@@ -748,6 +748,43 @@ From `INTERFACE_SCHEMA.md`:
 - **IPage**: Fixed structure with pagination and data array
 - **Documentation**: English only, detailed descriptions
 - **Types**: Never use `any`, always specify exact types
+- **`x-autobe-database-schema` REQUIRED**: All object types MUST have this field
+
+**CRITICAL: `x-autobe-database-schema` Requirement**:
+
+Every object type schema MUST include `x-autobe-database-schema`:
+- Set to table name when DTO maps to a database table
+- Set to `null` when DTO has no direct database mapping
+
+**When `x-autobe-database-schema` is `null`**, the `description` MUST contain:
+
+1. **WHY** - Reason for no database mapping:
+   - Request parameter type for API input
+   - Wrapper type for API responses
+   - Composite type aggregating multiple tables
+   - Computed result type from calculations
+   - Pure business logic type from requirements
+
+2. **HOW** - Detailed implementation specification (if applicable):
+   - Source tables and columns involved
+   - Join conditions between tables
+   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+   - Business rules and transformation logic
+   - Edge cases (nulls, empty sets, defaults)
+
+The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation.
+
+**`x-autobe-database-schema-member` Property-Level Mapping**:
+
+Every property within an object schema must specify its database member mapping:
+
+- When `x-autobe-database-schema` has a valid table name:
+  - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
+  - Set to `null` for computed properties, with detailed computation spec in `description`
+
+- When `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-schema-member` MUST be set to `null` for all properties
+  - Each property's `description` must still contain detailed data sourcing specs
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests

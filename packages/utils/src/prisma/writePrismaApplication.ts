@@ -167,6 +167,7 @@ function writeRelations(props: {
   interface IHasRelationship {
     modelName: string;
     unique: boolean;
+    oppositeName: string;
     mappingName?: string;
   }
   const hasRelationships: IHasRelationship[] = props.application.files
@@ -180,6 +181,7 @@ function writeRelations(props: {
           .map((otherForeign) => ({
             modelName: otherModel.name,
             unique: otherForeign.unique,
+            oppositeName: otherForeign.relation.oppositeName,
             mappingName: otherForeign.relation.mappingName,
           })),
       ),
@@ -206,7 +208,7 @@ function writeRelations(props: {
     ),
     hasRelationships.map((r) =>
       [
-        r.mappingName ?? r.modelName,
+        r.oppositeName ?? r.mappingName ?? r.modelName, // for legacy histories
         `${r.modelName}${r.unique ? "?" : "[]"}`,
         ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
       ].join(" "),

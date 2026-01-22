@@ -87,14 +87,9 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           operations: [],
           path: `${props.path}.revises[${i}].schema`,
           errors: props.errors,
-          databaseSchemas: new Set(
-            ctx
-              .state()
-              .database!.result.data.files.map((f) =>
-                f.models.map((m) => m.name),
-              )
-              .flat(),
-          ),
+          models: ctx
+            .state()
+            .database!.result.data.files.flatMap((f) => f.models),
         });
     });
     for (const key of Object.keys(props.schema.properties))
@@ -159,16 +154,12 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
 
   const nullish = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    property: Exclude<
-      AutoBeOpenApi.IJsonSchemaDescriptive,
-      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-    >;
+    property: AutoBeOpenApi.IJsonSchemaProperty;
     revise: AutoBeInterfaceSchemaPropertyNullish;
   }): void => {
-    let cloned: Exclude<
-      AutoBeOpenApi.IJsonSchemaDescriptive,
-      AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-    > = JSON.parse(JSON.stringify(props.property));
+    let cloned: AutoBeOpenApi.IJsonSchemaProperty = JSON.parse(
+      JSON.stringify(props.property),
+    );
     if (props.revise.nullable === true) {
       if (AutoBeOpenApiTypeChecker.isOneOf(cloned)) {
         if (
@@ -179,11 +170,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
           description: cloned.description,
+          "x-autobe-database-schema-member":
+            cloned["x-autobe-database-schema-member"],
           oneOf: [
             {
               ...cloned,
               ...{
                 description: undefined,
+                "x-autobe-database-schema-member": undefined,
               },
             },
             { type: "null" },
@@ -198,9 +192,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             description: cloned.description,
+            "x-autobe-database-schema-member":
+              cloned["x-autobe-database-schema-member"],
           };
       }
     }
+    // Update description: null preserves existing, string replaces it
+    if (props.revise.description !== null)
+      cloned.description = props.revise.description;
     props.schema.properties[props.revise.key] = cloned;
     if (props.revise.required === true)
       props.schema.required.push(props.revise.key);

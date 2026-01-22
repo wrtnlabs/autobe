@@ -3,8 +3,8 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 /**
  * Replace an existing property's schema definition.
  *
- * Use when property type, format, or structure is incorrect.
- * For nullability-only changes, use `nullish` instead.
+ * Use when property type, format, or structure is incorrect. For
+ * nullability-only changes, use `nullish` instead.
  */
 export interface AutoBeInterfaceSchemaPropertyUpdate {
   type: "update";
@@ -24,10 +24,7 @@ export interface AutoBeInterfaceSchemaPropertyUpdate {
   newKey: string | null;
 
   /** New schema definition that replaces the existing one. */
-  schema: Exclude<
-    AutoBeOpenApi.IJsonSchemaDescriptive,
-    AutoBeOpenApi.IJsonSchemaDescriptive.IObject
-  >;
+  schema: AutoBeOpenApi.IJsonSchemaProperty;
 
   /** Whether property should be in `required` array. */
   required: boolean;

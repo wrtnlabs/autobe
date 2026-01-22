@@ -247,7 +247,8 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+  "description": "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation with no direct database mapping. Computed by: SELECT category, COUNT(*) FROM reports GROUP BY category.",
+  "x-autobe-database-schema": null,
   "additionalProperties": {
     "type": "number",
     "description": "Count of reports in this category."
@@ -265,19 +266,20 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "User preferences containing display and localization settings.",
+  "description": "User preferences containing display and localization settings. This is the internal structure of the users.preferences JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from users.preferences column as JSON object.",
+  "x-autobe-database-schema": null,
   "properties": {
     "theme": {
       "type": "string",
-      "description": "UI theme preference."
+      "description": "UI theme preference. Stored as 'theme' key in the JSON structure."
     },
     "language": {
       "type": "string",
-      "description": "Preferred language code."
+      "description": "Preferred language code. Stored as 'language' key in the JSON structure."
     },
     "timezone": {
       "type": "string",
-      "description": "User's timezone identifier."
+      "description": "User's timezone identifier. Stored as 'timezone' key in the JSON structure."
     }
   }
 }
@@ -293,10 +295,35 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "Additional metadata stored as key-value pairs.",
+  "description": "Additional metadata stored as key-value pairs. This is the internal structure of the orders.metadata JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from orders.metadata column as JSON object with dynamic keys.",
+  "x-autobe-database-schema": null,
   "additionalProperties": true
 }
 ```
+
+**CRITICAL: `x-autobe-database-schema` Requirement**
+
+All refined object schemas MUST include `x-autobe-database-schema`:
+- Set to **table name** when the object maps to a database table
+- Set to **`null`** when no direct database mapping exists
+
+**When `x-autobe-database-schema` is `null`**, the `description` MUST explain:
+1. **WHY**: Reason for no database mapping (computed aggregation, composite type, etc.)
+2. **HOW**: Detailed specification of data sourcing or computation (source tables, formulas, join conditions)
+
+The HOW must be **precise enough for downstream agents to implement** the data retrieval or computation.
+
+**`x-autobe-database-schema-member` Property-Level Mapping**:
+
+Every property within a refined object schema must specify its database member mapping:
+
+- When `x-autobe-database-schema` has a valid table name:
+  - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
+  - Set to `null` for computed properties, with detailed computation spec in `description`
+
+- When `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-schema-member` is not applicable
+  - Each property's `description` must still contain detailed data sourcing specs
 
 ---
 
@@ -445,7 +472,8 @@ process({
     verdict: "REFINE: This is a degenerate type. The documentation explicitly describes a Record<string, number> structure (key-value mapping) but the type is just `number`. Will refine to an object with additionalProperties.",
     schema: {
       type: "object",
-      description: "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+      description: "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation type with no direct database mapping. Computed by grouping reports by category and counting occurrences: SELECT category, COUNT(*) FROM reports GROUP BY category.",
+      "x-autobe-database-schema": null,
       additionalProperties: {
         type: "number",
         description: "Count of reports in this category."
@@ -467,19 +495,23 @@ process({
     verdict: "REFINE: This is a degenerate type. Documentation describes a structured object with email, push, and SMS settings but type is `string`. Will refine to object with specific properties.",
     schema: {
       type: "object",
-      description: "User notification preferences containing email, push, and SMS notification settings.",
+      description: "User notification preferences containing email, push, and SMS notification settings. This is the internal structure of user_preferences.notification_settings JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from user_preferences.notification_settings column as JSON object.",
+      "x-autobe-database-schema": null,
       properties: {
         email: {
           type: "boolean",
-          description: "Whether to receive email notifications."
+          description: "Whether to receive email notifications. Stored as 'email' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         push: {
           type: "boolean",
-          description: "Whether to receive push notifications."
+          description: "Whether to receive push notifications. Stored as 'push' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         sms: {
           type: "boolean",
-          description: "Whether to receive SMS notifications."
+          description: "Whether to receive SMS notifications. Stored as 'sms' key in the JSON structure.",
+          "x-autobe-database-schema-member": null  // Parent has no DB mapping
         }
       }
     }
@@ -590,6 +622,8 @@ Before calling the complete function:
 - [ ] Structure matches what documentation describes
 - [ ] Used `additionalProperties` for Record patterns
 - [ ] Used `properties` for structured objects
+- [ ] **`x-autobe-database-schema` field included** (set to table name or `null`)
+- [ ] **If `x-autobe-database-schema` is `null`**: Description contains WHY (no DB mapping) and HOW (data sourcing/computation spec)
 
 ---
 

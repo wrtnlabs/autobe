@@ -36,6 +36,7 @@ export function validateDatabaseApplication(
             ...validateValidNames(model, accessor),
             ...validateIndexes(model, accessor),
             ...validateReferences(model, accessor, dict),
+            ...validateDuplicatedRelationOppositeNames(dict, model),
           ];
         }),
       )
@@ -431,6 +432,126 @@ function validateDuplicatedIndexes(
   return errors;
 }
 
+function validateDuplicatedRelationOppositeNames(
+  dict: Map<string, IModelContainer>,
+  model: AutoBeDatabase.IModel,
+): IAutoBeDatabaseValidation.IError[] {
+  interface IOppositeNameContainer {
+    container: IModelContainer;
+    foreignField: AutoBeDatabase.IForeignField;
+    foreignFieldIndex: number;
+  }
+  const errors: IAutoBeDatabaseValidation.IError[] = [];
+  const group: Map<string, IOppositeNameContainer[]> = new Map();
+
+  // Collect all field/relation names in the target model
+  const targetFieldNames = new Set<string>([
+    model.primaryField.name,
+    ...model.foreignFields.map((f) => f.name),
+    ...model.foreignFields.map((f) => f.relation.name),
+    ...model.plainFields.map((f) => f.name),
+  ]);
+
+  for (const c of dict.values()) {
+    c.model.foreignFields.forEach((ff, i) => {
+      if (ff.relation.targetModel !== model.name) return;
+      MapUtil.take(group, ff.relation.oppositeName, () => []).push({
+        container: c,
+        foreignField: ff,
+        foreignFieldIndex: i,
+      });
+    });
+  }
+
+  // Check oppositeName conflicts with target model's existing fields
+  for (const [oppositeName, array] of group) {
+    if (targetFieldNames.has(oppositeName)) {
+      array.forEach((item) => {
+        const c = item.container;
+        const ff = item.foreignField;
+        errors.push({
+          path: `application.files[${c.fileIndex}].models[${c.modelIndex}].foreignFields[${item.foreignFieldIndex}].relation.oppositeName`,
+          table: c.model.name,
+          field: ff.name,
+          message: StringUtil.trim`
+            oppositeName "${oppositeName}" conflicts with existing field in target model "${model.name}".
+
+            **What happened?**
+            The oppositeName "${oppositeName}" would create a reverse relation property in "${model.name}",
+            but "${model.name}" already has a field or relation with that name.
+
+            **Why is this a problem?**
+            - Prisma cannot have two properties with the same name in a model
+            - This will cause Prisma schema compilation errors
+            - The reverse relation would overwrite or conflict with the existing field
+
+            **How to fix:**
+            Choose a different oppositeName that doesn't conflict with existing fields in "${model.name}".
+
+            **Naming suggestions:**
+            - Add a descriptive prefix/suffix: "${oppositeName}List", "${oppositeName}Items", "related${oppositeName.charAt(0).toUpperCase() + oppositeName.slice(1)}"
+            - Use the source model name: "${c.model.name.replace(/_/g, "").toLowerCase()}s"
+          `,
+        });
+      });
+    }
+  }
+
+  // Check duplicate oppositeNames among relations targeting the same model
+  for (const [oppositeName, array] of group) {
+    if (array.length === 1) continue;
+    array.forEach((item, i) => {
+      const c = item.container;
+      const ff = item.foreignField;
+      errors.push({
+        path: `application.files[${c.fileIndex}].models[${c.modelIndex}].foreignFields[${item.foreignFieldIndex}].relation.oppositeName`,
+        table: c.model.name,
+        field: ff.name,
+        message: StringUtil.trim`
+          Duplicated relation oppositeName "${oppositeName}" detected on target model "${model.name}".
+
+          **What is oppositeName?**
+          In Prisma relations, oppositeName defines the name of the reverse relation field
+          on the target model. It allows the target model to access related records through
+          this named property.
+
+          **Current situation:**
+          Multiple foreign key fields from different models are trying to create reverse
+          relations on "${model.name}" with the same oppositeName "${oppositeName}".
+
+          **Conflicting relations:**
+          ${array
+            .filter((_, j) => i !== j)
+            .map(
+              (oppo) =>
+                `- Model "${oppo.container.model.name}", field "${oppo.foreignField.name}" (accessor: application.files[${oppo.container.fileIndex}].models[${oppo.container.modelIndex}].foreignFields[${oppo.foreignFieldIndex}].relation.oppositeName)`,
+            )
+            .join("\n")}
+
+          **Why is this a problem?**
+          - Prisma requires unique relation names within a model
+          - When "${model.name}" tries to access related records, it won't know which relation to use
+          - This will cause Prisma schema compilation errors
+
+          **How to fix:**
+          Each relation pointing to "${model.name}" must have a unique oppositeName.
+
+          **Naming suggestions:**
+          - Use descriptive names that indicate the relationship's purpose
+          - Include the source model name for clarity
+          - Examples:
+            - Instead of both using "orders", use "customerOrders" and "sellerOrders"
+            - Instead of both using "users", use "createdByUser" and "assignedToUser"
+            - For "${c.model.name}" → "${model.name}": consider "${c.model.name.charAt(0).toLowerCase() + c.model.name.slice(1)}s" or a more descriptive name
+
+          Please rename the oppositeName to be unique across all relations targeting "${model.name}".
+        `,
+      });
+    });
+  }
+  return errors;
+}
+
 /* -----------------------------------------------------------
   VALIDATIONS
 ----------------------------------------------------------- */
@@ -488,6 +609,11 @@ function validateValidNames(
     validate({
       value: ff.relation.name,
       accessor: `${accessor}.foreignFields[${i}].relation.name`,
+      field: ff.name,
+    });
+    validate({
+      value: ff.relation.oppositeName,
+      accessor: `${accessor}.foreignFields[${i}].relation.oppositeName`,
       field: ff.name,
     });
     if (ff.relation.mappingName)

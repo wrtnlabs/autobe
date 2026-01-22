@@ -51,6 +51,7 @@ export namespace AutoBeJsonSchemaFactory {
         value.properties.token = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "Authorization token.",
+          "x-autobe-database-schema-member": null,
         };
       value.required = Array.from(
         new Set([...parent.required, ...value.required]),
@@ -263,6 +264,7 @@ export namespace AutoBeJsonSchemaFactory {
       pagination: {
         $ref: "#/components/schemas/IPage.IPagination",
         description: "Page information.",
+        "x-autobe-database-schema-member": null,
       },
       data: {
         type: "array",
@@ -270,6 +272,7 @@ export namespace AutoBeJsonSchemaFactory {
           $ref: `#/components/schemas/${key}`,
         },
         description: "List of records.",
+        "x-autobe-database-schema-member": null,
       },
     },
     required: ["pagination", "data"],
@@ -317,8 +320,11 @@ export namespace AutoBeJsonSchemaFactory {
         },
         schema: value,
         closure: (next) => {
-          if (AutoBeOpenApiTypeChecker.isObject(next))
+          if (AutoBeOpenApiTypeChecker.isObject(next)) {
             next["x-autobe-database-schema"] = null;
+            for (const p of Object.values(next.properties))
+              p["x-autobe-database-schema-member"] = null;
+          }
         },
       });
     return init;

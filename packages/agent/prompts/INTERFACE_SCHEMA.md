@@ -888,9 +888,39 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 **USAGE**:
 - Present in ANY object type schema that maps to a database model
 - Includes: `IEntityName`, `IEntityName.ISummary`, `IEntityName.ICreate`, `IEntityName.IUpdate`
-- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types
+- Value is `null` for: `IEntityName.IRequest` (query params), `IPageIEntityName` (wrapper), system types, composite types
 
 **FORMAT**: `"`x-autobe-database-schema`": "database_model_name"` (exact model name from database schema) or `null`
+
+**CRITICAL REQUIREMENT WHEN `null`**:
+
+When `x-autobe-database-schema` is `null`, the object's `description` field MUST contain:
+
+1. **WHY** - Clear reason for no database mapping:
+   - Request parameter type for API input (filters, pagination)
+   - Wrapper type for API responses (pagination container)
+   - Composite type aggregating data from multiple tables
+   - Computed result type from calculations
+   - Pure business logic type born from requirements
+
+2. **HOW** - Detailed implementation specification (if applicable):
+   - Source tables and columns involved
+   - Join conditions between tables
+   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+   - Business rules and transformation logic
+   - Edge cases (nulls, empty sets, defaults)
+
+The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague descriptions are unacceptable.
+
+**Example for `null` mapping**:
+```json
+{
+  "type": "object",
+  "description": "Search and pagination parameters for user listing. This is a request parameter type for API input, not a database entity. Contains optional filters for search term matching against user name and email fields, along with standard pagination controls.",
+  "x-autobe-database-schema": null,
+  "properties": { ... }
+}
+```
 
 **VALIDATION PROCESS**:
 1. **Check for `x-autobe-database-schema` field**: If present in an object type schema, it indicates direct database model mapping (string) or no mapping (null)
@@ -908,15 +938,15 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "shopping_customers",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
+    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "name" },
+    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "created_at" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
-  "required": ["id", "email", "name", "createdAt"],
-  "x-autobe-database-schema": "shopping_customers"
+  "required": ["id", "email", "name", "createdAt"]
 }
 ```
 
@@ -955,8 +985,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
   "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -999,7 +1029,103 @@ Examples:
 - The `properties` object is ONLY for data that the API actually transmits
 - Always place metadata at the same level as `type` and `properties`, never inside `properties`
 
-#### 2.2.4. Database Nullable Field Handling - Nullable vs Optional
+#### 2.2.4. `x-autobe-database-schema-member` Property-Level Database Mapping
+
+**PURPOSE**: This field links each DTO property to its corresponding database member (field or relation) for traceability.
+
+**APPLIES TO**: Every property within an object schema where `x-autobe-database-schema` has a valid table name.
+
+**TYPE**: `string | null`
+- `string`: The exact database member name (scalar field, foreign key field, or relation name) this property maps to
+- `null`: Property is computed/derived and has no direct member mapping
+
+**USAGE RULES**:
+
+**Case 1: When `x-autobe-database-schema` has a valid table name**
+- Every property MUST have `x-autobe-database-schema-member` filled
+- If property maps directly to a database member (scalar field, FK field, or relation) → set to member name
+- If property is computed/derived (no direct member) → set to `null`, and the property's `description` MUST contain detailed computation specification
+
+**Case 2: When `x-autobe-database-schema` is `null`**
+- `x-autobe-database-schema-member` MUST be set to `null` for all properties (entire object has no table mapping)
+- Each property's `description` MUST still contain detailed specs explaining data sourcing
+
+**CRITICAL: Description Requirement for Computed Properties**
+
+When `x-autobe-database-schema-member` is `null`, the property's `description` MUST contain:
+
+1. **WHY** - Reason for no direct member mapping:
+   - Aggregated from multiple fields/rows
+   - Calculated from other fields
+   - Joined from related tables
+   - Derived from business logic
+
+2. **HOW** - Detailed implementation specification:
+   - Source tables and columns involved
+   - Join conditions between tables
+   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+   - Business rules and transformation logic
+   - Edge cases (nulls, empty sets, defaults)
+
+The HOW must be **precise enough for downstream agents to implement** the actual computation.
+
+**Example - Object with direct table mapping**:
+```json
+{
+  "type": "object",
+  "description": "User entity from users table.",
+  "x-autobe-database-schema": "users",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for the user.",
+      "x-autobe-database-schema-member": "id"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "User's email address for login and communication.",
+      "x-autobe-database-schema-member": "email"
+    },
+    "totalOrders": {
+      "type": "integer",
+      "description": "Total number of orders placed by this user. Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
+      "x-autobe-database-schema-member": null
+    }
+  },
+  "required": ["id", "email", "totalOrders"]
+}
+```
+
+**Example - Object with no table mapping** (x-autobe-database-schema is null):
+```json
+{
+  "type": "object",
+  "description": "Sales statistics aggregating data from multiple tables. This is a computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
+  "x-autobe-database-schema": null,
+  "properties": {
+    "categoryName": {
+      "type": "string",
+      "description": "Category name from categories table. Source: categories.name via JOIN products ON products.category_id = categories.id.",
+      "x-autobe-database-schema-member": null
+    },
+    "totalSales": {
+      "type": "integer",
+      "description": "Total units sold in this category. Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
+      "x-autobe-database-schema-member": null
+    },
+    "averagePrice": {
+      "type": "number",
+      "description": "Average sale price in this category. Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
+      "x-autobe-database-schema-member": null
+    }
+  },
+  "required": ["categoryName", "totalSales", "averagePrice"]
+}
+```
+
+#### 2.2.5. Database Nullable Field Handling - Nullable vs Optional
 
 **🚨 CRITICAL DISTINCTION**: Understand the difference between **nullable** (database) and **optional** (DTO).
 
@@ -1011,12 +1137,75 @@ Examples:
 
 ---
 
+### ⚠️ Important: DTO Nullability vs Database Nullability
+
+**The two directions have DIFFERENT rules**:
+
+#### ✅ DB non-null → DTO nullable: ALLOWED
+
+This direction is safe and commonly needed:
+
+| Scenario | DB | DTO | Reason |
+|----------|----|----|--------|
+| **Default value** | `role String @default("user")` (non-null) | `role?: string` (optional) | Client can omit; DB uses default |
+| **Auto-generated** | `created_at DateTime @default(now())` (non-null) | Not in Create DTO | Server generates automatically |
+| **Server-filled** | `created_by String` (non-null) | Not in Create DTO | Server extracts from auth context |
+| **Partial update** | `name String` (non-null) | `name?: string` (optional) | PATCH allows omitting unchanged fields |
+
+**⚠️ REQUIRED: Document the reason in `description`!**
+
+When DB is non-null but DTO is nullable/optional, you **MUST** explain why in the property's `description`:
+
+```json
+{
+  "role": {
+    "type": "string",
+    "description": "User's role in the system. Optional - if not provided, defaults to 'user'."
+  },
+  "nickname": {
+    "type": "string",
+    "description": "Display name. Optional - server generates from email prefix if not provided."
+  }
+}
+```
+
+This documentation is critical for:
+- API consumers to understand the behavior
+- Future maintainers to know the design decision
+- Code reviewers to verify the nullability is intentional
+
+#### ❌ DB nullable → DTO non-null: FORBIDDEN
+
+This direction is **dangerous** and will cause runtime errors:
+
+```
+DB: bio String?  (nullable - can return NULL)
+DTO: bio: string (non-null - expects value)
+→ Runtime error when DB returns NULL!
+```
+
+**You MUST use `oneOf` with null type when DB field is nullable**:
+```json
+{
+  "bio": {
+    "oneOf": [
+      { "type": "string" },
+      { "type": "null" }
+    ]
+  }
+}
+```
+
+This rule is **enforced by the validator**. Violating it will produce compilation errors.
+
+---
+
 ### Read DTOs (Response) - All Fields Always Present
 
-**Rule for Read DTOs** (`IEntity`, `IEntity.ISummary`):
+**General Guideline for Read DTOs** (`IEntity`, `IEntity.ISummary`):
 - **All fields are ALWAYS present in response JSON** (no optional fields)
-- Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]` to allow null values
 - **All fields MUST be in `required` array** (field always present, value may be null)
+- For fields that can return null: Use `oneOf: [{ type: "..." }, { type: "null" }]`
 
 **Database Schema**:
 ```prisma
@@ -1028,42 +1217,30 @@ model User {
 }
 ```
 
-**❌ WRONG - Read DTO with nullable as non-null type**:
+**Typical Pattern - nullable DB field as nullable DTO**:
 ```json
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "users",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },        // ❌ Should allow null!
-    "expiredAt": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }   // ❌ Should allow null!
-  },
-  "required": ["id", "email", "bio", "expiredAt"]
-}
-```
-
-**✅ CORRECT - Read DTO respecting database nullability**:
-```json
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
     "bio": {
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
       ],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "bio"
     },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
       ],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "expired_at"
     }
   },
   "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
@@ -1101,10 +1278,11 @@ model User {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "users",
   "properties": {
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
+    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "bio" },
+    "role": { "type": "string", "description": "Optional - if not provided, defaults to 'user'.", "x-autobe-database-schema-member": "role" }
   },
   "required": ["email"]  // ✅ Only non-nullable, non-default fields required
 }
@@ -1117,19 +1295,19 @@ model User {
 
 ---
 
-### Validation Rules by DTO Type
+### Rules by DTO Type
 
 **Read DTOs** (`IEntity`, `IEntity.ISummary`):
 1. ✅ All database fields appear in `properties`
-2. ✅ Database nullable (`?`) → Use `oneOf: [{ type: "..." }, { type: "null" }]`
-3. ✅ Database NOT NULL → Use simple type `{ type: "..." }`
+2. ✅ DB nullable (`?`) → **MUST** use `oneOf: [{ type: "..." }, { type: "null" }]`
+3. ✅ DB NOT NULL → simple type `{ type: "..." }`, OR can be nullable (safe direction)
 4. ✅ **All fields in `required` array** (fields always present, values may be null)
 
 **Create DTOs** (`IEntity.ICreate`):
 1. ✅ Exclude auto-generated fields (`id`, `created_at`)
 2. ✅ Exclude auth context fields (`user_id`, `session_id`)
-3. ✅ Database nullable (`?`) → NOT in `required` array (optional)
-4. ✅ Database with `@default` → NOT in `required` array (optional)
+3. ✅ DB nullable (`?`) → NOT in `required` array (optional)
+4. ✅ DB with `@default` → NOT in `required` array (optional, DB provides default)
 5. ✅ **Only non-nullable, non-default fields in `required` array**
 
 **Update DTOs** (`IEntity.IUpdate`):
@@ -1177,11 +1355,11 @@ model Session {
 
 ---
 
-### Common Mistakes
+### Common Patterns and Pitfalls
 
-❌ **Read DTO - Omitting nullable fields from required array**:
+❌ **Read DTO - Omitting fields from required array**:
 ```json
-// ❌ WRONG
+// ❌ WRONG - Read DTO fields must always be in required array
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
@@ -1198,43 +1376,43 @@ model Session {
 }
 ```
 
-❌ **Read DTO - Using simple type for nullable field**:
+❌ **Read DTO - DB nullable field as non-null type**:
 ```json
-// ❌ WRONG - bio is nullable in DB
+// ❌ FORBIDDEN - bio is nullable in DB, MUST allow null in DTO
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": { "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["bio"]
+  "required": ["bio"]  // ❌ Will cause runtime error when DB returns NULL!
 }
 
-// ✅ CORRECT
+// ✅ CORRECT - Use oneOf with null for DB nullable field
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" }
   },
-  "required": ["bio"]
+  "required": ["bio"]  // ✅ Field present, value may be null
 }
 ```
 
-❌ **Create DTO - Requiring nullable or default fields**:
+⚠️ **Create DTO - Requiring field with DB default**:
 ```json
-// ❌ WRONG - bio is nullable, should be optional
+// ⚠️ TYPICALLY WRONG - role has DB default, should be optional
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["email", "bio"]
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "required": ["email", "role"]  // ⚠️ role has @default("user") in DB
 }
 
-// ✅ CORRECT
+// ✅ CORRECT - Let DB use default value
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
-  "required": ["email"]
+  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "required": ["email"]  // ✅ role optional, DB default applies
 }
 ```
 
@@ -1245,14 +1423,15 @@ model Session {
 | Database Field | Read DTO (Response) | Create DTO (Request) |
 |---------------|-------------------|-------------------|
 | `String` (NOT NULL) | `{ type: "string" }` + in required | `{ type: "string" }` + in required |
-| `String?` (nullable) | `{ oneOf: [string, null] }` + in required | `{ type: "string" }` + NOT in required |
+| `String?` (nullable) | **MUST** `{ oneOf: [string, null] }` + in required | `{ type: "string" }` + NOT in required |
 | `String @default(...)` | `{ type: "string" }` + in required | `{ type: "string" }` + NOT in required |
 | `DateTime` (NOT NULL) | `{ type: "string", format: "date-time" }` + in required | Usually excluded (auto) |
-| `DateTime?` (nullable) | `{ oneOf: [datetime, null] }` + in required | Usually excluded (auto) |
+| `DateTime?` (nullable) | **MUST** `{ oneOf: [datetime, null] }` + in required | Usually excluded (auto) |
 
 **REMEMBER**:
-- **Read DTOs**: All fields present, use `oneOf` for nullable values
-- **Request DTOs**: Optional fields omitted from `required` array
+- **DB nullable → DTO MUST be nullable**: Use `oneOf` with null type. This is enforced by validator.
+- **DB non-null → DTO can be nullable**: Safe direction, allowed for default values, server-generated fields, etc.
+- **Request DTOs**: Optional fields omitted from `required` array; DB default values allow optional in DTO.
 
 #### 2.2.5. Database JSON String Fields with `additionalProperties`
 
@@ -1378,12 +1557,14 @@ model User {
     "id": {
       "type": "string",
       "format": "uuid",
-      "description": "Unique identifier for the user."
+      "description": "Unique identifier for the user.",
+      "x-autobe-database-schema-member": "id"
     },
     "email": {
       "type": "string",
       "format": "email",
-      "description": "User's email address."
+      "description": "User's email address.",
+      "x-autobe-database-schema-member": "email"
     },
     "preferences": {
       "type": "object",
@@ -1392,7 +1573,8 @@ model User {
       "additionalProperties": {
         "type": "string"
       },
-      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings."
+      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
+      "x-autobe-database-schema-member": "preferences"
     },
     "customFields": {
       "oneOf": [
@@ -1406,7 +1588,8 @@ model User {
         },
         { "type": "null" }
       ],
-      "description": "Optional custom fields as key-value pairs. Null if not set."
+      "description": "Optional custom fields as key-value pairs. Null if not set.",
+      "x-autobe-database-schema-member": "custom_fields"
     }
   },
   "required": ["id", "email", "preferences", "customFields"]
@@ -1484,53 +1667,60 @@ An **inline object type** occurs when you define an object's complete structure 
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "bbs_articles",
   "properties": {
-    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
+    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "title" },
+    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "content" },
     "attachments": {
       "type": "array",
       "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null,
       "items": {
         "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
       }
     },
     "metadata": {
       "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null
     }
   }
 }
 ```
 
 ```json
-// Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments
+// Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments (no direct DB mapping)
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": null,
   "properties": {
-    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>" },
-    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>" },
-    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>" }
+    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
+    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
+    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null }
   },
   "required": ["url", "name", "size"]
 }
 ```
 
 ```json
-// Schema: IBbsArticleMetadata - Supporting type for metadata
+// Schema: IBbsArticleMetadata - Supporting type for metadata (no direct DB mapping)
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": null,
   "properties": {
     "tags": {
       "type": "array",
       "description": "<DETAILED_DESCRIPTION>",
-      "items": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+      "x-autobe-database-schema-member": null,
+      "items": { "type": "string" }
     },
     "priority": {
       "type": "string",
       "enum": ["low", "medium", "high"],
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": null
     }
   }
 }
@@ -1647,10 +1837,12 @@ Before ANY schema is accepted:
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
+  "x-autobe-database-schema": "posts",
   "properties": {
     "author": {
       "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-      "description": "<DETAILED_DESCRIPTION>"
+      "description": "<DETAILED_DESCRIPTION>",
+      "x-autobe-database-schema-member": "author"
     }
   }
 }
@@ -4962,7 +5154,8 @@ interface IBbsArticle.IUpdate {
      - Include sort options (orderBy, direction)
      - Include common filters (search, status, dateRange)
      - May include "my_items_only" but not direct "user_id"
-     - NO `x-autobe-database-schema` (query params, not table mapping)
+     - Set `x-autobe-database-schema` to `null` (query params, not table mapping)
+     - **CRITICAL**: `description` MUST explain WHY (request parameter type for API input)
 
    - **`.IInvert`**:
      - Use when child needs parent context
@@ -5127,9 +5320,9 @@ export namespace IJsonSchemaDescriptive {
   }
 }
 
-// IObject.properties requires IJsonSchemaDescriptive for each property
+// IObject.properties requires IJsonSchemaProperty for each property
 export interface IObject {
-  properties: Record<string, IJsonSchemaDescriptive>;  // ← Each value MUST have description
+  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description AND x-autobe-database-schema-member
 }
 ```
 
@@ -5170,8 +5363,8 @@ Soft deletion is supported to preserve historical transaction records.
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
   "properties": {
-    "id": { "type": "string", "description": "Sale unique identifier" },
-    "title": { "type": "string", "description": "Sale listing title" }
+    "id": { "type": "string", "description": "Sale unique identifier", "x-autobe-database-schema-member": "id" },
+    "title": { "type": "string", "description": "Sale listing title", "x-autobe-database-schema-member": "title" }
   },
   "required": ["id", "title"]
 }
@@ -5182,8 +5375,8 @@ Summary variant excludes large text fields for list performance.`,
   "type": "object",
   "description": "Sale entity. Contains product and seller information.",
   "properties": {
-    "id": { "type": "string", "description": "Sale ID" },
-    "title": { "type": "string", "description": "Title" }
+    "id": { "type": "string", "description": "Sale ID", "x-autobe-database-schema-member": "id" },
+    "title": { "type": "string", "description": "Title", "x-autobe-database-schema-member": "title" }
   }
 }
 ```
@@ -5192,7 +5385,7 @@ Summary variant excludes large text fields for list performance.`,
 
 **⚠️ MANDATORY: Every single property MUST have a `description` field ⚠️**
 
-This is NOT optional. The type system requires `IJsonSchemaDescriptive` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
+This is NOT optional. The type system requires `IJsonSchemaProperty` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
 
 Write clear, detailed property descriptions explaining the purpose, constraints, and business context of each field.
 
@@ -5210,7 +5403,8 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
   "email": {
     "type": "string",
     "format": "email",
-    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards."
+    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards.",
+    "x-autobe-database-schema-member": "email"
   }
 }
 
@@ -5219,15 +5413,17 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
   "price": {
     "type": "number",
     "minimum": 0,
-    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents."
+    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents.",
+    "x-autobe-database-schema-member": "price"
   }
 }
 
-// WRONG: Too brief
+// WRONG: Too brief (description insufficient)
 {
   "email": {
     "type": "string",
-    "description": "Email"
+    "description": "Email",
+    "x-autobe-database-schema-member": "email"
   }
 }
 
@@ -5235,8 +5431,9 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 {
   "email": {
     "type": "string",
-    "format": "email"
-    // Missing description! This violates IJsonSchemaDescriptive type requirement
+    "format": "email",
+    "x-autobe-database-schema-member": "email"
+    // Missing description! This violates IJsonSchemaProperty type requirement
   }
 }
 
@@ -5244,7 +5441,8 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 {
   "description": {
     "type": "string",
-    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"
+    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision",
+    "x-autobe-database-schema-member": "description"
   }
 }
 ```

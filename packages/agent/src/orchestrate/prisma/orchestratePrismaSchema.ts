@@ -15,6 +15,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
+import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
 import { IAutoBeDatabaseSchemaApplication } from "./structures/IAutoBeDatabaseSchemaApplication";
 
 export async function orchestratePrismaSchema(
@@ -110,6 +111,8 @@ async function process(
       }),
     });
     if (pointer.value === null) return out(result)(null);
+
+    AutoBeDatabaseModelProgrammer.emend(pointer.value.model);
     return out(result)({
       type: SOURCE,
       id: v7(),

@@ -35,7 +35,13 @@ export const validate_interface_rename = async (props: {
   };
 
   // Rename schemas (modifies document in-place)
-  await orchestrateInterfaceSchemaRename(props.agent.getContext(), document);
+  await orchestrateInterfaceSchemaRename(props.agent.getContext(), {
+    document,
+    progress: {
+      completed: 0,
+      total: 0,
+    },
+  });
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

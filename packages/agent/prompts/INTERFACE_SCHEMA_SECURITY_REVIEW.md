@@ -941,10 +941,7 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;   // Why this field is being added
   key: string;      // Property name to add
-  schema: {         // Schema definition for the new property
-    type: string;   // e.g., "string"
-    description: string;
-  };
+  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-database-schema-member
   required: boolean; // Whether the field is required
 }
 
@@ -961,12 +958,29 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 - **`create`**: Add missing `password` field to IJoin/ILogin, add missing session context fields
 - **`keep`**: Acknowledge existing properties that pass security review
 
+**`x-autobe-database-schema-member` Requirement**:
+
+When creating properties, specify database member mapping:
+
+- For fields that directly map to a database member (scalar field, FK field, or relation):
+  - Set `x-autobe-database-schema-member` to the member name
+
+- For computed/derived fields (no direct member):
+  - Set `x-autobe-database-schema-member` to `null`
+  - The `description` MUST contain detailed computation spec
+
+- When the parent object's `x-autobe-database-schema` is `null`:
+  - `x-autobe-database-schema-member` is not applicable
+  - The `description` must still contain detailed data sourcing specs
+
 ### 5.3. Output Examples
 
 **Example 1: ILogin with password_hashed (Erase + Create)**
 
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
+// Note: ILogin is a request DTO with x-autobe-database-schema: null
+// When x-autobe-database-schema is null, x-autobe-database-schema-member should also be null
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {
@@ -989,7 +1003,8 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "User's password for authentication"
+          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing.",
+          "x-autobe-database-schema-member": null  // null because parent has no DB mapping
         },
         required: true
       },
@@ -1058,6 +1073,7 @@ process({
 ```typescript
 // Reviewing: ISeller.IJoin - missing password field
 // Actor: { name: "seller", kind: "member" }
+// Note: IJoin is a request DTO with x-autobe-database-schema: null
 process({
   thinking: "Seller has kind: 'member', so IJoin requires password. Adding password field.",
   request: {
@@ -1075,7 +1091,8 @@ process({
         key: "password",
         schema: {
           type: "string",
-          description: "Password for the new seller account"
+          description: "Password for the new seller account. Will be hashed before storing in sellers.password column.",
+          "x-autobe-database-schema-member": null  // IJoin has no DB mapping
         },
         required: true
       },
@@ -1129,6 +1146,7 @@ process({
 
 ```typescript
 // Reviewing: ICustomer.IJoin - missing session context fields
+// Note: IJoin is a request DTO with x-autobe-database-schema: null
 process({
   thinking: "IJoin missing required session context fields. Adding href and referrer.",
   request: {
@@ -1146,7 +1164,8 @@ process({
         key: "href",
         schema: {
           type: "string",
-          description: "Connection URL (current page URL)"
+          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking.",
+          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
         },
         required: true
       },
@@ -1156,7 +1175,8 @@ process({
         key: "referrer",
         schema: {
           type: "string",
-          description: "Referrer URL (previous page URL)"
+          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking.",
+          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
         },
         required: true
       },

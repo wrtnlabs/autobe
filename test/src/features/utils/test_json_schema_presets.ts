@@ -8,19 +8,24 @@ export const test_json_schema_presets = () => {
     AutoBeJsonSchemaFactory.presets(
       new Set(["IPageIUser.ISummary", "IUser.IAuthorized"]),
     );
+
   TestValidator.predicate("IPage.IPagination", () =>
-    typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IPage.IPagination"]),
+    typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
+      presets["IPage.IPagination"],
+    ),
   );
   TestValidator.predicate("IAuthorizationToken", () =>
-    typia.is<AutoBeOpenApi.IJsonSchema.IObject>(presets["IAuthorizationToken"]),
+    typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
+      presets["IAuthorizationToken"],
+    ),
   );
   TestValidator.predicate(
     "IPageIUser.ISummary",
     () =>
-      typia.is<AutoBeOpenApi.IJsonSchema.IObject>(
+      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IObject>(
         presets["IPageIUser.ISummary"],
       ) &&
-      typia.is<AutoBeOpenApi.IJsonSchema.IArray>(
+      typia.is<AutoBeOpenApi.IJsonSchemaDescriptive.IArray>(
         presets["IPageIUser.ISummary"].properties.data,
       ) &&
       typia.is<AutoBeOpenApi.IJsonSchema.IReference>(

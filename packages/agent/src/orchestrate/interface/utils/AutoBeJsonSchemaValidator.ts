@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
@@ -35,7 +35,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   export interface IProps {
     errors: IValidation.IError[];
-    databaseSchemas: Set<string>;
+    models: AutoBeDatabase.IModel[];
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive;
@@ -67,7 +67,7 @@ export namespace AutoBeJsonSchemaValidator {
           transform: (typeName) => `#/components/schemas/${typeName}`,
         });
       },
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+      accessor: props.path,
     });
   };
 
@@ -240,7 +240,7 @@ export namespace AutoBeJsonSchemaValidator {
     if (props.typeName.endsWith(".IAuthorized") === true) {
       if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) {
         props.errors.push({
-          path: `${props.path}[${JSON.stringify(props.typeName)}]`,
+          path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
           value: props.schema,
           description: `${props.typeName} must be an object type for authorization responses`,
@@ -251,7 +251,8 @@ export namespace AutoBeJsonSchemaValidator {
         props.schema.properties["token"] = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "JWT token information for authentication",
-        } as AutoBeOpenApi.IJsonSchemaDescriptive.IReference;
+          "x-autobe-database-schema-member": null,
+        } as AutoBeOpenApi.IJsonSchemaProperty.IReference;
 
         props.schema.required ??= [];
         if (props.schema.required.includes("token") === false)
@@ -261,7 +262,7 @@ export namespace AutoBeJsonSchemaValidator {
 
     AutoBeOpenApiTypeChecker.skim({
       schema: props.schema,
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
+      accessor: props.path,
       closure: (next, accessor) => {
         if (AutoBeOpenApiTypeChecker.isReference(next) === false) return;
         const key: string = next.$ref.split("/").pop()!;
@@ -335,40 +336,189 @@ export namespace AutoBeJsonSchemaValidator {
         )}
       `;
     }
+
     // check database schema existence
-    AutoBeOpenApiTypeChecker.skim({
-      schema: props.schema,
-      accessor: `${props.path}[${JSON.stringify(props.typeName)}]`,
-      closure: (schema, accessor) => {
-        if (AutoBeOpenApiTypeChecker.isObject(schema) === false) return;
-        else if (
-          schema["x-autobe-database-schema"] !== null &&
-          schema["x-autobe-database-schema"] !== undefined &&
-          props.databaseSchemas.has(schema["x-autobe-database-schema"]) ===
-            false
-        )
-          props.errors.push({
-            path: `${accessor}["x-autobe-database-schema"]`,
-            expected: Array.from(props.databaseSchemas)
-              .map((s) => JSON.stringify(s))
-              .join(" | "),
-            value: schema["x-autobe-database-schema"],
-            description: StringUtil.trim`
-              You've referenced a non-existing database schema name
-              ${JSON.stringify(schema["x-autobe-database-schema"])} in
-              "x-autobe-database-schema" property. Make sure that the
-              referenced database schema name exists in your database schema files.
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    else if (
+      props.schema["x-autobe-database-schema"] === null ||
+      props.schema["x-autobe-database-schema"] === undefined
+    )
+      return;
 
-              Never assume non-existing models. This is not recommendation,
-              but an instruction you must follow. Never repeat the same
-              value again. I repeat that, you have to choose one of below:
+    const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
+    const model: AutoBeDatabase.IModel | undefined = props.models.find(
+      (m) => m.name === next["x-autobe-database-schema"],
+    );
+    if (model === undefined)
+      props.errors.push({
+        path: `${props.path}["x-autobe-database-schema"]`,
+        expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
+        value: next["x-autobe-database-schema"],
+        description: StringUtil.trim`
+          You've referenced a non-existing database schema name
+          ${JSON.stringify(next["x-autobe-database-schema"])} in
+          "x-autobe-database-schema" property. Make sure that the
+          referenced database schema name exists in your database schema files.
 
-              Existing database schema names are:
-              - ${Array.from(props.databaseSchemas).join("\n- ")}
-            `,
-          });
+          Never assume non-existing models. This is not recommendation,
+          but an instruction you must follow. Never repeat the same
+          value again. I repeat that, you have to choose one of below:
+
+          Existing database schema names are:
+          
+          ${props.models.map((m) => `- ${m.name}`).join("\n")}
+        `,
+      });
+    for (const [key, value] of Object.entries(next.properties))
+      validateDatabaseSchemaMember({
+        models: props.models,
+        target: model,
+        key,
+        value,
+        errors: props.errors,
+        path: `${props.path}.properties${
+          Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+        }`,
+      });
+  };
+
+  const validateDatabaseSchemaMember = (props: {
+    models: AutoBeDatabase.IModel[];
+    target: AutoBeDatabase.IModel | undefined;
+    key: string;
+    value: AutoBeOpenApi.IJsonSchemaProperty;
+    errors: IValidation.IError[];
+    path: string;
+  }): void => {
+    const member: string | null =
+      props.value["x-autobe-database-schema-member"];
+    if (member === null || member === undefined) return;
+
+    const propertyAccessor: string = Escaper.variable(props.key)
+      ? `${props.path}.properties.${props.key}`
+      : `${props.path}.properties[${JSON.stringify(props.key)}]`;
+    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-schema-member"]`;
+
+    if (props.target === undefined) {
+      props.errors.push({
+        path: pluginAccessor,
+        expected: "null",
+        value: member,
+        description: StringUtil.trim`
+          You have defined "x-autobe-database-schema-member" property referencing
+          a database schema member, but the parent schema does not reference any
+          database schema in "x-autobe-database-schema" property.
+
+          To reference a database schema member, first define the parent
+          schema's "x-autobe-database-schema" property with
+          a valid database schema name.
+
+          If not, remove this "x-autobe-database-schema-member" property
+          at the next time, and then describe what this property is for
+          in the schema description instead.
+        `,
+      });
+      return;
+    }
+
+    interface ICandidate {
+      key: string;
+      nullable: boolean;
+    }
+    const candidates: ICandidate[] = [
+      {
+        key: props.target.primaryField.name,
+        nullable: false,
       },
-    });
+      ...props.target.plainFields.map((f) => ({
+        key: f.name,
+        nullable: f.nullable,
+      })),
+      ...props.target.foreignFields.map((f) => ({
+        key: f.name,
+        nullable: f.nullable,
+      })),
+      ...props.target.foreignFields.map((f) => ({
+        key: f.relation.name,
+        nullable: f.nullable,
+      })),
+      ...props.models
+        .map((m) =>
+          m.foreignFields
+            .filter((ff) => ff.relation.targetModel === props.target!.name)
+            .map((ff) => ({
+              key: ff.relation.oppositeName,
+              nullable: ff.unique,
+            })),
+        )
+        .flat(),
+    ];
+    const found: ICandidate | undefined = candidates.find(
+      (c) => c.key === member,
+    );
+    if (found === undefined)
+      props.errors.push({
+        path: pluginAccessor,
+        expected: candidates.map((c) => JSON.stringify(c.key)).join(" | "),
+        value: member,
+        description: StringUtil.trim`
+          You have defined "x-autobe-database-schema-member" property with value
+          ${JSON.stringify(member)} that does not match any member (field or relation)
+          in the database schema "${props.target.name}".
+
+          The member name you specified does not exist in the target database
+          schema. Please check the spelling and ensure you're referencing
+          an existing field or relation.
+
+          Available members in "${props.target.name}" are:
+          ${candidates.map((c) => `- ${c.key}`).join("\n")}
+        `,
+      });
+    else if (
+      found.nullable === true &&
+      AutoBeOpenApiTypeChecker.isNullable(props.value) === false
+    ) {
+      const expected: AutoBeOpenApi.IJsonSchemaProperty = {
+        oneOf: [
+          ...(AutoBeOpenApiTypeChecker.isOneOf(props.value)
+            ? props.value.oneOf
+            : [
+                {
+                  ...props.value,
+                  ...{
+                    description: undefined,
+                    "x-autobe-database-schema-member": undefined,
+                  },
+                },
+              ]),
+          { type: "null" },
+        ],
+        description: props.value.description,
+        "x-autobe-database-schema-member":
+          props.value["x-autobe-database-schema-member"],
+      };
+      props.errors.push({
+        path: propertyAccessor,
+        expected: JSON.stringify(expected),
+        value: props.value["x-autobe-database-schema-member"],
+        description: StringUtil.trim`
+          The database schema member "${found.key}" in "${props.target.name}"
+          is nullable, but this DTO property is defined as non-nullable.
+
+          This is dangerous because the database can return NULL values,
+          which would cause runtime errors if the DTO expects non-null.
+
+          You MUST use "oneOf" with "null" type to allow null values:
+          
+          \`\`\`json
+          ${JSON.stringify(expected)}
+          \`\`\`
+
+          Note: The reverse case (DB non-null, DTO nullable) is allowed
+          because DB default values or server logic may fill the value.
+        `,
+      });
+    }
   };
 
   const validateRecursive = (props: IProps): void => {
