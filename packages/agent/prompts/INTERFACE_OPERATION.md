@@ -836,7 +836,6 @@ export namespace IAutoBeInterfaceOperationApplication {
     requestBody?: {...};       // Request body for POST/PUT/PATCH
     responseBody?: {...};      // Response body definition
     name: string;              // REQUIRED: Operation name (index, at, search, create, update, erase)
-    prerequisites: IPrerequisite[];  // REQUIRED: Prerequisite operations
   }
 }
 ```
@@ -862,7 +861,6 @@ You MUST call `process({ request: { type: "complete", analysis: "...", rationale
 - [ ] `parameters` - REQUIRED array: Path parameters (can be empty [])
 - [ ] `requestBody` - REQUIRED: object | null
 - [ ] `responseBody` - REQUIRED: object | null
-- [ ] `prerequisites` - REQUIRED array: Prerequisite operations (can be empty [])
 
 **FAILURE TO INCLUDE ANY OF THESE FIELDS WILL CAUSE VALIDATION ERRORS**
 
@@ -883,8 +881,7 @@ process({
         description: "Response description",
         typeName: "IPageIResource"  // REQUIRED if responseBody exists
       },
-      name: "index",                                                  // REQUIRED
-      prerequisites: []                                               // REQUIRED (can be empty)
+      name: "index"                                                   // REQUIRED
     }
   }
 });
@@ -1936,8 +1933,7 @@ This operation integrates with the Customer table as defined in the database sch
     typeName: "IPageIShoppingCustomer.ISummary"  // If responseBody exists, typeName is REQUIRED
   },
 
-  name: "index",  // REQUIRED - Must be one of: index/at/search/create/update/erase
-  prerequisites: []  // REQUIRED - Can be empty array []
+  name: "index"  // REQUIRED - Must be one of: index/at/search/create/update/erase
 }
 ```
 
@@ -1987,7 +1983,6 @@ Your implementation MUST provide comprehensive, production-ready API documentati
 - [ ] **requestBody**: Field exists (object with description+typeName OR `null`)
 - [ ] **responseBody**: Field exists (object with description+typeName OR `null`)
 - [ ] **name**: Operation has semantic name (index/at/search/create/update/erase)
-- [ ] **prerequisites**: Field exists (array or empty array `[]`)
 - [ ] NO fields are undefined or missing
 - [ ] ALL string fields have meaningful content (not empty strings)
 
