@@ -31,84 +31,32 @@ export interface AutoBeInterfaceEndpointDesign {
   description: string;
 
   /**
-   * Authorization actors required to access this API operation.
+   * Authorization actors associated with this API endpoint.
    *
-   * This field specifies which user actors are allowed to access this endpoint.
-   * Multiple actors can be specified to allow different types of users to
-   * access the same endpoint.
+   * Specify actors that are **associated with** this endpoint. An actor should
+   * be included if:
    *
-   * ## ⚠️ CRITICAL: Actor Multiplication Effect
-   *
-   * **EACH ACTOR IN THIS ARRAY GENERATES A SEPARATE ENDPOINT**
-   *
-   * - If you specify `["admin", "moderator", "member"]`, this creates 3 separate
-   *   endpoints
-   * - Total generated endpoints = operations × average actors.length
-   * - Example: 100 operations with 3 actors each = 300 actual endpoints
-   *
-   * ## 🔴 AVOID OVER-GENERATION
-   *
-   * **DO NOT create actor-specific endpoints when a public endpoint would
-   * suffice:**
-   *
-   * - ❌ BAD: Separate GET endpoints for admin, member, moderator to view the same
-   *   public data
-   * - ✅ GOOD: Single public endpoint `[]` with actor-based filtering in business
-   *   logic
-   *
-   * **DO NOT enumerate all possible actors when the database schema uses a
-   * single User table:**
-   *
-   * - If database has a User table with role/permission fields, you likely only
-   *   need `["user"]`
-   * - Avoid listing `["admin", "seller", "buyer", "moderator", ...]`
-   *   unnecessarily
-   * - The actual actor checking happens in business logic, not at the endpoint
-   *   level
-   *
-   * ## Naming Convention
-   *
-   * DO: Use camelCase for all actor names.
-   *
-   * ## Important Guidelines
-   *
-   * - Set to empty array `[]` for public endpoints that require no authentication
-   * - Set to array with actor strings for actor-restricted endpoints
-   * - **MINIMIZE the number of actors per endpoint to prevent explosion**
-   * - Consider if the endpoint can be public with actor-based filtering instead
-   * - The actor names match exactly with the user type/actor defined in the
-   *   database
-   * - This will be used by the Realize Agent to generate appropriate decorator
-   *   and authorization logic in the provider functions
-   * - The controller will apply the corresponding authentication decorator based
-   *   on these actors
+   * 1. **The actor can call this endpoint**: The endpoint requires authentication
+   *    and only this actor type can access it.
+   * 2. **The endpoint is related to the actor**: If the endpoint path contains the
+   *    actor name (e.g., `/auth/users/login` → `"user"`), or the endpoint
+   *    serves that actor type, include the actor to indicate the relationship.
    *
    * ## Examples
    *
-   * - `[]` - Public endpoint, no authentication required (PREFERRED for read
-   *   operations)
-   * - `["user"]` - Any authenticated user can access (PREFERRED for user-specific
-   *   operations)
-   * - `["admin"]` - Only admin users can access (USE SPARINGLY)
-   * - `["admin", "moderator"]` - Both admin and moderator users can access (AVOID
-   *   if possible)
-   * - `["seller"]` - Only seller users can access (ONLY if Seller is a separate
-   *   table)
+   * - `/auth/users/login` → `["user"]` (related to user)
+   * - `/auth/admins/join` → `["admin"]` (related to admin)
+   * - `/users/{userId}/profile` → `["user"]` (user can call)
+   * - `/products` → `[]` (public, no association)
    *
-   * ## Best Practices
+   * ## ⚠️ Actor Multiplication Effect
    *
-   * 1. **Start with public `[]` for all read operations** unless sensitive data is
-   *    involved
-   * 2. **Use single actor `["user"]` for authenticated operations** and handle
-   *    permissions in business logic
-   * 3. **Only use multiple actors when absolutely necessary** for different
-   *    business logic paths
-   * 4. **Remember: Fewer actors = Fewer endpoints = Better performance and
-   *    maintainability**
+   * Each actor may generate a separate endpoint. Minimize actors to prevent
+   * endpoint explosion.
    *
-   * Note: The actual authentication/authorization implementation will be
-   * handled by decorators at the controller level, and the provider function
-   * will receive the authenticated user object with the appropriate type.
+   * ## Naming Convention
+   *
+   * Use camelCase for all actor names (e.g., `"user"`, `"admin"`, `"seller"`).
    */
   authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
 
@@ -118,11 +66,10 @@ export interface AutoBeInterfaceEndpointDesign {
    * - `"login"`: User login endpoint that validate credentials
    * - `"join"`: User registration endpoint that create accounts
    * - `"refresh"`: Token refresh endpoint that renew access tokens
-   * - `"session"`: Session management endpoint that manage user sessions
+   * - `"session"`: Session related endpoint
+   * - `"password"`: Password related endpoint
    * - `"management"`: Authentication-related endpoint other than login, join, and
-   *   refresh (e.g., logout, password reset/change, email/phone verification,
-   *   2FA, OAuth, session management, profile)
-   * - `"password"`: Password management endpoint that manage user passwords
+   *   refresh (e.g., logout, email/phone verification, 2FA, OAuth, profile)
    * - `null`: All other endpoint (CRUD, business logic, etc.)
    */
   authorizationType:
@@ -130,8 +77,8 @@ export interface AutoBeInterfaceEndpointDesign {
     | "join"
     | "refresh"
     | "session"
-    | "management"
     | "password"
+    | "management"
     | null;
 
   /** The endpoint definition containing path and HTTP method. */

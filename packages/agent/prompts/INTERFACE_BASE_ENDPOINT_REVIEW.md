@@ -98,8 +98,10 @@ Scan the provided endpoints and find any that match the patterns below but have 
 | Path ends with `*/login` | `"login"` |
 | Path ends with `*/join` | `"join"` |
 | Path ends with `*/refresh` | `"refresh"` |
+| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
+| `*/password`, `*/password/*` | `"password"` |
 | **POST `/{actors}`** (actor table create) | `"join"` |
-| Other `/auth/*` paths (logout, password, verify, 2fa, oauth, me, sessions) | `"management"` |
+| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
 | All other paths | `null` |
 
 **Actor Table Create = Join**:
@@ -136,10 +138,12 @@ POST /guests           → authorizationType: "join"
   type: "update",
   reason: "POST /members is actor creation (registration). Setting authorizationType to 'join'.",
   original: { path: "/members", method: "post" },
-  updated: { path: "/members", method: "post" },
-  description: "Create a new member (user registration).",
-  authorizationType: "join",  // ← INJECT CORRECT VALUE
-  authorizationActors: []
+  updated: {
+    endpoint: { path: "/members", method: "post" },
+    description: "Create a new member (user registration).",
+    authorizationType: "join",  // ← INJECT CORRECT VALUE
+    authorizationActors: ["member"]  // ← Associated with member actor
+  }
 }
 ```
 
@@ -149,6 +153,8 @@ POST /guests           → authorizationType: "join"
 // - POST /members (authorizationType: null) ← actor create
 // - POST /auth/members/login (authorizationType: null)
 // - POST /auth/members/refresh (authorizationType: null)
+// - GET /auth/members/sessions (authorizationType: null) ← session path
+// - PUT /auth/members/password (authorizationType: null) ← password path
 
 // You MUST update them:
 revises: [
@@ -156,28 +162,56 @@ revises: [
     type: "update",
     reason: "POST /members is actor creation (registration). Setting authorizationType to 'join'.",
     original: { path: "/members", method: "post" },
-    updated: { path: "/members", method: "post" },
-    description: "Create a new member (user registration).",
-    authorizationType: "join",
-    authorizationActors: []
+    updated: {
+      endpoint: { path: "/members", method: "post" },
+      description: "Create a new member (user registration).",
+      authorizationType: "join",
+      authorizationActors: ["member"]
+    }
   },
   {
     type: "update",
     reason: "Injecting authorizationType 'login' for login endpoint.",
     original: { path: "/auth/members/login", method: "post" },
-    updated: { path: "/auth/members/login", method: "post" },
-    description: "User login with credentials.",
-    authorizationType: "login",
-    authorizationActors: []
+    updated: {
+      endpoint: { path: "/auth/members/login", method: "post" },
+      description: "User login with credentials.",
+      authorizationType: "login",
+      authorizationActors: ["member"]
+    }
   },
   {
     type: "update",
     reason: "Injecting authorizationType 'refresh' for token refresh endpoint.",
     original: { path: "/auth/members/refresh", method: "post" },
-    updated: { path: "/auth/members/refresh", method: "post" },
-    description: "Refresh authentication token.",
-    authorizationType: "refresh",
-    authorizationActors: []
+    updated: {
+      endpoint: { path: "/auth/members/refresh", method: "post" },
+      description: "Refresh authentication token.",
+      authorizationType: "refresh",
+      authorizationActors: ["member"]
+    }
+  },
+  {
+    type: "update",
+    reason: "Injecting authorizationType 'session' for session endpoint.",
+    original: { path: "/auth/members/sessions", method: "get" },
+    updated: {
+      endpoint: { path: "/auth/members/sessions", method: "get" },
+      description: "Get current sessions.",
+      authorizationType: "session",
+      authorizationActors: ["member"]
+    }
+  },
+  {
+    type: "update",
+    reason: "Injecting authorizationType 'password' for password endpoint.",
+    original: { path: "/auth/members/password", method: "put" },
+    updated: {
+      endpoint: { path: "/auth/members/password", method: "put" },
+      description: "Change password.",
+      authorizationType: "password",
+      authorizationActors: ["member"]
+    }
   }
 ]
 ```
@@ -453,8 +487,12 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
   type: "update",
   reason: "Converting singular 'article' to plural 'articles' for REST convention.",
   original: { path: "/article/{articleId}", method: "get" },
-  updated: { path: "/articles/{articleId}", method: "get" },
-  description: "Get an article by ID."
+  updated: {
+    endpoint: { path: "/articles/{articleId}", method: "get" },
+    description: "Get an article by ID.",
+    authorizationType: null,
+    authorizationActors: []
+  }
 }
 ```
 
@@ -482,19 +520,23 @@ process({
         type: "update",
         reason: "Converting singular 'category' to plural 'categories'.",
         original: { path: "/category/{categoryId}", method: "get" },
-        updated: { path: "/categories/{categoryId}", method: "get" },
-        description: "Get a category by ID.",
-        authorizationType: null,
-        authorizationActors: []
+        updated: {
+          endpoint: { path: "/categories/{categoryId}", method: "get" },
+          description: "Get a category by ID.",
+          authorizationType: null,
+          authorizationActors: []
+        }
       },
       {
         type: "update",
         reason: "Converting singular segments to plural: member→members, address→addresses.",
         original: { path: "/member/{memberId}/address", method: "post" },
-        updated: { path: "/members/{memberId}/addresses", method: "post" },
-        description: "Create address for a member.",
-        authorizationType: null,
-        authorizationActors: ["member"]
+        updated: {
+          endpoint: { path: "/members/{memberId}/addresses", method: "post" },
+          description: "Create address for a member.",
+          authorizationType: null,
+          authorizationActors: ["member"]
+        }
       }
     ],
     review: "Fixed 6 singular/plural issues. Erased 2 duplicate singular forms. Updated 4 singular paths to plural."
@@ -798,20 +840,24 @@ process({
         type: "update",
         reason: "Converting camelCase path to hierarchical structure.",
         original: { path: "/moderationLogs", method: "patch" },
-        updated: { path: "/moderation/logs", method: "patch" },
-        description: "Search moderation logs with filters.",
-        authorizationType: null,
-        authorizationActors: ["admin"]
+        updated: {
+          endpoint: { path: "/moderation/logs", method: "patch" },
+          description: "Search moderation logs with filters.",
+          authorizationType: null,
+          authorizationActors: ["admin"]
+        }
       },
       // Fix singular to plural
       {
         type: "update",
         reason: "Normalizing singular 'guest' to plural 'guests'.",
         original: { path: "/guest/{guestId}", method: "get" },
-        updated: { path: "/guests/{guestId}", method: "get" },
-        description: "Get a guest by ID.",
-        authorizationType: null,
-        authorizationActors: []
+        updated: {
+          endpoint: { path: "/guests/{guestId}", method: "get" },
+          description: "Get a guest by ID.",
+          authorizationType: null,
+          authorizationActors: []
+        }
       },
       // Erase duplicate
       {
@@ -823,10 +869,12 @@ process({
       {
         type: "create",
         reason: "Comments are subsidiary and need delete through parent.",
-        endpoint: { path: "/articles/{articleId}/comments/{commentId}", method: "delete" },
-        description: "Delete a comment under an article.",
-        authorizationType: null,
-        authorizationActors: ["member"]
+        design: {
+          endpoint: { path: "/articles/{articleId}/comments/{commentId}", method: "delete" },
+          description: "Delete a comment under an article.",
+          authorizationType: null,
+          authorizationActors: ["member"]
+        }
       }
     ],
     review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Erased 3 duplicate endpoints and 2 endpoints for subsidiary entities that should be nested. Final count: 40 endpoints."
@@ -835,8 +883,8 @@ process({
 ```
 
 **Action Types**:
-- `create`: Add endpoint with `type`, `reason` (why adding), `endpoint`, `description` (what it does), `authorizationType` (null for regular endpoints), and `authorizationActors` (array of actor names)
-- `update`: Fix path/method with `type`, `reason` (why changing), `original`, `updated`, `description` (what it does), `authorizationType`, and `authorizationActors`
+- `create`: Add endpoint with `type`, `reason` (why adding), and `design` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
+- `update`: Fix path/method with `type`, `reason` (why changing), `original`, and `updated` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
 - `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
 
 ### 5.3. Authorization Fields in Revises
@@ -852,22 +900,35 @@ Identifies special authorization endpoints. **You MUST set this value based on t
 | `*/login` | `"login"` |
 | `*/join` | `"join"` |
 | `*/refresh` | `"refresh"` |
-| Other `/auth/*` paths (logout, password, verify, 2fa, oauth, me, sessions) | `"management"` |
+| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
+| `*/password`, `*/password/*` | `"password"` |
+| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
 | All other paths | `null` |
 
 - `"login"` - User login endpoint (e.g., `/auth/members/login`)
 - `"join"` - User registration endpoint (e.g., `/auth/members/join`)
 - `"refresh"` - Token refresh endpoint (e.g., `/auth/members/refresh`)
-- `"management"` - Other auth-related operations (logout, password reset/change, verify, 2fa, oauth, sessions, me)
+- `"session"` - Session endpoint (e.g., `/auth/members/session`, `/auth/members/sessions`, `/auth/members/sessions/{sessionId}`)
+- `"password"` - Password endpoint (e.g., `/auth/members/password`, `/auth/members/password/reset`, `/auth/members/password/change`)
+- `"management"` - Other auth-related operations (logout, verify, 2fa, oauth, me)
 - `null` - Regular business endpoint (most common for CRUD)
 
 #### `authorizationActors`
-- `[]` - Public endpoint, no authentication required
-- `["member"]` - Any authenticated user
-- `["admin"]` - Admin only
+
+This field specifies which actors are **associated with** the endpoint:
+
+1. **The actor can call this endpoint**: Requires authentication from this actor type.
+2. **The endpoint is related to the actor**: Path contains the actor name (e.g., `/auth/members/login` → `["member"]`).
+
+**Guidelines**:
+- `[]` - Public endpoint with no actor association
+- `["member"]` - Associated with member actor (either can call, or path contains "member")
+- `["admin"]` - Associated with admin actor
 - Use actor names matching the Analyze phase definitions
 
-**Tip**: When updating an endpoint, preserve the original authorization settings unless specifically changing them. When creating a new endpoint, determine appropriate access based on the operation type (read operations are often public, write operations typically require authentication).
+**Important**: For auth operations (login, join, refresh), include the actor from the path even though these endpoints remain publicly accessible.
+
+**Tip**: When updating an endpoint, preserve the original authorization settings unless specifically changing them. When creating a new endpoint, determine appropriate access based on the operation type. For auth endpoints, include the actor from the path.
 
 ### 5.2. No Modifications Needed
 
@@ -916,7 +977,7 @@ process({
 - [ ] **⚠️ ZERO IMAGINATION**: All data used was actually loaded via function calling
 
 ### 8.3. Review Compliance
-- [ ] **Auth endpoints have correct `authorizationType`**: paths ending in /login, /join, /refresh, other /auth/* paths (management), AND actor POST endpoints
+- [ ] **Auth endpoints have correct `authorizationType`**: /login → `"login"`, /join → `"join"`, /refresh → `"refresh"`, /session(s) → `"session"`, /password → `"password"`, other /auth/* → `"management"`, actor POST → `"join"`
 - [ ] **Session tables have NO PUT (update) endpoints**
 - [ ] **Snapshot tables have NO PUT (update) or DELETE endpoints**
 - [ ] All paths use hierarchical `/` structure (no camelCase)

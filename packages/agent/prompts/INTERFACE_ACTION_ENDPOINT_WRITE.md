@@ -516,25 +516,19 @@ Each endpoint design must include `authorizationType` and `authorizationActors` 
 
 #### `authorizationType`
 
-Identifies special authorization endpoints. **You MUST set this value based on the endpoint's path pattern:**
+**Action endpoints MUST always use `authorizationType: null`.**
 
-| Path Pattern | `authorizationType` |
-|--------------|---------------------|
-| `*/login` | `"login"` |
-| `*/join` | `"join"` |
-| `*/refresh` | `"refresh"` |
-| Other `/auth/*` paths (logout, password, verify, 2fa, oauth, me, sessions) | `"management"` |
-| All other paths | `null` |
+Action endpoints are business logic endpoints (analytics, dashboards, search, reports, etc.), NOT authentication endpoints. All authentication-related endpoints (login, join, refresh, session, password, management) are handled by the **Base Endpoint Generator**.
 
-- `"login"` - User login endpoint (e.g., `/auth/members/login`)
-- `"join"` - User registration endpoint (e.g., `/auth/members/join`)
-- `"refresh"` - Token refresh endpoint (e.g., `/auth/members/refresh`)
-- `"management"` - Other auth-related operations (logout, password reset/change, verify, 2fa, oauth, sessions, me)
-- `null` - Regular business endpoint (most common for action endpoints)
+**❌ NEVER create these in Action Endpoints**:
+- `/auth/*` paths
+- Login, join, refresh endpoints
+- Session management endpoints
+- Password management endpoints
 
 #### `authorizationActors`
 
-This field specifies which actors can access the endpoint. It directly affects how many API endpoints are generated.
+This field specifies which actors are **associated with** the endpoint. An actor should be included if the actor can call this endpoint (requires authentication from this actor type).
 
 **⚠️ CRITICAL: Actor Multiplication Effect**
 
@@ -544,16 +538,17 @@ Each actor in the array generates a SEPARATE endpoint with that actor's path pre
 - `authorizationActors: ["admin", "seller"]` → 2 endpoints
 
 **Guidelines**:
-- `[]` - Public endpoint, no authentication required (use for public search, public analytics)
-- `["admin"]` - Admin only (use for admin dashboards, admin-specific analytics)
-- `["member"]` - Any authenticated user
+- `[]` - Public endpoint with no actor association
+- `["admin"]` - Admin-only endpoint
+- `["member"]` - Member-only endpoint
 - Use actor names that match exactly with the actors defined in the Analyze phase
 
 **Best Practices for Action Endpoints**:
 1. Dashboard endpoints typically require specific actor access (`["admin"]`, `["seller"]`)
 2. Global search may be public (`[]`) or require authentication (`["member"]`)
 3. Analytics endpoints are usually admin-only (`["admin"]`)
-4. Minimize actors to prevent endpoint multiplication
+4. For auth endpoints (login/join/refresh): Include the actor name from the path
+5. Minimize actors to prevent endpoint multiplication
 
 ## 6. Endpoint Path Patterns
 
@@ -722,9 +717,9 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Monthly sales trends", "endpoint": {"path": "/analytics/sales/monthly", "method": "get"}},
-  {"description": "Sales breakdown by category", "endpoint": {"path": "/analytics/sales/categories", "method": "get"}},
-  {"description": "Customer behavior analysis with filters", "endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}}
+  {"description": "Monthly sales trends", "endpoint": {"path": "/analytics/sales/monthly", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Sales breakdown by category", "endpoint": {"path": "/analytics/sales/categories", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Customer behavior analysis with filters", "endpoint": {"path": "/analytics/customers/behavior", "method": "patch"}, "authorizationType": null, "authorizationActors": ["admin", "analyst"]}
 ]
 ```
 
@@ -732,8 +727,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Admin dashboard summary", "endpoint": {"path": "/dashboard/admins/overview", "method": "get"}},
-  {"description": "Seller performance metrics", "endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}}
+  {"description": "Admin dashboard summary", "endpoint": {"path": "/dashboard/admins/overview", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Seller performance metrics", "endpoint": {"path": "/dashboard/sellers/metrics", "method": "get"}, "authorizationType": null, "authorizationActors": ["seller"]}
 ]
 ```
 
@@ -741,8 +736,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Cross-entity unified search", "endpoint": {"path": "/search/global", "method": "patch"}},
-  {"description": "Advanced product search with filters", "endpoint": {"path": "/search/products/advanced", "method": "patch"}}
+  {"description": "Cross-entity unified search", "endpoint": {"path": "/search/global", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Advanced product search with filters", "endpoint": {"path": "/search/products/advanced", "method": "patch"}, "authorizationType": null, "authorizationActors": []}
 ]
 ```
 
@@ -750,8 +745,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Revenue summary report", "endpoint": {"path": "/reports/revenues/summary", "method": "get"}},
-  {"description": "Filtered inventory status report", "endpoint": {"path": "/reports/inventories/status", "method": "patch"}}
+  {"description": "Revenue summary report", "endpoint": {"path": "/reports/revenues/summary", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Filtered inventory status report", "endpoint": {"path": "/reports/inventories/status", "method": "patch"}, "authorizationType": null, "authorizationActors": ["admin"]}
 ]
 ```
 
@@ -759,8 +754,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Products with seller, category, and reviews", "endpoint": {"path": "/products/enriched", "method": "patch"}},
-  {"description": "Order with items, customer, and shipping", "endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}}
+  {"description": "Products with seller, category, and reviews", "endpoint": {"path": "/products/enriched", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Order with items, customer, and shipping", "endpoint": {"path": "/orders/{orderId}/complete", "method": "get"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
@@ -768,8 +763,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 
 ```json
 [
-  {"description": "Customer lifetime value and purchase metrics", "endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}},
-  {"description": "Product performance analytics", "endpoint": {"path": "/products/{productId}/analytics", "method": "get"}}
+  {"description": "Customer lifetime value and purchase metrics", "endpoint": {"path": "/customers/{customerId}/metrics", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Product performance analytics", "endpoint": {"path": "/products/{productId}/analytics", "method": "get"}, "authorizationType": null, "authorizationActors": ["admin", "seller"]}
 ]
 ```
 

@@ -92,18 +92,32 @@ export const orchestrateInterfaceEndpointReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
-    // TODO: create Filter Function to Programmer.
-    // Filter out authorization endpoints from revises (login, join, refresh, management)
-    // props.designs is already filtered by orchestrateInterfaceEndpointWrite
-    const filteredRevises = pointer.value.revises.filter((r) =>
-      r.type === "erase"
-        ? true
-        : r.type === "create"
-          ? r.design.authorizationType === null
-          : r.type === "update"
-            ? r.updated.authorizationType === null
-            : false,
+    // Filter authorization actors and exclude auth-generated endpoints
+    const actors = ctx.state().analyze?.actors ?? [];
+    const designs = pointer.value.revises
+      .filter((r) => r.type !== "erase")
+      .map((r) => (r.type === "create" ? r.design : r.updated));
+    const filteredDesignSet = new Set(
+      AutoBeInterfaceEndpointProgrammer.filterDesigns({
+        kind: props.programmer.kind,
+        designs,
+        actors,
+      }),
     );
+    const filteredRevises = pointer.value.revises.filter((r) => {
+      if (r.type === "erase") return true;
+      const design = r.type === "create" ? r.design : r.updated;
+      return filteredDesignSet.has(design);
+    });
+
+    // Log endpoint review results
+    console.log(JSON.stringify({
+      type: "endpoint-review",
+      kind: props.programmer.kind,
+      group: props.group.name,
+      revises: pointer.value.revises,
+      filteredRevises,
+    }, null, 2));
 
     ctx.dispatch({
       id: v7(),

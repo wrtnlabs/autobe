@@ -118,17 +118,24 @@ For each actor table, generate these **authentication endpoints**:
 | `/auth/{actors}/join` | POST | `"join"` | User registration |
 | `/auth/{actors}/refresh` | POST | `"refresh"` | Token refresh |
 
-**Additional Auth Management Endpoints**:
+**Additional Auth Endpoints**:
 
-Analyze the actor table schema thoroughly and generate a **comprehensive set of auth management endpoints**. These endpoints use `authorizationType: "management"`.
+Analyze the actor table schema thoroughly and generate a **comprehensive set of auth endpoints**. Set `authorizationType` based on the path:
+
+| Path Pattern | `authorizationType` |
+|--------------|---------------------|
+| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
+| `*/password`, `*/password/*` | `"password"` |
+| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
 
 **Autonomous Rich Generation**:
 - Deeply analyze ALL fields in the actor table schema
-- Infer what authentication/authorization management operations would be valuable based on the schema structure
-- Generate `/auth/{actors}/*` management endpoints **as richly as possible** - cover all reasonable auth management scenarios the schema can support
-- Think creatively about what users would need: account security, credential management, session control, verification flows, recovery mechanisms, etc.
-- You have full autonomy to design management endpoints - use your best judgment to create a complete auth management API surface
+- Infer what authentication/authorization operations would be valuable based on the schema structure
+- Generate `/auth/{actors}/*` endpoints **as richly as possible** - cover all reasonable auth scenarios the schema can support
+- Think creatively about what users would need: account security, credential updates, session control, verification flows, recovery mechanisms, etc.
+- You have full autonomy to design auth endpoints - use your best judgment to create a complete auth API surface
 - The goal is **comprehensive coverage**, not minimal implementation
+- **IMPORTANT**: Use correct `authorizationType` for each path (session → `"session"`, password → `"password"`, others → `"management"`)
 
 **IMPORTANT: Actor POST (create) = Registration**
 
@@ -141,21 +148,25 @@ The standard CRUD `POST /{actors}` endpoint for actor tables is also a registrat
 **Example for `members` table**:
 ```json
 [
-  {"endpoint": {"path": "/auth/members/login", "method": "post"}, "authorizationType": "login", "authorizationActors": []},
-  {"endpoint": {"path": "/auth/members/join", "method": "post"}, "authorizationType": "join", "authorizationActors": []},
-  {"endpoint": {"path": "/auth/members/refresh", "method": "post"}, "authorizationType": "refresh", "authorizationActors": []},
-  // + Generate additional management endpoints based on schema analysis (authorizationType: "management")
-  {"endpoint": {"path": "/members", "method": "post"}, "authorizationType": "join", "authorizationActors": []},
-  {"endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
-  {"endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
-  {"endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]},
-  {"endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
+  {"description": "User login with credentials", "endpoint": {"path": "/auth/members/login", "method": "post"}, "authorizationType": "login", "authorizationActors": ["member"]},
+  {"description": "User registration", "endpoint": {"path": "/auth/members/join", "method": "post"}, "authorizationType": "join", "authorizationActors": ["member"]},
+  {"description": "Refresh authentication token", "endpoint": {"path": "/auth/members/refresh", "method": "post"}, "authorizationType": "refresh", "authorizationActors": ["member"]},
+  {"description": "Get current sessions", "endpoint": {"path": "/auth/members/sessions", "method": "get"}, "authorizationType": "session", "authorizationActors": ["member"]},
+  {"description": "Revoke a session", "endpoint": {"path": "/auth/members/sessions/{sessionId}", "method": "delete"}, "authorizationType": "session", "authorizationActors": ["member"]},
+  {"description": "Change password", "endpoint": {"path": "/auth/members/password", "method": "put"}, "authorizationType": "password", "authorizationActors": ["member"]},
+  {"description": "Reset password request", "endpoint": {"path": "/auth/members/password/reset", "method": "post"}, "authorizationType": "password", "authorizationActors": ["member"]},
+  {"description": "Logout", "endpoint": {"path": "/auth/members/logout", "method": "post"}, "authorizationType": "management", "authorizationActors": ["member"]},
+  {"description": "Create a new member (registration)", "endpoint": {"path": "/members", "method": "post"}, "authorizationType": "join", "authorizationActors": ["member"]},
+  {"description": "Search and filter members", "endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Update member profile", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]},
+  {"description": "Delete member account", "endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
 **Note**:
-- Auth endpoints (login, join, refresh) and actor POST have `authorizationActors: []` (public) because they are used before authentication.
-- Beyond the essential three (login, join, refresh), generate any additional management endpoints you determine necessary based on the actor table schema.
+- Auth endpoints (login, join, refresh) have `authorizationActors: ["member"]` to indicate they are **associated with** the member actor (the path contains the actor name). However, these endpoints remain publicly accessible because their `authorizationType` (login/join/refresh) indicates they must be callable without authentication.
+- Use correct `authorizationType` for each path: session paths → `"session"`, password paths → `"password"`, other auth paths → `"management"`.
 
 ### 2.3. Session Tables - No Updates
 
@@ -628,8 +639,8 @@ process({
 - `rationale`: Your reasoning for the endpoint design decisions
 - `endpoint`: Object with `path` and `method`
 - `description`: Brief explanation of why this endpoint was created
-- `authorizationType`: Type of authorization endpoint (`"login"`, `"join"`, `"refresh"`, `"management"`, or `null` for regular endpoints)
-- `authorizationActors`: Array of actor names who can access this endpoint. Use `[]` for public endpoints, or `["actorName"]` for authenticated endpoints
+- `authorizationType`: Type of authorization endpoint (`"login"`, `"join"`, `"refresh"`, `"session"`, `"password"`, `"management"`, or `null` for regular endpoints)
+- `authorizationActors`: Array of actor names associated with this endpoint. For auth endpoints (login/join/refresh), include the actor from the path. For business endpoints, include actors who can call it.
 
 ### 6.1. Authorization Fields
 
@@ -642,18 +653,25 @@ Identifies special authorization endpoints. **You MUST set this value based on t
 | `*/login` | `"login"` |
 | `*/join` | `"join"` |
 | `*/refresh` | `"refresh"` |
-| Other `/auth/*` paths | `"management"` |
+| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
+| `*/password`, `*/password/*` | `"password"` |
+| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
 | All other paths | `null` |
 
-- `"login"` - User login endpoint
-- `"join"` - User registration endpoint
-- `"refresh"` - Token refresh endpoint
-- `"management"` - Any other auth-related management operations (generate richly based on schema analysis)
+- `"login"` - User login endpoint (e.g., `/auth/members/login`)
+- `"join"` - User registration endpoint (e.g., `/auth/members/join`)
+- `"refresh"` - Token refresh endpoint (e.g., `/auth/members/refresh`)
+- `"session"` - Session endpoint (e.g., `/auth/members/session`, `/auth/members/sessions`, `/auth/members/sessions/{sessionId}`)
+- `"password"` - Password endpoint (e.g., `/auth/members/password`, `/auth/members/password/reset`, `/auth/members/password/change`)
+- `"management"` - Other auth-related operations (logout, verify, 2fa, oauth, me)
 - `null` - Regular business endpoint (most common for CRUD)
 
 #### `authorizationActors`
 
-This field specifies which actors can access the endpoint. It directly affects how many API endpoints are generated.
+This field specifies which actors are **associated with** the endpoint. An actor should be included if:
+
+1. **The actor can call this endpoint**: The endpoint requires authentication and only this actor type can access it.
+2. **The endpoint is related to the actor**: If the endpoint path contains the actor name (e.g., `/auth/members/login` → `"member"`), include the actor to indicate the relationship.
 
 **⚠️ CRITICAL: Actor Multiplication Effect**
 
@@ -662,15 +680,17 @@ Each actor in the array generates a SEPARATE endpoint with that actor's path pre
 - `authorizationActors: ["member"]` → 1 endpoint: `/prefix/member/resources`
 - `authorizationActors: ["admin", "member"]` → 2 endpoints: `/prefix/admin/resources`, `/prefix/member/resources`
 
+**Important**: For auth operations (login, join, refresh), the `authorizationActors` indicates **association**, not access control. These endpoints remain publicly accessible regardless of the actors listed.
+
 **Guidelines**:
-- `[]` - Public endpoint, no authentication required (use for read operations on public data)
-- `["user"]` or `["member"]` - Any authenticated user (use for user-specific operations)
-- `["admin"]` - Admin only (use sparingly)
+- `[]` - Public endpoint with no actor association
+- `["member"]` - Associated with member actor (either can call, or path contains "member")
+- `["admin"]` - Associated with admin actor
 - Use actor names that match exactly with the actors defined in the Analyze phase
 
 **Best Practices**:
-1. Start with `[]` for read operations unless data is sensitive
-2. Use single actor `["member"]` for write operations
+1. For auth endpoints (login/join/refresh): Include the actor name from the path (e.g., `/auth/members/login` → `["member"]`)
+2. For business endpoints: Include actors who can call the endpoint
 3. Avoid multiple actors unless truly needed - it multiplies endpoints
 
 ## 7. Implementation Strategy
@@ -754,11 +774,11 @@ model enterprises {
 **Generated Endpoints:**
 ```json
 [
-  {"description": "Search enterprises", "endpoint": {"path": "/enterprises", "method": "patch"}},
-  {"description": "Get enterprise by code", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}},
-  {"description": "Create enterprise", "endpoint": {"path": "/enterprises", "method": "post"}},
-  {"description": "Update enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}},
-  {"description": "Delete enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}}
+  {"description": "Search enterprises", "endpoint": {"path": "/enterprises", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Get enterprise by code", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Create enterprise", "endpoint": {"path": "/enterprises", "method": "post"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Update enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "put"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Delete enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["admin"]}
 ]
 ```
 
@@ -779,11 +799,11 @@ model enterprise_teams {
 **Generated Endpoints:**
 ```json
 [
-  {"description": "Search teams within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}},
-  {"description": "Get team by code within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}},
-  {"description": "Create team in enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}},
-  {"description": "Update team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}},
-  {"description": "Delete team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}}
+  {"description": "Search teams within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Get team by code within enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Create team in enterprise", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams", "method": "post"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Update team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "put"}, "authorizationType": null, "authorizationActors": ["admin"]},
+  {"description": "Delete team", "endpoint": {"path": "/enterprises/{enterpriseCode}/teams/{teamCode}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["admin"]}
 ]
 ```
 
@@ -803,10 +823,10 @@ model members {
 **Generated Endpoints:**
 ```json
 [
-  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null},
-  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null},
-  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null},
-  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null}
+  {"description": "Search members", "endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Update member", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]},
+  {"description": "Delete member", "endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
@@ -830,10 +850,10 @@ model article_snapshots {
 **Generated Endpoints:**
 ```json
 [
-  {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}},
-  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}},
-  {"description": "Create article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "post"}},
-  {"description": "Delete article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "delete"}}
+  {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
+  {"description": "Create article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "post"}, "authorizationType": null, "authorizationActors": ["member"]},
+  {"description": "Delete article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
@@ -845,7 +865,7 @@ model article_snapshots {
 - [ ] Verified **actor tables** have NO POST (create) - user creation handled by `join` endpoint
 - [ ] Verified **session tables** have NO PUT (update) - session modification goes through auth flows
 - [ ] Verified **snapshot tables** have NO PUT (update) - historical data is immutable once created
-- [ ] Verified auth endpoints (login, join, refresh, management) have correct `authorizationType` values
+- [ ] Verified auth endpoints have correct `authorizationType`: /login → `"login"`, /join → `"join"`, /refresh → `"refresh"`, /session(s) → `"session"`, /password → `"password"`, other /auth/* → `"management"`
 
 ### Path Design
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
@@ -871,4 +891,4 @@ model article_snapshots {
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. For auth endpoints (login, join, refresh, management), set the appropriate `authorizationType` value. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. For auth endpoints, set the appropriate `authorizationType` value: login → `"login"`, join → `"join"`, refresh → `"refresh"`, session(s) → `"session"`, password → `"password"`, other auth → `"management"`. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.
