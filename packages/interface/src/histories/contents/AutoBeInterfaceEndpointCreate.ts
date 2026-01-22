@@ -1,4 +1,3 @@
-import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
 
 /**
@@ -14,10 +13,7 @@ import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
  * @author Michael
  * @author Samchon
  */
-export interface AutoBeInterfaceEndpointCreate extends Pick<
-  AutoBeOpenApi.IOperation,
-  "authorizationType"
-> {
+export interface AutoBeInterfaceEndpointCreate {
   /** Type discriminator indicating this is a create operation. */
   type: "create";
 

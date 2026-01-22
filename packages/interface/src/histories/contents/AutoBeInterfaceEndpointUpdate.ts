@@ -15,10 +15,7 @@ import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
  * @author Michael
  * @author Samchon
  */
-export interface AutoBeInterfaceEndpointUpdate extends Pick<
-  AutoBeOpenApi.IOperation,
-  "authorizationType"
-> {
+export interface AutoBeInterfaceEndpointUpdate {
   /** Type discriminator indicating this is an update operation. */
   type: "update";
 
@@ -36,7 +33,7 @@ export interface AutoBeInterfaceEndpointUpdate extends Pick<
    * DO NOT reference endpoints that are not in the provided list. Must match
    * exactly (path + method).
    */
-  original: AutoBeInterfaceEndpointDesign;
+  original: AutoBeOpenApi.IEndpoint;
 
   /**
    * The updated endpoint definition.
