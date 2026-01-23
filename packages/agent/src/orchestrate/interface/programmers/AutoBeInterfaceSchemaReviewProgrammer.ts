@@ -1,4 +1,5 @@
 import {
+  AutoBeDatabase,
   AutoBeInterfaceSchemaPropertyErase,
   AutoBeInterfaceSchemaPropertyKeep,
   AutoBeInterfaceSchemaPropertyNullish,
@@ -14,7 +15,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
-import { AutoBeLlmSchemaFactory } from "../utils/AutoBeLlmSchemaFactory";
+import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
   export const filterSecurity = (props: {
@@ -34,11 +35,29 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
   export const fixApplication = (props: {
     state: AutoBeState;
     application: ILlmApplication;
+    typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   }): void => {
-    const $defs = props.application.functions[0].parameters.$defs;
-    AutoBeLlmSchemaFactory.fixDatabasePlugin(props.state, $defs);
+    if (props.state.database === null) return;
 
+    const model: AutoBeDatabase.IModel | null =
+      props.state.database.result.data.files
+        .flatMap((f) => f.models)
+        .find(
+          (m) =>
+            m.name ===
+            (props.schema["x-autobe-database-schema"] ??
+              AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(
+                props.typeName,
+              )),
+        ) ?? null;
+    AutoBeInterfaceSchemaProgrammer.fixApplication({
+      state: props.state,
+      application: props.application,
+      model,
+    });
+
+    const $defs = props.application.functions[0].parameters.$defs;
     const fix = (next: ILlmSchema | undefined): void => {
       if (next === undefined) return;
       else if (LlmTypeChecker.isObject(next) === false) return;

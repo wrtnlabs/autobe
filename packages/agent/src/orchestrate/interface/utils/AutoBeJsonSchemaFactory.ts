@@ -2,11 +2,10 @@ import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
-import { plural } from "pluralize";
 import typia, { tags } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
+import { AutoBeInterfaceSchemaProgrammer } from "../programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
 export namespace AutoBeJsonSchemaFactory {
@@ -203,56 +202,11 @@ export namespace AutoBeJsonSchemaFactory {
         continue;
 
       const typeName: string = key.split(".")[0]!.substring(1);
-      const modelName: string = getDatabaseModelName(typeName);
+      const modelName: string =
+        AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(typeName);
       if (modelDict.has(modelName) === true)
         value["x-autobe-database-schema"] = modelName;
     }
-  };
-
-  const getDatabaseModelName = (typeName: string): string =>
-    plural(NamingConvention.snake(typeName.split(".")[0]!.substring(1)));
-
-  export const getNeighborDatabaseSchemas = (props: {
-    typeName: string;
-    application: AutoBeDatabase.IApplication;
-  }): AutoBeDatabase.IModel[] | undefined => {
-    const everything: Map<string, AutoBeDatabase.IModel> = new Map(
-      props.application.files
-        .map((f) => f.models)
-        .flat()
-        .map((m) => [m.name, m]),
-    );
-    const unique: Map<string, AutoBeDatabase.IModel> = new Map();
-    const found: AutoBeDatabase.IModel | undefined = everything.get(
-      getDatabaseModelName(props.typeName),
-    );
-    if (found === undefined) return;
-
-    // add myself
-    unique.set(found.name, found);
-
-    // add parent models
-    found.foreignFields.forEach((ff) => {
-      const gotten: AutoBeDatabase.IModel | undefined = everything.get(
-        ff.relation.targetModel,
-      );
-      if (gotten !== undefined) unique.set(gotten.name, gotten);
-    });
-
-    // add children models
-    for (const model of unique.values()) {
-      const ff: AutoBeDatabase.IForeignField | undefined =
-        model.foreignFields.find(
-          (ff) => ff.relation.targetModel === found.name,
-        );
-      if (ff !== undefined) {
-        const parent: AutoBeDatabase.IModel | undefined = everything.get(
-          ff.relation.targetModel,
-        );
-        if (parent !== undefined) unique.set(parent.name, parent);
-      }
-    }
-    return Array.from(unique.values());
   };
 
   /* -----------------------------------------------------------

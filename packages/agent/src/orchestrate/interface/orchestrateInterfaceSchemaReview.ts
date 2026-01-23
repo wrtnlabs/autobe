@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaReviewEvent,
   AutoBeOpenApi,
@@ -14,7 +15,9 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
+import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
@@ -137,10 +140,20 @@ async function process(
     local: {
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
-      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
-        typeName: props.typeName,
-        application: ctx.state().database!.result.data,
-      }),
+      databaseSchemas: (() => {
+        const expected: string =
+          props.reviewSchema["x-autobe-database-schema"] ??
+          AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName);
+        const model: AutoBeDatabase.IModel | undefined = ctx
+          .state()
+          .database?.result.data.files.flatMap((f) => f.models)
+          .find((m) => m.name === expected);
+        if (model === undefined) return [];
+        return AutoBeDatabaseModelProgrammer.getNeighbors({
+          application: ctx.state().database!.result.data,
+          model,
+        });
+      })(),
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -256,6 +269,7 @@ function createController(
   AutoBeInterfaceSchemaReviewProgrammer.fixApplication({
     state: ctx.state(),
     application,
+    typeName: props.typeName,
     schema: props.schema,
   });
 

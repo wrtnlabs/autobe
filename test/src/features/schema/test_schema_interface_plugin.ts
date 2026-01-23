@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
+import { AutoBeInterfaceSchemaProgrammer } from "@autobe/agent/src/orchestrate/interface/programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaApplication";
-import { AutoBeLlmSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeLlmSchemaFactory";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { TestValidator } from "@nestia/e2e";
@@ -38,7 +38,11 @@ export const test_schema_interface_plugin = async () => {
   const app: ILlmApplication =
     typia.llm.application<IAutoBeInterfaceSchemaApplication>();
   const $defs: Record<string, ILlmSchema> = app.functions[0].parameters.$defs;
-  AutoBeLlmSchemaFactory.fixDatabasePlugin(state, $defs);
+  AutoBeInterfaceSchemaProgrammer.fixApplication({
+    state,
+    application: app,
+    model: null,
+  });
 
   const models: string[] =
     state.database?.result.data.files

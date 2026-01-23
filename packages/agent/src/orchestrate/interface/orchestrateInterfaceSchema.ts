@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaEvent,
   AutoBeOpenApi,
@@ -14,10 +15,10 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
+import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
-import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 export async function orchestrateInterfaceSchema(
@@ -124,10 +125,11 @@ async function process(
           (o.responseBody && predicate(o.responseBody.typeName))
         );
       }),
-      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
-        typeName: props.typeName,
-        application: ctx.state().database!.result.data,
-      }),
+      databaseSchemas:
+        AutoBeInterfaceSchemaProgrammer.getNeighborDatabaseSchemas({
+          typeName: props.typeName,
+          application: ctx.state().database!.result.data,
+        }),
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -195,6 +197,9 @@ function createController(
     typeName: string;
   },
 ): IAgenticaController.IClass {
+  const everyModels: AutoBeDatabase.IModel[] =
+    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
@@ -213,7 +218,7 @@ function createController(
     const errors: IValidation.IError[] = [];
     AutoBeJsonSchemaValidator.validateSchema({
       errors,
-      models: ctx.state().database!.result.data.files.flatMap((f) => f.models),
+      models: everyModels,
       operations: props.operations,
       typeName: props.typeName,
       schema: result.data.request.schema,
@@ -248,10 +253,16 @@ function createController(
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
-  AutoBeLlmSchemaFactory.fixDatabasePlugin(
-    ctx.state(),
-    application.functions[0].parameters.$defs,
-  );
+  AutoBeInterfaceSchemaProgrammer.fixApplication({
+    application,
+    state: ctx.state(),
+    model:
+      everyModels.find(
+        (m) =>
+          m.name ===
+          AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName),
+      ) ?? null,
+  });
 
   return {
     protocol: "class",

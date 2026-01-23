@@ -15,10 +15,10 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaRefineHistory } from "./histories/transformInterfaceSchemaRefineHistory";
+import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaRefineApplication } from "./structures/IAutoBeInterfaceSchemaRefineApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
-import { AutoBeLlmSchemaFactory } from "./utils/AutoBeLlmSchemaFactory";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
 export async function orchestrateInterfaceSchemaRefine(
@@ -115,10 +115,11 @@ async function process(
     local: {
       interfaceOperations: props.refineOperations,
       interfaceSchemas: { [props.typeName]: props.originalSchema },
-      databaseSchemas: AutoBeJsonSchemaFactory.getNeighborDatabaseSchemas({
-        typeName: props.typeName,
-        application: ctx.state().database!.result.data,
-      }),
+      databaseSchemas:
+        AutoBeInterfaceSchemaProgrammer.getNeighborDatabaseSchemas({
+          typeName: props.typeName,
+          application: ctx.state().database!.result.data,
+        }),
     },
   });
 
@@ -239,10 +240,18 @@ function createController(
       },
     }),
   );
-  AutoBeLlmSchemaFactory.fixDatabasePlugin(
-    ctx.state(),
-    application.functions[0].parameters.$defs,
-  );
+  AutoBeInterfaceSchemaProgrammer.fixApplication({
+    application,
+    state: ctx.state(),
+    model:
+      (
+        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? []
+      ).find(
+        (m) =>
+          m.name ===
+          AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName),
+      ) ?? null,
+  });
 
   return {
     protocol: "class",
