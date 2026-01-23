@@ -27,6 +27,8 @@ export interface AutoBeInterfaceEndpointDesign {
    * Functional description of the endpoint's purpose and business context.
    * Should explain the use case and requirements this endpoint fulfills, not
    * just repeat the path/method.
+   *
+   * Write concisely. Keep it brief and to the point.
    */
   description: string;
 
