@@ -11,6 +11,11 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { AutoBeDatabaseModelProgrammer } from "../../prisma/programmers/AutoBeDatabaseModelProgrammer";
 
 export namespace AutoBeInterfaceSchemaProgrammer {
+  export interface IDatabaseSchemaMember {
+    key: string;
+    nullable: boolean;
+  }
+
   export const getDatabaseSchemaName = (typeName: string): string =>
     plural(NamingConvention.snake(typeName.split(".")[0]!.substring(1)));
 
@@ -32,14 +37,29 @@ export namespace AutoBeInterfaceSchemaProgrammer {
   export const getDatabaseSchemaMembers = (props: {
     everyModels: AutoBeDatabase.IModel[];
     model: AutoBeDatabase.IModel;
-  }): string[] => [
-    props.model.primaryField.name,
-    ...props.model.foreignFields.map((f) => f.name),
-    ...props.model.foreignFields.map((f) => f.relation.name),
+  }): IDatabaseSchemaMember[] => [
+    {
+      key: props.model.primaryField.name,
+      nullable: false,
+    },
+    ...props.model.foreignFields.map((f) => ({
+      key: f.name,
+      nullable: f.nullable,
+    })),
+    ...props.model.foreignFields.map((f) => ({
+      key: f.relation.name,
+      nullable: f.nullable,
+    })),
     ...props.everyModels
-      .flatMap((m) => m.foreignFields)
-      .filter((f) => f.relation.targetModel === props.model.name)
-      .map((f) => f.relation.oppositeName),
+      .map((m) =>
+        m.foreignFields
+          .filter((f) => f.relation.targetModel === props.model.name)
+          .map((f) => ({
+            key: f.relation.oppositeName,
+            nullable: f.unique,
+          })),
+      )
+      .flat(),
   ];
 
   export const fixApplication = (props: {
@@ -120,7 +140,7 @@ export namespace AutoBeInterfaceSchemaProgrammer {
         value.enum = getDatabaseSchemaMembers({
           everyModels: props.everyModels,
           model: props.model,
-        });
+        }).map((m) => m.key);
       },
     });
   };

@@ -3,6 +3,7 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
+import { AutoBeInterfaceSchemaProgrammer } from "../programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
 
 export namespace AutoBeJsonSchemaValidator {
@@ -342,44 +343,66 @@ export namespace AutoBeJsonSchemaValidator {
     else if (
       props.schema["x-autobe-database-schema"] === null ||
       props.schema["x-autobe-database-schema"] === undefined
-    )
-      return;
+    ) {
+      for (const [key, value] of Object.entries(props.schema.properties))
+        if (value["x-autobe-database-schema-member"] !== null)
+          props.errors.push({
+            path: `${props.path}.properties${
+              Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+            }["x-autobe-database-schema-member"]`,
+            expected: "null",
+            value: value["x-autobe-database-schema-member"],
+            description: StringUtil.trim`
+              You have defined "x-autobe-database-schema-member" property referencing
+              a database schema member, but the parent schema does not reference any
+              database schema in "x-autobe-database-schema" property.
 
-    const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
-    const model: AutoBeDatabase.IModel | undefined = props.models.find(
-      (m) => m.name === next["x-autobe-database-schema"],
-    );
-    if (model === undefined)
-      props.errors.push({
-        path: `${props.path}["x-autobe-database-schema"]`,
-        expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
-        value: next["x-autobe-database-schema"],
-        description: StringUtil.trim`
-          You've referenced a non-existing database schema name
-          ${JSON.stringify(next["x-autobe-database-schema"])} in
-          "x-autobe-database-schema" property. Make sure that the
-          referenced database schema name exists in your database schema files.
+              To reference a database schema member, first define the parent
+              schema's "x-autobe-database-schema" property with
+              a valid database schema name.
 
-          Never assume non-existing models. This is not recommendation,
-          but an instruction you must follow. Never repeat the same
-          value again. I repeat that, you have to choose one of below:
+              If not, set this "x-autobe-database-schema-member" property
+              to null value at the next time, and then describe what this property 
+              is for in the schema description instead.
+            `,
+          });
+    } else {
+      const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
+      const model: AutoBeDatabase.IModel | undefined = props.models.find(
+        (m) => m.name === next["x-autobe-database-schema"],
+      );
+      if (model === undefined)
+        props.errors.push({
+          path: `${props.path}["x-autobe-database-schema"]`,
+          expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
+          value: next["x-autobe-database-schema"],
+          description: StringUtil.trim`
+            You've referenced a non-existing database schema name
+            ${JSON.stringify(next["x-autobe-database-schema"])} in
+            "x-autobe-database-schema" property. Make sure that the
+            referenced database schema name exists in your database schema files.
 
-          Existing database schema names are:
-          
-          ${props.models.map((m) => `- ${m.name}`).join("\n")}
-        `,
-      });
-    for (const [key, value] of Object.entries(next.properties))
-      validateDatabaseSchemaMember({
-        models: props.models,
-        target: model,
-        key,
-        value,
-        errors: props.errors,
-        path: `${props.path}.properties${
-          Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
-        }`,
-      });
+            Never assume non-existing models. This is not recommendation,
+            but an instruction you must follow. Never repeat the same
+            value again. I repeat that, you have to choose one of below:
+
+            Existing database schema names are:
+            
+            ${props.models.map((m) => `- ${m.name}`).join("\n")}
+          `,
+        });
+      for (const [key, value] of Object.entries(next.properties))
+        validateDatabaseSchemaMember({
+          models: props.models,
+          target: model,
+          key,
+          value,
+          errors: props.errors,
+          path: `${props.path}.properties${
+            Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+          }`,
+        });
+    }
   };
 
   const validateDatabaseSchemaMember = (props: {
@@ -421,41 +444,14 @@ export namespace AutoBeJsonSchemaValidator {
       return;
     }
 
-    interface ICandidate {
-      key: string;
-      nullable: boolean;
-    }
-    const candidates: ICandidate[] = [
-      {
-        key: props.target.primaryField.name,
-        nullable: false,
-      },
-      ...props.target.plainFields.map((f) => ({
-        key: f.name,
-        nullable: f.nullable,
-      })),
-      ...props.target.foreignFields.map((f) => ({
-        key: f.name,
-        nullable: f.nullable,
-      })),
-      ...props.target.foreignFields.map((f) => ({
-        key: f.relation.name,
-        nullable: f.nullable,
-      })),
-      ...props.models
-        .map((m) =>
-          m.foreignFields
-            .filter((ff) => ff.relation.targetModel === props.target!.name)
-            .map((ff) => ({
-              key: ff.relation.oppositeName,
-              nullable: ff.unique,
-            })),
-        )
-        .flat(),
-    ];
-    const found: ICandidate | undefined = candidates.find(
-      (c) => c.key === member,
-    );
+    const candidates: AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember[] =
+      AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaMembers({
+        everyModels: props.models,
+        model: props.target,
+      });
+    const found:
+      | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
+      | undefined = candidates.find((c) => c.key === member);
     if (found === undefined)
       props.errors.push({
         path: pluginAccessor,

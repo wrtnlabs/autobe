@@ -38,7 +38,7 @@ export const test_schema_interface_database_specific = async () => {
     AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaMembers({
       everyModels,
       model,
-    });
+    }).map((m) => m.key);
 
   const assert = (application: ILlmApplication) => {
     const func: ILlmFunction = application.functions[0];
