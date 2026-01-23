@@ -809,6 +809,42 @@ export namespace AutoBeOpenApi {
    */
   export interface IParameter {
     /**
+     * Implementation specification for the path parameter.
+     *
+     * This is an AutoBE-internal field (not exposed in standard OpenAPI output)
+     * that provides detailed implementation guidance for downstream agents
+     * (Interface Agent, Realize Agent, etc.).
+     *
+     * Include **HOW** this parameter should be processed:
+     *
+     * - Database column or table it maps to
+     * - Validation rules and constraints
+     * - Transformation logic if any
+     * - Edge cases and error handling
+     *
+     * This field enables code generation agents to correctly implement
+     * parameter handling without ambiguity.
+     *
+     * > MUST be written in English. Never use other languages.
+     */
+    "x-autobe-specification": string;
+
+    /**
+     * Description about the path parameter for API documentation.
+     *
+     * This is the standard OpenAPI description field that will be displayed in
+     * Swagger UI, SDK documentation, and other API documentation tools. Write a
+     * short, concise, and clear description that helps API consumers understand
+     * what this parameter represents.
+     *
+     * Focus on **WHAT** the parameter is and **WHY** it's needed from the API
+     * consumer's perspective. Do not include implementation details here.
+     *
+     * > MUST be written in English. Never use other languages.
+     */
+    description: string;
+
+    /**
      * Identifier name of the path parameter.
      *
      * This name must match exactly with the parameter name in the route path.
@@ -818,15 +854,6 @@ export namespace AutoBeOpenApi {
      * MUST use camelCase naming convention.
      */
     name: string & CamelCasePattern;
-
-    /**
-     * Description about the path parameter.
-     *
-     * Make short, concise and clear description about the path parameter.
-     *
-     * > MUST be written in English. Never use other languages.
-     */
-    description: string;
 
     /**
      * Type schema of the path parameter.
@@ -1309,21 +1336,15 @@ export namespace AutoBeOpenApi {
        *
        * ## Critical Requirement When `null`
        *
-       * When this field is `null`, the object's `description` field MUST
-       * contain:
+       * When this field is `null`, the `x-autobe-specification` field (in
+       * {@link IJsonSchemaDescriptive.IObject}) MUST contain detailed
+       * implementation instructions:
        *
-       * 1. **WHY** - Reason for no database mapping
-       * 2. **HOW** - Detailed implementation specification:
-       *
-       *    - Source tables and columns involved
-       *    - Join conditions between tables
-       *    - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
-       *    - Business rules and transformation logic
-       *    - Edge cases (nulls, empty sets, defaults)
-       *
-       * The HOW must be **precise enough for downstream agents to implement**
-       * the actual data retrieval or computation. Vague descriptions are
-       * unacceptable.
+       * - Source tables and columns involved
+       * - Join conditions between tables
+       * - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+       * - Business rules and transformation logic
+       * - Edge cases (nulls, empty sets, defaults)
        *
        * **CRITICAL**: When set, the table name MUST be an actually existing
        * model name from the loaded database schema. Never guess or invent
@@ -1482,38 +1503,35 @@ export namespace AutoBeOpenApi {
   }
 
   /**
-   * Descriptive type schema info.
+   * Descriptive type schema info with required documentation.
    *
-   * `AutoBeOpenApi.IJsonSchemaDescriptive` is a type schema info of the OpenAPI
-   * Generative, but it has a `description` property which is required.
+   * `AutoBeOpenApi.IJsonSchemaDescriptive` extends the base JSON schema types
+   * with a required `description` field for API documentation. For object
+   * types, it also includes an `x-autobe-specification` field for
+   * implementation guidance.
    *
-   * `AutoBeOpenApi.IJsonSchemaDescriptive` basically follows the JSON schema
-   * specification of OpenAPI v3.1, but a little bit shrunk to remove ambiguous
-   * and duplicated expressions of OpenAPI v3.1 for the convenience, clarity,
-   * and AI generation.
+   * ## Two-Field Documentation Pattern
    *
-   * CRITICAL INSTRUCTIONS FOR OPTIMAL AI GENERATION:
+   * This type system separates concerns between two documentation fields:
    *
-   * When creating descriptions for components, types, and properties:
+   * - **`description`**: Standard OpenAPI field for API consumers. Displayed in
+   *   Swagger UI, SDK docs, etc. Focuses on WHAT and WHY.
+   * - **`x-autobe-specification`** (object types only): AutoBE-internal field for
+   *   implementation agents. Focuses on HOW to implement.
    *
-   * 1. ALWAYS refer to and incorporate the description comments from the
-   *    corresponding database schema tables and columns. The descriptions
-   *    should match the style, level of detail, and terminology used in the
-   *    database schema.
-   * 2. ALL descriptions MUST be organized into MULTIPLE PARAGRAPHS separated by
-   *    line breaks. Single-paragraph descriptions should be avoided.
-   * 3. Descriptions should comprehensively cover:
+   * ## Guidelines for `description`
    *
-   *    - The purpose and business meaning of the type or property
-   *    - Relationships to other entities
-   *    - Validation rules, constraints, and edge cases
-   *    - Usage context and examples when helpful
-   * 4. For each property of an object type, ensure its description reflects the
-   *    corresponding column description in the database schema, maintaining the
-   *    same level of detail and terminology
-   * 5. Descriptions should be so detailed and clear that anyone reading them can
-   *    fully understand the type or property without needing to reference any
-   *    other documentation
+   * - Reference the corresponding database schema documentation
+   * - Organize into multiple paragraphs for complex types
+   * - Focus on business meaning, relationships, and constraints
+   * - Keep accessible to API consumers (no implementation details)
+   *
+   * ## Guidelines for `x-autobe-specification` (Object Types)
+   *
+   * - Provide precise implementation instructions
+   * - Include source tables, join conditions, aggregation formulas
+   * - Document edge cases and business rules
+   * - Must be detailed enough for Realize Agent to implement
    */
   export type IJsonSchemaDescriptive =
     | IJsonSchemaDescriptive.IConstant
@@ -1528,39 +1546,76 @@ export namespace AutoBeOpenApi {
     | IJsonSchemaDescriptive.INull;
   export namespace IJsonSchemaDescriptive {
     /** Constant value type. */
-    export interface IConstant extends IJsonSchema.IConstant, IDescriptive {}
+    export interface IConstant extends IDescriptive, IJsonSchema.IConstant {}
 
     /** Boolean type info. */
-    export interface IBoolean extends IJsonSchema.IBoolean, IDescriptive {}
+    export interface IBoolean extends IDescriptive, IJsonSchema.IBoolean {}
 
     /** Integer type info. */
-    export interface IInteger extends IJsonSchema.IInteger, IDescriptive {}
+    export interface IInteger extends IDescriptive, IJsonSchema.IInteger {}
 
     /** Number (double) type info. */
-    export interface INumber extends IJsonSchema.INumber, IDescriptive {}
+    export interface INumber extends IDescriptive, IJsonSchema.INumber {}
 
     /** String type info. */
-    export interface IString extends IJsonSchema.IString, IDescriptive {}
+    export interface IString extends IDescriptive, IJsonSchema.IString {}
 
     /** Array type info. */
-    export interface IArray extends IJsonSchema.IArray, IDescriptive {}
+    export interface IArray extends IDescriptive, IJsonSchema.IArray {}
 
     /**
-     * Object type info.
+     * Object type info with implementation specification.
      *
-     * When `x-autobe-database-schema` is `null`, the `description` MUST
-     * explain:
+     * This interface extends the base object schema with an additional
+     * `x-autobe-specification` field that separates API documentation from
+     * implementation details.
      *
-     * - **WHY**: Reason for no database mapping (composite, request params,
-     *   computed result, pure business logic, etc.)
-     * - **HOW**: Detailed specification of data sourcing or computation logic,
-     *   precise enough for downstream agents to implement (source tables, join
-     *   conditions, aggregation formulas, business rules, edge cases)
+     * ## Field Responsibilities
+     *
+     * - **`description`**: API documentation for consumers. Explains WHAT the
+     *   type represents and WHY it exists. Displayed in Swagger UI and SDK
+     *   docs.
+     * - **`x-autobe-specification`**: Implementation guidance for agents.
+     *   Explains HOW to implement data retrieval, computation, or
+     *   transformation logic.
+     *
+     * ## When `x-autobe-database-schema` is `null`
+     *
+     * The `x-autobe-specification` MUST contain detailed implementation
+     * instructions:
+     *
+     * - Source tables and columns involved
+     * - Join conditions between tables
+     * - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+     * - Business rules and transformation logic
+     * - Edge cases (nulls, empty sets, defaults)
      */
-    export interface IObject extends IJsonSchema.IObject, IDescriptive {}
+    export interface IObject extends IDescriptive, IJsonSchema.IObject {
+      /**
+       * Implementation specification for this object type.
+       *
+       * This is an AutoBE-internal field that provides detailed implementation
+       * guidance for downstream agents (Realize Agent, Test Agent, etc.).
+       *
+       * Include **HOW** this type should be implemented:
+       *
+       * - Source database tables and columns
+       * - Join conditions for related data
+       * - Aggregation formulas and computation logic
+       * - Business rules and transformation logic
+       * - Edge cases (null handling, empty results, defaults)
+       *
+       * This field is especially critical when `x-autobe-database-schema` is
+       * `null`, as it provides the only guidance for implementing data
+       * retrieval or computation logic.
+       *
+       * > MUST be written in English. Never use other languages.
+       */
+      "x-autobe-specification": string;
+    }
 
     /** Reference type directing named schema. */
-    export interface IReference extends IJsonSchema.IReference, IDescriptive {}
+    export interface IReference extends IDescriptive, IJsonSchema.IReference {}
 
     /**
      * Union type.
@@ -1571,54 +1626,35 @@ export namespace AutoBeOpenApi {
      * `anyOf` instead of the `oneOf`, {@link AutoBeOpenApi} forcibly converts it
      * to `oneOf` type.
      */
-    export interface IOneOf extends IJsonSchema.IOneOf, IDescriptive {}
+    export interface IOneOf extends IDescriptive, IJsonSchema.IOneOf {}
 
     /** Null type. */
-    export interface INull extends IJsonSchema.INull, IDescriptive {}
+    export interface INull extends IDescriptive, IJsonSchema.INull {}
 
     interface IDescriptive {
       /**
-       * Description about the type.
+       * API documentation for the type.
        *
-       * CRITICAL: This description MUST be extensively detailed and MUST
-       * reference and align with the description comments from the
-       * corresponding database schema tables and columns.
+       * This is the standard OpenAPI description field that will be displayed
+       * in Swagger UI, SDK documentation, and other API documentation tools.
+       * Focus on explaining the type from an API consumer's perspective.
        *
-       * The description MUST be organized into MULTIPLE PARAGRAPHS (separated
-       * by line breaks) based on different aspects of the type:
+       * The description SHOULD be organized into MULTIPLE PARAGRAPHS (separated
+       * by line breaks) covering:
        *
-       * - The purpose and business meaning of the type
-       * - Relationships to other entities in the system
-       * - Validation rules, constraints, and edge cases
-       * - Usage context and examples when helpful
+       * - **WHAT**: The purpose and business meaning of the type
+       * - **WHY**: When and why this type is used
+       * - **Relationships**: Connections to other entities in the system
+       * - **Constraints**: Validation rules visible to API consumers
        *
-       * ## Special Requirement for Object Types Without Database Mapping
+       * ## Important Notes
        *
-       * For object types where `x-autobe-database-schema` is `null`, the
-       * description MUST include:
-       *
-       * 1. **WHY** - Reason for no database mapping:
-       *
-       *    - Composite type aggregating multiple tables
-       *    - Request parameter type for API input
-       *    - Computed result type from calculations
-       *    - Pure business logic type from requirements
-       * 2. **HOW** - Detailed implementation specification:
-       *
-       *    - Source tables and columns involved
-       *    - Join conditions between tables
-       *    - Aggregation formulas (e.g., `SUM`, `COUNT`, `AVG`)
-       *    - Business rules and transformation logic
-       *    - Edge cases (nulls, empty sets, defaults)
-       *
-       * The HOW section must be **precise enough for downstream agents to
-       * implement** the actual data retrieval, combination, or computation
-       * logic. Vague descriptions are unacceptable.
-       *
-       * This structured approach improves readability and helps readers better
-       * understand the type's various characteristics and use cases. The
-       * description should be so comprehensive that anyone reading it can fully
-       * understand the type without needing to reference other documentation.
+       * - Reference the corresponding database schema table's documentation to
+       *   maintain consistency
+       * - Do NOT include implementation details here (use
+       *   `x-autobe-specification` for object types)
+       * - Keep the language accessible to API consumers who may not know the
+       *   internal implementation
        *
        * > MUST be written in English. Never use other languages.
        */
@@ -1630,10 +1666,16 @@ export namespace AutoBeOpenApi {
    * Type schema for object properties with database column mapping.
    *
    * `IJsonSchemaProperty` extends the base JSON Schema types with database
-   * traceability metadata. Each property in an
-   * {@link IJsonSchema.IObject object schema} uses this type, which includes an
-   * `x-autobe-database-schema-member` field linking the property to its source
-   * database column.
+   * traceability metadata and implementation specifications. Each property in
+   * an {@link IJsonSchema.IObject object schema} uses this type.
+   *
+   * ## Three-Field Documentation Pattern
+   *
+   * Each property includes:
+   *
+   * - **`description`**: API documentation for consumers (Swagger UI, SDK docs)
+   * - **`x-autobe-specification`**: Implementation guidance for agents
+   * - **`x-autobe-database-schema-member`**: Database column mapping
    *
    * ## Purpose
    *
@@ -1652,8 +1694,8 @@ export namespace AutoBeOpenApi {
    *
    * While {@link IJsonSchemaDescriptive} is used for top-level component schemas
    * (types in `components.schemas`), `IJsonSchemaProperty` is used for
-   * properties within those schemas. The key addition is the
-   * `x-autobe-database-schema-member` field.
+   * properties within those schemas. The key additions are
+   * `x-autobe-database-schema-member` and `x-autobe-specification` fields.
    *
    * ## Type Exclusions
    *
@@ -1662,7 +1704,7 @@ export namespace AutoBeOpenApi {
    * components section. This prevents inline object definitions and ensures all
    * complex types are properly named and reusable.
    *
-   * @see {@link IJsonSchemaProperty.IProperty} for database column mapping details
+   * @see {@link IJsonSchemaProperty.IProperty} for property metadata details
    * @see {@link IJsonSchema.IObject} for object schemas that contain these properties
    */
   export type IJsonSchemaProperty =
@@ -1677,22 +1719,22 @@ export namespace AutoBeOpenApi {
     | IJsonSchemaProperty.INull;
   export namespace IJsonSchemaProperty {
     /** Constant value property with database column mapping. */
-    export interface IConstant extends IJsonSchema.IConstant, IProperty {}
+    export interface IConstant extends IProperty, IJsonSchema.IConstant {}
 
     /** Boolean property with database column mapping. */
-    export interface IBoolean extends IJsonSchema.IBoolean, IProperty {}
+    export interface IBoolean extends IProperty, IJsonSchema.IBoolean {}
 
     /** Integer property with database column mapping. */
-    export interface IInteger extends IJsonSchema.IInteger, IProperty {}
+    export interface IInteger extends IProperty, IJsonSchema.IInteger {}
 
     /** Number (double) property with database column mapping. */
-    export interface INumber extends IJsonSchema.INumber, IProperty {}
+    export interface INumber extends IProperty, IJsonSchema.INumber {}
 
     /** String property with database column mapping. */
-    export interface IString extends IJsonSchema.IString, IProperty {}
+    export interface IString extends IProperty, IJsonSchema.IString {}
 
     /** Array property with database column mapping. */
-    export interface IArray extends IJsonSchema.IArray, IProperty {}
+    export interface IArray extends IProperty, IJsonSchema.IArray {}
 
     /**
      * Reference property with database column mapping.
@@ -1702,21 +1744,30 @@ export namespace AutoBeOpenApi {
      * foreign key column (e.g., `author_id`), while the `$ref` points to the
      * related entity type (e.g., `IUser.ISummary`).
      */
-    export interface IReference extends IJsonSchema.IReference, IProperty {}
+    export interface IReference extends IProperty, IJsonSchema.IReference {}
 
     /** Union type property with database column mapping. */
-    export interface IOneOf extends IJsonSchema.IOneOf, IProperty {}
+    export interface IOneOf extends IProperty, IJsonSchema.IOneOf {}
 
     /** Null type property with database column mapping. */
-    export interface INull extends IJsonSchema.INull, IProperty {}
+    export interface INull extends IProperty, IJsonSchema.INull {}
 
     /**
      * Property-level metadata for DTO schema properties.
      *
-     * This interface extends JSON Schema property definitions with database
-     * column mapping and comprehensive documentation requirements. It ensures
-     * traceability between DTO properties and their underlying data sources,
-     * enabling downstream agents to correctly implement data mapping logic.
+     * This interface provides three documentation fields for each property:
+     *
+     * - **`description`**: API documentation for consumers
+     * - **`x-autobe-specification`**: Implementation guidance for agents
+     * - **`x-autobe-database-schema-member`**: Database column mapping
+     *
+     * ## Field Responsibilities
+     *
+     * | Field                             | Audience      | Content                      |
+     * | --------------------------------- | ------------- | ---------------------------- |
+     * | `description`                     | API consumers | WHAT/WHY - business meaning  |
+     * | `x-autobe-specification`          | Agents        | HOW - implementation details |
+     * | `x-autobe-database-schema-member` | Agents        | WHERE - data source          |
      *
      * ## Database Column Mapping
      *
@@ -1724,18 +1775,83 @@ export namespace AutoBeOpenApi {
      * between a DTO property and a specific database column. This mapping is
      * critical for:
      *
-     * - Code generation: Realize agents use this to generate correct database
-     *   queries
-     * - Validation: Phantom Review agents verify properties exist in the database
+     * - Code generation: Realize agents use this to generate correct queries
+     * - Validation: Phantom Review agents verify properties exist in DB
      * - Type safety: Ensures DTO properties match database column types
      *
      * ## Computed Properties
      *
      * When `x-autobe-database-schema-member` is `null`, the property represents
      * a **computed value** derived from other data sources. In this case, the
-     * `description` field MUST contain detailed computation specifications.
+     * `x-autobe-specification` field MUST contain detailed computation
+     * specifications.
      */
     interface IProperty {
+      /**
+       * API documentation for the property.
+       *
+       * This is the standard OpenAPI description field that will be displayed
+       * in Swagger UI, SDK documentation, and other API documentation tools.
+       * Focus on explaining the property from an API consumer's perspective.
+       *
+       * ## Content Guidelines
+       *
+       * - **WHAT**: What this property represents in the business domain
+       * - **WHY**: Why this property exists and when it's used
+       * - **Constraints**: Validation rules, value ranges, or format requirements
+       *   visible to API consumers
+       * - **Relationships**: If referencing another entity, explain the semantic
+       *   relationship
+       *
+       * ## For Nullability Mismatch (DB non-null → DTO nullable/optional)
+       *
+       * When the database column is non-null but the DTO property is nullable
+       * or optional, briefly explain why:
+       *
+       * - "Optional - defaults to 'user' if not provided."
+       * - "Optional - server generates UUID if not provided."
+       * - "Optional for update operations."
+       *
+       * ## Format Requirements
+       *
+       * - MUST be written in English
+       * - Should be organized into multiple paragraphs for complex properties
+       * - Use clear, precise language accessible to API consumers
+       * - Do NOT include implementation details (use `x-autobe-specification`)
+       */
+      description: string;
+
+      /**
+       * Implementation specification for this property.
+       *
+       * This is an AutoBE-internal field (not exposed in standard OpenAPI
+       * output) that provides detailed implementation guidance for downstream
+       * agents (Realize Agent, Test Agent, etc.).
+       *
+       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
+       *
+       * - Database column details and type mapping
+       * - Any transformation logic between DB and DTO
+       * - Validation rules enforced at the service layer
+       *
+       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
+       *
+       * This field is CRITICAL and MUST include:
+       *
+       * 1. **Data sources**: ALL columns and/or tables involved
+       * 2. **Computation formula**: Exact algorithm or SQL-like expression (e.g.,
+       *    `SUM(items.price * items.quantity)`)
+       * 3. **Join conditions**: How related tables connect
+       * 4. **Edge cases**: Behavior for nulls, empty sets, defaults
+       * 5. **Examples**: Concrete examples to clarify computation
+       *
+       * The specification must be precise enough for Realize Agent to implement
+       * the computation logic without ambiguity.
+       *
+       * > MUST be written in English. Never use other languages.
+       */
+      "x-autobe-specification": string;
+
       /**
        * Database column that this property maps to.
        *
@@ -1770,8 +1886,8 @@ export namespace AutoBeOpenApi {
        *
        * ## Critical Requirement for Computed Properties
        *
-       * When this field is `null`, the `description` field MUST contain a
-       * **detailed computation specification** explaining:
+       * When this field is `null`, the `x-autobe-specification` field MUST
+       * contain a **detailed computation specification** explaining:
        *
        * - Source columns or tables involved
        * - The exact formula or algorithm used
@@ -1781,66 +1897,6 @@ export namespace AutoBeOpenApi {
        * logic in service layer code.
        */
       "x-autobe-database-schema-member": string | null;
-
-      /**
-       * Comprehensive documentation for the property.
-       *
-       * This description serves multiple purposes depending on the database column
-       * mapping status and nullability:
-       *
-       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
-       *
-       * When the property maps to an actual database column, the description
-       * should:
-       *
-       * 1. **Incorporate database column documentation**: Reference and align with
-       *    the column's description from the database schema
-       * 2. **Explain business semantics**: What the value represents in the domain
-       *    context
-       * 3. **Document constraints**: Any validation rules, value ranges, or format
-       *    requirements
-       * 4. **Describe relationships**: If the column is a foreign key, explain the
-       *    relationship semantics
-       *
-       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
-       *
-       * When the property is computed (not directly mapped to a column), the
-       * description MUST include a **detailed computation specification**:
-       *
-       * 1. **Data sources**: List ALL columns and/or tables involved in the
-       *    computation
-       * 2. **Computation formula**: Provide the exact algorithm or SQL-like
-       *    expression (e.g., "SUM(items.price * items.quantity)")
-       * 3. **Join conditions**: If data comes from related tables, specify how
-       *    they connect
-       * 4. **Edge cases**: Document behavior for null values, empty sets, or
-       *    exceptional conditions
-       * 5. **Example values**: Provide concrete examples to clarify the
-       *    computation result
-       *
-       * ## For Nullability Mismatch (DB non-null → DTO nullable/optional)
-       *
-       * When the database column is non-null but the DTO property is nullable or
-       * optional (allowed direction), the description MUST explain why:
-       *
-       * - **Default value**: "Optional - if not provided, defaults to 'user'."
-       * - **Server-generated**: "Optional - server generates UUID if not provided."
-       * - **Partial update**: "Optional for update operations."
-       *
-       * This documentation is critical for API consumers to understand the behavior
-       * and for maintainers to verify the nullability mismatch is intentional.
-       *
-       * **Note**: The reverse (DB nullable → DTO non-null) is FORBIDDEN and will
-       * cause runtime errors.
-       *
-       * ## Format Requirements
-       *
-       * - MUST be written in English
-       * - Should be organized into multiple paragraphs for complex properties
-       * - Use clear, precise technical language
-       * - Include examples where helpful
-       */
-      description: string;
     }
   }
 
