@@ -266,20 +266,24 @@ Correct type: [description of what it should be, if REFINE]
 // Output schema:
 {
   "type": "object",
-  "description": "User preferences containing display and localization settings. This is the internal structure of the users.preferences JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from users.preferences column as JSON object.",
+  "description": "User preferences containing display and localization settings.",
+  "x-autobe-specification": "Internal structure of the users.preferences JSON column. Represents JSON column structure, not a database table. Parsed from users.preferences column as JSON object.",
   "x-autobe-database-schema": null,
   "properties": {
     "theme": {
       "type": "string",
-      "description": "UI theme preference. Stored as 'theme' key in the JSON structure."
+      "description": "UI theme preference.",
+      "x-autobe-specification": "Stored as 'theme' key in the JSON structure."
     },
     "language": {
       "type": "string",
-      "description": "Preferred language code. Stored as 'language' key in the JSON structure."
+      "description": "Preferred language code.",
+      "x-autobe-specification": "Stored as 'language' key in the JSON structure."
     },
     "timezone": {
       "type": "string",
-      "description": "User's timezone identifier. Stored as 'timezone' key in the JSON structure."
+      "description": "User's timezone identifier.",
+      "x-autobe-specification": "Stored as 'timezone' key in the JSON structure."
     }
   }
 }
@@ -307,11 +311,18 @@ All refined object schemas MUST include `x-autobe-database-schema`:
 - Set to **table name** when the object maps to a database table
 - Set to **`null`** when no direct database mapping exists
 
-**When `x-autobe-database-schema` is `null`**, the `description` MUST explain:
-1. **WHY**: Reason for no database mapping (computed aggregation, composite type, etc.)
-2. **HOW**: Detailed specification of data sourcing or computation (source tables, formulas, join conditions)
+**When `x-autobe-database-schema` is `null`**, the object type has two documentation fields:
 
-The HOW must be **precise enough for downstream agents to implement** the data retrieval or computation.
+**Two-Field Documentation Pattern**:
+- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
+
+1. **`description`**: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+2. **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW) - source tables, formulas, join conditions
+
+**⚠️ IMPORTANT**: Object-level `x-autobe-specification` is for the **object type itself**, NOT for individual properties. Each property has its own `x-autobe-specification` field.
+
+The `x-autobe-specification` must be **precise enough for downstream agents to implement** the data retrieval or computation.
 
 **`x-autobe-database-schema-member` Property-Level Mapping**:
 
@@ -319,11 +330,11 @@ Every property within a refined object schema must specify its database member m
 
 - When `x-autobe-database-schema` has a valid table name:
   - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
-  - Set to `null` for computed properties, with detailed computation spec in `description`
+  - Set to `null` for computed properties, with detailed computation spec in `x-autobe-specification`
 
 - When `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` is not applicable
-  - Each property's `description` must still contain detailed data sourcing specs
+  - Each property's `x-autobe-specification` must still contain detailed data sourcing specs
 
 ---
 
@@ -495,22 +506,26 @@ process({
     verdict: "REFINE: This is a degenerate type. Documentation describes a structured object with email, push, and SMS settings but type is `string`. Will refine to object with specific properties.",
     schema: {
       type: "object",
-      description: "User notification preferences containing email, push, and SMS notification settings. This is the internal structure of user_preferences.notification_settings JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from user_preferences.notification_settings column as JSON object.",
+      description: "User notification preferences containing email, push, and SMS notification settings.",
+      "x-autobe-specification": "Internal structure of user_preferences.notification_settings JSON column. Represents JSON column structure, not a database table. Parsed from user_preferences.notification_settings column as JSON object.",
       "x-autobe-database-schema": null,
       properties: {
         email: {
           type: "boolean",
-          description: "Whether to receive email notifications. Stored as 'email' key in the JSON structure.",
+          description: "Whether to receive email notifications.",
+          "x-autobe-specification": "Stored as 'email' key in the JSON structure.",
           "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         push: {
           type: "boolean",
-          description: "Whether to receive push notifications. Stored as 'push' key in the JSON structure.",
+          description: "Whether to receive push notifications.",
+          "x-autobe-specification": "Stored as 'push' key in the JSON structure.",
           "x-autobe-database-schema-member": null  // Parent has no DB mapping
         },
         sms: {
           type: "boolean",
-          description: "Whether to receive SMS notifications. Stored as 'sms' key in the JSON structure.",
+          description: "Whether to receive SMS notifications.",
+          "x-autobe-specification": "Stored as 'sms' key in the JSON structure.",
           "x-autobe-database-schema-member": null  // Parent has no DB mapping
         }
       }
@@ -623,7 +638,7 @@ Before calling the complete function:
 - [ ] Used `additionalProperties` for Record patterns
 - [ ] Used `properties` for structured objects
 - [ ] **`x-autobe-database-schema` field included** (set to table name or `null`)
-- [ ] **If `x-autobe-database-schema` is `null`**: Description contains WHY (no DB mapping) and HOW (data sourcing/computation spec)
+- [ ] **If `x-autobe-database-schema` is `null`**: `description` contains WHAT/WHY (for API docs), `x-autobe-specification` contains HOW (data sourcing/computation spec)
 
 ---
 

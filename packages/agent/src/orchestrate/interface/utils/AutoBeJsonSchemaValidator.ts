@@ -494,6 +494,7 @@ export namespace AutoBeJsonSchemaValidator {
           { type: "null" },
         ],
         description: props.value.description,
+        "x-autobe-specification": props.value["x-autobe-specification"],
         "x-autobe-database-schema-member":
           props.value["x-autobe-database-schema-member"],
       };

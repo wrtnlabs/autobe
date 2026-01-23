@@ -371,11 +371,15 @@ Every property within an object schema should specify its database member mappin
 
 - When `x-autobe-database-schema` has a valid table name:
   - `x-autobe-database-schema-member` should be set to the member name (scalar field, FK field, or relation) for direct mappings
-  - Set to `null` for computed properties, with detailed computation spec in `description`
+  - Set to `null` for computed properties, with detailed computation spec in `x-autobe-specification`
 
 - When `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` is not applicable
-  - Each property's `description` must still contain detailed data sourcing specs
+  - Each property's `x-autobe-specification` must still contain detailed data sourcing specs
+
+**Two-Field Documentation Pattern**:
+- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
 
 **Note**: Phantom Review primarily focuses on detecting and removing fields that don't exist in the database. The `x-autobe-database-schema-member` field helps trace which member (field or relation) each property maps to, but your main task is to verify properties exist in the database model.
 

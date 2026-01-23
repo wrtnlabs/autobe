@@ -894,29 +894,31 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 
 **CRITICAL REQUIREMENT WHEN `null`**:
 
-When `x-autobe-database-schema` is `null`, the object's `description` field MUST contain:
+When `x-autobe-database-schema` is `null`, the object type has two documentation fields:
 
-1. **WHY** - Clear reason for no database mapping:
-   - Request parameter type for API input (filters, pagination)
-   - Wrapper type for API responses (pagination container)
-   - Composite type aggregating data from multiple tables
-   - Computed result type from calculations
-   - Pure business logic type born from requirements
+1. **`description`** - API documentation for consumers (Swagger UI, SDK docs):
+   - Clear, concise explanation of WHAT the type represents and WHY it exists
+   - Written for API consumers, stakeholders, and developers reading the API docs
+   - This is standard OpenAPI/Swagger description - human-readable purpose statement
 
-2. **HOW** - Detailed implementation specification (if applicable):
+2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
+   - Detailed implementation specification for downstream agents
    - Source tables and columns involved
    - Join conditions between tables
    - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
    - Business rules and transformation logic
    - Edge cases (nulls, empty sets, defaults)
 
-The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague descriptions are unacceptable.
+**⚠️ IMPORTANT**: Object-level `x-autobe-specification` is for the **object type itself**, NOT for individual properties. Each property has its own `x-autobe-specification` field. Do NOT duplicate property-level specs in the object-level spec.
+
+The `x-autobe-specification` must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague specifications are unacceptable.
 
 **Example for `null` mapping**:
 ```json
 {
   "type": "object",
-  "description": "Search and pagination parameters for user listing. This is a request parameter type for API input, not a database entity. Contains optional filters for search term matching against user name and email fields, along with standard pagination controls.",
+  "description": "Search and pagination parameters for user listing. Contains optional filters for search term matching and standard pagination controls.",
+  "x-autobe-specification": "Request parameter type for API input, not a database entity. Filters apply to user name (LIKE '%search%') and email fields. Pagination uses offset/limit pattern. This is a pure request type - no database persistence.",
   "x-autobe-database-schema": null,
   "properties": { ... }
 }
@@ -1044,30 +1046,32 @@ Examples:
 **Case 1: When `x-autobe-database-schema` has a valid table name**
 - Every property MUST have `x-autobe-database-schema-member` filled
 - If property maps directly to a database member (scalar field, FK field, or relation) → set to member name
-- If property is computed/derived (no direct member) → set to `null`, and the property's `description` MUST contain detailed computation specification
+- If property is computed/derived (no direct member) → set to `null`, and the property's `x-autobe-specification` MUST contain detailed computation specification
 
 **Case 2: When `x-autobe-database-schema` is `null`**
 - `x-autobe-database-schema-member` MUST be set to `null` for all properties (entire object has no table mapping)
-- Each property's `description` MUST still contain detailed specs explaining data sourcing
+- Each property's `x-autobe-specification` MUST still contain detailed specs explaining data sourcing
 
-**CRITICAL: Description Requirement for Computed Properties**
+**CRITICAL: Two-Field Documentation Pattern for Properties**
 
-When `x-autobe-database-schema-member` is `null`, the property's `description` MUST contain:
+Every property has two documentation fields:
 
-1. **WHY** - Reason for no direct member mapping:
-   - Aggregated from multiple fields/rows
-   - Calculated from other fields
-   - Joined from related tables
-   - Derived from business logic
+1. **`description`** - API documentation for consumers (WHAT/WHY):
+   - Clear, concise explanation for Swagger UI, SDK docs, API consumers
+   - Human-readable purpose statement
+   - This is standard OpenAPI/Swagger description
 
-2. **HOW** - Detailed implementation specification:
-   - Source tables and columns involved
-   - Join conditions between tables
-   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
-   - Business rules and transformation logic
-   - Edge cases (nulls, empty sets, defaults)
+2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
+   - Detailed implementation specification for downstream agents
+   - When `x-autobe-database-schema-member` is a valid member name: can be omitted or brief
+   - When `x-autobe-database-schema-member` is `null`: MUST contain detailed computation spec:
+     - Source tables and columns involved
+     - Join conditions between tables
+     - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
+     - Business rules and transformation logic
+     - Edge cases (nulls, empty sets, defaults)
 
-The HOW must be **precise enough for downstream agents to implement** the actual computation.
+The `x-autobe-specification` must be **precise enough for downstream agents to implement** the actual computation.
 
 **Example - Object with direct table mapping**:
 ```json
@@ -1090,7 +1094,8 @@ The HOW must be **precise enough for downstream agents to implement** the actual
     },
     "totalOrders": {
       "type": "integer",
-      "description": "Total number of orders placed by this user. Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
+      "description": "Total number of orders placed by this user.",
+      "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
       "x-autobe-database-schema-member": null
     }
   },
@@ -1102,22 +1107,26 @@ The HOW must be **precise enough for downstream agents to implement** the actual
 ```json
 {
   "type": "object",
-  "description": "Sales statistics aggregating data from multiple tables. This is a computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
+  "description": "Sales statistics aggregating data from multiple tables for category-level analysis.",
+  "x-autobe-specification": "Computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
   "x-autobe-database-schema": null,
   "properties": {
     "categoryName": {
       "type": "string",
-      "description": "Category name from categories table. Source: categories.name via JOIN products ON products.category_id = categories.id.",
+      "description": "Name of the product category.",
+      "x-autobe-specification": "Source: categories.name via JOIN products ON products.category_id = categories.id.",
       "x-autobe-database-schema-member": null
     },
     "totalSales": {
       "type": "integer",
-      "description": "Total units sold in this category. Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
+      "description": "Total units sold in this category.",
+      "x-autobe-specification": "Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
       "x-autobe-database-schema-member": null
     },
     "averagePrice": {
       "type": "number",
-      "description": "Average sale price in this category. Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
+      "description": "Average sale price in this category.",
+      "x-autobe-specification": "Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
       "x-autobe-database-schema-member": null
     }
   },

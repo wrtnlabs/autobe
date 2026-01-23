@@ -296,26 +296,27 @@ export namespace AutoBeOpenApi {
    */
   export interface IOperation extends IEndpoint {
     /**
-     * Authorization type of the API operation.
+     * Implementation specification for the API operation.
      *
-     * - `"login"`: User login operations that validate credentials
-     * - `"join"`: User registration operations that create accounts
-     * - `"refresh"`: Token refresh operations that renew access tokens
-     * - `null`: All other operations (CRUD, business logic, etc.)
+     * This is an AutoBE-internal field (not exposed in standard OpenAPI output)
+     * that provides detailed implementation guidance for downstream agents
+     * (Realize Agent, Test Agent, etc.).
      *
-     * Use authentication values only for credential validation, user
-     * registration, or token refresh operations. Use `null` for all other
-     * business operations.
+     * Include **HOW** this operation should be implemented:
      *
-     * Examples:
+     * - Service layer logic and algorithm
+     * - Database queries and transactions involved
+     * - Business rules and validation logic
+     * - Edge cases and error handling
+     * - Integration with other services
      *
-     * - `/auth/login` → `"login"`
-     * - `/auth/register` → `"join"`
-     * - `/auth/refresh` → `"refresh"`
-     * - `/auth/validate` → `null`
-     * - `/users/{id}`, `/shoppings/customers/sales/cancel`, → `null`
+     * This field complements the `description` field: while `description` is
+     * for API consumers (Swagger UI, SDK docs), `specification` is for agents
+     * that implement the operation.
+     *
+     * > MUST be written in English. Never use other languages.
      */
-    authorizationType: "login" | "join" | "refresh" | null;
+    specification: string;
 
     /**
      * Detailed description about the API operation.
@@ -363,6 +364,28 @@ export namespace AutoBeOpenApi {
      * > MUST be written in English. Never use other languages.
      */
     description: string;
+
+    /**
+     * Authorization type of the API operation.
+     *
+     * - `"login"`: User login operations that validate credentials
+     * - `"join"`: User registration operations that create accounts
+     * - `"refresh"`: Token refresh operations that renew access tokens
+     * - `null`: All other operations (CRUD, business logic, etc.)
+     *
+     * Use authentication values only for credential validation, user
+     * registration, or token refresh operations. Use `null` for all other
+     * business operations.
+     *
+     * Examples:
+     *
+     * - `/auth/login` → `"login"`
+     * - `/auth/register` → `"join"`
+     * - `/auth/refresh` → `"refresh"`
+     * - `/auth/validate` → `null`
+     * - `/users/{id}`, `/shoppings/customers/sales/cancel`, → `null`
+     */
+    authorizationType: "login" | "join" | "refresh" | null;
 
     /**
      * List of path parameters.
@@ -809,36 +832,15 @@ export namespace AutoBeOpenApi {
    */
   export interface IParameter {
     /**
-     * Implementation specification for the path parameter.
-     *
-     * This is an AutoBE-internal field (not exposed in standard OpenAPI output)
-     * that provides detailed implementation guidance for downstream agents
-     * (Interface Agent, Realize Agent, etc.).
-     *
-     * Include **HOW** this parameter should be processed:
-     *
-     * - Database column or table it maps to
-     * - Validation rules and constraints
-     * - Transformation logic if any
-     * - Edge cases and error handling
-     *
-     * This field enables code generation agents to correctly implement
-     * parameter handling without ambiguity.
-     *
-     * > MUST be written in English. Never use other languages.
-     */
-    "x-autobe-specification": string;
-
-    /**
-     * Description about the path parameter for API documentation.
+     * Description about the path parameter.
      *
      * This is the standard OpenAPI description field that will be displayed in
      * Swagger UI, SDK documentation, and other API documentation tools. Write a
      * short, concise, and clear description that helps API consumers understand
      * what this parameter represents.
      *
-     * Focus on **WHAT** the parameter is and **WHY** it's needed from the API
-     * consumer's perspective. Do not include implementation details here.
+     * Implementation details for parameter handling are covered in the
+     * parent {@link IOperation.specification} field.
      *
      * > MUST be written in English. Never use other languages.
      */
@@ -1592,22 +1594,32 @@ export namespace AutoBeOpenApi {
      */
     export interface IObject extends IDescriptive, IJsonSchema.IObject {
       /**
-       * Implementation specification for this object type.
+       * Implementation specification for this **object type itself**.
        *
        * This is an AutoBE-internal field that provides detailed implementation
        * guidance for downstream agents (Realize Agent, Test Agent, etc.).
        *
-       * Include **HOW** this type should be implemented:
+       * ## CRITICAL: Object-Level Only
        *
-       * - Source database tables and columns
-       * - Join conditions for related data
-       * - Aggregation formulas and computation logic
-       * - Business rules and transformation logic
-       * - Edge cases (null handling, empty results, defaults)
+       * This specification is for the **object type as a whole**, NOT for
+       * individual properties/members. Each property within this object has its
+       * own `x-autobe-specification` field in {@link IJsonSchemaProperty.IProperty}.
+       *
+       * - ✅ Describe how to retrieve/construct this entire object type
+       * - ✅ Describe data sourcing strategy for the object as a unit
+       * - ❌ Do NOT describe individual property computations here
+       * - ❌ Do NOT duplicate what should be in property-level specifications
+       *
+       * ## Include **HOW** this type should be implemented:
+       *
+       * - Source database tables (primary table and joined tables)
+       * - Overall query strategy (joins, filters, grouping)
+       * - Object-level business rules and constraints
+       * - Edge cases for the object as a whole (not found, empty, etc.)
        *
        * This field is especially critical when `x-autobe-database-schema` is
        * `null`, as it provides the only guidance for implementing data
-       * retrieval or computation logic.
+       * retrieval or computation logic for the entire object.
        *
        * > MUST be written in English. Never use other languages.
        */

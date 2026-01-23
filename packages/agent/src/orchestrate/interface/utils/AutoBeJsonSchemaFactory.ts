@@ -51,6 +51,8 @@ export namespace AutoBeJsonSchemaFactory {
         value.properties.token = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "Authorization token.",
+          "x-autobe-specification":
+            "Authorization token comes from the session table.",
           "x-autobe-database-schema-member": null,
         };
       value.required = Array.from(
@@ -264,6 +266,7 @@ export namespace AutoBeJsonSchemaFactory {
       pagination: {
         $ref: "#/components/schemas/IPage.IPagination",
         description: "Page information.",
+        "x-autobe-specification": "Pagination information for the page.",
         "x-autobe-database-schema-member": null,
       },
       data: {
@@ -272,6 +275,7 @@ export namespace AutoBeJsonSchemaFactory {
           $ref: `#/components/schemas/${key}`,
         },
         description: "List of records.",
+        "x-autobe-specification": `List of records of type ${key}.`,
         "x-autobe-database-schema-member": null,
       },
     },
@@ -281,6 +285,7 @@ export namespace AutoBeJsonSchemaFactory {
   
       Collection of records with pagination information.
     `,
+    "x-autobe-specification": `A page containing records of type ${key}.`,
     "x-autobe-database-schema": null, // filled by relation review agent
   });
 

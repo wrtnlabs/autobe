@@ -756,23 +756,26 @@ Every object type schema MUST include `x-autobe-database-schema`:
 - Set to table name when DTO maps to a database table
 - Set to `null` when DTO has no direct database mapping
 
-**When `x-autobe-database-schema` is `null`**, the `description` MUST contain:
+**When `x-autobe-database-schema` is `null`**, the object type has two documentation fields:
 
-1. **WHY** - Reason for no database mapping:
-   - Request parameter type for API input
-   - Wrapper type for API responses
-   - Composite type aggregating multiple tables
-   - Computed result type from calculations
-   - Pure business logic type from requirements
+**Two-Field Documentation Pattern**:
+- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
 
-2. **HOW** - Detailed implementation specification (if applicable):
+1. **`description`** - API documentation for consumers (WHAT/WHY):
+   - Clear, concise explanation for Swagger UI, SDK docs, API consumers
+   - Human-readable purpose statement
+
+2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
    - Source tables and columns involved
    - Join conditions between tables
    - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
    - Business rules and transformation logic
    - Edge cases (nulls, empty sets, defaults)
 
-The HOW must be **precise enough for downstream agents to implement** the actual data retrieval or computation.
+**⚠️ IMPORTANT**: Object-level `x-autobe-specification` is for the **object type itself**, NOT for individual properties. Each property has its own `x-autobe-specification` field.
+
+The `x-autobe-specification` must be **precise enough for downstream agents to implement** the actual data retrieval or computation.
 
 **`x-autobe-database-schema-member` Property-Level Mapping**:
 
@@ -780,11 +783,11 @@ Every property within an object schema must specify its database member mapping:
 
 - When `x-autobe-database-schema` has a valid table name:
   - Set `x-autobe-database-schema-member` to the member name (scalar field, FK field, or relation) for direct mappings
-  - Set to `null` for computed properties, with detailed computation spec in `description`
+  - Set to `null` for computed properties, with detailed computation spec in `x-autobe-specification`
 
 - When `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` MUST be set to `null` for all properties
-  - Each property's `description` must still contain detailed data sourcing specs
+  - Each property's `x-autobe-specification` must still contain detailed data sourcing specs
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests

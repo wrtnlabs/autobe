@@ -21,6 +21,11 @@ export function invertOpenApiDocument(
             path: r.path,
             description:
               writeDescription(r.operation()) ?? empty("description"),
+            specification: r.operation()
+              ? ((r.operation() as any)["x-autobe-specification"] ??
+                empty("x-autobe-specification"))
+              : empty("x-autobe-specification"),
+            accessor: r.accessor,
             parameters: r.parameters.map(
               (p) =>
                 ({

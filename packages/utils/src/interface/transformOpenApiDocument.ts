@@ -34,8 +34,8 @@ export function transformOpenApiDocument(
         name: p.name,
         in: "path",
         schema: p.schema,
-        description: p.description,
         required: true,
+        description: p.description,
       })),
       requestBody: op.requestBody
         ? {
@@ -67,6 +67,7 @@ export function transformOpenApiDocument(
       ...{
         "x-autobe-prerequisites": op.prerequisites,
         "x-samchon-accessor": op.accessor,
+        "x-autobe-specification": op.specification,
       },
     };
   }

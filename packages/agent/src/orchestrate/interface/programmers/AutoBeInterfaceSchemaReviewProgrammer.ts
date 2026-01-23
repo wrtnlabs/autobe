@@ -170,6 +170,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
           description: cloned.description,
+          "x-autobe-specification": cloned["x-autobe-specification"],
           "x-autobe-database-schema-member":
             cloned["x-autobe-database-schema-member"],
           oneOf: [
@@ -192,6 +193,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             description: cloned.description,
+            "x-autobe-specification": cloned["x-autobe-specification"],
             "x-autobe-database-schema-member":
               cloned["x-autobe-database-schema-member"],
           };

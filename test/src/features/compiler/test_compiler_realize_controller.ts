@@ -121,6 +121,7 @@ const document: AutoBeOpenApi.IDocument = {
         required: [],
         ...{
           description: "Information of shopping customer.",
+          "x-autobe-specification": "Unique customer information.",
         },
         "x-autobe-database-schema": "shopping_customers",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
@@ -130,6 +131,7 @@ const document: AutoBeOpenApi.IDocument = {
         required: [],
         ...{
           description: "Create information of shopping sale.",
+          "x-autobe-specification": "Information required to create a sale.",
         },
         "x-autobe-database-schema": "shopping_sales",
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
@@ -140,6 +142,7 @@ const document: AutoBeOpenApi.IDocument = {
         "x-autobe-database-schema": "shopping_sales",
         ...{
           description: "Information of shopping sale.",
+          "x-autobe-specification": "Detailed information of a sale.",
         },
       } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
     },

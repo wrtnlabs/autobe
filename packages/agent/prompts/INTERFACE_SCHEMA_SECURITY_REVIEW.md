@@ -967,11 +967,15 @@ When creating properties, specify database member mapping:
 
 - For computed/derived fields (no direct member):
   - Set `x-autobe-database-schema-member` to `null`
-  - The `description` MUST contain detailed computation spec
+  - The `x-autobe-specification` MUST contain detailed computation spec
 
 - When the parent object's `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` is not applicable
-  - The `description` must still contain detailed data sourcing specs
+  - The `x-autobe-specification` must still contain detailed data sourcing specs
+
+**Two-Field Documentation Pattern**:
+- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
 
 ### 5.3. Output Examples
 
