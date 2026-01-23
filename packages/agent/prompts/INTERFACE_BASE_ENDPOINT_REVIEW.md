@@ -216,9 +216,9 @@ revises: [
 ]
 ```
 
-### 3.2. Session & Snapshot Table Restrictions (CRITICAL)
+### 3.2. Session & Snapshot Table Restrictions
 
-**Session tables** and **Snapshot tables** have strict endpoint restrictions. You MUST DELETE any endpoints that violate these rules.
+**Session tables** and **Snapshot tables** have default endpoint restrictions based on their nature.
 
 #### Session Tables (e.g., `sessions`, `member_sessions`, `auth_sessions`)
 
@@ -244,35 +244,26 @@ Session state changes are managed through authentication flows, not direct CRUD 
 
 #### Snapshot Tables (stance: "snapshot")
 
-Snapshot tables store historical point-in-time data that must remain immutable once created.
+Snapshot tables store point-in-time historical records that are **immutable by nature**.
 
-**FORBIDDEN endpoints for snapshot tables**:
-- ❌ `PUT /{snapshots}/{snapshotId}` - Historical data cannot be modified
-- ❌ `DELETE /{snapshots}/{snapshotId}` - Historical data cannot be deleted
+**Default behavior** (when requirements don't specify otherwise):
+- `PUT` (update) - should not exist (historical records should not be modified)
+- `DELETE` (erase) - should not exist (historical records should be preserved)
 
-**ALLOWED endpoints for snapshot tables**:
-- ✅ `PATCH /{snapshots}` - Search/list snapshots
-- ✅ `GET /{snapshots}/{snapshotId}` - View snapshot
-- ✅ `POST /{snapshots}` - Create new snapshot
+**Override**: If requirements explicitly request update or delete operations for snapshots, those endpoints are acceptable.
 
-**Action**: DELETE forbidden snapshot endpoints:
+**Action**: DELETE snapshot PUT/DELETE endpoints only when requirements don't explicitly request them:
 ```typescript
 {
   type: "erase",
-  reason: "Snapshot tables cannot have UPDATE (PUT) endpoints. Historical data is immutable.",
+  reason: "Snapshot tables should not have UPDATE (PUT) endpoints by default. No explicit requirement found.",
   endpoint: { path: "/article_snapshots/{snapshotId}", method: "put" }
-},
-{
-  type: "erase",
-  reason: "Snapshot tables cannot have DELETE endpoints. Historical data must be preserved.",
-  endpoint: { path: "/article_snapshots/{snapshotId}", method: "delete" }
 }
 ```
 
 **How to Identify**:
 - Check database schema for `stance: "snapshot"` property
 - Table names often contain: `snapshot`, `history`, `audit`, `log`, `archive`
-- Session tables: `session`, `sessions`, `*_session`, `*_sessions`
 
 ### 3.3. Necessity Check
 
@@ -569,18 +560,18 @@ GET /articles/{articleId}/comments/{commentId}
 ```
 
 **SNAPSHOT Stance**:
-- Immutable - NO UPDATE operations
-- NO PUT (update) - historical data cannot be modified
+- Immutable by default - no PUT (update) or DELETE (erase)
+- If requirements explicitly request update/delete, those are acceptable
 
 ```
-❌ DELETE these (update operations on snapshot):
+❌ DELETE these by default (unless requirements explicitly request):
 PUT /articles/{articleId}/snapshots/{snapshotId}
+DELETE /articles/{articleId}/snapshots/{snapshotId}
 
-✅ KEEP these (all except update):
+✅ KEEP these:
 PATCH /articles/{articleId}/snapshots
 GET /articles/{articleId}/snapshots/{snapshotId}
 POST /articles/{articleId}/snapshots
-DELETE /articles/{articleId}/snapshots/{snapshotId}
 ```
 
 ### 3.8. Composite Unique Constraint Compliance
@@ -979,7 +970,7 @@ process({
 ### 8.3. Review Compliance
 - [ ] **Auth endpoints have correct `authorizationType`**: /login → `"login"`, /join → `"join"`, /refresh → `"refresh"`, /session(s) → `"session"`, /password → `"password"`, other /auth/* → `"management"`, actor POST → `"join"`
 - [ ] **Session tables have NO PUT (update) endpoints**
-- [ ] **Snapshot tables have NO PUT (update) or DELETE endpoints**
+- [ ] **Snapshot tables have no PUT/DELETE by default** (unless requirements explicitly request them)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
@@ -987,7 +978,7 @@ process({
 - [ ] **No singular/plural duplicate pairs exist (e.g., both /guest and /guests)**
 - [ ] No duplicate functionality exists
 - [ ] Subsidiary entities use nested paths only
-- [ ] Snapshot entities have read-only endpoints only
+- [ ] Snapshot entities have read + create by default (no update/delete unless explicitly requested)
 - [ ] Composite unique entities use complete parent paths
 - [ ] All endpoints are justified by requirements
 

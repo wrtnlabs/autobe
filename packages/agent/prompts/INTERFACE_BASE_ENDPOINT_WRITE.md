@@ -94,15 +94,11 @@ Generate the five standard CRUD endpoints for each database model in the assigne
 
 NOT every table should have API endpoints. You MUST evaluate each table for security implications before generating endpoints.
 
-### 2.1. Tables That Need Restricted Endpoints
+### 2.1. Tables That May Need Restricted Endpoints
 
-For these tables, generate ONLY read endpoints (at, index) - NO write operations:
+Consider restricting write operations for these tables:
 
-1. **Snapshot/History Tables** (stance: "snapshot")
-   - Historical versions of entities
-   - Audit trails (if user viewing is allowed)
-
-2. **Reference Data Tables**
+1. **Reference Data Tables**
    - System-defined lookup tables
    - Country codes, currency codes, etc.
 
@@ -176,14 +172,16 @@ The standard CRUD `POST /{actors}` endpoint for actor tables is also a registrat
 - ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search), `POST` (create), `DELETE` (erase)
 - ❌ **FORBIDDEN**: `PUT` (update) - Session modification should go through auth flows (refresh token, etc.)
 
-### 2.4. Snapshot Tables - Read & Create Only
+### 2.4. Snapshot Tables
 
-**Snapshot tables** (stance: "snapshot") store historical point-in-time data. Once created, snapshots must remain immutable - they cannot be modified or deleted.
+**Snapshot tables** (stance: "snapshot") store point-in-time historical records that are **immutable by nature**.
 
-**Rules for Snapshot Tables**:
-- ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search), `POST` (create)
-- ❌ **FORBIDDEN**: `PUT` (update) - Historical data must remain immutable once created
-- ❌ **FORBIDDEN**: `DELETE` (erase) - Historical data must be preserved
+**Default behavior**:
+- `GET` (at), `PATCH` (index/search), `POST` (create) - allowed
+- `PUT` (update) - not generated (historical records should not be modified)
+- `DELETE` (erase) - not generated (historical records should be preserved)
+
+**Override**: If requirements explicitly request update or delete operations for snapshots, follow the requirements.
 
 ### 2.5. Security Evaluation Checklist
 
@@ -191,7 +189,7 @@ Before generating endpoints for a table, verify:
 
 - [ ] For **Actor tables**: POST endpoint has `authorizationType: "join"`
 - [ ] For **Session tables**: Skip PUT (update) - session modification goes through auth flows
-- [ ] For **Snapshot tables**: Skip PUT (update) and DELETE (erase) - historical data is immutable and must be preserved
+- [ ] For **Snapshot tables**: By default, skip PUT (update) and DELETE (erase) unless requirements explicitly request them
 - [ ] IS intended for user interaction based on requirements
 
 **Note**: Tables with password, session, token, or sensitive fields CAN have read endpoints. The implementation layer will handle field filtering and access control.
@@ -232,18 +230,17 @@ Nested endpoints only - accessed through parent:
 
 ### 3.3. Snapshot Stance (`stance: "snapshot"`)
 
-Immutable endpoints (no updates allowed):
+Immutable by default (no updates, no deletes):
 
 ```json
 [
   {"path": "/resources", "method": "patch"},
   {"path": "/resources/{resourceCode}", "method": "get"},
-  {"path": "/resources", "method": "post"},
-  {"path": "/resources/{resourceCode}", "method": "delete"}
+  {"path": "/resources", "method": "post"}
 ]
 ```
 
-**NO PUT (update)** for snapshot entities - historical data must remain immutable once created.
+By default, no PUT (update) or DELETE (erase) for snapshot entities. If requirements explicitly request these operations, include them.
 
 ### 3.4. Detecting Parent-Child Relationships from Foreign Keys
 
@@ -832,7 +829,7 @@ model members {
 
 **Note:** No `POST /members` - all user creation (including by administrators) is handled by the `join` endpoint from Authorization Agent.
 
-### 8.4. Snapshot Table - No Updates
+### 8.4. Snapshot Table - Immutable by Default
 
 **Schema:**
 ```prisma
@@ -847,24 +844,23 @@ model article_snapshots {
 }
 ```
 
-**Generated Endpoints:**
+**Generated Endpoints (default):**
 ```json
 [
   {"description": "Search article snapshots", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
   {"description": "Get specific snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
-  {"description": "Create article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "post"}, "authorizationType": null, "authorizationActors": ["member"]},
-  {"description": "Delete article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots/{snapshotId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
+  {"description": "Create article snapshot", "endpoint": {"path": "/articles/{articleId}/snapshots", "method": "post"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
-**Note:** No PUT (update) - snapshots are immutable once created.
+**Note:** By default, no PUT (update) or DELETE (erase) - snapshots are immutable. If requirements explicitly request delete functionality, add the DELETE endpoint.
 
 ## 9. Final Execution Checklist
 
 ### Special Table Handling
 - [ ] Verified **actor tables** have NO POST (create) - user creation handled by `join` endpoint
 - [ ] Verified **session tables** have NO PUT (update) - session modification goes through auth flows
-- [ ] Verified **snapshot tables** have NO PUT (update) - historical data is immutable once created
+- [ ] Verified **snapshot tables** have no PUT/DELETE by default (unless requirements explicitly request them)
 - [ ] Verified auth endpoints have correct `authorizationType`: /login → `"login"`, /join → `"join"`, /refresh → `"refresh"`, /session(s) → `"session"`, /password → `"password"`, other /auth/* → `"management"`
 
 ### Path Design
@@ -880,7 +876,7 @@ model article_snapshots {
 ### Completeness
 - [ ] Generated all 5 CRUD operations for primary entities
 - [ ] Generated nested CRUD for subsidiary entities
-- [ ] Generated read-only for snapshot entities
+- [ ] Generated read + create for snapshot entities (no update/delete by default)
 
 ### Output Format
 - [ ] `analysis` field documents what tables were analyzed, what CRUD operations were identified

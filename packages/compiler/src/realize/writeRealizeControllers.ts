@@ -24,7 +24,9 @@ export const writeRealizeControllers = async (
     e2e: false,
     programmer: {
       controllerMethod: (ctx) => {
-        const method = NestiaMigrateNestMethodProgrammer.write(ctx);
+        const method: ts.MethodDeclaration =
+          NestiaMigrateNestMethodProgrammer.write(ctx);
+        console.log("method");
         const operate: AutoBeOpenApi.IOperation | undefined =
           props.document.operations.find(
             (o) => o.method === ctx.route.method && o.path === ctx.route.path,
@@ -46,8 +48,6 @@ export const writeRealizeControllers = async (
                 (d) => d.actor.name === operate.authorizationActor,
               )
             : undefined;
-        if (operate.authorizationActor && authorization === undefined)
-          return method; // unreachable
 
         ctx.importer.external({
           type: "instance",

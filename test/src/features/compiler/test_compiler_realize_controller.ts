@@ -111,6 +111,7 @@ const document: AutoBeOpenApi.IDocument = {
         description: "Created shopping sale.",
       },
       authorizationActor: "customer",
+      authorizationType: null,
     },
   ],
   components: {
