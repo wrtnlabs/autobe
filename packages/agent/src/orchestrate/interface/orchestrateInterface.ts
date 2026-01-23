@@ -2,6 +2,7 @@ import {
   AutoBeAssistantMessageHistory,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceCompleteEvent,
+  AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeInterfaceHistory,
@@ -95,32 +96,30 @@ export const orchestrateInterface =
       total: init.groups.length * endpointSteps.length,
     };
     // BASE ENDPOINTS
-    const baseEndpoints: AutoBeOpenApi.IEndpoint[] =
+    const baseEndpoints: AutoBeInterfaceEndpointDesign[] =
       await orchestrateInterfaceBaseEndpoint(ctx, {
         instruction: props.instruction,
         groups: init.groups,
-        authorizations: authOperations,
         progress: endpointProgress,
         reviewProgress: endpointReviewProgress,
       });
     // ACTION ENDPOINTS
-    const actionEndpoints: AutoBeOpenApi.IEndpoint[] =
+    const actionEndpoints: AutoBeInterfaceEndpointDesign[] =
       await orchestrateInterfaceActionEndpoint(ctx, {
         instruction: props.instruction,
         groups: init.groups,
-        authorizations: authOperations,
         baseEndpoints: baseEndpoints,
         progress: endpointProgress,
         reviewProgress: endpointReviewProgress,
       });
-    const endpoints: AutoBeOpenApi.IEndpoint[] = [
+    const designs: AutoBeInterfaceEndpointDesign[] = [
       ...baseEndpoints,
       ...actionEndpoints,
     ];
 
     const firstOperations: AutoBeOpenApi.IOperation[] =
       await orchestrateInterfaceOperation(ctx, {
-        endpoints,
+        designs,
         instruction: props.instruction,
       });
     const operations: AutoBeOpenApi.IOperation[] = new HashMap<

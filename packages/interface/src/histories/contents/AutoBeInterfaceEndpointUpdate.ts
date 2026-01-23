@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
+import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
 
 /**
  * Request to update an existing endpoint.
@@ -39,12 +40,5 @@ export interface AutoBeInterfaceEndpointUpdate {
    *
    * Contains the corrected path and/or method.
    */
-  updated: AutoBeOpenApi.IEndpoint;
-
-  /**
-   * Updated description of what this endpoint does.
-   *
-   * Functional description of the endpoint's purpose.
-   */
-  description: string;
+  updated: AutoBeInterfaceEndpointDesign;
 }

@@ -4,11 +4,13 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceAuthorizationEvent,
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -59,6 +61,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
+  const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "previousAnalysisFiles"
@@ -99,23 +102,25 @@ async function process(
         preliminary,
       }),
     });
-    return out(result)(
-      pointer.value !== null
-        ? ({
-            type: SOURCE,
-            id: v7(),
-            analysis: pointer.value.analysis,
-            rationale: pointer.value.rationale,
-            operations: pointer.value.operations,
-            completed: ++props.progress.completed,
-            metric: result.metric,
-            tokenUsage: result.tokenUsage,
-            created_at: new Date().toISOString(),
-            step: ctx.state().analyze?.step ?? 0,
-            total: props.progress.total,
-          } satisfies AutoBeInterfaceAuthorizationEvent)
-        : null,
-    );
+    if (pointer.value === null) return out(result)(null);
+    const operations: AutoBeOpenApi.IOperation[] =
+      AutoBeInterfaceAuthorizationProgrammer.fixOperations({
+        operations: pointer.value?.operations ?? [],
+        prefix,
+      });
+    return out(result)({
+      type: SOURCE,
+      id: v7(),
+      analysis: pointer.value.analysis,
+      rationale: pointer.value.rationale,
+      operations,
+      completed: ++props.progress.completed,
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
+      created_at: new Date().toISOString(),
+      step: ctx.state().analyze?.step ?? 0,
+      total: props.progress.total,
+    } satisfies AutoBeInterfaceAuthorizationEvent);
   });
 }
 

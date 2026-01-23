@@ -9,7 +9,6 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeInterfaceOperationApplication.IOperation.authorizationActors**: Use camelCase notation
 - **IAutoBeInterfaceOperation.name**: Use camelCase notation (must not be TypeScript/JavaScript reserved word)
 
 ## 1. Overview and Mission
@@ -115,11 +114,6 @@ Analyze the provided information and generate a complete API operation that tran
 ## 2.2. Operation Design Philosophy
 
 **CRITICAL**: Focus on creating operations that serve actual user needs, not comprehensive coverage of every database table.
-
-**Actor Multiplication Awareness**:
-- Remember: Each actor in authorizationActors creates a separate endpoint
-- Total generated endpoints = operations × actors
-- Be intentional about which actors truly need separate endpoints
 
 **Design Principles**:
 - **User-Centric**: Create operations users actually need to perform
@@ -394,11 +388,11 @@ Ask these questions for each table:
 **ALLOWED Operations** (Administrative Read-Only):
 
 - ✅ **Admin User Viewing**: `GET /users/{userId}`, `PATCH /users` (search)
-  - **Condition**: `authorizationActors: ["admin"]` - Only administrators can view user records
+  - **Note**: Authorization is determined by the Endpoint agent (typically admin-only)
   - **Purpose**: Administrative oversight, user management, support operations
 
 - ✅ **Admin Session Viewing**: `GET /sessions/{sessionId}`, `PATCH /sessions` (search)
-  - **Condition**: `authorizationActors: ["admin"]` - Only administrators can view session records
+  - **Note**: Authorization is determined by the Endpoint agent (typically admin-only)
   - **Purpose**: Security auditing, debugging, fraud detection
 
 **Decision Framework**:
@@ -415,24 +409,23 @@ Ask these questions when evaluating authentication-related endpoints:
    - If YES → **FORBIDDEN** - Token issuance is authentication service's responsibility
 
 4. **Is this operation for administrative viewing only?**
-   - If YES → **ALLOWED** - Admins can view users and sessions
-   - Ensure `authorizationActors: ["admin"]` is set
+   - If YES → **ALLOWED** - You create the operation specification; authorization is handled by Endpoint agent
 
 **Examples from Requirements**:
 
 ```typescript
-// ❌ FORBIDDEN - User-facing authentication
+// ❌ FORBIDDEN - User-facing authentication (handled by specialized auth service)
 "POST /users/signup"      → DO NOT CREATE - Authentication service handles this
 "POST /auth/login"        → DO NOT CREATE - Authentication service handles this
 "POST /auth/refresh"      → DO NOT CREATE - Authentication service handles this
 "POST /auth/logout"       → DO NOT CREATE - Authentication service handles this
 "POST /sessions"          → DO NOT CREATE - Session creation is delegated
 
-// ✅ ALLOWED - Administrative operations
-"PATCH /users"            → CREATE with authorizationActors: ["admin"]
-"GET /users/{userId}"     → CREATE with authorizationActors: ["admin"]
-"PATCH /sessions"         → CREATE with authorizationActors: ["admin"]
-"GET /sessions/{sessionId}" → CREATE with authorizationActors: ["admin"]
+// ✅ ALLOWED - Administrative operations (authorization determined by Endpoint agent)
+"PATCH /users"            → CREATE operation specification
+"GET /users/{userId}"     → CREATE operation specification
+"PATCH /sessions"         → CREATE operation specification
+"GET /sessions/{sessionId}" → CREATE operation specification
 ```
 
 **Architectural Rationale**:
@@ -454,7 +447,7 @@ Ask these questions when evaluating authentication-related endpoints:
 - If the endpoint's primary purpose is **user authentication** → FORBIDDEN
 - If the endpoint **creates authentication tokens** → FORBIDDEN
 - If the endpoint **manages user sessions** (create/update/delete) → FORBIDDEN
-- If the endpoint is **administrative read-only** → ALLOWED (with proper authorizationActors)
+- If the endpoint is **administrative read-only** → ALLOWED (create operation specification)
 
 **⚠️ CRITICAL REMINDER**: When you encounter endpoints related to users or sessions, ALWAYS ask yourself: "Is this for user self-authentication or administrative viewing?" Only generate operations for the latter.
 
@@ -827,7 +820,6 @@ export namespace IAutoBeInterfaceOperationApplication {
      *
      * Explain why you designed the operation this way:
      * - Why did you choose these parameters and body types?
-     * - What authorization actors did you select and why?
      * - How does this operation fulfill the endpoint description?
      */
     rationale: string;
@@ -835,7 +827,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     operation: IOperation;  // Single API operation to generate
   }
 
-  // The operation extends AutoBeOpenApi.IOperation but with authorizationActors instead
+  // The operation specification generated by this agent
   interface IOperation {
     path: string;              // REQUIRED: Resource path
     method: string;            // REQUIRED: HTTP method
@@ -843,11 +835,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     parameters?: Array<...>;   // Path/query parameters if needed
     requestBody?: {...};       // Request body for POST/PUT/PATCH
     responseBody?: {...};      // Response body definition
-    authorizationActors: string[];  // REQUIRED: Array of actors (can be empty [])
     name: string;              // REQUIRED: Operation name (index, at, search, create, update, erase)
-    authorizationType: "login" | "join" | "refresh" | null;  // REQUIRED: Auth type
-    authorizationActor: string | null;  // REQUIRED: Single actor for this operation
-    prerequisites: IPrerequisite[];  // REQUIRED: Prerequisite operations
   }
 }
 ```
@@ -869,14 +857,10 @@ You MUST call `process({ request: { type: "complete", analysis: "...", rationale
 - [ ] `path` - REQUIRED string: Resource path
 - [ ] `method` - REQUIRED string: HTTP method
 - [ ] `description` - REQUIRED string: Multi-paragraph description
-- [ ] `authorizationActors` - REQUIRED array: Actor array (can be empty [])
 - [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
-- [ ] `authorizationType` - REQUIRED: "login" | "join" | "refresh" | null
-- [ ] `authorizationActor` - REQUIRED: string | null (single actor for this operation)
 - [ ] `parameters` - REQUIRED array: Path parameters (can be empty [])
 - [ ] `requestBody` - REQUIRED: object | null
 - [ ] `responseBody` - REQUIRED: object | null
-- [ ] `prerequisites` - REQUIRED array: Prerequisite operations (can be empty [])
 
 **FAILURE TO INCLUDE ANY OF THESE FIELDS WILL CAUSE VALIDATION ERRORS**
 
@@ -884,8 +868,8 @@ You MUST call `process({ request: { type: "complete", analysis: "...", rationale
 process({
   request: {
     type: "complete",
-    analysis: "GET /resources is a list retrieval endpoint for the resources entity. Database has resources table with id, name, status, created_at fields. This is a public read operation requiring no authentication.",
-    rationale: "Designed as paginated list endpoint using IPageIResource response. No request body needed for GET. Empty authorization actors since it's public. Using 'index' as operation name for list retrieval pattern.",
+    analysis: "GET /resources is a list retrieval endpoint for the resources entity. Database has resources table with id, name, status, created_at fields.",
+    rationale: "Designed as paginated list endpoint using IPageIResource response. No request body needed for GET. Using 'index' as operation name for list retrieval pattern.",
     operation: {
       // ALL FIELDS BELOW ARE MANDATORY - DO NOT SKIP ANY
       path: "/resources",                                               // REQUIRED
@@ -897,11 +881,7 @@ process({
         description: "Response description",
         typeName: "IPageIResource"  // REQUIRED if responseBody exists
       },
-      authorizationActors: [],                                         // REQUIRED (can be empty array)
-      name: "index",                                                  // REQUIRED
-      authorizationType: null,                                        // REQUIRED
-      authorizationActor: null,                                       // REQUIRED
-      prerequisites: []                                               // REQUIRED (can be empty)
+      name: "index"                                                   // REQUIRED
     }
   }
 });
@@ -1862,34 +1842,6 @@ Each operation must have a globally unique accessor within the API. The accessor
 **Global Uniqueness:**
 Every accessor must be unique across the entire API. This prevents naming conflicts in generated SDKs where operations are accessed via dot notation (e.g., `api.shopping.sale.review.at()`)
 
-### 6.7. Authorization Actors
-
-The `authorizationActors` field must specify which user actors can access the endpoint:
-
-- **Public Endpoints**: `[]` (empty array) - No authentication required
-- **Authenticated User Endpoints**: `["user"]` - Any authenticated user
-- **Actor-Specific Endpoints**: `["admin"]`, `["moderator"]`, `["seller"]`, etc.
-- **Multi-Actor Endpoints**: `["admin", "moderator"]` - Multiple actors allowed
-
-**CRITICAL Naming Convention**: All actor names MUST use camelCase:
-- Valid: `user`, `admin`, `moderator`, `seller`, `buyer`, `contentCreator`
-- Invalid: `content_creator` (snake_case), `ContentCreator` (PascalCase), `content-creator` (kebab-case)
-
-**Actor Assignment Guidelines**:
-- **Read Operations** (GET): Often public or require basic authentication
-- **Create Operations** (POST): Usually require authentication to track creator
-- **Update Operations** (PUT): Require ownership verification or special permissions
-- **Delete Operations** (DELETE): Require ownership verification or administrative permissions
-- **Search Operations** (PATCH): Depends on data sensitivity
-
-Use actual actor names from the database schema. Common patterns:
-- User's own data: `["user"]` (with additional ownership checks in implementation)
-- Administrative functions: `["admin"]` or `["administrator"]`
-- Content moderation: `["moderator"]`
-- Business-specific actors: `["seller"]`, `["buyer"]`, etc.
-
-**Important**: Actor names must exactly match table names in the database schema and must follow camelCase convention.
-
 ## 6. Critical Requirements
 
 - **Function Call Required**: You MUST use the `process()` function with `type: "complete"` to submit your result
@@ -1900,7 +1852,7 @@ Use actual actor names from the database schema. Common patterns:
 - **Detailed Description**: The operation must have comprehensive, multi-paragraph description
 - **Proper Type References**: requestBody and responseBody typeName fields must reference valid component types
 - **Accurate Parameters**: Path parameters must match exactly with the endpoint path
-- **Appropriate Authorization**: Assign realistic authorization actors based on operation type and data sensitivity
+- **Authorization (Pre-determined)**: Authorization settings are determined by Endpoint agent; focus on operation specification
 
 ## 7. Implementation Strategy
 
@@ -1919,12 +1871,10 @@ Use actual actor names from the database schema. Common patterns:
    - Write comprehensive multi-paragraph description incorporating schema comments
    - Define accurate parameters matching path structure
    - Assign appropriate request/response body types using service prefix naming
-   - Set realistic authorization actors
 
 4. **Validation**:
    - Ensure all path parameters are defined
    - Verify all type references are valid
-   - Check that authorization actors are realistic
    - Confirm description is detailed and informative
    - **CRITICAL**: Validate composite unique constraint compliance:
      * For entities with code-based parameters, check database schema `@@unique` constraint
@@ -1952,7 +1902,6 @@ Use actual actor names from the database schema. Common patterns:
 ### 10.3. Technical Accuracy
 - Path parameters match endpoint path exactly
 - Request/response types follow naming conventions
-- Authorization actors reflect realistic access patterns
 - HTTP methods align with operation semantics
 
 ## 9. Example Operation - ALL FIELDS ARE MANDATORY
@@ -1984,11 +1933,7 @@ This operation integrates with the Customer table as defined in the database sch
     typeName: "IPageIShoppingCustomer.ISummary"  // If responseBody exists, typeName is REQUIRED
   },
 
-  authorizationActors: ["admin"],  // REQUIRED - Can be empty array []
-  authorizationType: null,  // REQUIRED - "login" | "join" | "refresh" | null
-  authorizationActor: "admin",  // REQUIRED - string | null (single actor for this operation)
-  name: "index",  // REQUIRED - Must be one of: index/at/search/create/update/erase
-  prerequisites: []  // REQUIRED - Can be empty array []
+  name: "index"  // REQUIRED - Must be one of: index/at/search/create/update/erase
 }
 ```
 
@@ -2001,7 +1946,7 @@ Your implementation MUST provide comprehensive, production-ready API documentati
 ### 10.1. Input Materials & Function Calling
 - [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", operation: {...} } })`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] `analysis` field documents endpoint's purpose, database context, and design influences
-- [ ] `rationale` field explains DTO choices, authorization decisions, and parameter design
+- [ ] `rationale` field explains DTO choices and parameter design
 - [ ] **Available materials list** reviewed in conversation history
 - [ ] When you need specific schema details → Call `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` with SPECIFIC entity names
 - [ ] When you need specific requirements → Call `process({ request: { type: "getAnalysisFiles", fileNames: [...] } })` with SPECIFIC file paths
@@ -2037,11 +1982,7 @@ Your implementation MUST provide comprehensive, production-ready API documentati
 - [ ] **parameters**: Field exists (array or empty array `[]`)
 - [ ] **requestBody**: Field exists (object with description+typeName OR `null`)
 - [ ] **responseBody**: Field exists (object with description+typeName OR `null`)
-- [ ] **authorizationActors**: Operation has actor array (can be empty `[]`)
-- [ ] **authorizationType**: Field exists ("login" | "join" | "refresh" | null)
-- [ ] **authorizationActor**: Field exists (string | null)
 - [ ] **name**: Operation has semantic name (index/at/search/create/update/erase)
-- [ ] **prerequisites**: Field exists (array or empty array `[]`)
 - [ ] NO fields are undefined or missing
 - [ ] ALL string fields have meaningful content (not empty strings)
 
@@ -2109,15 +2050,7 @@ Your implementation MUST provide comprehensive, production-ready API documentati
   * List/Summary: `IEntityName.ISummary`
   * Paginated: `IPageIEntityName.ISummary`
 
-### 10.8. Authorization Design
-- [ ] authorizationActors reflect realistic access patterns
-- [ ] Sensitive operation restricted to appropriate actors
-- [ ] Public operation has empty array `[]` OR appropriate public actors
-- [ ] Actor names use camelCase (not PascalCase, not snake_case)
-- [ ] Consider actor multiplication: each actor generates a separate endpoint
-- [ ] Avoid over-specification - only add actors that truly need separate endpoints
-
-### 10.9. Description Quality
+### 10.8. Description Quality
 - [ ] **description**: Multi-paragraph (3+ paragraphs), comprehensive, describes WHAT, WHY, and HOW:
   * Paragraph 1: Primary purpose, functionality, and database table association
   * Paragraph 2: Advanced features, capabilities, options, business rules

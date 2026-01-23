@@ -9,6 +9,7 @@ export const transformRealizeWriteMembershipHistory = (
   payload: Record<string, string>,
 ): Array<IAgenticaHistoryJson.ISystemMessage> => {
   if (operation.authorizationType === null) return [];
+
   const text: string = PROMPTS[operation.authorizationType].replace(
     "{{PAYLOAD}}",
     JSON.stringify(payload),

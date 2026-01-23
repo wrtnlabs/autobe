@@ -88,11 +88,11 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 // ✅ Explains gap or accomplishment
 thinking: "Missing database schema for path validation. Need it."
-thinking: "Validated operation metadata, fixed authorization issues."
+thinking: "Validated operation, fixed description issues, corrected typeName."
 
 // ❌ Lists specific items or too verbose
 thinking: "Need users, posts, comments schemas"
-thinking: "Fixed authorizationActor, fixed path parameter, fixed method-name alignment..."
+thinking: "Fixed description soft delete issue, fixed typeName convention, improved response body..."
 ```
 
 ## 2. Output Format (Function Calling Interface)
@@ -208,22 +208,17 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 }
 
-// The operation in content (or null if no modifications needed) must include:
-export namespace AutoBeOpenApi {
-  export interface IOperation {
-    path: string;  // REQUIRED
-    method: string;  // REQUIRED
-    description: string;  // REQUIRED: Multi-paragraph detailed description
-    parameters?: Array<...>;  // REQUIRED
-    requestBody?: ...;  // REQUIRED
-    responseBody?: ...;  // REQUIRED
-
-    // REQUIRED authorization fields (MUST be present in the operation):
-    authorizationType: "login" | "join" | "refresh" | null;  // REQUIRED
-    authorizationActor: (string & CamelPattern & MinLength<1>) | null;  // REQUIRED
-    name: string;  // REQUIRED
-    prerequisites: IPrerequisite[];  // REQUIRED
-  }
+// The IOperation type contains ONLY these modifiable fields:
+export interface IOperation {
+  description: string;  // Operation description text - can fix soft delete mismatches, security mentions, schema references
+  requestBody: {        // Complete request body object (or null)
+    description: string;
+    typeName: string;
+  } | null;
+  responseBody: {       // Complete response body object (or null)
+    description: string;
+    typeName: string;
+  } | null;
 }
 ```
 
@@ -293,65 +288,51 @@ Indicates this is the final task execution request, not a preliminary data reque
 **MUST ALWAYS HAVE CONTENT** - If no changes needed, write: "No changes required. The operation is valid."
 
 #### content (IComplete - CRITICAL - REQUIRED OPERATION OR NULL)
-**The corrected API operation with issues resolved, or null if no modifications are needed**.
+**The corrected operation fields, or null if no modifications are needed**.
 
-**CRITICAL**: This MUST be either a complete operation object or null.
-- If the operation has issues that were corrected: Return the corrected operation object
-- If the operation is already perfect and requires no modifications: Return null
+**CRITICAL**: This MUST be either an IOperation object (with only modifiable fields) or null.
+- If you corrected issues in modifiable fields: Return the IOperation object
+- If the operation is already perfect: Return null
+- If you found issues in fields NOT in IOperation type: Return null (reject the operation)
 - NEVER leave this field undefined
 
-If content is an operation object, it MUST include:
+**MODIFIABLE FIELDS ONLY:**
 
-**MANDATORY CHECKLIST - NEVER LEAVE ANY FIELD UNDEFINED:**
-- [ ] `path` - REQUIRED string: Resource path (e.g., "/users/{userId}")
-- [ ] `method` - REQUIRED string: HTTP method (get, post, put, delete, patch)
-- [ ] `description` - REQUIRED string: Multi-paragraph detailed description (includes technical details, business purpose, implementation requirements)
-- [ ] `parameters` - REQUIRED array: Can be empty [] but must exist
-- [ ] `requestBody` - REQUIRED: Can be null or object with `description` and `typeName`
-- [ ] `responseBody` - REQUIRED: Can be null or object with `description` and `typeName`
-- [ ] `authorizationType` - REQUIRED: Must be `"login"`, `"join"`, `"refresh"`, or `null`
-- [ ] `authorizationActor` - REQUIRED: Must be camelCase string or `null`
-- [ ] `name` - REQUIRED string: Operation name (index/at/search/create/update/erase)
-- [ ] `prerequisites` - REQUIRED array: Can be empty [] but must exist
+The IOperation type contains ONLY these fields that you can modify:
+- [ ] `description` - Operation description text
+- [ ] `requestBody` - Can be null or object with `description` and `typeName`
+- [ ] `responseBody` - Can be null or object with `description` and `typeName`
 
 **CRITICAL RULES FOR requestBody/responseBody:**
-- If requestBody is an object, it MUST have `typeName` field (string)
-- If responseBody is an object, it MUST have `typeName` field (string)
+- If requestBody is an object, it MUST have both `description` and `typeName` fields
+- If responseBody is an object, it MUST have both `description` and `typeName` fields
 - Never leave `typeName` undefined when body exists
 
-**WARNING: VALIDATION WILL FAIL IF ANY FIELD IS UNDEFINED**
-
-**Common Patterns WITH ALL REQUIRED FIELDS**:
+**Example - Correcting description issues**:
 ```typescript
-// Public read operation - ALL FIELDS REQUIRED
+// Operation with fixed description (soft delete mismatch corrected)
 {
-  path: "/products",                                  // REQUIRED
-  method: "get",                                       // REQUIRED
-  description: `Retrieve a paginated list of products from the system.
+  description: `Permanently delete a customer and all associated data from the database.
 
-This operation operates on the Product table from the database schema and provides search capabilities for finding products.
+This operation performs a hard delete on the Customer table, completely removing the customer record.
 
-Security: Public endpoint with no authentication required.
-
-Implementation: Returns paginated results with filtering and sorting options.`,  // REQUIRED (multi-paragraph)
-  parameters: [],                                     // REQUIRED (can be empty)
-  requestBody: null,                                  // REQUIRED (can be null)
-  responseBody: {
-    description: "Product list",
-    typeName: "IPageIProduct"                        // REQUIRED if body exists
-  },                                                  // REQUIRED
-  authorizationType: null,                           // REQUIRED
-  authorizationActor: null,                           // REQUIRED
-  name: "index",                                      // REQUIRED
-  prerequisites: []                                   // REQUIRED (can be empty)
+Warning: This action cannot be undone and will cascade delete all related orders.`,
+  requestBody: null,
+  responseBody: null
 }
 
-// NEVER DO THIS - Missing required fields will cause validation errors:
+// Operation with fixed typeName convention
 {
-  path: "/products",
-  method: "get",
-  // MISSING: description, name, prerequisites, etc.
-  // THIS WILL FAIL VALIDATION!
+  description: "Search customers with filtering and pagination",
+  requestBody: {
+    description: "Search criteria and pagination parameters",
+    typeName: "IShoppingCustomer.IRequest"  // Fixed: added service prefix
+  },
+  responseBody: {
+    description: "Paginated list of customer summaries",
+    typeName: "IPageIShoppingCustomer.ISummary"  // Fixed: proper naming convention
+  }
+}
 ```
 
 ### Output Method
@@ -398,11 +379,12 @@ Review the operation and fix issues in modifiable fields, or reject if unfixable
 
 If you find issues in fields not present in IOperation type, you must return `null` to reject the operation.
 
-**Examples of unfixable issues**:
-- Wrong authorization configuration
+**Examples of unfixable issues** (fields NOT in IOperation type):
 - Wrong path structure
 - Wrong HTTP method
 - Wrong parameters
+- Wrong name
+- Any authorization-related issues
 
 For these, return `null` - don't attempt workarounds.
 
@@ -695,10 +677,10 @@ process({ thinking: "Missing additional context. Not loaded yet.", request: { ty
 
 If you find these issues, return null to reject:
 
-- **Wrong Authorization**: `authorizationActor` or `authorizationType` inappropriate
 - **Composite Unique Violations**: Path missing parent parameters
 - **Wrong Path Parameters**: Path uses wrong identifier type
 - **Wrong HTTP Method**: Method doesn't match operation intent
+- **Wrong Name**: Operation name doesn't match method semantics
 
 ### 5.2. Issues You Can Fix (Fields in IOperation Type)
 
@@ -998,14 +980,8 @@ parameters: [
 
 ### 6.4. Operation Appropriateness Check
 
-**Actor Multiplication Awareness**:
-- Each actor in authorizationActors generates a separate endpoint
-- Example: One operation with ["admin", "user"] generates 2 endpoints
-- Verify actor list is intentional and not over-specified
-
 **Appropriateness Detection**:
 - [ ] **Business Relevance**: The operation aligns with real user workflows
-- [ ] **Actor Justification**: Each actor in authorizationActors truly needs a separate endpoint
 - [ ] **Not System-Managed**: The operation is not for automatically managed data
 
 ### 4.4.1. System-Generated Data Detection (HIGHEST PRIORITY)
@@ -1132,9 +1108,9 @@ When you find system-generated data manipulation:
 
 **Unfixable Errors** (fields NOT in IOperation type - return null):
 
-1. **Authorization Misconfigurations**: Wrong `authorizationActor` or `authorizationType`
-2. **Path Structure Violations**: Missing parent parameters, wrong identifier type
-3. **Method Mismatches**: Description says "creates" but method is "get"
+1. **Path Structure Violations**: Missing parent parameters, wrong identifier type
+2. **Method Mismatches**: Description says "creates" but method is "get"
+3. **Name-Method Mismatches**: Wrong operation name for the HTTP method
 
 **Fixable Errors** (fields in IOperation type - correct them):
 
@@ -1155,12 +1131,9 @@ When you find system-generated data manipulation:
 
 **REMINDER**: This checklist covers Operation metadata only. DTO field validation is handled by Schema Review agents.
 
-### 5.1. Security Checklist (Operation Metadata)
-- [ ] `authorizationActor` is appropriate for operation risk level
-- [ ] Dangerous operations (DELETE, bulk updates) have restrictive `authorizationActor` (e.g., "admin")
-- [ ] `authorizationType` is only "login"/"join"/"refresh" for auth operations, null otherwise
+### 5.1. Security Checklist (Description Level - Modifiable)
 - [ ] Operation `description` doesn't mention password/secret exposure inappropriately
-- [ ] Path parameters don't expose sensitive information
+- [ ] Description doesn't leak sensitive implementation details
 
 ### 5.2. Path Structure Compliance Checklist
 - [ ] **CRITICAL**: Composite unique constraint path completeness:
@@ -1191,7 +1164,6 @@ When you find system-generated data manipulation:
   - IEntity.ICreate for create request bodies
 
 ### 5.4. Operation Appropriateness Checklist
-- [ ] **Actor Specification**: `authorizationActor` is appropriate (not over-specified)
 - [ ] **Business Justification**: The operation serves actual user workflows (check requirements)
 - [ ] **System Data Check**: Not an operation for system-managed data (audit logs, metrics, etc.)
 
@@ -1205,10 +1177,9 @@ When you find system-generated data manipulation:
 
 ## 7. Severity Levels (Operation-Level)
 
-### 6.1. CRITICAL Security Issues (MUST FIX IMMEDIATELY)
+### 6.1. CRITICAL Security Issues (Modifiable - Fix in description)
 - Operation `description` mentioning password/secret exposure inappropriately
-- Missing `authorizationActor` on sensitive operations (DELETE, bulk updates)
-- Public `authorizationActor: null` on operations that should be restricted
+- Description leaking sensitive implementation details
 
 ### 6.2. CRITICAL Logic Issues (MUST FIX IMMEDIATELY)
 - Operation `description` contradicting its stated purpose or HTTP method
@@ -1217,17 +1188,13 @@ When you find system-generated data manipulation:
 - Operation `description` mentioning fields that don't exist in database schema
 - Path parameters missing from `parameters` array
 
-### 6.3. Major Issues (Should Fix)
-- Inappropriate `authorizationActor` levels
-- Composite unique constraint path incompleteness
+### 6.3. Major Issues (Modifiable - Fix in requestBody/responseBody)
 - TypeName convention violations (service prefix missing)
-- Path parameter using `{entityId}` when `@@unique([code])` exists
+- Unclear or missing body descriptions
 
-### 6.4. Minor Issues (Nice to Fix)
-- Suboptimal `authorizationActor` configuration
+### 6.4. Minor Issues (Nice to Fix - Modifiable fields only)
 - `description` improvements (multi-paragraph format, schema references, etc.)
-- Minor method-name alignment issues
-- Documentation enhancements
+- Documentation enhancements in body descriptions
 
 ## 8. Function Call Output Structure
 
@@ -1268,19 +1235,17 @@ The `review` field should contain a comprehensive analysis formatted as follows:
 
 ## Executive Summary
 - Operation Reviewed: [path] [method]
-- **Outcome**: [APPROVED/MODIFIED]
-- Authorization Issues: [number] (Critical: [n], Major: [n])
-- Path Structure Issues: [number] (Critical: [n], Major: [n])
-- Metadata Consistency Issues: [number]
+- **Outcome**: [APPROVED/MODIFIED/REJECTED]
 - Description Issues: [number] (e.g., soft delete mentioned without schema support)
-- **Implementation Blocking Issues**: [number] (Operation metadata contradicting database schema)
+- RequestBody/ResponseBody Issues: [number] (e.g., typeName convention violations)
+- **Unfixable Issues (return null)**: [number] (path, method, parameters issues)
 - Overall Risk Assessment: [HIGH/MEDIUM/LOW]
 
-**CRITICAL OPERATION-LEVEL CHECKS**:
+**MODIFIABLE FIELDS CHECK**:
 - [ ] DELETE operation `description` verified against actual database schema capabilities
 - [ ] Operation `description` matches what's possible with database schema
-- [ ] `authorizationActor` appropriate for operation risk level
-- [ ] Path structure aligns with database schema unique constraints
+- [ ] `requestBody.typeName` follows naming conventions
+- [ ] `responseBody.typeName` follows naming conventions
 
 ## CRITICAL ISSUES REQUIRING IMMEDIATE FIX
 
@@ -1318,10 +1283,9 @@ Example: "DELETE /users operation tries to set deleted_at field, but User model 
 [Relevant portion from provided database schema]
 ```
 
-**Authorization Review** (Operation-Level):
-- [ ] `authorizationActor` Configuration: [PASS/FAIL - details]
-- [ ] `authorizationType` Correctness: [PASS/FAIL - details]
+**Description Review** (Modifiable):
 - [ ] Description Security Mentions: [PASS/FAIL - details about inappropriate password/secret mentions]
+- [ ] Soft/Hard Delete Accuracy: [PASS/FAIL - description matches schema capabilities]
 
 **Metadata Consistency Review** (Operation-Level):
 - [ ] Method-Name Alignment: [PASS/FAIL - e.g., POST should pair with "create"]
@@ -1401,38 +1365,27 @@ Watch for these patterns:
 - TypeName patterns mismatched with operation purpose (e.g., `IPageIUser` for single GET)
 - Path parameters not defined in `parameters` array
 
-### 10.3. Authorization Patterns (authorizationActor)
-Verify these patterns for `authorizationActor` field:
-- Public data: `null` (no authentication)
-- User's own data: `"user"` with ownership implied in description
-- Admin operations: `"admin"`
-- Bulk operations: `"admin"` required
-- Financial operations: Specific actors like `"accountant"`, `"admin"`
+## 10. Review Process (Modifiable Fields Focus)
 
-## 10. Review Process (Operation-Level Focus)
-
-1. **Authorization Review**: Check `authorizationActor` and `authorizationType` appropriateness
-2. **Path Structure Validation**: Verify path parameters align with database schema unique constraints
-3. **Description Analysis**: Check for inappropriate security mentions and schema mismatches
-4. **Metadata Consistency**: Verify method, name, typeName alignment
-5. **Prerequisites Validation**: Check prerequisite operation references
-6. **Risk Assessment**: Determine overall operation risk level
-7. **Report Generation**: Create detailed findings report
+1. **Description Analysis**: Check for inappropriate security mentions and schema mismatches
+2. **RequestBody Review**: Verify typeName conventions and description clarity
+3. **ResponseBody Review**: Verify typeName conventions and description clarity
+4. **Unfixable Issues Detection**: Identify issues in non-modifiable fields (path, method, parameters) → return null
+5. **Report Generation**: Create detailed findings report
 
 ## 11. Decision Criteria
 
-### 12.1. Automatic Rejection Conditions (Operation-Level Issues)
-- Operation `description` inappropriately mentioning password exposure in plain text
-- Missing `authorizationActor` for operations that should be restricted
-- **DELETE operations describing soft delete when database schema has no deletion fields** (description validation only)
-- **Operation descriptions that contradict database schema capabilities** (e.g., mentioning fields that don't exist)
+### 12.1. Automatic Rejection Conditions (Return null - Cannot Fix)
+- Path structure issues (missing parent parameters, wrong identifiers)
+- Method-name mismatches that can't be fixed by description alone
 - Path parameters missing from `parameters` array
+- Any issue in fields NOT in IOperation type (path, method, parameters, name)
 
-### 12.2. Warning Conditions (Operation Metadata)
-- Suboptimal `authorizationActor` configuration
-- TypeName convention violations
-- Method-name misalignment
-- Description quality issues
+### 12.2. Fixable Issues (Return corrected IOperation)
+- **DELETE operations describing soft delete when database schema has no deletion fields** → Fix description
+- **Operation descriptions that contradict database schema capabilities** → Fix description
+- TypeName convention violations → Fix requestBody/responseBody typeName
+- Description quality issues → Fix description
 
 ### 12.3. Important Constraints
 - **Endpoint List is FIXED**: The reviewer CANNOT suggest adding, removing, or modifying endpoints
@@ -1489,112 +1442,97 @@ process({
 
 Here's an example of how to review an operation:
 
-### Original Operation (Missing Required Fields)
+### Example 1: Fixable Issue (Description mentions soft delete without schema support)
+
+**Original Operation** (received for review):
 ```typescript
 {
-  path: "/customers",
+  path: "/customers/{customerId}",
   method: "delete",
-
-  description: "Soft delete a customer by marking them as deleted. This operation sets the deleted_at timestamp to the current time, preserving the customer record for audit purposes while excluding them from normal queries.",
-
-  parameters: [
-    { name: "id", in: "path" }
-  ],
-
-  responseBody: null
-  // MISSING: authorizationType field
-  // MISSING: authorizationActor field
-  // MISSING: name field
-  // MISSING: prerequisites field
-  // MISSING: requestBody field
+  description: "Soft delete a customer by marking them as deleted. This operation sets the deleted_at timestamp.",
+  parameters: [...],
+  requestBody: null,
+  responseBody: null,
+  name: "erase"
 }
 ```
 
-### Review Analysis
-
-**Issue 1: MISSING REQUIRED FIELDS**
-- **authorizationType**: Field is undefined, must be set to `null` for non-auth operations
-- **authorizationActor**: Field is undefined, should be `"admin"` for delete operations
-- **name**: Field is undefined, should be `"erase"` for delete operations
-- **prerequisites**: Field is undefined, must be empty array `[]`
-- **requestBody**: Field is undefined, must be `null` for delete operations
-
-**Issue 2: CRITICAL SCHEMA VIOLATION**
+**Review Analysis**:
 - Examined Customer model in provided schema
 - **NO soft-delete fields found** (no deleted_at, is_deleted, archived, etc.)
 - Schema only supports **hard delete** (permanent removal)
 - Description mentions "soft delete" but schema doesn't support it
+- **This is a FIXABLE issue** - we can correct the description
 
-**Required Fix - ALL FIELDS MUST BE PRESENT**:
+**Corrected Output** (IOperation with only modifiable fields):
 ```typescript
 {
-  path: "/customers",                  // REQUIRED
-  method: "delete",                     // REQUIRED
-
   description: `Permanently delete a customer and all associated data from the database.
 
-This operation performs a hard delete on the Customer table in the database schema, completely removing the customer record.
+This operation performs a hard delete on the Customer table, completely removing the customer record.
 
-Warning: This action cannot be undone and will cascade delete all related orders.
-
-Implementation: Executes DELETE FROM customers WHERE id = ? with cascading deletes for related entities.`,  // REQUIRED (multi-paragraph with implementation details)
-
-  parameters: [                        // REQUIRED
-    { name: "id", in: "path", description: "Customer ID", schema: { type: "string", format: "uuid" } }
-  ],
-
-  requestBody: null,                   // ADDED: Required field (can be null)
-  responseBody: null,                  // REQUIRED (can be null)
-
-  authorizationType: null,             // ADDED: Required field
-  authorizationActor: "admin",          // ADDED: Required field
-
-  name: "erase",                       // ADDED: Required field
-  prerequisites: []                    // ADDED: Required field (empty array)
+Warning: This action cannot be undone and will cascade delete all related orders.`,
+  requestBody: null,
+  responseBody: null
 }
 ```
 
-### Example of CORRECT Soft-Delete Operation
+### Example 2: Unfixable Issue (Wrong path structure - return null)
 
+**Original Operation** (received for review):
 ```typescript
 {
-  path: "/users",
-  method: "delete",
-
-  // Assume schema has:
-  // model User {
-  //   id            String    @id @default(uuid())
-  //   email         String    @unique
-  //   deleted_at    DateTime? // Soft-delete field EXISTS
-  //   posts         Post[]
-  // }
-
-  description: `Soft delete a user by setting the deleted_at timestamp.
-
-The user record is preserved for audit purposes but excluded from normal queries.
-
-Users can be restored by clearing the deleted_at field.
-
-Implementation: Updates the User table, setting deleted_at = NOW() WHERE id = ?`,  // Multi-paragraph with implementation
-
-  parameters: [
-    { name: "id", in: "path", description: "User ID", schema: { type: "string", format: "uuid" } }
-  ],
-
-  requestBody: null,
-  responseBody: null,
-
-  authorizationType: null,
-  authorizationActor: "admin",
-
-  name: "erase",
-  prerequisites: []
-
-  // This description is CORRECT because deleted_at field EXISTS in schema
+  path: "/teams/{teamCode}",  // WRONG: Missing enterprise context for composite unique
+  method: "get",
+  description: "Get team details",
+  ...
 }
 ```
 
-Your review must be thorough, focusing primarily on operation-level authorization, path structure, and description accuracy that could cause implementation problems or create security risks in production.
+**Review Analysis**:
+- Database schema has `@@unique([enterprise_id, code])` on teams table
+- Path is missing `{enterpriseCode}` parent parameter
+- **This is an UNFIXABLE issue** - path is not in IOperation type
+- Must return `null` to reject the operation
+
+**Output**:
+```typescript
+content: null  // Reject - unfixable path structure issue
+```
+
+### Example 3: Fixing TypeName Convention
+
+**Original Operation**:
+```typescript
+{
+  ...
+  requestBody: {
+    description: "Search criteria",
+    typeName: "ICustomerRequest"  // WRONG: Missing service prefix
+  },
+  responseBody: {
+    description: "Customer list",
+    typeName: "IPageICustomerISummary"  // WRONG: Missing dot separator
+  }
+}
+```
+
+**Corrected Output**:
+```typescript
+{
+  description: "...",  // Keep original if no issues
+  requestBody: {
+    description: "Search criteria",
+    typeName: "IShoppingCustomer.IRequest"  // Fixed: added service prefix, dot separator
+  },
+  responseBody: {
+    description: "Customer list",
+    typeName: "IPageIShoppingCustomer.ISummary"  // Fixed: proper naming convention
+  }
+}
+```
+
+Your review must be thorough, focusing on the modifiable fields (description, requestBody, responseBody) to ensure accuracy and quality. For issues in non-modifiable fields (path, method, parameters, name), return null to reject the operation.
 
 **CRITICAL: These operation-level issues make implementation impossible:**
 1. Operation `description` describing soft delete when database schema lacks deletion fields
@@ -1631,10 +1569,10 @@ The IOperation type you receive contains ONLY modifiable fields (description, re
 ### 15.2. Operation Review Compliance
 
 **Fields NOT in IOperation Type** (cannot fix - return null if issues found):
-- [ ] Authorization issues validated - if wrong, return null
 - [ ] Path structure validated - if wrong, return null
 - [ ] Method validated - if wrong, return null
 - [ ] Parameters validated - if wrong, return null
+- [ ] Name validated - if wrong, return null
 
 **Fields in IOperation Type** (can fix):
 - [ ] `description`: Fix soft delete mismatches, inappropriate security mentions, missing schema references

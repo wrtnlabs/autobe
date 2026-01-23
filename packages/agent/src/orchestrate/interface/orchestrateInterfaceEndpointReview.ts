@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeActor,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -14,6 +15,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointReviewApplication } from "./structures/IAutoBeInterfaceEndpointReviewApplication";
 
 interface IProgrammer {
@@ -74,6 +76,7 @@ export const orchestrateInterfaceEndpointReview = async (
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
+        actors: ctx.state().analyze?.actors ?? [],
         preliminary,
         build: (next) => {
           pointer.value = next;
@@ -89,6 +92,25 @@ export const orchestrateInterfaceEndpointReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
+    // Filter authorization actors and exclude auth-generated endpoints
+    const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+    const revises: AutoBeInterfaceEndpointRevise[] =
+      pointer.value.revises.filter((r) =>
+        r.type === "create"
+          ? AutoBeInterfaceEndpointProgrammer.filter({
+              kind: props.programmer.kind,
+              design: r.design,
+              actors,
+            })
+          : r.type === "update"
+            ? AutoBeInterfaceEndpointProgrammer.filter({
+                kind: props.programmer.kind,
+                design: r.updated,
+                actors,
+              })
+            : true,
+      );
+
     ctx.dispatch({
       id: v7(),
       type: SOURCE,
@@ -96,7 +118,7 @@ export const orchestrateInterfaceEndpointReview = async (
       group: props.group.name,
       designs: props.designs,
       review: pointer.value.review,
-      revises: pointer.value.revises,
+      revises,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       completed: ++props.progress.completed,
@@ -104,11 +126,12 @@ export const orchestrateInterfaceEndpointReview = async (
       metric: result.metric,
       tokenUsage: result.tokenUsage,
     } satisfies AutoBeInterfaceEndpointReviewEvent);
-    return out(result)(pointer.value.revises);
+    return out(result)(revises);
   });
 };
 
 const createController = (props: {
+  actors: AutoBeAnalyzeActor[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -125,12 +148,42 @@ const createController = (props: {
       typia.validate<IAutoBeInterfaceEndpointReviewApplication.IProps>(input);
     if (result.success === false) return result;
     const request = result.data.request;
-    if (request.type === "complete") return result;
+    if (request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request,
+      });
 
-    return props.preliminary.validate({
-      thinking: result.data.thinking,
-      request,
+    const revises = request.revises;
+    const errors: IValidation.IError[] = [];
+
+    if (props.actors.length === 0)
+      revises.forEach((r) => {
+        if (r.type === "create") r.design.authorizationActors = [];
+        else if (r.type === "update") r.updated.authorizationActors = [];
+      });
+    revises.forEach((r, i) => {
+      if (r.type === "erase") return;
+      const design = r.type === "create" ? r.design : r.updated;
+      if (
+        props.actors.length !== 0 &&
+        design.authorizationActors.length !== 0
+      ) {
+        AutoBeInterfaceEndpointProgrammer.validateDesign({
+          actors: props.actors,
+          design: r.type === "create" ? r.design : r.updated,
+          errors,
+          path: `$input.request.revises[${i}]`,
+        });
+      }
     });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: input,
+      };
+    return result;
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
@@ -140,6 +193,10 @@ const createController = (props: {
       },
     }),
   );
+  AutoBeInterfaceEndpointProgrammer.fixApplication({
+    application,
+    actors: props.actors,
+  });
 
   return {
     protocol: "class",

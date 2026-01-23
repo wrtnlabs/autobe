@@ -13,6 +13,24 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       ? true
       : props.operation.authorizationType !== "login";
 
+  export const fixOperations = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    prefix: string;
+  }): AutoBeOpenApi.IOperation[] => {
+    return props.operations
+      .filter((op) => op.authorizationType !== null)
+      .map((op) => {
+        return {
+          ...op,
+          path:
+            "/" +
+            [props.prefix, ...op.path.split("/")]
+              .filter((it) => it !== "")
+              .join("/"),
+        } satisfies AutoBeOpenApi.IOperation;
+      });
+  };
+
   export const validateOperation = (props: {
     operation: AutoBeOpenApi.IOperation;
     actor: string;
@@ -156,6 +174,8 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
   }): void => {
     type AuthorizaationType = AutoBeOpenApi.IOperation["authorizationType"];
     for (const type of typia.misc.literals<AuthorizaationType>()) {
+      // Skip null - these are handled by Base/Action Endpoint generators
+      if (type === null) continue;
       if (props.actor === "guest" && type === "login") continue;
       const count: number = props.operations.filter(
         (o) => o.authorizationType === type,

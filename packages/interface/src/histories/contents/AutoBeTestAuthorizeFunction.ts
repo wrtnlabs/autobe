@@ -32,11 +32,12 @@ export interface AutoBeTestAuthorizeFunction
   actor: string;
 
   /**
-   * Authentication type - one of "login" | "join" | "refresh".
+   * Authentication type - one of "login" | "join" | "refresh" | "management".
    *
    * - Login: Authenticate existing user
    * - Join: Register new user
    * - Refresh: Renew expired token
+   * - Management: Other auth operations (logout, password reset/change, verify, 2fa, oauth, sessions, me)
    */
   authType: string;
 }

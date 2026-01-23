@@ -1,11 +1,12 @@
 import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeEventSource,
+  AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceOperationEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
+import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
 import typia from "typia";
@@ -26,20 +27,20 @@ export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    endpoints: AutoBeOpenApi.IEndpoint[];
+    designs: AutoBeInterfaceEndpointDesign[];
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
   // write
   const progress: AutoBeProgressEventBase = {
-    total: props.endpoints.length,
+    total: props.designs.length,
     completed: 0,
   };
   const written: AutoBeOpenApi.IOperation[] = (
     await executeCachedBatch(
       ctx,
-      props.endpoints.map((endpoint) => async (promptCacheKey) => {
+      props.designs.map((design) => async (promptCacheKey) => {
         const row: AutoBeOpenApi.IOperation[] = await process(ctx, {
-          endpoint,
+          design,
           progress,
           promptCacheKey,
           instruction: props.instruction,
@@ -100,7 +101,7 @@ export async function orchestrateInterfaceOperation(
 async function process(
   ctx: AutoBeContext,
   props: {
-    endpoint: AutoBeOpenApi.IEndpoint;
+    design: AutoBeInterfaceEndpointDesign;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     instruction: string;
@@ -134,7 +135,6 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        actors: ctx.state().analyze?.actors.map((it) => it.name) ?? [],
         build: (complete) => {
           pointer.value = complete;
         },
@@ -142,7 +142,7 @@ async function process(
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceOperationHistory({
-        endpoint: props.endpoint,
+        endpoint: props.design.endpoint,
         instruction: props.instruction,
         prefix,
         preliminary,
@@ -152,8 +152,11 @@ async function process(
 
     for (const p of pointer.value.operation.parameters)
       p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
+
+    // Use authorizationActors from endpoint design (not from LLM)
+    const authorizationActors = props.design.authorizationActors;
     const matrix: AutoBeOpenApi.IOperation[] =
-      pointer.value.operation.authorizationActors.length === 0
+      authorizationActors.length === 0
         ? [
             {
               ...pointer.value.operation,
@@ -167,7 +170,7 @@ async function process(
               prerequisites: [],
             } satisfies AutoBeOpenApi.IOperation,
           ]
-        : pointer.value.operation.authorizationActors.map(
+        : authorizationActors.map(
             (actor) =>
               ({
                 ...pointer.value!.operation,
@@ -200,7 +203,6 @@ async function process(
 }
 
 function createController(props: {
-  actors: string[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -231,24 +233,6 @@ function createController(props: {
       operation: op,
     });
 
-    // validate roles
-    if (props.actors.length === 0) op.authorizationActors = [];
-    else if (op.authorizationActors.length !== 0 && props.actors.length !== 0)
-      op.authorizationActors.forEach((actor, j) => {
-        if (props.actors.includes(actor) === true) return;
-        errors.push({
-          path: `$input.request.operation.authorizationActors[${j}]`,
-          expected: `null | ${props.actors.map((str) => JSON.stringify(str)).join(" | ")}`,
-          description: StringUtil.trim`
-            Actor "${actor}" is not defined in the roles list.
-
-            Please select one of them below, or do not define (\`null\`):
-
-            ${props.actors.map((role) => `- ${role}`).join("\n")}
-          `,
-          value: actor,
-        });
-      });
     if (errors.length !== 0)
       return {
         success: false,

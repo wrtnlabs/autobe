@@ -4,6 +4,7 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
   AutoBeInterfaceAuthorization,
+  AutoBeInterfaceEndpointDesign,
   AutoBeOpenApi,
 } from "@autobe/interface";
 
@@ -15,7 +16,7 @@ export const validate_interface_operation = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeOpenApi.IOperation[]> => {
-  const endpoints: AutoBeOpenApi.IEndpoint[] =
+  const designs: AutoBeInterfaceEndpointDesign[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
@@ -33,7 +34,7 @@ export const validate_interface_operation = async (props: {
       .map((a) => a.operations)
       .flat(),
     ...(await orchestrateInterfaceOperation(props.agent.getContext(), {
-      endpoints,
+      designs,
       instruction: "",
     })),
   ];

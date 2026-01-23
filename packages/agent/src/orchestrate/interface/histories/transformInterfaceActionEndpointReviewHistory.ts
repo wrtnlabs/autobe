@@ -20,7 +20,6 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
   >;
   designs: AutoBeInterfaceEndpointDesign[];
   baseEndpoints: AutoBeOpenApi.IEndpoint[];
-  authorizations: AutoBeOpenApi.IOperation[];
   group: AutoBeInterfaceGroup;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
@@ -41,21 +40,6 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
       id: v7(),
       type: "assistantMessage",
       text: StringUtil.trim`
-        ## Authorization Endpoints (Reference - Already Exist)
-
-        These authorization endpoints already exist. For reference only:
-
-        \`\`\`json
-        ${JSON.stringify(
-          props.authorizations.map((op) => ({
-            path: op.path,
-            method: op.method,
-          })),
-          null,
-          2,
-        )}
-        \`\`\`
-
         ## Base CRUD Endpoints (Reference - Already Exist)
 
         These base CRUD endpoints already exist. For reference only:
@@ -76,7 +60,7 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
         ⚠️ CRITICAL: These are the ONLY endpoints you can review.
 
         You can ONLY create new endpoints, update these endpoints, or erase these endpoints.
-        
+
         DO NOT reference any endpoint that is not listed here.
 
         \`\`\`json

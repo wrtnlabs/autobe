@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
+import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
 
 /**
  * Request to create a new endpoint.
@@ -26,12 +26,5 @@ export interface AutoBeInterfaceEndpointCreate {
   reason: string;
 
   /** The new endpoint to add. */
-  endpoint: AutoBeOpenApi.IEndpoint;
-
-  /**
-   * Description of what this endpoint does.
-   *
-   * Functional description of the endpoint's purpose and business context.
-   */
-  description: string;
+  design: AutoBeInterfaceEndpointDesign;
 }

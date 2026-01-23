@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeActor,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
@@ -16,6 +17,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointWriteApplication } from "./structures/IAutoBeInterfaceEndpointWriteApplication";
 
 interface IProgrammer {
@@ -85,6 +87,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
+        actors: ctx.state().analyze?.actors ?? [],
         preliminary,
         build: (next) => {
           pointer.value = next;
@@ -99,14 +102,21 @@ export const orchestrateInterfaceEndpointWrite = async (
     });
     if (pointer.value === null) return out(result)(null);
 
+    const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
       pointer.value.designs.map((c) => new Pair(c.endpoint, c)),
       AutoBeOpenApiEndpointComparator.hashCode,
       AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
-      .map((it) => it.second);
-
+      .map((it) => it.second)
+      .filter((design) =>
+        AutoBeInterfaceEndpointProgrammer.filter({
+          kind: props.programmer.kind,
+          design,
+          actors,
+        }),
+      );
     ctx.dispatch({
       id: v7(),
       type: SOURCE,
@@ -127,6 +137,7 @@ export const orchestrateInterfaceEndpointWrite = async (
 };
 
 const createController = (props: {
+  actors: AutoBeAnalyzeActor[];
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -141,12 +152,34 @@ const createController = (props: {
   ): IValidation<IAutoBeInterfaceEndpointWriteApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceEndpointWriteApplication.IProps> =
       typia.validate<IAutoBeInterfaceEndpointWriteApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
-      return result;
-    return props.preliminary.validate({
-      thinking: result.data.thinking,
-      request: result.data.request,
+    if (result.success === false) return result;
+    else if (result.data.request.type !== "complete")
+      return props.preliminary.validate({
+        thinking: result.data.thinking,
+        request: result.data.request,
+      });
+
+    const designs: AutoBeInterfaceEndpointDesign[] =
+      result.data.request.designs;
+    const errors: IValidation.IError[] = [];
+
+    if (props.actors.length === 0)
+      designs.forEach((d) => (d.authorizationActors = []));
+    designs.forEach((d, i) => {
+      AutoBeInterfaceEndpointProgrammer.validateDesign({
+        actors: props.actors,
+        design: d,
+        errors,
+        path: `$input.request.designs[${i}]`,
+      });
     });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: input,
+      };
+    return result;
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
@@ -156,6 +189,10 @@ const createController = (props: {
       },
     }),
   );
+  AutoBeInterfaceEndpointProgrammer.fixApplication({
+    application,
+    actors: props.actors,
+  });
 
   return {
     protocol: "class",

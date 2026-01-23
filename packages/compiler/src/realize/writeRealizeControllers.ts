@@ -39,7 +39,9 @@ export const writeRealizeControllers = async (
         if (func === undefined || operate === undefined) return method; // unreachable
 
         const authorization: AutoBeRealizeAuthorization | undefined =
-          operate.authorizationActor
+          operate.authorizationActor !== null &&
+          operate.authorizationType !== "join" &&
+          operate.authorizationType !== "login"
             ? props.authorizations.find(
                 (d) => d.actor.name === operate.authorizationActor,
               )
