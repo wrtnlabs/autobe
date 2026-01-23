@@ -293,18 +293,24 @@ export namespace AutoBeJsonSchemaFactory {
     PLUGIN
   ----------------------------------------------------------- */
   export const fixSchema = <Schema extends AutoBeOpenApi.IJsonSchema>(
-    value: Schema,
+    schema: Schema,
   ): Schema => {
     const id: string = v7();
     const emended: AutoBeOpenApi.IJsonSchema = (
       ((
         OpenApiV3_1Emender.convertComponents({
           schemas: {
-            [id]: value,
+            [id]: schema,
           },
         }) as AutoBeOpenApi.IComponents
       ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchema>
     )[id];
+
+    const visited: WeakSet<object> = new WeakSet();
+    visited.add(emended);
+    if (AutoBeOpenApiTypeChecker.isObject(emended))
+      for (const v of Object.values(emended.properties)) visited.add(v);
+
     AutoBeOpenApiTypeChecker.visit({
       components: {
         authorizations: [],
@@ -312,13 +318,9 @@ export namespace AutoBeJsonSchemaFactory {
       },
       schema: emended,
       closure(next) {
-        for (const k of Object.keys(next))
-          if (
-            k === "x-autobe-database-schema" &&
-            AutoBeOpenApiTypeChecker.isObject(next)
-          )
-            continue;
-          else if (k.startsWith("x-")) delete (next as any)[k];
+        if (visited.has(next) === false)
+          for (const k of Object.keys(next))
+            if (k.startsWith("x-")) delete (next as any)[k];
         if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
         else if (AutoBeOpenApiTypeChecker.isArray(next)) fixArraySchema(next);
         else if (AutoBeOpenApiTypeChecker.isInteger(next))
@@ -376,10 +378,10 @@ export namespace AutoBeJsonSchemaFactory {
    *
    * Handles:
    *
-   * - minimum === maximum → const
-   * - minimum: N, exclusiveMaximum: N+1 → const N
-   * - exclusiveMinimum: N-1, maximum: N → const N
-   * - exclusiveMinimum: N-1, exclusiveMaximum: N+1 → const N
+   * - Minimum === maximum → const
+   * - Minimum: N, exclusiveMaximum: N+1 → const N
+   * - ExclusiveMinimum: N-1, maximum: N → const N
+   * - ExclusiveMinimum: N-1, exclusiveMaximum: N+1 → const N
    */
   const fixIntegerSchema = (
     schema: AutoBeOpenApi.IJsonSchema.IInteger,
@@ -387,11 +389,20 @@ export namespace AutoBeJsonSchemaFactory {
     const value: number | undefined = (() => {
       if (schema.minimum !== undefined && schema.maximum === schema.minimum)
         return schema.minimum;
-      if (schema.minimum !== undefined && schema.exclusiveMaximum === schema.minimum + 1)
+      if (
+        schema.minimum !== undefined &&
+        schema.exclusiveMaximum === schema.minimum + 1
+      )
         return schema.minimum;
-      if (schema.maximum !== undefined && schema.exclusiveMinimum === schema.maximum - 1)
+      if (
+        schema.maximum !== undefined &&
+        schema.exclusiveMinimum === schema.maximum - 1
+      )
         return schema.maximum;
-      if (schema.exclusiveMinimum !== undefined && schema.exclusiveMaximum === schema.exclusiveMinimum + 2)
+      if (
+        schema.exclusiveMinimum !== undefined &&
+        schema.exclusiveMaximum === schema.exclusiveMinimum + 2
+      )
         return schema.exclusiveMinimum + 1;
       return undefined;
     })();
@@ -404,7 +415,7 @@ export namespace AutoBeJsonSchemaFactory {
    *
    * Handles:
    *
-   * - minimum === maximum → const
+   * - Minimum === maximum → const
    */
   const fixNumberSchema = (schema: AutoBeOpenApi.IJsonSchema.INumber): void => {
     // minimum === maximum → const
@@ -419,11 +430,13 @@ export namespace AutoBeJsonSchemaFactory {
 
 namespace IPage {
   /**
-   * Pagination metadata containing current page position and total data statistics.
+   * Pagination metadata containing current page position and total data
+   * statistics.
    *
-   * This interface provides comprehensive pagination information returned alongside
-   * paginated list data. It enables clients to implement navigation controls,
-   * display progress indicators, and determine data boundaries for UI rendering.
+   * This interface provides comprehensive pagination information returned
+   * alongside paginated list data. It enables clients to implement navigation
+   * controls, display progress indicators, and determine data boundaries for UI
+   * rendering.
    *
    * @x-autobe-specification Pagination metadata for paginated list responses. Included in all list endpoint responses.
    */
@@ -431,9 +444,10 @@ namespace IPage {
     /**
      * Current page number being viewed (1-indexed).
      *
-     * Indicates which page of results is currently being returned. Page numbering
-     * starts from 1, so the first page is page 1 (not 0). This value reflects the
-     * page parameter from the request after validation and bounds checking.
+     * Indicates which page of results is currently being returned. Page
+     * numbering starts from 1, so the first page is page 1 (not 0). This value
+     * reflects the page parameter from the request after validation and bounds
+     * checking.
      *
      * @x-autobe-specification 1-indexed current page number. Defaults to 1.
      */
@@ -442,10 +456,10 @@ namespace IPage {
     /**
      * Maximum number of records per page.
      *
-     * Defines the upper bound on how many records can be returned in a single page.
-     * This corresponds to the limit parameter from the request. The actual number
-     * of records in the data array may be less than this value on the final page
-     * or when total records are fewer than the limit.
+     * Defines the upper bound on how many records can be returned in a single
+     * page. This corresponds to the limit parameter from the request. The
+     * actual number of records in the data array may be less than this value on
+     * the final page or when total records are fewer than the limit.
      *
      * @x-autobe-specification Maximum records per page. Actual count may be less on last page.
      */
@@ -454,10 +468,10 @@ namespace IPage {
     /**
      * Total count of all records matching the query criteria.
      *
-     * Represents the complete number of records available across all pages,
-     * not just the current page. This value is computed via a COUNT query
-     * and is essential for calculating total pages and displaying pagination
-     * UI elements like "Showing 1-10 of 150 results".
+     * Represents the complete number of records available across all pages, not
+     * just the current page. This value is computed via a COUNT query and is
+     * essential for calculating total pages and displaying pagination UI
+     * elements like "Showing 1-10 of 150 results".
      *
      * @x-autobe-specification Total record count across all pages.
      */
@@ -466,9 +480,9 @@ namespace IPage {
     /**
      * Total number of pages available.
      *
-     * Calculated as ceiling of {@link records} divided by {@link limit}.
-     * When records is 0, pages will also be 0. This value enables clients
-     * to render page navigation controls and validate page bounds.
+     * Calculated as ceiling of {@link records} divided by {@link limit}. When
+     * records is 0, pages will also be 0. This value enables clients to render
+     * page navigation controls and validate page bounds.
      *
      * @x-autobe-specification Total pages. Calculated as Math.ceil(records / limit).
      */
@@ -480,8 +494,8 @@ namespace IPage {
    *
    * Defines the query parameters used to control pagination when requesting
    * list data. Both parameters are optional with sensible defaults, allowing
-   * clients to fetch data without specifying pagination if default behavior
-   * is acceptable.
+   * clients to fetch data without specifying pagination if default behavior is
+   * acceptable.
    *
    * @x-autobe-specification Pagination query parameters for list endpoints. All fields optional.
    */
@@ -490,9 +504,9 @@ namespace IPage {
      * Target page number to retrieve (1-indexed).
      *
      * Specifies which page of results to return. Page numbering starts from 1.
-     * If omitted, null, or undefined, defaults to page 1 (first page). Requesting
-     * a page beyond the available range returns an empty data array with valid
-     * pagination metadata reflecting the actual totals.
+     * If omitted, null, or undefined, defaults to page 1 (first page).
+     * Requesting a page beyond the available range returns an empty data array
+     * with valid pagination metadata reflecting the actual totals.
      *
      * @x-autobe-specification 1-indexed page number. Defaults to 1 if not provided.
      */
@@ -502,8 +516,9 @@ namespace IPage {
      * Maximum number of records to return per page.
      *
      * Controls how many records are included in each page response. If omitted,
-     * null, or undefined, defaults to 100 records per page. The server may enforce
-     * upper bounds to prevent excessive resource consumption on large requests.
+     * null, or undefined, defaults to 100 records per page. The server may
+     * enforce upper bounds to prevent excessive resource consumption on large
+     * requests.
      *
      * @default 100
      *
@@ -517,14 +532,14 @@ namespace IPage {
  * JWT-based authorization token pair with expiration metadata.
  *
  * Provides a complete authentication token structure containing both access and
- * refresh tokens along with their respective expiration timestamps. This dual-token
- * pattern enables secure, stateless authentication with automatic session renewal
- * capabilities.
+ * refresh tokens along with their respective expiration timestamps. This
+ * dual-token pattern enables secure, stateless authentication with automatic
+ * session renewal capabilities.
  *
  * The access token is short-lived for security, while the refresh token allows
- * obtaining new access tokens without requiring the user to re-enter credentials.
- * This structure is automatically included in authentication responses across
- * all generated backend applications.
+ * obtaining new access tokens without requiring the user to re-enter
+ * credentials. This structure is automatically included in authentication
+ * responses across all generated backend applications.
  *
  * @x-autobe-specification Dual-token authentication structure with access/refresh tokens and expiration info.
  */
@@ -532,11 +547,11 @@ interface IAuthorizationToken {
   /**
    * Short-lived JWT access token for authenticating API requests.
    *
-   * This token must be included in the Authorization header using the Bearer scheme
-   * (e.g., `Authorization: Bearer {access}`) for all endpoints requiring authentication.
-   * The token contains encoded claims including user identity, roles, and permissions.
-   * Typically expires within 15-60 minutes for security; use the refresh token to
-   * obtain a new access token when expired.
+   * This token must be included in the Authorization header using the Bearer
+   * scheme (e.g., `Authorization: Bearer {access}`) for all endpoints requiring
+   * authentication. The token contains encoded claims including user identity,
+   * roles, and permissions. Typically expires within 15-60 minutes for
+   * security; use the refresh token to obtain a new access token when expired.
    *
    * @x-autobe-specification JWT access token. Use in Authorization header as "Bearer {access}".
    */
@@ -547,8 +562,8 @@ interface IAuthorizationToken {
    *
    * Used to request new access tokens when the current access token expires,
    * allowing session continuation without re-authentication. Should be stored
-   * securely and transmitted only to the token refresh endpoint. Typical lifetime
-   * ranges from 7 to 30 days depending on security requirements.
+   * securely and transmitted only to the token refresh endpoint. Typical
+   * lifetime ranges from 7 to 30 days depending on security requirements.
    *
    * @x-autobe-specification Refresh token for obtaining new access tokens without re-authentication.
    */
@@ -557,10 +572,11 @@ interface IAuthorizationToken {
   /**
    * ISO 8601 timestamp when the access token expires.
    *
-   * After this timestamp, the access token will be rejected by authenticated endpoints.
-   * Clients should proactively refresh before expiration to maintain seamless user
-   * experience. A common strategy is to refresh when remaining time falls below
-   * 5 minutes. This timestamp is also embedded within the JWT itself as the "exp" claim.
+   * After this timestamp, the access token will be rejected by authenticated
+   * endpoints. Clients should proactively refresh before expiration to maintain
+   * seamless user experience. A common strategy is to refresh when remaining
+   * time falls below 5 minutes. This timestamp is also embedded within the JWT
+   * itself as the "exp" claim.
    *
    * @x-autobe-specification Access token expiration timestamp in ISO 8601 format.
    */
@@ -569,10 +585,11 @@ interface IAuthorizationToken {
   /**
    * ISO 8601 timestamp indicating the absolute session expiration deadline.
    *
-   * Represents the latest possible time the refresh token can be used. Once this
-   * timestamp is reached, the user must fully re-authenticate with credentials.
-   * This defines the maximum session duration regardless of activity. If refresh
-   * token rotation is enabled, this deadline may extend with each successful refresh.
+   * Represents the latest possible time the refresh token can be used. Once
+   * this timestamp is reached, the user must fully re-authenticate with
+   * credentials. This defines the maximum session duration regardless of
+   * activity. If refresh token rotation is enabled, this deadline may extend
+   * with each successful refresh.
    *
    * @x-autobe-specification Refresh token expiration timestamp. Re-authentication required after this time.
    */
@@ -582,9 +599,10 @@ interface IAuthorizationToken {
 /**
  * Base entity interface providing standard primary key identification.
  *
- * Serves as the foundational interface for all database entities in the generated
- * application. Every model and record type extends this interface, ensuring
- * consistent identification semantics across all database tables and API responses.
+ * Serves as the foundational interface for all database entities in the
+ * generated application. Every model and record type extends this interface,
+ * ensuring consistent identification semantics across all database tables and
+ * API responses.
  *
  * @x-autobe-specification Base interface for all database entities. Contains the primary key.
  */
@@ -593,8 +611,8 @@ interface IEntity {
    * Unique identifier for this entity (UUID format).
    *
    * Auto-generated primary key using UUID format. This value is assigned by the
-   * system upon record creation and cannot be modified afterward. All foreign key
-   * relationships in the database reference this field.
+   * system upon record creation and cannot be modified afterward. All foreign
+   * key relationships in the database reference this field.
    *
    * @x-autobe-specification Primary key in UUID format. Auto-generated, read-only.
    */
