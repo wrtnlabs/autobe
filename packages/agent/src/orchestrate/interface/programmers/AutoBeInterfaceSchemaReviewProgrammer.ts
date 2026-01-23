@@ -12,7 +12,6 @@ import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
-import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
@@ -33,27 +32,23 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
   };
 
   export const fixApplication = (props: {
-    state: AutoBeState;
     application: ILlmApplication;
     typeName: string;
+    everyModels: AutoBeDatabase.IModel[];
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   }): void => {
-    if (props.state.database === null) return;
-
     const model: AutoBeDatabase.IModel | null =
-      props.state.database.result.data.files
-        .flatMap((f) => f.models)
-        .find(
-          (m) =>
-            m.name ===
-            (props.schema["x-autobe-database-schema"] ??
-              AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(
-                props.typeName,
-              )),
-        ) ?? null;
+      props.everyModels.find(
+        (m) =>
+          m.name ===
+          (props.schema["x-autobe-database-schema"] ??
+            AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(
+              props.typeName,
+            )),
+      ) ?? null;
     AutoBeInterfaceSchemaProgrammer.fixApplication({
-      state: props.state,
       application: props.application,
+      everyModels: props.everyModels,
       model,
     });
 

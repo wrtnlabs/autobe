@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaRefineEvent,
   AutoBeOpenApi,
@@ -233,6 +234,8 @@ function createController(
     return result;
   };
 
+  const everyModels: AutoBeDatabase.IModel[] =
+    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
   const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>({
       validate: {
@@ -242,11 +245,9 @@ function createController(
   );
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
-    state: ctx.state(),
+    everyModels,
     model:
-      (
-        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? []
-      ).find(
+      everyModels.find(
         (m) =>
           m.name ===
           AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName),

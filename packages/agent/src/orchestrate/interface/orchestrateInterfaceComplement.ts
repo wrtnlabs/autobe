@@ -239,7 +239,7 @@ function createController(
     ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
-    state: ctx.state(),
+    everyModels,
     model:
       everyModels.find(
         (m) =>

@@ -267,7 +267,8 @@ function createController(
     }),
   );
   AutoBeInterfaceSchemaReviewProgrammer.fixApplication({
-    state: ctx.state(),
+    everyModels:
+      ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [],
     application,
     typeName: props.typeName,
     schema: props.schema,

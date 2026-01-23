@@ -8,7 +8,6 @@ import {
 import { plural } from "pluralize";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
-import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeDatabaseModelProgrammer } from "../../prisma/programmers/AutoBeDatabaseModelProgrammer";
 
 export namespace AutoBeInterfaceSchemaProgrammer {
@@ -30,31 +29,38 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     });
   };
 
+  export const getDatabaseSchemaMembers = (props: {
+    everyModels: AutoBeDatabase.IModel[];
+    model: AutoBeDatabase.IModel;
+  }): string[] => [
+    props.model.primaryField.name,
+    ...props.model.foreignFields.map((f) => f.name),
+    ...props.model.foreignFields.map((f) => f.relation.name),
+    ...props.everyModels
+      .flatMap((m) => m.foreignFields)
+      .filter((f) => f.relation.targetModel === props.model.name)
+      .map((f) => f.relation.oppositeName),
+  ];
+
   export const fixApplication = (props: {
-    state: AutoBeState;
     application: ILlmApplication;
+    everyModels: AutoBeDatabase.IModel[];
     model: AutoBeDatabase.IModel | null;
   }): void => {
-    if (props.state.database === null) return;
-
-    const everyModels: AutoBeDatabase.IModel[] =
-      props.state.database.result.data.files.flatMap((f) => f.models);
     const func: ILlmFunction = props.application.functions[0];
 
     fixDatabaseSchema({
       $defs: func.parameters.$defs,
       parameters: func.parameters,
       model: props.model,
-      everyModels,
+      everyModels: props.everyModels,
     });
     if (props.model !== null) {
       fixDatabaseSchemaMember({
         $defs: func.parameters.$defs,
         parameters: func.parameters,
         model: props.model,
-        everyModels: props.state.database.result.data.files.flatMap(
-          (f) => f.models,
-        ),
+        everyModels: props.everyModels,
       });
     }
   };
@@ -111,15 +117,10 @@ export namespace AutoBeInterfaceSchemaProgrammer {
         );
         if (value === undefined) return;
 
-        value.enum = [
-          props.model.primaryField.name,
-          ...props.model.foreignFields.map((f) => f.name),
-          ...props.model.foreignFields.map((f) => f.relation.name),
-          ...props.everyModels
-            .flatMap((m) => m.foreignFields)
-            .filter((f) => f.relation.targetModel === props.model.name)
-            .map((f) => f.relation.oppositeName),
-        ];
+        value.enum = getDatabaseSchemaMembers({
+          everyModels: props.everyModels,
+          model: props.model,
+        });
       },
     });
   };
