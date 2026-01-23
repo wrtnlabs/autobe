@@ -10,6 +10,7 @@ import {
   LlmTypeChecker,
 } from "@samchon/openapi";
 import typia from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeInterfaceEndpointProgrammer {
   /**
@@ -43,6 +44,23 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     )
       return false;
     return true;
+  };
+
+  export const fixDesign = (props: {
+    design: AutoBeInterfaceEndpointDesign;
+  }): void => {
+    props.design.endpoint.path = fixPath(props.design.endpoint.path);
+  };
+
+  export const fixPath = (path: string): string => {
+    return path
+      .split("/")
+      .map((s) =>
+        s.startsWith("{") && s.endsWith("}")
+          ? `{${NamingConvention.camel(s.slice(1, -1).replace(/-/g, "_"))}}`
+          : s,
+      )
+      .join("/");
   };
 
   export const fixApplication = (props: {

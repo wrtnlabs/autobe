@@ -101,6 +101,9 @@ export const orchestrateInterfaceEndpointWrite = async (
       }),
     });
     if (pointer.value === null) return out(result)(null);
+    pointer.value.designs.forEach((d) =>
+      AutoBeInterfaceEndpointProgrammer.fixDesign({ design: d }),
+    );
 
     const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
