@@ -307,9 +307,10 @@ export namespace AutoBeJsonSchemaFactory {
     )[id];
 
     const visited: WeakSet<object> = new WeakSet();
-    visited.add(emended);
-    if (AutoBeOpenApiTypeChecker.isObject(emended))
+    if (AutoBeOpenApiTypeChecker.isObject(emended)) {
+      visited.add(emended);
       for (const v of Object.values(emended.properties)) visited.add(v);
+    }
 
     AutoBeOpenApiTypeChecker.visit({
       components: {
