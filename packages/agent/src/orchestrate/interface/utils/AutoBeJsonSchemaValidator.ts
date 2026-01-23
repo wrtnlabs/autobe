@@ -498,7 +498,7 @@ export namespace AutoBeJsonSchemaValidator {
       props.errors.push({
         path: propertyAccessor,
         expected: JSON.stringify(expected),
-        value: props.value["x-autobe-database-schema-member"],
+        value: props.value,
         description: StringUtil.trim`
           The database schema member "${found.key}" in "${props.target.name}"
           is nullable, but this DTO property is defined as non-nullable.
@@ -810,11 +810,7 @@ export namespace AutoBeJsonSchemaValidator {
         const { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema;
 
         // Case 1: minimum > maximum
-        if (
-          minimum !== undefined &&
-          maximum !== undefined &&
-          minimum > maximum
-        )
+        if (minimum !== undefined && maximum !== undefined && minimum > maximum)
           props.errors.push({
             path: accessor,
             expected: "minimum <= maximum",
@@ -895,8 +891,7 @@ export namespace AutoBeJsonSchemaValidator {
         )
           props.errors.push({
             path: accessor,
-            expected:
-              "no exclusive constraints when minimum equals maximum",
+            expected: "no exclusive constraints when minimum equals maximum",
             value: schema,
             description: StringUtil.trim`
               Invalid numeric range: minimum equals maximum (${minimum}), but exclusive
