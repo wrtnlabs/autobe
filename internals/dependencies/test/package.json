@@ -7,10 +7,10 @@
   "devDependencies": {
     "@nestia/e2e": "^10.0.2",
     "@nestia/fetcher": "^10.0.2",
-    "@samchon/openapi": "^6.0.0",
+    "@samchon/openapi": "^6.0.1",
     "@types/node": "^22.15.3",
     "typescript": "~5.9.3",
-    "typia": "^11.0.1",
+    "typia": "^11.0.2",
     "tstl": "^3.0.0"
   }
 }

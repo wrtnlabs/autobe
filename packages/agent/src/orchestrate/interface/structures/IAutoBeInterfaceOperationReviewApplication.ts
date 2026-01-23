@@ -73,12 +73,14 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    *
    * The IOperation type contains only:
    *
-   * - description: Can fix soft delete mismatches, inappropriate security
-   *   mentions, add schema references
-   * - requestBody: Complete object - can modify both description and typeName to
+   * - Specification: Implementation guidance for Realize Agent - can fix
+   *   implementation details, algorithm descriptions, database query logic
+   * - Description: API documentation for consumers - can fix soft delete
+   *   mismatches, inappropriate security mentions, add schema references
+   * - RequestBody: Complete object - can modify both description and typeName to
    *   fix clarity issues and naming convention violations
-   * - responseBody: Complete object - can modify both description and typeName
-   *   to fix clarity issues and naming convention violations
+   * - ResponseBody: Complete object - can modify both description and typeName to
+   *   fix clarity issues and naming convention violations
    *
    * Fields not in IOperation cannot be modified - the agent must reject by
    * returning null if those fields have issues.
@@ -118,7 +120,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * - Why each change is necessary
      * - If rejecting (returning null), why the operation cannot be fixed
      *
-     * If no issues found: "No improvements required. Operation meets standards."
+     * If no issues found: "No improvements required. Operation meets
+     * standards."
      */
     plan: string;
 
@@ -155,16 +158,18 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    *
    * Fields in this type:
    *
-   * - **description**: Operation description text - can fix soft delete
-   *   mismatches, remove inappropriate security mentions, add schema references
+   * - **specification**: Implementation guidance for Realize Agent - can fix
+   *   implementation details, algorithm descriptions, database query logic
+   * - **description**: API documentation for consumers - can fix soft delete
+   *   mismatches, remove inappropriate security mentions, add schema
+   *   references
    * - **requestBody**: Complete request body object (or null) - can modify both
    *   description and typeName to fix naming conventions or improve clarity
-   * - **responseBody**: Complete response body object (or null) - can modify
-   *   both description and typeName to fix naming conventions or improve clarity
+   * - **responseBody**: Complete response body object (or null) - can modify both
+   *   description and typeName to fix naming conventions or improve clarity
    */
   export interface IOperation extends Pick<
     AutoBeOpenApi.IOperation,
-    "description" | "requestBody" | "responseBody"
+    "specification" | "description" | "requestBody" | "responseBody"
   > {}
-
 }

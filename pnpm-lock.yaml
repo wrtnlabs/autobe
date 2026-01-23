@@ -46,8 +46,8 @@ catalogs:
       specifier: ^10.0.2
       version: 10.0.2
     '@samchon/openapi':
-      specifier: ^6.0.0
-      version: 6.0.0
+      specifier: ^6.0.1
+      version: 6.0.1
     embed-eslint:
       specifier: ^2.0.1
       version: 2.0.1
@@ -70,8 +70,8 @@ catalogs:
       specifier: ^3.0.0
       version: 3.0.0
     typia:
-      specifier: ^11.0.1
-      version: 11.0.1
+      specifier: ^11.0.2
+      version: 11.0.2
   typescript:
     '@typescript-eslint/eslint-plugin':
       specifier: 8.40.0
@@ -156,7 +156,7 @@ importers:
         version: 10.0.2
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -165,7 +165,7 @@ importers:
         version: 1.2.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
@@ -208,13 +208,13 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
         version: 10.0.2
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)
+        version: 10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -235,7 +235,7 @@ importers:
         version: 7.2.0
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.3
@@ -265,7 +265,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -347,7 +347,7 @@ importers:
         version: 7.3.6(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       react:
         specifier: catalog:ui
         version: 19.2.3
@@ -362,7 +362,7 @@ importers:
         version: 1.2.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -402,13 +402,13 @@ importers:
         version: 10.0.2
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       tgrid:
         specifier: catalog:samchon
         version: 1.2.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@rollup/plugin-terser':
         specifier: ^0.4.4
@@ -454,7 +454,7 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -466,7 +466,7 @@ importers:
         version: 11.1.10(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -478,11 +478,11 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)
+        version: 10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)
       nestia:
         specifier: catalog:samchon
         version: 10.0.2
@@ -518,7 +518,7 @@ importers:
         version: 7.3.6(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       '@stackblitz/sdk':
         specifier: ^1.11.0
         version: 1.11.0
@@ -530,7 +530,7 @@ importers:
         version: 19.2.3(react@19.2.3)
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -579,10 +579,10 @@ importers:
         version: link:interface
       '@ryoppippi/unplugin-typia':
         specifier: ^2.6.5
-        version: 2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.1(typescript@5.9.3))(vite@6.4.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+        version: 2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.2(typescript@5.9.3))(vite@6.4.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       '@types/node':
         specifier: 22.x
         version: 22.19.3
@@ -615,7 +615,7 @@ importers:
         version: 5.9.3
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
 
   apps/vscode-extension/interface:
     devDependencies:
@@ -624,7 +624,7 @@ importers:
         version: link:../../../packages/interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       ts-patch:
         specifier: catalog:typescript
         version: 3.3.0
@@ -645,7 +645,7 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.18(vite@6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
@@ -690,7 +690,7 @@ importers:
         version: link:../../../packages/rpc
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -699,11 +699,11 @@ importers:
         version: 1.2.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@ryoppippi/unplugin-typia':
         specifier: ^2.6.5
-        version: 2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.1(typescript@5.9.3))(vite@6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
+        version: 2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.2(typescript@5.9.3))(vite@6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       ts-patch:
         specifier: ^3.3.0
         version: 3.3.0
@@ -727,7 +727,7 @@ importers:
         version: link:../../packages/rpc
       '@nestia/core':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
         version: 10.0.2
@@ -742,7 +742,7 @@ importers:
         version: 11.1.10(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -751,7 +751,7 @@ importers:
         version: 1.2.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^22.15.17
@@ -767,7 +767,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.39.0(@samchon/openapi@6.0.0)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.1(typescript@5.9.3))
+        version: 0.39.0(@samchon/openapi@6.0.1)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.2(typescript@5.9.3))
       '@autobe/interface':
         specifier: workspace:^
         version: link:../interface
@@ -779,7 +779,7 @@ importers:
         version: 7.2.0(typescript@5.9.3)
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -791,7 +791,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -849,7 +849,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -880,13 +880,13 @@ importers:
         version: link:../utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestia/migrate':
         specifier: catalog:samchon
         version: 10.0.2
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^5.2.2
         version: 5.2.2(prettier@3.7.4)
@@ -931,7 +931,7 @@ importers:
         version: 3.5.5(typescript@5.9.3)
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^22.15.3
@@ -959,7 +959,7 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
@@ -984,13 +984,13 @@ importers:
     dependencies:
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -1006,10 +1006,10 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       rimraf:
         specifier: ^6.0.1
@@ -1044,7 +1044,7 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       '@types/react':
         specifier: catalog:ui
         version: 19.2.7
@@ -1077,13 +1077,13 @@ importers:
         version: link:../interface
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       tstl:
         specifier: catalog:samchon
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
     devDependencies:
       '@types/node':
         specifier: ^24.10.1
@@ -1102,7 +1102,7 @@ importers:
     dependencies:
       '@agentica/core':
         specifier: catalog:agentica
-        version: 0.39.0(@samchon/openapi@6.0.0)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.1(typescript@5.9.3))
+        version: 0.39.0(@samchon/openapi@6.0.1)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.2(typescript@5.9.3))
       '@autobe/agent':
         specifier: workspace:^
         version: link:../packages/agent
@@ -1129,7 +1129,7 @@ importers:
         version: link:../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+        version: 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
         version: 10.0.2
@@ -1141,7 +1141,7 @@ importers:
         version: 10.0.2
       '@samchon/openapi':
         specifier: catalog:samchon
-        version: 6.0.0
+        version: 6.0.1
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -1162,7 +1162,7 @@ importers:
         version: 3.0.0
       typia:
         specifier: catalog:samchon
-        version: 11.0.1(typescript@5.9.3)
+        version: 11.0.2(typescript@5.9.3)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -2450,8 +2450,8 @@ packages:
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
 
-  '@oxc-project/types@0.108.0':
-    resolution: {integrity: sha512-7lf13b2IA/kZO6xgnIZA88sq3vwrxWk+2vxf6cc+omwYCRTiA5e63Beqf3fz/v8jEviChWWmFYBwzfSeyrsj7Q==}
+  '@oxc-project/types@0.110.0':
+    resolution: {integrity: sha512-6Ct21OIlrEnFEJk5LT4e63pk3btsI6/TusD/GStLi7wYlGJNOl1GI9qvXAnRAxQU9zqA2Oz+UwhfTOU2rPZVow==}
 
   '@pagefind/darwin-arm64@1.4.0':
     resolution: {integrity: sha512-2vMqkbv3lbx1Awea90gTaBsvpzgRs7MuSgKDxW0m9oV1GPZCZbZBJg/qL83GIUEN2BFlY46dtUZi54pwH+/pTQ==}
@@ -2662,79 +2662,79 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@rolldown/binding-android-arm64@1.0.0-beta.60':
-    resolution: {integrity: sha512-hOW6iQXtpG4uCW1zGK56+KhEXGttSkTp2ykncW/nkOIF/jOKTqbM944Q73HVeMXP1mPRvE2cZwNp3xeLIeyIGQ==}
+  '@rolldown/binding-android-arm64@1.0.0-rc.1':
+    resolution: {integrity: sha512-He6ZoCfv5D7dlRbrhNBkuMVIHd0GDnjJwbICE1OWpG7G3S2gmJ+eXkcNLJjzjNDpeI2aRy56ou39AJM9AD8YFA==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [android]
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.60':
-    resolution: {integrity: sha512-vyDA4HXY2mP8PPtl5UE17uGPxUNG4m1wkfa3kAkR8JWrFbarV97UmLq22IWrNhtBPa89xqerzLK8KoVmz5JqCQ==}
+  '@rolldown/binding-darwin-arm64@1.0.0-rc.1':
+    resolution: {integrity: sha512-YzJdn08kSOXnj85ghHauH2iHpOJ6eSmstdRTLyaziDcUxe9SyQJgGyx/5jDIhDvtOcNvMm2Ju7m19+S/Rm1jFg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [darwin]
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.60':
-    resolution: {integrity: sha512-WnxyqxAKP2BsxouwGY/RCF5UFw/LA4QOHhJ7VEl+UCelHokiwqNHRbryLAyRy3TE1FZ5eae+vAFcaetAu/kWLw==}
+  '@rolldown/binding-darwin-x64@1.0.0-rc.1':
+    resolution: {integrity: sha512-cIvAbqM+ZVV6lBSKSBtlNqH5iCiW933t1q8j0H66B3sjbe8AxIRetVqfGgcHcJtMzBIkIALlL9fcDrElWLJQcQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.60':
-    resolution: {integrity: sha512-JtyWJ+zXOHof5gOUYwdTWI2kL6b8q9eNwqB/oD4mfUFaC/COEB2+47JMhcq78dey9Ahmec3DZKRDZPRh9hNAMQ==}
+  '@rolldown/binding-freebsd-x64@1.0.0-rc.1':
+    resolution: {integrity: sha512-rVt+B1B/qmKwCl1XD02wKfgh3vQPXRXdB/TicV2w6g7RVAM1+cZcpigwhLarqiVCxDObFZ7UgXCxPC7tpDoRog==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [freebsd]
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.60':
-    resolution: {integrity: sha512-LrMoKqpHx+kCaNSk84iSBd4yVOymLIbxJQtvFjDN2CjQraownR+IXcwYDblFcj9ivmS54T3vCboXBbm3s1zbPQ==}
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.1':
+    resolution: {integrity: sha512-69YKwJJBOFprQa1GktPgbuBOfnn+EGxu8sBJ1TjPER+zhSpYeaU4N07uqmyBiksOLGXsMegymuecLobfz03h8Q==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm]
     os: [linux]
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.60':
-    resolution: {integrity: sha512-sqI+Vdx1gmXJMsXN3Fsewm3wlt7RHvRs1uysSp//NLsCoh9ZFEUr4ZzGhWKOg6Rvf+njNu/vCsz96x7wssLejQ==}
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.1':
+    resolution: {integrity: sha512-9JDhHUf3WcLfnViFWm+TyorqUtnSAHaCzlSNmMOq824prVuuzDOK91K0Hl8DUcEb9M5x2O+d2/jmBMsetRIn3g==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.60':
-    resolution: {integrity: sha512-8xlqGLDtTP8sBfYwneTDu8+PRm5reNEHAuI/+6WPy9y350ls0KTFd3EJCOWEXWGW0F35ko9Fn9azmurBTjqOrQ==}
+  '@rolldown/binding-linux-arm64-musl@1.0.0-rc.1':
+    resolution: {integrity: sha512-UvApLEGholmxw/HIwmUnLq3CwdydbhaHHllvWiCTNbyGom7wTwOtz5OAQbAKZYyiEOeIXZNPkM7nA4Dtng7CLw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [linux]
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.60':
-    resolution: {integrity: sha512-iR4nhVouVZK1CiGGGyz+prF5Lw9Lmz30Rl36Hajex+dFVFiegka604zBwzTp5Tl0BZnr50ztnVJ30tGrBhDr8Q==}
+  '@rolldown/binding-linux-x64-gnu@1.0.0-rc.1':
+    resolution: {integrity: sha512-uVctNgZHiGnJx5Fij7wHLhgw4uyZBVi6mykeWKOqE7bVy9Hcxn0fM/IuqdMwk6hXlaf9fFShDTFz2+YejP+x0A==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.60':
-    resolution: {integrity: sha512-HbfNcqNeqxFjSMf1Kpe8itr2e2lr0Bm6HltD2qXtfU91bSSikVs9EWsa1ThshQ1v2ZvxXckGjlVLtah6IoslPg==}
+  '@rolldown/binding-linux-x64-musl@1.0.0-rc.1':
+    resolution: {integrity: sha512-T6Eg0xWwcxd/MzBcuv4Z37YVbUbJxy5cMNnbIt/Yr99wFwli30O4BPlY8hKeGyn6lWNtU0QioBS46lVzDN38bg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [linux]
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-beta.60':
-    resolution: {integrity: sha512-BiiamFcgTJ+ZFOUIMO9AHXUo9WXvHVwGfSrJ+Sv0AsTd2w3VN7dJGiH3WRcxKFetljJHWvGbM4fdpY5lf6RIvw==}
+  '@rolldown/binding-openharmony-arm64@1.0.0-rc.1':
+    resolution: {integrity: sha512-PuGZVS2xNJyLADeh2F04b+Cz4NwvpglbtWACgrDOa5YDTEHKwmiTDjoD5eZ9/ptXtcpeFrMqD2H4Zn33KAh1Eg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [openharmony]
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.60':
-    resolution: {integrity: sha512-6roXGbHMdR2ucnxXuwbmQvk8tuYl3VGu0yv13KxspyKBxxBd4RS6iykzLD6mX2gMUHhfX8SVWz7n/62gfyKHow==}
+  '@rolldown/binding-wasm32-wasi@1.0.0-rc.1':
+    resolution: {integrity: sha512-2mOxY562ihHlz9lEXuaGEIDCZ1vI+zyFdtsoa3M62xsEunDXQE+DVPO4S4x5MPK9tKulG/aFcA/IH5eVN257Cw==}
     engines: {node: '>=14.0.0'}
     cpu: [wasm32]
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.60':
-    resolution: {integrity: sha512-JBOm8/DC/CKnHyMHoJFdvzVHxUixid4dGkiTqGflxOxO43uSJMpl77pSPXvzwZ/VXwqblU2V0/PanyCBcRLowQ==}
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.1':
+    resolution: {integrity: sha512-oQVOP5cfAWZwRD0Q3nGn/cA9FW3KhMMuQ0NIndALAe6obqjLhqYVYDiGGRGrxvnjJsVbpLwR14gIUYnpIcHR1g==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [arm64]
     os: [win32]
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.60':
-    resolution: {integrity: sha512-MKF0B823Efp+Ot8KsbwIuGhKH58pf+2rSM6VcqyNMlNBHheOM0Gf7JmEu+toc1jgN6fqjH7Et+8hAzsLVkIGfA==}
+  '@rolldown/binding-win32-x64-msvc@1.0.0-rc.1':
+    resolution: {integrity: sha512-Ydsxxx++FNOuov3wCBPaYjZrEvKOOGq3k+BF4BPridhg2pENfitSRD2TEuQ8i33bp5VptuNdC9IzxRKU031z5A==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
@@ -2742,8 +2742,8 @@ packages:
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
 
-  '@rolldown/pluginutils@1.0.0-beta.60':
-    resolution: {integrity: sha512-Jz4aqXRPVtqkH1E3jRDzLO5cgN5JwW+WG0wXGE4NiJd25nougv/AHzxmKCzmVQUYnxLmTM0M4wrZp+LlC2FKLg==}
+  '@rolldown/pluginutils@1.0.0-rc.1':
+    resolution: {integrity: sha512-UTBjtTxVOhodhzFVp/ayITaTETRHPUPYZPXQe0WU0wOgxghMojXxYjOiPOauKIYNWJAWS2fd7gJgGQK8GU8vDA==}
 
   '@rollup/plugin-json@6.1.0':
     resolution: {integrity: sha512-EGI2te5ENk1coGeADSIwZ7G2Q8CJS2sF120T7jLw4xFw9n7wIOXHo+kIYRAoVpJAN+kmqZSoO3Fp4JtoNF4ReA==}
@@ -2909,8 +2909,8 @@ packages:
       vite:
         optional: true
 
-  '@samchon/openapi@6.0.0':
-    resolution: {integrity: sha512-6HnP9gf+RfdEYVuoqv9CCIHyZvSq2wktu8LuFdwzS8fTif+/cp6dN15oWmeGM6e+k3zn5H7LBepaU22pr3YiAg==}
+  '@samchon/openapi@6.0.1':
+    resolution: {integrity: sha512-+nkznmCf/6YavoVkvWg60YoC0UbXY/oK9uMZReyrFcIcXecf+YoWmOLUg+TlgHi+h+6DPgRy6zRkZfiRd3uRnA==}
 
   '@secretlint/config-creator@10.2.2':
     resolution: {integrity: sha512-BynOBe7Hn3LJjb3CqCHZjeNB09s/vgf0baBaHVw67w7gHF0d25c3ZsZ5+vv8TgwSchRdUCRrbbcq5i2B1fJ2QQ==}
@@ -7178,8 +7178,8 @@ packages:
       vue-tsc:
         optional: true
 
-  rolldown@1.0.0-beta.60:
-    resolution: {integrity: sha512-YYgpv7MiTp9LdLj1fzGzCtij8Yi2OKEc3HQtfbIxW4yuSgpQz9518I69U72T5ErPA/ATOXqlcisiLrWy+5V9YA==}
+  rolldown@1.0.0-rc.1:
+    resolution: {integrity: sha512-M3AeZjYE6UclblEf531Hch0WfVC/NOL43Cc+WdF3J50kk5/fvouHhDumSGTh0oRjbZ8C4faaVr5r6Nx1xMqDGg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -7872,8 +7872,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typia@11.0.1:
-    resolution: {integrity: sha512-Tm8WRayC/OHblOtlrdGaSqm9hcoP7FrrPuK6Af0Cw2rAY8lQ/XAn4IESpwHIEAhZnl86oAFgEIOOQyfFVxKQug==}
+  typia@11.0.2:
+    resolution: {integrity: sha512-d1txuyfOma1D0Erkb2eCpjTnGwHzvx13XQzzlBvzcvJLcbnVBJt04RvbHgyHPB+yN/6lhTrszfPkpq2XP/iYLg==}
     hasBin: true
     peerDependencies:
       typescript: '>=4.8.0 <5.10.0'
@@ -8382,14 +8382,14 @@ packages:
 
 snapshots:
 
-  '@agentica/core@0.39.0(@samchon/openapi@6.0.0)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.1(typescript@5.9.3))':
+  '@agentica/core@0.39.0(@samchon/openapi@6.0.1)(openai@6.15.0(ws@8.18.3)(zod@4.2.1))(typia@11.0.2(typescript@5.9.3))':
     dependencies:
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
       es-jsonkit: 0.1.6
       jsonrepair: 3.13.1
       openai: 6.15.0(ws@8.18.3)(zod@4.2.1)
       tstl: 3.0.0
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
       uuid: 13.0.0
 
   '@alloc/quick-lru@5.2.0': {}
@@ -9361,12 +9361,12 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))':
+  '@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))':
     dependencies:
       '@nestia/fetcher': 10.0.2
       '@nestjs/common': 11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.1.10(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
       detect-ts-node: 1.0.5
       get-function-location: 2.0.0
       glob: 11.1.0
@@ -9375,7 +9375,7 @@ snapshots:
       reflect-metadata: 0.2.2
       rxjs: 7.8.2
       tgrid: 1.2.1
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
       ws: 7.5.10
     transitivePeerDependencies:
       - bufferutil
@@ -9385,26 +9385,26 @@ snapshots:
 
   '@nestia/fetcher@10.0.2':
     dependencies:
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
 
   '@nestia/migrate@10.0.2':
     dependencies:
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
       commander: 10.0.0
       inquirer: 8.2.5
       prettier: 3.7.4
       prettier-plugin-jsdoc: 1.8.0(prettier@3.7.4)
       tstl: 3.0.0
       typescript: 5.9.3
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
     transitivePeerDependencies:
       - supports-color
 
-  '@nestia/sdk@10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)':
+  '@nestia/sdk@10.0.2(@nestia/core@10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3)))(@types/node@24.10.4)(typescript@5.9.3)':
     dependencies:
-      '@nestia/core': 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.1(typescript@5.9.3))
+      '@nestia/core': 10.0.2(@nestia/fetcher@10.0.2)(@nestjs/common@11.1.10(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@11.0.2(typescript@5.9.3))
       '@nestia/fetcher': 10.0.2
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
       cli: 1.0.1
       get-function-location: 2.0.0
       glob: 11.1.0
@@ -9414,7 +9414,7 @@ snapshots:
       tsconfck: 2.1.2(typescript@5.9.3)
       tsconfig-paths: 4.2.0
       tstl: 3.0.0
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -9507,7 +9507,7 @@ snapshots:
 
   '@opentelemetry/api@1.9.0': {}
 
-  '@oxc-project/types@0.108.0': {}
+  '@oxc-project/types@0.110.0': {}
 
   '@pagefind/darwin-arm64@1.4.0':
     optional: true
@@ -9863,50 +9863,50 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@rolldown/binding-android-arm64@1.0.0-beta.60':
+  '@rolldown/binding-android-arm64@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-darwin-arm64@1.0.0-beta.60':
+  '@rolldown/binding-darwin-arm64@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-darwin-x64@1.0.0-beta.60':
+  '@rolldown/binding-darwin-x64@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-freebsd-x64@1.0.0-beta.60':
+  '@rolldown/binding-freebsd-x64@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-beta.60':
+  '@rolldown/binding-linux-arm-gnueabihf@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-linux-arm64-gnu@1.0.0-beta.60':
+  '@rolldown/binding-linux-arm64-gnu@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-linux-arm64-musl@1.0.0-beta.60':
+  '@rolldown/binding-linux-arm64-musl@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-linux-x64-gnu@1.0.0-beta.60':
+  '@rolldown/binding-linux-x64-gnu@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-linux-x64-musl@1.0.0-beta.60':
+  '@rolldown/binding-linux-x64-musl@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-openharmony-arm64@1.0.0-beta.60':
+  '@rolldown/binding-openharmony-arm64@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-beta.60':
+  '@rolldown/binding-wasm32-wasi@1.0.0-rc.1':
     dependencies:
       '@napi-rs/wasm-runtime': 1.1.1
     optional: true
 
-  '@rolldown/binding-win32-arm64-msvc@1.0.0-beta.60':
+  '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.1':
     optional: true
 
-  '@rolldown/binding-win32-x64-msvc@1.0.0-beta.60':
+  '@rolldown/binding-win32-x64-msvc@1.0.0-rc.1':
     optional: true
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
-  '@rolldown/pluginutils@1.0.0-beta.60': {}
+  '@rolldown/pluginutils@1.0.0-rc.1': {}
 
   '@rollup/plugin-json@6.1.0(rollup@4.54.0)':
     dependencies:
@@ -10005,7 +10005,7 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.54.0':
     optional: true
 
-  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.1(typescript@5.9.3))(vite@6.4.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
+  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.2(typescript@5.9.3))(vite@6.4.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.54.0)
       bun-only: 0.0.1
@@ -10018,14 +10018,14 @@ snapshots:
       pkg-types: 2.3.0
       type-fest: 4.41.0
       typescript: 5.9.3
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
       unplugin: 2.3.11
     optionalDependencies:
       vite: 6.4.1(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - rollup
 
-  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.1(typescript@5.9.3))(vite@6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
+  '@ryoppippi/unplugin-typia@2.6.5(rollup@4.54.0)(typescript@5.9.3)(typia@11.0.2(typescript@5.9.3))(vite@6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.54.0)
       bun-only: 0.0.1
@@ -10038,14 +10038,14 @@ snapshots:
       pkg-types: 2.3.0
       type-fest: 4.41.0
       typescript: 5.9.3
-      typia: 11.0.1(typescript@5.9.3)
+      typia: 11.0.2(typescript@5.9.3)
       unplugin: 2.3.11
     optionalDependencies:
       vite: 6.4.1(@types/node@24.10.4)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - rollup
 
-  '@samchon/openapi@6.0.0': {}
+  '@samchon/openapi@6.0.1': {}
 
   '@secretlint/config-creator@10.2.2':
     dependencies:
@@ -15251,7 +15251,7 @@ snapshots:
 
   robust-predicates@3.0.2: {}
 
-  rolldown-plugin-dts@0.15.10(rolldown@1.0.0-beta.60)(typescript@5.9.3):
+  rolldown-plugin-dts@0.15.10(rolldown@1.0.0-rc.1)(typescript@5.9.3):
     dependencies:
       '@babel/generator': 7.28.5
       '@babel/parser': 7.28.5
@@ -15261,31 +15261,31 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
       dts-resolver: 2.1.3
       get-tsconfig: 4.13.0
-      rolldown: 1.0.0-beta.60
+      rolldown: 1.0.0-rc.1
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
       - oxc-resolver
       - supports-color
 
-  rolldown@1.0.0-beta.60:
+  rolldown@1.0.0-rc.1:
     dependencies:
-      '@oxc-project/types': 0.108.0
-      '@rolldown/pluginutils': 1.0.0-beta.60
+      '@oxc-project/types': 0.110.0
+      '@rolldown/pluginutils': 1.0.0-rc.1
     optionalDependencies:
-      '@rolldown/binding-android-arm64': 1.0.0-beta.60
-      '@rolldown/binding-darwin-arm64': 1.0.0-beta.60
-      '@rolldown/binding-darwin-x64': 1.0.0-beta.60
-      '@rolldown/binding-freebsd-x64': 1.0.0-beta.60
-      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-beta.60
-      '@rolldown/binding-linux-arm64-gnu': 1.0.0-beta.60
-      '@rolldown/binding-linux-arm64-musl': 1.0.0-beta.60
-      '@rolldown/binding-linux-x64-gnu': 1.0.0-beta.60
-      '@rolldown/binding-linux-x64-musl': 1.0.0-beta.60
-      '@rolldown/binding-openharmony-arm64': 1.0.0-beta.60
-      '@rolldown/binding-wasm32-wasi': 1.0.0-beta.60
-      '@rolldown/binding-win32-arm64-msvc': 1.0.0-beta.60
-      '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.60
+      '@rolldown/binding-android-arm64': 1.0.0-rc.1
+      '@rolldown/binding-darwin-arm64': 1.0.0-rc.1
+      '@rolldown/binding-darwin-x64': 1.0.0-rc.1
+      '@rolldown/binding-freebsd-x64': 1.0.0-rc.1
+      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-rc.1
+      '@rolldown/binding-linux-arm64-gnu': 1.0.0-rc.1
+      '@rolldown/binding-linux-arm64-musl': 1.0.0-rc.1
+      '@rolldown/binding-linux-x64-gnu': 1.0.0-rc.1
+      '@rolldown/binding-linux-x64-musl': 1.0.0-rc.1
+      '@rolldown/binding-openharmony-arm64': 1.0.0-rc.1
+      '@rolldown/binding-wasm32-wasi': 1.0.0-rc.1
+      '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.1
+      '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.1
 
   rollup@4.54.0:
     dependencies:
@@ -15999,8 +15999,8 @@ snapshots:
       diff: 8.0.2
       empathic: 2.0.0
       hookable: 5.5.3
-      rolldown: 1.0.0-beta.60
-      rolldown-plugin-dts: 0.15.10(rolldown@1.0.0-beta.60)(typescript@5.9.3)
+      rolldown: 1.0.0-rc.1
+      rolldown-plugin-dts: 0.15.10(rolldown@1.0.0-rc.1)(typescript@5.9.3)
       semver: 7.7.3
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
@@ -16091,9 +16091,9 @@ snapshots:
 
   typescript@5.9.3: {}
 
-  typia@11.0.1(typescript@5.9.3):
+  typia@11.0.2(typescript@5.9.3):
     dependencies:
-      '@samchon/openapi': 6.0.0
+      '@samchon/openapi': 6.0.1
       '@standard-schema/spec': 1.1.0
       commander: 10.0.1
       comment-json: 4.5.0
