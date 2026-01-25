@@ -39,14 +39,10 @@ export namespace AutoBeJsonSchemaFactory {
 
       const parent: AutoBeOpenApi.IJsonSchemaDescriptive | undefined =
         schemas[key.replace(".IAuthorized", "")];
-      if (parent === undefined) continue;
-      else if (AutoBeOpenApiTypeChecker.isObject(parent) === false) continue;
-
-      value.properties = {
-        ...parent.properties,
-        ...value.properties,
-      };
-      if (value.properties.token === undefined)
+      if (
+        parent === undefined ||
+        AutoBeOpenApiTypeChecker.isObject(parent) === false
+      ) {
         value.properties.token = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "Authorization token.",
@@ -54,12 +50,28 @@ export namespace AutoBeJsonSchemaFactory {
             "Authorization token comes from the session table.",
           "x-autobe-database-schema-member": null,
         };
-      value.required = Array.from(
-        new Set([...parent.required, ...value.required]),
-      );
-      if (value.required.includes("id") === false) value.required.push("id");
-      if (value.required.includes("token") === false)
-        value.required.push("token");
+        if (value.required.includes("token") === false)
+          value.required.push("token");
+      } else {
+        value.properties = {
+          ...parent.properties,
+          ...value.properties,
+        };
+        if (value.properties.token === undefined)
+          value.properties.token = {
+            $ref: "#/components/schemas/IAuthorizationToken",
+            description: "Authorization token.",
+            "x-autobe-specification":
+              "Authorization token comes from the session table.",
+            "x-autobe-database-schema-member": null,
+          };
+        value.required = Array.from(
+          new Set([...parent.required, ...value.required]),
+        );
+        if (value.required.includes("id") === false) value.required.push("id");
+        if (value.required.includes("token") === false)
+          value.required.push("token");
+      }
     }
   };
 

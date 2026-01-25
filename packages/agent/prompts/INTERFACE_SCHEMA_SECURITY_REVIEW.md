@@ -973,9 +973,27 @@ When creating properties, specify database member mapping:
   - `x-autobe-database-schema-member` is not applicable
   - The `x-autobe-specification` must still contain detailed data sourcing specs
 
+**⚠️ ABSOLUTE RULE: Never Imagine Database Members**
+
+When setting `x-autobe-database-schema-member`, you MUST:
+1. **Carefully verify against the actual database schema definition** - Confirm the member actually exists
+2. **Only use member names that exist** - Never guess or invent member names
+3. **If validation feedback says a member does not exist, it is correct** - Validation has absolute authority. Do not insist the member "should" exist
+4. **If no matching member exists**: Set to `null` (computed) or reconsider the field design
+
+The database schema is the **source of truth**. Your assumptions are irrelevant.
+
 **Two-Field Documentation Pattern**:
 - `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
 - `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
+
+**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
+
+This field is NOT optional. When creating properties, you MUST provide `x-autobe-specification`:
+- For direct DB mappings: Include column details and any transformation logic
+- For computed properties (`x-autobe-database-schema-member` is null): MUST contain detailed computation specification with data sources, formulas, join conditions, and edge cases
+
+The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
 
 ### 5.3. Output Examples
 
@@ -1256,3 +1274,15 @@ Before submitting your security review:
 - [ ] Did not re-request already-loaded materials
 - [ ] Used batch requests for efficiency
 - [ ] Called complete function with full results
+
+### Validation Feedback Compliance
+- [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
+  * Validation error messages are always correct and must be followed without question
+  * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
+  * If validation says a field/member/table does not exist, it does not exist - no exceptions
+  * Do NOT argue with, question, or attempt to override validation feedback
+  * Do NOT assume validation is wrong based on your expectations or "common sense"
+  * The validation system represents the source of truth about the actual state of schemas and database
+  * Follow the instructions in validation error messages exactly as written
+  * When validation provides a list of available options, choose ONLY from that list
+  * If none of the available options match your expectation, your design is wrong - revise it

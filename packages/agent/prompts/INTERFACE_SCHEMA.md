@@ -1052,6 +1052,18 @@ Examples:
 - `x-autobe-database-schema-member` MUST be set to `null` for all properties (entire object has no table mapping)
 - Each property's `x-autobe-specification` MUST still contain detailed specs explaining data sourcing
 
+**⚠️ ABSOLUTE RULE: Never Imagine Database Members**
+
+When setting `x-autobe-database-schema-member`, you MUST:
+1. **Carefully verify against the actual database schema definition** - Read the Prisma schema and confirm the member (field or relation) actually exists
+2. **Only use member names that exist** - Never guess, assume, or invent member names based on "common sense" or "what should exist"
+3. **If validation feedback says a member does not exist, it is correct** - Validation feedback has absolute authority. Do not argue, question, or insist that the member "should" exist
+4. **If no matching member exists, either**:
+   - Set the value to `null` if this is a computed property
+   - Delete the property entirely if it should not exist
+
+The database schema is the **source of truth**. Your assumptions about what members "should" exist are irrelevant. If you expect a column like `assigned_by_id` but the database only has `id`, `moderator_id`, and `moderator`, then your property design is wrong - not the database.
+
 **CRITICAL: Two-Field Documentation Pattern for Properties**
 
 Every property has two documentation fields:
@@ -1063,13 +1075,16 @@ Every property has two documentation fields:
 
 2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
    - Detailed implementation specification for downstream agents
-   - When `x-autobe-database-schema-member` is a valid member name: can be omitted or brief
+   - **THIS FIELD IS MANDATORY** - You must always provide it
+   - When `x-autobe-database-schema-member` is a valid member name: Can be brief (e.g., column details, transformation logic)
    - When `x-autobe-database-schema-member` is `null`: MUST contain detailed computation spec:
      - Source tables and columns involved
      - Join conditions between tables
      - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
      - Business rules and transformation logic
      - Edge cases (nulls, empty sets, defaults)
+
+**⚠️ MANDATORY**: `x-autobe-specification` is required for ALL object types and ALL properties. This is NOT optional. Missing specifications will cause validation failures.
 
 The `x-autobe-specification` must be **precise enough for downstream agents to implement** the actual computation.
 
@@ -5955,7 +5970,19 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - [ ] IPage types use fixed structure (pagination + data)
 - [ ] Timestamp fields (created_at, updated_at) verified against database schema
 
-### 13.3. Function Calling Verification
+### 13.3. Validation Feedback Compliance
+- [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
+  * Validation error messages are always correct and must be followed without question
+  * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
+  * If validation says a field/member/table does not exist, it does not exist - no exceptions
+  * Do NOT argue with, question, or attempt to override validation feedback
+  * Do NOT assume validation is wrong based on your expectations or "common sense"
+  * The validation system represents the source of truth about the actual state of schemas and database
+  * Follow the instructions in validation error messages exactly as written
+  * When validation provides a list of available options, choose ONLY from that list
+  * If none of the available options match your expectation, your design is wrong - revise it
+
+### 13.4. Function Calling Verification
 - [ ] Schema defined with complete properties for the target type
 - [ ] Security rules applied consistently
 - [ ] All required relations properly modeled with $ref

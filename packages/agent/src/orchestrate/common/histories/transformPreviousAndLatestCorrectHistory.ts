@@ -12,7 +12,7 @@ export const transformPreviousAndLatestCorrectHistory = (
   }>,
 ): IAgenticaHistoryJson.IAssistantMessage[] => {
   // console.log(printErrorHints(array.at(-1)!.script, array.at(-1)!.diagnostics));
-  return array.slice(-1).map((failure, i) => ({
+  return array.map((failure, i) => ({
     id: v7(),
     type: "assistantMessage",
     text: StringUtil.trim`

@@ -734,9 +734,31 @@ Every property you create MUST specify its database member mapping:
   - `x-autobe-database-schema-member` is not applicable
   - The `x-autobe-specification` must still contain detailed data sourcing specs
 
+**⚠️ ABSOLUTE RULE: Never Imagine Database Members**
+
+When setting `x-autobe-database-schema-member`, you MUST:
+1. **Carefully verify against the actual database schema definition** - Read the Prisma schema and confirm the member actually exists
+2. **Only use member names that exist** - Never guess or invent member names
+3. **If validation feedback says a member does not exist, it is correct** - Validation has absolute authority. Do not insist the member "should" exist
+4. **If no matching member exists**: Set to `null` (computed) or do not add this field
+
+The database schema is the **source of truth**. Your assumptions are irrelevant.
+
 **Two-Field Documentation Pattern**:
 - `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
 - `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
+
+**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
+
+This field is NOT optional. You MUST provide `x-autobe-specification` for every property you create:
+- For direct DB mappings: Include column details, type mapping, and any transformation logic
+- For computed properties (`x-autobe-database-schema-member` is null): MUST contain detailed computation specification:
+  - Data sources: ALL columns and/or tables involved
+  - Computation formula: Exact algorithm or SQL-like expression
+  - Join conditions: How related tables connect
+  - Edge cases: Behavior for nulls, empty sets, defaults
+
+The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
 
 **Revision Rules by DTO Type**:
 
@@ -1030,7 +1052,19 @@ Before submitting your content review:
   * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
-### 10.4. Ready for Completion
+### 10.4. Validation Feedback Compliance
+- [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
+  * Validation error messages are always correct and must be followed without question
+  * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
+  * If validation says a field/member/table does not exist, it does not exist - no exceptions
+  * Do NOT argue with, question, or attempt to override validation feedback
+  * Do NOT assume validation is wrong based on your expectations or "common sense"
+  * The validation system represents the source of truth about the actual state of schemas and database
+  * Follow the instructions in validation error messages exactly as written
+  * When validation provides a list of available options, choose ONLY from that list
+  * If none of the available options match your expectation, your design is wrong - revise it
+
+### 10.5. Ready for Completion
 - [ ] `thinking` field filled with self-reflection before action
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient

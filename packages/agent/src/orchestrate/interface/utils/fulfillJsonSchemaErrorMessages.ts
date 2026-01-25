@@ -23,23 +23,24 @@ const fulfillTypeAsArrayError = (e: IValidation.IError): boolean => {
     typia.is<{ type: string[] }>(e.value) === true
   ) {
     e.description = StringUtil.trim`
-      You have defined the JSON schema's type property value as an 
-      array type listing all the types that you want, but this is not 
-      allowed in the JSON schema.
-      
-      The JSON schema's type property value must be a single string type.
-      In your case, you have to change it to an "oneOf" type which 
-      represents a union type.
+      **Invalid Schema: Array-type "type" property is not allowed.**
 
-      So, please change the value as below:
+      You defined the "type" property as an array (e.g., \`["number", "string"]\`),
+      but the JSON schema specification requires "type" to be a single string value.
 
-      \`\`\`
+      To represent a union of multiple types, you must use the "oneOf" construct.
+      Convert your schema to the following format:
+
+      \`\`\`json
       {
-        oneOf: [
+        "oneOf": [
       ${e.value.type.map((t) => `    { "type": ${JSON.stringify(t)}, ... },`).join("\n")}
-        ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
+        ],${"description" in e.value ? `\n  "description": ${JSON.stringify(e.value.description)},` : ""}
       }
       \`\`\`
+
+      You must make this correction. The validator will continue to reject your
+      schema until you replace the array-type "type" with a proper "oneOf" structure.
     `;
     return true;
   }
@@ -53,17 +54,24 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
     typia.is<{ enum: any[] }>(e.value) === true
   ) {
     e.description = StringUtil.trim`
-      You have defined an enum property, but it is not allowed in the 
-      JSON schema. You have to define it as oneOf type containing multiple
-      const types like below:
-      
-      \`\`\`
+      **Invalid Schema: "enum" keyword is not supported in AutoBE.**
+
+      The "enum" keyword is prohibited. AutoBE requires you to use the "oneOf"
+      construct with individual "const" values instead. This design ensures
+      better type safety and documentation clarity.
+
+      Convert your schema to the following format:
+
+      \`\`\`json
       {
-        oneOf: [
+        "oneOf": [
       ${e.value.enum.map((t) => `    { "const": ${JSON.stringify(t)} },`).join("\n")}
-        ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
+        ],${"description" in e.value ? `\n  "description": ${JSON.stringify(e.value.description)},` : ""}
       }
       \`\`\`
+
+      You must make this correction. The validator will continue to reject your
+      schema until you replace "enum" with the proper "oneOf" + "const" structure.
     `;
     return true;
   }
@@ -77,22 +85,22 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
     if (isPropertyLevel) {
       // Property-level x-autobe-specification
       e.description = StringUtil.trim`
-        You have missed the "x-autobe-specification" property in the JSON schema property.
+        **Missing Required Field: "x-autobe-specification" (property-level)**
 
-        The "x-autobe-specification" is an AutoBE-internal field that provides detailed
-        implementation guidance for downstream agents (Realize Agent, Test Agent, etc.).
-        While "description" is for API consumers (Swagger UI, SDK docs),
-        "x-autobe-specification" explains HOW to implement the actual logic.
+        Every property in your schema must have an "x-autobe-specification" field.
+        This field provides implementation instructions for downstream agents
+        (Realize Agent, Test Agent) and is distinct from "description" which
+        serves API documentation purposes.
 
-        **For properties (IJsonSchemaProperty)**, it should include:
-        - Database column details and type mapping (when mapped to a column)
-        - Computation formula when "x-autobe-database-schema-member" is null:
-          - Data sources: ALL columns and/or tables involved
-          - Exact algorithm or SQL-like expression (e.g., SUM(items.price * items.quantity))
+        **What to include**:
+        - For column-mapped properties: Database column details, constraints, type mapping
+        - For computed properties (when "x-autobe-database-schema-member" is null):
+          - All source columns and tables involved
+          - Exact computation formula (e.g., \`SUM(items.price * items.quantity)\`)
           - Join conditions between related tables
-          - Edge cases: Behavior for nulls, empty sets, defaults
+          - Edge case handling (nulls, empty sets, default values)
 
-        **Example for a direct column mapping**:
+        **Example**:
         \`\`\`json
         {
           "email": {
@@ -105,42 +113,33 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
         }
         \`\`\`
 
-        **Example for a computed property**:
-        \`\`\`json
-        {
-          "totalOrders": {
-            "type": "integer",
-            "description": "Total number of orders placed by this user.",
-            "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
-            "x-autobe-database-schema-member": null
-          }
-        }
-        \`\`\`
-
         The specification must be precise enough for downstream agents to implement
-        the actual data retrieval or computation without ambiguity.
+        the data retrieval or computation without ambiguity.
+
+        You must add this field. The validator will continue to reject your schema
+        until every property has an "x-autobe-specification" value.
       `;
     } else {
       // Object-level x-autobe-specification
       e.description = StringUtil.trim`
-        You have missed the "x-autobe-specification" property in the JSON schema object type.
+        **Missing Required Field: "x-autobe-specification" (object-level)**
 
-        The "x-autobe-specification" is an AutoBE-internal field that provides detailed
-        implementation guidance for downstream agents (Realize Agent, Test Agent, etc.).
-        While "description" is for API consumers (Swagger UI, SDK docs),
-        "x-autobe-specification" explains HOW to implement the actual logic.
+        Every object type in your schema must have an "x-autobe-specification" field.
+        This field provides implementation instructions for downstream agents
+        (Realize Agent, Test Agent) and is distinct from "description" which
+        serves API documentation purposes.
 
-        **For object types (IJsonSchemaDescriptive.IObject)**, it should include:
+        **What to include**:
         - Source database tables (primary table and joined tables)
         - Overall query strategy (joins, filters, grouping)
         - Object-level business rules and constraints
         - Edge cases for the object as a whole (not found, empty, etc.)
 
-        **⚠️ IMPORTANT**: Object-level "x-autobe-specification" is for the **object type
-        itself**, NOT for individual properties. Each property has its own
-        "x-autobe-specification" field. Do NOT duplicate property-level specs here.
+        **Important**: Object-level "x-autobe-specification" describes the object type
+        as a whole. Do NOT repeat individual property specifications here - each
+        property has its own "x-autobe-specification" field.
 
-        **Example for an object with direct table mapping**:
+        **Example**:
         \`\`\`json
         {
           "type": "object",
@@ -151,19 +150,11 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
         }
         \`\`\`
 
-        **Example for a computed/aggregated object (null database mapping)**:
-        \`\`\`json
-        {
-          "type": "object",
-          "description": "Sales statistics aggregating data from multiple tables.",
-          "x-autobe-specification": "Computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
-          "x-autobe-database-schema": null,
-          "properties": { ... }
-        }
-        \`\`\`
-
         The specification must be precise enough for downstream agents to implement
-        the actual data retrieval or computation without ambiguity.
+        the data retrieval or computation without ambiguity.
+
+        You must add this field. The validator will continue to reject your schema
+        until every object type has an "x-autobe-specification" value.
       `;
     }
     return true;
@@ -175,41 +166,30 @@ const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
   if (e.value === undefined && e.path.endsWith(".description")) {
     // no description
     e.description = StringUtil.trim`
-      You have missed the "description" property in the JSON schema.
+      **Missing Required Field: "description"**
 
-      The "description" is the standard OpenAPI field that will be displayed in
-      Swagger UI, SDK documentation, and other API documentation tools. It should
-      be written for API consumers and focus on WHAT/WHY rather than implementation
-      details.
+      Every schema element must have a "description" field. This is the standard
+      OpenAPI field that appears in Swagger UI, SDK documentation, and other
+      API documentation tools. Write descriptions for API consumers, focusing
+      on WHAT and WHY rather than implementation details.
 
-      **Guidelines for writing descriptions**:
+      **Writing guidelines**:
       - Reference the corresponding database schema table's documentation
-      - Organize into multiple paragraphs for complex types (separated by line breaks)
+      - Use multiple paragraphs for complex types (separated by line breaks)
       - Focus on business meaning, relationships, and constraints
-      - Keep the language accessible to API consumers
+      - Keep language accessible to API consumers
+      - Write all descriptions in English
 
-      **For type schemas**, describe:
-      - WHAT: The purpose and business meaning of the type
-      - WHY: When and why this type is used
-      - Relationships: Connections to other entities in the system
-      - Constraints: Validation rules visible to API consumers
+      **For type schemas**: Describe the purpose, business meaning, when/why the
+      type is used, relationships to other entities, and consumer-visible constraints.
 
-      **For property schemas**, describe:
-      - WHAT: What this property represents in the business domain
-      - WHY: Why this property exists and when it's used
-      - Constraints: Validation rules, value ranges, or format requirements
-      - For nullable/optional properties: Explain why if DB column is non-null
+      **For property schemas**: Describe what the property represents in the
+      business domain, why it exists, validation rules, value ranges, and format
+      requirements. For nullable/optional properties, explain the reason if the
+      underlying DB column is non-null.
 
-      **Example**:
-      \`\`\`json
-      {
-        "type": "object",
-        "description": "Shopping sale information with detailed metadata.\\n\\nRepresents a product listing that sellers publish for customers to browse and purchase. Contains pricing information, product details, and availability status.\\n\\nDirectly corresponds to the shopping_sales table in the database.",
-        ...
-      }
-      \`\`\`
-
-      All descriptions MUST be written in English.
+      You must add this field. The validator will continue to reject your schema
+      until every schema element has a "description" value.
     `;
     return true;
   }
@@ -223,53 +203,33 @@ const fulfillNoDatabaseSchema = (e: IValidation.IError): boolean => {
   ) {
     // no x-autobe-database-schema
     e.description = StringUtil.trim`
-      You have missed the "x-autobe-database-schema" property in the JSON schema.
+      **Missing Required Field: "x-autobe-database-schema"**
 
-      The "x-autobe-database-schema" establishes a direct link between this DTO
-      schema and a specific database table. This mapping is critical for property
-      validation, code generation, and ensuring type consistency.
+      Every object type schema must have an "x-autobe-database-schema" field that
+      links the DTO to a specific database table. This mapping enables property
+      validation, code generation, and type consistency across the system.
 
-      **When to set a table name**:
-      Set this to a valid table name when the DTO directly represents or derives
-      from a specific database table:
+      **Set to a table name** when the DTO represents or derives from a database table:
       - Entity types (\`IUser\`, \`IOrder\`): Map to their primary table
-      - Summary types (\`IUser.ISummary\`): Map to the same table as parent
+      - Summary types (\`IUser.ISummary\`): Map to the same table as the parent entity
       - Create/Update DTOs (\`IUser.ICreate\`): Map to the target table
 
-      **When to set \`null\`**:
-      Set this to \`null\` when the DTO has no direct database table mapping:
-      1. Composite/Aggregated types: DTOs combining data from multiple tables
-         (e.g., \`IDashboardSummary\` aggregating user, order, and product stats)
-      2. Request parameter types: Search filters, pagination options, sorting criteria
-         (e.g., \`IUser.IRequest\`, \`IPageInfo\`)
-      3. Computed result types: DTOs representing calculation outputs
-         (e.g., \`IRevenueReport\`, \`IAnalyticsResult\`)
-      4. Wrapper types: Container types for API responses
-         (e.g., \`IPage<T>\`, \`IApiResponse<T>\`)
-      5. Pure business logic types: DTOs born from requirements, not database structure
-         (e.g., \`ICheckoutSession\`, \`IPaymentIntent\`)
+      **Set to \`null\`** when the DTO has no direct table mapping:
+      - Composite types combining data from multiple tables (e.g., \`IDashboardSummary\`)
+      - Request parameter types (e.g., \`IUser.IRequest\`, \`IPageInfo\`)
+      - Computed result types (e.g., \`IRevenueReport\`)
+      - Wrapper types (e.g., \`IPage<T>\`)
+      - Pure business logic types (e.g., \`ICheckoutSession\`)
 
-      **CRITICAL**: When this field is \`null\`, the "x-autobe-specification" field
-      MUST contain detailed implementation instructions explaining:
-      - Source tables and columns involved
-      - Join conditions between tables
-      - Aggregation formulas (SUM, COUNT, AVG, etc.)
-      - Business rules and transformation logic
-      - Edge cases (nulls, empty sets, defaults)
+      **When set to \`null\`**: The "x-autobe-specification" field must contain
+      detailed implementation instructions including source tables, join conditions,
+      aggregation formulas, and edge case handling.
 
-      **Example**:
-      \`\`\`json
-      {
-        "type": "object",
-        "x-autobe-database-schema": null,
-        "x-autobe-specification": "Computed result type. Data sourced by: JOIN sales ON products.id = sales.product_id, grouped by category, with SUM(quantity) and AVG(price) calculations.",
-        ...
-      }
-      \`\`\`
+      **When set to a table name**: The name must exactly match an existing model
+      in the database schema. Non-existent names cause compilation failures.
 
-      **WARNING**: When set to a table name, it MUST be an actually existing model
-      name from the database schema. Using non-existent schema names causes
-      compilation failures.
+      You must add this field. The validator will continue to reject your schema
+      until every object type has an "x-autobe-database-schema" value (table name or null).
     `;
     return true;
   }
@@ -283,53 +243,34 @@ const fulfillNoDatabaseSchemaMember = (e: IValidation.IError): boolean => {
   ) {
     // no x-autobe-database-schema-member
     e.description = StringUtil.trim`
-      You have missed the "x-autobe-database-schema-member" property in the JSON schema.
+      **Missing Required Field: "x-autobe-database-schema-member"**
 
-      The "x-autobe-database-schema-member" specifies the exact database column name
-      that this DTO property maps to. This enables end-to-end traceability from DTO
-      properties to their database origins and is essential for:
-      - Phantom field detection: Verifying every DTO property has a corresponding DB column
-      - Code generation: Generating correct database queries and select clauses
-      - Type validation: Ensuring property types match database column types
+      Every property must have an "x-autobe-database-schema-member" field that
+      specifies the exact database column or relation this property maps to.
+      This enables phantom field detection, correct query generation, and type validation.
 
-      **When to set a column name**:
-      Set this to a valid column name when:
+      **Set to a column/relation name** when:
       - The property directly represents a database column value
       - The parent object's "x-autobe-database-schema" points to a valid table
-      - The column exists in that table's schema
+      - The column or relation actually exists in that table's schema
 
-      **When to set \`null\`**:
-      Set this to \`null\` when the property is a **computed property** that:
-      1. Aggregates data from the same table: Calculated from multiple columns
-         (e.g., \`fullName\` from \`first_name\` + \`last_name\`)
-      2. Derives from related tables: Computed from joined/related table data
-         (e.g., \`orderCount\` from counting related order records)
-      3. Applies business logic transformations: Results from runtime calculations
-         (e.g., \`discountedPrice\` from \`price * (1 - discount)\`)
-      4. Represents denormalized data: Flattened from nested relations
-         (e.g., \`authorName\` from \`post.author.name\`)
-      5. Parent object has no database mapping: When the containing object's
-         "x-autobe-database-schema" is itself \`null\`
+      **Set to \`null\`** when the property is computed:
+      - Aggregated from multiple columns (e.g., \`fullName\` from \`first_name\` + \`last_name\`)
+      - Derived from related tables (e.g., \`orderCount\` from counting orders)
+      - Result of runtime calculations (e.g., \`discountedPrice\`)
+      - Denormalized from nested relations (e.g., \`authorName\` from \`post.author.name\`)
+      - Parent object has no database mapping (\`x-autobe-database-schema\` is null)
 
-      **CRITICAL**: When this field is \`null\`, the "x-autobe-specification" field
-      MUST contain a detailed computation specification explaining:
-      - Data sources: ALL columns and/or tables involved
-      - Computation formula: Exact algorithm or SQL-like expression
-        (e.g., \`SUM(items.price * items.quantity)\`)
-      - Join conditions: How related tables connect
-      - Edge cases: Behavior for nulls, empty sets, defaults
+      **When set to \`null\`**: The "x-autobe-specification" field must contain
+      the complete computation specification: all source columns/tables, the exact
+      formula or algorithm, join conditions, and edge case handling.
 
-      **Example**:
-      \`\`\`json
-      {
-        "totalOrders": {
-          "type": "integer",
-          "description": "Total number of orders placed by this user.",
-          "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
-          "x-autobe-database-schema-member": null
-        }
-      }
-      \`\`\`
+      **When set to a member name**: The name must exactly match an existing field
+      or relation in the database schema. Do not guess or imagine member names.
+      If validation rejects a member name, that member does not exist in the schema.
+
+      You must add this field. The validator will continue to reject your schema
+      until every property has an "x-autobe-database-schema-member" value (member name or null).
     `;
     return true;
   }
@@ -344,14 +285,32 @@ const fulfillNoRequiredError = (e: IValidation.IError): boolean => {
     e.expected === "Array<string>"
   ) {
     e.description = StringUtil.trim`
-      You have missed the "required" property in the JSON schema of object type.
+      **Missing Required Field: "required"**
 
-      When defining the object type, you have to fill the "required" property
-      which lists all the required property names.
+      Every object type schema must have a "required" property that lists
+      which property names are mandatory. This field must be present even
+      when all properties are optional - in that case, provide an empty array.
 
-      Please fill it with the required fields. If you think that there is
-      not any required fields at all, you still have to fill the 
-      "required" property even though it becomes an empty array.
+      Example with required properties:
+      \`\`\`json
+      {
+        "type": "object",
+        "required": ["id", "name", "email"],
+        "properties": { ... }
+      }
+      \`\`\`
+
+      Example with no required properties:
+      \`\`\`json
+      {
+        "type": "object",
+        "required": [],
+        "properties": { ... }
+      }
+      \`\`\`
+
+      You must add this field. The validator will continue to reject your schema
+      until every object type has a "required" array.
     `;
     return true;
   }
@@ -370,45 +329,39 @@ const fulfillObjectMetadataMisplacement = (e: IValidation.IError): boolean => {
   }): boolean => {
     e.expected = "undefined";
     e.description = StringUtil.trim`
-      You have placed "${props.key}" in the wrong location.
+      **Structural Error: "${props.key}" is in the wrong location**
 
-      **Type System Violation**:
-      - You defined: \`${props.actual}\` (as a field inside properties)
-      - Required type: \`${props.expected}\` (as metadata at object type level)
+      You placed "${props.key}" inside the "properties" object, but it is a
+      metadata field that belongs at the object type level, outside of "properties".
 
-      The "${props.key}" is NOT a regular field that appears in the
-      object's properties, but a METADATA annotation that describes ${props.purpose}. 
-      In the AutoBE type system, metadata properties must be defined at the 
-      object type level, outside of "properties".
+      - Your placement: \`${props.actual}\`
+      - Correct placement: \`${props.expected}\`
 
-      **Current (Wrong)**:
+      The "${props.key}" field describes ${props.purpose} and must be placed
+      at the schema's top level alongside "type" and "properties".
+
+      **Your current structure (incorrect)**:
       \`\`\`json
       {
         "type": "object",
         "properties": {
           ...,
-          "${props.key}": ${JSON.stringify(e.value)}  // ❌ Wrong: inside properties
-        },
-        ...
+          "${props.key}": ${JSON.stringify(e.value)}
+        }
       }
       \`\`\`
 
-      **Correct**:
+      **Required structure**:
       \`\`\`json
       {
         "type": "object",
-        "${props.key}": ${JSON.stringify(e.value)},  // ✅ Correct: metadata level
-        "properties": { ... },
-        ...
+        "${props.key}": ${JSON.stringify(e.value)},
+        "properties": { ... }
       }
       \`\`\`
 
-      **Action Required**:
-      1. Remove "${props.key}" from: ${e.path}
-      2. Place it at the correct location: ${props.place}
-
-      This is a structural requirement enforced by the AutoBE type system.
-      The compiler will continue to reject this schema until corrected.
+      Move "${props.key}" from ${e.path} to ${props.place}. The validator will
+      continue to reject your schema until this structural correction is made.
     `;
     return true;
   };
@@ -456,43 +409,43 @@ const fulfillNestedObjectError = (e: IValidation.IError): boolean => {
   if (isExcludedObjectType(e) === true) {
     // nested object
     e.description = StringUtil.trim`
-      Nested inline object type definitions are not allowed in AutoBE.
+      **Invalid Schema: Inline object types are not allowed**
 
-      All object types must be defined as named schemas in the components section
-      and referenced using $ref. This enforces the DRY principle, improves reusability,
-      and maintains AutoBE's simplified AST structure for AI generation clarity.
+      AutoBE prohibits nested inline object definitions. All object types must be
+      defined as named schemas in the components section and referenced via $ref.
+      This requirement enforces reusability and maintains the simplified AST structure.
 
-      Instead of defining an inline object, create a new named type in components.schemas
-      with an interface-style name (starting with 'I'), then reference it with $ref.
-
-      For example, instead of:
-
-      \`\`\`typescript
+      **Your current structure (invalid)**:
+      \`\`\`json
       {
         "type": "array",
-        "items": { "type": "object", "properties": {...} }  // ❌ Wrong
+        "items": { "type": "object", "properties": {...} }
       }
       \`\`\`
 
-      Define a named type and reference it:
-
-      \`\`\`typescript
-      // In components.schemas
-      "IUserSummary": { 
-        "type": "object", 
-        "properties": {...} 
-      }
-
-      // Then reference it
-      {
-        "type": "array",
-        "items": { "$ref": "#/components/schemas/IUserSummary" }  // ✅ Correct
+      **Required approach**:
+      1. Create a named schema in components.schemas (name must start with 'I'):
+      \`\`\`json
+      "IUserSummary": {
+        "type": "object",
+        "properties": {...}
       }
       \`\`\`
 
-      This applies to array items, object properties, additionalProperties, 
-      and oneOf variants. Change the inline object definition to a named schema 
-      reference at the next time.
+      2. Reference it using $ref:
+      \`\`\`json
+      {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/IUserSummary" }
+      }
+      \`\`\`
+
+      This rule applies wherever objects appear: array items, object properties,
+      additionalProperties, and oneOf variants. Extract every inline object
+      definition to a named schema and replace it with a $ref.
+
+      The validator will continue to reject your schema until all inline object
+      definitions are converted to named schema references.
     `;
     return true;
   }

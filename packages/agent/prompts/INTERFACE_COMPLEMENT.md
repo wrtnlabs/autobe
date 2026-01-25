@@ -773,9 +773,19 @@ Every object type schema MUST include `x-autobe-database-schema`:
    - Business rules and transformation logic
    - Edge cases (nulls, empty sets, defaults)
 
-**⚠️ IMPORTANT**: Object-level `x-autobe-specification` is for the **object type itself**, NOT for individual properties. Each property has its own `x-autobe-specification` field.
+**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Object Types and Properties**
 
-The `x-autobe-specification` must be **precise enough for downstream agents to implement** the actual data retrieval or computation.
+This field is NOT optional. You MUST provide `x-autobe-specification` for:
+- Every object type schema (explains how to retrieve/construct the object)
+- Every property within an object (explains how to get/compute the property value)
+
+**Object-level `x-autobe-specification`**: Describes how to retrieve/construct the entire object type. Include source tables, overall query strategy, and object-level constraints.
+
+**Property-level `x-autobe-specification`**: Each property has its own field. Include:
+- For direct DB mappings: Column details and any transformation logic
+- For computed properties (`x-autobe-database-schema-member` is null): MUST contain detailed computation specification with data sources, formulas, join conditions, and edge cases
+
+The specification must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague or missing specifications will cause validation failures.
 
 **`x-autobe-database-schema-member` Property-Level Mapping**:
 
@@ -788,6 +798,16 @@ Every property within an object schema must specify its database member mapping:
 - When `x-autobe-database-schema` is `null`:
   - `x-autobe-database-schema-member` MUST be set to `null` for all properties
   - Each property's `x-autobe-specification` must still contain detailed data sourcing specs
+
+**⚠️ ABSOLUTE RULE: Never Imagine Database Members**
+
+When setting `x-autobe-database-schema-member`, you MUST:
+1. **Carefully verify against the actual database schema definition** - Read the Prisma schema and confirm the member actually exists
+2. **Only use member names that exist** - Never guess or invent member names
+3. **If validation feedback says a member does not exist, it is correct** - Validation has absolute authority. Do not insist the member "should" exist
+4. **If no matching member exists**: Set to `null` (computed) or delete the property entirely
+
+The database schema is the **source of truth**. Your assumptions are irrelevant.
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests
@@ -853,7 +873,19 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
 - [ ] IPage types use fixed structure (pagination + data)
 - [ ] Descriptions in English, clear and detailed
 
-### 9.3. Function Calling Verification
+### 9.3. Validation Feedback Compliance
+- [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
+  * Validation error messages are always correct and must be followed without question
+  * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
+  * If validation says a field/member/table does not exist, it does not exist - no exceptions
+  * Do NOT argue with, question, or attempt to override validation feedback
+  * Do NOT assume validation is wrong based on your expectations or "common sense"
+  * The validation system represents the source of truth about the actual state of schemas and database
+  * Follow the instructions in validation error messages exactly as written
+  * When validation provides a list of available options, choose ONLY from that list
+  * If none of the available options match your expectation, your design is wrong - revise it
+
+### 9.4. Function Calling Verification
 - [ ] The specific missing schema type identified and schema definition created
 - [ ] NO existing schemas recreated or modified
 - [ ] Schema definition is complete and self-contained

@@ -89,11 +89,12 @@ export namespace AutoBeJsonSchemaValidator {
         description: StringUtil.trim`
           JSON schema type name allows at most one dot(.) character to separate
           module name and interface name.
-          
+
           However, current key name ${transform(JSON.stringify(props.key))}
-          contains multiple dot(.) characters (${elements.length - 1} times). 
-          
+          contains multiple dot(.) characters (${elements.length - 1} times).
+
           Change it to a valid type name with at most one dot(.) character at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (elements.every(Escaper.variable) === false)
@@ -111,8 +112,9 @@ export namespace AutoBeJsonSchemaValidator {
           Even though JSON schema type name allows dot(.) character, but
           each segment separated by dot(.) must be a valid variable name.
 
-          Current key name ${transform(JSON.stringify(props.key))} is not valid. 
+          Current key name ${transform(JSON.stringify(props.key))} is not valid.
           Change it to a valid variable name at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (props.key.endsWith(".IPage")) {
@@ -141,10 +143,11 @@ export namespace AutoBeJsonSchemaValidator {
         value: transform(props.key),
         description: StringUtil.trim`
           You've taken a mistake that defines "${transform("IPageIRequest")}" as a type name.
-          However, as you've intended to define a pagination request type, 
+          However, as you've intended to define a pagination request type,
           the correct type name is "${transform("IPage.IRequest")}" instead of "${transform("IPageIRequest")}".
 
           Change it to "${transform("IPage.IRequest")}" at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (
@@ -170,10 +173,11 @@ export namespace AutoBeJsonSchemaValidator {
 
           Even in the case of pagination response, after 'IPage' prefix,
           the remaining part must be an interface name starting with 'I'.
-          
+
           Current key name ${JSON.stringify(props.key)} is not valid. Change
           it to a valid interface name to be  ${JSON.stringify(expected)},
           or change it to another valid interface name at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     }
@@ -233,7 +237,7 @@ export namespace AutoBeJsonSchemaValidator {
 
           Change ${transform(JSON.stringify(props.key))} to ${transform(JSON.stringify(`${elements[0].replace("Session", "")}.${elements[1]}`))} at the next time.
 
-          This is an ABSOLUTE RULE with ZERO TOLERANCE. You MUST follow this instruction exactly.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
   };
@@ -245,7 +249,7 @@ export namespace AutoBeJsonSchemaValidator {
           path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
           value: props.schema,
-          description: `${props.typeName} must be an object type for authorization responses`,
+          description: `${props.typeName} must be an object type for authorization responses. Note that, this is not a recommendation, but an instruction you must follow.`,
         });
       } else {
         // Check if token property exists
@@ -295,17 +299,19 @@ export namespace AutoBeJsonSchemaValidator {
               .join(" | "),
             value: key,
             description: StringUtil.trim`
-              You've referenced an authorization-related type ${JSON.stringify(key)} 
+              You've referenced an authorization-related type ${JSON.stringify(key)}
               that is not used in any operation's requestBody or responseBody.
 
               Authorization-related types must be used in at least one operation's
               requestBody or responseBody. Make sure to use the type appropriately
               in your API design.
- 
+
               Existing authorization-related types used in operations are:
               - ${Array.from(candidates)
                 .map((s) => `#/components/schemas/${s}`)
                 .join("\n- ")}
+
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
       },
@@ -322,20 +328,22 @@ export namespace AutoBeJsonSchemaValidator {
       e.description = StringUtil.trim`
         You have defined a property named "x-autobe-database-schema"
         somewhere wrong place.
-        
-        You have defined a property name "x-autobe-database-schema" as 
+
+        You have defined a property name "x-autobe-database-schema" as
         an object type. However, this "x-autobe-database-schema" property
         must be defined only in the root schema object as a metadata,
         not in the nested object property.
 
         Remove this property at the next time, and re-define it in the
         root object schema.
-        
+
         - Current path (wrong): ${e.path}
         - Must be (object root): ${e.path.replace(
           `.properties["x-autobe-database-schema"]`,
           `["x-autobe-database-schema"]`,
         )}
+
+        Note that, this is not a recommendation, but an instruction you must follow.
       `;
     }
 
@@ -363,8 +371,10 @@ export namespace AutoBeJsonSchemaValidator {
               a valid database schema name.
 
               If not, set this "x-autobe-database-schema-member" property
-              to null value at the next time, and then describe what this property 
+              to null value at the next time, and then describe what this property
               is for in the schema description instead.
+
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
     } else {
@@ -440,6 +450,8 @@ export namespace AutoBeJsonSchemaValidator {
           If not, remove this "x-autobe-database-schema-member" property
           at the next time, and then describe what this property is for
           in the schema description instead.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
       return;
@@ -463,12 +475,20 @@ export namespace AutoBeJsonSchemaValidator {
           ${JSON.stringify(member)} that does not match any member (field or relation)
           in the database schema "${props.target.name}".
 
-          The member name you specified does not exist in the target database
-          schema. Please check the spelling and ensure you're referencing
-          an existing field or relation.
-
           Available members in "${props.target.name}" are:
           ${candidates.map((c) => `- ${c.key}`).join("\n")}
+
+          Choose one of the following actions:
+          1. If you made a typo and a similar member exists above, correct it
+          2. If this property is computed (not from DB), set the value to null
+          3. If no similar member exists above, delete this property entirely
+             from the schema - the property itself should not exist
+
+          The database schema is the source of truth. If the column you expected
+          does not exist, the property design is incorrect. Do not insist on
+          non-existent columns or keep trying different names hoping one works.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     else if (
@@ -507,13 +527,15 @@ export namespace AutoBeJsonSchemaValidator {
           which would cause runtime errors if the DTO expects non-null.
 
           You MUST use "oneOf" with "null" type to allow null values:
-          
+
           \`\`\`json
           ${JSON.stringify(expected)}
           \`\`\`
 
           Note: The reverse case (DB non-null, DTO nullable) is allowed
           because DB default values or server logic may fill the value.
+
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     }
@@ -546,6 +568,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need tree or graph structures, use explicit relationships with
         ID references (e.g., parentId: string) instead of recursive type definitions.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isArray(props.schema) &&
@@ -566,6 +589,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need nested structures, define explicit depth levels with separate
         types, or use parent-child relationships with ID references.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isOneOf(props.schema) &&
@@ -590,6 +614,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need polymorphic hierarchies, define separate concrete types for
         each variant without including the union type itself as a variant.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isObject(props.schema) &&
@@ -625,6 +650,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need parent-child or graph relationships, make the self-referencing
         property either nullable or optional, or use ID references (e.g., parentId: string).
         Remove the required self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
   };
 
@@ -820,6 +846,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               This creates an impossible range where no value can satisfy both constraints.
               Either increase maximum or decrease minimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -839,6 +866,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               This creates an impossible range where no value can satisfy both constraints.
               Either increase exclusiveMaximum or decrease exclusiveMinimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -859,6 +887,7 @@ export namespace AutoBeJsonSchemaValidator {
               This creates an impossible range. A value cannot be >= ${minimum} and < ${exclusiveMaximum}
               at the same time when minimum >= exclusiveMaximum.
               Either increase exclusiveMaximum or decrease minimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -879,6 +908,7 @@ export namespace AutoBeJsonSchemaValidator {
               This creates an impossible range. A value cannot be > ${exclusiveMinimum} and <= ${maximum}
               at the same time when exclusiveMinimum >= maximum.
               Either increase maximum or decrease exclusiveMinimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -900,6 +930,7 @@ export namespace AutoBeJsonSchemaValidator {
               When minimum === maximum, the only valid value is exactly ${minimum}.
               Adding exclusiveMinimum or exclusiveMaximum makes this impossible.
               Remove the exclusive constraints or adjust minimum/maximum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -914,6 +945,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               The multipleOf constraint must be a positive number greater than zero.
               Change multipleOf to a positive value.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
       },
