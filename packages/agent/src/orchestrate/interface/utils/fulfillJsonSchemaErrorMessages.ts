@@ -265,12 +265,12 @@ const fulfillNoDatabaseSchemaMember = (e: IValidation.IError): boolean => {
       the complete computation specification: all source columns/tables, the exact
       formula or algorithm, join conditions, and edge case handling.
 
-      **When set to a member name**: The name must exactly match an existing field
-      or relation in the database schema. Do not guess or imagine member names.
-      If validation rejects a member name, that member does not exist in the schema.
+      **When set to a property name**: The name must exactly match an existing column
+      or relation in the database schema. Do not guess or imagine property names.
+      If validation rejects a property name, that property does not exist in the schema.
 
       You must add this field. The validator will continue to reject your schema
-      until every property has an "x-autobe-database-schema-property" value (member name or null).
+      until every property has an "x-autobe-database-schema-property" value (property name or null).
     `;
     return true;
   }

@@ -75,14 +75,14 @@ export namespace AutoBeInterfaceSchemaProgrammer {
       model: props.model,
       everyModels: props.everyModels,
     });
-    if (props.model !== null) {
-      fixDatabaseSchemaMember({
-        $defs: func.parameters.$defs,
-        parameters: func.parameters,
-        model: props.model,
-        everyModels: props.everyModels,
-      });
-    }
+    // if (props.model !== null) {
+    //   fixDatabaseSchemaMember({
+    //     $defs: func.parameters.$defs,
+    //     parameters: func.parameters,
+    //     model: props.model,
+    //     everyModels: props.everyModels,
+    //   });
+    // }
   };
 
   const fixDatabaseSchema = (props: {
@@ -115,33 +115,33 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     });
   };
 
-  const fixDatabaseSchemaMember = (props: {
-    $defs: Record<string, ILlmSchema>;
-    parameters: ILlmSchema.IParameters;
-    model: AutoBeDatabase.IModel;
-    everyModels: AutoBeDatabase.IModel[];
-  }): void => {
-    LlmTypeChecker.visit({
-      $defs: props.$defs,
-      schema: props.parameters,
-      closure: (next) => {
-        if (LlmTypeChecker.isObject(next) === false) return;
+  // const fixDatabaseSchemaMember = (props: {
+  //   $defs: Record<string, ILlmSchema>;
+  //   parameters: ILlmSchema.IParameters;
+  //   model: AutoBeDatabase.IModel;
+  //   everyModels: AutoBeDatabase.IModel[];
+  // }): void => {
+  //   LlmTypeChecker.visit({
+  //     $defs: props.$defs,
+  //     schema: props.parameters,
+  //     closure: (next) => {
+  //       if (LlmTypeChecker.isObject(next) === false) return;
 
-        const member: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema-property"];
-        if (member === undefined || LlmTypeChecker.isAnyOf(member) === false)
-          return;
+  //       const member: ILlmSchema | undefined =
+  //         next.properties["x-autobe-database-schema-property"];
+  //       if (member === undefined || LlmTypeChecker.isAnyOf(member) === false)
+  //         return;
 
-        const value: ILlmSchema | undefined = member.anyOf.find((x) =>
-          LlmTypeChecker.isString(x),
-        );
-        if (value === undefined) return;
+  //       const value: ILlmSchema | undefined = member.anyOf.find((x) =>
+  //         LlmTypeChecker.isString(x),
+  //       );
+  //       if (value === undefined) return;
 
-        value.enum = getDatabaseSchemaMembers({
-          everyModels: props.everyModels,
-          model: props.model,
-        }).map((m) => m.key);
-      },
-    });
-  };
+  //       value.enum = getDatabaseSchemaMembers({
+  //         everyModels: props.everyModels,
+  //         model: props.model,
+  //       }).map((m) => m.key);
+  //     },
+  //   });
+  // };
 }

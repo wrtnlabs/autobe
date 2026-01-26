@@ -363,10 +363,10 @@ export namespace AutoBeJsonSchemaValidator {
             value: value["x-autobe-database-schema-property"],
             description: StringUtil.trim`
               You have defined "x-autobe-database-schema-property" property referencing
-              a database schema member, but the parent schema does not reference any
+              a database schema property, but the parent schema does not reference any
               database schema in "x-autobe-database-schema" property.
 
-              To reference a database schema member, first define the parent
+              To reference a database schema property, first define the parent
               schema's "x-autobe-database-schema" property with
               a valid database schema name.
 
@@ -480,16 +480,16 @@ export namespace AutoBeJsonSchemaValidator {
         value: member,
         description: StringUtil.trim`
           You have defined "x-autobe-database-schema-property" property with value
-          ${JSON.stringify(member)} that does not match any member (field or relation)
+          ${JSON.stringify(member)} that does not match any property (column or relation)
           in the database schema "${props.target.name}".
 
-          Available members in "${props.target.name}" are:
+          Available properties in "${props.target.name}" are:
           ${candidates.map((c) => `- ${c.key}`).join("\n")}
 
           Choose one of the following actions:
-          1. If you made a typo and a similar member exists above, correct it
+          1. If you made a typo and a similar property exists above, correct it
           2. If this property is computed (not from DB), set the value to null
-          3. If no similar member exists above, delete this property entirely
+          3. If no similar property exists above, delete this property entirely
              from the schema - the property itself should not exist
 
           The database schema is the source of truth. If the column you expected
@@ -528,7 +528,7 @@ export namespace AutoBeJsonSchemaValidator {
         expected: JSON.stringify(expected),
         value: props.value,
         description: StringUtil.trim`
-          The database schema member "${found.key}" in "${props.target.name}"
+          The database schema property "${found.key}" in "${props.target.name}"
           is nullable, but this DTO property is defined as non-nullable.
 
           This is dangerous because the database can return NULL values,

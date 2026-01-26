@@ -100,7 +100,7 @@ export const transformInterfaceComplementHistory = (props: {
     \`\`\`
 
     **2. NEVER Omit Required Fields:**
-    - \`x-autobe-database-schema-property\`: MANDATORY on every property (string member name or null)
+    - \`x-autobe-database-schema-property\`: MANDATORY on every property (string property name or null)
     - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
     - Omitting these fields is a CRITICAL ERROR that will cause validation failure
 
