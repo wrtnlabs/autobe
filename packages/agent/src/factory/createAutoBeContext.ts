@@ -163,7 +163,7 @@ export const createAutoBeContext = (props: {
           if (
             next.enforceFunctionCall === true &&
             !!event.body.tools?.length &&
-            props.vendor.useToolChoice !== false
+            (props.vendor.useToolChoice ?? true) === true
           )
             event.body.tool_choice = "required";
           if (event.body.parallel_tool_calls !== undefined)
