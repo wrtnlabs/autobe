@@ -24,15 +24,20 @@ export async function orchestratePrismaComponent(
     groups: AutoBeDatabaseGroup[];
   },
 ): Promise<AutoBeDatabaseComponent[]> {
+  // Filter to only process domain groups - authorization groups are handled
+  // by orchestratePrismaAuthorization separately
+  const domainGroups = props.groups.filter((g) => g.kind === "domain");
+  if (domainGroups.length === 0) return [];
+
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
   const progress: AutoBeProgressEventBase = {
     completed: 0,
-    total: props.groups.length,
+    total: domainGroups.length,
   };
 
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
-    props.groups.map((group) => async (promptCacheKey) => {
+    domainGroups.map((group) => async (promptCacheKey) => {
       const component: AutoBeDatabaseComponent = await process(ctx, {
         group,
         instruction: props.instruction,

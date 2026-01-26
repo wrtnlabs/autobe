@@ -131,6 +131,13 @@ export namespace ArchiveLogger {
         `  - groups: ${event.groups.length}`,
         ...event.groups.map((g) => `    - ${g.namespace}`),
       );
+    else if (event.type === "databaseAuthorization")
+      content.push(
+        `  - actor: ${event.actorName} (${event.actorKind})`,
+        `  - namespace: ${event.component.namespace}`,
+        `  - tables: ${event.component.tables.length}`,
+        ...event.component.tables.map((t) => `    - ${t.name}`),
+      );
     else if (event.type === "databaseComponent")
       content.push(
         `  - namespace: ${event.component.namespace}`,

@@ -150,6 +150,7 @@ async function process(
     );
 
     const component: AutoBeDatabaseComponent = {
+      kind: props.component.kind,
       filename: props.component.filename,
       namespace: props.component.namespace,
       thinking: props.component.thinking,

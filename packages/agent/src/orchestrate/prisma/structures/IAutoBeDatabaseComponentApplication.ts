@@ -55,7 +55,8 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Determines which action to perform: preliminary data retrieval
      * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
      * or final table design (complete). When preliminary returns empty array,
-     * that type is removed from the union, physically preventing repeated calls.
+     * that type is removed from the union, physically preventing repeated
+     * calls.
      */
     request:
       | IComplete
@@ -89,6 +90,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Analysis of the component's scope and table requirements.
      *
      * Documents the agent's understanding of this component's domain:
+     *
      * - What is the component's business purpose (from the skeleton)?
      * - What entities from the requirements belong to this component?
      * - What relationships exist between these entities?
@@ -100,6 +102,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      * Rationale for the table design decisions.
      *
      * Explains why tables were designed this way:
+     *
      * - Why was each table created?
      * - Why were certain entities kept separate vs combined?
      * - What normalization principles were applied?
