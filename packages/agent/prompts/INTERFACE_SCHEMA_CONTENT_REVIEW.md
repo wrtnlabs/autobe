@@ -760,6 +760,48 @@ This field is NOT optional. You MUST provide `x-autobe-specification` for every 
 
 The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
 
+**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
+
+When constructing or revising properties, you MUST follow this strict field ordering:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: x-autobe-database-schema-member  →  WHERE does data come from?    │
+│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: Type metadata (type, format...)  →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order is Mandatory**:
+
+This ordering enforces **grounded reasoning** - you must first establish the data source before proceeding to implementation and documentation:
+
+1. **STEP 1 - WHERE**: First determine if this is a direct DB column or computed property
+2. **STEP 2 - HOW**: Based on the data source, specify implementation details
+3. **STEP 3 - WHAT (consumer)**: Now that you know WHERE and HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record type information consistent with the source
+
+**ABSOLUTE PROHIBITIONS**:
+- NEVER omit `x-autobe-database-schema-member` (every property MUST have this field)
+- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
+- NEVER write fields out of order (the cognitive flow ensures consistency)
+
+**Example - Correct Property Structure**:
+```json
+{
+  "stock": {
+    "x-autobe-database-schema-member": "stock",
+    "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
+    "description": "Current inventory quantity. Automatically decremented when orders are placed.",
+    "type": "integer",
+    "minimum": 0
+  }
+}
+```
+
+This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
 **Revision Rules by DTO Type**:
 
 | DTO Type | `required` Value | Nullability Rule |

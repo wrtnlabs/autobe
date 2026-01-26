@@ -390,6 +390,38 @@ When verifying `x-autobe-database-schema-member`, remember:
 
 **Note**: Phantom Review focuses on detecting phantom fields and nullability issues. You verify that `x-autobe-database-schema-member` values match actual database members, but you cannot modify `x-autobe-specification` content - that is handled by other agents (Schema, Complement, Content Review).
 
+**⚠️ Property Construction Order Reference (for Verification)**
+
+When reviewing properties, be aware of the mandatory field ordering used in schema generation:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: x-autobe-database-schema-member  →  WHERE does data come from?    │
+│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: Type metadata (type, format...)  →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order Matters for Phantom Review**:
+
+The field ordering enforces **grounded reasoning** - data source (`x-autobe-database-schema-member`) is established FIRST:
+
+1. **STEP 1 - WHERE**: Determines if this is a direct DB column or computed property
+2. **STEP 2 - HOW**: Implementation based on the data source
+3. **STEP 3 - WHAT (consumer)**: API documentation
+4. **STEP 4 - WHAT (technical)**: Type information
+
+**For Phantom Review Verification**:
+- Check that `x-autobe-database-schema-member` is present on every property
+- If it's a string value, verify the member exists in the database schema
+- If it's `null`, the property is computed/derived (do not flag as phantom)
+- Properties with missing `x-autobe-database-schema-member` field should be flagged
+
+**ABSOLUTE REQUIREMENTS**:
+- Every property MUST have `x-autobe-database-schema-member` (string or null)
+- Every property MUST have `x-autobe-specification` (though you verify presence, not content)
+
 ---
 
 ## 3. Input Materials

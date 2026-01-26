@@ -1149,7 +1149,128 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
 }
 ```
 
-#### 2.2.5. Database Nullable Field Handling - Nullable vs Optional
+#### 2.2.5. MANDATORY: Property Construction Order for AI Function Calling
+
+**CRITICAL REASONING FRAMEWORK**: When constructing properties for object types, you MUST follow a strict field ordering. This order is NOT arbitrary - it enforces a cognitive reasoning flow that produces consistent, grounded API specifications.
+
+**THE MANDATORY ORDER**:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: x-autobe-database-schema-member  →  WHERE does data come from?    │
+│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: Type metadata (type, format...)  →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**WHY THIS ORDER IS MANDATORY - Grounded Reasoning Flow**:
+
+This ordering enforces **grounded reasoning** - the AI must first establish the data source before proceeding to implementation and documentation. This prevents hallucination and ensures consistency:
+
+1. **STEP 1 - WHERE (Data Source)**: `x-autobe-database-schema-member`
+   - First, determine WHERE the data originates
+   - Is this a direct database column? Set the column name.
+   - Is this computed/derived? Set to `null`.
+   - This grounds ALL subsequent decisions in the actual data model.
+
+2. **STEP 2 - HOW (Implementation)**: `x-autobe-specification`
+   - Based on the data source, specify HOW to implement
+   - If direct column (Step 1 = column name): Brief transformation note
+   - If computed (Step 1 = null): Detailed computation specification
+   - Implementation spec MUST be consistent with the declared data source
+
+3. **STEP 3 - WHAT for Consumers (Documentation)**: `description`
+   - Now that you know WHERE and HOW, document WHAT this means for API users
+   - Write clear, human-readable documentation for Swagger UI / SDK docs
+   - The description naturally flows from the established data source and implementation
+
+4. **STEP 4 - WHAT Technically (Type Metadata)**: `type`, `format`, etc.
+   - Finally, record the technical type information
+   - Type must be consistent with the database column type (from Step 1)
+   - Format and constraints must match what the implementation produces (from Step 2)
+
+**THE REASONING CHAIN**:
+
+```
+                    ┌──────────────────────────────────────────────────────────┐
+                    │  "This property maps to users.email column"             │
+                    │                     ↓                                    │
+                    │  "Simply read from the email field"                      │
+                    │                     ↓                                    │
+                    │  "User's email address for login and communication"     │
+                    │                     ↓                                    │
+                    │  "type: string, format: email"                           │
+                    └──────────────────────────────────────────────────────────┘
+
+vs. Computed:       ┌──────────────────────────────────────────────────────────┐
+                    │  "No direct column mapping (null)"                       │
+                    │                     ↓                                    │
+                    │  "Computed by: COUNT(*) FROM orders WHERE user_id = ..."│
+                    │                     ↓                                    │
+                    │  "Total number of orders placed by this user"           │
+                    │                     ↓                                    │
+                    │  "type: integer, minimum: 0"                             │
+                    └──────────────────────────────────────────────────────────┘
+```
+
+**CORRECT PROPERTY STRUCTURE**:
+
+```json
+{
+  "email": {
+    "x-autobe-database-schema-member": "email",           // STEP 1: WHERE - DB column
+    "x-autobe-specification": "Direct mapping from users.email column.",  // STEP 2: HOW
+    "description": "User's email address for login and communication.",   // STEP 3: WHAT (consumer)
+    "type": "string",                                     // STEP 4: WHAT (technical)
+    "format": "email"
+  },
+  "totalOrders": {
+    "x-autobe-database-schema-member": null,              // STEP 1: WHERE - computed
+    "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if no orders.",  // STEP 2: HOW (detailed)
+    "description": "Total number of orders placed by this user.",         // STEP 3: WHAT (consumer)
+    "type": "integer",                                    // STEP 4: WHAT (technical)
+    "minimum": 0
+  }
+}
+```
+
+**⚠️ ABSOLUTE PROHIBITIONS**:
+
+1. **NEVER omit `x-autobe-database-schema-member`**: This field is MANDATORY for every property in an object type. Without it, there is no grounding for implementation.
+
+2. **NEVER omit `x-autobe-specification`**: This field is MANDATORY for every property. It tells downstream agents exactly HOW to implement the property.
+
+3. **NEVER write fields out of order**: The cognitive flow is disrupted when you write `description` before establishing the data source. Follow the order strictly.
+
+4. **NEVER make implementation decisions before establishing data source**: If you decide "this will be computed" before checking the database schema, you risk hallucination.
+
+**VALIDATION CHECKLIST** - For every property you generate:
+
+- [ ] `x-autobe-database-schema-member` is present (string or null)
+- [ ] `x-autobe-specification` is present and detailed enough for implementation
+- [ ] `description` is present and consumer-friendly
+- [ ] Type metadata is consistent with the declared data source
+- [ ] Fields appear in the correct order in your JSON output
+
+**WHY ORDER MATTERS FOR AI FUNCTION CALLING**:
+
+When the LLM generates properties through function calling, the field ordering in the schema definition influences the token generation sequence. By placing `x-autobe-database-schema-member` FIRST, we force the model to:
+
+1. Commit to a data source before anything else
+2. Make implementation decisions grounded in that source
+3. Write documentation that naturally follows from the established facts
+4. Assign types that are consistent with the source and implementation
+
+This eliminates a class of errors where:
+- ❌ The description says "computed from X" but there's no specification
+- ❌ The type says "string" but the column is actually an integer
+- ❌ The specification references a column that doesn't exist
+- ❌ Properties are documented without any grounding in the data model
+
+**REMEMBER**: The order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
+#### 2.2.6. Database Nullable Field Handling - Nullable vs Optional
 
 **🚨 CRITICAL DISTINCTION**: Understand the difference between **nullable** (database) and **optional** (DTO).
 
@@ -1457,7 +1578,7 @@ model Session {
 - **DB non-null → DTO can be nullable**: Safe direction, allowed for default values, server-generated fields, etc.
 - **Request DTOs**: Optional fields omitted from `required` array; DB default values allow optional in DTO.
 
-#### 2.2.5. Database JSON String Fields with `additionalProperties`
+#### 2.2.7. Database JSON String Fields with `additionalProperties`
 
 **CRITICAL RECOGNITION**: When a database column is typed as `String` but its description indicates "JSON string containing key-value pairs" (or similar phrases like "JSON object", "key-value map", "dictionary"), this is a **classic indicator** that the field should use `additionalProperties` in OpenAPI Schema.
 

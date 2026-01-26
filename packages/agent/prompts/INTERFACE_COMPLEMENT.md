@@ -809,6 +809,55 @@ When setting `x-autobe-database-schema-member`, you MUST:
 
 The database schema is the **source of truth**. Your assumptions are irrelevant.
 
+**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
+
+When constructing properties for object types, you MUST follow this strict field ordering:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: x-autobe-database-schema-member  →  WHERE does data come from?    │
+│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: Type metadata (type, format...)  →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order is Mandatory**:
+
+This ordering enforces **grounded reasoning** - you must first establish the data source before proceeding to implementation and documentation:
+
+1. **STEP 1 - WHERE**: First determine if this is a direct DB column or computed property
+2. **STEP 2 - HOW**: Based on the data source, specify implementation details
+3. **STEP 3 - WHAT (consumer)**: Now that you know WHERE and HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record type information consistent with the source
+
+**ABSOLUTE PROHIBITIONS**:
+- NEVER omit `x-autobe-database-schema-member` (every property MUST have this field)
+- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
+- NEVER write fields out of order (the cognitive flow ensures consistency)
+
+**Example - Correct Property Structure**:
+```json
+{
+  "email": {
+    "x-autobe-database-schema-member": "email",
+    "x-autobe-specification": "Direct mapping from users.email column.",
+    "description": "User's email address for login and communication.",
+    "type": "string",
+    "format": "email"
+  },
+  "totalOrders": {
+    "x-autobe-database-schema-member": null,
+    "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if no orders.",
+    "description": "Total number of orders placed by this user.",
+    "type": "integer",
+    "minimum": 0
+  }
+}
+```
+
+This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests
 - **Authentication Context**: User identity from JWT/session, never from request body

@@ -703,6 +703,47 @@ This field is NOT optional. When creating or modifying properties, you MUST prov
 
 The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
 
+**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
+
+When constructing or modifying properties (especially during FK transformation), you MUST follow this strict field ordering:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: x-autobe-database-schema-member  →  WHERE does data come from?    │
+│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: Type metadata (type, $ref...)    →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order is Mandatory**:
+
+This ordering enforces **grounded reasoning** - you must first establish the data source before proceeding to implementation and documentation:
+
+1. **STEP 1 - WHERE**: First determine if this is a relation, computed property, or direct mapping
+2. **STEP 2 - HOW**: Based on the data source, specify the join strategy or computation
+3. **STEP 3 - WHAT (consumer)**: Now that you know WHERE and HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record type reference ($ref) consistent with the source
+
+**ABSOLUTE PROHIBITIONS**:
+- NEVER omit `x-autobe-database-schema-member` (every property MUST have this field)
+- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
+- NEVER write fields out of order (the cognitive flow ensures consistency)
+
+**Example - Correct FK Transformation Property**:
+```json
+{
+  "author": {
+    "x-autobe-database-schema-member": null,
+    "x-autobe-specification": "Join via bbs_members table using bbs_articles.bbs_member_id. Returns ISummary variant with id, name, avatar only.",
+    "description": "Author who wrote this article. Contains essential member information for display.",
+    "$ref": "#/components/schemas/IBbsMember.ISummary"
+  }
+}
+```
+
+This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
 ---
 
 ## 3. Theoretical Foundation of DTO Relations

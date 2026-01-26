@@ -839,8 +839,8 @@ export namespace AutoBeOpenApi {
      * short, concise, and clear description that helps API consumers understand
      * what this parameter represents.
      *
-     * Implementation details for parameter handling are covered in the
-     * parent {@link IOperation.specification} field.
+     * Implementation details for parameter handling are covered in the parent
+     * {@link IOperation.specification} field.
      *
      * > MUST be written in English. Never use other languages.
      */
@@ -1603,7 +1603,8 @@ export namespace AutoBeOpenApi {
        *
        * This specification is for the **object type as a whole**, NOT for
        * individual properties/members. Each property within this object has its
-       * own `x-autobe-specification` field in {@link IJsonSchemaProperty.IProperty}.
+       * own `x-autobe-specification` field in
+       * {@link IJsonSchemaProperty.IProperty}.
        *
        * - ✅ Describe how to retrieve/construct this entire object type
        * - ✅ Describe data sourcing strategy for the object as a unit
@@ -1800,71 +1801,6 @@ export namespace AutoBeOpenApi {
      */
     interface IProperty {
       /**
-       * API documentation for the property.
-       *
-       * This is the standard OpenAPI description field that will be displayed
-       * in Swagger UI, SDK documentation, and other API documentation tools.
-       * Focus on explaining the property from an API consumer's perspective.
-       *
-       * ## Content Guidelines
-       *
-       * - **WHAT**: What this property represents in the business domain
-       * - **WHY**: Why this property exists and when it's used
-       * - **Constraints**: Validation rules, value ranges, or format requirements
-       *   visible to API consumers
-       * - **Relationships**: If referencing another entity, explain the semantic
-       *   relationship
-       *
-       * ## For Nullability Mismatch (DB non-null → DTO nullable/optional)
-       *
-       * When the database column is non-null but the DTO property is nullable
-       * or optional, briefly explain why:
-       *
-       * - "Optional - defaults to 'user' if not provided."
-       * - "Optional - server generates UUID if not provided."
-       * - "Optional for update operations."
-       *
-       * ## Format Requirements
-       *
-       * - MUST be written in English
-       * - Should be organized into multiple paragraphs for complex properties
-       * - Use clear, precise language accessible to API consumers
-       * - Do NOT include implementation details (use `x-autobe-specification`)
-       */
-      description: string;
-
-      /**
-       * Implementation specification for this property.
-       *
-       * This is an AutoBE-internal field (not exposed in standard OpenAPI
-       * output) that provides detailed implementation guidance for downstream
-       * agents (Realize Agent, Test Agent, etc.).
-       *
-       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
-       *
-       * - Database column details and type mapping
-       * - Any transformation logic between DB and DTO
-       * - Validation rules enforced at the service layer
-       *
-       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
-       *
-       * This field is CRITICAL and MUST include:
-       *
-       * 1. **Data sources**: ALL columns and/or tables involved
-       * 2. **Computation formula**: Exact algorithm or SQL-like expression (e.g.,
-       *    `SUM(items.price * items.quantity)`)
-       * 3. **Join conditions**: How related tables connect
-       * 4. **Edge cases**: Behavior for nulls, empty sets, defaults
-       * 5. **Examples**: Concrete examples to clarify computation
-       *
-       * The specification must be precise enough for Realize Agent to implement
-       * the computation logic without ambiguity.
-       *
-       * > MUST be written in English. Never use other languages.
-       */
-      "x-autobe-specification": string;
-
-      /**
        * Database column that this property maps to.
        *
        * Specifies the exact column name from the target database table that
@@ -1909,6 +1845,71 @@ export namespace AutoBeOpenApi {
        * logic in service layer code.
        */
       "x-autobe-database-schema-member": string | null;
+
+      /**
+       * Implementation specification for this property.
+       *
+       * This is an AutoBE-internal field (not exposed in standard OpenAPI
+       * output) that provides detailed implementation guidance for downstream
+       * agents (Realize Agent, Test Agent, etc.).
+       *
+       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
+       *
+       * - Database column details and type mapping
+       * - Any transformation logic between DB and DTO
+       * - Validation rules enforced at the service layer
+       *
+       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
+       *
+       * This field is CRITICAL and MUST include:
+       *
+       * 1. **Data sources**: ALL columns and/or tables involved
+       * 2. **Computation formula**: Exact algorithm or SQL-like expression (e.g.,
+       *    `SUM(items.price * items.quantity)`)
+       * 3. **Join conditions**: How related tables connect
+       * 4. **Edge cases**: Behavior for nulls, empty sets, defaults
+       * 5. **Examples**: Concrete examples to clarify computation
+       *
+       * The specification must be precise enough for Realize Agent to implement
+       * the computation logic without ambiguity.
+       *
+       * > MUST be written in English. Never use other languages.
+       */
+      "x-autobe-specification": string;
+
+      /**
+       * API documentation for the property.
+       *
+       * This is the standard OpenAPI description field that will be displayed
+       * in Swagger UI, SDK documentation, and other API documentation tools.
+       * Focus on explaining the property from an API consumer's perspective.
+       *
+       * ## Content Guidelines
+       *
+       * - **WHAT**: What this property represents in the business domain
+       * - **WHY**: Why this property exists and when it's used
+       * - **Constraints**: Validation rules, value ranges, or format requirements
+       *   visible to API consumers
+       * - **Relationships**: If referencing another entity, explain the semantic
+       *   relationship
+       *
+       * ## For Nullability Mismatch (DB non-null → DTO nullable/optional)
+       *
+       * When the database column is non-null but the DTO property is nullable
+       * or optional, briefly explain why:
+       *
+       * - "Optional - defaults to 'user' if not provided."
+       * - "Optional - server generates UUID if not provided."
+       * - "Optional for update operations."
+       *
+       * ## Format Requirements
+       *
+       * - MUST be written in English
+       * - Should be organized into multiple paragraphs for complex properties
+       * - Use clear, precise language accessible to API consumers
+       * - Do NOT include implementation details (use `x-autobe-specification`)
+       */
+      description: string;
     }
   }
 
