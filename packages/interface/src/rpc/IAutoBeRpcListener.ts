@@ -5,6 +5,7 @@ import {
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
+  AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
@@ -199,7 +200,25 @@ export interface IAutoBeRpcListener {
    */
   databaseStart?(event: AutoBeDatabaseStartEvent): Promise<void>;
 
+  /**
+   * Optional handler for database group events.
+   *
+   * Called when the Database agent organizes tables into categorized groups by
+   * business domain, enabling client applications to display the structural
+   * planning of the database architecture and show progress scope.
+   */
   databaseGroup?(event: AutoBeDatabaseGroupEvent): Promise<void>;
+
+  /**
+   * Optional handler for database authorization events.
+   *
+   * Called when the Database agent generates authorization tables for a
+   * specific actor, enabling client applications to display the progress of
+   * authorization table generation and track which actor is being processed.
+   */
+  databaseAuthorization?(
+    event: AutoBeDatabaseAuthorizationEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for database component organization events.
