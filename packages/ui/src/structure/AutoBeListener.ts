@@ -80,6 +80,9 @@ export class AutoBeListener {
       databaseGroup: async (event) => {
         this.insert(event);
       },
+      databaseAuthorization: async (event) => {
+        this.accumulate(event);
+      },
       databaseComponent: async (event) => {
         this.accumulate(event);
       },
