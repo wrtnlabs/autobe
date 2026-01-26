@@ -1065,9 +1065,10 @@ process({
         reason: "CRITICAL: Login DTO requires password field for authentication",
         key: "password",
         schema: {
-          type: "string",
+          "x-autobe-database-schema-member": null,  // null because parent has no DB mapping
+          "x-autobe-specification": "Plaintext password for authentication. Server compares hashed value against customers.password_hashed column.",
           description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing.",
-          "x-autobe-database-schema-member": null  // null because parent has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1153,9 +1154,10 @@ process({
         reason: "CRITICAL: Member registration DTO requires password field",
         key: "password",
         schema: {
-          type: "string",
+          "x-autobe-database-schema-member": null,  // IJoin has no DB mapping
+          "x-autobe-specification": "Plaintext password for new account. Server will hash and store in sellers.password_hashed column.",
           description: "Password for the new seller account. Will be hashed before storing in sellers.password column.",
-          "x-autobe-database-schema-member": null  // IJoin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1226,9 +1228,10 @@ process({
         reason: "Required session context field for session creation",
         key: "href",
         schema: {
-          type: "string",
+          "x-autobe-database-schema-member": null,  // ILogin has no DB mapping
+          "x-autobe-specification": "Connection URL provided by client. Server stores in sessions.href column for analytics.",
           description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking.",
-          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1237,9 +1240,10 @@ process({
         reason: "Required session context field for session creation",
         key: "referrer",
         schema: {
-          type: "string",
+          "x-autobe-database-schema-member": null,  // ILogin has no DB mapping
+          "x-autobe-specification": "Referrer URL provided by client. Server stores in sessions.referrer column for analytics.",
           description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking.",
-          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1310,6 +1314,19 @@ Before submitting your security review:
 ### Revision Completeness
 - [ ] EVERY property has a revise (erase, create, or keep)
 - [ ] All security violations documented in `review` field
+
+### ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every created property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property in `create` revisions (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property in `create` revisions - contains implementation details:
+  - For request DTOs (IJoin/ILogin): explain how server processes the field
+  - For response DTOs (IAuthorized): explain data source and computation
+- [ ] **NO OMISSIONS**: Zero properties in revisions missing any of the mandatory fields
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
 
 ### Function Calling Compliance
 - [ ] Did not re-request already-loaded materials

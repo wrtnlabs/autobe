@@ -648,11 +648,30 @@ export namespace IAutoBeInterfaceComplementApplication {
      * Example structure:
      * ```typescript
      * {
+     *   "x-autobe-database-schema": "users",
+     *   "x-autobe-specification": "Represents a user entity with basic contact information.",
+     *   "description": "User account information.",
      *   "type": "object",
      *   "properties": {
-     *     "id": { "type": "string" },
-     *     "name": { "type": "string" },
-     *     "email": { "type": "string", "format": "email" }
+     *     "id": {
+     *       "x-autobe-database-schema-member": "id",
+     *       "x-autobe-specification": "Direct mapping from users.id column.",
+     *       "description": "Unique identifier for the user.",
+     *       "type": "string"
+     *     },
+     *     "name": {
+     *       "x-autobe-database-schema-member": "name",
+     *       "x-autobe-specification": "Direct mapping from users.name column.",
+     *       "description": "Display name of the user.",
+     *       "type": "string"
+     *     },
+     *     "email": {
+     *       "x-autobe-database-schema-member": "email",
+     *       "x-autobe-specification": "Direct mapping from users.email column.",
+     *       "description": "User's email address for login and communication.",
+     *       "type": "string",
+     *       "format": "email"
+     *     }
      *   },
      *   "required": ["id", "name", "email"]
      * }
@@ -724,13 +743,31 @@ process({
     analysis: "IProduct.ISummary is referenced in IOrder.product and ICartItem.product. These are response DTOs showing order/cart details, so they need a lightweight product representation with essential fields.",
     rationale: "Included id, name, price as core identifiers. Excluded detailed fields like description and inventory since summary is for display in lists. Required all fields since products always have these basics.",
     schema: {
-      // Complete JSON Schema definition for the specific type
-      type: "object",
-      properties: {
-        // ... field definitions
+      "x-autobe-database-schema": "products",
+      "x-autobe-specification": "Lightweight product representation for display in order/cart contexts.",
+      "description": "Summary view of a product with essential display information.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "x-autobe-database-schema-member": "id",
+          "x-autobe-specification": "Direct mapping from products.id column.",
+          "description": "Unique identifier for the product.",
+          "type": "string"
+        },
+        "name": {
+          "x-autobe-database-schema-member": "name",
+          "x-autobe-specification": "Direct mapping from products.name column.",
+          "description": "Display name of the product.",
+          "type": "string"
+        },
+        "price": {
+          "x-autobe-database-schema-member": "price",
+          "x-autobe-specification": "Direct mapping from products.price column.",
+          "description": "Current price of the product.",
+          "type": "number"
+        }
       },
-      required: ["..."],
-      description: "Description must be clear and detailed"
+      "required": ["id", "name", "price"]
     }
   }
 })
@@ -922,7 +959,21 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
 - [ ] IPage types use fixed structure (pagination + data)
 - [ ] Descriptions in English, clear and detailed
 
-### 9.3. Validation Feedback Compliance
+### 9.3. ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **`x-autobe-database-schema`**: Present on the generated object type schema (string table name or null)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For computed properties (member is null): MUST have detailed computation spec
+- [ ] **NO OMISSIONS**: Zero properties missing any of the three mandatory fields
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
+
+### 9.4. Validation Feedback Compliance
 - [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
   * Validation error messages are always correct and must be followed without question
   * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
@@ -934,7 +985,7 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
   * When validation provides a list of available options, choose ONLY from that list
   * If none of the available options match your expectation, your design is wrong - revise it
 
-### 9.4. Function Calling Verification
+### 9.5. Function Calling Verification
 - [ ] The specific missing schema type identified and schema definition created
 - [ ] NO existing schemas recreated or modified
 - [ ] Schema definition is complete and self-contained

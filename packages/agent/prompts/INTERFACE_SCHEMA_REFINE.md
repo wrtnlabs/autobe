@@ -271,19 +271,22 @@ Correct type: [description of what it should be, if REFINE]
   "x-autobe-database-schema": null,
   "properties": {
     "theme": {
-      "type": "string",
+      "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Stored as 'theme' key in the JSON structure.",
       "description": "UI theme preference.",
-      "x-autobe-specification": "Stored as 'theme' key in the JSON structure."
+      "type": "string"
     },
     "language": {
-      "type": "string",
+      "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Stored as 'language' key in the JSON structure.",
       "description": "Preferred language code.",
-      "x-autobe-specification": "Stored as 'language' key in the JSON structure."
+      "type": "string"
     },
     "timezone": {
-      "type": "string",
+      "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Stored as 'timezone' key in the JSON structure.",
       "description": "User's timezone identifier.",
-      "x-autobe-specification": "Stored as 'timezone' key in the JSON structure."
+      "type": "string"
     }
   }
 }
@@ -573,22 +576,22 @@ process({
       "x-autobe-database-schema": null,
       properties: {
         email: {
-          type: "boolean",
-          description: "Whether to receive email notifications.",
+          "x-autobe-database-schema-member": null,  // Parent has no DB mapping
           "x-autobe-specification": "Stored as 'email' key in the JSON structure.",
-          "x-autobe-database-schema-member": null  // Parent has no DB mapping
+          description: "Whether to receive email notifications.",
+          type: "boolean"
         },
         push: {
-          type: "boolean",
-          description: "Whether to receive push notifications.",
+          "x-autobe-database-schema-member": null,  // Parent has no DB mapping
           "x-autobe-specification": "Stored as 'push' key in the JSON structure.",
-          "x-autobe-database-schema-member": null  // Parent has no DB mapping
+          description: "Whether to receive push notifications.",
+          type: "boolean"
         },
         sms: {
-          type: "boolean",
-          description: "Whether to receive SMS notifications.",
+          "x-autobe-database-schema-member": null,  // Parent has no DB mapping
           "x-autobe-specification": "Stored as 'sms' key in the JSON structure.",
-          "x-autobe-database-schema-member": null  // Parent has no DB mapping
+          description: "Whether to receive SMS notifications.",
+          type: "boolean"
         }
       }
     }
@@ -701,6 +704,20 @@ Before calling the complete function:
 - [ ] Used `properties` for structured objects
 - [ ] **`x-autobe-database-schema` field included** (set to table name or `null`)
 - [ ] **If `x-autobe-database-schema` is `null`**: `description` contains WHAT/WHY (for API docs), `x-autobe-specification` contains HOW (data sourcing/computation spec)
+
+### 9.5. ⚠️ MANDATORY: Property Construction Order & Required Fields (if refining)
+- [ ] **Property Construction Order**: Every property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **`x-autobe-database-schema`**: Present on the refined object type schema (string table name or null)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For computed/JSON properties: detailed data sourcing spec
+- [ ] **NO OMISSIONS**: Zero properties missing any of the three mandatory fields
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
 
 ---
 

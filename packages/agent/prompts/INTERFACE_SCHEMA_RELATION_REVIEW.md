@@ -3931,9 +3931,10 @@ process({
         key: "author_id",      // Current FK field
         newKey: "author",      // Rename to object field
         schema: {
-          "$ref": "#/components/schemas/IUser.ISummary",
-          "description": "Author who created this article. Joined via articles.author_id FK to users table.",
-          "x-autobe-database-schema-member": null  // Relation field - joined data, not a direct scalar field
+          "x-autobe-database-schema-member": null,  // Relation field - joined data, not a direct scalar field
+          "x-autobe-specification": "Join via articles.author_id FK to users table. Returns ISummary variant with essential user fields.",
+          "description": "Author who created this article.",
+          "$ref": "#/components/schemas/IUser.ISummary"
         },
         required: true
       },
@@ -3943,9 +3944,10 @@ process({
         key: "category_id",    // Current FK field
         newKey: "category",    // Rename to object field
         schema: {
-          "$ref": "#/components/schemas/ICategory.ISummary",
-          "description": "Category this article belongs to. Joined via articles.category_id FK to categories table.",
-          "x-autobe-database-schema-member": null  // Relation field - joined data, not a direct scalar field
+          "x-autobe-database-schema-member": null,  // Relation field - joined data, not a direct scalar field
+          "x-autobe-specification": "Join via articles.category_id FK to categories table. Returns ISummary variant with essential category fields.",
+          "description": "Category this article belongs to.",
+          "$ref": "#/components/schemas/ICategory.ISummary"
         },
         required: true
       }
@@ -3996,12 +3998,13 @@ process({
         key: "items",
         newKey: null,  // Keep same key
         schema: {
+          "x-autobe-database-schema-member": null,  // Composition array - not a direct member mapping
+          "x-autobe-specification": "Composition relation with order_items table. Items are created atomically with the order in the same transaction.",
+          "description": "Order line items. Each item represents a product in the order with quantity and pricing.",
           "type": "array",
           "items": {
             "$ref": "#/components/schemas/IOrderItem"
-          },
-          "description": "Order line items. Each item represents a product in the order with quantity and pricing. Composition relation - items are created with the order.",
-          "x-autobe-database-schema-member": null  // Composition array - not a direct member mapping
+          }
         },
         required: true
       }
@@ -4247,7 +4250,22 @@ Repeat these as you review:
 - [ ] ALL entity names singular
 - [ ] **`x-autobe-database-schema` field present** - This field is present for all object type schemas (values determined by REALIZE agents)
 
-### 13.4. Response DTO Relations - DETAIL
+### 13.4. ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every created/modified property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details, $ref)
+- [ ] **`x-autobe-database-schema`**: Present on EVERY object type schema (string table name or null)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property in `create`/`update` revisions (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property in `create`/`update` revisions - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For FK transformations (relation joins): join strategy and data source
+  - For computed properties (member is null): MUST have detailed computation spec
+- [ ] **NO OMISSIONS**: Zero properties in revisions missing any of the mandatory fields
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
+
+### 13.5. Response DTO Relations - DETAIL
 - [ ] ALL foreign keys transformed to objects (except hierarchical parent)
 - [ ] **BELONGS-TO relations use .ISummary types** (circular reference prevention)
 - [ ] **HAS-MANY/HAS-ONE compositions use detail types** (base interface)
@@ -4256,7 +4274,7 @@ Repeat these as you review:
 - [ ] Aggregations NOT included (separate API)
 - [ ] Actor entities have NO entity arrays
 
-### 13.5. Response DTO Relations - SUMMARY
+### 13.6. Response DTO Relations - SUMMARY
 - [ ] **BELONGS-TO (associations) transformed to .ISummary** for context
 - [ ] HAS-MANY (compositions) EXCLUDED for efficiency
 - [ ] HAS-ONE (1:1 compositions) CONDITIONALLY included (only if small and essential)
@@ -4264,7 +4282,7 @@ Repeat these as you review:
 - [ ] Summary is lightweight for list displays
 - [ ] **NO back-references or reverse relations** in Summary types
 
-### 13.6. Request DTO Relations
+### 13.7. Request DTO Relations
 - [ ] **ABSOLUTE: NEVER transform FK to object in Create/Update DTOs**
 - [ ] **ABSOLUTE: NO `.ISummary` references in Create/Update DTOs**
 - [ ] **ABSOLUTE: NO full type references (e.g., `parent?: IBbsArticle`) in Create/Update DTOs**
@@ -4282,19 +4300,19 @@ Repeat these as you review:
 - [ ] Update DTOs: Ownership relations excluded (immutable)
 - [ ] Update DTOs: Structural relations excluded (immutable)
 
-### 13.7. Special Patterns
+### 13.8. Special Patterns
 - [ ] NO actor reversal violations
 - [ ] IInvert types where needed
 - [ ] Many-to-many properly handled
 - [ ] Recursive relations correct
 
-### 13.8. Documentation Complete
+### 13.9. Documentation Complete
 - [ ] `review` lists ALL violations found and fixes applied
 - [ ] `revises` contains appropriate revision for EVERY property
 - [ ] `revises` contains `keep` for each correct property that needs no changes
 - [ ] EVERY property in schema has a corresponding revise entry
 
-### 13.9. Validation Feedback Compliance
+### 13.10. Validation Feedback Compliance
 - [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
   * Validation error messages are always correct and must be followed without question
   * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise

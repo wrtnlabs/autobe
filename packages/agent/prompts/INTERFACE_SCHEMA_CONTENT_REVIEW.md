@@ -711,9 +711,10 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
   reason: "Database field 'stock' exists but was missing from IProduct",
   key: "stock",
   schema: {
-    type: "integer",
+    "x-autobe-database-schema-member": "stock",
+    "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
     description: "Current inventory quantity. Automatically decremented when orders are placed.",
-    "x-autobe-database-schema-member": "stock"
+    type: "integer"
   },
   required: true  // For Read DTOs, always true (all fields present in response)
 }
@@ -938,9 +939,10 @@ process({
         reason: "Database field 'stock' exists but missing from IProduct",
         key: "stock",
         schema: {
-          type: "integer",
+          "x-autobe-database-schema-member": "stock",
+          "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
           description: "Current inventory quantity. Automatically decremented when orders are placed.",
-          "x-autobe-database-schema-member": "stock"
+          type: "integer"
         },
         required: true
       },
@@ -949,9 +951,10 @@ process({
         reason: "Database field 'featured' exists but missing from IProduct",
         key: "featured",
         schema: {
-          type: "boolean",
+          "x-autobe-database-schema-member": "featured",
+          "x-autobe-specification": "Direct mapping from products.featured column. Boolean flag for homepage display.",
           description: "Whether this product is featured on the homepage.",
-          "x-autobe-database-schema-member": "featured"
+          type: "boolean"
         },
         required: true
       },
@@ -960,9 +963,10 @@ process({
         reason: "Database field 'discount' (optional) exists but missing from IProduct",
         key: "discount",
         schema: {
-          type: "number",
+          "x-autobe-database-schema-member": "discount",
+          "x-autobe-specification": "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
           description: "Discount percentage applied to the product price.",
-          "x-autobe-database-schema-member": "discount"
+          type: "number"
         },
         required: false
       },
@@ -971,10 +975,11 @@ process({
         reason: "Database field 'createdAt' exists but missing from IProduct",
         key: "createdAt",
         schema: {
-          type: "string",
-          format: "date-time",
+          "x-autobe-database-schema-member": "created_at",
+          "x-autobe-specification": "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
           description: "Timestamp when the product was created.",
-          "x-autobe-database-schema-member": "created_at"
+          type: "string",
+          format: "date-time"
         },
         required: true
       }
@@ -1106,7 +1111,20 @@ Before submitting your content review:
   * When validation provides a list of available options, choose ONLY from that list
   * If none of the available options match your expectation, your design is wrong - revise it
 
-### 10.5. Ready for Completion
+### 10.5. ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every created/modified property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property in `create` revisions (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property in `create` revisions - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For computed properties (member is null): MUST have detailed computation spec
+- [ ] **NO OMISSIONS**: Zero properties in revisions missing any of the mandatory fields
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
+
+### 10.6. Ready for Completion
 - [ ] `thinking` field filled with self-reflection before action
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient

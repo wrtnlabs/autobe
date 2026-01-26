@@ -942,10 +942,10 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "shopping_customers",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
-    "name": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "name" },
-    "createdAt": { "type": "string", "format": "date-time", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "created_at" }
+    "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-database-schema-member": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "name": { "x-autobe-database-schema-member": "name", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "createdAt": { "x-autobe-database-schema-member": "created_at", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "date-time" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
   "required": ["id", "email", "name", "createdAt"]
@@ -987,8 +987,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
   "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" }
+    "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-database-schema-member": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -1096,22 +1096,24 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "x-autobe-database-schema": "users",
   "properties": {
     "id": {
-      "type": "string",
-      "format": "uuid",
+      "x-autobe-database-schema-member": "id",
+      "x-autobe-specification": "Direct mapping from users.id column.",
       "description": "Unique identifier for the user.",
-      "x-autobe-database-schema-member": "id"
+      "type": "string",
+      "format": "uuid"
     },
     "email": {
-      "type": "string",
-      "format": "email",
+      "x-autobe-database-schema-member": "email",
+      "x-autobe-specification": "Direct mapping from users.email column.",
       "description": "User's email address for login and communication.",
-      "x-autobe-database-schema-member": "email"
+      "type": "string",
+      "format": "email"
     },
     "totalOrders": {
-      "type": "integer",
-      "description": "Total number of orders placed by this user.",
+      "x-autobe-database-schema-member": null,
       "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
-      "x-autobe-database-schema-member": null
+      "description": "Total number of orders placed by this user.",
+      "type": "integer"
     }
   },
   "required": ["id", "email", "totalOrders"]
@@ -1127,22 +1129,22 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "x-autobe-database-schema": null,
   "properties": {
     "categoryName": {
-      "type": "string",
-      "description": "Name of the product category.",
+      "x-autobe-database-schema-member": null,
       "x-autobe-specification": "Source: categories.name via JOIN products ON products.category_id = categories.id.",
-      "x-autobe-database-schema-member": null
+      "description": "Name of the product category.",
+      "type": "string"
     },
     "totalSales": {
-      "type": "integer",
-      "description": "Total units sold in this category.",
+      "x-autobe-database-schema-member": null,
       "x-autobe-specification": "Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
-      "x-autobe-database-schema-member": null
+      "description": "Total units sold in this category.",
+      "type": "integer"
     },
     "averagePrice": {
-      "type": "number",
-      "description": "Average sale price in this category.",
+      "x-autobe-database-schema-member": null,
       "x-autobe-specification": "Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
-      "x-autobe-database-schema-member": null
+      "description": "Average sale price in this category.",
+      "type": "number"
     }
   },
   "required": ["categoryName", "totalSales", "averagePrice"]
@@ -1369,23 +1371,25 @@ model User {
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "users",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "id" },
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
+    "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-database-schema-member": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
     "bio": {
+      "x-autobe-database-schema-member": "bio",
+      "x-autobe-specification": "Direct mapping from nullable column.",
+      "description": "<DETAILED_DESCRIPTION>",
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
-      ],
-      "description": "<DETAILED_DESCRIPTION>",
-      "x-autobe-database-schema-member": "bio"
+      ]
     },
     "expiredAt": {
+      "x-autobe-database-schema-member": "expired_at",
+      "x-autobe-specification": "Direct mapping from nullable column.",
+      "description": "<DETAILED_DESCRIPTION>",
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
-      ],
-      "description": "<DETAILED_DESCRIPTION>",
-      "x-autobe-database-schema-member": "expired_at"
+      ]
     }
   },
   "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
@@ -1425,9 +1429,9 @@ model User {
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "users",
   "properties": {
-    "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "email" },
-    "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "bio" },
-    "role": { "type": "string", "description": "Optional - if not provided, defaults to 'user'.", "x-autobe-database-schema-member": "role" }
+    "email": { "x-autobe-database-schema-member": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "bio": { "x-autobe-database-schema-member": "bio", "x-autobe-specification": "Direct mapping to nullable column.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "role": { "x-autobe-database-schema-member": "role", "x-autobe-specification": "Direct mapping. Uses default 'user' if not provided.", "description": "Optional - if not provided, defaults to 'user'.", "type": "string" }
   },
   "required": ["email"]  // ✅ Only non-nullable, non-default fields required
 }
@@ -1700,28 +1704,34 @@ model User {
   "x-autobe-database-schema": "users",
   "properties": {
     "id": {
-      "type": "string",
-      "format": "uuid",
+      "x-autobe-database-schema-member": "id",
+      "x-autobe-specification": "Direct mapping from users.id column.",
       "description": "Unique identifier for the user.",
-      "x-autobe-database-schema-member": "id"
+      "type": "string",
+      "format": "uuid"
     },
     "email": {
-      "type": "string",
-      "format": "email",
+      "x-autobe-database-schema-member": "email",
+      "x-autobe-specification": "Direct mapping from users.email column.",
       "description": "User's email address.",
-      "x-autobe-database-schema-member": "email"
+      "type": "string",
+      "format": "email"
     },
     "preferences": {
+      "x-autobe-database-schema-member": "preferences",
+      "x-autobe-specification": "JSON column parsed as key-value object. Keys are preference names.",
+      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
       "type": "object",
       "properties": {},
       "required": [],
       "additionalProperties": {
         "type": "string"
-      },
-      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
-      "x-autobe-database-schema-member": "preferences"
+      }
     },
     "customFields": {
+      "x-autobe-database-schema-member": "custom_fields",
+      "x-autobe-specification": "Nullable JSON column parsed as key-value object. Returns null if not set.",
+      "description": "Optional custom fields as key-value pairs. Null if not set.",
       "oneOf": [
         {
           "type": "object",
@@ -1732,9 +1742,7 @@ model User {
           }
         },
         { "type": "null" }
-      ],
-      "description": "Optional custom fields as key-value pairs. Null if not set.",
-      "x-autobe-database-schema-member": "custom_fields"
+      ]
     }
   },
   "required": ["id", "email", "preferences", "customFields"]
@@ -1814,20 +1822,22 @@ An **inline object type** occurs when you define an object's complete structure 
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "bbs_articles",
   "properties": {
-    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "title" },
-    "content": { "type": "string", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": "content" },
+    "title": { "x-autobe-database-schema-member": "title", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "content": { "x-autobe-database-schema-member": "content", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
     "attachments": {
-      "type": "array",
-      "description": "<DETAILED_DESCRIPTION>",
       "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Nested composition. Each attachment stored in bbs_article_attachments table.",
+      "description": "<DETAILED_DESCRIPTION>",
+      "type": "array",
       "items": {
         "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
       }
     },
     "metadata": {
-      "$ref": "#/components/schemas/IBbsArticleMetadata",  // ✅ PERFECT
+      "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Nested object stored as JSON or in separate metadata table.",
       "description": "<DETAILED_DESCRIPTION>",
-      "x-autobe-database-schema-member": null
+      "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
     }
   }
 }
@@ -1840,9 +1850,9 @@ An **inline object type** occurs when you define an object's complete structure 
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": null,
   "properties": {
-    "url": { "type": "string", "format": "uri", "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
-    "name": { "type": "string", "minLength": 1, "maxLength": 255, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null },
-    "size": { "type": "integer", "minimum": 0, "description": "<DETAILED_DESCRIPTION>", "x-autobe-database-schema-member": null }
+    "url": { "x-autobe-database-schema-member": null, "x-autobe-specification": "File URL for the attachment.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "uri" },
+    "name": { "x-autobe-database-schema-member": null, "x-autobe-specification": "Original filename.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "minLength": 1, "maxLength": 255 },
+    "size": { "x-autobe-database-schema-member": null, "x-autobe-specification": "File size in bytes.", "description": "<DETAILED_DESCRIPTION>", "type": "integer", "minimum": 0 }
   },
   "required": ["url", "name", "size"]
 }
@@ -1856,16 +1866,18 @@ An **inline object type** occurs when you define an object's complete structure 
   "x-autobe-database-schema": null,
   "properties": {
     "tags": {
-      "type": "array",
-      "description": "<DETAILED_DESCRIPTION>",
       "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Array of tag strings for categorization.",
+      "description": "<DETAILED_DESCRIPTION>",
+      "type": "array",
       "items": { "type": "string" }
     },
     "priority": {
-      "type": "string",
-      "enum": ["low", "medium", "high"],
+      "x-autobe-database-schema-member": null,
+      "x-autobe-specification": "Priority level enum value.",
       "description": "<DETAILED_DESCRIPTION>",
-      "x-autobe-database-schema-member": null
+      "type": "string",
+      "enum": ["low", "medium", "high"]
     }
   }
 }
@@ -5508,8 +5520,8 @@ Soft deletion is supported to preserve historical transaction records.
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
   "properties": {
-    "id": { "type": "string", "description": "Sale unique identifier", "x-autobe-database-schema-member": "id" },
-    "title": { "type": "string", "description": "Sale listing title", "x-autobe-database-schema-member": "title" }
+    "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping from sale ID.", "description": "Sale unique identifier", "type": "string" },
+    "title": { "x-autobe-database-schema-member": "title", "x-autobe-specification": "Direct mapping from sale title.", "description": "Sale listing title", "type": "string" }
   },
   "required": ["id", "title"]
 }
@@ -5520,8 +5532,8 @@ Summary variant excludes large text fields for list performance.`,
   "type": "object",
   "description": "Sale entity. Contains product and seller information.",
   "properties": {
-    "id": { "type": "string", "description": "Sale ID", "x-autobe-database-schema-member": "id" },
-    "title": { "type": "string", "description": "Title", "x-autobe-database-schema-member": "title" }
+    "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping.", "description": "Sale ID", "type": "string" },
+    "title": { "x-autobe-database-schema-member": "title", "x-autobe-specification": "Direct mapping.", "description": "Title", "type": "string" }
   }
 }
 ```
@@ -6091,7 +6103,21 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - [ ] IPage types use fixed structure (pagination + data)
 - [ ] Timestamp fields (created_at, updated_at) verified against database schema
 
-### 13.3. Validation Feedback Compliance
+### 13.3. ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every property follows the mandatory 4-step order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **`x-autobe-database-schema`**: Present on EVERY object type schema (string table name or null)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property within object types (string member name or null)
+- [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For computed properties (member is null): MUST have detailed computation spec (sources, formulas, joins, edge cases)
+- [ ] **NO OMISSIONS**: Zero properties missing any of the three mandatory fields above
+- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
+
+### 13.4. Validation Feedback Compliance
 - [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
   * Validation error messages are always correct and must be followed without question
   * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
@@ -6103,7 +6129,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   * When validation provides a list of available options, choose ONLY from that list
   * If none of the available options match your expectation, your design is wrong - revise it
 
-### 13.4. Function Calling Verification
+### 13.5. Function Calling Verification
 - [ ] Schema defined with complete properties for the target type
 - [ ] Security rules applied consistently
 - [ ] All required relations properly modeled with $ref

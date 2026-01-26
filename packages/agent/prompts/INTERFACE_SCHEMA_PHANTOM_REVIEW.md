@@ -195,9 +195,9 @@ Not all fields that don't exist in database schema are phantom fields. **DO NOT 
   "IBbsArticle": {
     "x-autobe-database-schema": "Article",
     "properties": {
-      "id": { "type": "string", "x-autobe-database-schema-member": "id" },
-      "title": { "type": "string", "x-autobe-database-schema-member": "title" },
-      "total_comments": { "type": "number", "x-autobe-database-schema-member": null }  // ✅ DO NOT DELETE - computed from relation count
+      "id": { "x-autobe-database-schema-member": "id", "x-autobe-specification": "Direct mapping.", "description": "Article identifier.", "type": "string" },
+      "title": { "x-autobe-database-schema-member": "title", "x-autobe-specification": "Direct mapping.", "description": "Article title.", "type": "string" },
+      "total_comments": { "x-autobe-database-schema-member": null, "x-autobe-specification": "COUNT of related comments.", "description": "Total number of comments on this article.", "type": "number" }  // ✅ DO NOT DELETE - computed from relation count
     }
   }
 }
@@ -939,7 +939,21 @@ Before calling the complete function, verify:
 - [ ] `revises` contains `keep` for each valid property
 - [ ] EVERY property in schema has a corresponding revise
 
-### 7.5. Validation Feedback Compliance
+### 7.5. ⚠️ MANDATORY: Property Metadata Verification
+- [ ] **`x-autobe-database-schema`**: Present on EVERY object type schema being reviewed (string table name or null)
+- [ ] **`x-autobe-database-schema-member`**: Present on EVERY property (string member name or null)
+  - If member name is a string → Verify it exists in the database schema
+  - If member name is null → Property is computed/derived (do NOT flag as phantom)
+  - If `x-autobe-database-schema-member` is MISSING → Flag this as an issue
+- [ ] **`x-autobe-specification`**: Present on EVERY property (verify presence, content handled by other agents)
+- [ ] **Property Construction Order**: Verified that properties follow the mandatory order:
+  1. `x-autobe-database-schema-member` (WHERE - data source)
+  2. `x-autobe-specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. Type metadata (WHAT - technical details)
+- [ ] **NO OMISSIONS**: Zero properties missing any of the mandatory fields flagged for correction
+
+### 7.6. Validation Feedback Compliance
 - [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
   * Validation error messages are always correct and must be followed without question
   * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
