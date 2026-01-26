@@ -143,7 +143,8 @@ export const transformInterfaceSchemaRefineHistory = (props: {
 
     **2. NEVER Omit Required Fields:**
     - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
-    - Omitting this field is a CRITICAL ERROR that will cause validation failure
+    - \`description\`: MANDATORY on every property (API consumer-facing meaning)
+    - Omitting either of these fields is a CRITICAL ERROR that will cause validation failure
 
     **3. Example - Correct Refined Property Structure:**
     \`\`\`json
