@@ -18,7 +18,9 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     prefix: string | null;
   }): string => {
     const actorLower: string = props.actor.name.toLowerCase();
-    const prefix: string = props.prefix ? `${props.prefix}_` : "";
+    const prefix: string = props.prefix
+      ? `${props.prefix.toLocaleLowerCase()}_`
+      : "";
     return `${prefix}${actorLower}s`;
   };
 
