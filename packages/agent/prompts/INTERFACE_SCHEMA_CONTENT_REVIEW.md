@@ -719,9 +719,42 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 }
 ```
 
-**Two-Field Documentation Pattern**:
-- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
-- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+**Two-Field Documentation Pattern: Your Primary Review Reference**
+
+**⚠️ CRITICAL: Carefully Examine Existing Properties' Fields**
+
+The `x-autobe-specification` and `description` fields in EXISTING properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
+
+- **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
+  - Shows the data mapping patterns used in this schema
+  - Reveals the naming conventions (e.g., `users.email` → `email`)
+  - **For Content Review**: Follow the same patterns when adding missing fields
+
+- **`description`**: API documentation for consumers (WHAT/WHY)
+  - Explains the semantic meaning of each property
+  - **For Content Review**: Helps understand the DTO's purpose and what fields it should include
+
+**How to Use These Fields for Content Review**:
+
+1. **Study existing properties' `x-autobe-specification`** - Understand the mapping patterns
+2. **Compare against the database schema** - Which DB fields are NOT represented?
+3. **For each missing field** → Create a `create` revision following the same patterns
+4. **Write `x-autobe-specification`** for new fields using the same style as existing ones
+
+**Example Analysis**:
+```json
+// Existing property in IUser:
+{
+  "email": {
+    "x-autobe-specification": "Direct mapping from users.email column.",
+    "description": "User's email address for login.",
+    "type": "string"
+  }
+}
+// DB has: email, name, phone, created_at
+// Schema has: email, name
+// Missing: phone, created_at → Create revisions for these
+```
 
 **⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
 

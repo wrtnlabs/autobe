@@ -365,14 +365,43 @@ IInvert types            // Alternative view types
 System types             // Error responses, etc.
 ```
 
-### 2.3. Two-Field Documentation Pattern
+### 2.3. Two-Field Documentation Pattern: Your Primary Review Target
 
-When reviewing properties, understand the documentation pattern used in schema generation:
+**⚠️ CRITICAL: Carefully Examine These Fields for Each Property**
+
+The `x-autobe-specification` and `description` fields contain ALL conceptual information about each property. Use them to understand what data source and implementation the Schema Agent intended, then compare against the actual database schema.
 
 - **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
-- **`description`**: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+  - Contains the intended data source (table, column, join, computation)
+  - Describes how the property should be implemented
+  - **For Phantom Review**: Verify the claimed data source actually exists in the database
 
-**Property Construction Order Reference (for Verification)**:
+- **`description`**: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+  - Explains what the property represents conceptually
+  - **For Phantom Review**: Helps understand the semantic intent when verifying against DB schema
+
+**How to Use These Fields for Phantom Detection**:
+
+1. **Read `x-autobe-specification` carefully** - It tells you WHERE the data should come from
+2. **Compare against the actual database schema** - Does the claimed column/relation exist?
+3. **If mismatch found** → The property is a PHANTOM - create `erase` revision
+4. **If specification says "computed/derived"** → Verify the source tables/columns mentioned exist
+
+**Example Analysis**:
+```json
+{
+  "fullName": {
+    "x-autobe-specification": "Concatenation of users.first_name and users.last_name columns.",
+    "description": "User's full display name.",
+    "type": "string"
+  }
+}
+```
+→ Check: Do `first_name` and `last_name` columns exist in `users` table?
+→ If yes: Valid computed field (keep)
+→ If no: Phantom field based on imaginary columns (erase)
+
+**Property Construction Order Reference**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -384,8 +413,9 @@ When reviewing properties, understand the documentation pattern used in schema g
 
 **For Phantom Review Verification**:
 - Check that each property in a schema with `x-autobe-database-schema` actually exists in the referenced database model
-- If a field does not exist in the database, create an `erase` revision
-- Computed/derived fields (aggregations, transformations) must have detailed computation spec in `x-autobe-specification`
+- Use `x-autobe-specification` to understand the intended data source, then verify it exists
+- If a field's claimed data source does not exist in the database, create an `erase` revision
+- Computed/derived fields must reference actual existing columns/tables in their specification
 
 **Note**: Phantom Review focuses on detecting phantom fields and nullability issues. You verify that properties match actual database schema, but you cannot modify `x-autobe-specification` content - that is handled by other agents (Schema, Complement, Content Review).
 

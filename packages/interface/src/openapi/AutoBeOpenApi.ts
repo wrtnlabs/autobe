@@ -1512,14 +1512,22 @@ export namespace AutoBeOpenApi {
    * types, it also includes an `x-autobe-specification` field for
    * implementation guidance.
    *
+   * ## Type Construction Order
+   *
+   * When constructing types, fields MUST be specified in this order:
+   *
+   * 1. `x-autobe-specification` → HOW to implement this type
+   * 2. `description` → WHAT for API consumers
+   * 3. Type metadata (type, properties, etc.) → WHAT technically
+   *
    * ## Two-Field Documentation Pattern
    *
    * This type system separates concerns between two documentation fields:
    *
    * - **`description`**: Standard OpenAPI field for API consumers. Displayed in
    *   Swagger UI, SDK docs, etc. Focuses on WHAT and WHY.
-   * - **`x-autobe-specification`** (object types only): AutoBE-internal field for
-   *   implementation agents. Focuses on HOW to implement.
+   * - **`x-autobe-specification`**: AutoBE-internal field for implementation
+   *   agents. Focuses on HOW to implement.
    *
    * ## Guidelines for `description`
    *
@@ -1673,12 +1681,20 @@ export namespace AutoBeOpenApi {
    * implementation specifications. Each property in an
    * {@link IJsonSchema.IObject object schema} uses this type.
    *
+   * ## Property Construction Order
+   *
+   * When constructing properties, fields MUST be specified in this order:
+   *
+   * 1. `x-autobe-specification` → HOW to implement/compute this property
+   * 2. `description` → WHAT for API consumers
+   * 3. Type metadata (type, format, etc.) → WHAT technically
+   *
    * ## Two-Field Documentation Pattern
    *
    * Each property includes:
    *
-   * - **`description`**: API documentation for consumers (Swagger UI, SDK docs)
    * - **`x-autobe-specification`**: Implementation guidance for agents
+   * - **`description`**: API documentation for consumers (Swagger UI, SDK docs)
    *
    * ## Key Difference from IJsonSchemaDescriptive
    *
@@ -1744,15 +1760,23 @@ export namespace AutoBeOpenApi {
      *
      * This interface provides two documentation fields for each property:
      *
-     * - **`description`**: API documentation for consumers
      * - **`x-autobe-specification`**: Implementation guidance for agents
+     * - **`description`**: API documentation for consumers
+     *
+     * ## Property Construction Order
+     *
+     * When constructing properties, fields MUST be specified in this order:
+     *
+     * 1. `x-autobe-specification` → HOW to implement/compute this property
+     * 2. `description` → WHAT for API consumers
+     * 3. Type metadata (type, format, etc.) → WHAT technically
      *
      * ## Field Responsibilities
      *
      * | Field                    | Audience      | Content                      |
      * | ------------------------ | ------------- | ---------------------------- |
-     * | `description`            | API consumers | WHAT/WHY - business meaning  |
      * | `x-autobe-specification` | Agents        | HOW - implementation details |
+     * | `description`            | API consumers | WHAT/WHY - business meaning  |
      */
     interface IProperty {
       /** @internal */

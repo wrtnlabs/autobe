@@ -668,12 +668,43 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 - Document violations in `think.review`
 - Apply corrections in `content`
 
-### 2.4. Two-Field Documentation Pattern
+### 2.4. Two-Field Documentation Pattern: Your Primary Review Reference
 
-When creating or modifying properties, understand the documentation pattern:
+**⚠️ CRITICAL: Carefully Examine These Fields to Understand Relation Intent**
 
-- **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW)
-- **`description`**: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
+The `x-autobe-specification` and `description` fields contain ALL conceptual information about each property's intended relationship. Use them to understand the Schema Agent's relation design, then verify against the actual database schema.
+
+- **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
+  - Contains the intended join strategy (FK column, related table)
+  - Describes whether it's a direct mapping or a relation transformation
+  - **For Relation Review**: Verify the FK column and related table actually exist in DB
+
+- **`description`**: API documentation for consumers (WHAT/WHY)
+  - Explains the semantic relationship (ownership, association, composition)
+  - **For Relation Review**: Helps classify the relation type (composition vs association vs aggregation)
+
+**How to Use These Fields for Relation Review**:
+
+1. **Read `x-autobe-specification` carefully** - It tells you the intended join strategy
+2. **Identify FK fields** - Look for properties that should be transformed to object references
+3. **Compare against the database schema** - Verify the FK column and target table exist
+4. **Check relation patterns** - Is this composition, association, or aggregation? Apply correct rules
+
+**Example Analysis**:
+```json
+{
+  "author_id": {
+    "x-autobe-specification": "Direct mapping from articles.author_id column. Foreign key to users table.",
+    "description": "ID of the user who wrote this article.",
+    "type": "string",
+    "format": "uuid"
+  }
+}
+```
+→ This is a FK field that should be transformed to an object reference
+→ Check: Does `author_id` column exist in `articles`? Does `users` table exist?
+→ Transform to: `"author": { "$ref": "#/components/schemas/IUser.ISummary" }`
+→ Write new `x-autobe-specification`: "Join via users table using articles.author_id. Returns ISummary variant."
 
 **⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
 
