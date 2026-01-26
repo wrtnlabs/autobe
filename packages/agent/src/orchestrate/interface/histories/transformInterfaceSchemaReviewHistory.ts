@@ -126,5 +126,34 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     - \`update\`: Transform or modify a property schema
 
     Return an empty \`revises\` array if no changes are needed.
+
+    ## CRITICAL: Object Type Property Construction Rules
+
+    For ALL \`create\` or \`update\` revisions, you MUST follow these ABSOLUTE rules:
+
+    **1. MANDATORY Property Field Order:**
+    Every property schema MUST be constructed in this exact order:
+    \`\`\`
+    1. x-autobe-database-schema-member  →  WHERE does data come from?
+    2. x-autobe-specification           →  HOW to implement/compute?
+    3. description                      →  WHAT for API consumers?
+    4. Type metadata (type, format...)  →  WHAT technically?
+    \`\`\`
+
+    **2. NEVER Omit Required Fields:**
+    - \`x-autobe-database-schema-member\`: MANDATORY on every property (string member name or null)
+    - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
+    - Omitting these fields is a CRITICAL ERROR that will cause validation failure
+
+    **3. Example - Correct Property Structure:**
+    \`\`\`json
+    {
+      "x-autobe-database-schema-member": "email",
+      "x-autobe-specification": "Direct mapping from users.email column.",
+      "description": "User's email address for login.",
+      "type": "string",
+      "format": "email"
+    }
+    \`\`\`
   `,
 });

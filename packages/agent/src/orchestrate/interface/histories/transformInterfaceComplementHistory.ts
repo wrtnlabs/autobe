@@ -77,12 +77,45 @@ export const transformInterfaceComplementHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Complete the missing schema type ${JSON.stringify(props.typeName)} 
+    Complete the missing schema type ${JSON.stringify(props.typeName)}
     based on the provided API design instructions.
 
     Note that, not making "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>"
     type, but making "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for
     the ${JSON.stringify(props.typeName)} type.
+
+    ## CRITICAL: Object Type Property Construction Rules
+
+    When designing schemas, prefer object types whenever semantically appropriate.
+
+    For ALL object type schemas, you MUST follow these ABSOLUTE rules:
+
+    **1. MANDATORY Property Field Order:**
+    Every property MUST be constructed in this exact order:
+    \`\`\`
+    1. x-autobe-database-schema-member  →  WHERE does data come from?
+    2. x-autobe-specification           →  HOW to implement/compute?
+    3. description                      →  WHAT for API consumers?
+    4. Type metadata (type, format...)  →  WHAT technically?
+    \`\`\`
+
+    **2. NEVER Omit Required Fields:**
+    - \`x-autobe-database-schema-member\`: MANDATORY on every property (string member name or null)
+    - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
+    - Omitting these fields is a CRITICAL ERROR that will cause validation failure
+
+    **3. Example - Correct Property Structure:**
+    \`\`\`json
+    {
+      "email": {
+        "x-autobe-database-schema-member": "email",
+        "x-autobe-specification": "Direct mapping from users.email column.",
+        "description": "User's email address for login.",
+        "type": "string",
+        "format": "email"
+      }
+    }
+    \`\`\`
   `,
 });
 
