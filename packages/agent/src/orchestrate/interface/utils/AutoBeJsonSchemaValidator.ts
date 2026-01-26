@@ -385,7 +385,9 @@ export namespace AutoBeJsonSchemaValidator {
       if (model === undefined)
         props.errors.push({
           path: `${props.path}["x-autobe-database-schema"]`,
-          expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
+          expected:
+            props.models.map((s) => JSON.stringify(s.name)).join(" | ") +
+            " | null",
           value: next["x-autobe-database-schema"],
           description: StringUtil.trim`
             You've referenced a non-existing database schema name
@@ -395,11 +397,16 @@ export namespace AutoBeJsonSchemaValidator {
 
             Never assume non-existing models. This is not recommendation,
             but an instruction you must follow. Never repeat the same
-            value again. I repeat that, you have to choose one of below:
+            value again. You have to choose one of below:
 
-            Existing database schema names are:
-            
+            **Option 1: Reference an existing database schema**
             ${props.models.map((m) => `- ${m.name}`).join("\n")}
+
+            **Option 2: Set to null (for DTOs with no database reference)**
+            If this DTO represents pure computed/statistical data or logic-only
+            structures that have no direct relationship to any database table,
+            set "x-autobe-database-schema" to null. In this case, all properties
+            must also have "x-autobe-database-schema-member" set to null.
           `,
         });
       for (const [key, value] of Object.entries(next.properties))
@@ -468,7 +475,8 @@ export namespace AutoBeJsonSchemaValidator {
     if (found === undefined)
       props.errors.push({
         path: pluginAccessor,
-        expected: candidates.map((c) => JSON.stringify(c.key)).join(" | "),
+        expected:
+          candidates.map((c) => JSON.stringify(c.key)).join(" | ") + " | null",
         value: member,
         description: StringUtil.trim`
           You have defined "x-autobe-database-schema-member" property with value
