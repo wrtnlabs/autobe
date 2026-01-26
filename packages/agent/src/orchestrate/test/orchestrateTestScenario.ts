@@ -66,7 +66,8 @@ export const orchestrateTestScenario = async (
           promptCacheKey,
           instruction,
         });
-      } catch {
+      } catch (error) {
+        console.log(operation, error);
         ++progress.completed;
         return [];
       }

@@ -149,14 +149,14 @@ function createController(props: {
     const errors: IValidation.IError[] = [];
     AutoBeInterfaceAuthorizationProgrammer.validateAuthorizationTypes({
       errors,
-      actor: props.actor.kind,
+      actor: props.actor,
       operations: result.data.request.operations,
       accessor: "$input.request.operations",
     });
     result.data.request.operations.forEach((operation, index) =>
       AutoBeInterfaceAuthorizationProgrammer.validateOperation({
         errors,
-        actor: props.actor.kind,
+        actor: props.actor,
         operation,
         accessor: `$input.request.operations[${index}]`,
       }),

@@ -154,7 +154,7 @@ async function process(
       p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
 
     // Use authorizationActors from endpoint design (not from LLM)
-    const authorizationActors = props.design.authorizationActors;
+    const authorizationActors: string[] = props.design.authorizationActors;
     const matrix: AutoBeOpenApi.IOperation[] =
       authorizationActors.length === 0
         ? [
@@ -224,13 +224,11 @@ function createController(props: {
         request: result.data.request,
       });
 
-    const op: IAutoBeInterfaceOperationApplication.IOperation =
-      result.data.request.operation;
     const errors: IValidation.IError[] = [];
     AutoBeInterfaceOperationProgrammer.validate({
       accessor: "$input.request.operation",
       errors,
-      operation: op,
+      operation: result.data.request.operation,
     });
 
     if (errors.length !== 0)
