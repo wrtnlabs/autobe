@@ -39,7 +39,9 @@ export interface AutoBeVendorRequestEvent extends AutoBeEventBase<"vendorRequest
    * AI responses for improved user experience and progressive output
    * generation.
    */
-  body: OpenAI.ChatCompletionCreateParamsStreaming;
+  body:
+    | OpenAI.ChatCompletionCreateParamsStreaming
+    | OpenAI.ChatCompletionCreateParamsNonStreaming;
 
   retry: number;
 
