@@ -11,7 +11,6 @@ export const fulfillJsonSchemaErrorMessages = (
       fulfillNoSpecificationError(e) ||
       fulfillNoDescriptionError(e) ||
       fulfillNoDatabaseSchema(e) ||
-      fulfillNoDatabaseSchemaMember(e) ||
       fulfillObjectMetadataMisplacement(e) ||
       fulfillNestedObjectError(e);
 };
@@ -94,7 +93,7 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
 
         **What to include**:
         - For column-mapped properties: Database column details, constraints, type mapping
-        - For computed properties (when "x-autobe-database-schema-property" is null):
+        - For computed/derived properties:
           - All source columns and tables involved
           - Exact computation formula (e.g., \`SUM(items.price * items.quantity)\`)
           - Join conditions between related tables
@@ -104,11 +103,10 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
         \`\`\`json
         {
           "email": {
-            "type": "string",
-            "format": "email",
+            "x-autobe-specification": "Direct mapping from users.email column. Unique constraint enforced at DB level.",
             "description": "User's email address used for login and notifications.",
-            "x-autobe-specification": "Maps to users.email column. Unique constraint enforced at DB level.",
-            "x-autobe-database-schema-property": "email"
+            "type": "string",
+            "format": "email"
           }
         }
         \`\`\`
@@ -230,47 +228,6 @@ const fulfillNoDatabaseSchema = (e: IValidation.IError): boolean => {
 
       You must add this field. The validator will continue to reject your schema
       until every object type has an "x-autobe-database-schema" value (table name or null).
-    `;
-    return true;
-  }
-  return false;
-};
-
-const fulfillNoDatabaseSchemaMember = (e: IValidation.IError): boolean => {
-  if (
-    e.value === undefined &&
-    e.path.endsWith(`["x-autobe-database-schema-property"]`)
-  ) {
-    // no x-autobe-database-schema-property
-    e.description = StringUtil.trim`
-      **Missing Required Field: "x-autobe-database-schema-property"**
-
-      Every property must have an "x-autobe-database-schema-property" field that
-      specifies the exact database column or relation this property maps to.
-      This enables phantom field detection, correct query generation, and type validation.
-
-      **Set to a column/relation name** when:
-      - The property directly represents a database column value
-      - The parent object's "x-autobe-database-schema" points to a valid table
-      - The column or relation actually exists in that table's schema
-
-      **Set to \`null\`** when the property is computed:
-      - Aggregated from multiple columns (e.g., \`fullName\` from \`first_name\` + \`last_name\`)
-      - Derived from related tables (e.g., \`orderCount\` from counting orders)
-      - Result of runtime calculations (e.g., \`discountedPrice\`)
-      - Denormalized from nested relations (e.g., \`authorName\` from \`post.author.name\`)
-      - Parent object has no database mapping (\`x-autobe-database-schema\` is null)
-
-      **When set to \`null\`**: The "x-autobe-specification" field must contain
-      the complete computation specification: all source columns/tables, the exact
-      formula or algorithm, join conditions, and edge case handling.
-
-      **When set to a property name**: The name must exactly match an existing column
-      or relation in the database schema. Do not guess or imagine property names.
-      If validation rejects a property name, that property does not exist in the schema.
-
-      You must add this field. The validator will continue to reject your schema
-      until every property has an "x-autobe-database-schema-property" value (property name or null).
     `;
     return true;
   }

@@ -44,11 +44,10 @@ export namespace AutoBeJsonSchemaFactory {
         AutoBeOpenApiTypeChecker.isObject(parent) === false
       ) {
         value.properties.token = {
-          $ref: "#/components/schemas/IAuthorizationToken",
-          description: "Authorization token.",
           "x-autobe-specification":
             "Authorization token comes from the session table.",
-          "x-autobe-database-schema-property": null,
+          description: "Authorization token.",
+          $ref: "#/components/schemas/IAuthorizationToken",
         };
         if (value.required.includes("token") === false)
           value.required.push("token");
@@ -59,11 +58,10 @@ export namespace AutoBeJsonSchemaFactory {
         };
         if (value.properties.token === undefined)
           value.properties.token = {
-            $ref: "#/components/schemas/IAuthorizationToken",
-            description: "Authorization token.",
             "x-autobe-specification":
               "Authorization token comes from the session table.",
-            "x-autobe-database-schema-property": null,
+            description: "Authorization token.",
+            $ref: "#/components/schemas/IAuthorizationToken",
           };
         value.required = Array.from(
           new Set([...parent.required, ...value.required]),
@@ -230,19 +228,17 @@ export namespace AutoBeJsonSchemaFactory {
     type: "object",
     properties: {
       pagination: {
-        $ref: "#/components/schemas/IPage.IPagination",
-        description: "Page information.",
         "x-autobe-specification": "Pagination information for the page.",
-        "x-autobe-database-schema-property": null,
+        description: "Page information.",
+        $ref: "#/components/schemas/IPage.IPagination",
       },
       data: {
+        "x-autobe-specification": `List of records of type ${key}.`,
+        description: "List of records.",
         type: "array",
         items: {
           $ref: `#/components/schemas/${key}`,
         },
-        description: "List of records.",
-        "x-autobe-specification": `List of records of type ${key}.`,
-        "x-autobe-database-schema-property": null,
       },
     },
     required: ["pagination", "data"],
@@ -293,8 +289,6 @@ export namespace AutoBeJsonSchemaFactory {
         closure: (next) => {
           if (AutoBeOpenApiTypeChecker.isObject(next)) {
             next["x-autobe-database-schema"] = null;
-            for (const p of Object.values(next.properties))
-              p["x-autobe-database-schema-property"] = null;
           }
         },
       });

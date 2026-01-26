@@ -183,16 +183,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned.oneOf.push({ type: "null" });
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
-          description: cloned.description,
           "x-autobe-specification": cloned["x-autobe-specification"],
-          "x-autobe-database-schema-property":
-            cloned["x-autobe-database-schema-property"],
+          description: cloned.description,
           oneOf: [
             {
               ...cloned,
               ...{
+                "x-autobe-specification": undefined,
                 description: undefined,
-                "x-autobe-database-schema-property": undefined,
               },
             },
             { type: "null" },
@@ -206,10 +204,8 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         if (cloned.oneOf.length === 1)
           cloned = {
             ...cloned.oneOf[0],
-            description: cloned.description,
             "x-autobe-specification": cloned["x-autobe-specification"],
-            "x-autobe-database-schema-property":
-              cloned["x-autobe-database-schema-property"],
+            description: cloned.description,
           };
       }
     }
