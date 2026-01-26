@@ -942,10 +942,10 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "shopping_customers",
   "properties": {
-    "id": { "x-autobe-database-schema-property": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "email": { "x-autobe-database-schema-property": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "name": { "x-autobe-database-schema-property": "name", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "createdAt": { "x-autobe-database-schema-property": "created_at", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "date-time" }
+    "id": { "x-autobe-specification": "Direct mapping from shopping_customers.id.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-specification": "Direct mapping from shopping_customers.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "name": { "x-autobe-specification": "Direct mapping from shopping_customers.name.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "createdAt": { "x-autobe-specification": "Direct mapping from shopping_customers.created_at.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "date-time" }
     // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
   "required": ["id", "email", "name", "createdAt"]
@@ -987,8 +987,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
   "description": "<DETAILED_DESCRIPTION>",                       // ✅ CORRECT: Metadata at object level
   "x-autobe-database-schema": "users",        // ✅ CORRECT: Metadata at object level
   "properties": {
-    "id": { "x-autobe-database-schema-property": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "email": { "x-autobe-database-schema-property": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" }
+    "id": { "x-autobe-specification": "Direct mapping from users.id.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-specification": "Direct mapping from users.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" }
   },
   "required": ["id", "email"]                 // ✅ CORRECT: Metadata at object level
 }
@@ -1031,93 +1031,9 @@ Examples:
 - The `properties` object is ONLY for data that the API actually transmits
 - Always place metadata at the same level as `type` and `properties`, never inside `properties`
 
-#### 2.2.4. `x-autobe-database-schema-property` Property-Level Database Mapping
+#### 2.2.4. Two-Field Documentation Pattern for Properties
 
-**PURPOSE**: This field links each DTO property to its corresponding database schema property for traceability and implementation.
-
-**APPLIES TO**: Every property within an object schema where `x-autobe-database-schema` has a valid table name.
-
-**TYPE**: `string | null`
-- `string`: The exact database schema property name this DTO property maps to
-- `null`: Property is computed/derived and has no direct property mapping
-
-##### What is a "Database Schema Property"?
-
-In Prisma schema, a **database schema property** is any named element within a model that represents data or a relationship. This includes both **columns** and **relationships**.
-
-**⚠️ CRITICAL DISTINCTION**: Indexes (`@@index`), constraints (`@@unique`), and other table-level metadata are **NOT** properties.
-
-**Example Prisma Model**:
-
-```prisma
-model shopping_articles {
-  // ═══════════════════════════════════════════════════════════════════════════
-  // COLUMNS — All of them are database schema properties
-  // ═══════════════════════════════════════════════════════════════════════════
-  id                   String    @id @db.Uuid
-  shopping_customer_id String    @db.Uuid
-  title                String
-  body                 String
-  created_at           DateTime  @db.Timestamptz
-  updated_at           DateTime  @db.Timestamptz
-  deleted_at           DateTime? @db.Timestamptz
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // RELATIONSHIPS — All of them are database schema properties
-  // ═══════════════════════════════════════════════════════════════════════════
-  customer  shopping_customers                      @relation(fields: [shopping_customer_id], references: [id])  // belongs to
-  of_review shopping_sale_snapshot_review_snapshots?  // has one
-  comments  shopping_article_comments[]             // has many
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // INDEXES — These are NOT properties (table-level metadata only)
-  // ═══════════════════════════════════════════════════════════════════════════
-  @@index([shopping_customer_id])
-  @@index([created_at])
-  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin)
-  @@index([body(ops: raw("gin_trgm_ops"))], type: Gin)
-}
-```
-
-**Summary**:
-
-| Element | Is a Property? | Valid for `x-autobe-database-schema-property`? |
-|---------|----------------|-----------------------------------------------|
-| `id`, `title`, `body`, `created_at`, etc. | ✅ Yes (Column) | ✅ Yes |
-| `shopping_customer_id` | ✅ Yes (FK Column) | ✅ Yes |
-| `customer` | ✅ Yes (Belongs-to Relation) | ✅ Yes |
-| `of_review` | ✅ Yes (Has-one Relation) | ✅ Yes |
-| `comments` | ✅ Yes (Has-many Relation) | ✅ Yes |
-| `@@index([...])` | ❌ No (Index) | ❌ No |
-| `@@unique([...])` | ❌ No (Constraint) | ❌ No |
-| `@@map(...)` | ❌ No (Configuration) | ❌ No |
-
-##### Usage Rules
-
-**Case 1: When `x-autobe-database-schema` has a valid table name**
-- Every property MUST have `x-autobe-database-schema-property` filled
-- If property maps directly to a database schema property → set to the property name
-- If property is computed/derived (no direct mapping) → set to `null`, and the property's `x-autobe-specification` MUST contain detailed computation specification
-
-**Case 2: When `x-autobe-database-schema` is `null`**
-- `x-autobe-database-schema-property` MUST be set to `null` for all properties (entire object has no table mapping)
-- Each property's `x-autobe-specification` MUST still contain detailed specs explaining data sourcing
-
-**⚠️ ABSOLUTE RULE: Never Imagine Database Schema Properties**
-
-When setting `x-autobe-database-schema-property`, you MUST:
-1. **Carefully verify against the actual Prisma schema definition** - Confirm the property (column or relation) actually exists in the model
-2. **Only use property names that exist** - Never guess, assume, or invent property names based on "common sense" or "what should exist"
-3. **If validation feedback says a property does not exist, it is 100% correct** - Validation feedback is generated by deterministic code logic, NOT by AI judgment. Its reliability is guaranteed. It has absolute authority - do not argue, question, or insist that the property "should" exist. Never prioritize your own judgment over validation feedback
-4. **If no matching property exists, either**:
-   - Set the value to `null` if this is a computed property
-   - Delete the property entirely if it should not exist
-
-The database schema is the **source of truth**. Your assumptions about what properties "should" exist are irrelevant. If you expect a column like `assigned_by_id` but the database only has `id`, `moderator_id`, and `moderator`, then your DTO property design is wrong - not the database.
-
-**CRITICAL: Two-Field Documentation Pattern for Properties**
-
-Every property has two documentation fields:
+Every property has two documentation fields that serve different purposes:
 
 1. **`description`** - API documentation for consumers (WHAT/WHY):
    - Clear, concise explanation for Swagger UI, SDK docs, API consumers
@@ -1127,8 +1043,8 @@ Every property has two documentation fields:
 2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
    - Detailed implementation specification for downstream agents
    - **THIS FIELD IS MANDATORY** - You must always provide it
-   - When `x-autobe-database-schema-property` is a valid property name: Can be brief (e.g., column details, transformation logic)
-   - When `x-autobe-database-schema-property` is `null`: MUST contain detailed computation spec:
+   - For direct column mappings: Can be brief (e.g., "Direct mapping from users.email column.")
+   - For computed/derived properties: MUST contain detailed computation spec:
      - Source tables and columns involved
      - Join conditions between tables
      - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
@@ -1147,21 +1063,18 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "x-autobe-database-schema": "users",
   "properties": {
     "id": {
-      "x-autobe-database-schema-property": "id",
       "x-autobe-specification": "Direct mapping from users.id column.",
       "description": "Unique identifier for the user.",
       "type": "string",
       "format": "uuid"
     },
     "email": {
-      "x-autobe-database-schema-property": "email",
       "x-autobe-specification": "Direct mapping from users.email column.",
       "description": "User's email address for login and communication.",
       "type": "string",
       "format": "email"
     },
     "totalOrders": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if user has no orders.",
       "description": "Total number of orders placed by this user.",
       "type": "integer"
@@ -1180,19 +1093,16 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
   "x-autobe-database-schema": null,
   "properties": {
     "categoryName": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Source: categories.name via JOIN products ON products.category_id = categories.id.",
       "description": "Name of the product category.",
       "type": "string"
     },
     "totalSales": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Computed by: SUM(sales.quantity) WHERE sales.product_id IN (SELECT id FROM products WHERE category_id = :categoryId). Returns 0 if no sales.",
       "description": "Total units sold in this category.",
       "type": "integer"
     },
     "averagePrice": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Computed by: AVG(sales.unit_price) for all sales in category. Returns null if no sales exist.",
       "description": "Average sale price in this category.",
       "type": "number"
@@ -1204,52 +1114,43 @@ The `x-autobe-specification` must be **precise enough for downstream agents to i
 
 #### 2.2.5. MANDATORY: Property Construction Order for AI Function Calling
 
-**CRITICAL REASONING FRAMEWORK**: When constructing properties for object types, you MUST follow a strict field ordering. This order is NOT arbitrary - it enforces a cognitive reasoning flow that produces consistent, grounded API specifications.
+**CRITICAL REASONING FRAMEWORK**: When constructing properties for object types, you MUST follow a strict field ordering. This order is NOT arbitrary - it enforces a cognitive reasoning flow that produces consistent, well-documented API specifications.
 
 **THE MANDATORY ORDER**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-database-schema-property  →  WHERE does data come from?    │
-│  STEP 2: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 3: description                      →  WHAT for API consumers?       │
-│  STEP 4: Type metadata (type, format...)  →  WHAT technically?             │
+│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
+│  STEP 2: description                      →  WHAT for API consumers?       │
+│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **WHY THIS ORDER IS MANDATORY - Grounded Reasoning Flow**:
 
-This ordering enforces **grounded reasoning** - the AI must first establish the data source before proceeding to implementation and documentation. This prevents hallucination and ensures consistency:
+This ordering enforces **grounded reasoning** - the AI must first establish implementation details before proceeding to documentation. This prevents hallucination and ensures consistency:
 
-1. **STEP 1 - WHERE (Data Source)**: `x-autobe-database-schema-property`
-   - First, determine WHERE the data originates
-   - Is this a direct database column? Set the column name.
-   - Is this computed/derived? Set to `null`.
-   - This grounds ALL subsequent decisions in the actual data model.
+1. **STEP 1 - HOW (Implementation)**: `x-autobe-specification`
+   - First, specify HOW this property will be implemented
+   - Is this a direct database column mapping? Specify the source.
+   - Is this computed/derived? Provide detailed computation specification.
+   - This grounds ALL subsequent decisions in the actual implementation.
 
-2. **STEP 2 - HOW (Implementation)**: `x-autobe-specification`
-   - Based on the data source, specify HOW to implement
-   - If direct column (Step 1 = column name): Brief transformation note
-   - If computed (Step 1 = null): Detailed computation specification
-   - Implementation spec MUST be consistent with the declared data source
-
-3. **STEP 3 - WHAT for Consumers (Documentation)**: `description`
-   - Now that you know WHERE and HOW, document WHAT this means for API users
+2. **STEP 2 - WHAT for Consumers (Documentation)**: `description`
+   - Now that you know HOW, document WHAT this means for API users
    - Write clear, human-readable documentation for Swagger UI / SDK docs
-   - The description naturally flows from the established data source and implementation
+   - The description naturally flows from the established implementation
 
-4. **STEP 4 - WHAT Technically (Type Metadata)**: `type`, `format`, etc.
+3. **STEP 3 - WHAT Technically (Type Metadata)**: `type`, `format`, etc.
    - Finally, record the technical type information
-   - Type must be consistent with the database column type (from Step 1)
-   - Format and constraints must match what the implementation produces (from Step 2)
+   - Type must be consistent with the database column type
+   - Format and constraints must match what the implementation produces
 
 **THE REASONING CHAIN**:
 
 ```
                     ┌──────────────────────────────────────────────────────────┐
-                    │  "This property maps to users.email column"             │
-                    │                     ↓                                    │
-                    │  "Simply read from the email field"                      │
+                    │  "Direct mapping from users.email column"                │
                     │                     ↓                                    │
                     │  "User's email address for login and communication"     │
                     │                     ↓                                    │
@@ -1257,8 +1158,6 @@ This ordering enforces **grounded reasoning** - the AI must first establish the 
                     └──────────────────────────────────────────────────────────┘
 
 vs. Computed:       ┌──────────────────────────────────────────────────────────┐
-                    │  "No direct column mapping (null)"                       │
-                    │                     ↓                                    │
                     │  "Computed by: COUNT(*) FROM orders WHERE user_id = ..."│
                     │                     ↓                                    │
                     │  "Total number of orders placed by this user"           │
@@ -1272,17 +1171,15 @@ vs. Computed:       ┌───────────────────
 ```json
 {
   "email": {
-    "x-autobe-database-schema-property": "email",           // STEP 1: WHERE - DB column
-    "x-autobe-specification": "Direct mapping from users.email column.",  // STEP 2: HOW
-    "description": "User's email address for login and communication.",   // STEP 3: WHAT (consumer)
-    "type": "string",                                     // STEP 4: WHAT (technical)
+    "x-autobe-specification": "Direct mapping from users.email column.",  // STEP 1: HOW
+    "description": "User's email address for login and communication.",   // STEP 2: WHAT (consumer)
+    "type": "string",                                     // STEP 3: WHAT (technical)
     "format": "email"
   },
   "totalOrders": {
-    "x-autobe-database-schema-property": null,              // STEP 1: WHERE - computed
-    "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if no orders.",  // STEP 2: HOW (detailed)
-    "description": "Total number of orders placed by this user.",         // STEP 3: WHAT (consumer)
-    "type": "integer",                                    // STEP 4: WHAT (technical)
+    "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if no orders.",  // STEP 1: HOW (detailed)
+    "description": "Total number of orders placed by this user.",         // STEP 2: WHAT (consumer)
+    "type": "integer",                                    // STEP 3: WHAT (technical)
     "minimum": 0
   }
 }
@@ -1290,36 +1187,31 @@ vs. Computed:       ┌───────────────────
 
 **⚠️ ABSOLUTE PROHIBITIONS**:
 
-1. **NEVER omit `x-autobe-database-schema-property`**: This field is MANDATORY for every property in an object type. Without it, there is no grounding for implementation.
+1. **NEVER omit `x-autobe-specification`**: This field is MANDATORY for every property. It tells downstream agents exactly HOW to implement the property.
 
-2. **NEVER omit `x-autobe-specification`**: This field is MANDATORY for every property. It tells downstream agents exactly HOW to implement the property.
+2. **NEVER write fields out of order**: The cognitive flow is disrupted when you write `description` before establishing the implementation. Follow the order strictly.
 
-3. **NEVER write fields out of order**: The cognitive flow is disrupted when you write `description` before establishing the data source. Follow the order strictly.
-
-4. **NEVER make implementation decisions before establishing data source**: If you decide "this will be computed" before checking the database schema, you risk hallucination.
+3. **NEVER omit `description`**: This field is MANDATORY for every property. It provides documentation for API consumers.
 
 **VALIDATION CHECKLIST** - For every property you generate:
 
-- [ ] `x-autobe-database-schema-property` is present (string or null)
 - [ ] `x-autobe-specification` is present and detailed enough for implementation
 - [ ] `description` is present and consumer-friendly
-- [ ] Type metadata is consistent with the declared data source
+- [ ] Type metadata is consistent with the implementation specification
 - [ ] Fields appear in the correct order in your JSON output
 
 **WHY ORDER MATTERS FOR AI FUNCTION CALLING**:
 
-When the LLM generates properties through function calling, the field ordering in the schema definition influences the token generation sequence. By placing `x-autobe-database-schema-property` FIRST, we force the model to:
+When the LLM generates properties through function calling, the field ordering in the schema definition influences the token generation sequence. By placing `x-autobe-specification` FIRST, we force the model to:
 
-1. Commit to a data source before anything else
-2. Make implementation decisions grounded in that source
-3. Write documentation that naturally follows from the established facts
-4. Assign types that are consistent with the source and implementation
+1. Commit to an implementation approach before anything else
+2. Write documentation that naturally follows from the established implementation
+3. Assign types that are consistent with the implementation
 
 This eliminates a class of errors where:
 - ❌ The description says "computed from X" but there's no specification
-- ❌ The type says "string" but the column is actually an integer
-- ❌ The specification references a column that doesn't exist
-- ❌ Properties are documented without any grounding in the data model
+- ❌ The type says "string" but the implementation produces an integer
+- ❌ Properties are documented without any grounding in actual implementation
 
 **REMEMBER**: The order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
 
@@ -1422,11 +1314,10 @@ model User {
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "users",
   "properties": {
-    "id": { "x-autobe-database-schema-property": "id", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "email": { "x-autobe-database-schema-property": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "id": { "x-autobe-specification": "Direct mapping from users.id.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "email": { "x-autobe-specification": "Direct mapping from users.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
     "bio": {
-      "x-autobe-database-schema-property": "bio",
-      "x-autobe-specification": "Direct mapping from nullable column.",
+      "x-autobe-specification": "Direct mapping from users.bio (nullable column).",
       "description": "<DETAILED_DESCRIPTION>",
       "oneOf": [
         { "type": "string" },
@@ -1434,8 +1325,7 @@ model User {
       ]
     },
     "expiredAt": {
-      "x-autobe-database-schema-property": "expired_at",
-      "x-autobe-specification": "Direct mapping from nullable column.",
+      "x-autobe-specification": "Direct mapping from users.expired_at (nullable column).",
       "description": "<DETAILED_DESCRIPTION>",
       "oneOf": [
         { "type": "string", "format": "date-time" },
@@ -1480,9 +1370,9 @@ model User {
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "users",
   "properties": {
-    "email": { "x-autobe-database-schema-property": "email", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "bio": { "x-autobe-database-schema-property": "bio", "x-autobe-specification": "Direct mapping to nullable column.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "role": { "x-autobe-database-schema-property": "role", "x-autobe-specification": "Direct mapping. Uses default 'user' if not provided.", "description": "Optional - if not provided, defaults to 'user'.", "type": "string" }
+    "email": { "x-autobe-specification": "Direct mapping to users.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "bio": { "x-autobe-specification": "Direct mapping to users.bio (nullable column).", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "role": { "x-autobe-specification": "Direct mapping to users.role. Uses default 'user' if not provided.", "description": "Optional - if not provided, defaults to 'user'.", "type": "string" }
   },
   "required": ["email"]  // ✅ Only non-nullable, non-default fields required
 }
@@ -1755,21 +1645,18 @@ model User {
   "x-autobe-database-schema": "users",
   "properties": {
     "id": {
-      "x-autobe-database-schema-property": "id",
       "x-autobe-specification": "Direct mapping from users.id column.",
       "description": "Unique identifier for the user.",
       "type": "string",
       "format": "uuid"
     },
     "email": {
-      "x-autobe-database-schema-property": "email",
       "x-autobe-specification": "Direct mapping from users.email column.",
       "description": "User's email address.",
       "type": "string",
       "format": "email"
     },
     "preferences": {
-      "x-autobe-database-schema-property": "preferences",
       "x-autobe-specification": "JSON column parsed as key-value object. Keys are preference names.",
       "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
       "type": "object",
@@ -1780,7 +1667,6 @@ model User {
       }
     },
     "customFields": {
-      "x-autobe-database-schema-property": "custom_fields",
       "x-autobe-specification": "Nullable JSON column parsed as key-value object. Returns null if not set.",
       "description": "Optional custom fields as key-value pairs. Null if not set.",
       "oneOf": [
@@ -1873,10 +1759,9 @@ An **inline object type** occurs when you define an object's complete structure 
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": "bbs_articles",
   "properties": {
-    "title": { "x-autobe-database-schema-property": "title", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "content": { "x-autobe-database-schema-property": "content", "x-autobe-specification": "Direct mapping.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "title": { "x-autobe-specification": "Direct mapping to bbs_articles.title.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
+    "content": { "x-autobe-specification": "Direct mapping to bbs_articles.content.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
     "attachments": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Nested composition. Each attachment stored in bbs_article_attachments table.",
       "description": "<DETAILED_DESCRIPTION>",
       "type": "array",
@@ -1885,7 +1770,6 @@ An **inline object type** occurs when you define an object's complete structure 
       }
     },
     "metadata": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Nested object stored as JSON or in separate metadata table.",
       "description": "<DETAILED_DESCRIPTION>",
       "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
@@ -1901,9 +1785,9 @@ An **inline object type** occurs when you define an object's complete structure 
   "description": "<DETAILED_DESCRIPTION>",
   "x-autobe-database-schema": null,
   "properties": {
-    "url": { "x-autobe-database-schema-property": null, "x-autobe-specification": "File URL for the attachment.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "uri" },
-    "name": { "x-autobe-database-schema-property": null, "x-autobe-specification": "Original filename.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "minLength": 1, "maxLength": 255 },
-    "size": { "x-autobe-database-schema-property": null, "x-autobe-specification": "File size in bytes.", "description": "<DETAILED_DESCRIPTION>", "type": "integer", "minimum": 0 }
+    "url": { "x-autobe-specification": "File URL for the attachment.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "uri" },
+    "name": { "x-autobe-specification": "Original filename.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "minLength": 1, "maxLength": 255 },
+    "size": { "x-autobe-specification": "File size in bytes.", "description": "<DETAILED_DESCRIPTION>", "type": "integer", "minimum": 0 }
   },
   "required": ["url", "name", "size"]
 }
@@ -1917,14 +1801,12 @@ An **inline object type** occurs when you define an object's complete structure 
   "x-autobe-database-schema": null,
   "properties": {
     "tags": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Array of tag strings for categorization.",
       "description": "<DETAILED_DESCRIPTION>",
       "type": "array",
       "items": { "type": "string" }
     },
     "priority": {
-      "x-autobe-database-schema-property": null,
       "x-autobe-specification": "Priority level enum value.",
       "description": "<DETAILED_DESCRIPTION>",
       "type": "string",
@@ -2049,8 +1931,8 @@ Before ANY schema is accepted:
   "properties": {
     "author": {
       "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-      "description": "<DETAILED_DESCRIPTION>",
-      "x-autobe-database-schema-property": "author"
+      "x-autobe-specification": "Relation: posts.author -> authors (belongs-to). Load via JOIN on author_id.",
+      "description": "<DETAILED_DESCRIPTION>"
     }
   }
 }
@@ -5530,7 +5412,7 @@ export namespace IJsonSchemaDescriptive {
 
 // IObject.properties requires IJsonSchemaProperty for each property
 export interface IObject {
-  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description AND x-autobe-database-schema-property
+  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description AND x-autobe-specification
 }
 ```
 
@@ -5571,8 +5453,8 @@ Soft deletion is supported to preserve historical transaction records.
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
   "properties": {
-    "id": { "x-autobe-database-schema-property": "id", "x-autobe-specification": "Direct mapping from sale ID.", "description": "Sale unique identifier", "type": "string" },
-    "title": { "x-autobe-database-schema-property": "title", "x-autobe-specification": "Direct mapping from sale title.", "description": "Sale listing title", "type": "string" }
+    "id": { "x-autobe-specification": "Direct mapping from shopping_sales.id.", "description": "Sale unique identifier", "type": "string" },
+    "title": { "x-autobe-specification": "Direct mapping from shopping_sales.title.", "description": "Sale listing title", "type": "string" }
   },
   "required": ["id", "title"]
 }
@@ -5583,8 +5465,8 @@ Summary variant excludes large text fields for list performance.`,
   "type": "object",
   "description": "Sale entity. Contains product and seller information.",
   "properties": {
-    "id": { "x-autobe-database-schema-property": "id", "x-autobe-specification": "Direct mapping.", "description": "Sale ID", "type": "string" },
-    "title": { "x-autobe-database-schema-property": "title", "x-autobe-specification": "Direct mapping.", "description": "Title", "type": "string" }
+    "id": { "x-autobe-specification": "Direct mapping.", "description": "Sale ID", "type": "string" },
+    "title": { "x-autobe-specification": "Direct mapping.", "description": "Title", "type": "string" }
   }
 }
 ```
@@ -5609,38 +5491,38 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 // EXCELLENT: Detailed property description
 {
   "email": {
-    "type": "string",
-    "format": "email",
+    "x-autobe-specification": "Direct mapping from customers.email column.",
     "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards.",
-    "x-autobe-database-schema-property": "email"
+    "type": "string",
+    "format": "email"
   }
 }
 
 // GOOD: Clear and specific
 {
   "price": {
-    "type": "number",
-    "minimum": 0,
+    "x-autobe-specification": "Direct mapping from sales.price column.",
     "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents.",
-    "x-autobe-database-schema-property": "price"
+    "type": "number",
+    "minimum": 0
   }
 }
 
 // WRONG: Too brief (description insufficient)
 {
   "email": {
-    "type": "string",
+    "x-autobe-specification": "Direct mapping from customers.email.",
     "description": "Email",
-    "x-autobe-database-schema-property": "email"
+    "type": "string"
   }
 }
 
 // ❌ FATAL ERROR: Missing description - COMPILATION WILL FAIL
 {
   "email": {
+    "x-autobe-specification": "Direct mapping from customers.email.",
     "type": "string",
-    "format": "email",
-    "x-autobe-database-schema-property": "email"
+    "format": "email"
     // Missing description! This violates IJsonSchemaProperty type requirement
   }
 }
@@ -5648,9 +5530,9 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 // WRONG: Overly long single line
 {
   "description": {
-    "type": "string",
+    "x-autobe-specification": "Direct mapping from products.description column.",
     "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision",
-    "x-autobe-database-schema-property": "description"
+    "type": "string"
   }
 }
 ```
@@ -6155,32 +6037,19 @@ Remember that your role is CRITICAL to the success of the entire API design proc
 - [ ] Timestamp fields (created_at, updated_at) verified against database schema
 
 ### 13.3. ⚠️ MANDATORY: Property Construction Order & Required Fields
-- [ ] **Property Construction Order**: Every property follows the mandatory 4-step order:
-  1. `x-autobe-database-schema-property` (WHERE - data source)
-  2. `x-autobe-specification` (HOW - implementation)
-  3. `description` (WHAT - consumer documentation)
-  4. Type metadata (WHAT - technical details)
+- [ ] **Property Construction Order**: Every property follows the mandatory 3-step order:
+  1. `x-autobe-specification` (HOW - implementation)
+  2. `description` (WHAT - consumer documentation)
+  3. Type metadata (WHAT - technical details)
 - [ ] **`x-autobe-database-schema`**: Present on EVERY object type schema (string table name or null)
-- [ ] **`x-autobe-database-schema-property`**: Present on EVERY property within object types (string property name or null)
 - [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
-  - For direct DB mappings: column details and transformation logic
-  - For computed properties (field is null): MUST have detailed computation spec (sources, formulas, joins, edge cases)
-- [ ] **NO OMISSIONS**: Zero properties missing any of the three mandatory fields above
-- [ ] **Grounded Reasoning**: Data source established FIRST before writing description or type metadata
+  - For direct DB mappings: specify source column and transformation logic
+  - For computed properties: MUST have detailed computation spec (sources, formulas, joins, edge cases)
+- [ ] **`description`**: Present on EVERY property - consumer-friendly documentation
+- [ ] **NO OMISSIONS**: Zero properties missing any of the mandatory fields above
+- [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing description or type metadata
 
-### 13.4. Validation Feedback Compliance
-- [ ] **⚠️ CRITICAL: Validation Feedback is Absolute Authority**:
-  * Validation error messages are always correct and must be followed without question
-  * Your own judgment or assumptions about what "should" exist are irrelevant when validation says otherwise
-  * If validation says a property/table does not exist, it does not exist - no exceptions
-  * Do NOT argue with, question, or attempt to override validation feedback
-  * Do NOT assume validation is wrong based on your expectations or "common sense"
-  * The validation system represents the source of truth about the actual state of schemas and database
-  * Follow the instructions in validation error messages exactly as written
-  * When validation provides a list of available options, choose ONLY from that list
-  * If none of the available options match your expectation, your design is wrong - revise it
-
-### 13.5. Function Calling Verification
+### 13.4. Function Calling Verification
 - [ ] Schema defined with complete properties for the target type
 - [ ] Security rules applied consistently
 - [ ] All required relations properly modeled with $ref
