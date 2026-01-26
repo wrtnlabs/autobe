@@ -1,0 +1,70 @@
+import {
+  AutoBeAnalyzeActor,
+  AutoBeDatabaseComponentTableDesign,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { IValidation } from "typia";
+
+export namespace AutoBeDatabaseAuthorizationProgrammer {
+  /**
+   * Compute expected table names for an actor.
+   *
+   * Based on naming convention:
+   *
+   * - Actor table: `{prefix}_{actorName}s`
+   */
+  export const getExpectedTableNames = (props: {
+    actor: AutoBeAnalyzeActor;
+    prefix: string | null;
+  }): string => {
+    const actorLower: string = props.actor.name.toLowerCase();
+    const prefix: string = props.prefix ? `${props.prefix}_` : "";
+    return `${prefix}${actorLower}s`;
+  };
+
+  /** Validate authorization tables for an actor. */
+  export const validate = (props: {
+    errors: IValidation.IError[];
+    path: string;
+    actor: AutoBeAnalyzeActor;
+    prefix: string | null;
+    tables: AutoBeDatabaseComponentTableDesign[];
+  }): void => {
+    const expectedTable: string = getExpectedTableNames({
+      actor: props.actor,
+      prefix: props.prefix,
+    });
+    const actorLower: string = props.actor.name.toLowerCase();
+    const tableNames: string[] = props.tables.map((t) => t.name.toLowerCase());
+
+    // Validation: all tables must contain actor name
+    props.tables.forEach((table, i) => {
+      if (table.name.toLowerCase().includes(actorLower) === false)
+        props.errors.push({
+          path: `${props.path}[${i}].name`,
+          expected: `table name containing "${actorLower}"`,
+          value: table.name,
+          description: StringUtil.trim`
+            Table "${table.name}" does not contain actor name "${actorLower}".
+
+            Fix: Add "${actorLower}" to the table name, or remove this table
+            if it is unrelated to "${props.actor.name}" actor.
+          `,
+        });
+    });
+
+    // Validation: actor table must exist
+    if (tableNames.includes(expectedTable) === false)
+      props.errors.push({
+        path: props.path,
+        expected: `table named "${expectedTable}"`,
+        value: tableNames,
+        description: StringUtil.trim`
+          Missing required actor table "${expectedTable}".
+
+          Fix: Add table "${expectedTable}", or rename the table that
+          serves as the main "${props.actor.name}" actor entity.
+        `,
+      });
+  };
+}

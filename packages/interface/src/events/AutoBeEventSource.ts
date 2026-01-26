@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
@@ -74,6 +75,7 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeReviewEvent["type"]
   // database
   | AutoBeDatabaseGroupEvent["type"]
+  | AutoBeDatabaseAuthorizationEvent["type"]
   | AutoBeDatabaseComponentEvent["type"]
   | AutoBeDatabaseComponentReviewEvent["type"]
   | AutoBeDatabaseSchemaEvent["type"]

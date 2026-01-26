@@ -61,6 +61,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "analyzeReview":
     case "interfaceEndpoint":
     case "interfaceEndpointReview":
+    case "databaseAuthorization":
     case "databaseComponent":
     case "databaseComponentReview":
     case "databaseSchema":

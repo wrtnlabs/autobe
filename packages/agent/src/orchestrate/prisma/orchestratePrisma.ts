@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { predicateStateMessage } from "../../utils/predicateStateMessage";
 import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacadeApplicationProps";
+import { orchestratePrismaAuthorization } from "./orchestratePrismaAuthorization";
 import { orchestratePrismaComponent } from "./orchestratePrismaComponent";
 import { orchestratePrismaComponentReview } from "./orchestratePrismaComponentReview";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
@@ -54,17 +55,35 @@ export const orchestratePrisma = async (
     ctx,
     props.instruction,
   );
-  const components: AutoBeDatabaseComponent[] =
+
+  // AUTHORIZATION COMPONENTS
+  // Generate actor tables (users, sessions, etc.) via Authorization Agent
+  const authorizationComponents: AutoBeDatabaseComponent[] =
+    await orchestratePrismaAuthorization(ctx, {
+      instruction: props.instruction,
+      groups,
+    });
+
+  // BUSINESS DOMAIN COMPONENTS
+  // Generate business domain tables (orders, products, etc.) via Component Agent
+  const businessComponents: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponent(ctx, {
       instruction: props.instruction,
       groups,
     });
 
+  // MERGE COMPONENTS
+  // Authorization components (schema-02-actors.prisma) come before business components
+  const allComponents: AutoBeDatabaseComponent[] = [
+    ...authorizationComponents,
+    ...businessComponents,
+  ];
+
   // COMPONENT REVIEW (each event is dispatched inside)
   const reviewedComponents: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponentReview(ctx, {
       instruction: props.instruction,
-      components,
+      components: allComponents,
     });
 
   // CONSTRUCT AST DATA
