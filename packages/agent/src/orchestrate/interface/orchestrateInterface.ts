@@ -26,11 +26,11 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestrateInterfaceActionEndpoint } from "./orchestrateInterfaceActionEndpoint";
 import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
 import { orchestrateInterfaceBaseEndpoint } from "./orchestrateInterfaceBaseEndpoint";
-import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
 import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
+import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
 import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
@@ -251,7 +251,7 @@ export const orchestrateInterface =
     while (missedOpenApiSchemas(document).length !== 0) {
       // COMPLEMENT OMITTED
       const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await orchestrateInterfaceComplement(ctx, {
+        await orchestrateInterfaceSchemaComplement(ctx, {
           instruction: props.instruction,
           progress: complementProgress,
           document,

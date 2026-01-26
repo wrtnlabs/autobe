@@ -1,6 +1,6 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
-import { orchestrateInterfaceComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceComplement";
+import { orchestrateInterfaceSchemaComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaComplement";
 import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
 import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
@@ -90,7 +90,7 @@ export const validate_interface_complement = async (props: {
       Object.keys(document.components.schemas),
     );
     const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await orchestrateInterfaceComplement(props.agent.getContext(), {
+      await orchestrateInterfaceSchemaComplement(props.agent.getContext(), {
         instruction: "Design API specs carefully considering the security.",
         progress: complementProgress,
         document,

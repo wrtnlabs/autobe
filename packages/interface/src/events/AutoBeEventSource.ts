@@ -10,13 +10,13 @@ import { AutoBeDatabaseSchemaReviewEvent } from "./AutoBeDatabaseSchemaReviewEve
 import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteEvent";
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
-import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
 import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
 import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
+import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
 import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
@@ -90,7 +90,7 @@ export type AutoBeEventSource =
   | AutoBeInterfaceSchemaRefineEvent["type"]
   | AutoBeInterfaceSchemaReviewEvent["type"]
   | AutoBeInterfaceSchemaRenameEvent["type"]
-  | AutoBeInterfaceComplementEvent["type"]
+  | AutoBeInterfaceSchemaComplementEvent["type"]
   | AutoBeInterfacePrerequisiteEvent["type"]
   // test
   | AutoBeTestScenarioEvent["type"]

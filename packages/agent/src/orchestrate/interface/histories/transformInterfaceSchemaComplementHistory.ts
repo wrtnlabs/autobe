@@ -8,7 +8,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceComplementHistory = (props: {
+export const transformInterfaceSchemaComplementHistory = (props: {
   instruction: string;
   document: AutoBeOpenApi.IDocument;
   typeName: string;
@@ -34,7 +34,7 @@ export const transformInterfaceComplementHistory = (props: {
       type: "systemMessage",
       id: v7(),
       created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_COMPLEMENT,
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_COMPLEMENT,
     },
     ...props.preliminary.getHistories(),
     ...[

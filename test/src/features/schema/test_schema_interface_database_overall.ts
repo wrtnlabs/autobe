@@ -1,6 +1,6 @@
 import { AutoBeInterfaceSchemaProgrammer } from "@autobe/agent/src/orchestrate/interface/programmers/AutoBeInterfaceSchemaProgrammer";
-import { IAutoBeInterfaceComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceComplementApplication";
 import { IAutoBeInterfaceSchemaApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaApplication";
+import { IAutoBeInterfaceSchemaComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaComplementApplication";
 import { IAutoBeInterfaceSchemaRefineApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaRefineApplication";
 import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
@@ -105,5 +105,5 @@ export const test_schema_interface_database_overall = async () => {
   assert(typia.llm.application<IAutoBeInterfaceSchemaApplication>());
   assert(typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>());
   assert(typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>());
-  assert(typia.llm.application<IAutoBeInterfaceComplementApplication>());
+  assert(typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>());
 };

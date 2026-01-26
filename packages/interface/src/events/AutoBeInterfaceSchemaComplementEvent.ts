@@ -19,9 +19,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeInterfaceComplementEvent
+export interface AutoBeInterfaceSchemaComplementEvent
   extends
-    AutoBeEventBase<"interfaceComplement">,
+    AutoBeEventBase<"interfaceSchemaComplement">,
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase {
   /**
@@ -44,9 +44,9 @@ export interface AutoBeInterfaceComplementEvent
   /**
    * Rationale for the schema design decisions.
    *
-   * Explains why the schema was designed with specific properties, required
-   * vs optional field choices, how it satisfies referencing schemas'
-   * expectations, and what patterns from existing schemas were followed.
+   * Explains why the schema was designed with specific properties, required vs
+   * optional field choices, how it satisfies referencing schemas' expectations,
+   * and what patterns from existing schemas were followed.
    */
   rationale: string;
 

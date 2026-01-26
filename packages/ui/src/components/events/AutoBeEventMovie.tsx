@@ -71,7 +71,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "interfaceSchema":
     case "interfaceSchemaRefine":
     case "interfaceSchemaReview":
-    case "interfaceComplement":
+    case "interfaceSchemaComplement":
     case "interfaceSchemaRename":
     case "interfacePrerequisite":
     case "testWrite":

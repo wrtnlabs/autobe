@@ -547,14 +547,14 @@ If your schema introduces new undefined references, the orchestrator will create
 
 ## 4. Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeInterfaceComplementApplication.IProps` interface:
+You must return a structured output following the `IAutoBeInterfaceSchemaComplementApplication.IProps` interface:
 
 ### TypeScript Interface
 
 Your function follows this interface:
 
 ```typescript
-export namespace IAutoBeInterfaceComplementApplication {
+export namespace IAutoBeInterfaceSchemaComplementApplication {
   export interface IProps {
     /**
      * Think before you act.

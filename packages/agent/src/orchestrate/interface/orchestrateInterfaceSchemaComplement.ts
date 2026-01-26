@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeEventSource,
-  AutoBeInterfaceComplementEvent,
+  AutoBeInterfaceSchemaComplementEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -15,14 +15,14 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformInterfaceComplementHistory } from "./histories/transformInterfaceComplementHistory";
+import { transformInterfaceSchemaComplementHistory } from "./histories/transformInterfaceSchemaComplementHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
-import { IAutoBeInterfaceComplementApplication } from "./structures/IAutoBeInterfaceComplementApplication";
+import { IAutoBeInterfaceSchemaComplementApplication } from "./structures/IAutoBeInterfaceSchemaComplementApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export const orchestrateInterfaceComplement = async (
+export const orchestrateInterfaceSchemaComplement = async (
   ctx: AutoBeContext,
   props: {
     instruction: string;
@@ -73,7 +73,7 @@ async function process(
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<IAutoBeInterfaceComplementApplication>(),
+      typia.json.application<IAutoBeInterfaceSchemaComplementApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -116,7 +116,7 @@ async function process(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceComplementApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaComplementApplication.IComplete | null> =
       {
         value: null,
       };
@@ -132,7 +132,7 @@ async function process(
       }),
       promptCacheKey: props.promptCacheKey,
       enforceFunctionCall: true,
-      ...transformInterfaceComplementHistory({
+      ...transformInterfaceSchemaComplementHistory({
         document: props.document,
         instruction: props.instruction,
         preliminary,
@@ -159,7 +159,7 @@ async function process(
       completed: props.progress.completed,
       total: props.progress.total,
       created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceComplementEvent);
+    } satisfies AutoBeInterfaceSchemaComplementEvent);
     return out(result)(schema);
   });
 }
@@ -179,7 +179,9 @@ function createController(
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"
     >;
-    build: (schema: IAutoBeInterfaceComplementApplication.IComplete) => void;
+    build: (
+      schema: IAutoBeInterfaceSchemaComplementApplication.IComplete,
+    ) => void;
   },
 ): IAgenticaController.IClass {
   const everyModels: AutoBeDatabase.IModel[] =
@@ -187,9 +189,9 @@ function createController(
 
   const validate = (
     next: unknown,
-  ): IValidation<IAutoBeInterfaceComplementApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceComplementApplication.IProps> =
-      typia.validate<IAutoBeInterfaceComplementApplication.IProps>(next);
+  ): IValidation<IAutoBeInterfaceSchemaComplementApplication.IProps> => {
+    const result: IValidation<IAutoBeInterfaceSchemaComplementApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaComplementApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -218,7 +220,7 @@ function createController(
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceComplementApplication>({
+    typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>({
       validate: {
         process: validate,
       },
@@ -233,7 +235,7 @@ function createController(
     (
       (
         application.functions[0].parameters.$defs[
-          "IAutoBeInterfaceComplementApplication.IComplete"
+          "IAutoBeInterfaceSchemaComplementApplication.IComplete"
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
     ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
@@ -256,11 +258,11 @@ function createController(
       process: (next) => {
         if (next.request.type === "complete") props.build(next.request);
       },
-    } satisfies IAutoBeInterfaceComplementApplication,
+    } satisfies IAutoBeInterfaceSchemaComplementApplication,
   };
 }
 
-const SOURCE = "interfaceComplement" satisfies AutoBeEventSource;
+const SOURCE = "interfaceSchemaComplement" satisfies AutoBeEventSource;
 
 const isReferenced = (
   schema: AutoBeOpenApi.IJsonSchemaDescriptive,

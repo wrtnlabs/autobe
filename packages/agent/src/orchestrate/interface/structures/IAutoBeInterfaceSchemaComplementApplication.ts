@@ -9,7 +9,7 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
-export interface IAutoBeInterfaceComplementApplication {
+export interface IAutoBeInterfaceSchemaComplementApplication {
   /**
    * Process schema complement task or preliminary data requests.
    *
@@ -19,10 +19,10 @@ export interface IAutoBeInterfaceComplementApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceComplementApplication.IProps): void;
+  process(props: IAutoBeInterfaceSchemaComplementApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceComplementApplication {
+export namespace IAutoBeInterfaceSchemaComplementApplication {
   export interface IProps {
     /**
      * Think before you act.

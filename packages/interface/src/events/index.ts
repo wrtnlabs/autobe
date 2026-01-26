@@ -44,7 +44,7 @@ export * from "./AutoBeDatabaseValidateEvent";
 
 // INTERFACE
 export * from "./AutoBeInterfaceAuthorizationEvent";
-export * from "./AutoBeInterfaceComplementEvent";
+export * from "./AutoBeInterfaceSchemaComplementEvent";
 export * from "./AutoBeInterfaceCompleteEvent";
 export * from "./AutoBeInterfaceEndpointEvent";
 export * from "./AutoBeInterfaceEndpointReviewEvent";

@@ -17,11 +17,11 @@ import {
   AutoBeImageDescribeCompleteEvent,
   AutoBeImageDescribeDraftEvent,
   AutoBeImageDescribeStartEvent,
-  AutoBeInterfaceComplementEvent,
   AutoBeInterfaceCompleteEvent,
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceOperationEvent,
   AutoBeInterfaceOperationReviewEvent,
+  AutoBeInterfaceSchemaComplementEvent,
   AutoBeInterfaceSchemaEvent,
   AutoBeInterfaceSchemaRenameEvent,
   AutoBeInterfaceStartEvent,
@@ -392,7 +392,9 @@ export interface IAutoBeRpcListener {
    * specification, enabling client applications to show that gaps are being
    * filled to ensure comprehensive API coverage.
    */
-  interfaceComplement?(event: AutoBeInterfaceComplementEvent): Promise<void>;
+  interfaceSchemaComplement?(
+    event: AutoBeInterfaceSchemaComplementEvent,
+  ): Promise<void>;
 
   /**
    * Mandatory handler for API design completion events.
