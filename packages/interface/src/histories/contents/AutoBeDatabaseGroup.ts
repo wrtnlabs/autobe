@@ -89,4 +89,25 @@ export interface AutoBeDatabaseGroup {
    * business area.
    */
   filename: string & tags.Pattern<"^[a-zA-Z0-9._-]+\\.prisma$">;
+
+  /**
+   * Kind of the component group.
+   *
+   * 🔧 **TECHNICAL FIELD #3**: Identifies whether this group contains
+   * authentication/authorization tables or business domain tables.
+   *
+   * - **"authorization"**: Contains authentication and authorization tables
+   *   (users, sessions, password resets, email verifications, etc.).
+   *   These groups are processed by the Authorization Agent to generate
+   *   core authentication tables for each actor type.
+   *
+   * - **"domain"**: Contains business domain tables (products, orders, etc.).
+   *   These groups are processed by the Component Agent to generate
+   *   business logic tables.
+   *
+   * The Authorization Agent only processes groups with `kind: "authorization"`,
+   * while the Component Agent processes all groups but avoids creating
+   * core authentication tables in authorization groups.
+   */
+  kind: "authorization" | "domain";
 }

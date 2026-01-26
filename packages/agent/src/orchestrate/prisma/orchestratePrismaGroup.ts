@@ -8,6 +8,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaGroupHistory } from "./histories/transformPrismaGroupHistory";
+import { AutoBeDatabaseGroupProgrammer } from "./programmers/AutoBeDatabaseGroupProgrammer";
 import { IAutoBeDatabaseGroupApplication } from "./structures/IAutoBeDatabaseGroupApplication";
 
 export async function orchestratePrismaGroup(
@@ -84,7 +85,19 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // Complete request validation
+    // Complete request validation - check group type counts
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseGroupProgrammer.validate({
+      errors,
+      path: "$input.request.groups",
+      groups: result.data.request.groups,
+    });
+    if (errors.length > 0)
+      return {
+        success: false,
+        errors,
+        data: result.data,
+      };
     return result;
   };
 

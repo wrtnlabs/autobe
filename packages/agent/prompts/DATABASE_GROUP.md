@@ -110,6 +110,7 @@ AutoBeDatabaseGroup {
   thinking: string;    // Why these entities belong together
   review: string;      // Review of the grouping decision
   rationale: string;   // Final reasoning for this component
+  kind: "authorization" | "domain";  // Authorization for auth tables, domain for business tables
   // NO tables field - that comes later!
 }
 ```
@@ -222,21 +223,24 @@ If any step lacks a component, you're missing functionality.
         review: "Foundation layer for all other components",
         rationale: "Groups system-level entities",
         namespace: "Systematic",
-        filename: "schema-01-systematic.prisma"
+        filename: "schema-01-systematic.prisma",
+        kind: "domain"
       },
       {
         thinking: "All user types and authentication",
         review: "Identity management separate from business logic",
         rationale: "Groups all actor-related entities",
         namespace: "Actors",
-        filename: "schema-02-actors.prisma"
+        filename: "schema-02-actors.prisma",
+        kind: "authorization"
       },
       {
         thinking: "All shopping functionality - products, carts, orders, reviews, shipping, payments",
         review: "Everything related to e-commerce in one component",
         rationale: "Groups all shopping-related entities together",
         namespace: "Shopping",  // ❌ TOO BROAD - 40+ tables!
-        filename: "schema-03-shopping.prisma"
+        filename: "schema-03-shopping.prisma",
+        kind: "domain"
       }
     ]
   }
@@ -262,70 +266,80 @@ If any step lacks a component, you're missing functionality.
         review: "Foundation infrastructure separate from business domains",
         rationale: "Groups system-level configuration and infrastructure entities",
         namespace: "Systematic",
-        filename: "schema-01-systematic.prisma"
+        filename: "schema-01-systematic.prisma",
+        kind: "domain"
       },
       {
         thinking: "All user types, authentication, sessions, profiles",
         review: "Identity management fundamentally separate from business operations",
         rationale: "Maintains separation between identity management and business logic",
         namespace: "Actors",
-        filename: "schema-02-actors.prisma"
+        filename: "schema-02-actors.prisma",
+        kind: "authorization"  // ⭐ Authorization group - processed by Authorization Agent
       },
       {
         thinking: "Product catalog, categories, images, variants, specifications",
         review: "Products are separate from sales - catalog vs transactions",
         rationale: "Groups product catalog and product information management",
         namespace: "Products",
-        filename: "schema-03-products.prisma"
+        filename: "schema-03-products.prisma",
+        kind: "domain"
       },
       {
         thinking: "Product sales listings, pricing, promotions, sale metadata",
         review: "Sales represent listed offerings, distinct from completed orders",
         rationale: "Groups sales catalog and pricing entities",
         namespace: "Sales",
-        filename: "schema-04-sales.prisma"
+        filename: "schema-04-sales.prisma",
+        kind: "domain"
       },
       {
         thinking: "Shopping carts, cart items, temporary selection state",
         review: "Carts are temporary - different lifecycle from orders",
         rationale: "Separates selection phase from execution phase of purchasing",
         namespace: "Carts",
-        filename: "schema-05-carts.prisma"
+        filename: "schema-05-carts.prisma",
+        kind: "domain"
       },
       {
         thinking: "Orders, order items, payments, order lifecycle management",
         review: "Orders are committed purchases requiring fulfillment",
         rationale: "Groups order processing, payment, and fulfillment entities",
         namespace: "Orders",
-        filename: "schema-06-orders.prisma"
+        filename: "schema-06-orders.prisma",
+        kind: "domain"
       },
       {
         thinking: "Product reviews, sale reviews, review votes, review moderation",
         review: "Reviews are user-generated content about products and sales",
         rationale: "Groups all review and rating functionality",
         namespace: "Reviews",
-        filename: "schema-07-reviews.prisma"
+        filename: "schema-07-reviews.prisma",
+        kind: "domain"
       },
       {
         thinking: "Shipments, tracking, addresses, delivery status",
         review: "Shipping is distinct from orders - logistics vs transaction",
         rationale: "Groups logistics and delivery management entities",
         namespace: "Shipping",
-        filename: "schema-08-shipping.prisma"
+        filename: "schema-08-shipping.prisma",
+        kind: "domain"
       },
       {
         thinking: "Inventory stocks, stock movements, warehouse management",
         review: "Inventory tracking separate from product catalog",
         rationale: "Groups inventory and stock management entities",
         namespace: "Inventory",
-        filename: "schema-09-inventory.prisma"
+        filename: "schema-09-inventory.prisma",
+        kind: "domain"
       },
       {
         thinking: "Notifications, alerts, notification preferences, templates",
         review: "Notification system is cross-cutting concern",
         rationale: "Groups all notification and messaging entities",
         namespace: "Notifications",
-        filename: "schema-10-notifications.prisma"
+        filename: "schema-10-notifications.prisma",
+        kind: "domain"
       }
     ]
   }
@@ -768,35 +782,40 @@ The `request` property is a **discriminated union** that can be one of four type
         review: "Core infrastructure should be separate from business domains",
         rationale: "Groups all system-level configuration and infrastructure entities",
         namespace: "Systematic",
-        filename: "schema-01-systematic.prisma"
+        filename: "schema-01-systematic.prisma",
+        kind: "domain"
       },
       {
         thinking: "All user types and authentication belong together as identity management",
         review: "While actors interact with business domains, identity is fundamentally separate",
         rationale: "Maintains clear separation between identity management and business logic",
         namespace: "Actors",
-        filename: "schema-02-actors.prisma"
+        filename: "schema-02-actors.prisma",
+        kind: "authorization"
       },
       {
         thinking: "Product catalog and sales transactions form the core of shopping domain",
         review: "Sales should be separate from cart to maintain clear boundaries",
         rationale: "Groups all product catalog, pricing, and sales transaction entities",
         namespace: "Sales",
-        filename: "schema-03-sales.prisma"
+        filename: "schema-03-sales.prisma",
+        kind: "domain"
       },
       {
         thinking: "Cart represents temporary selection state before order commitment",
         review: "Carts are distinct from orders - different lifecycle and business meaning",
         rationale: "Separates selection phase from execution phase of purchasing",
         namespace: "Carts",
-        filename: "schema-04-carts.prisma"
+        filename: "schema-04-carts.prisma",
+        kind: "domain"
       },
       {
         thinking: "Orders represent committed purchases requiring fulfillment",
         review: "Orders involve payment, shipment, fulfillment - distinct from cart",
         rationale: "Groups all order processing, payment, and fulfillment entities",
         namespace: "Orders",
-        filename: "schema-05-orders.prisma"
+        filename: "schema-05-orders.prisma",
+        kind: "domain"
       }
       // More component skeletons...
     ]
@@ -806,35 +825,77 @@ The `request` property is a **discriminated union** that can be one of four type
 
 ### Output Field Requirements
 
-Each component skeleton (AutoBeDatabaseGroup) MUST contain exactly 5 fields **IN THIS ORDER**:
+Each component skeleton (AutoBeDatabaseGroup) MUST contain exactly 6 fields **IN THIS ORDER**:
 
 1. **thinking** (string): Initial thoughts on why entities belong in this component ⭐ REASONING #1
 2. **review** (string): Review considerations for this component's grouping ⭐ REASONING #2
 3. **rationale** (string): Final rationale for this component's composition ⭐ REASONING #3
 4. **namespace** (string): PascalCase namespace for Prisma (e.g., "Sales", "Carts") 🔧 TECHNICAL #1
 5. **filename** (string): `schema-{number}-{domain}.prisma` format 🔧 TECHNICAL #2
+6. **kind** ("authorization" | "domain"): Component kind for processing pipeline 🔧 TECHNICAL #3
 
-**Critical**: Property order matters for function calling! The AI must reason (thinking → review → rationale) BEFORE determining technical details (namespace → filename).
+**Critical**: Property order matters for function calling! The AI must reason (thinking → review → rationale) BEFORE determining technical details (namespace → filename → kind).
+
+**Kind Field Rules**:
+- **`kind: "authorization"`**: Use for groups containing authentication entities (users, sessions, password resets, email verifications). These groups will be processed by the **Authorization Agent** to generate core authentication tables.
+- **`kind: "domain"`**: Use for all other business domain groups (systematic, products, orders, sales, etc.). These groups will be processed by the **Component Agent** to generate business domain tables.
 
 **Note**: This is EXACTLY `AutoBeDatabaseComponent` structure WITHOUT the `tables` field.
 
 ## Component Organization Guidelines
 
+### 🎯 CRITICAL: The `kind` Field
+
+**Every group MUST have a `kind` field** that determines how it will be processed:
+
+| Type | Purpose | Processing Agent | Examples |
+|------|---------|------------------|----------|
+| `"authorization"` | Authentication & authorization tables | **Authorization Agent** | Users, sessions, password resets, email verifications |
+| `"domain"` | Business domain tables | **Component Agent** | Systematic, products, orders, sales, carts, shipping |
+
+### 🚨 MANDATORY GROUP COUNT REQUIREMENTS
+
+**These requirements are STRICTLY ENFORCED by validation - your output will be REJECTED if not met:**
+
+| Type | Required Count | Validation Rule |
+|------|----------------|-----------------|
+| `"authorization"` | **Exactly 1** | ❌ REJECTED if 0 or 2+ authorization groups |
+| `"domain"` | **At least 1** | ❌ REJECTED if 0 domain groups |
+
+**Why exactly 1 authorization group?**
+- All actor/authentication tables belong in a SINGLE authorization group
+- Multiple authorization groups would scatter auth tables across files
+- The Authorization Agent processes this single group for all actors
+
+**When to use `kind: "authorization"`**:
+- Groups containing user/actor entity tables
+- Groups containing session/authentication tables
+- Groups containing authorization-related tables
+- **EXACTLY ONE authorization group per application** (e.g., "Actors" namespace)
+
+**When to use `kind: "domain"`**:
+- ALL other groups that don't contain core authentication entities
+- System infrastructure groups (Systematic)
+- All business domain groups (Products, Orders, Sales, etc.)
+
+**IMPORTANT**: The Authorization Agent will generate **core authentication tables** (actor main table, session table, password reset, email verification) in authorization groups. The Component Agent can still add **business-related tables** (e.g., aggregations, statistics) to authorization groups later.
+
 ### Typical Component Patterns
 
 Based on enterprise application patterns, organize into these common components:
 
-**1. Systematic/Core** (`schema-01-systematic.prisma`)
+**1. Systematic/Core** (`schema-01-systematic.prisma`, `kind: "domain"`)
 - System configuration, channels, sections
 - Application metadata and settings
 - Core infrastructure
 
-**2. Identity/Actors** (`schema-02-actors.prisma`)
+**2. Identity/Actors** (`schema-02-actors.prisma`, `kind: "authorization"`)
 - Users, customers, administrators
 - Authentication and session tables
 - User profiles and preferences
+- ⭐ **This is typically the ONLY authorization group**
 
-**3-N. Business Domain Components** (`schema-03-{domain}.prisma`, ...)
+**3-N. Business Domain Components** (`schema-03-{domain}.prisma`, `kind: "domain"`)
 - Sales, Carts, Orders, Promotions, etc.
 - Each represents one cohesive business subdomain
 - Typically 8-10 components total
@@ -951,6 +1012,14 @@ Before calling `process({ request: { type: "complete", analysis: "...", rational
 - [ ] Namespaces accurately represent component's scope
 - [ ] All descriptions written in English
 
+### Kind Field Quality (VALIDATION ENFORCED)
+- [ ] **Every group has a `kind` field** - either "authorization" or "domain"
+- [ ] **🚨 EXACTLY 1 authorization group** - validation will REJECT if 0 or 2+
+- [ ] **🚨 AT LEAST 1 domain group** - validation will REJECT if 0
+- [ ] **Authorization group** (`kind: "authorization"`) contains all actor/authentication entities
+- [ ] **Domain groups** (`kind: "domain"`) contain all other business domain entities
+- [ ] Systematic/infrastructure group has `kind: "domain"` (not authorization)
+
 ### Completeness Signals
 - [ ] Component count is 5-15 (typical for medium-large applications)
 - [ ] You feel confident every requirement has a place
@@ -973,7 +1042,8 @@ Before calling `process({ request: { type: "complete", analysis: "...", rational
 - [ ] `analysis` field documents requirements structure, domain relationships, and organizational patterns
 - [ ] `rationale` field explains grouping decisions and component ordering rationale
 - [ ] Component groups array ready with complete `IAutoBeDatabaseGroupApplication.IComponent[]`
-- [ ] Each component has: thinking, review, rationale, namespace, filename
+- [ ] Each component has: thinking, review, rationale, namespace, filename, **kind**
+- [ ] **Every group has `kind: "authorization"` or `kind: "domain"`** properly assigned
 - [ ] JSON object properly formatted and valid
 - [ ] Ready to call `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })` immediately
 - [ ] NO user confirmation needed
