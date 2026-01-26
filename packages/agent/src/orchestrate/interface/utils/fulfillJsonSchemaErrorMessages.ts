@@ -94,7 +94,7 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
 
         **What to include**:
         - For column-mapped properties: Database column details, constraints, type mapping
-        - For computed properties (when "x-autobe-database-schema-member" is null):
+        - For computed properties (when "x-autobe-database-schema-property" is null):
           - All source columns and tables involved
           - Exact computation formula (e.g., \`SUM(items.price * items.quantity)\`)
           - Join conditions between related tables
@@ -108,7 +108,7 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
             "format": "email",
             "description": "User's email address used for login and notifications.",
             "x-autobe-specification": "Maps to users.email column. Unique constraint enforced at DB level.",
-            "x-autobe-database-schema-member": "email"
+            "x-autobe-database-schema-property": "email"
           }
         }
         \`\`\`
@@ -239,13 +239,13 @@ const fulfillNoDatabaseSchema = (e: IValidation.IError): boolean => {
 const fulfillNoDatabaseSchemaMember = (e: IValidation.IError): boolean => {
   if (
     e.value === undefined &&
-    e.path.endsWith(`["x-autobe-database-schema-member"]`)
+    e.path.endsWith(`["x-autobe-database-schema-property"]`)
   ) {
-    // no x-autobe-database-schema-member
+    // no x-autobe-database-schema-property
     e.description = StringUtil.trim`
-      **Missing Required Field: "x-autobe-database-schema-member"**
+      **Missing Required Field: "x-autobe-database-schema-property"**
 
-      Every property must have an "x-autobe-database-schema-member" field that
+      Every property must have an "x-autobe-database-schema-property" field that
       specifies the exact database column or relation this property maps to.
       This enables phantom field detection, correct query generation, and type validation.
 
@@ -270,7 +270,7 @@ const fulfillNoDatabaseSchemaMember = (e: IValidation.IError): boolean => {
       If validation rejects a member name, that member does not exist in the schema.
 
       You must add this field. The validator will continue to reject your schema
-      until every property has an "x-autobe-database-schema-member" value (member name or null).
+      until every property has an "x-autobe-database-schema-property" value (member name or null).
     `;
     return true;
   }

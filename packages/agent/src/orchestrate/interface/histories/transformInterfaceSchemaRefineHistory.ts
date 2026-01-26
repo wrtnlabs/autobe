@@ -136,14 +136,14 @@ export const transformInterfaceSchemaRefineHistory = (props: {
     **1. MANDATORY Property Field Order:**
     Every property MUST be constructed in this exact order:
     \`\`\`
-    1. x-autobe-database-schema-member  →  WHERE does data come from?
+    1. x-autobe-database-schema-property  →  WHERE does data come from?
     2. x-autobe-specification           →  HOW to implement/compute?
     3. description                      →  WHAT for API consumers?
     4. Type metadata (type, format...)  →  WHAT technically?
     \`\`\`
 
     **2. NEVER Omit Required Fields:**
-    - \`x-autobe-database-schema-member\`: MANDATORY on every property (string member name or null)
+    - \`x-autobe-database-schema-property\`: MANDATORY on every property (string member name or null)
     - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
     - Omitting these fields is a CRITICAL ERROR that will cause validation failure
 
@@ -151,7 +151,7 @@ export const transformInterfaceSchemaRefineHistory = (props: {
     \`\`\`json
     {
       "theme": {
-        "x-autobe-database-schema-member": null,
+        "x-autobe-database-schema-property": null,
         "x-autobe-specification": "Stored as 'theme' key in the preferences JSON structure.",
         "description": "User's preferred UI theme setting.",
         "type": "string",

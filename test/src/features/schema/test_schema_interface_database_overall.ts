@@ -79,11 +79,11 @@ export const test_schema_interface_database_overall = async () => {
         if (LlmTypeChecker.isObject(next) === false) return;
 
         const property: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema-member"];
+          next.properties["x-autobe-database-schema-property"];
         if (property === undefined) return;
         else if (LlmTypeChecker.isAnyOf(property) === false)
           throw new Error(
-            `Property "x-autobe-database-schema-member" must be an anyOf schema.`,
+            `Property "x-autobe-database-schema-property" must be an anyOf schema.`,
           );
 
         const value: ILlmSchema | undefined = property.anyOf.find((sch) =>
@@ -91,11 +91,11 @@ export const test_schema_interface_database_overall = async () => {
         );
         if (value === undefined)
           throw new Error(
-            `Property "x-autobe-database-schema-member" must contain a string schema in its anyOf.`,
+            `Property "x-autobe-database-schema-property" must contain a string schema in its anyOf.`,
           );
 
         TestValidator.equals(
-          "x-autobe-database-schema-member",
+          "x-autobe-database-schema-property",
           value.enum ?? [],
           [],
         );

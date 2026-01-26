@@ -128,7 +128,7 @@ export namespace AutoBeInterfaceSchemaProgrammer {
         if (LlmTypeChecker.isObject(next) === false) return;
 
         const member: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema-member"];
+          next.properties["x-autobe-database-schema-property"];
         if (member === undefined || LlmTypeChecker.isAnyOf(member) === false)
           return;
 

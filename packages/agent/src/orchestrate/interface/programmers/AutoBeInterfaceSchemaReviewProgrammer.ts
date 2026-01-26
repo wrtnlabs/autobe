@@ -185,14 +185,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         cloned = {
           description: cloned.description,
           "x-autobe-specification": cloned["x-autobe-specification"],
-          "x-autobe-database-schema-member":
-            cloned["x-autobe-database-schema-member"],
+          "x-autobe-database-schema-property":
+            cloned["x-autobe-database-schema-property"],
           oneOf: [
             {
               ...cloned,
               ...{
                 description: undefined,
-                "x-autobe-database-schema-member": undefined,
+                "x-autobe-database-schema-property": undefined,
               },
             },
             { type: "null" },
@@ -208,8 +208,8 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             ...cloned.oneOf[0],
             description: cloned.description,
             "x-autobe-specification": cloned["x-autobe-specification"],
-            "x-autobe-database-schema-member":
-              cloned["x-autobe-database-schema-member"],
+            "x-autobe-database-schema-property":
+              cloned["x-autobe-database-schema-property"],
           };
       }
     }

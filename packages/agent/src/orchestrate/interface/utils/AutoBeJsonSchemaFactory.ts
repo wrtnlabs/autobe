@@ -48,7 +48,7 @@ export namespace AutoBeJsonSchemaFactory {
           description: "Authorization token.",
           "x-autobe-specification":
             "Authorization token comes from the session table.",
-          "x-autobe-database-schema-member": null,
+          "x-autobe-database-schema-property": null,
         };
         if (value.required.includes("token") === false)
           value.required.push("token");
@@ -63,7 +63,7 @@ export namespace AutoBeJsonSchemaFactory {
             description: "Authorization token.",
             "x-autobe-specification":
               "Authorization token comes from the session table.",
-            "x-autobe-database-schema-member": null,
+            "x-autobe-database-schema-property": null,
           };
         value.required = Array.from(
           new Set([...parent.required, ...value.required]),
@@ -233,7 +233,7 @@ export namespace AutoBeJsonSchemaFactory {
         $ref: "#/components/schemas/IPage.IPagination",
         description: "Page information.",
         "x-autobe-specification": "Pagination information for the page.",
-        "x-autobe-database-schema-member": null,
+        "x-autobe-database-schema-property": null,
       },
       data: {
         type: "array",
@@ -242,7 +242,7 @@ export namespace AutoBeJsonSchemaFactory {
         },
         description: "List of records.",
         "x-autobe-specification": `List of records of type ${key}.`,
-        "x-autobe-database-schema-member": null,
+        "x-autobe-database-schema-property": null,
       },
     },
     required: ["pagination", "data"],
@@ -294,7 +294,7 @@ export namespace AutoBeJsonSchemaFactory {
           if (AutoBeOpenApiTypeChecker.isObject(next)) {
             next["x-autobe-database-schema"] = null;
             for (const p of Object.values(next.properties))
-              p["x-autobe-database-schema-member"] = null;
+              p["x-autobe-database-schema-property"] = null;
           }
         },
       });

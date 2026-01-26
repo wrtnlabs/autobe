@@ -93,14 +93,14 @@ export const transformInterfaceComplementHistory = (props: {
     **1. MANDATORY Property Field Order:**
     Every property MUST be constructed in this exact order:
     \`\`\`
-    1. x-autobe-database-schema-member  →  WHERE does data come from?
+    1. x-autobe-database-schema-property  →  WHERE does data come from?
     2. x-autobe-specification           →  HOW to implement/compute?
     3. description                      →  WHAT for API consumers?
     4. Type metadata (type, format...)  →  WHAT technically?
     \`\`\`
 
     **2. NEVER Omit Required Fields:**
-    - \`x-autobe-database-schema-member\`: MANDATORY on every property (string member name or null)
+    - \`x-autobe-database-schema-property\`: MANDATORY on every property (string member name or null)
     - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
     - Omitting these fields is a CRITICAL ERROR that will cause validation failure
 
@@ -108,7 +108,7 @@ export const transformInterfaceComplementHistory = (props: {
     \`\`\`json
     {
       "email": {
-        "x-autobe-database-schema-member": "email",
+        "x-autobe-database-schema-property": "email",
         "x-autobe-specification": "Direct mapping from users.email column.",
         "description": "User's email address for login.",
         "type": "string",

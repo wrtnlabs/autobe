@@ -257,7 +257,7 @@ export namespace AutoBeJsonSchemaValidator {
         props.schema.properties["token"] = {
           $ref: "#/components/schemas/IAuthorizationToken",
           description: "JWT token information for authentication",
-          "x-autobe-database-schema-member": null,
+          "x-autobe-database-schema-property": null,
         } as AutoBeOpenApi.IJsonSchemaProperty.IReference;
 
         props.schema.required ??= [];
@@ -354,15 +354,15 @@ export namespace AutoBeJsonSchemaValidator {
       props.schema["x-autobe-database-schema"] === undefined
     ) {
       for (const [key, value] of Object.entries(props.schema.properties))
-        if (value["x-autobe-database-schema-member"] !== null)
+        if (value["x-autobe-database-schema-property"] !== null)
           props.errors.push({
             path: `${props.path}.properties${
               Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
-            }["x-autobe-database-schema-member"]`,
+            }["x-autobe-database-schema-property"]`,
             expected: "null",
-            value: value["x-autobe-database-schema-member"],
+            value: value["x-autobe-database-schema-property"],
             description: StringUtil.trim`
-              You have defined "x-autobe-database-schema-member" property referencing
+              You have defined "x-autobe-database-schema-property" property referencing
               a database schema member, but the parent schema does not reference any
               database schema in "x-autobe-database-schema" property.
 
@@ -370,7 +370,7 @@ export namespace AutoBeJsonSchemaValidator {
               schema's "x-autobe-database-schema" property with
               a valid database schema name.
 
-              If not, set this "x-autobe-database-schema-member" property
+              If not, set this "x-autobe-database-schema-property" property
               to null value at the next time, and then describe what this property
               is for in the schema description instead.
 
@@ -406,7 +406,7 @@ export namespace AutoBeJsonSchemaValidator {
             If this DTO represents pure computed/statistical data or logic-only
             structures that have no direct relationship to any database table,
             set "x-autobe-database-schema" to null. In this case, all properties
-            must also have "x-autobe-database-schema-member" set to null.
+            must also have "x-autobe-database-schema-property" set to null.
           `,
         });
       for (const [key, value] of Object.entries(next.properties))
@@ -432,13 +432,13 @@ export namespace AutoBeJsonSchemaValidator {
     path: string;
   }): void => {
     const member: string | null =
-      props.value["x-autobe-database-schema-member"];
+      props.value["x-autobe-database-schema-property"];
     if (member === null || member === undefined) return;
 
     const propertyAccessor: string = Escaper.variable(props.key)
       ? `${props.path}.properties.${props.key}`
       : `${props.path}.properties[${JSON.stringify(props.key)}]`;
-    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-schema-member"]`;
+    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-schema-property"]`;
 
     if (props.target === undefined) {
       props.errors.push({
@@ -446,7 +446,7 @@ export namespace AutoBeJsonSchemaValidator {
         expected: "null",
         value: member,
         description: StringUtil.trim`
-          You have defined "x-autobe-database-schema-member" property referencing
+          You have defined "x-autobe-database-schema-property" property referencing
           a database schema member, but the parent schema does not reference any
           database schema in "x-autobe-database-schema" property.
 
@@ -454,7 +454,7 @@ export namespace AutoBeJsonSchemaValidator {
           schema's "x-autobe-database-schema" property with
           a valid database schema name.
 
-          If not, remove this "x-autobe-database-schema-member" property
+          If not, remove this "x-autobe-database-schema-property" property
           at the next time, and then describe what this property is for
           in the schema description instead.
 
@@ -479,7 +479,7 @@ export namespace AutoBeJsonSchemaValidator {
           candidates.map((c) => JSON.stringify(c.key)).join(" | ") + " | null",
         value: member,
         description: StringUtil.trim`
-          You have defined "x-autobe-database-schema-member" property with value
+          You have defined "x-autobe-database-schema-property" property with value
           ${JSON.stringify(member)} that does not match any member (field or relation)
           in the database schema "${props.target.name}".
 
@@ -512,7 +512,7 @@ export namespace AutoBeJsonSchemaValidator {
                   ...props.value,
                   ...{
                     description: undefined,
-                    "x-autobe-database-schema-member": undefined,
+                    "x-autobe-database-schema-property": undefined,
                   },
                 },
               ]),
@@ -520,8 +520,8 @@ export namespace AutoBeJsonSchemaValidator {
         ],
         description: props.value.description,
         "x-autobe-specification": props.value["x-autobe-specification"],
-        "x-autobe-database-schema-member":
-          props.value["x-autobe-database-schema-member"],
+        "x-autobe-database-schema-property":
+          props.value["x-autobe-database-schema-property"],
       };
       props.errors.push({
         path: propertyAccessor,
