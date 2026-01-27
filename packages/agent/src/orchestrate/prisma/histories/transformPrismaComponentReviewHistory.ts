@@ -1,5 +1,6 @@
 import { AutoBeDatabaseComponent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -36,7 +37,7 @@ export const transformPrismaComponentReviewHistory = (props: {
       text: StringUtil.trim`
         ## Component to Review
 
-        ${props.prefix !== null ? `**Table Prefix**: \`${props.prefix}\`` : ""}
+        ${props.prefix !== null ? `**Table Prefix**: \`${NamingConvention.snake(props.prefix)}\`` : ""}
 
         ### Target Component
 

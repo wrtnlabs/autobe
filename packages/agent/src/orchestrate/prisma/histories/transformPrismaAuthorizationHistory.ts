@@ -1,5 +1,6 @@
 import { AutoBeAnalyzeActor, AutoBeDatabaseGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -16,6 +17,9 @@ export const transformPrismaAuthorizationHistory = (props: {
     >;
   },
 ): IAutoBeOrchestrateHistory => {
+  const prefix: string | null = props.prefix
+    ? NamingConvention.snake(props.prefix)
+    : null;
   return {
     histories: [
       {
@@ -45,10 +49,10 @@ export const transformPrismaAuthorizationHistory = (props: {
           ## Prefix Configuration
 
           ${
-            props.prefix
-              ? `- Service Prefix: \`${props.prefix}\`
-                 - All table names MUST start with: \`${props.prefix}_\`
-                 - Example: \`${props.prefix}_${props.actor.name.toLowerCase()}s\`, \`${props.prefix}_${props.actor.name.toLowerCase()}_sessions\``
+            prefix
+              ? `- Service Prefix: \`${prefix}\`
+                 - All table names MUST start with: \`${prefix}_\`
+                 - Example: \`${prefix}_${props.actor.name.toLowerCase()}s\`, \`${prefix}_${props.actor.name.toLowerCase()}_sessions\``
               : `- No prefix configured
                  - Table names do NOT require a prefix
                  - Example: \`${props.actor.name.toLowerCase()}s\`, \`${props.actor.name.toLowerCase()}_sessions\``
@@ -100,15 +104,15 @@ export const transformPrismaAuthorizationHistory = (props: {
           ${
             props.actor.kind === "guest"
               ? `**Guest Authentication Tables**:
-                 1. \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Guest actor table with minimal identification fields (no password)
-                 2. \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - Temporary session tokens for guest access`
+                 1. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Guest actor table with minimal identification fields (no password)
+                 2. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - Temporary session tokens for guest access`
               : `**${props.actor.kind === "admin" ? "Admin" : "Member"} Authentication Tables**:
-                 1. \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Actor table with email/password authentication fields
-                 2. \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - JWT session table with access and refresh tokens
+                 1. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Actor table with email/password authentication fields
+                 2. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - JWT session table with access and refresh tokens
 
                  **Optional Tables** (add if requirements support):
-                 - \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}_password_resets\` - For password recovery
-                 - \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}_email_verifications\` - For email verification`
+                 - \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_password_resets\` - For password recovery
+                 - \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_email_verifications\` - For email verification`
           }
         `,
       },
@@ -124,8 +128,8 @@ export const transformPrismaAuthorizationHistory = (props: {
       3. Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\`
 
       **MANDATORY OUTPUT**:
-      - Main actor table: \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}s\`
-      - Session table: \`${props.prefix ? props.prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\`
+      - Main actor table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\`
+      - Session table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\`
       - Any additional auth support tables based on requirements
 
       Begin execution now. Function calling is MANDATORY.

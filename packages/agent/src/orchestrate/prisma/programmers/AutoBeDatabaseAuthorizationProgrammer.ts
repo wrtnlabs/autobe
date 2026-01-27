@@ -4,6 +4,7 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /**
@@ -19,7 +20,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
   }): string => {
     const actorLower: string = props.actor.name.toLowerCase();
     const prefix: string = props.prefix
-      ? `${props.prefix.toLocaleLowerCase()}_`
+      ? `${NamingConvention.snake(props.prefix)}_`
       : "";
     return `${prefix}${actorLower}s`;
   };
@@ -32,11 +33,11 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     prefix: string | null;
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
-    const expectedTable: string = getExpectedTableNames({
-      actor: props.actor,
-      prefix: props.prefix,
-    });
     const actorLower: string = props.actor.name.toLowerCase();
+    const prefix: string = props.prefix
+      ? `${NamingConvention.snake(props.prefix)}_`
+      : "";
+    const expectedTable: string = `${prefix}${actorLower}s`;
     const tableNames: string[] = props.tables.map((t) => t.name.toLowerCase());
 
     // Validation: all tables must contain actor name
@@ -66,6 +67,21 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
 
           Fix: Add table "${expectedTable}", or rename the table that
           serves as the main "${props.actor.name}" actor entity.
+        `,
+      });
+
+    // Validation: session table must exist
+    const expectedSessionTable: string = `${prefix}${actorLower}_sessions`;
+    if (tableNames.includes(expectedSessionTable) === false)
+      props.errors.push({
+        path: props.path,
+        expected: `table named "${expectedSessionTable}"`,
+        value: tableNames,
+        description: StringUtil.trim`
+          Missing required session table "${expectedSessionTable}".
+
+          Fix: Add table "${expectedSessionTable}" for authentication
+          session management of "${props.actor.name}" actor.
         `,
       });
   };
