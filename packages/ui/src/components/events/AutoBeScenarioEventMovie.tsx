@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeDatabaseGroupEvent,
+  AutoBeDatabaseGroupReviewEvent,
   AutoBeInterfaceGroupEvent,
   AutoBeRealizeTestResetEvent,
 } from "@autobe/interface";
@@ -12,6 +13,7 @@ export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
     | AutoBeDatabaseGroupEvent
+    | AutoBeDatabaseGroupReviewEvent
     | AutoBeInterfaceGroupEvent
     | AutoBeRealizeTestResetEvent;
 }
@@ -62,6 +64,20 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
             <ul>
               <li>namespaces: #{event.groups.length}</li>
             </ul>
+          </>
+        ),
+      };
+    case "databaseGroupReview":
+      return {
+        title: "Database Group Review",
+        description: (
+          <>
+            Reviewed Database group structure.
+            <br />
+            <br />
+            Revisions applied: #{event.revises.length}
+            <br />
+            Final groups: #{event.groups.length}
           </>
         ),
       };

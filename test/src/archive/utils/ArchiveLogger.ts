@@ -131,6 +131,24 @@ export namespace ArchiveLogger {
         `  - groups: ${event.groups.length}`,
         ...event.groups.map((g) => `    - ${g.namespace} (kind: ${g.kind})`),
       );
+    else if (event.type === "databaseGroupReview")
+      content.push(
+        `  - revises: ${event.revises.length}`,
+        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
+        ...event.revises
+          .filter((r) => r.type === "create")
+          .map((r) => `      - ${r.group.namespace} (kind: ${r.group.kind})`),
+        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
+        ...event.revises
+          .filter((r) => r.type === "update")
+          .map((r) => `      - ${r.original_namespace} => ${r.group.namespace}`),
+        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
+        ...event.revises
+          .filter((r) => r.type === "erase")
+          .map((r) => `      - ${r.namespace}`),
+        `  - groups after review: ${event.groups.length}`,
+        ...event.groups.map((g) => `    - ${g.namespace} (kind: ${g.kind})`),
+      );
     else if (event.type === "databaseAuthorization")
       content.push(
         `  - actor: ${event.actorName} (kind: ${event.actorKind})`,

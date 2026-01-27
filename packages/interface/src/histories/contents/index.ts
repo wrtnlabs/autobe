@@ -16,6 +16,10 @@ export * from "./AutoBeDatabaseComponentTableCreate";
 export * from "./AutoBeDatabaseComponentTableUpdate";
 export * from "./AutoBeDatabaseComponentTableErase";
 export * from "./AutoBeDatabaseGroup";
+export * from "./AutoBeDatabaseGroupRevise";
+export * from "./AutoBeDatabaseGroupReviseCreate";
+export * from "./AutoBeDatabaseGroupReviseUpdate";
+export * from "./AutoBeDatabaseGroupReviseErase";
 
 export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceGroup";

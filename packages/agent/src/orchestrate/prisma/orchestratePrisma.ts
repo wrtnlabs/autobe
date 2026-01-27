@@ -23,6 +23,7 @@ import { orchestratePrismaComponent } from "./orchestratePrismaComponent";
 import { orchestratePrismaComponentReview } from "./orchestratePrismaComponentReview";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
 import { orchestratePrismaGroup } from "./orchestratePrismaGroup";
+import { orchestratePrismaGroupReview } from "./orchestratePrismaGroupReview";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 import { orchestratePrismaSchemaReview } from "./orchestratePrismaSchemaReview";
 
@@ -63,20 +64,29 @@ export const orchestratePrisma = async (
     ctx,
     props.instruction,
   );
+  const reviewedGroups: AutoBeDatabaseGroup[] =
+    await orchestratePrismaGroupReview(ctx, {
+      instruction: props.instruction,
+      groups,
+    });
+
+  // AUTHORIZATION
   const authorizations: AutoBeDatabaseComponent[] =
     await orchestratePrismaAuthorization(ctx, {
       instruction: props.instruction,
-      groups,
+      groups: reviewedGroups,
     });
   const reviewedAuthorizations: AutoBeDatabaseComponent[] =
     await orchestratePrismaAuthorizationReview(ctx, {
       instruction: props.instruction,
       components: authorizations,
     });
+
+  // COMPONENT
   const components: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponent(ctx, {
       instruction: props.instruction,
-      groups,
+      groups: reviewedGroups,
     });
   const reviewedComponents: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponentReview(ctx, {
@@ -87,6 +97,10 @@ export const orchestratePrisma = async (
     ...reviewedAuthorizations,
     ...reviewedComponents,
   ];
+
+  console.log(
+    `Total models: ${reviewedAllComponents.flatMap((c) => c.tables.map((t) => t.name)).length}`,
+  );
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
