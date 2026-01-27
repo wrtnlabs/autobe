@@ -17,6 +17,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationHistory } from "./histories/transformPrismaAuthorizationHistory";
 import { AutoBeDatabaseAuthorizationProgrammer } from "./programmers/AutoBeDatabaseAuthorizationProgrammer";
+import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 import { IAutoBeDatabaseAuthorizationApplication } from "./structures/IAutoBeDatabaseAuthorizationApplication";
 
 export async function orchestratePrismaAuthorization(
@@ -51,7 +52,9 @@ export async function orchestratePrismaAuthorization(
       return component;
     }),
   );
-  const tables: AutoBeDatabaseComponentTableDesign[] = components.flatMap(
+  const deduped: AutoBeDatabaseComponent[] =
+    AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
+  const tables: AutoBeDatabaseComponentTableDesign[] = deduped.flatMap(
     (c) => c.tables,
   );
   return [{ ...authorizationGroup, tables }];

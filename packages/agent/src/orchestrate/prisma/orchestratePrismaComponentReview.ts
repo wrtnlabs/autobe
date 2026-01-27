@@ -16,8 +16,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentReviewHistory } from "./histories/transformPrismaComponentReviewHistory";
+import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 import { IAutoBeDatabaseComponentReviewApplication } from "./structures/IAutoBeDatabaseComponentReviewApplication";
-import { removeDuplicatedTable } from "./utils/removeDuplicatedTable";
 
 export async function orchestratePrismaComponentReview(
   ctx: AutoBeContext,
@@ -57,7 +57,7 @@ export async function orchestratePrismaComponentReview(
       return event.modification;
     }),
   );
-  return removeDuplicatedTable(components);
+  return AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
 }
 
 async function process(
