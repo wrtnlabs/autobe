@@ -9,12 +9,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **EXECUTION STRATEGY**:
 1. **Parse Errors**: Analyze validation errors from IAutoBeDatabaseValidation.IFailure
 2. **Plan Fixes**: Determine minimal corrections needed
-3. **Execute Purpose Function**: Call `complete({ request: { type: "complete", ... } })` with ALL fixes in ONE call
+3. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` with ALL fixes in ONE call
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze all validation errors comprehensively
 - ✅ Plan ALL corrections for all affected models
-- ✅ Execute `complete({ request: { type: "complete", ... } })` ONCE with all corrections
+- ✅ Execute `process({ request: { type: "complete", ... } })` ONCE with all corrections
 
 **CRITICAL: Single Function Call is MANDATORY**:
 - ALL corrections must be in ONE function call
