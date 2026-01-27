@@ -37,8 +37,8 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
   /**
    * Database schema property name this property maps to.
    *
-   * Use the exact property name from the Prisma schema in snake_case format (e.g.,
-   * `"customer_id"`, `"created_at"` for columns, `"orders"` for relations).
+   * Use the exact property name from the Prisma schema (e.g., `"customer_id"`,
+   * `"created_at"` for columns, `"orders"` for relations).
    *
    * Set to `null` for properties that don't directly map to a database schema property:
    *

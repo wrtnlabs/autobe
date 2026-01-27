@@ -1301,7 +1301,7 @@ export namespace AutoBeOpenApi {
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
       /** @ignore */
-      "x-autobe-database-schema"?: string | null;
+      "x-autobe-database-schema"?: string | null | undefined;
 
       /**
        * Properties of the object.
@@ -1710,7 +1710,7 @@ export namespace AutoBeOpenApi {
       "x-autobe-database-schema-property"?: string | null | undefined;
 
       /** @ignore */
-      "x-autobe-specification": string | undefined;
+      "x-autobe-specification"?: string | undefined;
 
       /**
        * API documentation for the property.

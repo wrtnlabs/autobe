@@ -92,7 +92,7 @@ export interface AutoBeInterfaceSchemaPropertyUpdate {
    *
    * Guidelines:
    *
-   * - Reference corresponding database column documentation for consistency
+   * - Reference corresponding database schema property documentation for consistency
    * - Explain business meaning and constraints
    * - Keep accessible to API consumers (no implementation details)
    * - MUST be written in English
