@@ -3,6 +3,7 @@ import {
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaComplementEvent,
+  AutoBeInterfaceSchemaDesign,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -234,10 +235,10 @@ function createController(
     (
       (
         application.functions[0].parameters.$defs[
-          "IAutoBeInterfaceSchemaComplementApplication.IComplete"
+          typia.reflect.name<AutoBeInterfaceSchemaDesign>()
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
-    ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
+    ).$ref = "#/$defs/AutoBeOpenApi.IJsonSchema.IObject";
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
     everyModels,

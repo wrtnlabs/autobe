@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeEventSource,
+  AutoBeInterfaceSchemaDesign,
   AutoBeInterfaceSchemaEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -248,10 +249,10 @@ function createController(
     (
       (
         application.functions[0].parameters.$defs[
-          "IAutoBeInterfaceSchemaApplication.IComplete"
+          typia.reflect.name<AutoBeInterfaceSchemaDesign>()
         ] as ILlmSchema.IObject
       ).properties.schema as ILlmSchema.IReference
-    ).$ref = "AutoBeOpenApi.IJsonSchemaDescriptive.IObject";
+    ).$ref = "AutoBeOpenApi.IJsonSchema.IObject";
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
     everyModels,
