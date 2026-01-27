@@ -168,7 +168,6 @@ request:
   | IAutoBePreliminaryGetAnalysisFiles          // Preliminary: request analysis files
   | IAutoBePreliminaryGetDatabaseSchemas        // Preliminary: request database schemas
   | IAutoBePreliminaryGetInterfaceOperations    // Preliminary: request interface operations
-  | IAutoBePreliminaryGetInterfaceSchemas       // Preliminary: request existing schemas
   | IAutoBePreliminaryGetPreviousAnalysisFiles       // Preliminary: request previous analysis files
   | IAutoBePreliminaryGetPreviousDatabaseSchemas     // Preliminary: request previous database schemas
   | IAutoBePreliminaryGetPreviousInterfaceOperations // Preliminary: request previous interface operations
@@ -5605,7 +5604,6 @@ export namespace IAutoBeInterfaceSchemaApplication {
       | IAutoBePreliminaryGetAnalysisFiles
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
-      | IAutoBePreliminaryGetInterfaceSchemas
       | IAutoBePreliminaryGetPreviousAnalysisFiles
       | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
@@ -6085,7 +6083,6 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   * These instructions ensure efficient resource usage and accurate analysis
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
-  * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/operation/requirement details → You called the appropriate function FIRST
