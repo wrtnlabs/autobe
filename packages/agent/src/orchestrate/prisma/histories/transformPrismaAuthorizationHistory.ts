@@ -1,6 +1,5 @@
 import { AutoBeAnalyzeActor, AutoBeDatabaseGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -17,9 +16,7 @@ export const transformPrismaAuthorizationHistory = (props: {
     >;
   },
 ): IAutoBeOrchestrateHistory => {
-  const prefix: string | null = props.prefix
-    ? NamingConvention.snake(props.prefix)
-    : null;
+  const prefix: string | null = props.prefix;
   return {
     histories: [
       {
@@ -120,19 +117,28 @@ export const transformPrismaAuthorizationHistory = (props: {
     userMessage: StringUtil.trim`
       ## Your Task: Design Authorization Tables for ${props.actor.name}
 
-      Create all authentication and authorization related tables for the "${props.actor.name}" actor (kind: "${props.actor.kind}").
+      **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via
+      \`getAnalysisFiles\` to identify authentication requirements for this actor.
 
-      **EXECUTION STEPS**:
-      1. If you need authentication requirements, load them via \`getAnalysisFiles\`
-      2. Design all required tables based on actor kind
-      3. Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\`
+      **MANDATORY STEPS**:
+
+      1. **FIRST**: Call \`getAnalysisFiles\` to load authentication requirement documents
+         - NEVER skip this step - Requirements are the ONLY valid source for authentication design
+      2. **THEN**: Analyze the LOADED requirements to design authorization tables for "${props.actor.name}" actor (kind: "${props.actor.kind}")
+      3. **FINALLY**: Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables
+
+      **ABSOLUTE PROHIBITIONS**:
+
+      - NEVER generate tables without loading requirement documents first
+      - NEVER work from assumptions, imagination, or "typical patterns"
+      - NEVER skip loading requirements under any circumstances
 
       **MANDATORY OUTPUT**:
       - Main actor table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\`
       - Session table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\`
       - Any additional auth support tables based on requirements
 
-      Begin execution now. Function calling is MANDATORY.
+      Begin by calling \`getAnalysisFiles\` to load the authentication requirement documents you need to analyze.
     `,
   };
 };
