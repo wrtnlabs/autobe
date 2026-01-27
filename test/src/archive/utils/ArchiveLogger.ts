@@ -129,11 +129,11 @@ export namespace ArchiveLogger {
     else if (event.type === "databaseGroup")
       content.push(
         `  - groups: ${event.groups.length}`,
-        ...event.groups.map((g) => `    - ${g.namespace}`),
+        ...event.groups.map((g) => `    - ${g.namespace} (kind: ${g.kind})`),
       );
     else if (event.type === "databaseAuthorization")
       content.push(
-        `  - actor: ${event.actorName} (${event.actorKind})`,
+        `  - actor: ${event.actorName} (kind: ${event.actorKind})`,
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
