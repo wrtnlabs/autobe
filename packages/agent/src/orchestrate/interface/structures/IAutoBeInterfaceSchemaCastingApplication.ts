@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceSchemaCasting } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -20,7 +20,7 @@ import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/stru
  * conventions to identify mismatches between documented semantics and actual
  * type definitions, then provides corrected object schema definitions.
  */
-export interface IAutoBeInterfaceSchemaRefineApplication {
+export interface IAutoBeInterfaceSchemaCastingApplication {
   /**
    * Process schema refinement task or preliminary data requests.
    *
@@ -31,10 +31,10 @@ export interface IAutoBeInterfaceSchemaRefineApplication {
    * @param props Request containing either preliminary data request or
    *   refinement completion
    */
-  process(props: IAutoBeInterfaceSchemaRefineApplication.IProps): void;
+  process(props: IAutoBeInterfaceSchemaCastingApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceSchemaRefineApplication {
+export namespace IAutoBeInterfaceSchemaCastingApplication {
   /** Properties for schema refinement processing. */
   export interface IProps {
     /**
@@ -139,21 +139,6 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      */
     verdict: string;
 
-    /**
-     * The refined object schema that replaces the degenerate primitive.
-     *
-     * If the type needs refinement, provide the correct object schema
-     * definition. The schema should accurately represent the data structure
-     * described in the documentation.
-     *
-     * If `null`, the original type is intentional and correct (not degenerate).
-     *
-     * Common patterns:
-     *
-     * - `Record<string, T>`: Use `{ type: "object", additionalProperties: {...}
-     *   }`
-     * - Structured object: Use `{ type: "object", properties: {...} }`
-     */
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject | null;
+    casting: AutoBeInterfaceSchemaCasting | null;
   }
 }

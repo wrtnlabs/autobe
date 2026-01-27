@@ -1,4 +1,5 @@
 import { AutoBeInterfaceSchemaPropertyCreate } from "./AutoBeInterfaceSchemaPropertyCreate";
+import { AutoBeInterfaceSchemaPropertyDepict } from "./AutoBeInterfaceSchemaPropertyDepict";
 import { AutoBeInterfaceSchemaPropertyErase } from "./AutoBeInterfaceSchemaPropertyErase";
 import { AutoBeInterfaceSchemaPropertyKeep } from "./AutoBeInterfaceSchemaPropertyKeep";
 import { AutoBeInterfaceSchemaPropertyNullish } from "./AutoBeInterfaceSchemaPropertyNullish";
@@ -7,15 +8,19 @@ import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaProp
 /**
  * Atomic property-level revision for DTO schema.
  *
- * - `create`: Add missing property
- * - `erase`: Remove invalid property
- * - `keep`: Keep existing property unchanged (explicit acknowledgment)
- * - `nullish`: Fix nullable/required status only
- * - `update`: Replace property schema (optionally with rename via `newKey`)
+ * - `depict`: Update documentation/metadata only (no type change)
+ * - `create`: Add new property
+ * - `update`: Replace property schema (optionally rename via `newKey`)
+ * - `erase`: Remove property
+ * - `keep`: Explicit acknowledgment that property is correct as-is
+ * - `nullish`: Change only nullable/required status
+ *
+ * @author Samchon
  */
 export type AutoBeInterfaceSchemaPropertyRevise =
   | AutoBeInterfaceSchemaPropertyCreate
   | AutoBeInterfaceSchemaPropertyErase
   | AutoBeInterfaceSchemaPropertyNullish
+  | AutoBeInterfaceSchemaPropertyDepict
   | AutoBeInterfaceSchemaPropertyUpdate
   | AutoBeInterfaceSchemaPropertyKeep;

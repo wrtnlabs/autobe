@@ -30,8 +30,8 @@ import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
 import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
+import { orchestrateInterfaceSchemaCasting } from "./orchestrateInterfaceSchemaCasting";
 import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
-import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
@@ -205,7 +205,7 @@ export const orchestrateInterface =
       total: 0,
     };
     await overwrite(
-      await orchestrateInterfaceSchemaRefine(ctx, {
+      await orchestrateInterfaceSchemaCasting(ctx, {
         instruction: props.instruction,
         document,
         schemas: document.components.schemas,
@@ -258,7 +258,7 @@ export const orchestrateInterface =
         });
       await overwrite(complemented);
       await overwrite(
-        await orchestrateInterfaceSchemaRefine(ctx, {
+        await orchestrateInterfaceSchemaCasting(ctx, {
           instruction: props.instruction,
           document,
           schemas: complemented,

@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceSchemaDesign } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -109,47 +109,6 @@ export namespace IAutoBeInterfaceSchemaApplication {
      */
     rationale: string;
 
-    /**
-     * JSON schema component for the specified type.
-     *
-     * This property contains the type definition for a single DTO type that
-     * will be used in the OpenAPI specification's components.schemas section.
-     * The type name is already provided in the input context, so only the
-     * schema definition itself needs to be returned.
-     *
-     * DO: Define object types as named types in the components.schemas section.
-     * DO NOT: Use inline anonymous object definitions.
-     *
-     * This schema represents:
-     *
-     * - Main entity types (IEntityName)
-     * - Operation-specific variants (.ICreate, .IUpdate, .ISummary, etc.)
-     * - Container types (IPage<T> for pagination)
-     * - Enumeration types
-     *
-     * DO: Include detailed descriptions that reference the original database
-     * schema comments and thoroughly document each property. DO: Use a $ref to
-     * a named type in the components.schemas section for every property that
-     * references an object.
-     *
-     * This applies to all objects in request bodies, response bodies, and
-     * properties that are objects or arrays of objects.
-     *
-     * Example structure for typeName "IUser":
-     *
-     * ```typescript
-     * {
-     *   "type": "object",
-     *   "properties": {
-     *     "id": { "type": "string", "format": "uuid" },
-     *     "email": { "type": "string", "format": "email" },
-     *     "profile": { "$ref": "#/components/schemas/IUserProfile" }
-     *   },
-     *   "required": ["id", "email"],
-     *   "description": "User entity representing system account holders..."
-     * }
-     * ```
-     */
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    design: AutoBeInterfaceSchemaDesign;
   }
 }

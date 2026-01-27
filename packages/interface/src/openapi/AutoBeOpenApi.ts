@@ -1300,59 +1300,7 @@ export namespace AutoBeOpenApi {
 
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
-      /**
-       * Target database table that this DTO object represents.
-       *
-       * Establishes a direct link between this DTO schema and a specific
-       * database table. This mapping is critical for:
-       *
-       * - Property validation: Verifying DTO properties exist in the table
-       * - Code generation: Generating correct database queries and selects
-       * - Type consistency: Ensuring DTO structure aligns with database schema
-       *
-       * ## When to Set a Table Name
-       *
-       * Set this to a valid table name when the DTO directly represents or
-       * derives from a specific database table:
-       *
-       * - Entity types (`IUser`, `IOrder`): Map to their primary table
-       * - Summary types (`IUser.ISummary`): Map to the same table as parent
-       * - Create/Update DTOs (`IUser.ICreate`): Map to the target table
-       *
-       * ## When to Set `null`
-       *
-       * Set this to `null` when the DTO has no direct database table mapping.
-       * Common cases include:
-       *
-       * 1. **Composite/Aggregated types**: DTOs that combine data from multiple
-       *    tables (e.g., `IDashboardSummary` aggregating user, order, and
-       *    product statistics)
-       * 2. **Request parameter types**: Search filters, pagination options,
-       *    sorting criteria (e.g., `IUser.IRequest`, `IPageInfo`)
-       * 3. **Computed result types**: DTOs representing calculation outputs (e.g.,
-       *    `IRevenueReport`, `IAnalyticsResult`)
-       * 4. **Wrapper types**: Container types for API responses (e.g., `IPage<T>`,
-       *    `IApiResponse<T>`)
-       * 5. **Pure business logic types**: DTOs born from requirements, not
-       *    database structure (e.g., `ICheckoutSession`, `IPaymentIntent`)
-       *
-       * ## Critical Requirement When `null`
-       *
-       * When this field is `null`, the `x-autobe-specification` field (in
-       * {@link IJsonSchemaDescriptive.IObject}) MUST contain detailed
-       * implementation instructions:
-       *
-       * - Source tables and columns involved
-       * - Join conditions between tables
-       * - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
-       * - Business rules and transformation logic
-       * - Edge cases (nulls, empty sets, defaults)
-       *
-       * **CRITICAL**: When set, the table name MUST be an actually existing
-       * model name from the loaded database schema. Never guess or invent
-       * schema names. Using non-existent schema names causes compilation
-       * failures and pipeline breakdown.
-       */
+      /** @ignore */
       "x-autobe-database-schema"?: string | null;
 
       /**
@@ -1620,29 +1568,8 @@ export namespace AutoBeOpenApi {
     export interface INull extends IDescriptive, IJsonSchema.INull {}
 
     interface IDescriptive {
-      /**
-       * Implementation specification for this type.
-       *
-       * This is an AutoBE-internal field (not exposed in standard OpenAPI
-       * output) that provides detailed implementation guidance for downstream
-       * agents (Realize Agent, Test Agent, etc.).
-       *
-       * Include **HOW** this type should be implemented:
-       *
-       * - Source database tables (primary table and joined tables)
-       * - Overall query strategy (joins, filters, grouping)
-       * - Aggregation formulas if applicable (`SUM`, `COUNT`, `AVG`, etc.)
-       * - Business rules and transformation logic
-       * - Edge cases (nulls, empty sets, defaults)
-       *
-       * This field is especially critical when `x-autobe-database-schema` is
-       * `null` (for composite, computed, or request parameter types), as it
-       * provides the only guidance for implementing data retrieval or
-       * computation logic.
-       *
-       * > MUST be written in English. Never use other languages.
-       */
-      "x-autobe-specification": string;
+      /** @ignore */
+      "x-autobe-specification"?: string | undefined;
 
       /**
        * API documentation for the type.
@@ -1779,32 +1706,11 @@ export namespace AutoBeOpenApi {
      * | `description`            | API consumers | WHAT/WHY - business meaning  |
      */
     interface IProperty {
-      /** @internal */
+      /** @ignore */
       "x-autobe-database-schema-property"?: string | null | undefined;
 
-      /**
-       * Implementation specification for this property.
-       *
-       * This is an AutoBE-internal field (not exposed in standard OpenAPI
-       * output) that provides detailed implementation guidance for downstream
-       * agents (Realize Agent, Test Agent, etc.).
-       *
-       * Include **HOW** this property value should be retrieved or computed:
-       *
-       * - Source database column or related table
-       * - Any transformation logic between DB and DTO (e.g., type casting,
-       *   formatting)
-       * - Computation formula for derived values (e.g., `price * quantity`)
-       * - Join conditions if data comes from related tables
-       * - Validation rules enforced at the service layer
-       * - Edge cases (nulls, defaults, empty values)
-       *
-       * The specification must be precise enough for Realize Agent to implement
-       * the data retrieval or computation logic without ambiguity.
-       *
-       * > MUST be written in English. Never use other languages.
-       */
-      "x-autobe-specification": string;
+      /** @ignore */
+      "x-autobe-specification": string | undefined;
 
       /**
        * API documentation for the property.

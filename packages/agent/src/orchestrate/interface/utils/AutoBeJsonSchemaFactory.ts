@@ -1,4 +1,8 @@
-import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeDatabase,
+  AutoBeInterfaceSchemaDesign,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
 import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
@@ -298,6 +302,20 @@ export namespace AutoBeJsonSchemaFactory {
   /* -----------------------------------------------------------
     PLUGIN
   ----------------------------------------------------------- */
+  export const fixDesign = (
+    design: AutoBeInterfaceSchemaDesign,
+  ): AutoBeOpenApi.IJsonSchemaDescriptive => {
+    const emended: AutoBeOpenApi.IJsonSchema = fixSchema(design.schema);
+    const final: AutoBeOpenApi.IJsonSchemaDescriptive = {
+      ...emended,
+      description: design.description,
+      "x-autobe-specification": design.specification,
+    };
+    if (AutoBeOpenApiTypeChecker.isObject(final))
+      final["x-autobe-database-schema"] = design.databaseSchema;
+    return final;
+  };
+
   export const fixSchema = <Schema extends AutoBeOpenApi.IJsonSchema>(
     schema: Schema,
   ): Schema => {

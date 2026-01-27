@@ -25,6 +25,8 @@ export * from "./AutoBeInterfaceEndpointCreate";
 export * from "./AutoBeInterfaceEndpointUpdate";
 export * from "./AutoBeInterfaceEndpointErase";
 export * from "./AutoBeInterfaceEndpointDesign";
+export * from "./AutoBeInterfaceSchemaDesign";
+export * from "./AutoBeInterfaceSchemaCasting";
 export * from "./AutoBeInterfaceSchemaPropertyRevise";
 export * from "./AutoBeInterfaceSchemaPropertyCreate";
 export * from "./AutoBeInterfaceSchemaPropertyErase";

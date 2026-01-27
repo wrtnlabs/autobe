@@ -160,8 +160,7 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      AutoBeJsonSchemaFactory.fixSchema(pointer.value.schema);
-
+      AutoBeJsonSchemaFactory.fixDesign(pointer.value.design);
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -221,8 +220,8 @@ function createController(
       models: everyModels,
       operations: props.operations,
       typeName: props.typeName,
-      schema: result.data.request.schema,
-      path: "$input.request.schema",
+      schema: result.data.request.design.schema,
+      path: "$input.request.design.schema",
     });
     if (errors.length !== 0)
       return {

@@ -16,9 +16,9 @@ import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
+import { AutoBeInterfaceSchemaCastingEvent } from "./AutoBeInterfaceSchemaCastingEvent";
 import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
-import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBePreliminaryEvent } from "./AutoBePreliminaryEvent";
@@ -87,7 +87,7 @@ export type AutoBeEventSource =
   | AutoBeInterfaceOperationEvent["type"]
   | AutoBeInterfaceOperationReviewEvent["type"]
   | AutoBeInterfaceSchemaEvent["type"]
-  | AutoBeInterfaceSchemaRefineEvent["type"]
+  | AutoBeInterfaceSchemaCastingEvent["type"]
   | AutoBeInterfaceSchemaReviewEvent["type"]
   | AutoBeInterfaceSchemaRenameEvent["type"]
   | AutoBeInterfaceSchemaComplementEvent["type"]

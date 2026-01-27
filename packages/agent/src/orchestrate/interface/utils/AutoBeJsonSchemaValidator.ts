@@ -38,7 +38,7 @@ export namespace AutoBeJsonSchemaValidator {
     models: AutoBeDatabase.IModel[];
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }
 
@@ -356,7 +356,7 @@ export namespace AutoBeJsonSchemaValidator {
       // No validation needed when x-autobe-database-schema is null
       // x-autobe-database-schema-property is now @internal and hidden from AI
     } else {
-      const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
+      const next: AutoBeOpenApi.IJsonSchema.IObject = props.schema;
       const model: AutoBeDatabase.IModel | undefined = props.models.find(
         (m) => m.name === next["x-autobe-database-schema"],
       );
@@ -512,10 +512,7 @@ export namespace AutoBeJsonSchemaValidator {
       if (o.requestBody) root.add(o.requestBody.typeName);
       if (o.responseBody) root.add(o.responseBody.typeName);
     }
-    return (
-      key: string,
-      schema: AutoBeOpenApi.IJsonSchemaDescriptive,
-    ): void => {
+    return (key: string, schema: AutoBeOpenApi.IJsonSchema): void => {
       if (AutoBeOpenApiTypeChecker.isObject(schema) === true) return;
       if (root.has(key))
         props.errors.push({
@@ -578,7 +575,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   const validateReferenceId = (props: {
     errors: IValidation.IError[];
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
@@ -625,7 +622,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   const validatePropertyNames = (props: {
     errors: IValidation.IError[];
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;

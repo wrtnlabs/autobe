@@ -197,7 +197,7 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - typeName: ${event.typeName}`);
-    else if (event.type === "interfaceSchemaRefine")
+    else if (event.type === "interfaceSchemaCasting")
       content.push(
         `  - typeName: ${event.typeName}`,
         `  - original: ${JSON.stringify(event.original)}`,

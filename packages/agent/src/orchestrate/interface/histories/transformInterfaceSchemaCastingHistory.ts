@@ -7,7 +7,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceSchemaRefineHistory = (props: {
+export const transformInterfaceSchemaCastingHistory = (props: {
   state: AutoBeState;
   instruction: string;
   preliminary: AutoBePreliminaryController<
