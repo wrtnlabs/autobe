@@ -152,7 +152,7 @@ export const createAutoBeContext = (props: {
               common: () => getCommonPrompt(props.config),
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
-            // stream: false,
+            stream: false,
           } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
@@ -298,8 +298,8 @@ export const createAutoBeContext = (props: {
           const last: MicroAgenticaHistory | undefined =
             result.histories.at(-1);
           if (
-            last?.type === "assistantMessage" &&
-            last.text.trim().length !== 0
+            last?.type === "assistantMessage" ||
+            (result.histories.length === 1 && last?.type === "userMessage")
           ) {
             metric("consent");
             const consent: string | null = await consentFunctionCall({
@@ -309,7 +309,8 @@ export const createAutoBeContext = (props: {
               },
               config: props.config,
               vendor: props.vendor,
-              assistantMessage: last.text,
+              assistantMessage:
+                last?.type === "assistantMessage" ? last.text.trim() : "",
             });
             if (consent !== null) {
               const newHistories: MicroAgenticaHistory[] =

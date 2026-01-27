@@ -8,6 +8,7 @@ import {
   AutoBeEvent,
   AutoBeEventSource,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -34,8 +35,30 @@ export const consentFunctionCall = async (props: {
   source: AutoBeEventSource;
   config: IAutoBeConfig;
   vendor: IAutoBeVendor;
-  assistantMessage: string;
+  assistantMessage: string; // trimmed
 }): Promise<string | null> => {
+  const dispatch = (result: AutoBeConsentFunctionCallEvent.IResult | null) =>
+    props.dispatch({
+      type: "consentFunctionCall",
+      id: v7(),
+      source: props.source,
+      assistantMessage: props.assistantMessage,
+      result,
+      created_at: new Date().toISOString(),
+    });
+  if (props.assistantMessage.length === 0) {
+    const message: string = StringUtil.trim`
+      You sent me an empty assistant message.
+
+      Don't do such foolish thing again, and do the function calling properly.
+    `;
+    dispatch({
+      type: "consent",
+      message,
+    });
+    return message;
+  }
+
   const pointer: IPointer<AutoBeConsentFunctionCallEvent.IResult | null> = {
     value: null,
   };
@@ -50,7 +73,7 @@ export const consentFunctionCall = async (props: {
         common: () => getCommonPrompt(props.config),
       },
       retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
-      // stream: false,
+      stream: false,
     },
     histories: [
       {
@@ -96,14 +119,7 @@ export const consentFunctionCall = async (props: {
         message: last.text,
       };
   }
-  props.dispatch({
-    type: "consentFunctionCall",
-    id: v7(),
-    source: props.source,
-    assistantMessage: props.assistantMessage,
-    result: pointer.value,
-    created_at: new Date().toISOString(),
-  });
+  dispatch(pointer.value);
   return pointer.value?.type === "consent" ? pointer.value.message : null;
 };
 

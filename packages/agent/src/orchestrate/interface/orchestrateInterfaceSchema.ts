@@ -56,24 +56,29 @@ export async function orchestrateInterfaceSchema(
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
-      const predicate = (key: string) =>
-        key === it ||
-        (AutoBeJsonSchemaValidator.isPage(key) &&
-          AutoBeJsonSchemaFactory.getPageName(key) === it);
-      const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
-        (op) =>
-          (op.requestBody && predicate(op.requestBody.typeName)) ||
-          (op.responseBody && predicate(op.responseBody.typeName)),
-      );
-      const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
-        operations,
-        progress,
-        otherTypeNames: typeNames.filter((k) => k !== it),
-        promptCacheKey,
-        typeName: it,
-        instruction: props.instruction,
-      });
-      x[it] = row;
+      try {
+        const predicate = (key: string) =>
+          key === it ||
+          (AutoBeJsonSchemaValidator.isPage(key) &&
+            AutoBeJsonSchemaFactory.getPageName(key) === it);
+        const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
+          (op) =>
+            (op.requestBody && predicate(op.requestBody.typeName)) ||
+            (op.responseBody && predicate(op.responseBody.typeName)),
+        );
+        const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
+          operations,
+          progress,
+          otherTypeNames: typeNames.filter((k) => k !== it),
+          promptCacheKey,
+          typeName: it,
+          instruction: props.instruction,
+        });
+        x[it] = row;
+      } catch (error) {
+        console.log(it, error);
+        throw error;
+      }
     }),
   );
   return x;

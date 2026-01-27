@@ -1,5 +1,6 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateInterfaceOperation } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceOperation";
+import { orchestrateInterfaceSchemaRename } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRename";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
@@ -38,6 +39,19 @@ export const validate_interface_operation = async (props: {
       instruction: "",
     })),
   ];
+  await orchestrateInterfaceSchemaRename(props.agent.getContext(), {
+    document: {
+      operations,
+      components: {
+        authorizations: [],
+        schemas: {},
+      },
+    },
+    progress: {
+      completed: 0,
+      total: 0,
+    },
+  });
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

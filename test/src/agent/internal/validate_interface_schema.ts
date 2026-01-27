@@ -8,6 +8,7 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 
 import { validate_interface_operation } from "./validate_interface_operation";
 
@@ -22,6 +23,16 @@ export const validate_interface_schema = async (props: {
       project: props.project,
       file: "interface.operation.json",
     })) ?? (await validate_interface_operation(props));
+  console.log(StringUtil.trim`
+    method | path | request body | response body
+    -------|------|--------------|---------------
+    ${operations
+      .map(
+        (o) =>
+          `${o.method} | ${o.path} | ${o.requestBody?.typeName ?? "-"} | ${o.responseBody?.typeName ?? "-"}`,
+      )
+      .join("\n")}  
+  `);
 
   // Initial schema generation
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =

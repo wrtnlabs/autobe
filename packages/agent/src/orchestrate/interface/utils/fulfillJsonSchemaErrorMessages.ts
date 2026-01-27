@@ -75,9 +75,9 @@ const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
     e.description = e.path.includes(".properties")
       ? AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_PROPERTY_SPECIFICATION
       : AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_OBJECT_SPECIFICATION;
-    return false;
+    return true;
   }
-  return true;
+  return false;
 };
 
 const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
