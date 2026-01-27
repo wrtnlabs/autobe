@@ -624,27 +624,19 @@ Before calling the complete function:
 - [ ] If REFINE: Described what the correct type should be
 - [ ] If KEEP: Explained why primitive is appropriate
 
-### 9.4. Schema Quality (if refining)
-- [ ] Type is "object"
-- [ ] Description preserved from original JSDoc
-- [ ] Structure matches what documentation describes
+### 9.4. Casting Quality (if refining)
+- [ ] `casting.databaseSchema` set appropriately (table name or `null`)
+- [ ] `casting.specification` contains HOW (implementation guide for downstream agents)
+- [ ] `casting.description` contains WHAT/WHY (API documentation for consumers)
+- [ ] `casting.schema.type` is "object"
+- [ ] Structure in `casting.schema` matches what documentation describes
 - [ ] Used `additionalProperties` for Record patterns
 - [ ] Used `properties` for structured objects
-- [ ] **`x-autobe-database-schema` field included** (set to table name or `null`)
-- [ ] **If `x-autobe-database-schema` is `null`**: `description` contains WHAT/WHY (for API docs), `x-autobe-specification` contains HOW (data sourcing/computation spec)
 
-### 9.5. ⚠️ MANDATORY: Property Construction Order & Required Fields (if refining)
-- [ ] **Property Construction Order**: Every property follows the mandatory 3-step order:
-  1. `x-autobe-specification` (HOW - implementation)
-  2. `description` (WHAT - consumer documentation)
-  3. Type metadata (WHAT - technical details)
-- [ ] **`x-autobe-database-schema`**: Present on the refined object type schema (string table name or null)
-- [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
-  - For direct DB mappings: specify source column and transformation logic
-  - For computed/JSON properties: detailed data sourcing spec
-- [ ] **`description`**: Present on EVERY property - consumer-friendly documentation
-- [ ] **NO OMISSIONS**: Zero properties missing any of the mandatory fields
-- [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing description or type metadata
+### 9.5. ⚠️ MANDATORY: Property Requirements (if refining)
+- [ ] **Every property MUST have `description`**: Consumer-friendly documentation
+- [ ] **NO OMISSIONS**: Zero properties missing description field
+- [ ] **Implementation details go in `casting.specification`**: Not in property-level fields
 
 ---
 

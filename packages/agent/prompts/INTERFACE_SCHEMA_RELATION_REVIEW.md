@@ -617,7 +617,7 @@ You are the **architect of data relations** in the API schema. Your decisions di
 3. **REMOVE** incorrect reverse relations and circular references
 4. **REFERENCE** new types via `$ref` (ISummary, IInvert, extracted types)
 5. **ENFORCE** proper naming conventions and structural patterns
-6. **VALIDATE** `x-autobe-database-schema` mappings for correctness (applies to object type schemas only)
+6. **VALIDATE** `databaseSchema` mappings for correctness (applies to object type schemas only)
 
 **CRITICAL LIMITATION**:
 - ❌ You CANNOT define type bodies - only INTERFACE_COMPLEMENT can define types
@@ -626,11 +626,11 @@ You are the **architect of data relations** in the API schema. Your decisions di
 
 **Your decisions shape the entire API's data model through `$ref` references.**
 
-### 2.3. `x-autobe-database-schema` Validation (OBJECT TYPE SCHEMAS ONLY)
+### 2.3. `databaseSchema` Validation (OBJECT TYPE SCHEMAS ONLY)
 
 **CRITICAL: OBJECT TYPE SCHEMAS ONLY**
 
-This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
+The `databaseSchema` field in the design structure applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 - ✅ **APPLIES TO**: Object type schemas (`"type": "object"`)
 - ❌ **DOES NOT APPLY TO**:
   - Primitive types (`string`, `number`, `boolean`, etc.)
@@ -641,14 +641,14 @@ This field applies **EXCLUSIVELY** to schemas with `"type": "object"`:
 **TYPE SAFETY**:
 - Type: `string | null` (enforced at TypeScript level)
 - `undefined` is **NOT POSSIBLE** (prevented by type system)
-- **ALL object type schemas** WILL have this field
+- **ALL object type schemas** WILL have this field in their design
 - **NO non-object types** will have this field
 
 **YOUR VALIDATION RESPONSIBILITY**:
 
-You MUST validate that every object type schema has the correct `x-autobe-database-schema` value:
+You MUST validate that every object type schema has the correct `databaseSchema` value:
 
-1. **Check the value is present**: All object type schemas MUST have this field
+1. **Check the value is present**: All object type schemas MUST have this field in design
 2. **Validate the mapping is correct**:
    - If value is a string: Verify it references a valid database model name
    - If value is `null`: Verify it's appropriate for the DTO type
@@ -663,7 +663,7 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 
 **Validation Process**:
 - Load the database schema to verify table names exist
-- Check each object type schema's `x-autobe-database-schema` value
+- Check each object type schema's `databaseSchema` value in design
 - Verify the mapping matches the DTO's purpose
 - Document violations in `think.review`
 - Apply corrections in `content`
@@ -672,20 +672,20 @@ You MUST validate that every object type schema has the correct `x-autobe-databa
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties to Understand Relation Intent**
 
-The `x-autobe-specification` and `description` fields in existing properties contain ALL conceptual information about each property's intended relationship. Use them to understand the Schema Agent's relation design, then verify against the actual database schema.
+The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about each property's intended relationship. Use them to understand the Schema Agent's relation design, then verify against the actual database schema.
 
-- **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
+- **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Contains the intended join strategy (FK column, related table)
   - Describes whether it's a direct mapping or a relation transformation
   - **For Relation Review**: Verify the FK column and related table actually exist in DB
 
-- **`description`**: API documentation for consumers (WHAT/WHY)
+- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
   - Explains the semantic relationship (ownership, association, composition)
   - **For Relation Review**: Helps classify the relation type (composition vs association vs aggregation)
 
 **How to Use These Fields for Relation Review**:
 
-1. **Read `x-autobe-specification` carefully** - It tells you the intended join strategy
+1. **Read `specification` carefully** - It tells you the intended join strategy
 2. **Identify FK fields** - Look for properties that should be transformed to object references
 3. **Compare against the database schema** - Verify the FK column and target table exist
 4. **Check relation patterns** - Is this composition, association, or aggregation? Apply correct rules
@@ -4182,7 +4182,7 @@ interface IBbsArticleComment {
 
 Repeat these as you review:
 
-1. **"Validate `x-autobe-database-schema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
+1. **"Validate `databaseSchema` (object type schemas only): entity DTOs need table names, request/wrapper DTOs need null"**
 2. **"Every object needs a name and $ref - no inline objects ever"**
 3. **"RESPONSE DTOs: Foreign keys become objects (remove `_id` suffix, add `.ISummary`)"**
 4. **"CREATE/UPDATE DTOs: Foreign keys STAY as scalars (keep `*_id` suffix, NEVER transform to objects)"**
@@ -4253,7 +4253,7 @@ Repeat these as you review:
 - [ ] ALL relations use $ref
 - [ ] ALL schemas at root level (not nested)
 - [ ] ALL entity names singular
-- [ ] **`x-autobe-database-schema` field present** - This field is present for all object type schemas (values determined by REALIZE agents)
+- [ ] **`databaseSchema` field present** - This field is present in design for all object type schemas (values determined by REALIZE agents)
 
 ### 13.4. ⚠️ MANDATORY: Property Construction Order & Required Fields
 - [ ] **Property Construction Order**: Every `update` revision follows the mandatory 4-step order:

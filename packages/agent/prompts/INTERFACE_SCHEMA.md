@@ -808,16 +808,20 @@ model bbs_articles {
 
 ```typescript
 // ❌ CATASTROPHICALLY WRONG: You "helpfully" add body
-{
-  "IBbsArticle": {
-    "x-autobe-database-schema": "bbs_articles",
-    "properties": {
-      "id": { "type": "string" },
-      "title": { "type": "string" },
-      "body": { "type": "string" },      // 🔴 PHANTOM - FORBIDDEN
-      "content": { "type": "string" },   // 🔴 PHANTOM - FORBIDDEN
-      "createdAt": { "type": "string", "format": "date-time" }
-    }
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "bbs_articles",
+  specification: "...",
+  description: "...",
+  schema: {
+    type: "object",
+    properties: {
+      id: { type: "string", description: "..." },
+      title: { type: "string", description: "..." },
+      body: { type: "string", description: "..." },      // 🔴 PHANTOM - FORBIDDEN
+      content: { type: "string", description: "..." },   // 🔴 PHANTOM - FORBIDDEN
+      createdAt: { type: "string", format: "date-time", description: "..." }
+    },
+    required: ["id", "title", "body", "content", "createdAt"]
   }
 }
 ```
@@ -1306,32 +1310,33 @@ model User {
 ```
 
 **Typical Pattern - nullable DB field as nullable DTO**:
-```json
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": "users",
-  "properties": {
-    "id": { "x-autobe-specification": "Direct mapping from users.id.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "email": { "x-autobe-specification": "Direct mapping from users.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "bio": {
-      "x-autobe-specification": "Direct mapping from users.bio (nullable column).",
-      "description": "<DETAILED_DESCRIPTION>",
-      "oneOf": [
-        { "type": "string" },
-        { "type": "null" }
-      ]
+```typescript
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "users",
+  specification: "Read DTO for users table. Direct mappings for id, email, bio, expired_at.",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      id: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      email: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      bio: {
+        description: "<DETAILED_DESCRIPTION>",
+        oneOf: [
+          { type: "string" },
+          { type: "null" }
+        ]
+      },
+      expiredAt: {
+        description: "<DETAILED_DESCRIPTION>",
+        oneOf: [
+          { type: "string", format: "date-time" },
+          { type: "null" }
+        ]
+      }
     },
-    "expiredAt": {
-      "x-autobe-specification": "Direct mapping from users.expired_at (nullable column).",
-      "description": "<DETAILED_DESCRIPTION>",
-      "oneOf": [
-        { "type": "string", "format": "date-time" },
-        { "type": "null" }
-      ]
-    }
-  },
-  "required": ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
+    required: ["id", "email", "bio", "expiredAt"]  // ✅ All fields present, values may be null
+  }
 }
 ```
 
@@ -1362,17 +1367,20 @@ model User {
 ```
 
 **✅ CORRECT - Create DTO with optional fields**:
-```json
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": "users",
-  "properties": {
-    "email": { "x-autobe-specification": "Direct mapping to users.email.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "bio": { "x-autobe-specification": "Direct mapping to users.bio (nullable column).", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "role": { "x-autobe-specification": "Direct mapping to users.role. Uses default 'user' if not provided.", "description": "Optional - if not provided, defaults to 'user'.", "type": "string" }
-  },
-  "required": ["email"]  // ✅ Only non-nullable, non-default fields required
+```typescript
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "users",
+  specification: "Create DTO for users table. Maps to columns: email, bio, role. id and created_at are auto-generated.",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      email: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      bio: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      role: { type: "string", description: "Optional - if not provided, defaults to 'user'." }
+    },
+    required: ["email"]  // ✅ Only non-nullable, non-default fields required
+  }
 }
 ```
 
@@ -1634,53 +1642,52 @@ model User {
 }
 ```
 
-**OpenAPI Schema**:
-```json
+**Design Structure**:
+```typescript
 // Schema: IUser
-{
-  "type": "object",
-  "description": "User entity with dynamic preferences and custom fields.",
-  "x-autobe-database-schema": "users",
-  "properties": {
-    "id": {
-      "x-autobe-specification": "Direct mapping from users.id column.",
-      "description": "Unique identifier for the user.",
-      "type": "string",
-      "format": "uuid"
-    },
-    "email": {
-      "x-autobe-specification": "Direct mapping from users.email column.",
-      "description": "User's email address.",
-      "type": "string",
-      "format": "email"
-    },
-    "preferences": {
-      "x-autobe-specification": "JSON column parsed as key-value object. Keys are preference names.",
-      "description": "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
-      "type": "object",
-      "properties": {},
-      "required": [],
-      "additionalProperties": {
-        "type": "string"
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "users",
+  specification: "Read DTO for users table. Direct mappings for id, email. preferences is JSON column parsed as key-value object. customFields is nullable JSON column.",
+  description: "User entity with dynamic preferences and custom fields.",
+  schema: {
+    type: "object",
+    properties: {
+      id: {
+        description: "Unique identifier for the user.",
+        type: "string",
+        format: "uuid"
+      },
+      email: {
+        description: "User's email address.",
+        type: "string",
+        format: "email"
+      },
+      preferences: {
+        description: "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
+        type: "object",
+        properties: {},
+        required: [],
+        additionalProperties: {
+          type: "string"
+        }
+      },
+      customFields: {
+        description: "Optional custom fields as key-value pairs. Null if not set.",
+        oneOf: [
+          {
+            type: "object",
+            properties: {},
+            required: [],
+            additionalProperties: {
+              type: "string"
+            }
+          },
+          { type: "null" }
+        ]
       }
     },
-    "customFields": {
-      "x-autobe-specification": "Nullable JSON column parsed as key-value object. Returns null if not set.",
-      "description": "Optional custom fields as key-value pairs. Null if not set.",
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {},
-          "required": [],
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        { "type": "null" }
-      ]
-    }
-  },
-  "required": ["id", "email", "preferences", "customFields"]
+    required: ["id", "email", "preferences", "customFields"]
+  }
 }
 ```
 
@@ -1750,66 +1757,73 @@ An **inline object type** occurs when you define an object's complete structure 
 
 **✅ THE ONLY CORRECT APPROACH**:
 
-```json
+```typescript
 // Schema: IBbsArticle.ICreate
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": "bbs_articles",
-  "properties": {
-    "title": { "x-autobe-specification": "Direct mapping to bbs_articles.title.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "content": { "x-autobe-specification": "Direct mapping to bbs_articles.content.", "description": "<DETAILED_DESCRIPTION>", "type": "string" },
-    "attachments": {
-      "x-autobe-specification": "Nested composition. Each attachment stored in bbs_article_attachments table.",
-      "description": "<DETAILED_DESCRIPTION>",
-      "type": "array",
-      "items": {
-        "$ref": "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "bbs_articles",
+  specification: "Create DTO for bbs_articles table. Maps to title, content. Attachments stored in bbs_article_attachments table. Metadata stored as JSON or separate table.",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      title: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      content: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      attachments: {
+        description: "<DETAILED_DESCRIPTION>",
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
+        }
+      },
+      metadata: {
+        description: "<DETAILED_DESCRIPTION>",
+        $ref: "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
       }
     },
-    "metadata": {
-      "x-autobe-specification": "Nested object stored as JSON or in separate metadata table.",
-      "description": "<DETAILED_DESCRIPTION>",
-      "$ref": "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
-    }
+    required: ["title", "content"]
   }
 }
 ```
 
-```json
+```typescript
 // Schema: IBbsArticleAttachment.ICreate - Supporting type for attachments (no direct DB mapping)
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": null,
-  "properties": {
-    "url": { "x-autobe-specification": "File URL for the attachment.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "format": "uri" },
-    "name": { "x-autobe-specification": "Original filename.", "description": "<DETAILED_DESCRIPTION>", "type": "string", "minLength": 1, "maxLength": 255 },
-    "size": { "x-autobe-specification": "File size in bytes.", "description": "<DETAILED_DESCRIPTION>", "type": "integer", "minimum": 0 }
-  },
-  "required": ["url", "name", "size"]
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: null,
+  specification: "Attachment create DTO. url is file URL, name is original filename, size is file size in bytes.",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      url: { type: "string", format: "uri", description: "<DETAILED_DESCRIPTION>" },
+      name: { type: "string", minLength: 1, maxLength: 255, description: "<DETAILED_DESCRIPTION>" },
+      size: { type: "integer", minimum: 0, description: "<DETAILED_DESCRIPTION>" }
+    },
+    required: ["url", "name", "size"]
+  }
 }
 ```
 
-```json
+```typescript
 // Schema: IBbsArticleMetadata - Supporting type for metadata (no direct DB mapping)
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": null,
-  "properties": {
-    "tags": {
-      "x-autobe-specification": "Array of tag strings for categorization.",
-      "description": "<DETAILED_DESCRIPTION>",
-      "type": "array",
-      "items": { "type": "string" }
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: null,
+  specification: "Metadata structure. tags is array of categorization strings, priority is enum for priority level.",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      tags: {
+        description: "<DETAILED_DESCRIPTION>",
+        type: "array",
+        items: { type: "string" }
+      },
+      priority: {
+        description: "<DETAILED_DESCRIPTION>",
+        type: "string",
+        enum: ["low", "medium", "high"]
+      }
     },
-    "priority": {
-      "x-autobe-specification": "Priority level enum value.",
-      "description": "<DETAILED_DESCRIPTION>",
-      "type": "string",
-      "enum": ["low", "medium", "high"]
-    }
+    required: ["tags", "priority"]
   }
 }
 ```
@@ -1920,18 +1934,21 @@ Before ANY schema is accepted:
 ```
 
 **✅ CORRECT - Reference Other Types**:
-```json
+```typescript
 // Your single schema should reference other types via $ref
-{
-  "type": "object",
-  "description": "<DETAILED_DESCRIPTION>",
-  "x-autobe-database-schema": "posts",
-  "properties": {
-    "author": {
-      "$ref": "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-      "x-autobe-specification": "Relation: posts.author -> authors (belongs-to). Load via JOIN on author_id.",
-      "description": "<DETAILED_DESCRIPTION>"
-    }
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "posts",
+  specification: "Read DTO for posts. author is loaded via JOIN on author_id (belongs-to relation).",
+  description: "<DETAILED_DESCRIPTION>",
+  schema: {
+    type: "object",
+    properties: {
+      author: {
+        $ref: "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
+        description: "<DETAILED_DESCRIPTION>"
+      }
+    },
+    required: ["author"]
   }
 }
 ```
@@ -5376,7 +5393,7 @@ interface IBbsArticle.IUpdate {
 - [ ] Every property exists in database schema - no assumptions
 - [ ] Timestamp fields verified individually per table
 - [ ] No phantom fields that would require database changes
-- [ ] `x-autobe-database-schema` linkage added for all applicable types
+- [ ] `design.databaseSchema` linkage added for all applicable types
 
 **F. Security Verification**:
 
@@ -5410,7 +5427,7 @@ export namespace IJsonSchemaDescriptive {
 
 // IObject.properties requires IJsonSchemaProperty for each property
 export interface IObject {
-  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description AND x-autobe-specification
+  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description
 }
 ```
 
@@ -5436,9 +5453,10 @@ export interface IObject {
 ```typescript
 // Schema: IShoppingSale
 // EXCELLENT: Detailed schema description with proper spacing
-{
-  "type": "object",
-  "description": `Product sale listings in the shopping marketplace.
+const design: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "shopping_sales",
+  specification: "Read DTO for shopping_sales. Direct mappings for id, title. Related to products, sellers, categories, orders.",
+  description: `Product sale listings in the shopping marketplace.
 
 Represents individual products listed for sale by sellers, including pricing, inventory, and availability information.
 Each sale references a specific product and is owned by an authenticated seller.
@@ -5450,21 +5468,29 @@ Soft deletion is supported to preserve historical transaction records.
 
 Used in sale creation requests (ICreate), sale updates (IUpdate), search results (ISummary), and detailed retrieval responses.
 Summary variant excludes large text fields for list performance.`,
-  "properties": {
-    "id": { "x-autobe-specification": "Direct mapping from shopping_sales.id.", "description": "Sale unique identifier", "type": "string" },
-    "title": { "x-autobe-specification": "Direct mapping from shopping_sales.title.", "description": "Sale listing title", "type": "string" }
-  },
-  "required": ["id", "title"]
+  schema: {
+    type: "object",
+    properties: {
+      id: { type: "string", description: "Sale unique identifier" },
+      title: { type: "string", description: "Sale listing title" }
+    },
+    required: ["id", "title"]
+  }
 }
 
 // Schema: IShoppingSale
 // WRONG: Too brief, no detail, missing structure
-{
-  "type": "object",
-  "description": "Sale entity. Contains product and seller information.",
-  "properties": {
-    "id": { "x-autobe-specification": "Direct mapping.", "description": "Sale ID", "type": "string" },
-    "title": { "x-autobe-specification": "Direct mapping.", "description": "Title", "type": "string" }
+const badDesign: AutoBeInterfaceSchemaDesign = {
+  databaseSchema: "shopping_sales",
+  specification: "Direct mapping.",  // ❌ Too vague
+  description: "Sale entity. Contains product and seller information.",  // ❌ Too brief
+  schema: {
+    type: "object",
+    properties: {
+      id: { type: "string", description: "Sale ID" },  // ❌ Too brief
+      title: { type: "string", description: "Title" }  // ❌ Too brief
+    },
+    required: ["id", "title"]
   }
 }
 ```
@@ -5486,51 +5512,61 @@ Write clear, detailed property descriptions explaining the purpose, constraints,
 **Examples:**
 
 ```typescript
-// EXCELLENT: Detailed property description
-{
-  "email": {
-    "x-autobe-specification": "Direct mapping from customers.email column.",
-    "description": "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards.",
-    "type": "string",
-    "format": "email"
+// EXCELLENT: Detailed property description in design.schema
+schema: {
+  type: "object",
+  properties: {
+    email: {
+      type: "string",
+      format: "email",
+      description: "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards."
+    }
   }
 }
 
 // GOOD: Clear and specific
-{
-  "price": {
-    "x-autobe-specification": "Direct mapping from sales.price column.",
-    "description": "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents.",
-    "type": "number",
-    "minimum": 0
+schema: {
+  type: "object",
+  properties: {
+    price: {
+      type: "number",
+      minimum: 0,
+      description: "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents."
+    }
   }
 }
 
 // WRONG: Too brief (description insufficient)
-{
-  "email": {
-    "x-autobe-specification": "Direct mapping from customers.email.",
-    "description": "Email",
-    "type": "string"
+schema: {
+  type: "object",
+  properties: {
+    email: {
+      type: "string",
+      description: "Email"  // ❌ Too brief!
+    }
   }
 }
 
 // ❌ FATAL ERROR: Missing description - COMPILATION WILL FAIL
-{
-  "email": {
-    "x-autobe-specification": "Direct mapping from customers.email.",
-    "type": "string",
-    "format": "email"
-    // Missing description! This violates IJsonSchemaProperty type requirement
+schema: {
+  type: "object",
+  properties: {
+    email: {
+      type: "string",
+      format: "email"
+      // Missing description! This violates IJsonSchemaProperty type requirement
+    }
   }
 }
 
 // WRONG: Overly long single line
-{
-  "description": {
-    "x-autobe-specification": "Direct mapping from products.description column.",
-    "description": "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision",
-    "type": "string"
+schema: {
+  type: "object",
+  properties: {
+    description: {
+      type: "string",
+      description: "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"  // ❌ Too long! Break into multiple sentences.
+    }
   }
 }
 ```
@@ -5624,7 +5660,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
 
 - **description**: API documentation for consumers (Swagger UI, SDK docs). Focus on WHAT the type represents and WHY it exists. Keep accessible to API consumers without implementation details. MUST be written in English.
 
-- **schema**: The JSON Schema definition for the type structure. Contains only type metadata (`type`, `properties`, `required`, `$ref`, etc.) - NO `x-autobe-*` fields here. The system automatically merges `databaseSchema`, `specification`, and `description` into the final OpenAPI output.
+- **schema**: The JSON Schema definition for the type structure. Contains only type metadata (`type`, `properties`, `required`, `$ref`, etc.) - NO extension fields here. The system automatically merges `databaseSchema`, `specification`, and `description` into the final OpenAPI output.
 
 ### 7.3. Output Example
 
@@ -5641,7 +5677,7 @@ const design: AutoBeInterfaceSchemaDesign = {
   // API documentation for consumers
   description: "Request DTO for creating a new BBS article. The author is automatically set from the authenticated session context.",
 
-  // JSON Schema definition (no x-autobe-* fields here)
+  // JSON Schema definition (pure JSON Schema, no extension fields)
   schema: {
     type: "object",
     properties: {

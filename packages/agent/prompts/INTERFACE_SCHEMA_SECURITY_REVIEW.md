@@ -965,20 +965,20 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties for Security Violations**
 
-The `x-autobe-specification` and `description` fields in existing properties contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
+The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
 
-- **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
+- **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Reveals the data source (which DB column, how it's processed)
   - Shows if sensitive data is being directly exposed
   - **For Security Review**: Check for exposed hashed passwords, internal IDs, or server-managed fields
 
-- **`description`**: API documentation for consumers (WHAT/WHY)
+- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
   - Explains what the property represents to API consumers
   - **For Security Review**: Check if the description reveals sensitive implementation details
 
 **How to Use These Fields for Security Review**:
 
-1. **Read `x-autobe-specification` carefully** - Does it reference sensitive columns like `password_hashed`?
+1. **Read `specification` carefully** - Does it reference sensitive columns like `password_hashed`?
 2. **Check the data flow** - Request DTOs should receive client input, Response DTOs should return safe data
 3. **Compare against the database schema** - Verify which columns are security-sensitive
 4. **Detect violations**:

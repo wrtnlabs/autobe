@@ -10,9 +10,7 @@ export const fulfillJsonSchemaErrorMessages = (
     fulfillTypeAsArrayError(e) ||
       fulfillEnumInsteadOfConstError(e) ||
       fulfillNoRequiredError(e) ||
-      fulfillNoSpecificationError(e) ||
       fulfillNoDescriptionError(e) ||
-      fulfillNoDatabaseSchema(e) ||
       fulfillObjectMetadataMisplacement(e) ||
       fulfillNestedObjectError(e);
 };
@@ -70,34 +68,11 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
   return false;
 };
 
-const fulfillNoSpecificationError = (e: IValidation.IError): boolean => {
-  if (e.value === undefined && e.path.endsWith(`["x-autobe-specification"]`)) {
-    e.description = e.path.includes(".properties")
-      ? AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_PROPERTY_SPECIFICATION
-      : AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_OBJECT_SPECIFICATION;
-    return true;
-  }
-  return false;
-};
-
 const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
   if (e.value === undefined && e.path.endsWith(".description")) {
     // no description
     e.description =
       AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_DESCRIPTION;
-    return true;
-  }
-  return false;
-};
-
-const fulfillNoDatabaseSchema = (e: IValidation.IError): boolean => {
-  if (
-    e.value === undefined &&
-    e.path.endsWith(`["x-autobe-database-schema"]`)
-  ) {
-    // no x-autobe-database-schema
-    e.description =
-      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_DATABASE_SCHEMA;
     return true;
   }
   return false;
@@ -167,20 +142,6 @@ const fulfillObjectMetadataMisplacement = (e: IValidation.IError): boolean => {
   };
 
   if (
-    e.path.endsWith(`.properties["x-autobe-database-schema"]`) === true &&
-    typeof e.value === "string"
-  )
-    return validate({
-      key: "x-autobe-database-schema",
-      expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject["x-autobe-database-schema"]`,
-      actual: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties["x-autobe-database-schema"]`,
-      place: e.path.replace(
-        `.properties["x-autobe-database-schema"]`,
-        `["x-autobe-database-schema"]`,
-      ),
-      purpose: "which database table this schema type corresponds to",
-    });
-  else if (
     e.path.endsWith(`.properties.required`) === true &&
     Array.isArray(e.value) === true
   )
@@ -190,17 +151,6 @@ const fulfillObjectMetadataMisplacement = (e: IValidation.IError): boolean => {
       actual: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties.required`,
       place: e.path.replace(`.properties.required`, `.required`),
       purpose: "which properties are mandatory",
-    });
-  else if (
-    e.path.endsWith(`.properties.description`) === true &&
-    typeof e.value === "string"
-  )
-    return validate({
-      key: "description",
-      expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.description`,
-      actual: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties.description`,
-      place: e.path.replace(`.properties.description`, `.description`),
-      purpose: "the entire schema",
     });
   return false;
 };
