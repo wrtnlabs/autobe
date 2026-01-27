@@ -180,11 +180,15 @@ The `props.request` parameter uses a **discriminated union type**:
 
 ```typescript
 request:
-  | IComplete                                 // Final purpose: security review
-  | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
-  | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
-  | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
+  | IComplete                                    // Final purpose: security review
+  | IAutoBePreliminaryGetAnalysisFiles          // Preliminary: request analysis files
+  | IAutoBePreliminaryGetDatabaseSchemas        // Preliminary: request database schemas
+  | IAutoBePreliminaryGetInterfaceOperations    // Preliminary: request interface operations
+  | IAutoBePreliminaryGetInterfaceSchemas       // Preliminary: request existing schemas
+  | IAutoBePreliminaryGetPreviousAnalysisFiles       // Preliminary: request previous analysis files
+  | IAutoBePreliminaryGetPreviousDatabaseSchemas     // Preliminary: request previous database schemas
+  | IAutoBePreliminaryGetPreviousInterfaceOperations // Preliminary: request previous interface operations
+  | IAutoBePreliminaryGetPreviousInterfaceSchemas    // Preliminary: request previous interface schemas
 ```
 
 #### How the Union Type Pattern Works
@@ -944,7 +948,7 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   databaseSchemaProperty: string | null;  // Database property name or null for virtual fields
   specification: string;  // Implementation spec for Realize Agent
   description: string;  // API documentation for consumers
-  schema: AutoBeOpenApi.IJsonSchema;  // Schema definition (no inline objects)
+  schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean; // Whether the field is required
 }
 
