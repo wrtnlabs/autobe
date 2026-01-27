@@ -737,9 +737,10 @@ interface AutoBeInterfaceSchemaPropertyNullish {
   type: "nullish";
   reason: string;            // Why nullability is being changed
   key: string;               // Property name
+  specification: string | null; // null = keep existing, string = replace specification
+  description: string | null;   // null = keep existing, string = replace description
   nullable: boolean;         // Should use oneOf with null?
   required: boolean;         // Should be in required array?
-  description: string | null; // null = keep existing, string = replace with new description
 }
 
 // Keep revision - keep existing property unchanged
@@ -755,9 +756,11 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 - **`nullish`**: Fix DB nullable → DTO non-null violations (ONLY this direction!)
 - **`keep`**: Explicitly acknowledge existing properties that are correct
 
-**When to use `description` in `nullish` revision**:
-- **Use `description: "..."`** (string): When the existing description doesn't explain nullable behavior. Provide a clear description that documents why the field can be null (e.g., "User's bio. Can be null if not provided.", "Expiration time. Null means no expiration.")
-- **Use `description: null`**: When the existing description already adequately explains the nullable behavior, or when the nullability is self-evident from context. Keeps the existing description unchanged.
+**When to use `specification` and `description` in `nullish` revision**:
+- **`specification: null`**: Keep existing specification (most common case for phantom review)
+- **`specification: "..."`**: Update specification if null handling needs documentation
+- **`description: "..."`** (string): When the existing description doesn't explain nullable behavior. Provide a clear description that documents why the field can be null (e.g., "User's bio. Can be null if not provided.", "Expiration time. Null means no expiration.")
+- **`description: null`**: When the existing description already adequately explains the nullable behavior, or when the nullability is self-evident from context. Keeps the existing description unchanged.
 
 ### 5.3. Output Examples
 
@@ -795,17 +798,19 @@ process({
         type: "nullish",
         reason: "DB field 'bio' is nullable (String?) but DTO is non-null. Must allow null.",
         key: "bio",
+        specification: null,  // Keep existing specification
+        description: "User's biography. Can be null if not provided by the user.",  // Update description
         nullable: true,
-        required: true,
-        description: "User's biography. Can be null if not provided by the user."  // string = replace description
+        required: true
       },
       {
         type: "nullish",
         reason: "DB field 'avatar_url' is nullable but DTO is non-null.",
         key: "avatarUrl",
+        specification: null,  // Keep existing specification
+        description: null,    // Keep existing description
         nullable: true,
-        required: true,
-        description: null  // null = keep existing description unchanged
+        required: true
       }
     ]
   }
