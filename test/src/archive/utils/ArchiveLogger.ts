@@ -138,6 +138,24 @@ export namespace ArchiveLogger {
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
       );
+    else if (event.type === "databaseAuthorizationReview")
+      content.push(
+        `  - namespace: ${event.modification.namespace}`,
+        `  - tables: ${event.modification.tables.length}`,
+        `  - revised:`,
+        `    - create: ${event.revises.filter((r) => r.type === "create").length}`,
+        ...event.revises
+          .filter((r) => r.type === "create")
+          .map((r) => `      - ${r.table}`),
+        `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
+        ...event.revises
+          .filter((r) => r.type === "update")
+          .map((r) => `      - ${r.original} => ${r.updated}`),
+        `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
+        ...event.revises
+          .filter((r) => r.type === "erase")
+          .map((r) => `      - ${r.table}`),
+      );
     else if (event.type === "databaseComponent")
       content.push(
         `  - namespace: ${event.component.namespace}`,
@@ -163,7 +181,9 @@ export namespace ArchiveLogger {
           .map((r) => `      - ${r.table}`),
       );
     else if (event.type === "databaseSchema")
-      content.push(`  - model: ${event.model.name}`);
+      content.push(
+        `  - model: ${event.model.name} (stance: ${event.model.stance})`,
+      );
     else if (event.type === "databaseValidate")
       content.push(
         JSON.stringify(event.result.errors, null, 2)

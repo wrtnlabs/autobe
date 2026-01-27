@@ -6,6 +6,7 @@ import {
   AutoBeAnalyzeWriteEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
+  AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
@@ -218,6 +219,17 @@ export interface IAutoBeRpcListener {
    */
   databaseAuthorization?(
     event: AutoBeDatabaseAuthorizationEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for database authorization review events.
+   *
+   * Called when the Database agent reviews and validates the authorization
+   * component's table organization, ensuring all actor and session tables
+   * are properly defined.
+   */
+  databaseAuthorizationReview?(
+    event: AutoBeDatabaseAuthorizationReviewEvent,
   ): Promise<void>;
 
   /**

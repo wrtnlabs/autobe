@@ -33,6 +33,7 @@ export * from "./AutoBeAnalyzeWriteEvent";
 
 // PRISMA
 export * from "./AutoBeDatabaseAuthorizationEvent";
+export * from "./AutoBeDatabaseAuthorizationReviewEvent";
 export * from "./AutoBeDatabaseCompleteEvent";
 export * from "./AutoBeDatabaseComponentEvent";
 export * from "./AutoBeDatabaseComponentReviewEvent";

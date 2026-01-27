@@ -1,0 +1,148 @@
+import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
+
+import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+
+export interface IAutoBeDatabaseAuthorizationReviewApplication {
+  /**
+   * Analyze requirements and review the authorization component's table list.
+   *
+   * Your PRIMARY task is to deeply analyze authentication requirements and
+   * ensure complete table coverage for all actor types in the authorization
+   * component. Review existing tables and identify necessary modifications
+   * using create, update, or erase operations.
+   *
+   * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
+   * what authentication features are required, then systematically verify
+   * actor table and session table coverage and apply corrections.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task with table revisions
+   */
+  process(props: IAutoBeDatabaseAuthorizationReviewApplication.IProps): void;
+}
+
+export namespace IAutoBeDatabaseAuthorizationReviewApplication {
+  export interface IProps {
+    /**
+     * Reflect on requirements analysis before acting.
+     *
+     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
+     * getPreviousDatabaseSchemas):
+     *
+     * - What authentication requirements do you need to analyze?
+     * - Which actor types need to be verified?
+     *
+     * For completion (complete):
+     *
+     * - What authentication requirements did you analyze?
+     * - How many revisions are you making and why?
+     * - Summarize the requirements-to-revisions mapping.
+     */
+    thinking: string;
+
+    /**
+     * Request type discriminator.
+     *
+     * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
+     * documents. Use complete to submit table revisions after thorough
+     * authentication requirements analysis.
+     */
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas;
+  }
+
+  /**
+   * Submit table revisions after authentication requirements analysis.
+   *
+   * Call this after you have:
+   * 1. Fetched and analyzed authentication requirements documents
+   * 2. Verified all actor types have main actor and session tables
+   * 3. Prepared create/update/erase operations with clear reasons
+   */
+  export interface IComplete {
+    /**
+     * Type discriminator. Value "complete" indicates final submission.
+     */
+    type: "complete";
+
+    /**
+     * Authentication requirements coverage analysis.
+     *
+     * Document how you analyzed authentication requirements and mapped them
+     * to table modifications:
+     *
+     * - What actor types are defined?
+     * - Does each actor have a main table and session table?
+     * - What authentication support tables are needed?
+     * - What existing tables need renaming or removal?
+     *
+     * Be specific - reference actual requirements and explain the
+     * requirements-to-revisions mapping.
+     */
+    review: string;
+
+    /**
+     * Array of table revision operations.
+     *
+     * Include all create, update, and erase operations identified during
+     * review. Each operation must include a reason explaining why the
+     * change is necessary.
+     *
+     * ## Operation Types:
+     *
+     * ### Create - Add missing tables
+     * Use when a table is needed to fulfill authentication requirements
+     * but doesn't exist.
+     * ```typescript
+     * {
+     *   type: "create",
+     *   reason: "Actor 'customer' requires password reset token storage",
+     *   table: "shopping_customer_password_resets",
+     *   description: "Stores password reset tokens with expiration for customers"
+     * }
+     * ```
+     *
+     * ### Update - Rename tables
+     * Use when a table has naming convention issues.
+     * ```typescript
+     * {
+     *   type: "update",
+     *   reason: "Table name violates actor naming convention",
+     *   original: "customerSessions",
+     *   updated: "shopping_customer_sessions",
+     *   description: "Authentication sessions for shopping customers"
+     * }
+     * ```
+     *
+     * ### Erase - Remove tables
+     * Use when a table doesn't belong to authorization.
+     * ```typescript
+     * {
+     *   type: "erase",
+     *   reason: "Table is a business domain entity, not authentication",
+     *   table: "shopping_orders"
+     * }
+     * ```
+     *
+     * ## Constraints:
+     *
+     * - Only CREATE tables related to authentication and authorization
+     * - Each actor MUST have a main actor table and session table
+     * - Each operation must have a clear, requirement-based reason
+     * - Empty array is valid if no modifications are needed
+     *
+     * ## Naming Conventions:
+     *
+     * - Snake case: `user_sessions` not `userSessions`
+     * - Plural form: `users` not `user`
+     * - Domain prefix: `shopping_customer_sessions`
+     * - Actor name in table: all tables must contain the actor name
+     */
+    revises: AutoBeDatabaseComponentTableRevise[];
+  }
+}

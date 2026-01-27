@@ -6,6 +6,7 @@ import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
+import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseCompleteEvent } from "./AutoBeDatabaseCompleteEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
@@ -109,6 +110,7 @@ export type AutoBeEvent =
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent
   | AutoBeDatabaseAuthorizationEvent
+  | AutoBeDatabaseAuthorizationReviewEvent
   | AutoBeDatabaseComponentEvent
   | AutoBeDatabaseComponentReviewEvent
   | AutoBeDatabaseSchemaEvent

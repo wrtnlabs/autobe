@@ -197,6 +197,7 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   databaseStart: 1_000,
   databaseGroup: 1_000,
   databaseAuthorization: 1_000,
+  databaseAuthorizationReview: 500,
   databaseComponent: 1_000,
   databaseComponentReview: 500,
   databaseSchema: 500,
