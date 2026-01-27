@@ -63,7 +63,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Generated missing schema definition, resolved undefined ref.",
-  request: { type: "complete", analysis: "...", rationale: "...", schema: {...} }
+  request: { type: "complete", analysis: "...", rationale: "...", design: {...} }
 }
 ```
 
@@ -503,12 +503,12 @@ process({ thinking: "Missing entity field details for relationship mapping. Don'
 ```typescript
 // ❌ FORBIDDEN
 process({ thinking: "Missing relationship details. Need them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders"] } })
-process({ thinking: "Missing schema generated", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })  // Executes with OLD materials!
+process({ thinking: "Missing schema generated", request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT
 process({ thinking: "Missing entity relationships for ref resolution. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["orders", "products"] } })
 // Then after materials loaded:
-process({ thinking: "Loaded schemas, resolved undefined ref, ready to complete", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })
+process({ thinking: "Loaded schemas, resolved undefined ref, ready to complete", request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
@@ -639,46 +639,18 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
     rationale: string;
 
     /**
-     * The missing schema definition that needs to be added to the OpenAPI
-     * document's `components.schemas` section.
+     * Design structure for the missing schema.
      *
-     * This schema definition is for a type that is referenced but not yet
-     * defined. The type name for this schema is provided in the input context.
+     * Contains four fields you must fill:
+     * - databaseSchema: Database model name (string) or null
+     * - specification: Implementation guide for downstream agents
+     * - description: API documentation for consumers
+     * - schema: The JSON Schema definition (type structure only)
      *
-     * Example structure:
-     * ```typescript
-     * {
-     *   "x-autobe-database-schema": "users",
-     *   "x-autobe-specification": "Represents a user entity with basic contact information.",
-     *   "description": "User account information.",
-     *   "type": "object",
-     *   "properties": {
-     *     "id": {
-     *       "x-autobe-specification": "Direct mapping from users.id column.",
-     *       "description": "Unique identifier for the user.",
-     *       "type": "string"
-     *     },
-     *     "name": {
-     *       "x-autobe-specification": "Direct mapping from users.name column.",
-     *       "description": "Display name of the user.",
-     *       "type": "string"
-     *     },
-     *     "email": {
-     *       "x-autobe-specification": "Direct mapping from users.email column.",
-     *       "description": "User's email address for login and communication.",
-     *       "type": "string",
-     *       "format": "email"
-     *     }
-     *   },
-     *   "required": ["id", "name", "email"]
-     * }
-     * ```
-     *
-     * The schema definition follows the JSON Schema specification and will be
-     * directly inserted into the OpenAPI document's components.schemas section,
-     * making it available for $ref references throughout the API specification.
+     * The design will be transformed into the final OpenAPI schema format.
+     * The type name for this schema is provided in the input context.
      */
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    design: AutoBeInterfaceSchemaDesign;
   }
 }
 ```
@@ -721,12 +693,12 @@ Your analysis of the missing type's purpose and context before designing the sch
 
 Your reasoning for the schema design decisions. Explain property choices, required vs optional decisions, how the schema satisfies referencing schemas' expectations, and what patterns you followed.
 
-#### schema (IComplete)
-**Type**: `AutoBeOpenApi.IJsonSchemaDescriptive` (REQUIRED)
+#### design (IComplete)
+**Type**: `AutoBeInterfaceSchemaDesign` (REQUIRED)
 
-The complete schema definition for the SPECIFIC missing type that needs to be added to the OpenAPI document's `components.schemas` section.
+The design structure for the SPECIFIC missing type. Contains `databaseSchema`, `specification`, `description`, and `schema` fields.
 
-**IMPORTANT**: The type name (key) is already provided as input material. You only need to provide the schema definition (value).
+**IMPORTANT**: The type name (key) is already provided as input material. You only need to provide the design structure.
 
 ### Output Method
 
@@ -739,129 +711,47 @@ process({
     type: "complete",
     analysis: "IProduct.ISummary is referenced in IOrder.product and ICartItem.product. These are response DTOs showing order/cart details, so they need a lightweight product representation with essential fields.",
     rationale: "Included id, name, price as core identifiers. Excluded detailed fields like description and inventory since summary is for display in lists. Required all fields since products always have these basics.",
-    schema: {
-      "x-autobe-database-schema": "products",
-      "x-autobe-specification": "Lightweight product representation for display in order/cart contexts.",
-      "description": "Summary view of a product with essential display information.",
-      "type": "object",
-      "properties": {
-        "id": {
-          "x-autobe-specification": "Direct mapping from products.id column.",
-          "description": "Unique identifier for the product.",
-          "type": "string"
+    design: {
+      databaseSchema: "products",
+      specification: "Lightweight product representation for display in order/cart contexts. Direct mappings: id from products.id, name from products.name, price from products.price.",
+      description: "Summary view of a product with essential display information.",
+      schema: {
+        type: "object",
+        properties: {
+          id: {
+            description: "Unique identifier for the product.",
+            type: "string"
+          },
+          name: {
+            description: "Display name of the product.",
+            type: "string"
+          },
+          price: {
+            description: "Current price of the product.",
+            type: "number"
+          }
         },
-        "name": {
-          "x-autobe-specification": "Direct mapping from products.name column.",
-          "description": "Display name of the product.",
-          "type": "string"
-        },
-        "price": {
-          "x-autobe-specification": "Direct mapping from products.price column.",
-          "description": "Current price of the product.",
-          "type": "number"
-        }
-      },
-      "required": ["id", "name", "price"]
+        required: ["id", "name", "price"]
+      }
     }
   }
 })
 ```
 
-**CRITICAL**: Return ONLY the schema definition for the specified missing type. The type name is already known from input materials.
+**CRITICAL**: Return ONLY the design for the specified missing type. The type name is already known from input materials.
 
 
 ## 5. Key Rules from Previous System Prompts
 
-From `INTERFACE_SCHEMA.md`:
+**All rules from `INTERFACE_SCHEMA.md` apply without exception.** Key points:
+
+- **Design Construction Order**: Follow the mandatory 4-step order (`databaseSchema` → `specification` → `description` → `schema`)
 - **Naming**: IEntity, IEntity.ICreate, IEntity.IUpdate, IEntity.ISummary, IPageIEntity
 - **Structure**: ALL DTO relationships MUST use $ref references - NEVER inline object definitions
-- **$ref MANDATORY**: For any relationship between DTOs, use $ref (e.g., `author: { $ref: "#/components/schemas/IUser" }`)
-- **IPage**: Fixed structure with pagination and data array
+- **`databaseSchema` REQUIRED**: All object type designs MUST have this field (table name or `null`)
+- **`specification` REQUIRED**: Must document HOW to implement ALL properties
+- **Property `description` REQUIRED**: Every property must have consumer documentation
 - **Documentation**: English only, detailed descriptions
-- **Types**: Never use `any`, always specify exact types
-- **`x-autobe-database-schema` REQUIRED**: All object types MUST have this field
-
-**CRITICAL: `x-autobe-database-schema` Requirement**:
-
-Every object type schema MUST include `x-autobe-database-schema`:
-- Set to table name when DTO maps to a database table
-- Set to `null` when DTO has no direct database mapping
-
-**When `x-autobe-database-schema` is `null`**, the object type has two documentation fields:
-
-**Two-Field Documentation Pattern**:
-- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
-
-1. **`description`** - API documentation for consumers (WHAT/WHY):
-   - Clear, concise explanation for Swagger UI, SDK docs, API consumers
-   - Human-readable purpose statement
-
-2. **`x-autobe-specification`** - Implementation specification for Realize Agent (HOW):
-   - Source tables and columns involved
-   - Join conditions between tables
-   - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
-   - Business rules and transformation logic
-   - Edge cases (nulls, empty sets, defaults)
-
-**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Object Types and Properties**
-
-This field is NOT optional. You MUST provide `x-autobe-specification` for:
-- Every object type schema (explains how to retrieve/construct the object)
-- Every property within an object (explains how to get/compute the property value)
-
-**Object-level `x-autobe-specification`**: Describes how to retrieve/construct the entire object type. Include source tables, overall query strategy, and object-level constraints.
-
-**Property-level `x-autobe-specification`**: Each property has its own field. Include:
-- For direct DB mappings: Specify source column and any transformation logic
-- For computed properties: MUST contain detailed computation specification with data sources, formulas, join conditions, and edge cases
-
-The specification must be **precise enough for downstream agents to implement** the actual data retrieval or computation. Vague or missing specifications will cause validation failures.
-
-**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
-
-When constructing properties for object types, you MUST follow this strict field ordering:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 2: description                      →  WHAT for API consumers?       │
-│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-**Why This Order is Mandatory**:
-
-This ordering enforces **grounded reasoning** - you must first establish implementation details before proceeding to documentation:
-
-1. **STEP 1 - HOW**: First specify how this property will be implemented
-2. **STEP 2 - WHAT (consumer)**: Now that you know HOW, write API documentation
-3. **STEP 3 - WHAT (technical)**: Finally, record type information consistent with the implementation
-
-**ABSOLUTE PROHIBITIONS**:
-- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
-- NEVER omit `description` (every property MUST have consumer documentation)
-- NEVER write fields out of order (the cognitive flow ensures consistency)
-
-**Example - Correct Property Structure**:
-```json
-{
-  "email": {
-    "x-autobe-specification": "Direct mapping from users.email column.",
-    "description": "User's email address for login and communication.",
-    "type": "string",
-    "format": "email"
-  },
-  "totalOrders": {
-    "x-autobe-specification": "Computed by: SELECT COUNT(*) FROM orders WHERE user_id = users.id. Returns 0 if no orders.",
-    "description": "Total number of orders placed by this user.",
-    "type": "integer",
-    "minimum": 0
-  }
-}
-```
-
-This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests
@@ -877,7 +767,7 @@ From `INTERFACE_SCHEMA_REVIEW.md`:
 3. **Context**: Examine existing operations, database schemas, and related DTOs to understand the type's purpose
 4. **Generate**: Create the schema definition following rules from both `INTERFACE_SCHEMA.md` and `INTERFACE_SCHEMA_REVIEW.md`
 5. **Verify**: Ensure the schema may reference other types via `$ref` (this is expected and correct)
-6. **Call Function**: Use `process({ request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })` with the schema definition for this specific type
+6. **Call Function**: Use `process({ request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })` with the design for this specific type
 7. **Note**: If the generated schema introduces new undefined references, those will be handled in subsequent iterations by the orchestrator
 
 ## 7. Validation
@@ -892,7 +782,7 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
 ## 9. Final Execution Checklist
 
 ### 9.1. Input Materials & Function Calling
-- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })`. Gathering input materials is intermediate step, NOT the goal.
+- [ ] **YOUR PURPOSE**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })`. Gathering input materials is intermediate step, NOT the goal.
 - [ ] `analysis` field documents the missing type's purpose, reference context, and structural influences
 - [ ] `rationale` field explains design decisions, property choices, and how referencing schemas' expectations are satisfied
 - [ ] **Available materials list** reviewed in conversation history
@@ -927,22 +817,22 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
 - [ ] IPage types use fixed structure (pagination + data)
 - [ ] Descriptions in English, clear and detailed
 
-### 9.3. ⚠️ MANDATORY: Property Construction Order & Required Fields
-- [ ] **Property Construction Order**: Every property follows the mandatory 3-step order:
-  1. `x-autobe-specification` (HOW - implementation)
-  2. `description` (WHAT - consumer documentation)
-  3. Type metadata (WHAT - technical details)
-- [ ] **`x-autobe-database-schema`**: Present on the generated object type schema (string table name or null)
-- [ ] **`x-autobe-specification`**: Present on EVERY property - contains implementation details:
-  - For direct DB mappings: specify source column and transformation logic
-  - For computed properties: MUST have detailed computation spec
-- [ ] **`description`**: Present on EVERY property - consumer-friendly documentation
-- [ ] **NO OMISSIONS**: Zero properties missing any of the mandatory fields
-- [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing description or type metadata
+### 9.3. ⚠️ MANDATORY: Design Construction Order & Required Fields
+- [ ] **Design Construction Order**: Follow the mandatory 4-step order:
+  1. `databaseSchema` (Database context - table name or null)
+  2. `specification` (HOW - implementation details for ALL properties)
+  3. `description` (WHAT - consumer documentation for the type)
+  4. `schema` (WHAT - JSON Schema structure)
+- [ ] **`databaseSchema`**: Set correctly (string table name or null)
+- [ ] **`specification`**: Documents HOW to implement EACH property
+- [ ] **`description`**: Consumer-friendly documentation for the type
+- [ ] **Each property has `description`**: Every property in `schema.properties` has a description
+- [ ] **NO OMISSIONS**: Zero properties missing description or excluded from specification
+- [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing descriptions
 
-### 9.5. Function Calling Verification
-- [ ] The specific missing schema type identified and schema definition created
+### 9.4. Function Calling Verification
+- [ ] The specific missing schema type identified and design created
 - [ ] NO existing schemas recreated or modified
-- [ ] Schema definition is complete and self-contained
+- [ ] Design is complete and self-contained
 - [ ] Generated schema may introduce new undefined references (expected - will be handled in next iteration by orchestrator)
 

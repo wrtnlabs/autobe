@@ -37,19 +37,9 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     everyModels: AutoBeDatabase.IModel[];
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   }): void => {
-    const model: AutoBeDatabase.IModel | null =
-      props.everyModels.find(
-        (m) =>
-          m.name ===
-          (props.schema["x-autobe-database-schema"] ??
-            AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(
-              props.typeName,
-            )),
-      ) ?? null;
     AutoBeInterfaceSchemaProgrammer.fixApplication({
       application: props.application,
       everyModels: props.everyModels,
-      model,
     });
 
     const $defs = props.application.functions[0].parameters.$defs;

@@ -710,9 +710,10 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
   type: "create",
   reason: "Database field 'stock' exists but was missing from IProduct",
   key: "stock",
+  databaseSchemaProperty: "stock",
+  specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+  description: "Current inventory quantity. Automatically decremented when orders are placed.",
   schema: {
-    "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
-    description: "Current inventory quantity. Automatically decremented when orders are placed.",
     type: "integer"
   },
   required: true  // For Read DTOs, always true (all fields present in response)
@@ -723,7 +724,7 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties' Fields**
 
-The `x-autobe-specification` and `description` fields in EXISTING properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
+The `x-autobe-specification` and `description` fields in existing properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
 
 - **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
   - Shows the data mapping patterns used in this schema
@@ -739,26 +740,11 @@ The `x-autobe-specification` and `description` fields in EXISTING properties con
 1. **Study existing properties' `x-autobe-specification`** - Understand the mapping patterns
 2. **Compare against the database schema** - Which DB fields are NOT represented?
 3. **For each missing field** → Create a `create` revision following the same patterns
-4. **Write `x-autobe-specification`** for new fields using the same style as existing ones
+4. **Write `specification`** for new fields using the same style as existing ones
 
-**Example Analysis**:
-```json
-// Existing property in IUser:
-{
-  "email": {
-    "x-autobe-specification": "Direct mapping from users.email column.",
-    "description": "User's email address for login.",
-    "type": "string"
-  }
-}
-// DB has: email, name, phone, created_at
-// Schema has: email, name
-// Missing: phone, created_at → Create revisions for these
-```
+**⚠️ MANDATORY: `specification` is Required for ALL Properties**
 
-**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
-
-This field is NOT optional. You MUST provide `x-autobe-specification` for every property you create:
+This field is NOT optional. You MUST provide `specification` for every property you create:
 - For direct DB mappings: Include column details, type mapping, and any transformation logic
 - For computed/derived properties: MUST contain detailed computation specification:
   - Data sources: ALL columns and/or tables involved
@@ -770,13 +756,14 @@ The specification must be precise enough for downstream agents to implement the 
 
 **⚠️ MANDATORY: Property Construction Order for AI Function Calling**
 
-When constructing or revising properties, you MUST follow this strict field ordering:
+When constructing `create` revisions, you MUST follow this strict field ordering:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 2: description                      →  WHAT for API consumers?       │
-│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
+│  STEP 1: databaseSchemaProperty           →  WHICH database property?      │
+│  STEP 2: specification                    →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: schema                           →  WHAT technically?             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -784,23 +771,29 @@ When constructing or revising properties, you MUST follow this strict field orde
 
 This ordering enforces **grounded reasoning**:
 
-1. **STEP 1 - HOW**: First specify implementation details and data source
-2. **STEP 2 - WHAT (consumer)**: Now that you know HOW, write API documentation
-3. **STEP 3 - WHAT (technical)**: Finally, record type information consistent with the source
+1. **STEP 1 - WHICH**: First identify the database property being mapped (or null for computed)
+2. **STEP 2 - HOW**: Specify implementation details and data source
+3. **STEP 3 - WHAT (consumer)**: Now that you know HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record schema consistent with the source
 
 **ABSOLUTE PROHIBITIONS**:
-- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
+- NEVER omit `specification` (every property MUST have implementation details)
 - NEVER write fields out of order (the cognitive flow ensures consistency)
 
-**Example - Correct Property Structure**:
-```json
+**Example - Correct Create Revision Structure**:
+```typescript
 {
-  "stock": {
-    "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
-    "description": "Current inventory quantity. Automatically decremented when orders are placed.",
-    "type": "integer",
-    "minimum": 0
-  }
+  type: "create",
+  reason: "Database field 'stock' exists but missing from IProduct",
+  key: "stock",
+  databaseSchemaProperty: "stock",
+  specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+  description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  schema: {
+    type: "integer",
+    minimum: 0
+  },
+  required: true
 }
 ```
 
@@ -817,14 +810,18 @@ This order is a prompt engineering technique that ensures reasoning consistency.
 **Important**: DB nullable → DTO non-null is **FORBIDDEN** (causes runtime errors). The reverse is allowed.
 
 **When DB non-null → DTO nullable/optional**: You MUST explain why in the `description`:
-```json
+```typescript
 {
-  "schema": {
-    "x-autobe-specification": "Direct mapping from users.role column. Uses @default value 'user' when not provided.",
-    "type": "string",
-    "description": "User role. Optional - if not provided, defaults to 'user'."
+  type: "create",
+  reason: "Adding role field from database",
+  key: "role",
+  databaseSchemaProperty: "role",
+  specification: "Direct mapping from users.role column. Uses @default value 'user' when not provided.",
+  description: "User role. Optional - if not provided, defaults to 'user'.",
+  schema: {
+    type: "string"
   },
-  "required": false  // DB is non-null but has @default
+  required: false  // DB is non-null but has @default
 }
 ```
 
@@ -904,7 +901,10 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;  // Why this field is being added
   key: string;     // Property name to add
-  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-specification
+  databaseSchemaProperty: string | null;  // Database property name or null for computed
+  specification: string;  // Implementation spec for Realize Agent
+  description: string;  // API documentation for consumers
+  schema: AutoBeOpenApi.IJsonSchema;  // Schema definition (no inline objects)
   required: boolean;  // Add to required array?
 }
 
@@ -941,9 +941,10 @@ process({
         type: "create",
         reason: "Database field 'stock' exists but missing from IProduct",
         key: "stock",
+        databaseSchemaProperty: "stock",
+        specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+        description: "Current inventory quantity. Automatically decremented when orders are placed.",
         schema: {
-          "x-autobe-specification": "Direct mapping from products.stock column. Integer value representing available inventory.",
-          description: "Current inventory quantity. Automatically decremented when orders are placed.",
           type: "integer"
         },
         required: true
@@ -952,9 +953,10 @@ process({
         type: "create",
         reason: "Database field 'featured' exists but missing from IProduct",
         key: "featured",
+        databaseSchemaProperty: "featured",
+        specification: "Direct mapping from products.featured column. Boolean flag for homepage display.",
+        description: "Whether this product is featured on the homepage.",
         schema: {
-          "x-autobe-specification": "Direct mapping from products.featured column. Boolean flag for homepage display.",
-          description: "Whether this product is featured on the homepage.",
           type: "boolean"
         },
         required: true
@@ -963,9 +965,10 @@ process({
         type: "create",
         reason: "Database field 'discount' (optional) exists but missing from IProduct",
         key: "discount",
+        databaseSchemaProperty: "discount",
+        specification: "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
+        description: "Discount percentage applied to the product price.",
         schema: {
-          "x-autobe-specification": "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
-          description: "Discount percentage applied to the product price.",
           type: "number"
         },
         required: false
@@ -974,9 +977,10 @@ process({
         type: "create",
         reason: "Database field 'createdAt' exists but missing from IProduct",
         key: "createdAt",
+        databaseSchemaProperty: "created_at",
+        specification: "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
+        description: "Timestamp when the product was created.",
         schema: {
-          "x-autobe-specification": "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
-          description: "Timestamp when the product was created.",
           type: "string",
           format: "date-time"
         },
@@ -1099,14 +1103,15 @@ Before submitting your content review:
   * ALL data used in your output was actually loaded and verified via function calling
 
 ### 10.4. ⚠️ MANDATORY: Property Construction Order & Required Fields
-- [ ] **Property Construction Order**: Every created/modified property follows the mandatory 3-step order:
-  1. `x-autobe-specification` (HOW - implementation)
-  2. `description` (WHAT - consumer documentation)
-  3. Type metadata (WHAT - technical details)
-- [ ] **`x-autobe-specification`**: Present on EVERY property in `create` revisions - contains implementation details:
+- [ ] **Property Construction Order**: Every `create` revision follows the mandatory 4-step order:
+  1. `databaseSchemaProperty` (WHICH - database property or null)
+  2. `specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. `schema` (WHAT - technical details)
+- [ ] **`specification`**: Present on EVERY `create` revision - contains implementation details:
   - For direct DB mappings: column details and transformation logic
   - For computed properties: MUST have detailed computation spec
-- [ ] **NO OMISSIONS**: Zero properties in revisions missing any of the mandatory fields
+- [ ] **NO OMISSIONS**: Zero revisions missing any of the mandatory fields
 
 ### 10.5. Ready for Completion
 - [ ] `thinking` field filled with self-reflection before action

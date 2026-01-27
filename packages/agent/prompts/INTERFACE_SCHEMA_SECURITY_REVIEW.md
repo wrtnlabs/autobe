@@ -941,7 +941,10 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;   // Why this field is being added
   key: string;      // Property name to add
-  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-specification
+  databaseSchemaProperty: string | null;  // Database property name or null for virtual fields
+  specification: string;  // Implementation spec for Realize Agent
+  description: string;  // API documentation for consumers
+  schema: AutoBeOpenApi.IJsonSchema;  // Schema definition (no inline objects)
   required: boolean; // Whether the field is required
 }
 
@@ -960,9 +963,9 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 
 **Two-Field Documentation Pattern: Your Primary Security Review Reference**
 
-**⚠️ CRITICAL: Carefully Examine These Fields for Security Violations**
+**⚠️ CRITICAL: Carefully Examine Existing Properties for Security Violations**
 
-The `x-autobe-specification` and `description` fields contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
+The `x-autobe-specification` and `description` fields in existing properties contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
 
 - **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW to implement/compute)
   - Reveals the data source (which DB column, how it's processed)
@@ -983,38 +986,24 @@ The `x-autobe-specification` and `description` fields contain ALL conceptual inf
    - Missing `password` in IJoin/ILogin for "member" actors → CREATE
    - Exposed internal session tokens → ERASE
 
-**Example Analysis**:
-```json
-// ❌ SECURITY VIOLATION - Exposing hashed password in login DTO
-{
-  "password_hashed": {
-    "x-autobe-specification": "Direct mapping from users.password_hashed column.",
-    "description": "User's hashed password for authentication.",
-    "type": "string"
-  }
-}
-```
-→ The specification reveals it maps to `password_hashed` column
-→ This is a CRITICAL violation: clients should send plaintext `password`, not pre-hashed
-→ Action: ERASE `password_hashed`, CREATE `password` with proper specification
+**⚠️ MANDATORY: `specification` is Required for ALL Created Properties**
 
-**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Properties**
-
-This field is NOT optional. When creating properties, you MUST provide `x-autobe-specification`:
+When creating `create` revisions, you MUST provide the `specification` field:
 - For direct DB mappings: Include column details and any transformation logic
-- For computed/derived properties: MUST contain detailed computation specification with data sources, formulas, join conditions, and edge cases
+- For virtual/computed properties: Include detailed implementation specification
 
 The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
 
 **⚠️ MANDATORY: Property Construction Order for AI Function Calling**
 
-When constructing or revising properties, you MUST follow this strict field ordering:
+When creating `create` revisions, you MUST follow this strict field ordering:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 2: description                      →  WHAT for API consumers?       │
-│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
+│  STEP 1: databaseSchemaProperty           →  WHICH database property?      │
+│  STEP 2: specification                    →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: schema                           →  WHAT technically?             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1022,22 +1011,28 @@ When constructing or revising properties, you MUST follow this strict field orde
 
 This ordering enforces **grounded reasoning**:
 
-1. **STEP 1 - HOW**: First specify implementation details and data source
-2. **STEP 2 - WHAT (consumer)**: Now that you know HOW, write API documentation
-3. **STEP 3 - WHAT (technical)**: Finally, record type information consistent with the source
+1. **STEP 1 - WHICH**: First identify the database property being mapped (or null for virtual)
+2. **STEP 2 - HOW**: Specify implementation details and data source
+3. **STEP 3 - WHAT (consumer)**: Now that you know HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record schema consistent with the source
 
 **ABSOLUTE PROHIBITIONS**:
-- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
+- NEVER omit `specification` (every property MUST have implementation details)
 - NEVER write fields out of order (the cognitive flow ensures consistency)
 
-**Example - Correct Property Structure**:
-```json
+**Example - Correct Create Revision Structure**:
+```typescript
 {
-  "password": {
-    "x-autobe-specification": "Plaintext password for authentication. Server compares hashed value against users.password_hashed column.",
-    "description": "User's password for authentication. Will be securely hashed before storage.",
-    "type": "string"
-  }
+  type: "create",
+  reason: "CRITICAL: Login DTO requires password field for authentication",
+  key: "password",
+  databaseSchemaProperty: null,  // Virtual field - not stored directly
+  specification: "Plaintext password for authentication. Server compares hashed value against users.password_hashed column.",
+  description: "User's password for authentication. Will be securely hashed before storage.",
+  schema: {
+    type: "string"
+  },
+  required: true
 }
 ```
 
@@ -1049,7 +1044,7 @@ This order is a prompt engineering technique that ensures reasoning consistency.
 
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
-// Note: ILogin is a request DTO with x-autobe-database-schema: null
+// Note: ILogin is a request DTO with databaseSchema: null
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {
@@ -1070,9 +1065,10 @@ process({
         type: "create",
         reason: "CRITICAL: Login DTO requires password field for authentication",
         key: "password",
+        databaseSchemaProperty: "password_hashed",
+        specification: "Plaintext password for authentication. Server compares hashed value against customers.password_hashed column.",
+        description: "User's plaintext password for authentication. Will be verified against hashed password in database.",
         schema: {
-          "x-autobe-specification": "Plaintext password for authentication. Server compares hashed value against customers.password_hashed column.",
-          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing.",
           type: "string"
         },
         required: true
@@ -1142,7 +1138,7 @@ process({
 ```typescript
 // Reviewing: ISeller.IJoin - missing password field
 // Actor: { name: "seller", kind: "member" }
-// Note: IJoin is a request DTO with x-autobe-database-schema: null
+// Note: IJoin is a request DTO with databaseSchema: null
 process({
   thinking: "Seller has kind: 'member', so IJoin requires password. Adding password field.",
   request: {
@@ -1158,9 +1154,10 @@ process({
         type: "create",
         reason: "CRITICAL: Member registration DTO requires password field",
         key: "password",
+        databaseSchemaProperty: "password_hashed",
+        specification: "Plaintext password for new account. Server will hash and store in sellers.password_hashed column.",
+        description: "Password for the new seller account. Will be hashed before storage.",
         schema: {
-          "x-autobe-specification": "Plaintext password for new account. Server will hash and store in sellers.password_hashed column.",
-          description: "Password for the new seller account. Will be hashed before storing in sellers.password column.",
           type: "string"
         },
         required: true
@@ -1215,7 +1212,7 @@ process({
 
 ```typescript
 // Reviewing: ICustomer.IJoin - missing session context fields
-// Note: IJoin is a request DTO with x-autobe-database-schema: null
+// Note: IJoin is a request DTO with databaseSchema: null
 process({
   thinking: "IJoin missing required session context fields. Adding href and referrer.",
   request: {
@@ -1231,9 +1228,10 @@ process({
         type: "create",
         reason: "Required session context field for session creation",
         key: "href",
+        databaseSchemaProperty: "href",
+        specification: "Connection URL provided by client. Server stores in sessions.href column for analytics.",
+        description: "Connection URL (current page URL). For analytics and security tracking.",
         schema: {
-          "x-autobe-specification": "Connection URL provided by client. Server stores in sessions.href column for analytics.",
-          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking.",
           type: "string"
         },
         required: true
@@ -1242,9 +1240,10 @@ process({
         type: "create",
         reason: "Required session context field for session creation",
         key: "referrer",
+        databaseSchemaProperty: null,
+        specification: "Referrer URL provided by client. Server stores in sessions.referrer column for analytics.",
+        description: "Referrer URL (previous page URL). For analytics and security tracking.",
         schema: {
-          "x-autobe-specification": "Referrer URL provided by client. Server stores in sessions.referrer column for analytics.",
-          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking.",
           type: "string"
         },
         required: true
@@ -1318,14 +1317,15 @@ Before submitting your security review:
 - [ ] All security violations documented in `review` field
 
 ### ⚠️ MANDATORY: Property Construction Order & Required Fields
-- [ ] **Property Construction Order**: Every created property follows the mandatory 3-step order:
-  1. `x-autobe-specification` (HOW - implementation)
-  2. `description` (WHAT - consumer documentation)
-  3. Type metadata (WHAT - technical details)
-- [ ] **`x-autobe-specification`**: Present on EVERY property in `create` revisions - contains implementation details:
+- [ ] **Property Construction Order**: Every `create` revision follows the mandatory 4-step order:
+  1. `databaseSchemaProperty` (WHICH - database property or null)
+  2. `specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. `schema` (WHAT - technical details)
+- [ ] **`specification`**: Present on EVERY `create` revision - contains implementation details:
   - For request DTOs (IJoin/ILogin): explain how server processes the property
   - For response DTOs (IAuthorized): explain data source and computation
-- [ ] **NO OMISSIONS**: Zero properties in revisions missing any of the mandatory fields
+- [ ] **NO OMISSIONS**: Zero revisions missing any of the mandatory fields
 
 ### Function Calling Compliance
 - [ ] Did not re-request already-loaded materials

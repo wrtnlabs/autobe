@@ -65,13 +65,11 @@ export namespace AutoBeInterfaceSchemaProgrammer {
   export const fixApplication = (props: {
     application: ILlmApplication;
     everyModels: AutoBeDatabase.IModel[];
-    model: AutoBeDatabase.IModel | null;
   }): void => {
     const func: ILlmFunction = props.application.functions[0];
     fixDatabaseSchema({
       $defs: func.parameters.$defs,
       parameters: func.parameters,
-      model: props.model,
       everyModels: props.everyModels,
     });
   };
@@ -79,7 +77,6 @@ export namespace AutoBeInterfaceSchemaProgrammer {
   const fixDatabaseSchema = (props: {
     $defs: Record<string, ILlmSchema>;
     parameters: ILlmSchema.IParameters;
-    model: AutoBeDatabase.IModel | null;
     everyModels: AutoBeDatabase.IModel[];
   }): void => {
     LlmTypeChecker.visit({
@@ -88,8 +85,7 @@ export namespace AutoBeInterfaceSchemaProgrammer {
       closure: (next) => {
         if (LlmTypeChecker.isObject(next) === false) return;
 
-        const member: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema"];
+        const member: ILlmSchema | undefined = next.properties.databaseSchema;
         if (member === undefined || LlmTypeChecker.isAnyOf(member) === false)
           return;
 
@@ -97,11 +93,6 @@ export namespace AutoBeInterfaceSchemaProgrammer {
           LlmTypeChecker.isString(x),
         );
         if (value === undefined) return;
-
-        value.enum =
-          props.model !== null
-            ? [props.model.name]
-            : props.everyModels.map((m) => m.name);
       },
     });
   };

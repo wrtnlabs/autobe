@@ -244,14 +244,17 @@ Correct type: [description of what it should be, if REFINE]
 ```typescript
 // Input: type = number, JSDoc mentions "key is category, value is count"
 
-// Output schema:
+// Output casting:
 {
-  "type": "object",
-  "description": "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation with no direct database mapping. Computed by: SELECT category, COUNT(*) FROM reports GROUP BY category.",
-  "x-autobe-database-schema": null,
-  "additionalProperties": {
-    "type": "number",
-    "description": "Count of reports in this category."
+  databaseSchema: null,
+  specification: "Computed aggregation type. Computed by: SELECT category, COUNT(*) FROM reports GROUP BY category. Each key is a category name, value is the count.",
+  description: "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+  schema: {
+    type: "object",
+    additionalProperties: {
+      type: "number",
+      description: "Count of reports in this category."
+    }
   }
 }
 ```
@@ -263,27 +266,26 @@ Correct type: [description of what it should be, if REFINE]
 ```typescript
 // Input: type = string, JSDoc mentions "preferences containing theme, language"
 
-// Output schema:
+// Output casting:
 {
-  "type": "object",
-  "description": "User preferences containing display and localization settings.",
-  "x-autobe-specification": "Internal structure of the users.preferences JSON column. Represents JSON column structure, not a database table. Parsed from users.preferences column as JSON object.",
-  "x-autobe-database-schema": null,
-  "properties": {
-    "theme": {
-      "x-autobe-specification": "Stored as 'theme' key in the JSON structure.",
-      "description": "UI theme preference.",
-      "type": "string"
-    },
-    "language": {
-      "x-autobe-specification": "Stored as 'language' key in the JSON structure.",
-      "description": "Preferred language code.",
-      "type": "string"
-    },
-    "timezone": {
-      "x-autobe-specification": "Stored as 'timezone' key in the JSON structure.",
-      "description": "User's timezone identifier.",
-      "type": "string"
+  databaseSchema: null,
+  specification: "Internal structure of the users.preferences JSON column. Represents JSON column structure, not a database table. Parsed from users.preferences column as JSON object. Properties: theme (stored as 'theme' key), language (stored as 'language' key), timezone (stored as 'timezone' key).",
+  description: "User preferences containing display and localization settings.",
+  schema: {
+    type: "object",
+    properties: {
+      theme: {
+        description: "UI theme preference.",
+        type: "string"
+      },
+      language: {
+        description: "Preferred language code.",
+        type: "string"
+      },
+      timezone: {
+        description: "User's timezone identifier.",
+        type: "string"
+      }
     }
   }
 }
@@ -296,82 +298,31 @@ Correct type: [description of what it should be, if REFINE]
 ```typescript
 // Input: type = string, JSDoc mentions "metadata" or "additional data"
 
-// Output schema:
+// Output casting:
 {
-  "type": "object",
-  "description": "Additional metadata stored as key-value pairs. This is the internal structure of the orders.metadata JSON column. WHY: Represents JSON column structure, not a database table. HOW: Parsed from orders.metadata column as JSON object with dynamic keys.",
-  "x-autobe-database-schema": null,
-  "additionalProperties": true
-}
-```
-
-**CRITICAL: `x-autobe-database-schema` Requirement**
-
-All refined object schemas MUST include `x-autobe-database-schema`:
-- Set to **table name** when the object maps to a database table
-- Set to **`null`** when no direct database mapping exists
-
-**When `x-autobe-database-schema` is `null`**, the object type has two documentation fields:
-
-**Two-Field Documentation Pattern**:
-- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
-
-1. **`description`**: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-2. **`x-autobe-specification`**: Implementation specification for Realize Agent (HOW) - source tables, formulas, join conditions
-
-**⚠️ MANDATORY: `x-autobe-specification` is Required for ALL Object Types and Properties**
-
-This field is NOT optional. You MUST provide `x-autobe-specification` for:
-- Every object type schema (explains how to retrieve/construct the object)
-- Every property within an object (explains how to get/compute the property value)
-
-For computed properties, the specification MUST contain:
-- Data sources: ALL columns and/or tables involved
-- Computation formula: Exact algorithm or SQL-like expression
-- Join conditions: How related tables connect
-- Edge cases: Behavior for nulls, empty sets, defaults
-
-The specification must be **precise enough for downstream agents to implement** the data retrieval or computation. Vague or missing specifications will cause validation failures.
-
-**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
-
-When constructing or refining properties for object types, you MUST follow this strict field ordering:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 2: description                      →  WHAT for API consumers?       │
-│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
-**Why This Order is Mandatory**:
-
-This ordering enforces **grounded reasoning** - you must first establish implementation details before proceeding to documentation:
-
-1. **STEP 1 - HOW**: First specify how this property will be implemented
-2. **STEP 2 - WHAT (consumer)**: Now that you know HOW, write API documentation
-3. **STEP 3 - WHAT (technical)**: Finally, record type information consistent with the implementation
-
-**ABSOLUTE PROHIBITIONS**:
-- NEVER omit `x-autobe-specification` (every property MUST have implementation details)
-- NEVER omit `description` (every property MUST have consumer documentation)
-- NEVER write fields out of order (the cognitive flow ensures consistency)
-
-**Example - Correct Refined Property Structure**:
-```json
-{
-  "theme": {
-    "x-autobe-specification": "Stored as 'theme' key in the preferences JSON structure.",
-    "description": "User's preferred UI theme setting.",
-    "type": "string",
-    "enum": ["light", "dark", "system"]
+  databaseSchema: null,
+  specification: "Internal structure of the orders.metadata JSON column. Parsed from orders.metadata column as JSON object with dynamic keys.",
+  description: "Additional metadata stored as key-value pairs.",
+  schema: {
+    type: "object",
+    additionalProperties: true
   }
 }
 ```
 
-This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+**CRITICAL: Casting Design Requirements**
+
+All casting designs use `AutoBeInterfaceSchemaCasting` which has the same structure as `AutoBeInterfaceSchemaDesign`:
+- `databaseSchema`: Table name (string) or `null` for embedded/computed types
+- `specification`: Implementation guide for downstream agents (MUST cover ALL properties)
+- `description`: API documentation for consumers
+- `schema`: The corrected object schema (MUST be `type: "object"`)
+
+**All rules from `INTERFACE_SCHEMA.md` apply without exception.** Key points:
+
+- **Design Construction Order**: Follow the mandatory 4-step order (`databaseSchema` → `specification` → `description` → `schema`)
+- **`specification` REQUIRED**: Must document HOW to implement ALL properties
+- **Property `description` REQUIRED**: Every property must have consumer documentation
 
 ---
 
@@ -497,12 +448,18 @@ export interface IComplete {
   verdict: string;
 
   /**
-   * The refined object schema.
+   * The casting design for the refined object schema.
    *
-   * If DEGENERATE: Provide the correct object schema
+   * If DEGENERATE: Provide the casting design with corrected object schema
    * If INTENTIONAL: Set to null
+   *
+   * The casting design contains:
+   * - databaseSchema: Table name (string) or null
+   * - specification: Implementation guide for ALL properties
+   * - description: API documentation for consumers
+   * - schema: The corrected object schema (type: "object")
    */
-  schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject | null;
+  casting: AutoBeInterfaceSchemaCasting | null;
 }
 ```
 
@@ -518,13 +475,16 @@ process({
     observation: "Current type is `number`. JSDoc says 'Distribution of report categories. Key represents the category name, value represents the count of reports.' Name contains 'Distribution'. Database field is marked as Json.",
     reasoning: "The JSDoc explicitly describes a key-value relationship ('Key represents X, value represents Y'), which is the canonical description of a Record<string, number> type. The type name 'Distribution' further reinforces this - distributions are mappings from categories to values. A primitive `number` cannot possibly represent multiple category-count pairs. This is unambiguously a degenerate type.",
     verdict: "REFINE: This is a degenerate type. The documentation explicitly describes a Record<string, number> structure (key-value mapping) but the type is just `number`. Will refine to an object with additionalProperties.",
-    schema: {
-      type: "object",
-      description: "Distribution of report categories. Key represents the category name, value represents the count of reports. This is a computed aggregation type with no direct database mapping. Computed by grouping reports by category and counting occurrences: SELECT category, COUNT(*) FROM reports GROUP BY category.",
-      "x-autobe-database-schema": null,
-      additionalProperties: {
-        type: "number",
-        description: "Count of reports in this category."
+    casting: {
+      databaseSchema: null,
+      specification: "Computed aggregation type with no direct database mapping. Computed by grouping reports by category and counting occurrences: SELECT category, COUNT(*) FROM reports GROUP BY category. Each key is a category name, each value is the count.",
+      description: "Distribution of report categories. Key represents the category name, value represents the count of reports.",
+      schema: {
+        type: "object",
+        additionalProperties: {
+          type: "number",
+          description: "Count of reports in this category."
+        }
       }
     }
   }
@@ -541,26 +501,25 @@ process({
     observation: "Current type is `string`. JSDoc says 'User notification preferences containing email, push, and SMS notification settings.' Name is 'INotificationPreferences'.",
     reasoning: "The JSDoc explicitly lists three distinct settings (email, push, SMS), indicating a structured object with multiple properties. The name 'Preferences' follows the common pattern for configuration objects. A `string` type cannot represent these separate boolean/object settings. The documentation is unambiguous about the structure.",
     verdict: "REFINE: This is a degenerate type. Documentation describes a structured object with email, push, and SMS settings but type is `string`. Will refine to object with specific properties.",
-    schema: {
-      type: "object",
+    casting: {
+      databaseSchema: null,
+      specification: "Internal structure of user_preferences.notification_settings JSON column. Represents JSON column structure, not a database table. Parsed from user_preferences.notification_settings column as JSON object. Properties: email (stored as 'email' key), push (stored as 'push' key), sms (stored as 'sms' key).",
       description: "User notification preferences containing email, push, and SMS notification settings.",
-      "x-autobe-specification": "Internal structure of user_preferences.notification_settings JSON column. Represents JSON column structure, not a database table. Parsed from user_preferences.notification_settings column as JSON object.",
-      "x-autobe-database-schema": null,
-      properties: {
-        email: {
-          "x-autobe-specification": "Stored as 'email' key in the JSON structure.",
-          description: "Whether to receive email notifications.",
-          type: "boolean"
-        },
-        push: {
-          "x-autobe-specification": "Stored as 'push' key in the JSON structure.",
-          description: "Whether to receive push notifications.",
-          type: "boolean"
-        },
-        sms: {
-          "x-autobe-specification": "Stored as 'sms' key in the JSON structure.",
-          description: "Whether to receive SMS notifications.",
-          type: "boolean"
+      schema: {
+        type: "object",
+        properties: {
+          email: {
+            description: "Whether to receive email notifications.",
+            type: "boolean"
+          },
+          push: {
+            description: "Whether to receive push notifications.",
+            type: "boolean"
+          },
+          sms: {
+            description: "Whether to receive SMS notifications.",
+            type: "boolean"
+          }
         }
       }
     }
@@ -578,7 +537,7 @@ process({
     observation: "Current type is `string`. JSDoc says 'Unique identifier for the user in UUID format.' Name is 'IUserId'.",
     reasoning: "The JSDoc describes a simple UUID identifier, which is correctly represented as a string. The name 'IUserId' follows the semantic alias pattern (I + Entity + Id) used throughout the codebase for type safety without structural complexity. This is not a degenerate type - it's an intentional semantic wrapper for a string that represents a user identifier. No key-value, list, or structural keywords present.",
     verdict: "KEEP: This is a valid semantic alias. `IUserId = string` is intentional - it provides type safety for user identifiers without implying any complex structure. The documentation matches the primitive type.",
-    schema: null
+    casting: null
   }
 })
 ```
@@ -593,7 +552,7 @@ process({
     observation: "Current type is `number`. JSDoc says 'Total number of items currently in the shopping cart.' Name is 'ICartItemCount'.",
     reasoning: "The JSDoc describes a single numeric value - a count of items. This is exactly what a `number` type represents. The name 'ICartItemCount' explicitly indicates a count (singular numeric value). No key-value patterns, no list indicators, no structured content implied. This is a straightforward numeric value that correctly uses `number`.",
     verdict: "KEEP: This is a valid primitive type. A cart item count is a single number, not a complex structure. The documentation matches the type - both describe a simple numeric value.",
-    schema: null
+    casting: null
   }
 })
 ```

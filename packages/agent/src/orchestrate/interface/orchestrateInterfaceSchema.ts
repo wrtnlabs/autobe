@@ -255,12 +255,6 @@ function createController(
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
     everyModels,
-    model:
-      everyModels.find(
-        (m) =>
-          m.name ===
-          AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName),
-      ) ?? null,
   });
 
   return {

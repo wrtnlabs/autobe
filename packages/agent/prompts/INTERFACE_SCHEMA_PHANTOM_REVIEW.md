@@ -387,30 +387,6 @@ The `x-autobe-specification` and `description` fields contain ALL conceptual inf
 3. **If mismatch found** → The property is a PHANTOM - create `erase` revision
 4. **If specification says "computed/derived"** → Verify the source tables/columns mentioned exist
 
-**Example Analysis**:
-```json
-{
-  "fullName": {
-    "x-autobe-specification": "Concatenation of users.first_name and users.last_name columns.",
-    "description": "User's full display name.",
-    "type": "string"
-  }
-}
-```
-→ Check: Do `first_name` and `last_name` columns exist in `users` table?
-→ If yes: Valid computed field (keep)
-→ If no: Phantom field based on imaginary columns (erase)
-
-**Property Construction Order Reference**:
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  STEP 1: x-autobe-specification           →  HOW to implement/compute?     │
-│  STEP 2: description                      →  WHAT for API consumers?       │
-│  STEP 3: Type metadata (type, format...)  →  WHAT technically?             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
 **For Phantom Review Verification**:
 - Check that each property in a schema with `x-autobe-database-schema` actually exists in the referenced database model
 - Use `x-autobe-specification` to understand the intended data source, then verify it exists

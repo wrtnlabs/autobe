@@ -16,7 +16,7 @@ import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_schema_interface_database_overall = async () => {
+export const test_schema_interface_database = async () => {
   if (
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
@@ -41,7 +41,6 @@ export const test_schema_interface_database_overall = async () => {
     AutoBeInterfaceSchemaProgrammer.fixApplication({
       application,
       everyModels,
-      model: null,
     });
     LlmTypeChecker.visit({
       $defs: func.parameters.$defs,
@@ -69,35 +68,6 @@ export const test_schema_interface_database_overall = async () => {
           "x-autobe-database-schema",
           (value.enum ?? []).slice().sort(),
           everyModels.map((m) => m.name).sort(),
-        );
-      },
-    });
-    LlmTypeChecker.visit({
-      $defs: func.parameters.$defs,
-      schema: func.parameters,
-      closure: (next) => {
-        if (LlmTypeChecker.isObject(next) === false) return;
-
-        const property: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema-property"];
-        if (property === undefined) return;
-        else if (LlmTypeChecker.isAnyOf(property) === false)
-          throw new Error(
-            `Property "x-autobe-database-schema-property" must be an anyOf schema.`,
-          );
-
-        const value: ILlmSchema | undefined = property.anyOf.find((sch) =>
-          LlmTypeChecker.isString(sch),
-        );
-        if (value === undefined)
-          throw new Error(
-            `Property "x-autobe-database-schema-property" must contain a string schema in its anyOf.`,
-          );
-
-        TestValidator.equals(
-          "x-autobe-database-schema-property",
-          value.enum ?? [],
-          [],
         );
       },
     });
