@@ -1,6 +1,5 @@
 import { AutoBeDatabaseGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -22,7 +21,6 @@ export const transformPrismaComponentsHistory = (
   if (state.analyze === null)
     // unreachable
     throw new Error("Analyze state is not set.");
-  if (props.prefix) props.prefix = NamingConvention.snake(props.prefix);
   return {
     histories: [
       {

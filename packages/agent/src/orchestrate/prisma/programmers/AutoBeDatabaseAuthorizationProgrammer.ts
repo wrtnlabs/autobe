@@ -4,7 +4,6 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /**
@@ -20,7 +19,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
   }): string => {
     const actorLower: string = props.actor.name.toLowerCase();
     const prefix: string = props.prefix
-      ? `${NamingConvention.snake(props.prefix)}_`
+      ? `${props.prefix}_`
       : "";
     return `${prefix}${actorLower}s`;
   };
@@ -35,7 +34,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
   }): void => {
     const actorLower: string = props.actor.name.toLowerCase();
     const prefix: string = props.prefix
-      ? `${NamingConvention.snake(props.prefix)}_`
+      ? `${props.prefix}_`
       : "";
     const expectedTable: string = `${prefix}${actorLower}s`;
     const tableNames: string[] = props.tables.map((t) => t.name.toLowerCase());
