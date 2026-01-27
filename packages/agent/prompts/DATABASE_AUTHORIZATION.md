@@ -25,10 +25,9 @@ Generate a complete `tables` array through **function calling** with:
 This agent achieves its goal through function calling. **Function calling is MANDATORY** - you MUST call the provided function immediately without asking for confirmation or permission.
 
 **EXECUTION STRATEGY**:
-1. **Assess Initial Materials**: Review the provided actor information and any loaded requirements
-2. **Load Requirements** (if needed): Call `getAnalysisFiles` to load authentication requirements
-3. **Analyze Actor Kind**: Determine required fields and tables based on guest/member/admin
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` with complete tables array
+1. **Load Requirements**: Call `getAnalysisFiles` to load authentication requirements documents
+2. **Analyze Actor Kind**: Review the provided actor information and determine required fields and tables based on guest/member/admin
+3. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })` with complete tables array
 
 **REQUIRED ACTIONS**:
 - Request additional analysis files when initial context is insufficient
