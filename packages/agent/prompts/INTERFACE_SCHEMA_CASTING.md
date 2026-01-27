@@ -394,7 +394,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 ```typescript
 {
   thinking: "Analyzed type, documentation contradicts primitive. Ready to refine.",
-  request: { type: "complete", observation: "...", reasoning: "...", verdict: "...", schema: {...} }
+  request: { type: "complete", observation: "...", reasoning: "...", verdict: "...", casting: {...} }
 }
 ```
 

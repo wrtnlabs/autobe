@@ -60,7 +60,7 @@ This is a required self-reflection step that helps you avoid duplicate requests 
 ```typescript
 {
   thinking: "Generated the OpenAPI schema with proper field mappings.",
-  request: { type: "complete", schema: {...} }
+  request: { type: "complete", analysis: "...", rationale: "...", design: {...} }
 }
 ```
 
@@ -433,12 +433,12 @@ process({ thinking: "Missing operation context for DTO usage patterns. Don't hav
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests are still pending
 process({ thinking: "Missing schema data. Need it.", request: { type: "getDatabaseSchemas", schemaNames: ["sales"] } })
-process({ thinking: "Schema designed", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })  // Executes with OLD materials!
+process({ thinking: "Schema designed", request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Complete preliminary gathering first, then execute complete
 process({ thinking: "Missing entity fields for comprehensive DTO design. Don't have them.", request: { type: "getDatabaseSchemas", schemaNames: ["sales", "orders"] } })
 // Then after materials loaded:
-process({ thinking: "Generated schema, mapped all relationships", request: { type: "complete", analysis: "...", rationale: "...", schema: {...} } })
+process({ thinking: "Generated schema, mapped all relationships", request: { type: "complete", analysis: "...", rationale: "...", design: {...} } })
 ```
 
 **Critical Warning: Runtime Validator Prevents Re-Requests**
