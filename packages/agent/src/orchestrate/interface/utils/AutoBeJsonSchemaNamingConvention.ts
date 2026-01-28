@@ -2,7 +2,7 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, MapUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 
-import { AutoBeJsonSchemaCollection } from "./AutoBeEJsonSchemaCollection";
+import { AutoBeJsonSchemaCollection } from "./AutoBeJsonSchemaCollection";
 
 export namespace AutoBeJsonSchemaNamingConvention {
   export const normalize = (props: {
@@ -20,7 +20,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
           if (op.responseBody !== null) op.responseBody.typeName = v;
         });
     }
-    for (const [key, value] of Object.entries(props.collection.all)) {
+    for (const [key, value] of Object.entries(props.collection.schemas)) {
       convention.emplace(key, (newKey) => {
         if (key === newKey) return;
         props.collection.set(newKey, value);
@@ -28,7 +28,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
       });
       AutoBeOpenApiTypeChecker.visit({
         components: {
-          schemas: props.collection.all,
+          schemas: props.collection.schemas,
           authorizations: [],
         },
         schema: value,

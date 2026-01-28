@@ -2,8 +2,6 @@ import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { orchestrateInterfaceSchemaComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaComplement";
 import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
-import { AutoBeJsonSchemaFactory } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaFactory";
-import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
@@ -66,24 +64,6 @@ export const validate_interface_complement = async (props: {
     total: 0,
   };
 
-  const assign = (
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-  ): void => {
-    Object.assign(document.components.schemas, schemas);
-    AutoBeJsonSchemaFactory.authorize(document.components.schemas);
-    Object.assign(
-      document.components.schemas,
-      AutoBeJsonSchemaFactory.presets(
-        new Set(Object.keys(document.components.schemas)),
-      ),
-    );
-    AutoBeJsonSchemaNamingConvention.normalize(document);
-    AutoBeJsonSchemaFactory.finalize({
-      document,
-      application: props.agent.getContext().state().database!.result.data,
-    });
-  };
-
   // Complement schemas
   while (missedOpenApiSchemas(document).length !== 0) {
     const oldSchemaKeys: Set<string> = new Set(
@@ -105,7 +85,7 @@ export const validate_interface_complement = async (props: {
       );
 
     // Update document with complemented schemas
-    assign(complemented);
+    Object.assign(document.components.schemas, complemented);
 
     // Review newly complemented schemas
     const reviewProgress: AutoBeProgressEventBase = {
@@ -124,7 +104,7 @@ export const validate_interface_complement = async (props: {
           progress: reviewProgress,
         },
       );
-      assign(reviewed);
+      Object.assign(document.components.schemas, reviewed);
     }
   }
 

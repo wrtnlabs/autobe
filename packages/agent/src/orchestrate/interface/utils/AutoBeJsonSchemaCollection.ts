@@ -2,8 +2,11 @@ import { AutoBeOpenApi } from "@autobe/interface";
 
 export class AutoBeJsonSchemaCollection {
   public constructor(
-    public readonly all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
-    public readonly local: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+    private readonly all: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+    private readonly local: Record<
+      string,
+      AutoBeOpenApi.IJsonSchemaDescriptive
+    >,
   ) {}
 
   public assign(
@@ -32,5 +35,9 @@ export class AutoBeJsonSchemaCollection {
 
   public has(key: string): boolean {
     return this.all[key] !== undefined;
+  }
+
+  public get schemas() {
+    return this.all;
   }
 }

@@ -1,5 +1,6 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestrateInterfaceSchemaRename } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRename";
+import { AutoBeJsonSchemaCollection } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaCollection";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 
@@ -36,7 +37,8 @@ export const validate_interface_rename = async (props: {
 
   // Rename schemas (modifies document in-place)
   await orchestrateInterfaceSchemaRename(props.agent.getContext(), {
-    document,
+    operations,
+    collection: new AutoBeJsonSchemaCollection(schemas, {}),
     progress: {
       completed: 0,
       total: 0,

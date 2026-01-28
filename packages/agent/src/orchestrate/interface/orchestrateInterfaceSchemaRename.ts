@@ -17,7 +17,7 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
-import { AutoBeJsonSchemaCollection } from "./utils/AutoBeEJsonSchemaCollection";
+import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 
 export async function orchestrateInterfaceSchemaRename(
   ctx: AutoBeContext,
@@ -42,7 +42,7 @@ export async function orchestrateInterfaceSchemaRename(
     entireTypeNames.add(key);
   };
 
-  for (const key of Object.keys(props.collection.all)) insert(key);
+  for (const key of Object.keys(props.collection.schemas)) insert(key);
 
   const matrix: string[][] = divideArray({
     array: Array.from(entireTypeNames),
@@ -109,9 +109,9 @@ export namespace orchestrateInterfaceSchemaRename {
 
     // JSON SCHEMA REFERENCES
     const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
-    for (const value of Object.values(props.collection.all))
+    for (const value of Object.values(props.collection.schemas))
       OpenApiTypeChecker.visit({
-        components: props.collection.all,
+        components: props.collection.schemas,
         schema: value,
         closure: (schema) => {
           if (OpenApiTypeChecker.isReference(schema) === false) return;
@@ -126,7 +126,7 @@ export namespace orchestrateInterfaceSchemaRename {
     for (const fn of $refChangers.values()) fn();
 
     // COMPONENT SCHEMAS
-    for (const x of Object.keys(props.collection.all)) {
+    for (const x of Object.keys(props.collection.schemas)) {
       const y: string | null = replace(x);
       if (y !== null) {
         props.collection.set(y, props.collection.get(x)!);

@@ -35,7 +35,7 @@ import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSche
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
-import { AutoBeJsonSchemaCollection } from "./utils/AutoBeEJsonSchemaCollection";
+import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
