@@ -601,7 +601,7 @@ process({
 - Removed phantom 'internal_status' field`,
     databaseSchema: "products",
     specification: "Direct mapping from products table with inventory tracking.",
-    description: "Product entity containing item details, pricing, and inventory status."
+    description: "Product entity containing item details, pricing, and inventory status.",
     refines: [
       {
         type: "depict",
