@@ -97,9 +97,9 @@ Initial JSON Schema generation produces only type structure (`type`, `properties
 ### 1.2. What You Are Enriching
 
 For the **object-level** schema:
-- `x-autobe-database-schema` - Which database table this type maps to
-- `x-autobe-specification` - Object-level implementation details (if needed)
-- `description` - Object-level API documentation (if needed)
+- `x-autobe-database-schema` - Which database table this type maps to (nullable for non-DB types)
+- `x-autobe-specification` - Object-level implementation details (always required)
+- `description` - Object-level API documentation (always required)
 
 For **each property** in the schema:
 - `x-autobe-database-schema-property` - Which database column this maps to
@@ -294,6 +294,12 @@ Every property in a schema should have these three documentation fields:
 - Transformation logic: Any formatting, calculation, or derivation steps
 - Edge cases: How to handle nulls, empty values, or special conditions
 
+**⚠️ CRITICAL: When `databaseSchemaProperty` is `null`**:
+- The `specification` becomes the **ONLY source of truth** for downstream agents
+- Without DB mapping, code generators have NO idea where the data comes from
+- You MUST provide explicit computation logic, data sources, and derivation steps
+- Example: `"Computed aggregation. SELECT COUNT(*) FROM posts WHERE author_id = users.id"`
+
 **3. `description`** (WHAT for API consumers?)
 - User-facing documentation shown in Swagger UI
 - Clear, concise explanation of what the property represents
@@ -405,33 +411,42 @@ Use when a property should not exist in the schema.
 
 In addition to property-level refinement, you must also review and enrich the object-level metadata:
 
-### 5.1. `databaseSchema` Field (Required)
+### 5.1. `databaseSchema` Field (Nullable)
 
 Specifies which database table this schema type maps to.
 
 ```typescript
 databaseSchema: "users"  // The Prisma model name
+databaseSchema: null     // For types that don't map to a single table
 ```
 
-### 5.2. `specification` Field (Optional)
+Set to `null` for schemas that don't directly map to a single database table (e.g., computed aggregations, cross-table joins, utility types).
 
-Object-level implementation details if the current one is missing or incorrect.
+**⚠️ CRITICAL: When `databaseSchema` is `null`**:
+- The `specification` becomes the **ONLY source of truth** for downstream agents
+- Without DB table mapping, code generators have NO idea where the data comes from
+- The `specification` MUST explain the data sources, join logic, or computation method
+- This applies to the entire object, making the specification even more critical
+
+### 5.2. `specification` Field (MANDATORY)
+
+Object-level implementation details.
 
 ```typescript
 specification: "This DTO represents the complete user entity including computed fields..."
 ```
 
-Return `null` if the existing specification is correct.
+**You MUST always provide this value**, even if the existing specification seems correct. This forces you to explicitly review and reason about the implementation details. Copying the existing value is acceptable when it's accurate.
 
-### 5.3. `description` Field (Optional)
+### 5.3. `description` Field (MANDATORY)
 
-Object-level API documentation if the current one is missing or incorrect.
+Object-level API documentation.
 
 ```typescript
 description: "Complete user information including profile data and account status."
 ```
 
-Return `null` if the existing description is correct.
+**You MUST always provide this value**, even if the existing description seems correct. This forces you to explicitly review and reason about the API documentation. Copying the existing value is acceptable when it's accurate.
 
 ---
 
@@ -482,22 +497,23 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Database schema context for the type.
      *
      * Specifies which database table this schema maps to.
+     * Set to `null` for types that don't map to a single table.
      */
-    databaseSchema: string;
+    databaseSchema: string | null;
 
     /**
-     * Object-level specification update.
+     * Object-level specification (MANDATORY).
      *
-     * Return `null` if existing specification is correct.
+     * You MUST always provide this value. This forces explicit review.
      */
-    specification: string | null;
+    specification: string;
 
     /**
-     * Object-level description update.
+     * Object-level description (MANDATORY).
      *
-     * Return `null` if existing description is correct.
+     * You MUST always provide this value. This forces explicit review.
      */
-    description: string | null;
+    description: string;
 
     /**
      * Array of property refinements to apply.
@@ -529,7 +545,7 @@ process({
 - Mapped each property to corresponding database column
 - Added specifications for implementation guidance`,
     databaseSchema: "users",
-    specification: null,  // Existing spec is correct
+    specification: "Direct mapping from users table. All fields correspond to database columns except computed aggregations.",
     description: "Complete user entity with profile and account information.",
     refines: [
       {
@@ -585,7 +601,7 @@ process({
 - Removed phantom 'internal_status' field`,
     databaseSchema: "products",
     specification: "Direct mapping from products table with inventory tracking.",
-    description: null,  // Existing description is correct
+    description: "Product entity containing item details, pricing, and inventory status."
     refines: [
       {
         type: "depict",
@@ -656,9 +672,9 @@ Repeat these as you refine:
 Before submitting your refinement:
 
 ### 8.1. Object-Level Enrichment
-- [ ] `databaseSchema` correctly identifies the database table
-- [ ] `specification` reviewed (update or null if correct)
-- [ ] `description` reviewed (update or null if correct)
+- [ ] `databaseSchema` correctly identifies the database table (or null if not applicable)
+- [ ] `specification` provided (MANDATORY - always provide value)
+- [ ] `description` provided (MANDATORY - always provide value)
 
 ### 8.2. Property-Level Refinement
 - [ ] ALL properties have refinement operations

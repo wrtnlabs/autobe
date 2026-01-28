@@ -1,6 +1,5 @@
 import {
   AutoBeDatabase,
-  AutoBeInterfaceSchemaPropertyCreate,
   AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
   AutoBeInterfaceSchemaPropertyRefine,
@@ -85,17 +84,16 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
 
   export const refine = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-    databaseSchema: string;
-    specification: string | null;
-    description: string | null;
+    databaseSchema: string | null;
+    specification: string;
+    description: string;
     refines: AutoBeInterfaceSchemaPropertyRefine[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
     const result: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
       ...props.schema,
       "x-autobe-database-schema": props.databaseSchema,
-      "x-autobe-specification":
-        props.specification ?? props.schema["x-autobe-specification"],
-      description: props.description ?? props.schema.description,
+      "x-autobe-specification": props.specification,
+      description: props.description,
       properties: {},
       required: [...props.schema.required],
     };

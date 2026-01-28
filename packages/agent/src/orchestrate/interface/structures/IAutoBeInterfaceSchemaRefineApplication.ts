@@ -117,8 +117,11 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Specifies which database table or entity this schema maps to, providing
      * context for property-level database field mappings. This establishes the
      * source of truth for data validation and transformation logic.
+     *
+     * Set to `null` for schemas that don't directly map to a single database
+     * table (e.g., computed aggregations, cross-table joins, utility types).
      */
-    databaseSchema: string;
+    databaseSchema: string | null;
 
     /**
      * Specification for the schema implementation.
@@ -126,10 +129,11 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Documents HOW the schema should be implemented, including data source
      * mappings, transformation rules, and technical implementation details.
      *
-     * Returns `null` if the existing specification is already correct and needs
-     * no update.
+     * **MANDATORY**: You must always provide this value, even if the existing
+     * specification is correct. This forces explicit review and strengthens
+     * reasoning about the implementation details.
      */
-    specification: string | null;
+    specification: string;
 
     /**
      * Description for API consumers.
@@ -137,10 +141,11 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Documents WHAT the schema represents for API consumers, explaining the
      * purpose and usage of this data type in the API context.
      *
-     * Returns `null` if the existing description is already correct and needs
-     * no update.
+     * **MANDATORY**: You must always provide this value, even if the existing
+     * description is correct. This forces explicit review and strengthens
+     * reasoning about the API documentation.
      */
-    description: string | null;
+    description: string;
 
     /**
      * Property-level refinement operations.
