@@ -98,10 +98,6 @@ export const orchestratePrisma = async (
     ...reviewedComponents,
   ];
 
-  console.log(
-    `Total models: ${reviewedAllComponents.flatMap((c) => c.tables.map((t) => t.name)).length}`,
-  );
-
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
     await orchestratePrismaSchema(
