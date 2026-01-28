@@ -1,3 +1,4 @@
+import { AutoBeJsonSchemaCollection } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaNamingConvention } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
@@ -41,10 +42,7 @@ export const test_json_schema_operation_convention = () => {
   );
   AutoBeJsonSchemaNamingConvention.normalize({
     operations,
-    components: {
-      authorizations: [],
-      schemas: {},
-    },
+    collection: new AutoBeJsonSchemaCollection({}, {}),
   });
 
   const typeNames: Set<string> = new Set();

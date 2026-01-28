@@ -20,6 +20,7 @@ import { transformInterfaceOperationHistory } from "./histories/transformInterfa
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
+import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 
@@ -95,10 +96,7 @@ export async function orchestrateInterfaceOperation(
     .map((it) => it.second);
   AutoBeJsonSchemaNamingConvention.normalize({
     operations,
-    components: {
-      authorizations: [],
-      schemas: {},
-    },
+    collection: new AutoBeJsonSchemaCollection({}, {}),
   });
   return operations;
 }

@@ -10,6 +10,7 @@ import typia, { tags } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeInterfaceSchemaProgrammer } from "../programmers/AutoBeInterfaceSchemaProgrammer";
+import { AutoBeJsonSchemaCollection } from "./AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaValidator } from "./AutoBeJsonSchemaValidator";
 
 export namespace AutoBeJsonSchemaFactory {
@@ -78,21 +79,43 @@ export namespace AutoBeJsonSchemaFactory {
   };
 
   export const finalize = (props: {
-    document: AutoBeOpenApi.IDocument;
     application: AutoBeDatabase.IApplication;
+    operations: AutoBeOpenApi.IOperation[];
+    collection: AutoBeJsonSchemaCollection;
   }): void => {
-    removeUnused(props.document);
-    removeDuplicated(props.document);
-    fixTimestamps(props);
-    linkRelatedModels(props);
+    removeUnused(props);
+    removeDuplicated(props);
+    fixTimestamps({
+      application: props.application,
+      document: {
+        operations: props.operations,
+        components: {
+          schemas: props.collection.schemas,
+          authorizations: [],
+        },
+      },
+    });
+    linkRelatedModels({
+      application: props.application,
+      document: {
+        operations: props.operations,
+        components: {
+          schemas: props.collection.schemas,
+          authorizations: [],
+        },
+      },
+    });
   };
 
-  const removeUnused = (document: AutoBeOpenApi.IDocument): void => {
+  const removeUnused = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    collection: AutoBeJsonSchemaCollection;
+  }): void => {
     while (true) {
       const used: Set<string> = new Set();
       const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
         OpenApiTypeChecker.visit({
-          components: { schemas: document.components.schemas },
+          components: { schemas: props.collection.schemas },
           schema,
           closure: (next) => {
             if (OpenApiTypeChecker.isReference(next)) {
@@ -101,7 +124,7 @@ export namespace AutoBeJsonSchemaFactory {
             }
           },
         });
-      for (const op of document.operations) {
+      for (const op of props.operations) {
         if (op.requestBody !== null)
           visit({
             $ref: `#/components/schemas/${op.requestBody.typeName}`,
@@ -113,28 +136,31 @@ export namespace AutoBeJsonSchemaFactory {
       }
 
       const complete: boolean =
-        Object.keys(document.components.schemas).length === 0 ||
-        Object.keys(document.components.schemas).every(
+        Object.keys(props.collection.schemas).length === 0 ||
+        Object.keys(props.collection.schemas).every(
           (key) => used.has(key) === true,
         );
       if (complete === true) break;
-      for (const key of Object.keys(document.components.schemas))
-        if (used.has(key) === false) delete document.components.schemas[key];
+      for (const key of Object.keys(props.collection.schemas))
+        if (used.has(key) === false) props.collection.delete(key);
     }
   };
 
-  const removeDuplicated = (document: AutoBeOpenApi.IDocument): void => {
+  const removeDuplicated = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    collection: AutoBeJsonSchemaCollection;
+  }): void => {
     // gather duplicated schemas
     const correct: Map<string, string> = new Map();
-    for (const key of Object.keys(document.components.schemas)) {
+    for (const key of Object.keys(props.collection.schemas)) {
       if (key.includes(".") === false) continue;
       const dotRemoved: string = key.replace(".", "");
-      if (document.components.schemas[dotRemoved] === undefined) continue;
+      if (props.collection.schemas[dotRemoved] === undefined) continue;
       correct.set(dotRemoved, key);
     }
 
     // fix operations' references
-    for (const op of document.operations) {
+    for (const op of props.operations) {
       if (op.requestBody && correct.has(op.requestBody.typeName))
         op.requestBody.typeName = correct.get(op.requestBody.typeName)!;
       if (op.responseBody && correct.has(op.responseBody.typeName))
@@ -143,9 +169,9 @@ export namespace AutoBeJsonSchemaFactory {
 
     // fix schemas' references
     const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
-    for (const value of Object.values(document.components.schemas))
+    for (const value of Object.values(props.collection.schemas))
       OpenApiTypeChecker.visit({
-        components: { schemas: document.components.schemas },
+        components: { schemas: props.collection.schemas },
         schema: value,
         closure: (next) => {
           if (OpenApiTypeChecker.isReference(next) === false) return;
@@ -161,7 +187,7 @@ export namespace AutoBeJsonSchemaFactory {
     for (const fn of $refChangers.values()) fn();
 
     // remove duplicated schemas
-    for (const key of correct.keys()) delete document.components.schemas[key];
+    for (const key of correct.keys()) props.collection.delete(key);
   };
 
   const fixTimestamps = (props: {

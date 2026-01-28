@@ -2,10 +2,15 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, MapUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 
+import { AutoBeJsonSchemaCollection } from "./AutoBeJsonSchemaCollection";
+
 export namespace AutoBeJsonSchemaNamingConvention {
-  export const normalize = (document: AutoBeOpenApi.IDocument): void => {
+  export const normalize = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    collection: AutoBeJsonSchemaCollection;
+  }): void => {
     const convention: Convention = new Convention();
-    for (const op of document.operations) {
+    for (const op of props.operations) {
       if (op.requestBody !== null)
         convention.emplace(op.requestBody.typeName, (v) => {
           if (op.requestBody !== null) op.requestBody.typeName = v;
@@ -15,14 +20,17 @@ export namespace AutoBeJsonSchemaNamingConvention {
           if (op.responseBody !== null) op.responseBody.typeName = v;
         });
     }
-    for (const [key, value] of Object.entries(document.components.schemas)) {
+    for (const [key, value] of Object.entries(props.collection.schemas)) {
       convention.emplace(key, (newKey) => {
         if (key === newKey) return;
-        document.components.schemas[newKey] = value;
-        delete document.components.schemas[key];
+        props.collection.set(newKey, value);
+        props.collection.delete(key);
       });
       AutoBeOpenApiTypeChecker.visit({
-        components: document.components,
+        components: {
+          schemas: props.collection.schemas,
+          authorizations: [],
+        },
         schema: value,
         closure: (s) => {
           if (AutoBeOpenApiTypeChecker.isReference(s) === false) return;

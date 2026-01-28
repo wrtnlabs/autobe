@@ -17,12 +17,14 @@ import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
+import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 
 export async function orchestrateInterfaceSchemaRename(
   ctx: AutoBeContext,
   props: {
-    document: AutoBeOpenApi.IDocument;
+    operations: AutoBeOpenApi.IOperation[];
     progress: AutoBeProgressEventBase;
+    collection: AutoBeJsonSchemaCollection;
   },
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY * 10,
 ): Promise<void> {
@@ -40,7 +42,7 @@ export async function orchestrateInterfaceSchemaRename(
     entireTypeNames.add(key);
   };
 
-  for (const key of Object.keys(props.document.components.schemas)) insert(key);
+  for (const key of Object.keys(props.collection.schemas)) insert(key);
 
   const matrix: string[][] = divideArray({
     array: Array.from(entireTypeNames),
@@ -64,36 +66,39 @@ export async function orchestrateInterfaceSchemaRename(
       )
     ).flat(),
   );
-  orchestrateInterfaceSchemaRename.rename(props.document, refactors);
+  orchestrateInterfaceSchemaRename.rename({
+    operations: props.operations,
+    collection: props.collection,
+    refactors,
+  });
 }
 export namespace orchestrateInterfaceSchemaRename {
-  export const rename = (
-    document: AutoBeOpenApi.IDocument,
-    refactors: AutoBeInterfaceSchemaRefactor[],
-  ): void => {
+  export const rename = (props: {
+    operations: AutoBeOpenApi.IOperation[];
+    collection: AutoBeJsonSchemaCollection;
+    refactors: AutoBeInterfaceSchemaRefactor[];
+  }): void => {
     // REPLACE RULE
     const replace = (typeName: string): string | null => {
       // exact match
-      const exact: AutoBeInterfaceSchemaRefactor | undefined = refactors.find(
-        (r) => r.from === typeName,
-      );
+      const exact: AutoBeInterfaceSchemaRefactor | undefined =
+        props.refactors.find((r) => r.from === typeName);
       if (exact !== undefined) return exact.to;
 
       // T.X match
-      const prefix: AutoBeInterfaceSchemaRefactor | undefined = refactors.find(
-        (r) => typeName.startsWith(`${r.from}.`),
-      );
+      const prefix: AutoBeInterfaceSchemaRefactor | undefined =
+        props.refactors.find((r) => typeName.startsWith(`${r.from}.`));
       if (prefix !== undefined)
         return typeName.replace(`${prefix.from}.`, `${prefix.to}.`);
 
       // IPageT exact match
       const pageExact: AutoBeInterfaceSchemaRefactor | undefined =
-        refactors.find((r) => typeName === `IPage${r.from}`);
+        props.refactors.find((r) => typeName === `IPage${r.from}`);
       if (pageExact !== undefined) return `IPage${pageExact.to}`;
 
       // IPageT.X match
       const pagePrefix: AutoBeInterfaceSchemaRefactor | undefined =
-        refactors.find((r) => typeName.startsWith(`IPage${r.from}.`));
+        props.refactors.find((r) => typeName.startsWith(`IPage${r.from}.`));
       if (pagePrefix !== undefined)
         return typeName.replace(
           `IPage${pagePrefix.from}.`,
@@ -104,9 +109,9 @@ export namespace orchestrateInterfaceSchemaRename {
 
     // JSON SCHEMA REFERENCES
     const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
-    for (const value of Object.values(document.components.schemas))
+    for (const value of Object.values(props.collection.schemas))
       OpenApiTypeChecker.visit({
-        components: document.components,
+        components: { schemas: props.collection.schemas },
         schema: value,
         closure: (schema) => {
           if (OpenApiTypeChecker.isReference(schema) === false) return;
@@ -121,16 +126,16 @@ export namespace orchestrateInterfaceSchemaRename {
     for (const fn of $refChangers.values()) fn();
 
     // COMPONENT SCHEMAS
-    for (const x of Object.keys(document.components.schemas)) {
+    for (const x of Object.keys(props.collection.schemas)) {
       const y: string | null = replace(x);
       if (y !== null) {
-        document.components.schemas[y] = document.components.schemas[x];
-        delete document.components.schemas[x];
+        props.collection.set(y, props.collection.get(x)!);
+        props.collection.delete(x);
       }
     }
 
     // OPERATIONS
-    for (const op of document.operations) {
+    for (const op of props.operations) {
       if (op.requestBody)
         op.requestBody.typeName =
           replace(op.requestBody.typeName) ?? op.requestBody.typeName;
