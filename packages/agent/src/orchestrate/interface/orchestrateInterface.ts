@@ -195,8 +195,8 @@ export const orchestrateInterface =
         next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
       ) => {
         for (const [k, v] of Object.entries(next))
-          if (v === undefined) delete schemas[k];
-        if (Object.keys(schemas).length === 0) return;
+          if (v === undefined) delete next[k];
+        if (Object.keys(next).length === 0) return;
 
         // assign schemas
         const collection: AutoBeJsonSchemaCollection =
