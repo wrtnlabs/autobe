@@ -40,15 +40,14 @@ export async function orchestrateInterfaceSchemaReview(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // Filter to only process object-type schemas (non-preset and object type)
-  const typeNames: string[] = Object.keys(props.schemas)
+  const typeNames: string[] = Object.entries(props.schemas)
     .filter(
-      (k) =>
+      ([k, v]) =>
         AutoBeJsonSchemaValidator.isPreset(k) === false &&
-        AutoBeJsonSchemaValidator.isObjectType({
-          operations: props.document.operations,
-          typeName: k,
-        }),
+        AutoBeOpenApiTypeChecker.isObject(v) &&
+        Object.keys(v.properties).length !== 0,
     )
+    .map(([k]) => k)
     .filter(
       (typeName) =>
         config.kind !== "security" ||
