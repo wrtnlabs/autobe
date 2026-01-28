@@ -111,7 +111,7 @@ export namespace orchestrateInterfaceSchemaRename {
     const $refChangers: Map<OpenApi.IJsonSchema, () => void> = new Map();
     for (const value of Object.values(props.collection.schemas))
       OpenApiTypeChecker.visit({
-        components: props.collection.schemas,
+        components: { schemas: props.collection.schemas },
         schema: value,
         closure: (schema) => {
           if (OpenApiTypeChecker.isReference(schema) === false) return;
