@@ -39,6 +39,8 @@ export const validate_interface_operation = async (props: {
       instruction: "",
     })),
   ];
+  console.log("operations are ready", operations.length);
+
   await orchestrateInterfaceSchemaRename(props.agent.getContext(), {
     document: {
       operations,

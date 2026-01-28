@@ -26,7 +26,6 @@ export const writeRealizeControllers = async (
       controllerMethod: (ctx) => {
         const method: ts.MethodDeclaration =
           NestiaMigrateNestMethodProgrammer.write(ctx);
-        console.log("method");
         const operate: AutoBeOpenApi.IOperation | undefined =
           props.document.operations.find(
             (o) => o.method === ctx.route.method && o.path === ctx.route.path,
@@ -59,7 +58,12 @@ export const writeRealizeControllers = async (
         });
 
         const inputArguments: string[] = [
-          ...(operate.authorizationActor ? [operate.authorizationActor] : []),
+          ...(authorization ? [authorization.actor.name] : []),
+          ...(authorization === undefined &&
+          (operate.authorizationType === "login" ||
+            operate.authorizationType === "join")
+            ? ["ip"]
+            : []),
           ...ctx.route.parameters.map((p) => p.name),
           ...(ctx.route.query ? [ctx.route.query.name] : []),
           ...(ctx.route.body ? [ctx.route.body.name] : []),
@@ -119,13 +123,12 @@ export const writeRealizeControllers = async (
           method.name,
           method.questionToken,
           method.typeParameters,
-          authorization
+          authorization !== undefined
             ? [
                 createAuthorizationParameter(ctx, authorization),
                 ...method.parameters,
               ]
-            : operate.authorizationType === "login" ||
-                operate.authorizationType === "join"
+            : inputArguments.includes("ip")
               ? [createIpParameter(ctx), ...method.parameters]
               : method.parameters,
           method.type,

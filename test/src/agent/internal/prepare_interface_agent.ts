@@ -1,10 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
-import {
-  AutoBeEventOfSerializable,
-  AutoBeExampleProject,
-} from "@autobe/interface";
+import { AutoBeEvent, AutoBeExampleProject } from "@autobe/interface";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -25,7 +22,7 @@ export const prepare_interface_agent = async (props: {
       phase: "database",
     }),
   });
-  for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
+  for (const type of typia.misc.literals<AutoBeEvent.Type>())
     agent.on(type, (event) => ArchiveLogger.event(start, event));
 
   agent.getHistories().push({
