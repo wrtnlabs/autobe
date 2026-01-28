@@ -51,8 +51,8 @@ class Convention {
       setter,
     });
 
-    const top: string = elements[0]!;
-    MapUtil.take(this.dict, top.toLowerCase(), () => new Set()).add(top);
+    const head: string = elements[0]!;
+    MapUtil.take(this.dict, head.toLowerCase(), () => new Set()).add(head);
   }
 
   public execute(): void {
@@ -66,8 +66,8 @@ class Convention {
       );
     for (const closure of this.closures) {
       const elements: string[] = closure.value.split(".");
-      const value: string = mapping.get(elements[0]!.toLowerCase())!;
-      closure.setter([value, ...elements.slice(1)].join("."));
+      const head: string = mapping.get(elements[0]!.toLowerCase())!;
+      closure.setter([head, ...elements.slice(1)].join("."));
     }
   }
 }
