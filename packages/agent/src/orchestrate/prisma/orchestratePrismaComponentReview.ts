@@ -95,6 +95,7 @@ async function process(
       controller: createController({
         preliminary,
         otherTableNames: props.otherTableNames,
+        prefix: props.prefix,
         build: (next) => {
           pointer.value = next;
         },
@@ -180,6 +181,7 @@ function createController(props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   otherTableNames: Set<string>;
+  prefix: string | null;
   build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
@@ -194,6 +196,21 @@ function createController(props: {
         thinking: result.data.thinking,
         request: result.data.request,
       });
+
+    // validate revise prefix
+    const errors: IValidation.IError[] = [];
+    const tableNames: string[] = result.data.request.revises
+      .map((r) =>
+        r.type === "create" ? r.table : r.type === "update" ? r.updated : null,
+      )
+      .filter((name): name is string => name !== null);
+    AutoBeDatabaseComponentProgrammer.validatePrefix({
+      errors,
+      path: "request.revises",
+      prefix: props.prefix,
+      tableNames,
+    });
+    if (errors.length > 0) return { success: false, data: result.data, errors };
 
     return result;
   };

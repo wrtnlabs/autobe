@@ -3,27 +3,10 @@ import {
   AutoBeDatabaseComponentTableDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { plural } from "pluralize";
 import { IValidation } from "typia";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
-  /**
-   * Compute expected table names for an actor.
-   *
-   * Based on naming convention:
-   *
-   * - Actor table: `{prefix}_{actorName}s`
-   */
-  export const getExpectedTableNames = (props: {
-    actor: AutoBeAnalyzeActor;
-    prefix: string | null;
-  }): string => {
-    const actorLower: string = props.actor.name.toLowerCase();
-    const prefix: string = props.prefix
-      ? `${props.prefix}_`
-      : "";
-    return `${prefix}${actorLower}s`;
-  };
-
   /** Validate authorization tables for an actor. */
   export const validate = (props: {
     errors: IValidation.IError[];
@@ -33,10 +16,8 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
     const actorLower: string = props.actor.name.toLowerCase();
-    const prefix: string = props.prefix
-      ? `${props.prefix}_`
-      : "";
-    const expectedTable: string = `${prefix}${actorLower}s`;
+    const prefix: string = props.prefix ? `${props.prefix}_` : "";
+    const expectedTable: string = `${prefix}${plural(actorLower)}`;
     const tableNames: string[] = props.tables.map((t) => t.name.toLowerCase());
 
     // Validation: all tables must contain actor name
