@@ -289,12 +289,7 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
-    while (missedOpenApiSchemas(document).length !== 0) {
-      console.log(
-        "missed schemas:",
-        Object.keys(document.components.schemas),
-        missedOpenApiSchemas(document),
-      );
+    while (missedOpenApiSchemas(document).length !== 0)
       await iterate(() =>
         orchestrateInterfaceSchemaComplement(ctx, {
           instruction: props.instruction,
@@ -302,7 +297,6 @@ export const orchestrateInterface =
           document,
         }),
       );
-    }
 
     //------------------------------------------------
     // FINALIZATION
