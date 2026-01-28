@@ -185,7 +185,7 @@ async function process(
 
     // Apply revises to generate the modified schema content
     const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaReviewProgrammer.refine({
+      AutoBeInterfaceSchemaReviewProgrammer.revise({
         schema: props.reviewSchema,
         revises: pointer.value.revises,
       });

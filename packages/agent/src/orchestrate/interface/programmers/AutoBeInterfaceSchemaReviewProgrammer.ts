@@ -114,7 +114,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         });
   };
 
-  export const refine = (props: {
+  export const revise = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
@@ -123,6 +123,10 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       properties: {},
       required: [],
     };
+    const setRequired = (key: string): void => {
+      if (result.required.includes(key) === false) result.required.push(key);
+    };
+
     for (const revise of props.revises)
       if (revise.type === "create") {
         // create new property
@@ -132,7 +136,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           "x-autobe-specification": revise.specification,
           "x-autobe-database-schema-property": revise.databaseSchemaProperty,
         };
-        if (revise.required === true) result.required.push(revise.key);
+        if (revise.required) setRequired(revise.key);
       } else if (revise.type === "update") {
         // update existing property
         const newKey: string = revise.newKey ?? revise.key;
@@ -142,14 +146,13 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           "x-autobe-specification": revise.specification,
           "x-autobe-database-schema-property": revise.databaseSchemaProperty,
         };
-        if (revise.required === true) result.required.push(newKey);
+        if (revise.required === true) setRequired(newKey);
       } else if (revise.type === "keep") {
         // keep original property (deep clone to avoid shared references)
         result.properties[revise.key] = JSON.parse(
           JSON.stringify(props.schema.properties[revise.key]),
         );
-        if (props.schema.required.includes(revise.key))
-          result.required.push(revise.key);
+        if (props.schema.required.includes(revise.key)) setRequired(revise.key);
       } else if (revise.type === "nullish") {
         // change nullable or required status only
         nullish({
@@ -157,14 +160,15 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           property: props.schema.properties[revise.key],
           revise: revise,
         });
-      } else if (revise.type === "depict")
+      } else if (revise.type === "depict") {
         result.properties[revise.key] = {
           ...props.schema.properties[revise.key],
           description: revise.description,
           "x-autobe-database-schema-property": revise.databaseSchemaProperty,
           "x-autobe-specification": revise.specification,
         };
-      else if (revise.type === "erase") continue;
+        if (props.schema.required.includes(revise.key)) setRequired(revise.key);
+      } else if (revise.type === "erase") continue;
       else revise satisfies never;
     return result;
   };

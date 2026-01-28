@@ -95,7 +95,10 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
       "x-autobe-specification": props.specification,
       description: props.description,
       properties: {},
-      required: [...props.schema.required],
+      required: [],
+    };
+    const setRequired = (key: string): void => {
+      if (result.required.includes(key) === false) result.required.push(key);
     };
 
     for (const refine of props.refines)
@@ -107,6 +110,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
           "x-autobe-specification": refine.specification,
         };
+        if (props.schema.required.includes(refine.key)) setRequired(refine.key);
       } else if (refine.type === "create") {
         // Create new property with documentation
         result.properties[refine.key] = {
@@ -115,8 +119,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           "x-autobe-specification": refine.specification,
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
         };
-        if (refine.required === true && !result.required.includes(refine.key))
-          result.required.push(refine.key);
+        if (refine.required) setRequired(refine.key);
       } else if (refine.type === "update") {
         // Update existing property type and documentation
         const newKey: string = refine.newKey ?? refine.key;
@@ -126,33 +129,9 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           "x-autobe-specification": refine.specification,
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
         };
-        // Remove old key from required if renamed
-        if (refine.newKey && result.required.includes(refine.key)) {
-          result.required = result.required.filter((k) => k !== refine.key);
-        }
-        if (refine.required === true && !result.required.includes(newKey))
-          result.required.push(newKey);
-      } else if (refine.type === "erase") {
-        // Remove property from required array if present
-        result.required = result.required.filter((k) => k !== refine.key);
-        // Property is simply not added to result.properties
-        continue;
-      } else {
-        refine satisfies never;
-      }
-
-    // Copy any properties that weren't refined (shouldn't happen ideally)
-    for (const key of Object.keys(props.schema.properties)) {
-      if (result.properties[key] === undefined) {
-        const wasErased = props.refines.some(
-          (r) => r.type === "erase" && r.key === key,
-        );
-        if (!wasErased) {
-          result.properties[key] = props.schema.properties[key];
-        }
-      }
-    }
-
+        if (refine.required) setRequired(newKey);
+      } else if (refine.type === "erase") continue;
+      else refine satisfies never;
     return result;
   };
 }
