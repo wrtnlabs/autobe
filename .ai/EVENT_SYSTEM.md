@@ -47,7 +47,7 @@ export type AutoBeEvent =
   | AutoBeInterfaceSchemaSecurityReviewEvent
   | AutoBeInterfaceSchemaRelationReviewEvent
   | AutoBeInterfaceSchemaContentReviewEvent
-  | AutoBeInterfaceComplementEvent
+  | AutoBeInterfaceSchemaComplementEvent
   | AutoBeInterfacePrerequisiteEvent
   | AutoBeInterfaceCompleteEvent
 

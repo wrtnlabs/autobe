@@ -37,19 +37,9 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     everyModels: AutoBeDatabase.IModel[];
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
   }): void => {
-    const model: AutoBeDatabase.IModel | null =
-      props.everyModels.find(
-        (m) =>
-          m.name ===
-          (props.schema["x-autobe-database-schema"] ??
-            AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(
-              props.typeName,
-            )),
-      ) ?? null;
     AutoBeInterfaceSchemaProgrammer.fixApplication({
       application: props.application,
       everyModels: props.everyModels,
-      model,
     });
 
     const $defs = props.application.functions[0].parameters.$defs;
@@ -136,16 +126,22 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     for (const revise of props.revises)
       if (revise.type === "create") {
         // create new property
-        result.properties[revise.key] = AutoBeJsonSchemaFactory.fixSchema(
-          revise.schema,
-        );
+        result.properties[revise.key] = {
+          ...AutoBeJsonSchemaFactory.fixSchema(revise.schema),
+          description: revise.description,
+          "x-autobe-specification": revise.specification,
+          "x-autobe-database-schema-property": revise.databaseSchemaProperty,
+        };
         if (revise.required === true) result.required.push(revise.key);
       } else if (revise.type === "update") {
         // update existing property
         const newKey: string = revise.newKey ?? revise.key;
-        result.properties[newKey] = AutoBeJsonSchemaFactory.fixSchema(
-          revise.schema,
-        );
+        result.properties[newKey] = {
+          ...AutoBeJsonSchemaFactory.fixSchema(revise.schema),
+          description: revise.description,
+          "x-autobe-specification": revise.specification,
+          "x-autobe-database-schema-property": revise.databaseSchemaProperty,
+        };
         if (revise.required === true) result.required.push(newKey);
       } else if (revise.type === "keep") {
         // keep original property (deep clone to avoid shared references)
@@ -161,7 +157,14 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           property: props.schema.properties[revise.key],
           revise: revise,
         });
-      } else if (revise.type === "erase") continue;
+      } else if (revise.type === "depict")
+        result.properties[revise.key] = {
+          ...props.schema.properties[revise.key],
+          description: revise.description,
+          "x-autobe-database-schema-property": revise.databaseSchemaProperty,
+          "x-autobe-specification": revise.specification,
+        };
+      else if (revise.type === "erase") continue;
       else revise satisfies never;
     return result;
   };
@@ -183,16 +186,17 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned.oneOf.push({ type: "null" });
       } else if (AutoBeOpenApiTypeChecker.isNull(cloned) === false)
         cloned = {
-          description: cloned.description,
+          "x-autobe-database-schema-property":
+            cloned["x-autobe-database-schema-property"],
           "x-autobe-specification": cloned["x-autobe-specification"],
-          "x-autobe-database-schema-member":
-            cloned["x-autobe-database-schema-member"],
+          description: cloned.description,
           oneOf: [
             {
               ...cloned,
               ...{
+                "x-autobe-specification": undefined,
+                "x-autobe-database-schema-property": undefined,
                 description: undefined,
-                "x-autobe-database-schema-member": undefined,
               },
             },
             { type: "null" },
@@ -206,16 +210,18 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         if (cloned.oneOf.length === 1)
           cloned = {
             ...cloned.oneOf[0],
-            description: cloned.description,
             "x-autobe-specification": cloned["x-autobe-specification"],
-            "x-autobe-database-schema-member":
-              cloned["x-autobe-database-schema-member"],
+            description: cloned.description,
           };
       }
     }
     // Update description: null preserves existing, string replaces it
     if (props.revise.description !== null)
       cloned.description = props.revise.description;
+    if (props.revise.specification !== null)
+      cloned["x-autobe-specification"] = props.revise.specification;
+
+    // do assign
     props.schema.properties[props.revise.key] = cloned;
     if (props.revise.required === true)
       props.schema.required.push(props.revise.key);

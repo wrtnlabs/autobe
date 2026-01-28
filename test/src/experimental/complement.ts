@@ -1,5 +1,6 @@
-import { IAutoBeInterfaceComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceComplementApplication";
+import { IAutoBeInterfaceSchemaComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaComplementApplication";
 import typia from "typia";
 
-const app = typia.llm.application<IAutoBeInterfaceComplementApplication>();
+const app =
+  typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>();
 console.log(JSON.stringify(app, null, 2));

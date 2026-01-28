@@ -26,12 +26,12 @@ import { IAutoBeFacadeApplicationProps } from "../facade/histories/IAutoBeFacade
 import { orchestrateInterfaceActionEndpoint } from "./orchestrateInterfaceActionEndpoint";
 import { orchestrateInterfaceAuthorization } from "./orchestrateInterfaceAuthorization";
 import { orchestrateInterfaceBaseEndpoint } from "./orchestrateInterfaceBaseEndpoint";
-import { orchestrateInterfaceComplement } from "./orchestrateInterfaceComplement";
 import { orchestrateInterfaceGroup } from "./orchestrateInterfaceGroup";
 import { orchestrateInterfaceOperation } from "./orchestrateInterfaceOperation";
 import { orchestrateInterfacePrerequisite } from "./orchestrateInterfacePrerequisite";
 import { orchestrateInterfaceSchema } from "./orchestrateInterfaceSchema";
-import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
+import { orchestrateInterfaceSchemaCasting } from "./orchestrateInterfaceSchemaCasting";
+import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
 import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
@@ -205,7 +205,7 @@ export const orchestrateInterface =
       total: 0,
     };
     await overwrite(
-      await orchestrateInterfaceSchemaRefine(ctx, {
+      await orchestrateInterfaceSchemaCasting(ctx, {
         instruction: props.instruction,
         document,
         schemas: document.components.schemas,
@@ -251,14 +251,14 @@ export const orchestrateInterface =
     while (missedOpenApiSchemas(document).length !== 0) {
       // COMPLEMENT OMITTED
       const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-        await orchestrateInterfaceComplement(ctx, {
+        await orchestrateInterfaceSchemaComplement(ctx, {
           instruction: props.instruction,
           progress: complementProgress,
           document,
         });
       await overwrite(complemented);
       await overwrite(
-        await orchestrateInterfaceSchemaRefine(ctx, {
+        await orchestrateInterfaceSchemaCasting(ctx, {
           instruction: props.instruction,
           document,
           schemas: complemented,

@@ -107,7 +107,7 @@ export interface IAutoBeVendor {
    * across multiple vendors and models with differing levels of tool-calling
    * support, without causing API errors or unexpected behavior.
    *
-   * @default false
+   * @default true
    */
   useToolChoice?: boolean;
 }

@@ -148,11 +148,15 @@ The `props.request` parameter uses a **discriminated union type**:
 
 ```typescript
 request:
-  | IComplete                                 // Final purpose: content review
-  | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
-  | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
-  | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
+  | IComplete                                    // Final purpose: content review
+  | IAutoBePreliminaryGetAnalysisFiles          // Preliminary: request analysis files
+  | IAutoBePreliminaryGetDatabaseSchemas        // Preliminary: request database schemas
+  | IAutoBePreliminaryGetInterfaceOperations    // Preliminary: request interface operations
+  | IAutoBePreliminaryGetInterfaceSchemas       // Preliminary: request existing schemas
+  | IAutoBePreliminaryGetPreviousAnalysisFiles       // Preliminary: request previous analysis files
+  | IAutoBePreliminaryGetPreviousDatabaseSchemas     // Preliminary: request previous database schemas
+  | IAutoBePreliminaryGetPreviousInterfaceOperations // Preliminary: request previous interface operations
+  | IAutoBePreliminaryGetPreviousInterfaceSchemas    // Preliminary: request previous interface schemas
 ```
 
 #### How the Union Type Pattern Works
@@ -710,33 +714,94 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
   type: "create",
   reason: "Database field 'stock' exists but was missing from IProduct",
   key: "stock",
+  databaseSchemaProperty: "stock",
+  specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+  description: "Current inventory quantity. Automatically decremented when orders are placed.",
   schema: {
-    type: "integer",
-    description: "Current inventory quantity. Automatically decremented when orders are placed.",
-    "x-autobe-database-schema-member": "stock"
+    type: "integer"
   },
   required: true  // For Read DTOs, always true (all fields present in response)
 }
 ```
 
-**`x-autobe-database-schema-member` Requirement**:
+**Two-Field Documentation Pattern: Your Primary Review Reference**
 
-Every property you create MUST specify its database member mapping:
+**⚠️ CRITICAL: Carefully Examine Existing Properties' Fields**
 
-- When adding a field that directly maps to a database member (scalar field, FK field, or relation):
-  - Set `x-autobe-database-schema-member` to the member name
+The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
 
-- When adding a computed/derived field (no direct member):
-  - Set `x-autobe-database-schema-member` to `null`
-  - The `x-autobe-specification` MUST contain detailed computation spec (source tables, formulas, join conditions)
+- **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
+  - Shows the data mapping patterns used in this schema
+  - Reveals the naming conventions (e.g., `users.email` → `email`)
+  - **For Content Review**: Follow the same patterns when adding missing fields
 
-- When the parent object's `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-schema-member` is not applicable
-  - The `x-autobe-specification` must still contain detailed data sourcing specs
+- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
+  - Explains the semantic meaning of each property
+  - **For Content Review**: Helps understand the DTO's purpose and what fields it should include
 
-**Two-Field Documentation Pattern**:
-- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
+**How to Use These Fields for Content Review**:
+
+1. **Study existing properties' `specification`** - Understand the mapping patterns
+2. **Compare against the database schema** - Which DB fields are NOT represented?
+3. **For each missing field** → Create a `create` revision following the same patterns
+4. **Write `specification`** for new fields using the same style as existing ones
+
+**⚠️ MANDATORY: `specification` is Required for ALL Properties**
+
+This field is NOT optional. You MUST provide `specification` for every property you create:
+- For direct DB mappings: Include column details, type mapping, and any transformation logic
+- For computed/derived properties: MUST contain detailed computation specification:
+  - Data sources: ALL columns and/or tables involved
+  - Computation formula: Exact algorithm or SQL-like expression
+  - Join conditions: How related tables connect
+  - Edge cases: Behavior for nulls, empty sets, defaults
+
+The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
+
+**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
+
+When constructing `create` revisions, you MUST follow this strict field ordering:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: databaseSchemaProperty           →  WHICH database property?      │
+│  STEP 2: specification                    →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: schema                           →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order is Mandatory**:
+
+This ordering enforces **grounded reasoning**:
+
+1. **STEP 1 - WHICH**: First identify the database property being mapped (or null for computed)
+2. **STEP 2 - HOW**: Specify implementation details and data source
+3. **STEP 3 - WHAT (consumer)**: Now that you know HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record schema consistent with the source
+
+**ABSOLUTE PROHIBITIONS**:
+- NEVER omit `specification` (every property MUST have implementation details)
+- NEVER write fields out of order (the cognitive flow ensures consistency)
+
+**Example - Correct Create Revision Structure**:
+```typescript
+{
+  type: "create",
+  reason: "Database field 'stock' exists but missing from IProduct",
+  key: "stock",
+  databaseSchemaProperty: "stock",
+  specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+  description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  schema: {
+    type: "integer",
+    minimum: 0
+  },
+  required: true
+}
+```
+
+This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
 
 **Revision Rules by DTO Type**:
 
@@ -749,14 +814,18 @@ Every property you create MUST specify its database member mapping:
 **Important**: DB nullable → DTO non-null is **FORBIDDEN** (causes runtime errors). The reverse is allowed.
 
 **When DB non-null → DTO nullable/optional**: You MUST explain why in the `description`:
-```json
+```typescript
 {
-  "schema": {
-    "type": "string",
-    "description": "User role. Optional - if not provided, defaults to 'user'.",
-    "x-autobe-database-schema-member": "role"
+  type: "create",
+  reason: "Adding role field from database",
+  key: "role",
+  databaseSchemaProperty: "role",
+  specification: "Direct mapping from users.role column. Uses @default value 'user' when not provided.",
+  description: "User role. Optional - if not provided, defaults to 'user'.",
+  schema: {
+    type: "string"
   },
-  "required": false  // DB is non-null but has @default
+  required: false  // DB is non-null but has @default
 }
 ```
 
@@ -836,7 +905,10 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;  // Why this field is being added
   key: string;     // Property name to add
-  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-database-schema-member
+  databaseSchemaProperty: string | null;  // Database property name or null for computed
+  specification: string;  // Implementation spec for Realize Agent
+  description: string;  // API documentation for consumers
+  schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean;  // Add to required array?
 }
 
@@ -873,10 +945,11 @@ process({
         type: "create",
         reason: "Database field 'stock' exists but missing from IProduct",
         key: "stock",
+        databaseSchemaProperty: "stock",
+        specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
+        description: "Current inventory quantity. Automatically decremented when orders are placed.",
         schema: {
-          type: "integer",
-          description: "Current inventory quantity. Automatically decremented when orders are placed.",
-          "x-autobe-database-schema-member": "stock"
+          type: "integer"
         },
         required: true
       },
@@ -884,10 +957,11 @@ process({
         type: "create",
         reason: "Database field 'featured' exists but missing from IProduct",
         key: "featured",
+        databaseSchemaProperty: "featured",
+        specification: "Direct mapping from products.featured column. Boolean flag for homepage display.",
+        description: "Whether this product is featured on the homepage.",
         schema: {
-          type: "boolean",
-          description: "Whether this product is featured on the homepage.",
-          "x-autobe-database-schema-member": "featured"
+          type: "boolean"
         },
         required: true
       },
@@ -895,10 +969,11 @@ process({
         type: "create",
         reason: "Database field 'discount' (optional) exists but missing from IProduct",
         key: "discount",
+        databaseSchemaProperty: "discount",
+        specification: "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
+        description: "Discount percentage applied to the product price.",
         schema: {
-          type: "number",
-          description: "Discount percentage applied to the product price.",
-          "x-autobe-database-schema-member": "discount"
+          type: "number"
         },
         required: false
       },
@@ -906,11 +981,12 @@ process({
         type: "create",
         reason: "Database field 'createdAt' exists but missing from IProduct",
         key: "createdAt",
+        databaseSchemaProperty: "created_at",
+        specification: "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
+        description: "Timestamp when the product was created.",
         schema: {
           type: "string",
-          format: "date-time",
-          description: "Timestamp when the product was created.",
-          "x-autobe-database-schema-member": "created_at"
+          format: "date-time"
         },
         required: true
       }
@@ -1030,7 +1106,18 @@ Before submitting your content review:
   * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
 
-### 10.4. Ready for Completion
+### 10.4. ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every `create` revision follows the mandatory 4-step order:
+  1. `databaseSchemaProperty` (WHICH - database property or null)
+  2. `specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. `schema` (WHAT - technical details)
+- [ ] **`specification`**: Present on EVERY `create` revision - contains implementation details:
+  - For direct DB mappings: column details and transformation logic
+  - For computed properties: MUST have detailed computation spec
+- [ ] **NO OMISSIONS**: Zero revisions missing any of the mandatory fields
+
+### 10.5. Ready for Completion
 - [ ] `thinking` field filled with self-reflection before action
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient

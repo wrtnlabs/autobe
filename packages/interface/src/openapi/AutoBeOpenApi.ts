@@ -839,8 +839,8 @@ export namespace AutoBeOpenApi {
      * short, concise, and clear description that helps API consumers understand
      * what this parameter represents.
      *
-     * Implementation details for parameter handling are covered in the
-     * parent {@link IOperation.specification} field.
+     * Implementation details for parameter handling are covered in the parent
+     * {@link IOperation.specification} field.
      *
      * > MUST be written in English. Never use other languages.
      */
@@ -1300,60 +1300,8 @@ export namespace AutoBeOpenApi {
 
     /** Object type info. */
     export interface IObject extends ISignificant<"object"> {
-      /**
-       * Target database table that this DTO object represents.
-       *
-       * Establishes a direct link between this DTO schema and a specific
-       * database table. This mapping is critical for:
-       *
-       * - Property validation: Verifying DTO properties exist in the table
-       * - Code generation: Generating correct database queries and selects
-       * - Type consistency: Ensuring DTO structure aligns with database schema
-       *
-       * ## When to Set a Table Name
-       *
-       * Set this to a valid table name when the DTO directly represents or
-       * derives from a specific database table:
-       *
-       * - Entity types (`IUser`, `IOrder`): Map to their primary table
-       * - Summary types (`IUser.ISummary`): Map to the same table as parent
-       * - Create/Update DTOs (`IUser.ICreate`): Map to the target table
-       *
-       * ## When to Set `null`
-       *
-       * Set this to `null` when the DTO has no direct database table mapping.
-       * Common cases include:
-       *
-       * 1. **Composite/Aggregated types**: DTOs that combine data from multiple
-       *    tables (e.g., `IDashboardSummary` aggregating user, order, and
-       *    product statistics)
-       * 2. **Request parameter types**: Search filters, pagination options,
-       *    sorting criteria (e.g., `IUser.IRequest`, `IPageInfo`)
-       * 3. **Computed result types**: DTOs representing calculation outputs (e.g.,
-       *    `IRevenueReport`, `IAnalyticsResult`)
-       * 4. **Wrapper types**: Container types for API responses (e.g., `IPage<T>`,
-       *    `IApiResponse<T>`)
-       * 5. **Pure business logic types**: DTOs born from requirements, not
-       *    database structure (e.g., `ICheckoutSession`, `IPaymentIntent`)
-       *
-       * ## Critical Requirement When `null`
-       *
-       * When this field is `null`, the `x-autobe-specification` field (in
-       * {@link IJsonSchemaDescriptive.IObject}) MUST contain detailed
-       * implementation instructions:
-       *
-       * - Source tables and columns involved
-       * - Join conditions between tables
-       * - Aggregation formulas (`SUM`, `COUNT`, `AVG`, etc.)
-       * - Business rules and transformation logic
-       * - Edge cases (nulls, empty sets, defaults)
-       *
-       * **CRITICAL**: When set, the table name MUST be an actually existing
-       * model name from the loaded database schema. Never guess or invent
-       * schema names. Using non-existent schema names causes compilation
-       * failures and pipeline breakdown.
-       */
-      "x-autobe-database-schema"?: string | null;
+      /** @ignore */
+      "x-autobe-database-schema"?: string | null | undefined;
 
       /**
        * Properties of the object.
@@ -1512,14 +1460,22 @@ export namespace AutoBeOpenApi {
    * types, it also includes an `x-autobe-specification` field for
    * implementation guidance.
    *
+   * ## Type Construction Order
+   *
+   * When constructing types, fields MUST be specified in this order:
+   *
+   * 1. `x-autobe-specification` → HOW to implement this type
+   * 2. `description` → WHAT for API consumers
+   * 3. Type metadata (type, properties, etc.) → WHAT technically
+   *
    * ## Two-Field Documentation Pattern
    *
    * This type system separates concerns between two documentation fields:
    *
    * - **`description`**: Standard OpenAPI field for API consumers. Displayed in
    *   Swagger UI, SDK docs, etc. Focuses on WHAT and WHY.
-   * - **`x-autobe-specification`** (object types only): AutoBE-internal field for
-   *   implementation agents. Focuses on HOW to implement.
+   * - **`x-autobe-specification`**: AutoBE-internal field for implementation
+   *   agents. Focuses on HOW to implement.
    *
    * ## Guidelines for `description`
    *
@@ -1592,39 +1548,7 @@ export namespace AutoBeOpenApi {
      * - Business rules and transformation logic
      * - Edge cases (nulls, empty sets, defaults)
      */
-    export interface IObject extends IDescriptive, IJsonSchema.IObject {
-      /**
-       * Implementation specification for this **object type itself**.
-       *
-       * This is an AutoBE-internal field that provides detailed implementation
-       * guidance for downstream agents (Realize Agent, Test Agent, etc.).
-       *
-       * ## CRITICAL: Object-Level Only
-       *
-       * This specification is for the **object type as a whole**, NOT for
-       * individual properties/members. Each property within this object has its
-       * own `x-autobe-specification` field in {@link IJsonSchemaProperty.IProperty}.
-       *
-       * - ✅ Describe how to retrieve/construct this entire object type
-       * - ✅ Describe data sourcing strategy for the object as a unit
-       * - ❌ Do NOT describe individual property computations here
-       * - ❌ Do NOT duplicate what should be in property-level specifications
-       *
-       * ## Include **HOW** this type should be implemented:
-       *
-       * - Source database tables (primary table and joined tables)
-       * - Overall query strategy (joins, filters, grouping)
-       * - Object-level business rules and constraints
-       * - Edge cases for the object as a whole (not found, empty, etc.)
-       *
-       * This field is especially critical when `x-autobe-database-schema` is
-       * `null`, as it provides the only guidance for implementing data
-       * retrieval or computation logic for the entire object.
-       *
-       * > MUST be written in English. Never use other languages.
-       */
-      "x-autobe-specification": string;
-    }
+    export interface IObject extends IDescriptive, IJsonSchema.IObject {}
 
     /** Reference type directing named schema. */
     export interface IReference extends IDescriptive, IJsonSchema.IReference {}
@@ -1644,6 +1568,9 @@ export namespace AutoBeOpenApi {
     export interface INull extends IDescriptive, IJsonSchema.INull {}
 
     interface IDescriptive {
+      /** @ignore */
+      "x-autobe-specification"?: string | undefined;
+
       /**
        * API documentation for the type.
        *
@@ -1675,39 +1602,32 @@ export namespace AutoBeOpenApi {
   }
 
   /**
-   * Type schema for object properties with database column mapping.
+   * Type schema for object properties with implementation specifications.
    *
-   * `IJsonSchemaProperty` extends the base JSON Schema types with database
-   * traceability metadata and implementation specifications. Each property in
-   * an {@link IJsonSchema.IObject object schema} uses this type.
+   * `IJsonSchemaProperty` extends the base JSON Schema types with
+   * implementation specifications. Each property in an
+   * {@link IJsonSchema.IObject object schema} uses this type.
    *
-   * ## Three-Field Documentation Pattern
+   * ## Property Construction Order
+   *
+   * When constructing properties, fields MUST be specified in this order:
+   *
+   * 1. `x-autobe-specification` → HOW to implement/compute this property
+   * 2. `description` → WHAT for API consumers
+   * 3. Type metadata (type, format, etc.) → WHAT technically
+   *
+   * ## Two-Field Documentation Pattern
    *
    * Each property includes:
    *
-   * - **`description`**: API documentation for consumers (Swagger UI, SDK docs)
    * - **`x-autobe-specification`**: Implementation guidance for agents
-   * - **`x-autobe-database-schema-member`**: Database column mapping
-   *
-   * ## Purpose
-   *
-   * This type enables end-to-end traceability from DTO properties back to their
-   * database origins. This traceability is essential for:
-   *
-   * 1. **Phantom Field Detection**: Review agents can verify every DTO property
-   *    has a corresponding database column (or is explicitly marked as
-   *    computed)
-   * 2. **Code Generation**: Realize agents generate accurate database `select` and
-   *    `include` clauses based on column mappings
-   * 3. **Type Validation**: Ensures property types match database column types,
-   *    preventing runtime mismatches
+   * - **`description`**: API documentation for consumers (Swagger UI, SDK docs)
    *
    * ## Key Difference from IJsonSchemaDescriptive
    *
    * While {@link IJsonSchemaDescriptive} is used for top-level component schemas
    * (types in `components.schemas`), `IJsonSchemaProperty` is used for
-   * properties within those schemas. The key additions are
-   * `x-autobe-database-schema-member` and `x-autobe-specification` fields.
+   * properties within those schemas.
    *
    * ## Type Exclusions
    *
@@ -1730,75 +1650,68 @@ export namespace AutoBeOpenApi {
     | IJsonSchemaProperty.IOneOf
     | IJsonSchemaProperty.INull;
   export namespace IJsonSchemaProperty {
-    /** Constant value property with database column mapping. */
+    /** Constant value property. */
     export interface IConstant extends IProperty, IJsonSchema.IConstant {}
 
-    /** Boolean property with database column mapping. */
+    /** Boolean property. */
     export interface IBoolean extends IProperty, IJsonSchema.IBoolean {}
 
-    /** Integer property with database column mapping. */
+    /** Integer property. */
     export interface IInteger extends IProperty, IJsonSchema.IInteger {}
 
-    /** Number (double) property with database column mapping. */
+    /** Number (double) property. */
     export interface INumber extends IProperty, IJsonSchema.INumber {}
 
-    /** String property with database column mapping. */
+    /** String property. */
     export interface IString extends IProperty, IJsonSchema.IString {}
 
-    /** Array property with database column mapping. */
+    /** Array property. */
     export interface IArray extends IProperty, IJsonSchema.IArray {}
 
     /**
-     * Reference property with database column mapping.
+     * Reference property.
      *
-     * Used when a property references another named schema. For relation fields
-     * (foreign keys), the `x-autobe-database-schema-member` should map to the
-     * foreign key column (e.g., `author_id`), while the `$ref` points to the
-     * related entity type (e.g., `IUser.ISummary`).
+     * Used when a property references another named schema. The `$ref` points
+     * to the related entity type (e.g., `IUser.ISummary`).
      */
     export interface IReference extends IProperty, IJsonSchema.IReference {}
 
-    /** Union type property with database column mapping. */
+    /** Union type property. */
     export interface IOneOf extends IProperty, IJsonSchema.IOneOf {}
 
-    /** Null type property with database column mapping. */
+    /** Null type property. */
     export interface INull extends IProperty, IJsonSchema.INull {}
 
     /**
      * Property-level metadata for DTO schema properties.
      *
-     * This interface provides three documentation fields for each property:
+     * This interface provides two documentation fields for each property:
      *
-     * - **`description`**: API documentation for consumers
      * - **`x-autobe-specification`**: Implementation guidance for agents
-     * - **`x-autobe-database-schema-member`**: Database column mapping
+     * - **`description`**: API documentation for consumers
+     *
+     * ## Property Construction Order
+     *
+     * When constructing properties, fields MUST be specified in this order:
+     *
+     * 1. `x-autobe-specification` → HOW to implement/compute this property
+     * 2. `description` → WHAT for API consumers
+     * 3. Type metadata (type, format, etc.) → WHAT technically
      *
      * ## Field Responsibilities
      *
-     * | Field                             | Audience      | Content                      |
-     * | --------------------------------- | ------------- | ---------------------------- |
-     * | `description`                     | API consumers | WHAT/WHY - business meaning  |
-     * | `x-autobe-specification`          | Agents        | HOW - implementation details |
-     * | `x-autobe-database-schema-member` | Agents        | WHERE - data source          |
-     *
-     * ## Database Column Mapping
-     *
-     * The `x-autobe-database-schema-member` field establishes a direct link
-     * between a DTO property and a specific database column. This mapping is
-     * critical for:
-     *
-     * - Code generation: Realize agents use this to generate correct queries
-     * - Validation: Phantom Review agents verify properties exist in DB
-     * - Type safety: Ensures DTO properties match database column types
-     *
-     * ## Computed Properties
-     *
-     * When `x-autobe-database-schema-member` is `null`, the property represents
-     * a **computed value** derived from other data sources. In this case, the
-     * `x-autobe-specification` field MUST contain detailed computation
-     * specifications.
+     * | Field                    | Audience      | Content                      |
+     * | ------------------------ | ------------- | ---------------------------- |
+     * | `x-autobe-specification` | Agents        | HOW - implementation details |
+     * | `description`            | API consumers | WHAT/WHY - business meaning  |
      */
     interface IProperty {
+      /** @ignore */
+      "x-autobe-database-schema-property"?: string | null | undefined;
+
+      /** @ignore */
+      "x-autobe-specification"?: string | undefined;
+
       /**
        * API documentation for the property.
        *
@@ -1832,83 +1745,6 @@ export namespace AutoBeOpenApi {
        * - Do NOT include implementation details (use `x-autobe-specification`)
        */
       description: string;
-
-      /**
-       * Implementation specification for this property.
-       *
-       * This is an AutoBE-internal field (not exposed in standard OpenAPI
-       * output) that provides detailed implementation guidance for downstream
-       * agents (Realize Agent, Test Agent, etc.).
-       *
-       * ## For Mapped Properties (`x-autobe-database-schema-member` is set)
-       *
-       * - Database column details and type mapping
-       * - Any transformation logic between DB and DTO
-       * - Validation rules enforced at the service layer
-       *
-       * ## For Computed Properties (`x-autobe-database-schema-member` is `null`)
-       *
-       * This field is CRITICAL and MUST include:
-       *
-       * 1. **Data sources**: ALL columns and/or tables involved
-       * 2. **Computation formula**: Exact algorithm or SQL-like expression (e.g.,
-       *    `SUM(items.price * items.quantity)`)
-       * 3. **Join conditions**: How related tables connect
-       * 4. **Edge cases**: Behavior for nulls, empty sets, defaults
-       * 5. **Examples**: Concrete examples to clarify computation
-       *
-       * The specification must be precise enough for Realize Agent to implement
-       * the computation logic without ambiguity.
-       *
-       * > MUST be written in English. Never use other languages.
-       */
-      "x-autobe-specification": string;
-
-      /**
-       * Database column that this property maps to.
-       *
-       * Specifies the exact column name from the target database table that
-       * this DTO property represents. The column name should match the actual
-       * database column identifier (typically snake_case in database schemas).
-       *
-       * ## When to Set a Column Name
-       *
-       * Set this to a valid column name when:
-       *
-       * - The property directly represents a database column value
-       * - The parent object's `x-autobe-database-schema` points to a valid table
-       * - The column exists in that table's schema
-       *
-       * ## When to Set `null`
-       *
-       * Set this to `null` when the property is a **computed property** that:
-       *
-       * 1. **Aggregates data from the same table**: Calculated from multiple
-       *    columns in the same table (e.g., `fullName` from `first_name` +
-       *    `last_name`)
-       * 2. **Derives from related tables**: Computed from joined/related table
-       *    data (e.g., `orderCount` from counting related order records)
-       * 3. **Applies business logic transformations**: Results from runtime
-       *    calculations (e.g., `discountedPrice` from `price * (1 -
-       *    discount)`)
-       * 4. **Represents denormalized data**: Flattened from nested relations for
-       *    convenience (e.g., `authorName` from `post.author.name`)
-       * 5. **Parent object has no database mapping**: When the containing object's
-       *    `x-autobe-database-schema` is itself `null`
-       *
-       * ## Critical Requirement for Computed Properties
-       *
-       * When this field is `null`, the `x-autobe-specification` field MUST
-       * contain a **detailed computation specification** explaining:
-       *
-       * - Source columns or tables involved
-       * - The exact formula or algorithm used
-       * - Any business rules or edge cases
-       *
-       * This enables Realize agents to correctly implement the computation
-       * logic in service layer code.
-       */
-      "x-autobe-database-schema-member": string | null;
     }
   }
 

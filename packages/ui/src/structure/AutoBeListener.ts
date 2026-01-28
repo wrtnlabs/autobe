@@ -125,9 +125,9 @@ export class AutoBeListener {
         this.dict_.delete("interfaceOperation");
         this.dict_.delete("interfaceOperationReview");
         this.dict_.delete("interfaceSchema");
-        this.dict_.delete("interfaceSchemaRefine");
+        this.dict_.delete("interfaceSchemaCasting");
         this.dict_.delete("interfaceSchemaReview");
-        this.dict_.delete("interfaceComplement");
+        this.dict_.delete("interfaceSchemaComplement");
         this.dict_.delete("interfaceSchemaRename");
         this.dict_.delete("interfacePrerequisite");
         this.insert(event);
@@ -153,7 +153,7 @@ export class AutoBeListener {
       interfaceSchema: async (event) => {
         this.accumulate(event);
       },
-      interfaceSchemaRefine: async (event) => {
+      interfaceSchemaCasting: async (event) => {
         this.accumulate(event);
       },
       interfaceSchemaReview: async (event) => {
@@ -162,7 +162,7 @@ export class AutoBeListener {
       interfaceSchemaRename: async (event) => {
         this.accumulate(event);
       },
-      interfaceComplement: async (event) => {
+      interfaceSchemaComplement: async (event) => {
         this.accumulate(event);
       },
       interfacePrerequisite: async (event) => {
@@ -174,10 +174,10 @@ export class AutoBeListener {
         this.dict_.delete("interfaceOperationReview");
         this.dict_.delete("interfaceAuthorization");
         this.dict_.delete("interfaceSchema");
-        this.dict_.delete("interfaceSchemaRefine");
+        this.dict_.delete("interfaceSchemaCasting");
         this.dict_.delete("interfaceSchemaReview");
         this.dict_.delete("interfaceSchemaRename");
-        this.dict_.delete("interfaceComplement");
+        this.dict_.delete("interfaceSchemaComplement");
         this.dict_.delete("interfacePrerequisite");
         this.state_.setInterface(event);
         this.insert(event);

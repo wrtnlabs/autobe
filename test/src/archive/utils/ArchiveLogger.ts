@@ -242,7 +242,7 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchema")
       content.push(`  - typeName: ${event.typeName}`);
-    else if (event.type === "interfaceSchemaRefine")
+    else if (event.type === "interfaceSchemaCasting")
       content.push(
         `  - typeName: ${event.typeName}`,
         `  - original: ${JSON.stringify(event.original)}`,
@@ -258,7 +258,7 @@ export namespace ArchiveLogger {
             `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
         ),
       );
-    else if (event.type === "interfaceComplement")
+    else if (event.type === "interfaceSchemaComplement")
       content.push(`  - typeName: ${event.typeName}`);
     else if (event.type === "interfaceSchemaRename")
       content.push(

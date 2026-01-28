@@ -1,7 +1,7 @@
 import { AutoBeInterfaceSchemaProgrammer } from "@autobe/agent/src/orchestrate/interface/programmers/AutoBeInterfaceSchemaProgrammer";
-import { IAutoBeInterfaceComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceComplementApplication";
 import { IAutoBeInterfaceSchemaApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaApplication";
-import { IAutoBeInterfaceSchemaRefineApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaRefineApplication";
+import { IAutoBeInterfaceSchemaCastingApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaCastingApplication";
+import { IAutoBeInterfaceSchemaComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaComplementApplication";
 import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeDatabase, AutoBeHistory } from "@autobe/interface";
@@ -16,7 +16,7 @@ import typia from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 
-export const test_schema_interface_database_overall = async () => {
+export const test_schema_interface_database = async () => {
   if (
     (await AutoBeExampleStorage.has({
       vendor: TestGlobal.vendorModel,
@@ -41,7 +41,6 @@ export const test_schema_interface_database_overall = async () => {
     AutoBeInterfaceSchemaProgrammer.fixApplication({
       application,
       everyModels,
-      model: null,
     });
     LlmTypeChecker.visit({
       $defs: func.parameters.$defs,
@@ -72,38 +71,9 @@ export const test_schema_interface_database_overall = async () => {
         );
       },
     });
-    LlmTypeChecker.visit({
-      $defs: func.parameters.$defs,
-      schema: func.parameters,
-      closure: (next) => {
-        if (LlmTypeChecker.isObject(next) === false) return;
-
-        const property: ILlmSchema | undefined =
-          next.properties["x-autobe-database-schema-member"];
-        if (property === undefined) return;
-        else if (LlmTypeChecker.isAnyOf(property) === false)
-          throw new Error(
-            `Property "x-autobe-database-schema-member" must be an anyOf schema.`,
-          );
-
-        const value: ILlmSchema | undefined = property.anyOf.find((sch) =>
-          LlmTypeChecker.isString(sch),
-        );
-        if (value === undefined)
-          throw new Error(
-            `Property "x-autobe-database-schema-member" must contain a string schema in its anyOf.`,
-          );
-
-        TestValidator.equals(
-          "x-autobe-database-schema-member",
-          value.enum ?? [],
-          [],
-        );
-      },
-    });
   };
   assert(typia.llm.application<IAutoBeInterfaceSchemaApplication>());
-  assert(typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>());
+  assert(typia.llm.application<IAutoBeInterfaceSchemaCastingApplication>());
   assert(typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>());
-  assert(typia.llm.application<IAutoBeInterfaceComplementApplication>());
+  assert(typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>());
 };

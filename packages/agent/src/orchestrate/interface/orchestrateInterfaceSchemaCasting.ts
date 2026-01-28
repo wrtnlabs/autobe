@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeEventSource,
-  AutoBeInterfaceSchemaRefineEvent,
+  AutoBeInterfaceSchemaCastingEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -15,14 +15,14 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformInterfaceSchemaRefineHistory } from "./histories/transformInterfaceSchemaRefineHistory";
+import { transformInterfaceSchemaCastingHistory } from "./histories/transformInterfaceSchemaCastingHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
-import { IAutoBeInterfaceSchemaRefineApplication } from "./structures/IAutoBeInterfaceSchemaRefineApplication";
+import { IAutoBeInterfaceSchemaCastingApplication } from "./structures/IAutoBeInterfaceSchemaCastingApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export async function orchestrateInterfaceSchemaRefine(
+export async function orchestrateInterfaceSchemaCasting(
   ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
@@ -96,7 +96,7 @@ async function process(
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<IAutoBeInterfaceSchemaRefineApplication>(),
+      typia.json.application<IAutoBeInterfaceSchemaCastingApplication>(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -127,7 +127,7 @@ async function process(
   const value = await preliminary.orchestrate<
     AutoBeOpenApi.IJsonSchemaDescriptive.IObject | false
   >(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null> =
       {
         value: null,
       };
@@ -142,7 +142,7 @@ async function process(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaRefineHistory({
+      ...transformInterfaceSchemaCastingHistory({
         state: ctx.state(),
         instruction: props.instruction,
         typeName: props.typeName,
@@ -155,9 +155,9 @@ async function process(
 
     // Fix schema if refined
     const refinedSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject | null =
-      pointer.value.schema !== null
-        ? (AutoBeJsonSchemaFactory.fixSchema(
-            pointer.value.schema,
+      pointer.value.casting !== null
+        ? (AutoBeJsonSchemaFactory.fixDesign(
+            pointer.value.casting,
           ) as AutoBeOpenApi.IJsonSchemaDescriptive.IObject)
         : null;
 
@@ -176,7 +176,7 @@ async function process(
       total: props.progress.total,
       completed: ++props.progress.completed,
       created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaRefineEvent);
+    } satisfies AutoBeInterfaceSchemaCastingEvent);
 
     return out(result)(refinedSchema ?? false);
   });
@@ -189,7 +189,7 @@ function createController(
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive;
     operations: AutoBeOpenApi.IOperation[];
-    pointer: IPointer<IAutoBeInterfaceSchemaRefineApplication.IComplete | null>;
+    pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null>;
     preliminary: AutoBePreliminaryController<
       | "analysisFiles"
       | "databaseSchemas"
@@ -203,8 +203,8 @@ function createController(
   },
 ): IAgenticaController.IClass {
   const validate: Validator = (next) => {
-    const result: IValidation<IAutoBeInterfaceSchemaRefineApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaRefineApplication.IProps>(next);
+    const result: IValidation<IAutoBeInterfaceSchemaCastingApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaCastingApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -213,31 +213,13 @@ function createController(
         thinking: result.data.thinking,
         request: result.data.request,
       });
-
-    // Validate that schema is object type if provided
-    if (
-      result.data.request.schema !== null &&
-      result.data.request.schema.type !== "object"
-    ) {
-      return {
-        success: false,
-        errors: [
-          {
-            path: "$input.request.schema.type",
-            expected: '"object"',
-            value: result.data.request.schema.type,
-          },
-        ],
-        data: result.data,
-      };
-    }
-    return result;
+    else return result;
   };
 
   const everyModels: AutoBeDatabase.IModel[] =
     ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceSchemaRefineApplication>({
+    typia.llm.application<IAutoBeInterfaceSchemaCastingApplication>({
       validate: {
         process: validate,
       },
@@ -246,12 +228,6 @@ function createController(
   AutoBeInterfaceSchemaProgrammer.fixApplication({
     application,
     everyModels,
-    model:
-      everyModels.find(
-        (m) =>
-          m.name ===
-          AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaName(props.typeName),
-      ) ?? null,
   });
 
   return {
@@ -263,12 +239,12 @@ function createController(
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeInterfaceSchemaRefineApplication,
+    } satisfies IAutoBeInterfaceSchemaCastingApplication,
   };
 }
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceSchemaRefineApplication.IProps>;
+) => IValidation<IAutoBeInterfaceSchemaCastingApplication.IProps>;
 
-const SOURCE = "interfaceSchemaRefine" satisfies AutoBeEventSource;
+const SOURCE = "interfaceSchemaCasting" satisfies AutoBeEventSource;

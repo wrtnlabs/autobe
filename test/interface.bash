@@ -22,6 +22,11 @@ pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3
 pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.prerequisite.reddit.log
 pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.prerequisite.shopping.log
 
+pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.schema.todo.log
+pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.schema.bbs.log
+pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.schema.reddit.log
+pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.schema.shopping.log
+
 ######################################################
 # qwen/qwen3-30b-a3b-thinking-2507
 ######################################################

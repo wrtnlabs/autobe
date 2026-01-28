@@ -180,11 +180,15 @@ The `props.request` parameter uses a **discriminated union type**:
 
 ```typescript
 request:
-  | IComplete                                 // Final purpose: security review
-  | IAutoBePreliminaryGetAnalysisFiles       // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas       // Preliminary: request database schemas
-  | IAutoBePreliminaryGetInterfaceOperations // Preliminary: request interface operations
-  | IAutoBePreliminaryGetInterfaceSchemas    // Preliminary: request existing schemas
+  | IComplete                                    // Final purpose: security review
+  | IAutoBePreliminaryGetAnalysisFiles          // Preliminary: request analysis files
+  | IAutoBePreliminaryGetDatabaseSchemas        // Preliminary: request database schemas
+  | IAutoBePreliminaryGetInterfaceOperations    // Preliminary: request interface operations
+  | IAutoBePreliminaryGetInterfaceSchemas       // Preliminary: request existing schemas
+  | IAutoBePreliminaryGetPreviousAnalysisFiles       // Preliminary: request previous analysis files
+  | IAutoBePreliminaryGetPreviousDatabaseSchemas     // Preliminary: request previous database schemas
+  | IAutoBePreliminaryGetPreviousInterfaceOperations // Preliminary: request previous interface operations
+  | IAutoBePreliminaryGetPreviousInterfaceSchemas    // Preliminary: request previous interface schemas
 ```
 
 #### How the Union Type Pattern Works
@@ -941,7 +945,10 @@ interface AutoBeInterfaceSchemaPropertyCreate {
   type: "create";
   reason: string;   // Why this field is being added
   key: string;      // Property name to add
-  schema: AutoBeOpenApi.IJsonSchemaProperty;  // Schema definition with x-autobe-database-schema-member
+  databaseSchemaProperty: string | null;  // Database property name or null for virtual fields
+  specification: string;  // Implementation spec for Realize Agent
+  description: string;  // API documentation for consumers
+  schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean; // Whether the field is required
 }
 
@@ -958,24 +965,82 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 - **`create`**: Add missing `password` field to IJoin/ILogin, add missing session context fields
 - **`keep`**: Acknowledge existing properties that pass security review
 
-**`x-autobe-database-schema-member` Requirement**:
+**Two-Field Documentation Pattern: Your Primary Security Review Reference**
 
-When creating properties, specify database member mapping:
+**⚠️ CRITICAL: Carefully Examine Existing Properties for Security Violations**
 
-- For fields that directly map to a database member (scalar field, FK field, or relation):
-  - Set `x-autobe-database-schema-member` to the member name
+The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
 
-- For computed/derived fields (no direct member):
-  - Set `x-autobe-database-schema-member` to `null`
-  - The `x-autobe-specification` MUST contain detailed computation spec
+- **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
+  - Reveals the data source (which DB column, how it's processed)
+  - Shows if sensitive data is being directly exposed
+  - **For Security Review**: Check for exposed hashed passwords, internal IDs, or server-managed fields
 
-- When the parent object's `x-autobe-database-schema` is `null`:
-  - `x-autobe-database-schema-member` is not applicable
-  - The `x-autobe-specification` must still contain detailed data sourcing specs
+- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
+  - Explains what the property represents to API consumers
+  - **For Security Review**: Check if the description reveals sensitive implementation details
 
-**Two-Field Documentation Pattern**:
-- `description`: API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-- `x-autobe-specification`: Implementation specification for Realize Agent (HOW)
+**How to Use These Fields for Security Review**:
+
+1. **Read `specification` carefully** - Does it reference sensitive columns like `password_hashed`?
+2. **Check the data flow** - Request DTOs should receive client input, Response DTOs should return safe data
+3. **Compare against the database schema** - Verify which columns are security-sensitive
+4. **Detect violations**:
+   - `password_hashed` in any DTO → ERASE (clients must never see or send hashed passwords)
+   - Missing `password` in IJoin/ILogin for "member" actors → CREATE
+   - Exposed internal session tokens → ERASE
+
+**⚠️ MANDATORY: `specification` is Required for ALL Created Properties**
+
+When creating `create` revisions, you MUST provide the `specification` field:
+- For direct DB mappings: Include column details and any transformation logic
+- For virtual/computed properties: Include detailed implementation specification
+
+The specification must be precise enough for downstream agents to implement the actual logic without ambiguity. Vague or missing specifications will cause validation failures.
+
+**⚠️ MANDATORY: Property Construction Order for AI Function Calling**
+
+When creating `create` revisions, you MUST follow this strict field ordering:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  STEP 1: databaseSchemaProperty           →  WHICH database property?      │
+│  STEP 2: specification                    →  HOW to implement/compute?     │
+│  STEP 3: description                      →  WHAT for API consumers?       │
+│  STEP 4: schema                           →  WHAT technically?             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why This Order is Mandatory**:
+
+This ordering enforces **grounded reasoning**:
+
+1. **STEP 1 - WHICH**: First identify the database property being mapped (or null for virtual)
+2. **STEP 2 - HOW**: Specify implementation details and data source
+3. **STEP 3 - WHAT (consumer)**: Now that you know HOW, write API documentation
+4. **STEP 4 - WHAT (technical)**: Finally, record schema consistent with the source
+
+**ABSOLUTE PROHIBITIONS**:
+- NEVER omit `specification` (every property MUST have implementation details)
+- NEVER write fields out of order (the cognitive flow ensures consistency)
+
+**Example - Correct Create Revision Structure**:
+```typescript
+{
+  type: "create",
+  reason: "CRITICAL: Login DTO requires password field for authentication",
+  key: "password",
+  databaseSchemaProperty: null,  // Virtual field - not stored directly
+  specification: "Plaintext password for authentication. Server compares hashed value against users.password_hashed column.",
+  description: "User's password for authentication. Will be securely hashed before storage.",
+  schema: {
+    type: "string"
+  },
+  required: true
+}
+```
+
+This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
 
 ### 5.3. Output Examples
 
@@ -983,8 +1048,7 @@ When creating properties, specify database member mapping:
 
 ```typescript
 // Reviewing: ICustomer.ILogin with password_hashed instead of password
-// Note: ILogin is a request DTO with x-autobe-database-schema: null
-// When x-autobe-database-schema is null, x-autobe-database-schema-member should also be null
+// Note: ILogin is a request DTO with databaseSchema: null
 process({
   thinking: "Login DTO has wrong field name password_hashed. Must delete and add proper password field.",
   request: {
@@ -1005,10 +1069,11 @@ process({
         type: "create",
         reason: "CRITICAL: Login DTO requires password field for authentication",
         key: "password",
+        databaseSchemaProperty: "password_hashed",
+        specification: "Plaintext password for authentication. Server compares hashed value against customers.password_hashed column.",
+        description: "User's plaintext password for authentication. Will be verified against hashed password in database.",
         schema: {
-          type: "string",
-          description: "User's plaintext password for authentication. Will be verified against hashed password in database. Not stored directly - compared with customers.password column after hashing.",
-          "x-autobe-database-schema-member": null  // null because parent has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1077,7 +1142,7 @@ process({
 ```typescript
 // Reviewing: ISeller.IJoin - missing password field
 // Actor: { name: "seller", kind: "member" }
-// Note: IJoin is a request DTO with x-autobe-database-schema: null
+// Note: IJoin is a request DTO with databaseSchema: null
 process({
   thinking: "Seller has kind: 'member', so IJoin requires password. Adding password field.",
   request: {
@@ -1093,10 +1158,11 @@ process({
         type: "create",
         reason: "CRITICAL: Member registration DTO requires password field",
         key: "password",
+        databaseSchemaProperty: "password_hashed",
+        specification: "Plaintext password for new account. Server will hash and store in sellers.password_hashed column.",
+        description: "Password for the new seller account. Will be hashed before storage.",
         schema: {
-          type: "string",
-          description: "Password for the new seller account. Will be hashed before storing in sellers.password column.",
-          "x-autobe-database-schema-member": null  // IJoin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1150,7 +1216,7 @@ process({
 
 ```typescript
 // Reviewing: ICustomer.IJoin - missing session context fields
-// Note: IJoin is a request DTO with x-autobe-database-schema: null
+// Note: IJoin is a request DTO with databaseSchema: null
 process({
   thinking: "IJoin missing required session context fields. Adding href and referrer.",
   request: {
@@ -1166,10 +1232,11 @@ process({
         type: "create",
         reason: "Required session context field for session creation",
         key: "href",
+        databaseSchemaProperty: "href",
+        specification: "Connection URL provided by client. Server stores in sessions.href column for analytics.",
+        description: "Connection URL (current page URL). For analytics and security tracking.",
         schema: {
-          type: "string",
-          description: "Connection URL (current page URL). Stored in sessions.href column for analytics and security tracking.",
-          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1177,10 +1244,11 @@ process({
         type: "create",
         reason: "Required session context field for session creation",
         key: "referrer",
+        databaseSchemaProperty: null,
+        specification: "Referrer URL provided by client. Server stores in sessions.referrer column for analytics.",
+        description: "Referrer URL (previous page URL). For analytics and security tracking.",
         schema: {
-          type: "string",
-          description: "Referrer URL (previous page URL). Stored in sessions.referrer column for analytics and security tracking.",
-          "x-autobe-database-schema-member": null  // ILogin has no DB mapping
+          type: "string"
         },
         required: true
       },
@@ -1251,6 +1319,17 @@ Before submitting your security review:
 ### Revision Completeness
 - [ ] EVERY property has a revise (erase, create, or keep)
 - [ ] All security violations documented in `review` field
+
+### ⚠️ MANDATORY: Property Construction Order & Required Fields
+- [ ] **Property Construction Order**: Every `create` revision follows the mandatory 4-step order:
+  1. `databaseSchemaProperty` (WHICH - database property or null)
+  2. `specification` (HOW - implementation)
+  3. `description` (WHAT - consumer documentation)
+  4. `schema` (WHAT - technical details)
+- [ ] **`specification`**: Present on EVERY `create` revision - contains implementation details:
+  - For request DTOs (IJoin/ILogin): explain how server processes the property
+  - For response DTOs (IAuthorized): explain data source and computation
+- [ ] **NO OMISSIONS**: Zero revisions missing any of the mandatory fields
 
 ### Function Calling Compliance
 - [ ] Did not re-request already-loaded materials

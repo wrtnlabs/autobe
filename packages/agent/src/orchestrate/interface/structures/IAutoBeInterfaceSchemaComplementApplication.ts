@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeInterfaceSchemaDesign } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -9,7 +9,7 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
-export interface IAutoBeInterfaceComplementApplication {
+export interface IAutoBeInterfaceSchemaComplementApplication {
   /**
    * Process schema complement task or preliminary data requests.
    *
@@ -19,10 +19,10 @@ export interface IAutoBeInterfaceComplementApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceComplementApplication.IProps): void;
+  process(props: IAutoBeInterfaceSchemaComplementApplication.IProps): void;
 }
 
-export namespace IAutoBeInterfaceComplementApplication {
+export namespace IAutoBeInterfaceSchemaComplementApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -107,37 +107,11 @@ export namespace IAutoBeInterfaceComplementApplication {
      *
      * - Which properties did you include and why?
      * - What is required vs optional, and why?
-     * - How does this satisfy the referencing schemas' expectations?
-     * - What patterns from existing schemas did you follow?
+     * - Which types use $ref and why?
+     * - What was excluded and why? (e.g., auto-generated fields for ICreate)
      */
     rationale: string;
 
-    /**
-     * The missing schema definition that needs to be added to the OpenAPI
-     * document's `components.schemas` section.
-     *
-     * This schema definition is for a type that is referenced but not yet
-     * defined. The type name for this schema is provided in the input context.
-     *
-     * Example structure:
-     *
-     * ```typescript
-     * {
-     *   "type": "object",
-     *   "properties": {
-     *     "id": { "type": "string" },
-     *     "name": { "type": "string" },
-     *     "email": { "type": "string", "format": "email" }
-     *   },
-     *   "required": ["id", "name", "email"]
-     * }
-     * ```
-     *
-     * The schema definition follows the JSON Schema specification and will be
-     * directly inserted into the OpenAPI document's components.schemas section,
-     * making it available for $ref references throughout the API
-     * specification.
-     */
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    design: AutoBeInterfaceSchemaDesign;
   }
 }

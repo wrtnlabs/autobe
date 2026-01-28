@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeAnalyzeActor, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import typia, { IValidation } from "typia";
 
@@ -33,7 +33,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
 
   export const validateOperation = (props: {
     operation: AutoBeOpenApi.IOperation;
-    actor: string;
+    actor: AutoBeAnalyzeActor;
     accessor: string;
     errors: IValidation.IError[];
   }): void => {
@@ -61,10 +61,10 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       });
 
     // check for which actor is specified
-    if (props.operation.authorizationActor !== props.actor)
+    if (props.operation.authorizationActor !== props.actor.name)
       props.errors.push({
         path: `${props.accessor}.authorizationActor`,
-        expected: JSON.stringify(props.actor),
+        expected: JSON.stringify(props.actor.name),
         value: props.operation.authorizationActor,
         description: StringUtil.trim`
           The authorizationActor must match the actor associated with
@@ -76,7 +76,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
           remake the operation for the correct actor. The other actor
           was already defined elsewhere.
 
-          - Expected actor: ${JSON.stringify(props.actor)}
+          - Expected actor: ${JSON.stringify(props.actor.name)}
           - Provided actor: ${JSON.stringify(props.operation.authorizationActor)}
         `,
       });
@@ -167,16 +167,16 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
   };
 
   export const validateAuthorizationTypes = (props: {
-    actor: string;
+    actor: AutoBeAnalyzeActor;
     operations: AutoBeOpenApi.IOperation[];
     accessor: string;
     errors: IValidation.IError[];
   }): void => {
-    type AuthorizaationType = AutoBeOpenApi.IOperation["authorizationType"];
-    for (const type of typia.misc.literals<AuthorizaationType>()) {
+    type AuthorizationType = AutoBeOpenApi.IOperation["authorizationType"];
+    for (const type of typia.misc.literals<AuthorizationType>()) {
       // Skip null - these are handled by Base/Action Endpoint generators
       if (type === null) continue;
-      if (props.actor === "guest" && type === "login") continue;
+      if (props.actor.kind === "guest" && type === "login") continue;
       const count: number = props.operations.filter(
         (o) => o.authorizationType === type,
       ).length;
@@ -193,11 +193,11 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
           description: StringUtil.trim`
             There must be an operation that has defined 
             (AutoBeOpenApi.IOperation.authorizationType := "${type}")
-            for the "${props.actor}" role's authorization activity; "${type}".
+            for the "${props.actor.name}" role's authorization activity; "${type}".
 
             However, none of the operations have the 
             (AutoBeOpenApi.IOperation.authorizationType := "${type}") value, 
-            so that the "${props.actor}" cannot perform the authorization ${type} activity.
+            so that the "${props.actor.name}" cannot perform the authorization ${type} activity.
 
             Please make that operation at the next function calling. You have to do it.
           `,
@@ -210,11 +210,11 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
           description: StringUtil.trim`
             There must be only one operation that has defined 
             (AutoBeOpenApi.IOperation.authorizationType := "${type}")
-            for the "${props.actor}" role's authorization activity; "${type}".
+            for the "${props.actor.name}" role's authorization activity; "${type}".
 
             However, multiple operations (${count} operations) have the
             (AutoBeOpenApi.IOperation.authorizationType := "${type}") value,
-            so that the "${props.actor}" cannot determine which operation to use
+            so that the "${props.actor.name}" cannot determine which operation to use
             for the authorization ${type} activity.
 
             Please ensure that only one operation is defined for each

@@ -3,7 +3,6 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-import { AutoBeInterfaceSchemaProgrammer } from "../programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
 
 export namespace AutoBeJsonSchemaValidator {
@@ -39,7 +38,7 @@ export namespace AutoBeJsonSchemaValidator {
     models: AutoBeDatabase.IModel[];
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }
 
@@ -89,11 +88,12 @@ export namespace AutoBeJsonSchemaValidator {
         description: StringUtil.trim`
           JSON schema type name allows at most one dot(.) character to separate
           module name and interface name.
-          
+
           However, current key name ${transform(JSON.stringify(props.key))}
-          contains multiple dot(.) characters (${elements.length - 1} times). 
-          
+          contains multiple dot(.) characters (${elements.length - 1} times).
+
           Change it to a valid type name with at most one dot(.) character at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (elements.every(Escaper.variable) === false)
@@ -111,8 +111,9 @@ export namespace AutoBeJsonSchemaValidator {
           Even though JSON schema type name allows dot(.) character, but
           each segment separated by dot(.) must be a valid variable name.
 
-          Current key name ${transform(JSON.stringify(props.key))} is not valid. 
+          Current key name ${transform(JSON.stringify(props.key))} is not valid.
           Change it to a valid variable name at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (props.key.endsWith(".IPage")) {
@@ -141,10 +142,11 @@ export namespace AutoBeJsonSchemaValidator {
         value: transform(props.key),
         description: StringUtil.trim`
           You've taken a mistake that defines "${transform("IPageIRequest")}" as a type name.
-          However, as you've intended to define a pagination request type, 
+          However, as you've intended to define a pagination request type,
           the correct type name is "${transform("IPage.IRequest")}" instead of "${transform("IPageIRequest")}".
 
           Change it to "${transform("IPage.IRequest")}" at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     if (
@@ -170,10 +172,11 @@ export namespace AutoBeJsonSchemaValidator {
 
           Even in the case of pagination response, after 'IPage' prefix,
           the remaining part must be an interface name starting with 'I'.
-          
+
           Current key name ${JSON.stringify(props.key)} is not valid. Change
           it to a valid interface name to be  ${JSON.stringify(expected)},
           or change it to another valid interface name at the next time.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
     }
@@ -233,7 +236,7 @@ export namespace AutoBeJsonSchemaValidator {
 
           Change ${transform(JSON.stringify(props.key))} to ${transform(JSON.stringify(`${elements[0].replace("Session", "")}.${elements[1]}`))} at the next time.
 
-          This is an ABSOLUTE RULE with ZERO TOLERANCE. You MUST follow this instruction exactly.
+          Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
   };
@@ -245,15 +248,16 @@ export namespace AutoBeJsonSchemaValidator {
           path: props.path,
           expected: `AutoBeOpenApi.IJsonSchemaDescriptive<AutoBeOpenApi.IJsonSchema.IObject>`,
           value: props.schema,
-          description: `${props.typeName} must be an object type for authorization responses`,
+          description: `${props.typeName} must be an object type for authorization responses. Note that, this is not a recommendation, but an instruction you must follow.`,
         });
       } else {
         // Check if token property exists
         props.schema.properties ??= {};
         props.schema.properties["token"] = {
+          "x-autobe-specification":
+            "JWT token information for authentication. Server generates this token upon successful login/join.",
+          description: "JWT token information for authentication.",
           $ref: "#/components/schemas/IAuthorizationToken",
-          description: "JWT token information for authentication",
-          "x-autobe-database-schema-member": null,
         } as AutoBeOpenApi.IJsonSchemaProperty.IReference;
 
         props.schema.required ??= [];
@@ -295,17 +299,19 @@ export namespace AutoBeJsonSchemaValidator {
               .join(" | "),
             value: key,
             description: StringUtil.trim`
-              You've referenced an authorization-related type ${JSON.stringify(key)} 
+              You've referenced an authorization-related type ${JSON.stringify(key)}
               that is not used in any operation's requestBody or responseBody.
 
               Authorization-related types must be used in at least one operation's
               requestBody or responseBody. Make sure to use the type appropriately
               in your API design.
- 
+
               Existing authorization-related types used in operations are:
               - ${Array.from(candidates)
                 .map((s) => `#/components/schemas/${s}`)
                 .join("\n- ")}
+
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
       },
@@ -322,20 +328,22 @@ export namespace AutoBeJsonSchemaValidator {
       e.description = StringUtil.trim`
         You have defined a property named "x-autobe-database-schema"
         somewhere wrong place.
-        
-        You have defined a property name "x-autobe-database-schema" as 
+
+        You have defined a property name "x-autobe-database-schema" as
         an object type. However, this "x-autobe-database-schema" property
         must be defined only in the root schema object as a metadata,
         not in the nested object property.
 
         Remove this property at the next time, and re-define it in the
         root object schema.
-        
+
         - Current path (wrong): ${e.path}
         - Must be (object root): ${e.path.replace(
           `.properties["x-autobe-database-schema"]`,
           `["x-autobe-database-schema"]`,
         )}
+
+        Note that, this is not a recommendation, but an instruction you must follow.
       `;
     }
 
@@ -345,37 +353,19 @@ export namespace AutoBeJsonSchemaValidator {
       props.schema["x-autobe-database-schema"] === null ||
       props.schema["x-autobe-database-schema"] === undefined
     ) {
-      for (const [key, value] of Object.entries(props.schema.properties))
-        if (value["x-autobe-database-schema-member"] !== null)
-          props.errors.push({
-            path: `${props.path}.properties${
-              Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
-            }["x-autobe-database-schema-member"]`,
-            expected: "null",
-            value: value["x-autobe-database-schema-member"],
-            description: StringUtil.trim`
-              You have defined "x-autobe-database-schema-member" property referencing
-              a database schema member, but the parent schema does not reference any
-              database schema in "x-autobe-database-schema" property.
-
-              To reference a database schema member, first define the parent
-              schema's "x-autobe-database-schema" property with
-              a valid database schema name.
-
-              If not, set this "x-autobe-database-schema-member" property
-              to null value at the next time, and then describe what this property 
-              is for in the schema description instead.
-            `,
-          });
+      // No validation needed when x-autobe-database-schema is null
+      // x-autobe-database-schema-property is now @internal and hidden from AI
     } else {
-      const next: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = props.schema;
+      const next: AutoBeOpenApi.IJsonSchema.IObject = props.schema;
       const model: AutoBeDatabase.IModel | undefined = props.models.find(
         (m) => m.name === next["x-autobe-database-schema"],
       );
       if (model === undefined)
         props.errors.push({
           path: `${props.path}["x-autobe-database-schema"]`,
-          expected: props.models.map((s) => JSON.stringify(s.name)).join(" | "),
+          expected:
+            props.models.map((s) => JSON.stringify(s.name)).join(" | ") +
+            " | null",
           value: next["x-autobe-database-schema"],
           description: StringUtil.trim`
             You've referenced a non-existing database schema name
@@ -385,137 +375,17 @@ export namespace AutoBeJsonSchemaValidator {
 
             Never assume non-existing models. This is not recommendation,
             but an instruction you must follow. Never repeat the same
-            value again. I repeat that, you have to choose one of below:
+            value again. You have to choose one of below:
 
-            Existing database schema names are:
-            
+            **Option 1: Reference an existing database schema**
             ${props.models.map((m) => `- ${m.name}`).join("\n")}
+
+            **Option 2: Set to null (for DTOs with no database reference)**
+            If this DTO represents pure computed/statistical data or logic-only
+            structures that have no direct relationship to any database table,
+            set "x-autobe-database-schema" to null.
           `,
         });
-      for (const [key, value] of Object.entries(next.properties))
-        validateDatabaseSchemaMember({
-          models: props.models,
-          target: model,
-          key,
-          value,
-          errors: props.errors,
-          path: `${props.path}.properties${
-            Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
-          }`,
-        });
-    }
-  };
-
-  const validateDatabaseSchemaMember = (props: {
-    models: AutoBeDatabase.IModel[];
-    target: AutoBeDatabase.IModel | undefined;
-    key: string;
-    value: AutoBeOpenApi.IJsonSchemaProperty;
-    errors: IValidation.IError[];
-    path: string;
-  }): void => {
-    const member: string | null =
-      props.value["x-autobe-database-schema-member"];
-    if (member === null || member === undefined) return;
-
-    const propertyAccessor: string = Escaper.variable(props.key)
-      ? `${props.path}.properties.${props.key}`
-      : `${props.path}.properties[${JSON.stringify(props.key)}]`;
-    const pluginAccessor: string = `${propertyAccessor}["x-autobe-database-schema-member"]`;
-
-    if (props.target === undefined) {
-      props.errors.push({
-        path: pluginAccessor,
-        expected: "null",
-        value: member,
-        description: StringUtil.trim`
-          You have defined "x-autobe-database-schema-member" property referencing
-          a database schema member, but the parent schema does not reference any
-          database schema in "x-autobe-database-schema" property.
-
-          To reference a database schema member, first define the parent
-          schema's "x-autobe-database-schema" property with
-          a valid database schema name.
-
-          If not, remove this "x-autobe-database-schema-member" property
-          at the next time, and then describe what this property is for
-          in the schema description instead.
-        `,
-      });
-      return;
-    }
-
-    const candidates: AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember[] =
-      AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaMembers({
-        everyModels: props.models,
-        model: props.target,
-      });
-    const found:
-      | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
-      | undefined = candidates.find((c) => c.key === member);
-    if (found === undefined)
-      props.errors.push({
-        path: pluginAccessor,
-        expected: candidates.map((c) => JSON.stringify(c.key)).join(" | "),
-        value: member,
-        description: StringUtil.trim`
-          You have defined "x-autobe-database-schema-member" property with value
-          ${JSON.stringify(member)} that does not match any member (field or relation)
-          in the database schema "${props.target.name}".
-
-          The member name you specified does not exist in the target database
-          schema. Please check the spelling and ensure you're referencing
-          an existing field or relation.
-
-          Available members in "${props.target.name}" are:
-          ${candidates.map((c) => `- ${c.key}`).join("\n")}
-        `,
-      });
-    else if (
-      found.nullable === true &&
-      AutoBeOpenApiTypeChecker.isNullable(props.value) === false
-    ) {
-      const expected: AutoBeOpenApi.IJsonSchemaProperty = {
-        oneOf: [
-          ...(AutoBeOpenApiTypeChecker.isOneOf(props.value)
-            ? props.value.oneOf
-            : [
-                {
-                  ...props.value,
-                  ...{
-                    description: undefined,
-                    "x-autobe-database-schema-member": undefined,
-                  },
-                },
-              ]),
-          { type: "null" },
-        ],
-        description: props.value.description,
-        "x-autobe-specification": props.value["x-autobe-specification"],
-        "x-autobe-database-schema-member":
-          props.value["x-autobe-database-schema-member"],
-      };
-      props.errors.push({
-        path: propertyAccessor,
-        expected: JSON.stringify(expected),
-        value: props.value["x-autobe-database-schema-member"],
-        description: StringUtil.trim`
-          The database schema member "${found.key}" in "${props.target.name}"
-          is nullable, but this DTO property is defined as non-nullable.
-
-          This is dangerous because the database can return NULL values,
-          which would cause runtime errors if the DTO expects non-null.
-
-          You MUST use "oneOf" with "null" type to allow null values:
-          
-          \`\`\`json
-          ${JSON.stringify(expected)}
-          \`\`\`
-
-          Note: The reverse case (DB non-null, DTO nullable) is allowed
-          because DB default values or server logic may fill the value.
-        `,
-      });
     }
   };
 
@@ -546,6 +416,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need tree or graph structures, use explicit relationships with
         ID references (e.g., parentId: string) instead of recursive type definitions.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isArray(props.schema) &&
@@ -566,6 +437,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need nested structures, define explicit depth levels with separate
         types, or use parent-child relationships with ID references.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isOneOf(props.schema) &&
@@ -590,6 +462,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need polymorphic hierarchies, define separate concrete types for
         each variant without including the union type itself as a variant.
         Remove the self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
     else if (
       AutoBeOpenApiTypeChecker.isObject(props.schema) &&
@@ -625,6 +498,7 @@ export namespace AutoBeJsonSchemaValidator {
         If you need parent-child or graph relationships, make the self-referencing
         property either nullable or optional, or use ID references (e.g., parentId: string).
         Remove the required self-reference and redesign the schema at the next time.
+        Note that, this is not a recommendation, but an instruction you must follow.
       `);
   };
 
@@ -638,10 +512,7 @@ export namespace AutoBeJsonSchemaValidator {
       if (o.requestBody) root.add(o.requestBody.typeName);
       if (o.responseBody) root.add(o.responseBody.typeName);
     }
-    return (
-      key: string,
-      schema: AutoBeOpenApi.IJsonSchemaDescriptive,
-    ): void => {
+    return (key: string, schema: AutoBeOpenApi.IJsonSchema): void => {
       if (AutoBeOpenApiTypeChecker.isObject(schema) === true) return;
       if (root.has(key))
         props.errors.push({
@@ -704,7 +575,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   const validateReferenceId = (props: {
     errors: IValidation.IError[];
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
@@ -751,7 +622,7 @@ export namespace AutoBeJsonSchemaValidator {
 
   const validatePropertyNames = (props: {
     errors: IValidation.IError[];
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     path: string;
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
@@ -810,11 +681,7 @@ export namespace AutoBeJsonSchemaValidator {
         const { minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema;
 
         // Case 1: minimum > maximum
-        if (
-          minimum !== undefined &&
-          maximum !== undefined &&
-          minimum > maximum
-        )
+        if (minimum !== undefined && maximum !== undefined && minimum > maximum)
           props.errors.push({
             path: accessor,
             expected: "minimum <= maximum",
@@ -824,6 +691,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               This creates an impossible range where no value can satisfy both constraints.
               Either increase maximum or decrease minimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -843,6 +711,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               This creates an impossible range where no value can satisfy both constraints.
               Either increase exclusiveMaximum or decrease exclusiveMinimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -863,6 +732,7 @@ export namespace AutoBeJsonSchemaValidator {
               This creates an impossible range. A value cannot be >= ${minimum} and < ${exclusiveMaximum}
               at the same time when minimum >= exclusiveMaximum.
               Either increase exclusiveMaximum or decrease minimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -883,6 +753,7 @@ export namespace AutoBeJsonSchemaValidator {
               This creates an impossible range. A value cannot be > ${exclusiveMinimum} and <= ${maximum}
               at the same time when exclusiveMinimum >= maximum.
               Either increase maximum or decrease exclusiveMinimum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -895,8 +766,7 @@ export namespace AutoBeJsonSchemaValidator {
         )
           props.errors.push({
             path: accessor,
-            expected:
-              "no exclusive constraints when minimum equals maximum",
+            expected: "no exclusive constraints when minimum equals maximum",
             value: schema,
             description: StringUtil.trim`
               Invalid numeric range: minimum equals maximum (${minimum}), but exclusive
@@ -905,6 +775,7 @@ export namespace AutoBeJsonSchemaValidator {
               When minimum === maximum, the only valid value is exactly ${minimum}.
               Adding exclusiveMinimum or exclusiveMaximum makes this impossible.
               Remove the exclusive constraints or adjust minimum/maximum to create a valid range.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
 
@@ -919,6 +790,7 @@ export namespace AutoBeJsonSchemaValidator {
 
               The multipleOf constraint must be a positive number greater than zero.
               Change multipleOf to a positive value.
+              Note that, this is not a recommendation, but an instruction you must follow.
             `,
           });
       },

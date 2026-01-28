@@ -11,14 +11,17 @@
  * **DO NOT use for the reverse case (DB non-null → DTO nullable)!** That
  * direction is intentionally allowed for:
  *
- * - Fields with @default values
+ * - Fields with default values
  * - Server-generated fields
  * - Optional fields in Create/Update DTOs
  *
  * Changes the wrapper (oneOf with null) and required array. Optionally updates
  * the property's description to document the nullability.
+ *
+ * @author Samchon
  */
 export interface AutoBeInterfaceSchemaPropertyNullish {
+  /** Discriminator for property revision type. */
   type: "nullish";
 
   /**
@@ -29,6 +32,26 @@ export interface AutoBeInterfaceSchemaPropertyNullish {
 
   /** Property key to modify. */
   key: string;
+
+  /**
+   * Optional: Updated implementation specification for downstream agents.
+   *
+   * When changing nullability, you may need to update the specification to
+   * document how null values should be handled during implementation.
+   *
+   * - If provided, replaces the existing specification
+   * - If `null`, the existing specification is preserved
+   */
+  specification: string | null;
+
+  /**
+   * Optional: Updated description for the property.
+   *
+   * When changing nullability, you may want to update the description to
+   * document the nullable behavior. If provided, replaces the existing
+   * description. If `null`, the existing description is preserved.
+   */
+  description: string | null;
 
   /**
    * Whether property should accept null values.
@@ -49,19 +72,4 @@ export interface AutoBeInterfaceSchemaPropertyNullish {
    * - Update DTOs: Always `false` (partial update)
    */
   required: boolean;
-
-  /**
-   * Optional: Updated description for the property.
-   *
-   * When changing nullability, you may want to update the description to
-   * document the nullable behavior. If provided, replaces the existing
-   * description. If not provided, the existing description is preserved.
-   *
-   * Example descriptions for nullable fields:
-   *
-   * - "User's bio. Can be null if not provided."
-   * - "Expiration timestamp. Null means no expiration."
-   * - "Optional discount rate. Null if no discount applies."
-   */
-  description: string | null;
 }

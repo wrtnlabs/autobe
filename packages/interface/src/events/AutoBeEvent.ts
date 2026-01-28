@@ -21,7 +21,6 @@ import { AutoBeImageDescribeCompleteEvent } from "./AutoBeImageDescribeCompleteE
 import { AutoBeImageDescribeDraftEvent } from "./AutoBeImageDescribeDraftEvent";
 import { AutoBeImageDescribeStartEvent } from "./AutoBeImageDescribeStartEvent";
 import { AutoBeInterfaceAuthorizationEvent } from "./AutoBeInterfaceAuthorizationEvent";
-import { AutoBeInterfaceComplementEvent } from "./AutoBeInterfaceComplementEvent";
 import { AutoBeInterfaceCompleteEvent } from "./AutoBeInterfaceCompleteEvent";
 import { AutoBeInterfaceEndpointEvent } from "./AutoBeInterfaceEndpointEvent";
 import { AutoBeInterfaceEndpointReviewEvent } from "./AutoBeInterfaceEndpointReviewEvent";
@@ -29,8 +28,9 @@ import { AutoBeInterfaceGroupEvent } from "./AutoBeInterfaceGroupEvent";
 import { AutoBeInterfaceOperationEvent } from "./AutoBeInterfaceOperationEvent";
 import { AutoBeInterfaceOperationReviewEvent } from "./AutoBeInterfaceOperationReviewEvent";
 import { AutoBeInterfacePrerequisiteEvent } from "./AutoBeInterfacePrerequisiteEvent";
+import { AutoBeInterfaceSchemaCastingEvent } from "./AutoBeInterfaceSchemaCastingEvent";
+import { AutoBeInterfaceSchemaComplementEvent } from "./AutoBeInterfaceSchemaComplementEvent";
 import { AutoBeInterfaceSchemaEvent } from "./AutoBeInterfaceSchemaEvent";
-import { AutoBeInterfaceSchemaRefineEvent } from "./AutoBeInterfaceSchemaRefineEvent";
 import { AutoBeInterfaceSchemaRenameEvent } from "./AutoBeInterfaceSchemaRenameEvent";
 import { AutoBeInterfaceSchemaReviewEvent } from "./AutoBeInterfaceSchemaReviewEvent";
 import { AutoBeInterfaceStartEvent } from "./AutoBeInterfaceStartEvent";
@@ -129,10 +129,10 @@ export type AutoBeEvent =
   | AutoBeInterfaceOperationEvent
   | AutoBeInterfaceAuthorizationEvent
   | AutoBeInterfaceSchemaEvent
-  | AutoBeInterfaceSchemaRefineEvent
+  | AutoBeInterfaceSchemaCastingEvent
   | AutoBeInterfaceSchemaReviewEvent
   | AutoBeInterfaceSchemaRenameEvent
-  | AutoBeInterfaceComplementEvent
+  | AutoBeInterfaceSchemaComplementEvent
   | AutoBeInterfaceCompleteEvent
   | AutoBeInterfacePrerequisiteEvent
   // TEST

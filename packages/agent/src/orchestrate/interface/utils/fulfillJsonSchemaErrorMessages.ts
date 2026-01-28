@@ -1,14 +1,16 @@
 import { StringUtil } from "@autobe/utils";
 import typia, { IValidation } from "typia";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+
 export const fulfillJsonSchemaErrorMessages = (
   errors: IValidation.IError[],
 ): void => {
   for (const e of errors)
     fulfillTypeAsArrayError(e) ||
       fulfillEnumInsteadOfConstError(e) ||
-      fulfillNoDescriptionError(e) ||
       fulfillNoRequiredError(e) ||
+      fulfillNoDescriptionError(e) ||
       fulfillObjectMetadataMisplacement(e) ||
       fulfillNestedObjectError(e);
 };
@@ -19,25 +21,17 @@ const fulfillTypeAsArrayError = (e: IValidation.IError): boolean => {
     isInvalidJsonSchema(e) &&
     typia.is<{ type: string[] }>(e.value) === true
   ) {
-    e.description = StringUtil.trim`
-      You have defined the JSON schema's type property value as an 
-      array type listing all the types that you want, but this is not 
-      allowed in the JSON schema.
-      
-      The JSON schema's type property value must be a single string type.
-      In your case, you have to change it to an "oneOf" type which 
-      represents a union type.
-
-      So, please change the value as below:
-
-      \`\`\`
-      {
-        oneOf: [
-      ${e.value.type.map((t) => `    { "type": ${JSON.stringify(t)}, ... },`).join("\n")}
-        ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
-      }
-      \`\`\`
-    `;
+    e.description =
+      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_TYPE_ARRAY.replace(
+        "${{JSON}}",
+        StringUtil.trim`
+        {
+          "oneOf": [
+        ${e.value.type.map((t) => `    { "type": ${JSON.stringify(t)}, ... },`).join("\n")}
+          ],${"description" in e.value ? `\n  "description": ${JSON.stringify(e.value.description)},` : ""}
+        }
+      `,
+      );
     return true;
   }
   return false;
@@ -50,17 +44,24 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
     typia.is<{ enum: any[] }>(e.value) === true
   ) {
     e.description = StringUtil.trim`
-      You have defined an enum property, but it is not allowed in the 
-      JSON schema. You have to define it as oneOf type containing multiple
-      const types like below:
-      
-      \`\`\`
+      **Invalid Schema: "enum" keyword is not supported in AutoBE.**
+
+      The "enum" keyword is prohibited. AutoBE requires you to use the "oneOf"
+      construct with individual "const" values instead. This design ensures
+      better type safety and documentation clarity.
+
+      Convert your schema to the following format:
+
+      \`\`\`json
       {
-        oneOf: [
+        "oneOf": [
       ${e.value.enum.map((t) => `    { "const": ${JSON.stringify(t)} },`).join("\n")}
-        ],${"description" in e.value ? `\n  description: ${JSON.stringify(e.value.description)},` : ""}
+        ],${"description" in e.value ? `\n  "description": ${JSON.stringify(e.value.description)},` : ""}
       }
       \`\`\`
+
+      You must make this correction. The validator will continue to reject your
+      schema until you replace "enum" with the proper "oneOf" + "const" structure.
     `;
     return true;
   }
@@ -70,11 +71,8 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
 const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
   if (e.value === undefined && e.path.endsWith(".description")) {
     // no description
-    e.description = StringUtil.trim`
-      You have missed the "description" property in the JSON schema. 
-      
-      Please fill it with detailed description about the type.
-    `;
+    e.description =
+      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_DESCRIPTION;
     return true;
   }
   return false;
@@ -87,16 +85,8 @@ const fulfillNoRequiredError = (e: IValidation.IError): boolean => {
     e.path.endsWith(".required") &&
     e.expected === "Array<string>"
   ) {
-    e.description = StringUtil.trim`
-      You have missed the "required" property in the JSON schema of object type.
-
-      When defining the object type, you have to fill the "required" property
-      which lists all the required property names.
-
-      Please fill it with the required fields. If you think that there is
-      not any required fields at all, you still have to fill the 
-      "required" property even though it becomes an empty array.
-    `;
+    e.description =
+      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_REQUIRED;
     return true;
   }
   return false;
@@ -114,64 +104,44 @@ const fulfillObjectMetadataMisplacement = (e: IValidation.IError): boolean => {
   }): boolean => {
     e.expected = "undefined";
     e.description = StringUtil.trim`
-      You have placed "${props.key}" in the wrong location.
+      **Structural Error: "${props.key}" is in the wrong location**
 
-      **Type System Violation**:
-      - You defined: \`${props.actual}\` (as a field inside properties)
-      - Required type: \`${props.expected}\` (as metadata at object type level)
+      You placed "${props.key}" inside the "properties" object, but it is a
+      metadata field that belongs at the object type level, outside of "properties".
 
-      The "${props.key}" is NOT a regular field that appears in the
-      object's properties, but a METADATA annotation that describes ${props.purpose}. 
-      In the AutoBE type system, metadata properties must be defined at the 
-      object type level, outside of "properties".
+      - Your placement: \`${props.actual}\`
+      - Correct placement: \`${props.expected}\`
 
-      **Current (Wrong)**:
+      The "${props.key}" field describes ${props.purpose} and must be placed
+      at the schema's top level alongside "type" and "properties".
+
+      **Your current structure (incorrect)**:
       \`\`\`json
       {
         "type": "object",
         "properties": {
           ...,
-          "${props.key}": ${JSON.stringify(e.value)}  // ❌ Wrong: inside properties
-        },
-        ...
+          "${props.key}": ${JSON.stringify(e.value)}
+        }
       }
       \`\`\`
 
-      **Correct**:
+      **Required structure**:
       \`\`\`json
       {
         "type": "object",
-        "${props.key}": ${JSON.stringify(e.value)},  // ✅ Correct: metadata level
-        "properties": { ... },
-        ...
+        "${props.key}": ${JSON.stringify(e.value)},
+        "properties": { ... }
       }
       \`\`\`
 
-      **Action Required**:
-      1. Remove "${props.key}" from: ${e.path}
-      2. Place it at the correct location: ${props.place}
-
-      This is a structural requirement enforced by the AutoBE type system.
-      The compiler will continue to reject this schema until corrected.
+      Move "${props.key}" from ${e.path} to ${props.place}. The validator will
+      continue to reject your schema until this structural correction is made.
     `;
     return true;
   };
 
   if (
-    e.path.endsWith(`.properties["x-autobe-database-schema"]`) === true &&
-    typeof e.value === "string"
-  )
-    return validate({
-      key: "x-autobe-database-schema",
-      expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject["x-autobe-database-schema"]`,
-      actual: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties["x-autobe-database-schema"]`,
-      place: e.path.replace(
-        `.properties["x-autobe-database-schema"]`,
-        `["x-autobe-database-schema"]`,
-      ),
-      purpose: "which database table this schema type corresponds to",
-    });
-  else if (
     e.path.endsWith(`.properties.required`) === true &&
     Array.isArray(e.value) === true
   )
@@ -182,62 +152,14 @@ const fulfillObjectMetadataMisplacement = (e: IValidation.IError): boolean => {
       place: e.path.replace(`.properties.required`, `.required`),
       purpose: "which properties are mandatory",
     });
-  else if (
-    e.path.endsWith(`.properties.description`) === true &&
-    typeof e.value === "string"
-  )
-    return validate({
-      key: "description",
-      expected: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.description`,
-      actual: `AutoBeOpenApi.IJsonSchemaDescriptive.IObject.properties.description`,
-      place: e.path.replace(`.properties.description`, `.description`),
-      purpose: "the entire schema",
-    });
   return false;
 };
 
 const fulfillNestedObjectError = (e: IValidation.IError): boolean => {
   if (isExcludedObjectType(e) === true) {
     // nested object
-    e.description = StringUtil.trim`
-      Nested inline object type definitions are not allowed in AutoBE.
-
-      All object types must be defined as named schemas in the components section
-      and referenced using $ref. This enforces the DRY principle, improves reusability,
-      and maintains AutoBE's simplified AST structure for AI generation clarity.
-
-      Instead of defining an inline object, create a new named type in components.schemas
-      with an interface-style name (starting with 'I'), then reference it with $ref.
-
-      For example, instead of:
-
-      \`\`\`typescript
-      {
-        "type": "array",
-        "items": { "type": "object", "properties": {...} }  // ❌ Wrong
-      }
-      \`\`\`
-
-      Define a named type and reference it:
-
-      \`\`\`typescript
-      // In components.schemas
-      "IUserSummary": { 
-        "type": "object", 
-        "properties": {...} 
-      }
-
-      // Then reference it
-      {
-        "type": "array",
-        "items": { "$ref": "#/components/schemas/IUserSummary" }  // ✅ Correct
-      }
-      \`\`\`
-
-      This applies to array items, object properties, additionalProperties, 
-      and oneOf variants. Change the inline object definition to a named schema 
-      reference at the next time.
-    `;
+    e.description =
+      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_NESTED_OBJECT;
     return true;
   }
   return false;
@@ -250,9 +172,9 @@ const isExcludedObjectType = (error: IValidation.IError): boolean =>
     (error.expected.includes(
       "AutoBeOpenApi.IJsonSchemaDescriptive.IConstant",
     ) &&
-      error.expected.includes(
-        "AutoBeOpenApi.IJsonSchemaDescriptive.IArray",
-      ))) &&
+      error.expected.includes("AutoBeOpenApi.IJsonSchemaDescriptive.IArray")) ||
+    (error.expected.includes("AutoBeOpenApi.IJsonSchemaProperty.IConstant") &&
+      error.expected.includes("AutoBeOpenApi.IJsonSchemaProperty.IArray"))) &&
   typia.is<{
     type: "object";
   }>(error.value) === true;
