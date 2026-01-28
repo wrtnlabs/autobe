@@ -19,39 +19,76 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeVendorRequestEvent extends AutoBeEventBase<"vendorRequest"> {
-  /**
-   * The origin point that triggered this AI request.
-   *
-   * Identifies which specific agent operation initiated this AI request, such
-   * as "analyzeWrite", "databaseSchema", or "testCorrect". This source tracking
-   * enables precise attribution of AI usage to specific workflow steps,
-   * facilitating cost allocation and performance analysis per operation.
-   */
-  source: AutoBeEventSource;
+export type AutoBeVendorRequestEvent =
+  | AutoBeVendorRequestEvent.Streaming
+  | AutoBeVendorRequestEvent.NonStreaming;
+export namespace AutoBeVendorRequestEvent {
+  /** Streaming request event type. */
+  export type Streaming = Base<
+    true,
+    OpenAI.ChatCompletionCreateParamsStreaming
+  >;
 
-  /**
-   * The complete OpenAI chat completion request parameters.
-   *
-   * Contains the full request body including messages, model selection,
-   * temperature settings, and streaming configuration that will be sent to
-   * OpenAI's API. This streaming-enabled request allows real-time processing of
-   * AI responses for improved user experience and progressive output
-   * generation.
-   */
-  body:
-    | OpenAI.ChatCompletionCreateParamsStreaming
-    | OpenAI.ChatCompletionCreateParamsNonStreaming;
+  /** Non-streaming request event type. */
+  export type NonStreaming = Base<
+    false,
+    OpenAI.ChatCompletionCreateParamsNonStreaming
+  >;
 
-  retry: number;
+  interface Base<
+    Stream extends boolean,
+    Body extends object,
+  > extends AutoBeEventBase<"vendorRequest"> {
+    /**
+     * The origin point that triggered this AI request.
+     *
+     * Identifies which specific agent operation initiated this AI request, such
+     * as "analyzeWrite", "databaseSchema", or "testCorrect". This source
+     * tracking enables precise attribution of AI usage to specific workflow
+     * steps, facilitating cost allocation and performance analysis per
+     * operation.
+     */
+    source: AutoBeEventSource;
 
-  /**
-   * Optional request configuration for the OpenAI API call.
-   *
-   * Includes additional settings such as timeout configurations, retry
-   * policies, and custom headers that control how the request is executed.
-   * These options ensure reliable AI interactions even under varying network
-   * conditions or API availability scenarios.
-   */
-  options?: OpenAI.RequestOptions | undefined;
+    /**
+     * Indicates whether the AI request is configured for streaming responses.
+     *
+     * When true, the AI's output will be delivered incrementally as it is
+     * generated, allowing for real-time processing and display.
+     *
+     * When false, the full response will be returned in a single payload upon
+     * completion.
+     */
+    stream: Stream;
+
+    /**
+     * The complete OpenAI chat completion request parameters.
+     *
+     * Contains the full request body including messages, model selection,
+     * temperature settings, and streaming configuration that will be sent to
+     * OpenAI's API. This streaming-enabled request allows real-time processing
+     * of AI responses for improved user experience and progressive output
+     * generation.
+     */
+    body: Body;
+
+    /**
+     * The number of retry attempts made for this request.
+     *
+     * Indicates how many times the request was retried before receiving this
+     * response. This information is useful for monitoring request reliability,
+     * diagnosing issues, and optimizing retry strategies.
+     */
+    retry: number;
+
+    /**
+     * Optional request configuration for the OpenAI API call.
+     *
+     * Includes additional settings such as timeout configurations, retry
+     * policies, and custom headers that control how the request is executed.
+     * These options ensure reliable AI interactions even under varying network
+     * conditions or API availability scenarios.
+     */
+    options?: OpenAI.RequestOptions | undefined;
+  }
 }
