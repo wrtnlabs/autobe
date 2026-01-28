@@ -14,8 +14,7 @@ export class AutoBeJsonSchemaCollection {
   ): void {
     for (const [key, value] of Object.entries(other)) {
       if (value === undefined) continue;
-      this.local[key] = value;
-      this.all[key] = value;
+      this.set(key, value);
     }
   }
 

@@ -128,7 +128,7 @@ export namespace orchestrateInterfaceSchemaRename {
     // COMPONENT SCHEMAS
     for (const x of Object.keys(props.collection.schemas)) {
       const y: string | null = replace(x);
-      if (y !== null) {
+      if (y !== null && x !== y) {
         props.collection.set(y, props.collection.get(x)!);
         props.collection.delete(x);
       }
