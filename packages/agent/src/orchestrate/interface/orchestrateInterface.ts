@@ -200,7 +200,7 @@ export const orchestrateInterface =
     );
 
     // REFINE NONE-OBJECT TYPES
-    const refineProgress: AutoBeProgressEventBase = {
+    const castingProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
     };
@@ -209,7 +209,7 @@ export const orchestrateInterface =
         instruction: props.instruction,
         document,
         schemas: document.components.schemas,
-        progress: refineProgress,
+        progress: castingProgress,
       }),
     );
 
@@ -262,7 +262,7 @@ export const orchestrateInterface =
           instruction: props.instruction,
           document,
           schemas: complemented,
-          progress: refineProgress,
+          progress: castingProgress,
         }),
       );
 

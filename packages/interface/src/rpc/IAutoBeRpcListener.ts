@@ -21,9 +21,12 @@ import {
   AutoBeInterfaceEndpointEvent,
   AutoBeInterfaceOperationEvent,
   AutoBeInterfaceOperationReviewEvent,
+  AutoBeInterfaceSchemaCastingEvent,
   AutoBeInterfaceSchemaComplementEvent,
   AutoBeInterfaceSchemaEvent,
+  AutoBeInterfaceSchemaRefineEvent,
   AutoBeInterfaceSchemaRenameEvent,
+  AutoBeInterfaceSchemaReviewEvent,
   AutoBeInterfaceStartEvent,
   AutoBeRealizeAuthorizationCorrectEvent,
   AutoBeRealizeAuthorizationValidateEvent,
@@ -357,9 +360,17 @@ export interface IAutoBeRpcListener {
    */
   interfaceSchema?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
 
-  interfaceSchemaCasting?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
+  interfaceSchemaCasting?(
+    event: AutoBeInterfaceSchemaCastingEvent,
+  ): Promise<void>;
 
-  interfaceSchemaReview?(event: AutoBeInterfaceSchemaEvent): Promise<void>;
+  interfaceSchemaRefine?(
+    event: AutoBeInterfaceSchemaRefineEvent,
+  ): Promise<void>;
+
+  interfaceSchemaReview?(
+    event: AutoBeInterfaceSchemaReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for API schema rename events.

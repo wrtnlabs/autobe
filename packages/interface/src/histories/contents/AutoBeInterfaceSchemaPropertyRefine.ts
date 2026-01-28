@@ -11,7 +11,7 @@ import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaProp
  * represents the operations to add `databaseSchemaProperty`, `specification`, and
  * `description` to each property.
  *
- * - `depict`: Add documentation to existing property (most common)
+ * - `depict`: Add documentation to existing property
  * - `create`: Add missing property with documentation
  * - `update`: Fix incorrect type and add documentation
  * - `erase`: Remove invalid property

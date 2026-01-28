@@ -1,0 +1,153 @@
+import { AutoBeOpenApi } from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
+import { v7 } from "uuid";
+
+import { AutoBeState } from "../../../context/AutoBeState";
+import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
+import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+
+export const transformInterfaceSchemaRefineHistory = (props: {
+  state: AutoBeState;
+  instruction: string;
+  preliminary: AutoBePreliminaryController<
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+    | "previousAnalysisFiles"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
+  >;
+  typeName: string;
+  refineOperations: AutoBeOpenApi.IOperation[];
+  refineSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+}): IAutoBeOrchestrateHistory => ({
+  histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_REFINE,
+    },
+    ...props.preliminary.getHistories(),
+    {
+      type: "assistantMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
+        ## API Design Instructions
+
+        The following API-specific instructions were extracted from
+        the user's requirements. These focus on API interface design aspects
+        relevant to the refinement task.
+
+        Follow these instructions when enriching schemas with documentation
+        and metadata.
+        Carefully distinguish between:
+
+        - Suggestions or recommendations (consider these as guidance)
+        - Direct specifications or explicit commands (these must be followed exactly)
+
+        When instructions contain direct specifications or explicit design decisions,
+        follow them precisely even if you believe you have better alternatives.
+
+        ${props.instruction}
+      `,
+    },
+    {
+      id: v7(),
+      type: "assistantMessage",
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
+        ## Operations (Filtered for Target Schema)
+
+        Here are the API operations that directly use the schema to refine.
+        These operations reference the target schema "${props.typeName}" via
+        requestBody.typeName or responseBody.typeName.
+
+        This FILTERED list helps you understand the exact usage context for
+        the schema you're enriching:
+
+        \`\`\`json
+        ${JSON.stringify(props.refineOperations)}
+        \`\`\`
+
+        ## DTO type to refine
+
+        Here is the SPECIFIC schema that needs refinement for type "${props.typeName}":
+
+        \`\`\`json
+        ${JSON.stringify(props.refineSchema)}
+        \`\`\`
+
+        Also, here is the list of properties currently defined in this schema,
+        so you have to enrich them one by one:
+
+        ${Object.keys(props.refineSchema.properties)
+          .map((k) => `- ${k}`)
+          .join("\n")}
+
+        IMPORTANT: Only this schema needs refinement. Other schemas in the
+        complete schema set are provided for reference only.
+      `,
+    },
+  ],
+  userMessage: StringUtil.trim`
+    Refine ${JSON.stringify(props.typeName)} type named JSON schema
+    component by adding documentation and metadata to each property.
+
+    ## Your Mission
+
+    Initial JSON schema generation produces only type structure (\`type\`,
+    \`properties\`, \`$ref\`, etc.) without descriptive information. Your task
+    is to enrich each property with:
+
+    - \`x-autobe-database-schema-property\`: Which database field this maps to
+    - \`x-autobe-specification\`: HOW to implement (data source, transformations)
+    - \`description\`: WHAT for API consumers (purpose, usage)
+
+    Also review the object-level metadata:
+
+    - \`databaseSchema\`: Which database table this type maps to
+    - \`specification\`: Object-level implementation details
+    - \`description\`: Object-level API documentation
+
+    ## Property-Level Refinements
+
+    Return property-level refinements in the \`refines\` array. Each refinement
+    represents an operation on a property:
+
+    - \`depict\`: Add documentation to existing property
+    - \`create\`: Add a missing property with documentation
+    - \`update\`: Fix incorrect type and add documentation
+    - \`erase\`: Remove an invalid property
+
+    ## CRITICAL: Property Field Order
+
+    For ALL \`create\`, \`update\`, or \`depict\` operations, you MUST follow this order:
+
+    \`\`\`
+    1. databaseSchemaProperty  →  Which DB field?
+    2. specification           →  HOW to implement?
+    3. description             →  WHAT for API consumers?
+    4. schema (if applicable)  →  Type definition
+    \`\`\`
+
+    ## ABSOLUTE: Validation Feedback Compliance
+
+    Validation feedback is generated by deterministic code logic, NOT by AI judgment.
+    Its reliability is 100% guaranteed.
+
+    **You MUST:**
+    - Absolutely obey ALL validation feedback without exception
+    - Treat validation errors as facts, not suggestions
+    - Fix every reported issue exactly as indicated
+
+    **You MUST NEVER:**
+    - Prioritize your own judgment over validation feedback
+    - Ignore or dismiss validation feedback for any reason
+    - Assume validation feedback is incorrect
+  `,
+});
