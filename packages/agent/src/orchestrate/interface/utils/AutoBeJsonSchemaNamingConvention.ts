@@ -26,7 +26,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
         schema: value,
         closure: (s) => {
           if (AutoBeOpenApiTypeChecker.isReference(s) === false) return;
-          const key: string = singular(s.$ref.split("/").pop()!);
+          const key: string = s.$ref.split("/").pop()!;
           convention.emplace(
             key,
             (v) => (s.$ref = `#/components/schemas/${v}`),
@@ -45,9 +45,15 @@ class Convention {
   private readonly closures: IClosure[] = [];
 
   public emplace(key: string, setter: (v: string) => void): void {
-    this.closures.push({ value: key, setter });
+    const elements: string[] = key
+      .split(".")
+      .map((s, i) => (i === 0 ? singular(s) : s));
+    this.closures.push({
+      value: elements.join("."),
+      setter,
+    });
 
-    const top: string = key.split(".")[0]!;
+    const top: string = elements[0]!;
     MapUtil.take(this.dict, top.toLowerCase(), () => new Set()).add(top);
   }
 
