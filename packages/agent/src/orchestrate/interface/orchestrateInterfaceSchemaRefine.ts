@@ -17,8 +17,8 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaRefineHistory } from "./histories/transformInterfaceSchemaRefineHistory";
-import { AutoBeInterfaceSchemaRefineProgrammer } from "./programmers/AutoBeInterfaceSchemaRefineProgrammer";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
+import { AutoBeInterfaceSchemaRefineProgrammer } from "./programmers/AutoBeInterfaceSchemaRefineProgrammer";
 import { IAutoBeInterfaceSchemaRefineApplication } from "./structures/IAutoBeInterfaceSchemaRefineApplication";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
@@ -33,14 +33,16 @@ export async function orchestrateInterfaceSchemaRefine(
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
   // Filter to only process object-type schemas (non-preset and object type)
-  const typeNames: string[] = Object.keys(props.schemas).filter(
-    (k) =>
-      AutoBeJsonSchemaValidator.isPreset(k) === false &&
-      AutoBeJsonSchemaValidator.isObjectType({
-        operations: props.document.operations,
-        typeName: k,
-      }),
-  );
+  const typeNames: string[] = Object.entries(props.schemas)
+    .filter(
+      ([k, v]) =>
+        AutoBeJsonSchemaValidator.isPreset(k) === false &&
+        AutoBeOpenApiTypeChecker.isObject(v) &&
+        Object.keys(v.properties).length !== 0,
+    )
+    .map(([k]) => k);
+  props.progress.total += typeNames.length;
+
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
     ctx,

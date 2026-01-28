@@ -241,12 +241,6 @@ export const orchestrateInterface =
       );
 
       // refine schemas
-      refineProgress.total += Object.entries(schemas).filter(
-        ([k, v]) =>
-          AutoBeJsonSchemaValidator.isPreset(k) === false &&
-          AutoBeOpenApiTypeChecker.isObject(v) &&
-          Object.keys(v.properties).length !== 0,
-      ).length;
       await overwrite(
         await orchestrateInterfaceSchemaRefine(ctx, {
           instruction: props.instruction,
