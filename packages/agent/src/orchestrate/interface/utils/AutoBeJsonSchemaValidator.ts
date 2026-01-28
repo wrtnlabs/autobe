@@ -586,8 +586,7 @@ export namespace AutoBeJsonSchemaValidator {
         Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
       }`;
       const inspect = (schema: AutoBeOpenApi.IJsonSchema): boolean =>
-        (AutoBeOpenApiTypeChecker.isString(schema) &&
-          schema.format === "uuid") ||
+        AutoBeOpenApiTypeChecker.isString(schema) ||
         AutoBeOpenApiTypeChecker.isNull(schema) ||
         (AutoBeOpenApiTypeChecker.isOneOf(schema) &&
           schema.oneOf.every((v) => inspect(v)));

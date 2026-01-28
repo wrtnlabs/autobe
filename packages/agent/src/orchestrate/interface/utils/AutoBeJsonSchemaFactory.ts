@@ -353,7 +353,20 @@ export namespace AutoBeJsonSchemaFactory {
         else if (AutoBeOpenApiTypeChecker.isNumber(next)) fixNumberSchema(next);
       },
     });
-    return emended as Schema;
+
+    const result: Schema = emended as Schema;
+    if (AutoBeOpenApiTypeChecker.isObject(result))
+      for (const [key, value] of Object.entries(result.properties)) {
+        if (key !== "id" && key.endsWith("_id") === false) continue;
+        else if (AutoBeOpenApiTypeChecker.isString(value))
+          fixReferenceIdSchema(value);
+        else if (AutoBeOpenApiTypeChecker.isOneOf(value)) {
+          const str: AutoBeOpenApi.IJsonSchema.IString | undefined =
+            value.oneOf.find((v) => AutoBeOpenApiTypeChecker.isString(v));
+          if (str !== undefined) fixReferenceIdSchema(str);
+        }
+      }
+    return result;
   };
 
   const convertConst = (
@@ -450,6 +463,13 @@ export namespace AutoBeJsonSchemaFactory {
       schema.minimum === schema.maximum
     )
       return convertConst(schema, schema.minimum);
+  };
+
+  const fixReferenceIdSchema = (
+    schema: AutoBeOpenApi.IJsonSchema.IString,
+  ): void => {
+    schema.format = "uuid";
+    fixStringSchema(schema);
   };
 }
 
