@@ -1,5 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, MapUtil } from "@autobe/utils";
+import { singular } from "pluralize";
 
 export namespace AutoBeJsonSchemaNamingConvention {
   export const normalize = (document: AutoBeOpenApi.IDocument): void => {
@@ -25,7 +26,7 @@ export namespace AutoBeJsonSchemaNamingConvention {
         schema: value,
         closure: (s) => {
           if (AutoBeOpenApiTypeChecker.isReference(s) === false) return;
-          const key: string = s.$ref.split("/").pop()!;
+          const key: string = singular(s.$ref.split("/").pop()!);
           convention.emplace(
             key,
             (v) => (s.$ref = `#/components/schemas/${v}`),
