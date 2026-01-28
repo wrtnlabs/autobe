@@ -39,13 +39,18 @@ export async function orchestrateInterfaceOperation(
     await executeCachedBatch(
       ctx,
       props.designs.map((design) => async (promptCacheKey) => {
-        const row: AutoBeOpenApi.IOperation[] = await process(ctx, {
-          design,
-          progress,
-          promptCacheKey,
-          instruction: props.instruction,
-        });
-        return row;
+        try {
+          const row: AutoBeOpenApi.IOperation[] = await process(ctx, {
+            design,
+            progress,
+            promptCacheKey,
+            instruction: props.instruction,
+          });
+          return row;
+        } catch (error) {
+          console.log("operation", design, error);
+          throw error;
+        }
       }),
     )
   ).flat();
