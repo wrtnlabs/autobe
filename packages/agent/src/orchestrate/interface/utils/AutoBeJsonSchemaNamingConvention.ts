@@ -45,9 +45,7 @@ class Convention {
   private readonly closures: IClosure[] = [];
 
   public emplace(key: string, setter: (v: string) => void): void {
-    const elements: string[] = key
-      .split(".")
-      .map((s, i) => (i === 0 ? singular(s) : s));
+    const elements: string[] = key.split(".").map(singular);
     this.closures.push({
       value: elements.join("."),
       setter,
