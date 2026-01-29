@@ -1,9 +1,11 @@
 import {
   AutoBeAnalyzeActor,
   AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseComponentTableRevise,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { plural } from "pluralize";
 import { IValidation } from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
@@ -54,6 +56,45 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
           path: `${props.path}[${i}].updated`,
           value: revise.updated,
         });
+    });
+  };
+
+  export const execute = (props: {
+    component: AutoBeDatabaseComponent;
+    revises: AutoBeDatabaseComponentTableRevise[];
+    actors: AutoBeAnalyzeActor[];
+    prefix: string | null;
+  }): AutoBeDatabaseComponentTableDesign[] => {
+    const prefix: string = props.prefix ? `${props.prefix}_` : "";
+
+    const filtered = props.revises.filter((revise) => {
+      for (const actor of props.actors) {
+        const name: string = NamingConvention.snake(actor.name);
+        const actorTable: string = `${prefix}${plural(name)}`;
+        const sessionTable: string = `${prefix}${name}_sessions`;
+
+        if (
+          revise.type === "create" &&
+          (revise.table === actorTable || revise.table === sessionTable)
+        )
+          return false;
+        else if (
+          revise.type === "update" &&
+          (revise.original === actorTable || revise.original === sessionTable)
+        )
+          return false;
+        else if (
+          revise.type === "erase" &&
+          (revise.table === actorTable || revise.table === sessionTable)
+        )
+          return false;
+      }
+      return true;
+    });
+
+    return AutoBeDatabaseComponentReviewProgrammer.execute({
+      component: props.component,
+      revises: filtered,
     });
   };
 }
