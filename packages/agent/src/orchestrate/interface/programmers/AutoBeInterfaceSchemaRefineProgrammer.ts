@@ -137,6 +137,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
               null)
             : null,
           revise: refine,
+          originalDtoSchema: props.schema.properties[refine.key],
           noModelDescription: StringUtil.trim`
             You have defined "databaseSchemaProperty" property referencing 
             a database schema property, but its parent schema (object type) 
