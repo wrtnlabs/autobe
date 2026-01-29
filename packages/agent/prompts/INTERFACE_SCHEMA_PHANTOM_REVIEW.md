@@ -181,10 +181,10 @@ Not all fields that don't exist in database schema are phantom fields. **DO NOT 
 {
   type: "object",
   properties: {
-    search: { type: "string", description: "..." },      // ✅ DO NOT DELETE - query filter
-    sort: { type: "string", description: "..." },        // ✅ DO NOT DELETE - sorting param
-    page: { type: "number", description: "..." },        // ✅ DO NOT DELETE - pagination
-    limit: { type: "number", description: "..." }        // ✅ DO NOT DELETE - pagination
+    search: { type: "string" },      // ✅ DO NOT DELETE - query filter
+    sort: { type: "string" },        // ✅ DO NOT DELETE - sorting param
+    page: { type: "number" },        // ✅ DO NOT DELETE - pagination
+    limit: { type: "number" }        // ✅ DO NOT DELETE - pagination
   }
 }
 ```
@@ -197,9 +197,9 @@ Not all fields that don't exist in database schema are phantom fields. **DO NOT 
 {
   type: "object",
   properties: {
-    id: { type: "string", description: "Article identifier." },
-    title: { type: "string", description: "Article title." },
-    total_comments: { type: "number", description: "Total number of comments on this article." }  // ✅ DO NOT DELETE - computed from relation count
+    id: { type: "string" },
+    title: { type: "string" },
+    total_comments: { type: "number" }  // ✅ DO NOT DELETE - computed from relation count
   }
 }
 ```
@@ -236,11 +236,11 @@ model bbs_articles {
 {
   type: "object",
   properties: {
-    id: { type: "string", description: "..." },
-    title: { type: "string", description: "..." },
-    body: { type: "string", description: "..." },      // 🔴 PHANTOM - YOU MUST ERASE THIS
-    content: { type: "string", description: "..." },   // 🔴 PHANTOM - YOU MUST ERASE THIS
-    createdAt: { type: "string", format: "date-time", description: "..." }
+    id: { type: "string" },
+    title: { type: "string" },
+    body: { type: "string" },      // 🔴 PHANTOM - YOU MUST ERASE THIS
+    content: { type: "string" },   // 🔴 PHANTOM - YOU MUST ERASE THIS
+    createdAt: { type: "string", format: "date-time" }
   }
 }
 ```
@@ -372,16 +372,14 @@ System types             // Error responses, etc.
 
 **⚠️ CRITICAL: Carefully Examine the `specification` and `description` Fields**
 
-The `specification` (from the design structure) and property `description` fields contain ALL conceptual information about each property. Use them to understand what data source and implementation the Schema Agent intended, then compare against the actual database schema.
+The `specification` (from the design structure) contains ALL conceptual information about each property's intended implementation. Use it to understand what data source and implementation the Schema Agent intended, then compare against the actual database schema.
 
 - **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Contains the intended data source (table, column, join, computation)
   - Describes how the property should be implemented
   - **For Phantom Review**: Verify the claimed data source actually exists in the database
 
-- **`description`** (on each property): API documentation for consumers (WHAT/WHY) - Swagger UI, SDK docs
-  - Explains what the property represents conceptually
-  - **For Phantom Review**: Helps understand the semantic intent when verifying against DB schema
+- **Note**: Property-level descriptions are handled by the Refine agent in a post-processing step. Focus on `specification` for phantom detection.
 
 **How to Use These Fields for Phantom Detection**:
 
@@ -927,7 +925,7 @@ Before calling the complete function, verify:
 ### 7.5. ⚠️ MANDATORY: Design Structure Verification
 - [ ] **`databaseSchema`**: Present in design structure for EVERY schema being reviewed (string table name or null)
 - [ ] **`specification`**: Present in design structure (verify presence, content handled by other agents)
-- [ ] **`description`**: Present on EVERY property in the schema
+- [ ] **`description`**: Present at the schema object level (type-level description)
 - [ ] **Schema Structure**: Verified that the design structure is properly formatted:
   1. `databaseSchema` - table name or null
   2. `specification` - implementation guide

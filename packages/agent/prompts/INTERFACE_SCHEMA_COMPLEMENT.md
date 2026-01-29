@@ -750,8 +750,7 @@ process({
 - **Structure**: ALL DTO relationships MUST use $ref references - NEVER inline object definitions
 - **`databaseSchema` REQUIRED**: All object type designs MUST have this field (table name or `null`)
 - **`specification` REQUIRED**: Must document HOW to implement ALL properties
-- **Property `description` REQUIRED**: Every property must have consumer documentation
-- **Documentation**: English only, detailed descriptions
+- **Documentation**: English only, detailed type-level description
 
 From `INTERFACE_SCHEMA_REVIEW.md`:
 - **Security**: No passwords in responses, no actor IDs in requests
@@ -826,8 +825,6 @@ The generated schema MUST pass compliance validation based on both `INTERFACE_SC
 - [ ] **`databaseSchema`**: Set correctly (string table name or null)
 - [ ] **`specification`**: Documents HOW to implement EACH property
 - [ ] **`description`**: Consumer-friendly documentation for the type
-- [ ] **Each property has `description`**: Every property in `schema.properties` has a description
-- [ ] **NO OMISSIONS**: Zero properties missing description or excluded from specification
 - [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing descriptions
 
 ### 9.4. Function Calling Verification

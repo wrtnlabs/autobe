@@ -213,13 +213,13 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeJsonSchemaValidator.validateSchema({
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
       errors,
-      models: everyModels,
+      everyModels,
       operations: props.operations,
       typeName: props.typeName,
-      schema: result.data.request.design.schema,
-      path: "$input.request.design.schema",
+      design: result.data.request.design,
     });
     if (errors.length !== 0)
       return {

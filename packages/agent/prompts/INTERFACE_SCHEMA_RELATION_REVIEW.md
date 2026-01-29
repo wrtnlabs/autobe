@@ -3148,8 +3148,8 @@ if (property.type === "object" && property.properties) {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "email": { "$ref": "#/components/schemas/IEmailSettings", "description": "<DETAILED_DESCRIPTION>" },
-    "push": { "$ref": "#/components/schemas/IPushSettings", "description": "<DETAILED_DESCRIPTION>" }
+    "email": { "$ref": "#/components/schemas/IEmailSettings" },
+    "push": { "$ref": "#/components/schemas/IPushSettings" }
   },
   "required": ["email", "push"]
 }
@@ -3183,8 +3183,7 @@ if (property.type === "object" && property.properties) {
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "author": {
-      "$ref": "#/components/schemas/IUser.ISummary",  // Reference to ISummary
-      "description": "<DETAILED_DESCRIPTION>"
+      "$ref": "#/components/schemas/IUser.ISummary"  // Reference to ISummary
     }
   },
   "required": ["author"]
@@ -3238,15 +3237,13 @@ IOrderShippingInfo, IArticleMetadata
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "pagination": {
-      "$ref": "#/components/schemas/IPage.IPagination",
-      "description": "<DETAILED_DESCRIPTION>"
+      "$ref": "#/components/schemas/IPage.IPagination"
     },
     "data": {
       "type": "array",
       "items": {
         "$ref": "#/components/schemas/IUser"
-      },
-      "description": "<DETAILED_DESCRIPTION>"
+      }
     }
   },
   "required": ["pagination", "data"]

@@ -819,11 +819,11 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      id: { type: "string", description: "..." },
-      title: { type: "string", description: "..." },
-      body: { type: "string", description: "..." },      // 🔴 PHANTOM - FORBIDDEN
-      content: { type: "string", description: "..." },   // 🔴 PHANTOM - FORBIDDEN
-      createdAt: { type: "string", format: "date-time", description: "..." }
+      id: { type: "string" },
+      title: { type: "string" },
+      body: { type: "string" },      // 🔴 PHANTOM - FORBIDDEN
+      content: { type: "string" },   // 🔴 PHANTOM - FORBIDDEN
+      createdAt: { type: "string", format: "date-time" }
     },
     required: ["id", "title", "body", "content", "createdAt"]
   }
@@ -953,10 +953,10 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      id: { description: "<DETAILED_DESCRIPTION>", type: "string" },
-      email: { description: "<DETAILED_DESCRIPTION>", type: "string" },
-      name: { description: "<DETAILED_DESCRIPTION>", type: "string" },
-      createdAt: { description: "<DETAILED_DESCRIPTION>", type: "string", format: "date-time" }
+      id: { type: "string" },
+      email: { type: "string" },
+      name: { type: "string" },
+      createdAt: { type: "string", format: "date-time" }
       // ❌ WRONG: updated_at, deleted_at - not in database schema
   },
   "required": ["id", "email", "name", "createdAt"]
@@ -980,8 +980,8 @@ Schema metadata properties are **NOT fields** of the object type. They MUST be p
 schema: {
   type: "object",
   properties: {
-    id: { type: "string", description: "<DETAILED_DESCRIPTION>" },
-    email: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+    id: { type: "string" },
+    email: { type: "string" },
     description: "<DETAILED_DESCRIPTION>",    // ❌ WRONG: This is metadata, not a field!
     required: ["id", "email"]                 // ❌ WRONG: This is metadata, not a field!
   }
@@ -994,8 +994,8 @@ schema: {
   type: "object",
   description: "<DETAILED_DESCRIPTION>",      // ✅ CORRECT: Metadata at object level
   properties: {
-    id: { description: "<DETAILED_DESCRIPTION>", type: "string" },
-    email: { description: "<DETAILED_DESCRIPTION>", type: "string" }
+    id: { type: "string" },
+    email: { type: "string" }
   },
   required: ["id", "email"]                   // ✅ CORRECT: Metadata at object level
 }
@@ -1050,9 +1050,9 @@ When designing a schema, you work with two levels of documentation:
 
 **2. Property-Level Fields (in `design.schema.properties`)**:
 
-Each property has only:
-- **`description`**: API documentation for that specific property
-- Type metadata (`type`, `format`, `$ref`, etc.)
+Each property has only type metadata:
+- Type metadata (`type`, `format`, `$ref`, `oneOf`, `enum`, `items`, etc.)
+- **No `description` field**: Property descriptions are handled automatically by the Refine agent in a post-processing step
 
 **⚠️ CRITICAL**: The schema-level `specification` field must document the implementation details for ALL properties. This is where you specify:
 - Direct column mappings (e.g., "id: Direct mapping from users.id column")
@@ -1070,17 +1070,14 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       id: {
-        description: "Unique identifier for the user.",
         type: "string",
         format: "uuid"
       },
       email: {
-        description: "User's email address for login and communication.",
         type: "string",
         format: "email"
       },
       totalOrders: {
-        description: "Total number of orders placed by this user.",
         type: "integer"
       }
     },
@@ -1099,15 +1096,12 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       categoryName: {
-        description: "Name of the product category.",
         type: "string"
       },
       totalSales: {
-        description: "Total units sold in this category.",
         type: "integer"
       },
       averagePrice: {
-        description: "Average sale price in this category.",
         type: "number"
       }
     },
@@ -1153,7 +1147,7 @@ This ordering enforces **grounded reasoning** - the AI must first establish the 
 
 4. **STEP 4 - WHAT Technically (Schema)**: `schema`
    - Finally, record the technical type structure
-   - Each property only needs `description` and type metadata
+   - Each property only needs type metadata
    - Type must be consistent with the database column type
 
 **THE REASONING CHAIN**:
@@ -1188,12 +1182,10 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       email: {
-        description: "User's email address for login and communication.",
         type: "string",
         format: "email"
       },
       totalOrders: {
-        description: "Total number of orders placed by this user.",
         type: "integer",
         minimum: 0
       }
@@ -1207,16 +1199,13 @@ const design: AutoBeInterfaceSchemaDesign = {
 
 1. **`specification` MUST cover ALL properties**: Document the implementation for every property in the schema.
 
-2. **`description` is MANDATORY for every property**: Each property in `schema.properties` must have a consumer-friendly description.
-
-3. **Follow the order strictly**: The cognitive flow ensures consistency between implementation and documentation.
+2. **Follow the order strictly**: The cognitive flow ensures consistency between implementation and documentation.
 
 **VALIDATION CHECKLIST**:
 
 - [ ] `databaseSchema` correctly identifies the source model (or null)
 - [ ] `specification` documents HOW to implement each property
 - [ ] `description` provides consumer-friendly documentation
-- [ ] Each property has a `description` field
 - [ ] Type metadata is consistent with the database schema
 
 **REMEMBER**: The order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
@@ -1248,26 +1237,16 @@ This direction is safe and commonly needed:
 | **Server-filled** | `created_by String` (non-null) | Not in Create DTO | Server extracts from auth context |
 | **Partial update** | `name String` (non-null) | `name?: string` (optional) | PATCH allows omitting unchanged fields |
 
-**⚠️ REQUIRED: Document the reason in `description`!**
+**⚠️ REQUIRED: Document the reason in `specification`!**
 
-When DB is non-null but DTO is nullable/optional, you **MUST** explain why in the property's `description`:
+When DB is non-null but DTO is nullable/optional, you **MUST** explain why in the schema-level `specification` field:
 
-```json
-{
-  "role": {
-    "type": "string",
-    "description": "User's role in the system. Optional - if not provided, defaults to 'user'."
-  },
-  "nickname": {
-    "type": "string",
-    "description": "Display name. Optional - server generates from email prefix if not provided."
-  }
-}
+```typescript
+specification: "... role: maps to users.role column with @default('user'), optional in create DTO. nickname: maps to users.nickname, server generates from email prefix if not provided. ..."
 ```
 
 This documentation is critical for:
-- API consumers to understand the behavior
-- Future maintainers to know the design decision
+- Downstream agents to understand the design decision
 - Code reviewers to verify the nullability is intentional
 
 #### ❌ DB nullable → DTO non-null: FORBIDDEN
@@ -1322,17 +1301,15 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      id: { type: "string", description: "<DETAILED_DESCRIPTION>" },
-      email: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      id: { type: "string" },
+      email: { type: "string" },
       bio: {
-        description: "<DETAILED_DESCRIPTION>",
         oneOf: [
           { type: "string" },
           { type: "null" }
         ]
       },
       expiredAt: {
-        description: "<DETAILED_DESCRIPTION>",
         oneOf: [
           { type: "string", format: "date-time" },
           { type: "null" }
@@ -1379,9 +1356,9 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      email: { type: "string", description: "<DETAILED_DESCRIPTION>" },
-      bio: { type: "string", description: "<DETAILED_DESCRIPTION>" },
-      role: { type: "string", description: "Optional - if not provided, defaults to 'user'." }
+      email: { type: "string" },
+      bio: { type: "string" },
+      role: { type: "string" }
     },
     required: ["email"]  // ✅ Only non-nullable, non-default fields required
   }
@@ -1436,15 +1413,13 @@ model Session {
   "properties": {
     "createdAt": {
       "type": "string",
-      "format": "date-time",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "date-time"
     },
     "expiredAt": {
       "oneOf": [
         { "type": "string", "format": "date-time" },
         { "type": "null" }
-      ],
-      "description": "<DETAILED_DESCRIPTION>"
+      ]
     }
   },
   "required": ["createdAt", "expiredAt"]  // ✅ Both present, expiredAt may be null
@@ -1463,7 +1438,7 @@ model Session {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" } },
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}] } },
   "required": []  // ❌ Field is always present in response!
 }
 
@@ -1471,7 +1446,7 @@ model Session {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" } },
+  "properties": { "bio": { "oneOf": [{"type": "string"}, {"type": "null"}] } },
   "required": ["bio"]  // ✅ Field present, value may be null
 }
 ```
@@ -1482,7 +1457,7 @@ model Session {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "bio": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "properties": { "bio": { "type": "string" } },
   "required": ["bio"]  // ❌ Will cause runtime error when DB returns NULL!
 }
 
@@ -1491,7 +1466,7 @@ model Session {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "bio": { "oneOf": [{"type": "string"}, {"type": "null"}], "description": "<DETAILED_DESCRIPTION>" }
+    "bio": { "oneOf": [{"type": "string"}, {"type": "null"}] }
   },
   "required": ["bio"]  // ✅ Field present, value may be null
 }
@@ -1503,7 +1478,7 @@ model Session {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "properties": { "email": { "type": "string" }, "role": { "type": "string" } },
   "required": ["email", "role"]  // ⚠️ role has @default("user") in DB
 }
 
@@ -1511,7 +1486,7 @@ model Session {
 {
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
-  "properties": { "email": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }, "role": { "type": "string", "description": "<DETAILED_DESCRIPTION>" } },
+  "properties": { "email": { "type": "string" }, "role": { "type": "string" } },
   "required": ["email"]  // ✅ role optional, DB default applies
 }
 ```
@@ -1562,8 +1537,7 @@ When you see a `String` field with a description mentioning "key-value pairs", "
 ```json
 {
   "attributes": {
-    "type": "string",
-    "description": "JSON string containing key-value pairs for dynamic product attributes"
+    "type": "string"
   }
 }
 ```
@@ -1577,8 +1551,7 @@ When you see a `String` field with a description mentioning "key-value pairs", "
     "required": [],
     "additionalProperties": {
       "type": "string"
-    },
-    "description": "Dynamic product attributes as key-value pairs. Keys are attribute names, values are attribute values."
+    }
   }
 }
 ```
@@ -1657,17 +1630,14 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       id: {
-        description: "Unique identifier for the user.",
         type: "string",
         format: "uuid"
       },
       email: {
-        description: "User's email address.",
         type: "string",
         format: "email"
       },
       preferences: {
-        description: "User preferences as key-value pairs. Keys are preference names, values are preference settings.",
         type: "object",
         properties: {},
         required: [],
@@ -1676,7 +1646,6 @@ const design: AutoBeInterfaceSchemaDesign = {
         }
       },
       customFields: {
-        description: "Optional custom fields as key-value pairs. Null if not set.",
         oneOf: [
           {
             type: "object",
@@ -1770,17 +1739,15 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      title: { type: "string", description: "<DETAILED_DESCRIPTION>" },
-      content: { type: "string", description: "<DETAILED_DESCRIPTION>" },
+      title: { type: "string" },
+      content: { type: "string" },
       attachments: {
-        description: "<DETAILED_DESCRIPTION>",
         type: "array",
         items: {
           $ref: "#/components/schemas/IBbsArticleAttachment.ICreate"  // ✅ PERFECT
         }
       },
       metadata: {
-        description: "<DETAILED_DESCRIPTION>",
         $ref: "#/components/schemas/IBbsArticleMetadata"  // ✅ PERFECT
       }
     },
@@ -1798,9 +1765,9 @@ const design: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      url: { type: "string", format: "uri", description: "<DETAILED_DESCRIPTION>" },
-      name: { type: "string", minLength: 1, maxLength: 255, description: "<DETAILED_DESCRIPTION>" },
-      size: { type: "integer", minimum: 0, description: "<DETAILED_DESCRIPTION>" }
+      url: { type: "string", format: "uri" },
+      name: { type: "string", minLength: 1, maxLength: 255 },
+      size: { type: "integer", minimum: 0 }
     },
     required: ["url", "name", "size"]
   }
@@ -1817,12 +1784,10 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       tags: {
-        description: "<DETAILED_DESCRIPTION>",
         type: "array",
         items: { type: "string" }
       },
       priority: {
-        description: "<DETAILED_DESCRIPTION>",
         type: "string",
         enum: ["low", "medium", "high"]
       }
@@ -1927,8 +1892,8 @@ Before ANY schema is accepted:
   "type": "object",
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
-    "id": { "type": "string", "description": "<DETAILED_DESCRIPTION>" },
-    "title": { "type": "string", "description": "<DETAILED_DESCRIPTION>" }
+    "id": { "type": "string" },
+    "title": { "type": "string" }
   },
   "IAuthor.ISummary": {  // ❌ CATASTROPHIC ERROR: Schema nested inside another schema!
     "type": "object",
@@ -1948,8 +1913,7 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       author: {
-        $ref: "#/components/schemas/IAuthor.ISummary",  // ✅ CORRECT: Use $ref
-        description: "<DETAILED_DESCRIPTION>"
+        $ref: "#/components/schemas/IAuthor.ISummary"  // ✅ CORRECT: Use $ref
       }
     },
     required: ["author"]
@@ -2165,15 +2129,13 @@ All IPage types MUST follow this exact structure:
   "description": "<DETAILED_DESCRIPTION>",
   "properties": {
     "pagination": {
-      "$ref": "#/components/schemas/IPage.IPagination",
-      "description": "<DETAILED_DESCRIPTION>"
+      "$ref": "#/components/schemas/IPage.IPagination"
     },
     "data": {
       "type": "array",
       "items": {
         "$ref": "#/components/schemas/<EntityType>"
-      },
-      "description": "<DETAILED_DESCRIPTION>"
+      }
     }
   },
   "required": ["pagination", "data"]
@@ -2207,12 +2169,10 @@ For authentication operations (login, join, refresh), the response type MUST fol
   "properties": {
     "id": {
       "type": "string",
-      "format": "uuid",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "uuid"
     },
     "token": {
-      "$ref": "#/components/schemas/IAuthorizationToken",
-      "description": "<DETAILED_DESCRIPTION>"
+      "$ref": "#/components/schemas/IAuthorizationToken"
     }
   },
   "required": ["id", "token"]
@@ -2321,29 +2281,24 @@ interface IUser.ICreate {
   "properties": {
     "email": {
       "type": "string",
-      "format": "email",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "email"
     },
     "password": {
-      "type": "string",
-      "description": "<DETAILED_DESCRIPTION>"
+      "type": "string"
     },
     "ip": {
       "oneOf": [
         { "type": "string" },
         { "type": "null" }
-      ],
-      "description": "<DETAILED_DESCRIPTION>"
+      ]
     },
     "href": {
       "type": "string",
-      "format": "uri",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "uri"
     },
     "referrer": {
       "type": "string",
-      "format": "uri",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "uri"
     }
   },
   "required": ["email", "password", "href", "referrer"]
@@ -4484,17 +4439,14 @@ interface IBbsArticleAttachment.ICreate {
     "name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 255,
-      "description": "<DETAILED_DESCRIPTION>"
+      "maxLength": 255
     },
     "extension": {
-      "type": "string",
-      "description": "<DETAILED_DESCRIPTION>"
+      "type": "string"
     },
     "url": {
       "type": "string",
-      "format": "uri",
-      "description": "<DETAILED_DESCRIPTION>"
+      "format": "uri"
     }
   },
   "required": ["name", "extension", "url"]
@@ -5414,33 +5366,30 @@ interface IBbsArticle.IUpdate {
 
 The `AutoBeOpenApi.IJsonSchemaDescriptive` type **REQUIRES** the `description` field. This is enforced by the TypeScript type system - schemas without descriptions will fail compilation.
 
-**TWO MANDATORY DESCRIPTION LOCATIONS:**
+**MANDATORY DESCRIPTION LOCATION:**
 
-1. **Root Schema Level** - The schema you generate MUST have a `description` field
-2. **Every Object Property** - When defining `properties` in an object type, EACH property MUST have a `description` field
+1. **Root Schema Level** - The `design.description` field MUST have a meaningful description for the schema type
+
+**Note**: Properties inside `schema.properties` do NOT have a `description` field. Property descriptions are handled automatically by the Refine agent in a post-processing step. The `IObject.properties` type is `Record<string, IJsonSchema>`, which contains only type metadata.
 
 This is NOT a recommendation or best practice - it is an **ABSOLUTE REQUIREMENT** enforced by the type system:
 
 ```typescript
-// The type definition REQUIRES description
-export namespace IJsonSchemaDescriptive {
-  interface IDescriptive {
-    description: string;  // ← REQUIRED, not optional!
-  }
+// The design-level description is REQUIRED
+export interface AutoBeInterfaceSchemaDesign {
+  description: string;  // ← REQUIRED, not optional!
 }
 
-// IObject.properties requires IJsonSchemaProperty for each property
+// IObject.properties uses IJsonSchema (type metadata only, no description)
 export interface IObject {
-  properties: Record<string, IJsonSchemaProperty>;  // ← Each value MUST have description
+  properties: Record<string, IJsonSchema>;  // ← Each value has only type metadata
 }
 ```
 
 **ZERO TOLERANCE POLICY:**
 - ❌ Schema without root `description` → **COMPILATION FAILURE**
-- ❌ Property without `description` → **COMPILATION FAILURE**
 - ❌ Empty string `description: ""` → **UNACCEPTABLE**
 - ✅ Every schema MUST have meaningful `description`
-- ✅ Every property MUST have meaningful `description`
 
 #### Schema Type Description Requirements
 
@@ -5475,8 +5424,8 @@ Summary variant excludes large text fields for list performance.`,
   schema: {
     type: "object",
     properties: {
-      id: { type: "string", description: "Sale unique identifier" },
-      title: { type: "string", description: "Sale listing title" }
+      id: { type: "string" },
+      title: { type: "string" }
     },
     required: ["id", "title"]
   }
@@ -5491,91 +5440,38 @@ const badDesign: AutoBeInterfaceSchemaDesign = {
   schema: {
     type: "object",
     properties: {
-      id: { type: "string", description: "Sale ID" },  // ❌ Too brief
-      title: { type: "string", description: "Title" }  // ❌ Too brief
+      id: { type: "string" },
+      title: { type: "string" }
     },
     required: ["id", "title"]
   }
 }
 ```
 
-#### Property Description Requirements
+#### Property Descriptions - Handled by Refine Agent
 
-**⚠️ MANDATORY: Every single property MUST have a `description` field ⚠️**
+**Properties in `schema.properties` do NOT include a `description` field.** Property-level descriptions are automatically added by the Refine agent in a post-processing step after schema generation.
 
-This is NOT optional. The type system requires `IJsonSchemaProperty` for each property, which mandates the `description` field. Missing descriptions will cause compilation failure.
-
-Write clear, detailed property descriptions explaining the purpose, constraints, and business context of each field.
-
-**Writing Guidelines**:
-- **EVERY property MUST have `description`** - no exceptions
-- Keep sentences reasonably short (avoid overly long single lines)
-- If needed for clarity, break into multiple sentences or short paragraphs
-- Explain field purpose, constraints, validation rules, and business context
-
-**Examples:**
+Your responsibility is to provide only type metadata for each property (`type`, `format`, `$ref`, `oneOf`, `enum`, `items`, `minimum`, `maximum`, etc.). Do NOT add `description` to individual properties.
 
 ```typescript
-// EXCELLENT: Detailed property description in design.schema
-schema: {
-  type: "object",
-  properties: {
-    email: {
-      type: "string",
-      format: "email",
-      description: "Customer email address used for authentication and communication. Must be unique across all customers. Validated against RFC 5322 email format standards."
-    }
-  }
-}
-
-// GOOD: Clear and specific
-schema: {
-  type: "object",
-  properties: {
-    price: {
-      type: "number",
-      minimum: 0,
-      description: "Sale price in USD. Must be non-negative. Supports up to 2 decimal places for cents."
-    }
-  }
-}
-
-// WRONG: Too brief (description insufficient)
-schema: {
-  type: "object",
-  properties: {
-    email: {
-      type: "string",
-      description: "Email"  // ❌ Too brief!
-    }
-  }
-}
-
-// ❌ FATAL ERROR: Missing description - COMPILATION WILL FAIL
+// CORRECT: Properties have only type metadata
 schema: {
   type: "object",
   properties: {
     email: {
       type: "string",
       format: "email"
-      // Missing description! This violates IJsonSchemaProperty type requirement
-    }
-  }
-}
-
-// WRONG: Overly long single line
-schema: {
-  type: "object",
-  properties: {
-    description: {
-      type: "string",
-      description: "Product description containing detailed information about the product features, specifications, materials, dimensions, weight, color options, care instructions, warranty information, and any other relevant details that customers need to know before making a purchase decision"  // ❌ Too long! Break into multiple sentences.
+    },
+    price: {
+      type: "number",
+      minimum: 0
     }
   }
 }
 ```
 
-**IMPORTANT**: All descriptions MUST be written in English only. Never use other languages.
+**IMPORTANT**: The schema-level `description` (in `design.description`) MUST be written in English only. Never use other languages.
 
 ---
 
@@ -5685,17 +5581,14 @@ const design: AutoBeInterfaceSchemaDesign = {
     type: "object",
     properties: {
       title: {
-        type: "string",
-        description: "Article title"
+        type: "string"
       },
       content: {
-        type: "string",
-        description: "Article content in markdown format"
+        type: "string"
       },
       category_id: {
         type: "string",
-        format: "uuid",
-        description: "Category identifier"
+        format: "uuid"
       }
       // SECURITY: NO bbs_member_id - comes from auth context
     },
@@ -5719,39 +5612,32 @@ const design: AutoBeInterfaceSchemaDesign = {
     properties: {
       id: {
         type: "string",
-        format: "uuid",
-        description: "Unique identifier"
+        format: "uuid"
       },
       title: {
-        type: "string",
-        description: "Article title"
+        type: "string"
       },
       content: {
-        type: "string",
-        description: "Article content in markdown format"
+        type: "string"
       },
       // Strong relation (same scope - aggregation)
       snapshots: {
         type: "array",
         items: {
           $ref: "#/components/schemas/IBbsArticleSnapshot"  // ✅ USE $ref!
-        },
-        description: "Version history snapshots"
+        }
       },
       // Weak relation (different scope - reference)
       author: {
-        $ref: "#/components/schemas/IBbsMember.ISummary",  // ✅ USE $ref!
-        description: "Author who wrote this article. Reference to member summary."
+        $ref: "#/components/schemas/IBbsMember.ISummary"  // ✅ USE $ref!
       },
       // Count for different scope entities
       comments_count: {
-        type: "integer",
-        description: "Number of comments on this article"
+        type: "integer"
       },
       created_at: {
         type: "string",
-        format: "date-time",
-        description: "Article creation timestamp"
+        format: "date-time"
       }
     },
     required: ["id", "title", "content", "author", "created_at"]
@@ -5998,7 +5884,7 @@ Before completing the schema generation, verify ALL of the following items:
 - [ ] **Single string type field** - Never use array notation like `["string", "null"]`
 - [ ] **Proper nullable handling** - Use `oneOf` for nullable types
 - [ ] **English descriptions only** - All descriptions in English
-- [ ] **Complete documentation** - Every schema and property has meaningful descriptions
+- [ ] **Complete documentation** - Every schema has meaningful description
 - [ ] **All schemas at root level** - NO schemas nested inside other schemas
 
 ---
@@ -6051,7 +5937,7 @@ Your final output should be the `design` object containing `databaseSchema`, `sp
 
 Always aim to create a schema definition that is:
 - **Intuitive**: Easy to understand and use
-- **Well-documented**: Comprehensive descriptions for the type and all properties
+- **Well-documented**: Comprehensive description for the type
 - **Accurate**: Faithfully represents the business domain and database schema
 - **Complete**: All relevant properties for this type variant included without exception
 - **Secure**: Built-in security from the start
@@ -6114,8 +6000,7 @@ Remember that your role is CRITICAL to the success of the entire API design proc
   - For computed properties: MUST have detailed computation spec (sources, formulas, joins, edge cases)
   - For relations: specify JOIN conditions and target types
 - [ ] **`description`**: Consumer-friendly documentation for the type
-- [ ] **Each property has `description`**: Every property in `schema.properties` has a description
-- [ ] **NO OMISSIONS**: Zero properties missing description or excluded from specification
+- [ ] **NO OMISSIONS**: Zero properties excluded from specification
 - [ ] **Grounded Reasoning**: Implementation specification established FIRST before writing descriptions
 
 ### 13.4. Function Calling Verification

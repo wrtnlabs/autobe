@@ -204,6 +204,9 @@ function createController(
     >;
   },
 ): IAgenticaController.IClass {
+  const everyModels: AutoBeDatabase.IModel[] =
+    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
+
   const validate: Validator = (next) => {
     const result: IValidation<IAutoBeInterfaceSchemaCastingApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaCastingApplication.IProps>(next);
@@ -215,11 +218,26 @@ function createController(
         thinking: result.data.thinking,
         request: result.data.request,
       });
-    else return result;
+
+    const errors: IValidation.IError[] = [];
+    if (result.data.request.casting !== null)
+      AutoBeInterfaceSchemaProgrammer.validate({
+        path: "$input.request.design",
+        errors,
+        everyModels,
+        operations: props.operations,
+        typeName: props.typeName,
+        design: result.data.request.casting,
+      });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
   };
 
-  const everyModels: AutoBeDatabase.IModel[] =
-    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
   const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeInterfaceSchemaCastingApplication>({
       validate: {

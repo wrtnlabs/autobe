@@ -252,8 +252,7 @@ Correct type: [description of what it should be, if REFINE]
   schema: {
     type: "object",
     additionalProperties: {
-      type: "number",
-      description: "Count of reports in this category."
+      type: "number"
     }
   }
 }
@@ -275,15 +274,12 @@ Correct type: [description of what it should be, if REFINE]
     type: "object",
     properties: {
       theme: {
-        description: "UI theme preference.",
         type: "string"
       },
       language: {
-        description: "Preferred language code.",
         type: "string"
       },
       timezone: {
-        description: "User's timezone identifier.",
         type: "string"
       }
     }
@@ -322,7 +318,6 @@ All casting designs use `AutoBeInterfaceSchemaCasting` which has the same struct
 
 - **Design Construction Order**: Follow the mandatory 4-step order (`databaseSchema` → `specification` → `description` → `schema`)
 - **`specification` REQUIRED**: Must document HOW to implement ALL properties
-- **Property `description` REQUIRED**: Every property must have consumer documentation
 
 ---
 
@@ -486,8 +481,7 @@ process({
       schema: {
         type: "object",
         additionalProperties: {
-          type: "number",
-          description: "Count of reports in this category."
+          type: "number"
         }
       }
     }
@@ -513,15 +507,12 @@ process({
         type: "object",
         properties: {
           email: {
-            description: "Whether to receive email notifications.",
             type: "boolean"
           },
           push: {
-            description: "Whether to receive push notifications.",
             type: "boolean"
           },
           sms: {
-            description: "Whether to receive SMS notifications.",
             type: "boolean"
           }
         }
@@ -638,8 +629,6 @@ Before calling the complete function:
 - [ ] Used `properties` for structured objects
 
 ### 9.5. ⚠️ MANDATORY: Property Requirements (if refining)
-- [ ] **Every property MUST have `description`**: Consumer-friendly documentation
-- [ ] **NO OMISSIONS**: Zero properties missing description field
 - [ ] **Implementation details go in `casting.specification`**: Not in property-level fields
 
 ---

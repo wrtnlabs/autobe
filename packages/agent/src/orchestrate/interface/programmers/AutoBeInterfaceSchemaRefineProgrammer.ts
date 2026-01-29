@@ -10,10 +10,10 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
+import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
 export namespace AutoBeInterfaceSchemaRefineProgrammer {
   export const fixApplication = (props: {
@@ -41,16 +41,18 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
   };
 
-  export const validate = (
-    ctx: AutoBeContext,
-    props: {
-      typeName: string;
-      schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-      refines: AutoBeInterfaceSchemaPropertyRefine[];
-      path: string;
-      errors: IValidation.IError[];
-    },
-  ): void => {
+  export const validate = (props: {
+    // common
+    path: string;
+    errors: IValidation.IError[];
+    everyModels: AutoBeDatabase.IModel[];
+    // special
+    typeName: string;
+    databaseSchema: string | null;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+    refines: AutoBeInterfaceSchemaPropertyRefine[];
+  }): void => {
+    // validate property key existence and schema correctness
     props.refines.forEach((refine, i) => {
       if (
         refine.type !== "create" &&
@@ -75,14 +77,53 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           operations: [],
           path: `${props.path}.refines[${i}].schema`,
           errors: props.errors,
-          models: ctx
-            .state()
-            .database!.result.data.files.flatMap((f) => f.models),
         });
     });
+    for (const key of Object.keys(props.schema.properties))
+      if (props.refines.some((refine) => refine.key === key) === false)
+        props.errors.push({
+          path: `${props.path}.refines[]`,
+          value: undefined,
+          expected: `AutoBeInterfaceSchemaPropertyRefine (key: ${JSON.stringify(key)})`,
+          description: StringUtil.trim`
+            Missing refine for property ${JSON.stringify(key)}.
+
+            You MUST provide a refine for EVERY property in the object schema.
+          `,
+        });
+
+    // validate database schema existence
+    if (
+      props.databaseSchema !== null &&
+      props.everyModels.find((m) => m.name === props.databaseSchema) ===
+        undefined
+    )
+      props.errors.push({
+        path: `${props.path}.databaseSchema`,
+        expected: props.everyModels
+          .map((m) => JSON.stringify(m.name))
+          .join(" | "),
+        value: props.databaseSchema,
+        description: StringUtil.trim`
+          @todo
+        `,
+      });
+    else
+      props.refines.forEach((refine, i) => {
+        AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
+          path: `${props.path}.refines[${i}]`,
+          errors: props.errors,
+          everyModels: props.everyModels,
+          model: props.databaseSchema
+            ? (props.everyModels.find((m) => m.name === props.databaseSchema) ??
+              null)
+            : null,
+          revise: refine,
+        });
+      });
   };
 
-  export const refine = (props: {
+  export const execute = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     databaseSchema: string | null;
     specification: string;

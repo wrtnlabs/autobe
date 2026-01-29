@@ -969,16 +969,14 @@ interface AutoBeInterfaceSchemaPropertyKeep {
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties for Security Violations**
 
-The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about each property's data handling. Use them to identify security risks by understanding what data is being exposed and how it's processed.
+The `specification` (from the design structure) contains ALL conceptual information about each property's data handling. Use it to identify security risks by understanding what data is being exposed and how it's processed.
 
 - **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Reveals the data source (which DB column, how it's processed)
   - Shows if sensitive data is being directly exposed
   - **For Security Review**: Check for exposed hashed passwords, internal IDs, or server-managed fields
 
-- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
-  - Explains what the property represents to API consumers
-  - **For Security Review**: Check if the description reveals sensitive implementation details
+- **Note**: Property-level descriptions are handled by the Refine agent in a post-processing step. Focus on `specification` for security assessment.
 
 **How to Use These Fields for Security Review**:
 

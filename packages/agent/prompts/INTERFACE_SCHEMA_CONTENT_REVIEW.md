@@ -561,10 +561,10 @@ model Article {
 {
   "type": "object",
   "properties": {
-    "title": { "type": "string", "description": "..." },
-    "subtitle": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." },
-    "content": { "type": "string", "description": "..." },
-    "summary": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." }
+    "title": { "type": "string" },
+    "subtitle": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+    "content": { "type": "string" },
+    "summary": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
   },
   "required": ["title", "subtitle", "content", "summary"]  // ALL fields required (present in response)
 }
@@ -575,10 +575,10 @@ model Article {
 {
   "type": "object",
   "properties": {
-    "title": { "type": "string", "description": "..." },
-    "subtitle": { "type": "string", "description": "..." },
-    "content": { "type": "string", "description": "..." },
-    "summary": { "type": "string", "description": "..." }
+    "title": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "content": { "type": "string" },
+    "summary": { "type": "string" }
   },
   "required": ["title", "content"]  // Only non-nullable fields
 }

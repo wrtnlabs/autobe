@@ -222,13 +222,13 @@ function createController(
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    AutoBeJsonSchemaValidator.validateSchema({
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
       errors,
-      models: everyModels,
       operations: props.operations,
+      everyModels,
       typeName: props.typeName,
-      schema: result.data.request.design.schema,
-      path: "$input.request.design.schema",
+      design: result.data.request.design,
     });
     if (errors.length !== 0)
       return {
