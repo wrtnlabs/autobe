@@ -141,7 +141,9 @@ export namespace ArchiveLogger {
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
         ...event.revises
           .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.original_namespace} => ${r.group.namespace}`),
+          .map(
+            (r) => `      - ${r.original_namespace} => ${r.group.namespace}`,
+          ),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
         ...event.revises
           .filter((r) => r.type === "erase")
@@ -151,7 +153,6 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseAuthorization")
       content.push(
-        `  - actor: ${event.actorName} (kind: ${event.actorKind})`,
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
