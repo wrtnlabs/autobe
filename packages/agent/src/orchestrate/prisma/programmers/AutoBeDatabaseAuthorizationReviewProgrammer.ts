@@ -14,7 +14,7 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
     errors: IValidation.IError[];
     path: string;
     prefix: string | null;
-    actor: AutoBeAnalyzeActor;
+    actors: AutoBeAnalyzeActor[];
     revises: AutoBeDatabaseComponentTableRevise[];
     component: AutoBeDatabaseComponent;
   }): void => {
@@ -22,19 +22,23 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
     AutoBeDatabaseComponentReviewProgrammer.validate(props);
 
     // naming convention
-    const actor: string = NamingConvention.snake(props.actor.name);
     const prefix: string = props.prefix ? `${props.prefix}_` : "";
+    const actorNames: string[] = props.actors.map(
+      (actor) => prefix + NamingConvention.snake(actor.name),
+    );
     const predicate = (next: { path: string; value: string }): void => {
-      if (next.value.includes(actor) === true) return;
+      if (actorNames.some((an) => next.value.startsWith(an) === true)) return;
       props.errors.push({
         path: next.path,
-        expected: `\`${prefix}${actor}\`\${string}`,
+        expected: `\`${prefix}\${${actorNames.map((s) => JSON.stringify(s)).join(" | ")}}\`\${string}`,
         value: next.value,
         description: StringUtil.trim`
-          Table "${next.value}" does not contain actor name "${prefix}${actor}".
+          Table "${next.value}" does not start with none of below:
 
-          Fix: Add "${prefix}${actor}" to the table name, or remove this table
-          if it is unrelated to "${props.actor.name}" actor.
+          ${actorNames.map((an) => `- "${an}"`).join("\n")}
+
+          Fix: Add one of above to the table name, or remove this table
+          if it is unrelated to some actor.
         `,
       });
     };
