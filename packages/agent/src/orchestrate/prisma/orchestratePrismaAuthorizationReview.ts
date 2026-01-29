@@ -3,8 +3,6 @@ import {
   AutoBeAnalyzeActor,
   AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentTableDesign,
-  AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -19,6 +17,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformPrismaAuthorizationReviewHistory } from "./histories/transformPrismaAuthorizationReviewHistory";
 import { AutoBeDatabaseAuthorizationReviewProgrammer } from "./programmers/AutoBeDatabaseAuthorizationReviewProgrammer";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
+import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseAuthorizationReviewApplication } from "./structures/IAutoBeDatabaseAuthorizationReviewApplication";
 
 export async function orchestratePrismaAuthorizationReview(
@@ -45,7 +44,6 @@ export async function orchestratePrismaAuthorizationReview(
           .filter((y) => y.second.filename !== x.second.filename)
           .flatMap((y) => y.second.tables.map((t) => t.name)),
       );
-
       const event: AutoBeDatabaseAuthorizationReviewEvent = await process(ctx, {
         component: x.second,
         actor: x.first,
@@ -118,57 +116,25 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Apply revises to the component's tables
-    const tableMap = new Map<string, AutoBeDatabaseComponentTableDesign>(
-      props.component.tables.map((t) => [t.name, t]),
-    );
-
-    const revises: AutoBeDatabaseComponentTableRevise[] = [];
-    for (const r of pointer.value.revises) {
-      if (r.type === "create") {
-        // Only add if not in other components
-        tableMap.set(r.table, {
-          name: r.table,
-          description: r.description,
-        });
-        revises.push(r);
-      } else if (r.type === "update") {
-        // Remove original, add updated (if not in other components)
-        tableMap.delete(r.original);
-        tableMap.set(r.updated, {
-          name: r.updated,
-          description: r.description,
-        });
-        revises.push(r);
-      } else if (r.type === "erase") {
-        tableMap.delete(r.table);
-        revises.push(r);
-      } else {
-        r satisfies never;
-      }
-    }
-
-    const validTables: AutoBeDatabaseComponentTableDesign[] = Array.from(
-      tableMap.values(),
-    );
-
-    const component: AutoBeDatabaseComponent = {
+    const modification: AutoBeDatabaseComponent = {
       kind: props.component.kind,
       filename: props.component.filename,
       namespace: props.component.namespace,
       thinking: props.component.thinking,
       review: pointer.value.review,
       rationale: props.component.rationale,
-      tables: validTables,
+      tables: AutoBeDatabaseComponentReviewProgrammer.execute({
+        component: props.component,
+        revises: pointer.value.revises,
+      }),
     };
-
     return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
-      review: component.review,
-      revises,
-      modification: component,
+      review: modification.review,
+      revises: pointer.value.revises,
+      modification,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

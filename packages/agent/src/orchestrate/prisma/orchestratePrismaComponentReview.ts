@@ -2,8 +2,6 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentReviewEvent,
-  AutoBeDatabaseComponentTableDesign,
-  AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -44,7 +42,6 @@ export async function orchestratePrismaComponentReview(
           .filter((c) => c.filename !== component.filename)
           .flatMap((c) => c.tables.map((t) => t.name)),
       );
-
       const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
         component,
         otherTableNames,
@@ -114,61 +111,25 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Apply revises to the component's tables
-    const tableMap = new Map<string, AutoBeDatabaseComponentTableDesign>(
-      props.component.tables.map((t) => [t.name, t]),
-    );
-
-    const revises: AutoBeDatabaseComponentTableRevise[] = [];
-    for (const revise of pointer.value.revises) {
-      if (revise.type === "create") {
-        // Only add if not in other components
-        if (!props.otherTableNames.has(revise.table)) {
-          tableMap.set(revise.table, {
-            name: revise.table,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "update") {
-        // Remove original, add updated (if not in other components)
-        tableMap.delete(revise.original);
-        if (!props.otherTableNames.has(revise.updated)) {
-          tableMap.set(revise.updated, {
-            name: revise.updated,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "erase") {
-        tableMap.delete(revise.table);
-        revises.push(revise);
-      } else {
-        revise satisfies never;
-      }
-    }
-
-    const validTables: AutoBeDatabaseComponentTableDesign[] = Array.from(
-      tableMap.values(),
-    );
-
-    const component: AutoBeDatabaseComponent = {
+    const modification: AutoBeDatabaseComponent = {
       kind: props.component.kind,
       filename: props.component.filename,
       namespace: props.component.namespace,
       thinking: props.component.thinking,
       review: pointer.value.review,
       rationale: props.component.rationale,
-      tables: validTables,
+      tables: AutoBeDatabaseComponentReviewProgrammer.execute({
+        component: props.component,
+        revises: pointer.value.revises,
+      }),
     };
-
     return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
-      review: component.review,
-      revises,
-      modification: component,
+      review: modification.review,
+      revises: pointer.value.revises,
+      modification,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,
