@@ -289,11 +289,13 @@ export const orchestrateInterface =
       completed: 0,
       total: 0,
     };
+    const failures: Map<string, number> = new Map();
     while (missedOpenApiSchemas(document).length !== 0)
       await iterate(() =>
         orchestrateInterfaceSchemaComplement(ctx, {
           instruction: props.instruction,
           progress: complementProgress,
+          failures,
           document,
         }),
       );

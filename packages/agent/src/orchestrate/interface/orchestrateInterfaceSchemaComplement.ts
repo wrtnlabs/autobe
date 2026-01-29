@@ -28,6 +28,7 @@ export const orchestrateInterfaceSchemaComplement = async (
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
+    failures: Map<string, number>;
     progress: AutoBeProgressEventBase;
   },
 ): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
@@ -41,13 +42,21 @@ export const orchestrateInterfaceSchemaComplement = async (
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
-      result[it] = await process(ctx, {
-        instruction: props.instruction,
-        document: props.document,
-        typeName: it,
-        progress: props.progress,
-        promptCacheKey,
-      });
+      try {
+        result[it] = await process(ctx, {
+          instruction: props.instruction,
+          document: props.document,
+          typeName: it,
+          progress: props.progress,
+          promptCacheKey,
+        });
+      } catch (error) {
+        console.log("interfaceSchemaComplement failure", it, error);
+        const count: number | undefined = props.failures.get(it);
+        if (count === undefined) props.failures.set(it, 1);
+        else if (count < 3) props.failures.set(it, count + 1);
+        else throw error;
+      }
     }),
   );
   return result;
