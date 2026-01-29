@@ -65,6 +65,7 @@ export const validate_interface_complement = async (props: {
   };
 
   // Complement schemas
+  const failures: Map<string, number> = new Map();
   while (missedOpenApiSchemas(document).length !== 0) {
     const oldSchemaKeys: Set<string> = new Set(
       Object.keys(document.components.schemas),
@@ -74,6 +75,7 @@ export const validate_interface_complement = async (props: {
         instruction: "Design API specs carefully considering the security.",
         progress: complementProgress,
         document,
+        failures,
       });
 
     // Get only newly added schemas
