@@ -56,14 +56,14 @@ export interface AutoBeInterfaceSchemaComplementEvent
    *
    * Contains the newly created schema definition that fills the gap identified
    * as the missing type. The schema contains the complete
-   * {@link AutoBeOpenApi.IJsonSchemaDescriptive} definition with proper typing,
-   * validation rules, and descriptive documentation.
+   * {@link AutoBeOpenApi.IJsonSchema} definition with proper typing, validation
+   * rules, and descriptive documentation.
    *
    * This complementary schema ensures that the type referenced throughout the
    * API specification is properly defined, enabling successful code generation
    * and maintaining type safety across the entire application.
    */
-  schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+  schema: AutoBeOpenApi.IJsonSchema;
 
   /**
    * Iteration number of the requirements analysis this API complement was

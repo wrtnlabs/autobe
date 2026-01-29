@@ -44,7 +44,7 @@ export interface AutoBeInterfaceSchemaCastingEvent
    * `string`, `number`, `boolean`, or `integer`) that is being evaluated. This
    * preserves the original state for comparison and audit purposes.
    */
-  original: AutoBeOpenApi.IJsonSchemaDescriptive;
+  original: AutoBeOpenApi.IJsonSchema;
 
   /**
    * Observation of the current type and its documentation.

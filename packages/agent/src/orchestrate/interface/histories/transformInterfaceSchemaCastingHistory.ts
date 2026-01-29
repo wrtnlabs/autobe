@@ -22,7 +22,7 @@ export const transformInterfaceSchemaCastingHistory = (props: {
   >;
   typeName: string;
   refineOperations: AutoBeOpenApi.IOperation[];
-  originalSchema: AutoBeOpenApi.IJsonSchemaDescriptive;
+  originalSchema: AutoBeOpenApi.IJsonSchema;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {

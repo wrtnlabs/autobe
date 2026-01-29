@@ -1,6 +1,9 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
+import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
+import { orchestrateInterfaceSchemaCasting } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaCasting";
 import { orchestrateInterfaceSchemaComplement } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaComplement";
+import { orchestrateInterfaceSchemaRefine } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
@@ -52,10 +55,11 @@ export const validate_interface_complement = async (props: {
     })) ?? (await validate_interface_schema(props));
 
   // Build document
+  const ctx: AutoBeContext = props.agent.getContext();
   const document: AutoBeOpenApi.IDocument = {
     operations,
     components: {
-      authorizations: props.agent.getContext().state().analyze?.actors ?? [],
+      authorizations: ctx.state().analyze?.actors ?? [],
       schemas,
     },
   };
@@ -63,50 +67,75 @@ export const validate_interface_complement = async (props: {
     completed: 0,
     total: 0,
   };
+  const castingProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
+  const refineProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
+  const reviewProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
 
   // Complement schemas
   const failures: Map<string, number> = new Map();
   while (missedOpenApiSchemas(document).length !== 0) {
-    const oldSchemaKeys: Set<string> = new Set(
-      Object.keys(document.components.schemas),
-    );
     const complemented: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      await orchestrateInterfaceSchemaComplement(props.agent.getContext(), {
+      {};
+    const assign = (
+      schemas: Record<
+        string,
+        AutoBeOpenApi.IJsonSchema | AutoBeOpenApi.IJsonSchemaDescriptive
+      >,
+    ) => {
+      Object.assign(complemented, schemas);
+      Object.assign(document.components.schemas, schemas);
+    };
+
+    // complement
+    assign(
+      await orchestrateInterfaceSchemaComplement(ctx, {
         instruction: "Design API specs carefully considering the security.",
         progress: complementProgress,
         document,
         failures,
-      });
+      }),
+    );
+    if (Object.keys(complemented).length === 0) continue;
 
-    // Get only newly added schemas
-    const newSchemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-      Object.fromEntries(
-        Object.keys(complemented)
-          .filter((key) => !oldSchemaKeys.has(key))
-          .map((key) => [key, complemented[key]]),
-      );
+    // casting
+    assign(
+      await orchestrateInterfaceSchemaCasting(ctx, {
+        document,
+        schemas: complemented,
+        progress: castingProgress,
+        instruction: "",
+      }),
+    );
 
-    // Update document with complemented schemas
-    Object.assign(document.components.schemas, complemented);
+    // refining
+    assign(
+      await orchestrateInterfaceSchemaRefine(ctx, {
+        instruction: "",
+        progress: refineProgress,
+        document,
+        schemas: complemented,
+      }),
+    );
 
     // Review newly complemented schemas
-    const reviewProgress: AutoBeProgressEventBase = {
-      completed: 0,
-      total: Object.keys(newSchemas).length * REVIEWERS.length,
-    };
-
+    reviewProgress.total += Object.keys(complemented).length * REVIEWERS.length;
     for (const config of REVIEWERS) {
-      const reviewed = await orchestrateInterfaceSchemaReview(
-        props.agent.getContext(),
-        config,
-        {
-          instruction: "Design API specs carefully considering the security.",
-          document,
-          schemas: newSchemas,
-          progress: reviewProgress,
-        },
-      );
-      Object.assign(document.components.schemas, reviewed);
+      const reviewed = await orchestrateInterfaceSchemaReview(ctx, config, {
+        instruction: "Design API specs carefully considering the security.",
+        document,
+        schemas: complemented,
+        progress: reviewProgress,
+      });
+      assign(reviewed);
     }
   }
 

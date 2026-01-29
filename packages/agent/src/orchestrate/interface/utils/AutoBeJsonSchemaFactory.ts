@@ -330,12 +330,17 @@ export namespace AutoBeJsonSchemaFactory {
   ----------------------------------------------------------- */
   export const fixDesign = (
     design: AutoBeInterfaceSchemaDesign,
-  ): AutoBeOpenApi.IJsonSchemaDescriptive => {
+  ): AutoBeOpenApi.IJsonSchema => {
     const emended: AutoBeOpenApi.IJsonSchema = fixSchema(design.schema);
-    const final: AutoBeOpenApi.IJsonSchemaDescriptive = {
+    const final: AutoBeOpenApi.IJsonSchema = {
       ...emended,
-      description: design.description,
-      "x-autobe-specification": design.specification,
+      ...({
+        description: design.description,
+        "x-autobe-specification": design.specification,
+      } satisfies Pick<
+        AutoBeOpenApi.IJsonSchemaDescriptive,
+        "description" | "x-autobe-specification"
+      >),
     };
     if (AutoBeOpenApiTypeChecker.isObject(final))
       final["x-autobe-database-schema"] = design.databaseSchema;
