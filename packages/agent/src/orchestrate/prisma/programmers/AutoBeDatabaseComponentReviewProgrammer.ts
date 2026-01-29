@@ -23,10 +23,8 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
         revise.original = plural(revise.original);
         revise.updated = plural(revise.updated);
       } else revise satisfies never;
-    if (props.prefix === null) return;
 
-    // validate prefix
-    const prefix: string = props.prefix + "_";
+    // validate existence
     const predicateExistence = (next: {
       path: string;
       value: string;
@@ -51,6 +49,24 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
         `,
       });
     };
+    props.revises.forEach((revise, i) => {
+      if (revise.type === "update")
+        predicatePrefix({
+          path: `${props.path}[${i}].updated`,
+          value: revise.updated,
+        });
+      else if (revise.type === "erase")
+        predicateExistence({
+          path: `${props.path}[${i}].table`,
+          value: revise.table,
+        });
+      else if (revise.type !== "create") revise satisfies never;
+    });
+
+    // validate prefix
+    if (props.prefix === null) return;
+
+    const prefix: string = props.prefix + "_";
     const predicatePrefix = (next: { path: string; value: string }): void => {
       if (next.value.startsWith(prefix) === true) return;
       props.errors.push({
@@ -72,16 +88,12 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
           path: `${props.path}[${i}].table`,
           value: revise.table,
         });
-      else if (revise.type === "update") {
-        predicateExistence({
-          path: `${props.path}[${i}].original`,
-          value: revise.original,
-        });
+      else if (revise.type === "update")
         predicatePrefix({
           path: `${props.path}[${i}].updated`,
           value: revise.updated,
         });
-      } else if (revise.type === "erase")
+      else if (revise.type === "erase")
         predicateExistence({
           path: `${props.path}[${i}].table`,
           value: revise.table,
