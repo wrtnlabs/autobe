@@ -51,7 +51,5 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
           value: revise.updated,
         });
     });
-
-    //
   };
 }
