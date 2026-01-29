@@ -21,8 +21,6 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     revise: AutoBeInterfaceSchemaPropertyRevise;
     noModelDescription: string;
   }): void => {
-    if (!("databaseSchemaProperty" in props.revise)) return;
-
     const property = validateDatabaseSchemaProperty(props);
     if (property !== undefined)
       validateNullable({
