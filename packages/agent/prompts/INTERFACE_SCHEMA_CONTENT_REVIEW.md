@@ -728,20 +728,18 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties' Fields**
 
-The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
+The `specification` (from the design structure) contains ALL conceptual information about each property's intended implementation. Use it to understand the patterns, then compare against the actual database schema to find what's MISSING.
 
 - **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Shows the data mapping patterns used in this schema
   - Reveals the naming conventions (e.g., `users.email` → `email`)
   - **For Content Review**: Follow the same patterns when adding missing fields
 
-- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
-  - Explains the semantic meaning of each property
-  - **For Content Review**: Helps understand the DTO's purpose and what fields it should include
+- Focus on `specification` for content review.
 
 **How to Use These Fields for Content Review**:
 
-1. **Study existing properties' `specification`** - Understand the mapping patterns
+1. **Study existing `specification`** - Understand the mapping patterns
 2. **Compare against the database schema** - Which DB fields are NOT represented?
 3. **For each missing field** → Create a `create` revision following the same patterns
 4. **Write `specification`** for new fields using the same style as existing ones

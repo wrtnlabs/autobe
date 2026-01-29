@@ -676,16 +676,14 @@ You MUST validate that every object type schema has the correct `databaseSchema`
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties to Understand Relation Intent**
 
-The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about each property's intended relationship. Use them to understand the Schema Agent's relation design, then verify against the actual database schema.
+The `specification` (from the design structure) contains ALL conceptual information about each property's intended relationship. Use it to understand the Schema Agent's relation design, then verify against the actual database schema.
 
 - **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Contains the intended join strategy (FK column, related table)
   - Describes whether it's a direct mapping or a relation transformation
   - **For Relation Review**: Verify the FK column and related table actually exist in DB
 
-- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
-  - Explains the semantic relationship (ownership, association, composition)
-  - **For Relation Review**: Helps classify the relation type (composition vs association vs aggregation)
+- Focus on `specification` for relation review.
 
 **How to Use These Fields for Relation Review**:
 
