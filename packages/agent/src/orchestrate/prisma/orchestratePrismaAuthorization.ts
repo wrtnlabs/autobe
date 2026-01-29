@@ -8,6 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { plural } from "pluralize";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -148,12 +149,15 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseAuthorizationApplication.IProps> =
       typia.validate<IAutoBeDatabaseAuthorizationApplication.IProps>(input);
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
       });
+
+    // make plural
+    for (const table of result.data.request.tables)
+      table.name = plural(table.name);
 
     const errors: IValidation.IError[] = [];
     AutoBeDatabaseAuthorizationProgrammer.validate({

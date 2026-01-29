@@ -6,6 +6,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { plural } from "pluralize";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -102,7 +103,6 @@ async function process(
       ...props.group,
       tables: pointer.value.tables,
     };
-
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -131,23 +131,25 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseComponentApplication.IProps> =
       typia.validate<IAutoBeDatabaseComponentApplication.IProps>(input);
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
       });
 
+    // make plural
+    for (const table of result.data.request.tables)
+      table.name = plural(table.name);
+
     // validate table prefix
     const errors: IValidation.IError[] = [];
     AutoBeDatabaseComponentProgrammer.validatePrefix({
       errors,
-      path: "request.tables",
       prefix: props.prefix,
       tableNames: result.data.request.tables.map((t) => t.name),
+      path: (i) => `$input.request.tables[${i}].name`,
     });
     if (errors.length > 0) return { success: false, data: result.data, errors };
-
     return result;
   };
   const application: ILlmApplication = props.preliminary.fixApplication(

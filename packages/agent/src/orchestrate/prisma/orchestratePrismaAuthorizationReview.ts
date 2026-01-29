@@ -8,6 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { plural } from "pluralize";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -44,18 +45,15 @@ export async function orchestratePrismaAuthorizationReview(
           .flatMap((c) => c.tables.map((t) => t.name)),
       );
 
-      const event: AutoBeDatabaseAuthorizationReviewEvent = await process(
-        ctx,
-        {
-          component,
-          otherTableNames,
-          allTableNames,
-          instruction: props.instruction,
-          prefix,
-          progress,
-          promptCacheKey,
-        },
-      );
+      const event: AutoBeDatabaseAuthorizationReviewEvent = await process(ctx, {
+        component,
+        otherTableNames,
+        allTableNames,
+        instruction: props.instruction,
+        prefix,
+        progress,
+        promptCacheKey,
+      });
       ctx.dispatch(event);
       return event.modification;
     }),
@@ -97,6 +95,7 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
+        prefix: props.prefix,
         otherTableNames: props.otherTableNames,
         build: (next) => {
           pointer.value = next;
@@ -120,31 +119,27 @@ async function process(
     );
 
     const revises: AutoBeDatabaseComponentTableRevise[] = [];
-    for (const revise of pointer.value.revises) {
-      if (revise.type === "create") {
+    for (const r of pointer.value.revises) {
+      if (r.type === "create") {
         // Only add if not in other components
-        if (!props.otherTableNames.has(revise.table)) {
-          tableMap.set(revise.table, {
-            name: revise.table,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "update") {
+        tableMap.set(r.table, {
+          name: r.table,
+          description: r.description,
+        });
+        revises.push(r);
+      } else if (r.type === "update") {
         // Remove original, add updated (if not in other components)
-        tableMap.delete(revise.original);
-        if (!props.otherTableNames.has(revise.updated)) {
-          tableMap.set(revise.updated, {
-            name: revise.updated,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "erase") {
-        tableMap.delete(revise.table);
-        revises.push(revise);
+        tableMap.delete(r.original);
+        tableMap.set(r.updated, {
+          name: r.updated,
+          description: r.description,
+        });
+        revises.push(r);
+      } else if (r.type === "erase") {
+        tableMap.delete(r.table);
+        revises.push(r);
       } else {
-        revise satisfies never;
+        r satisfies never;
       }
     }
 
@@ -182,6 +177,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
+  prefix: string | null;
   otherTableNames: Set<string>;
   build: (
     next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,
@@ -195,13 +191,60 @@ function createController(props: {
         input,
       );
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
       });
 
+    // make plural
+    for (const revise of result.data.request.revises)
+      if (revise.type === "create") revise.table = plural(revise.table);
+      else if (revise.type === "erase") revise.table = plural(revise.table);
+      else if (revise.type === "update") {
+        revise.original = plural(revise.original);
+        revise.updated = plural(revise.updated);
+      } else revise satisfies never;
+
+    // list up candidates
+    interface ICandidate {
+      path: string;
+      value: string;
+    }
+    const candidates: ICandidate[] = result.data.request.revises
+      .map((revise, i) => {
+        if (revise.type === "create" || revise.type === "erase")
+          return [
+            {
+              path: `$input.request.revises[${i}].table`,
+              value: revise.table,
+            },
+          ];
+        else if (revise.type === "update")
+          return [
+            {
+              path: `$input.request.revises[${i}].original`,
+              value: revise.original,
+            },
+            {
+              path: `$input.request.revises[${i}].updated`,
+              value: revise.updated,
+            },
+          ];
+        revise satisfies never;
+        return [];
+      })
+      .flat();
+
+    // validate table names
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseComponentProgrammer.validatePrefix({
+      errors,
+      prefix: props.prefix,
+      tableNames: candidates.map((c) => c.value),
+      path: (i) => candidates[i].path,
+    });
+    if (errors.length > 0) return { success: false, data: result.data, errors };
     return result;
   };
 

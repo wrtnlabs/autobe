@@ -8,6 +8,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { plural } from "pluralize";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -197,21 +198,54 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // validate revise prefix
+    // make plural
+    for (const revise of result.data.request.revises)
+      if (revise.type === "create") revise.table = plural(revise.table);
+      else if (revise.type === "erase") revise.table = plural(revise.table);
+      else if (revise.type === "update") {
+        revise.original = plural(revise.original);
+        revise.updated = plural(revise.updated);
+      } else revise satisfies never;
+
+    // list up candidates
+    interface ICandidate {
+      path: string;
+      value: string;
+    }
+    const candidates: ICandidate[] = result.data.request.revises
+      .map((revise, i) => {
+        if (revise.type === "create" || revise.type === "erase")
+          return [
+            {
+              path: `$input.request.revises[${i}].table`,
+              value: revise.table,
+            },
+          ];
+        else if (revise.type === "update")
+          return [
+            {
+              path: `$input.request.revises[${i}].original`,
+              value: revise.original,
+            },
+            {
+              path: `$input.request.revises[${i}].updated`,
+              value: revise.updated,
+            },
+          ];
+        revise satisfies never;
+        return [];
+      })
+      .flat();
+
+    // validate table names
     const errors: IValidation.IError[] = [];
-    const tableNames: string[] = result.data.request.revises
-      .map((r) =>
-        r.type === "create" ? r.table : r.type === "update" ? r.updated : null,
-      )
-      .filter((name): name is string => name !== null);
     AutoBeDatabaseComponentProgrammer.validatePrefix({
       errors,
-      path: "request.revises",
       prefix: props.prefix,
-      tableNames,
+      tableNames: candidates.map((c) => c.value),
+      path: (i) => candidates[i].path,
     });
     if (errors.length > 0) return { success: false, data: result.data, errors };
-
     return result;
   };
 

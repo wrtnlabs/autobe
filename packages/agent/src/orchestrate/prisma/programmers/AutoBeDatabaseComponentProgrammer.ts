@@ -6,17 +6,17 @@ import { IValidation } from "typia";
 export namespace AutoBeDatabaseComponentProgrammer {
   export const validatePrefix = (props: {
     errors: IValidation.IError[];
-    path: string;
+    path: (i: number) => string;
     prefix: string | null;
     tableNames: string[];
   }): void => {
     if (props.prefix === null) return;
 
-    const prefix = props.prefix + "_";
+    const prefix: string = props.prefix + "_";
     props.tableNames.forEach((name, i) => {
       if (!name.startsWith(prefix)) {
         props.errors.push({
-          path: `${props.path}[${i}]`,
+          path: props.path(i),
           expected: `table name starting with "${prefix}"`,
           value: name,
           description: StringUtil.trim`
