@@ -173,6 +173,7 @@ const fulfillJsonSchemaFormat = (e: IValidation.IError): boolean => {
       Required<AutoBeOpenApi.IJsonSchema.IString>["format"]
     >();
   if (
+    e.path.endsWith(".format") &&
     typeof e.value === "string" &&
     supported.every((s) => e.expected.includes(JSON.stringify(s)))
   ) {
