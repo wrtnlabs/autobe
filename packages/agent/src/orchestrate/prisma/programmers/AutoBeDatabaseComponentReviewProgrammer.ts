@@ -30,7 +30,8 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
       path: string;
       value: string;
     }): void => {
-      if (props.component.tables.some((t) => t.name === next.value)) return;
+      if (props.component.tables.some((t) => t.name === next.value) === true)
+        return;
       props.errors.push({
         path: next.path,
         expected: props.component.tables
