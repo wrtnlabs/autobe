@@ -32,10 +32,13 @@ const normalizeTableName = (
     name = name.slice(1);
   }
 
-  // 3) Split by "_", convert each token to singular, sort, and join
+  // 3) Split by "_", remove empty tokens, convert each token to singular, sort, and join
   // e.g., bbs_user_articles → ["bbs", "user", "article"] → ["article", "bbs", "user"] → "article_bbs_user"
   // e.g., bbs_article_users → ["bbs", "article", "user"] → ["article", "bbs", "user"] → "article_bbs_user"
-  const tokens = name.split("_").map((token) => singular(token));
+  const tokens = name
+    .split("_")
+    .filter((token) => token.length > 0)
+    .map((token) => singular(token));
   tokens.sort();
   return tokens.join("_");
 };
