@@ -51,7 +51,7 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
     };
     props.revises.forEach((revise, i) => {
       if (revise.type === "update")
-        predicatePrefix({
+        predicateExistence({
           path: `${props.path}[${i}].updated`,
           value: revise.updated,
         });
@@ -93,12 +93,7 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
           path: `${props.path}[${i}].updated`,
           value: revise.updated,
         });
-      else if (revise.type === "erase")
-        predicateExistence({
-          path: `${props.path}[${i}].table`,
-          value: revise.table,
-        });
-      else revise satisfies never;
+      else if (revise.type !== "erase") revise satisfies never;
     });
   };
 
