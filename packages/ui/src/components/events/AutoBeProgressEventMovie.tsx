@@ -79,6 +79,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Prisma Review",
           description: "Reviewing the Prisma schemas",
         };
+      case "databaseDeduplication":
+        return {
+          title: "Database Deduplication",
+          description: "Reviewing component tables for semantic duplicates",
+        };
       case "interfaceEndpoint":
         return {
           title: "Interface Endpoints",

@@ -141,7 +141,9 @@ export namespace ArchiveLogger {
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
         ...event.revises
           .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.original_namespace} => ${r.group.namespace}`),
+          .map(
+            (r) => `      - ${r.original_namespace} => ${r.group.namespace}`,
+          ),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
         ...event.revises
           .filter((r) => r.type === "erase")
@@ -198,7 +200,14 @@ export namespace ArchiveLogger {
           .filter((r) => r.type === "erase")
           .map((r) => `      - ${r.table}`),
       );
-    else if (event.type === "databaseSchema")
+    else if (event.type === "databaseDeduplication") {
+      content.push(
+        `  - process: progress`,
+        `  - progress: (${event.completed} of ${event.total})`,
+        `  - namespace: ${event.namespace}`,
+        `  - duplicated tables: ${event.duplicateGroups.map((g) => g.tables.map((t) => t.name).join(", ")).join(", ")}`,
+      );
+    } else if (event.type === "databaseSchema")
       content.push(
         `  - model: ${event.model.name} (stance: ${event.model.stance})`,
       );

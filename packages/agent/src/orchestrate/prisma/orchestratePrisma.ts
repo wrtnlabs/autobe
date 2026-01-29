@@ -22,10 +22,12 @@ import { orchestratePrismaAuthorizationReview } from "./orchestratePrismaAuthori
 import { orchestratePrismaComponent } from "./orchestratePrismaComponent";
 import { orchestratePrismaComponentReview } from "./orchestratePrismaComponentReview";
 import { orchestratePrismaCorrect } from "./orchestratePrismaCorrect";
+import { orchestratePrismaDeduplication } from "./orchestratePrismaDeduplication";
 import { orchestratePrismaGroup } from "./orchestratePrismaGroup";
 import { orchestratePrismaGroupReview } from "./orchestratePrismaGroupReview";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 import { orchestratePrismaSchemaReview } from "./orchestratePrismaSchemaReview";
+import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 
 export const orchestratePrisma = async (
   ctx: AutoBeContext,
@@ -76,11 +78,16 @@ export const orchestratePrisma = async (
       instruction: props.instruction,
       groups: reviewedGroups,
     });
+  console.log(`----------- PRISMA AUTHORIZATION -----------`);
+  console.log(JSON.stringify(authorizations, null, 2));
+
   const reviewedAuthorizations: AutoBeDatabaseComponent[] =
     await orchestratePrismaAuthorizationReview(ctx, {
       instruction: props.instruction,
       components: authorizations,
     });
+  console.log(`----------- PRISMA AUTHORIZATION REVIEW -----------`);
+  console.log(JSON.stringify(reviewedAuthorizations, null, 2));
 
   // COMPONENT
   const components: AutoBeDatabaseComponent[] =
@@ -88,25 +95,47 @@ export const orchestratePrisma = async (
       instruction: props.instruction,
       groups: reviewedGroups,
     });
+  console.log(`----------- PRISMA COMPONENT -----------`);
+  console.log(JSON.stringify(components, null, 2));
+
   const reviewedComponents: AutoBeDatabaseComponent[] =
     await orchestratePrismaComponentReview(ctx, {
       instruction: props.instruction,
       components,
     });
-  const reviewedAllComponents: AutoBeDatabaseComponent[] = [
-    ...reviewedAuthorizations,
-    ...reviewedComponents,
-  ];
+  console.log(`----------- PRISMA COMPONENT REVIEW -----------`);
+  console.log(JSON.stringify(reviewedComponents, null, 2));
+
+  const reviewedAllComponents: AutoBeDatabaseComponent[] =
+    AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([
+      ...reviewedAuthorizations,
+      ...reviewedComponents,
+    ]);
+
+  // DEDUPLICATION (semantic)
+  const deduplicatedComponents: AutoBeDatabaseComponent[] =
+    await orchestratePrismaDeduplication(ctx, {
+      instruction: props.instruction,
+      components: reviewedAllComponents,
+    });
+  console.log(`----------- PRISMA DEDUPLICATION -----------`);
+  console.log(JSON.stringify(deduplicatedComponents, null, 2));
+  console.log(
+    `before Tables: ${reviewedAllComponents.flatMap((c) => c.tables).length}`,
+  );
+  console.log(
+    `after Tables: ${deduplicatedComponents.flatMap((c) => c.tables).length}`,
+  );
 
   // CONSTRUCT AST DATA
   const schemaEvents: AutoBeDatabaseSchemaEvent[] =
     await orchestratePrismaSchema(
       ctx,
       props.instruction,
-      reviewedAllComponents,
+      deduplicatedComponents,
     );
   const application: AutoBeDatabase.IApplication = {
-    files: reviewedAllComponents.map((comp) => ({
+    files: deduplicatedComponents.map((comp) => ({
       filename: comp.filename,
       namespace: comp.namespace,
       models: schemaEvents
@@ -120,7 +149,7 @@ export const orchestratePrisma = async (
     await orchestratePrismaSchemaReview(
       ctx,
       application,
-      reviewedAllComponents,
+      deduplicatedComponents,
     );
   for (const event of reviewEvents) {
     if (event.content === null) continue;

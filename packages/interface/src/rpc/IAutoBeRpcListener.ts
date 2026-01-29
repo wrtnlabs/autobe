@@ -10,6 +10,7 @@ import {
   AutoBeDatabaseCompleteEvent,
   AutoBeDatabaseComponentEvent,
   AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseDeduplicationEvent,
   AutoBeDatabaseCorrectEvent,
   AutoBeDatabaseGroupEvent,
   AutoBeDatabaseGroupReviewEvent,
@@ -264,6 +265,18 @@ export interface IAutoBeRpcListener {
    */
   databaseComponentReview?(
     event: AutoBeDatabaseComponentReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for database component deduplication events.
+   *
+   * Called when the Database Component Deduplication Agent identifies
+   * semantically duplicate tables across components. Each event represents
+   * the deduplication review of a single component, containing groups of
+   * tables that serve the same purpose.
+   */
+  databaseDeduplication?(
+    event: AutoBeDatabaseDeduplicationEvent,
   ): Promise<void>;
 
   /**

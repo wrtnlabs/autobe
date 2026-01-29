@@ -74,6 +74,7 @@ export const validate_interface_complement = async (props: {
         instruction: "Design API specs carefully considering the security.",
         progress: complementProgress,
         document,
+        failures: new Map(),
       });
 
     // Get only newly added schemas

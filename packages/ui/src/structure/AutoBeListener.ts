@@ -102,6 +102,9 @@ export class AutoBeListener {
       databaseSchemaReview: async (event) => {
         this.accumulate(event);
       },
+      databaseDeduplication: async (event) => {
+        this.accumulate(event);
+      },
       databaseValidate: async (event) => {
         this.insert(event);
       },

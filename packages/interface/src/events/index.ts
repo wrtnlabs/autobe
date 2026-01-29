@@ -37,6 +37,7 @@ export * from "./AutoBeDatabaseAuthorizationReviewEvent";
 export * from "./AutoBeDatabaseCompleteEvent";
 export * from "./AutoBeDatabaseComponentEvent";
 export * from "./AutoBeDatabaseComponentReviewEvent";
+export * from "./AutoBeDatabaseDeduplicationEvent";
 export * from "./AutoBeDatabaseCorrectEvent";
 export * from "./AutoBeDatabaseGroupEvent";
 export * from "./AutoBeDatabaseGroupReviewEvent";

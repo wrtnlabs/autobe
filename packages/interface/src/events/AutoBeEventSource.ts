@@ -5,6 +5,7 @@ import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationE
 import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
 import { AutoBeDatabaseComponentReviewEvent } from "./AutoBeDatabaseComponentReviewEvent";
+import { AutoBeDatabaseDeduplicationEvent } from "./AutoBeDatabaseDeduplicationEvent";
 import { AutoBeDatabaseCorrectEvent } from "./AutoBeDatabaseCorrectEvent";
 import { AutoBeDatabaseGroupEvent } from "./AutoBeDatabaseGroupEvent";
 import { AutoBeDatabaseGroupReviewEvent } from "./AutoBeDatabaseGroupReviewEvent";
@@ -83,6 +84,7 @@ export type AutoBeEventSource =
   | AutoBeDatabaseAuthorizationReviewEvent["type"]
   | AutoBeDatabaseComponentEvent["type"]
   | AutoBeDatabaseComponentReviewEvent["type"]
+  | AutoBeDatabaseDeduplicationEvent["type"]
   | AutoBeDatabaseSchemaEvent["type"]
   | AutoBeDatabaseSchemaReviewEvent["type"]
   | AutoBeDatabaseCorrectEvent["type"]
