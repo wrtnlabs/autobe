@@ -105,7 +105,25 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           .join(" | "),
         value: props.databaseSchema,
         description: StringUtil.trim`
-          @todo
+          You've referenced a non-existing database schema name
+          ${JSON.stringify(props.databaseSchema)} in "databaseSchema" 
+          property. Make sure that the referenced database schema name 
+          exists in your database schema files.
+
+          Never assume non-existing models. This is not recommendation,
+          but an instruction you must follow. Never repeat the same
+          value again. You have to choose one of below:
+
+          **Option 1: Reference an existing database schema**
+          ${props.everyModels.map((m) => `- ${m.name}`).join("\n")}
+
+          **Option 2: Set to null (for DTOs with no database reference)**
+          If this DTO represents pure computed/statistical data or logic-only
+          structures that have no direct relationship to any database table,
+          set "databaseSchema" to null. In this case, all properties in the
+          object type must also have 
+          "AutoBeInterfaceSchemaPropertyRefine.databaseSchemaProperty" 
+          (except "AutoBeInterfaceSchemaPropertyErase" type) set to null.
         `,
       });
     else
@@ -119,6 +137,22 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
               null)
             : null,
           revise: refine,
+          noModelDescription: StringUtil.trim`
+            You have defined "databaseSchemaProperty" property referencing 
+            a database schema property, but its parent schema (object type) 
+            does not reference any database schema.
+
+            To reference a database schema property, you have to configure
+            "IAutoBeInterfaceSchemaRefineApplication.IComplete.databaseSchema"
+            property with a valid database schema name.
+
+            If not, set this "databaseSchemaProperty" property to null value
+            at the next time, and then depict what this property is for
+            in the "specification" property.
+
+            Note that, this is not a recommendation, 
+            but an instruction you must obey.
+          `,
         });
       });
   };

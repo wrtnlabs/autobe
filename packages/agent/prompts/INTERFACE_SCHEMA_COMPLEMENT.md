@@ -719,15 +719,12 @@ process({
         type: "object",
         properties: {
           id: {
-            description: "Unique identifier for the product.",
             type: "string"
           },
           name: {
-            description: "Display name of the product.",
             type: "string"
           },
           price: {
-            description: "Current price of the product.",
             type: "number"
           }
         },

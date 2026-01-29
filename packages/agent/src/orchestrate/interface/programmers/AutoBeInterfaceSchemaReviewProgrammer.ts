@@ -123,6 +123,18 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             ) ?? null)
           : null,
         revise,
+        noModelDescription: StringUtil.trim`
+          You have defined "databaseSchemaProperty" property referencing
+          a database schema property, but its parent schema (object type)
+          does not reference any database schema.
+
+          To make it correct, you have to change the "databaseSchemaProperty"
+          to be \`null\` at the next time, and then depict what this property 
+          is for in the "specification" property.
+
+          Note that, this is not a recommendation, but an instruction 
+          you must obey. I repeat that, change the value to be \`null\`.
+        `,
       }),
     );
   };
