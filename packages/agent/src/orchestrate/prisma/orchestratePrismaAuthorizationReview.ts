@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeActor,
   AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableDesign,
@@ -8,7 +9,7 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { IPointer } from "tstl";
+import { IPointer, Pair } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
@@ -16,37 +17,38 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationReviewHistory } from "./histories/transformPrismaAuthorizationReviewHistory";
+import { AutoBeDatabaseAuthorizationReviewProgrammer } from "./programmers/AutoBeDatabaseAuthorizationReviewProgrammer";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
-import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseAuthorizationReviewApplication } from "./structures/IAutoBeDatabaseAuthorizationReviewApplication";
 
 export async function orchestratePrismaAuthorizationReview(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    components: AutoBeDatabaseComponent[];
+    pairs: Pair<AutoBeAnalyzeActor, AutoBeDatabaseComponent>[];
   },
 ): Promise<AutoBeDatabaseComponent[]> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const allTableNames: string[] = props.components.flatMap((c) =>
-    c.tables.map((t) => t.name),
+  const allTableNames: string[] = props.pairs.flatMap((c) =>
+    c.second.tables.map((t) => t.name),
   );
   const progress: AutoBeProgressEventBase = {
     completed: 0,
-    total: props.components.length,
+    total: props.pairs.length,
   };
 
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
-    props.components.map((component) => async (promptCacheKey) => {
+    props.pairs.map((x) => async (promptCacheKey) => {
       const otherTableNames: Set<string> = new Set(
-        props.components
-          .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables.map((t) => t.name)),
+        props.pairs
+          .filter((y) => y.second.filename !== x.second.filename)
+          .flatMap((y) => y.second.tables.map((t) => t.name)),
       );
 
       const event: AutoBeDatabaseAuthorizationReviewEvent = await process(ctx, {
-        component,
+        component: x.second,
+        actor: x.first,
         otherTableNames,
         allTableNames,
         instruction: props.instruction,
@@ -64,6 +66,7 @@ export async function orchestratePrismaAuthorizationReview(
 async function process(
   ctx: AutoBeContext,
   props: {
+    actor: AutoBeAnalyzeActor;
     component: AutoBeDatabaseComponent;
     otherTableNames: Set<string>;
     allTableNames: string[];
@@ -96,6 +99,7 @@ async function process(
       controller: createController({
         preliminary,
         prefix: props.prefix,
+        actor: props.actor,
         component: props.component,
         otherTableNames: props.otherTableNames,
         build: (next) => {
@@ -184,6 +188,7 @@ function createController(props: {
   build: (
     next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,
   ) => void;
+  actor: AutoBeAnalyzeActor;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
@@ -200,12 +205,13 @@ function createController(props: {
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeDatabaseComponentReviewProgrammer.validate({
+    AutoBeDatabaseAuthorizationReviewProgrammer.validate({
       errors,
       prefix: props.prefix,
       revises: result.data.request.revises,
       path: "$input.request.revises",
       component: props.component,
+      actor: props.actor,
     });
     if (errors.length > 0)
       return {

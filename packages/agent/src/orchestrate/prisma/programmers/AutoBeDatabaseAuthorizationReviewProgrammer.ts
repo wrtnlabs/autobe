@@ -52,7 +52,6 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
         });
     });
 
-    // @todo Michael
-    //   revises 적용했더니 actor나 session 테이블이 사라지는 경우를 위한 피드백 필요
+    //
   };
 }

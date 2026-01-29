@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeActor,
   AutoBeAssistantMessageHistory,
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
@@ -11,6 +12,7 @@ import {
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { writePrismaApplication } from "@autobe/utils";
+import { Pair } from "tstl";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
@@ -71,7 +73,7 @@ export const orchestratePrisma = async (
     });
 
   // AUTHORIZATION
-  const authorizations: AutoBeDatabaseComponent[] =
+  const authorizations: Pair<AutoBeAnalyzeActor, AutoBeDatabaseComponent>[] =
     await orchestratePrismaAuthorization(ctx, {
       instruction: props.instruction,
       groups: reviewedGroups,
@@ -79,7 +81,7 @@ export const orchestratePrisma = async (
   const reviewedAuthorizations: AutoBeDatabaseComponent[] =
     await orchestratePrismaAuthorizationReview(ctx, {
       instruction: props.instruction,
-      components: authorizations,
+      pairs: authorizations,
     });
 
   // COMPONENT
