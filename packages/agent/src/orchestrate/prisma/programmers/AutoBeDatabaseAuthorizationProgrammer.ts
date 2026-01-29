@@ -5,6 +5,7 @@ import {
 import { StringUtil } from "@autobe/utils";
 import { plural } from "pluralize";
 import { IValidation } from "typia";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /** Validate authorization tables for an actor. */
@@ -15,48 +16,54 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     prefix: string | null;
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
-    const actorLower: string = props.actor.name.toLowerCase();
+    const actor: string = NamingConvention.snake(props.actor.name);
     const prefix: string = props.prefix ? `${props.prefix}_` : "";
-    const expectedTable: string = `${prefix}${plural(actorLower)}`;
-    const tableNames: string[] = props.tables.map((t) => t.name.toLowerCase());
+    const tableNames: string[] = props.tables.map((t) => t.name);
 
     // Validation: all tables must contain actor name
     props.tables.forEach((table, i) => {
-      if (table.name.toLowerCase().includes(actorLower) === false)
+      if (table.name.includes(actor) === false)
         props.errors.push({
           path: `${props.path}[${i}].name`,
-          expected: `table name containing "${actorLower}"`,
+          expected: `\`${actor}\`\${string}`,
           value: table.name,
           description: StringUtil.trim`
-            Table "${table.name}" does not contain actor name "${actorLower}".
+            Table "${table.name}" does not contain actor name "${actor}".
 
-            Fix: Add "${actorLower}" to the table name, or remove this table
+            Fix: Add "${actor}" to the table name, or remove this table
             if it is unrelated to "${props.actor.name}" actor.
           `,
         });
     });
 
     // Validation: actor table must exist
-    if (tableNames.includes(expectedTable) === false)
+    const expectedActorTable: string = `${prefix}${plural(actor)}`;
+    if (tableNames.includes(expectedActorTable) === false)
       props.errors.push({
         path: props.path,
-        expected: `table named "${expectedTable}"`,
-        value: tableNames,
+        expected: StringUtil.trim`{
+          name: ${JSON.stringify(expectedActorTable)};
+          description: string;
+        }`,
+        value: undefined,
         description: StringUtil.trim`
-          Missing required actor table "${expectedTable}".
+          Missing required actor table "${expectedActorTable}".
 
-          Fix: Add table "${expectedTable}", or rename the table that
+          Fix: Add table "${expectedActorTable}", or rename the table that
           serves as the main "${props.actor.name}" actor entity.
         `,
       });
 
     // Validation: session table must exist
-    const expectedSessionTable: string = `${prefix}${actorLower}_sessions`;
+    const expectedSessionTable: string = `${prefix}${actor}_sessions`;
     if (tableNames.includes(expectedSessionTable) === false)
       props.errors.push({
         path: props.path,
-        expected: `table named "${expectedSessionTable}"`,
-        value: tableNames,
+        expected: StringUtil.trim`{
+          name: ${JSON.stringify(expectedSessionTable)};
+          description: string;
+        }`,
+        value: undefined,
         description: StringUtil.trim`
           Missing required session table "${expectedSessionTable}".
 
