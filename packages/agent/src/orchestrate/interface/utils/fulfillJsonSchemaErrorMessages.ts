@@ -11,7 +11,6 @@ export const fulfillJsonSchemaErrorMessages = (
     fulfillTypeAsArrayError(e) ||
       fulfillEnumInsteadOfConstError(e) ||
       fulfillNoRequiredError(e) ||
-      fulfillNoDescriptionError(e) ||
       fulfillObjectMetadataMisplacement(e) ||
       fulfillNestedObjectError(e) ||
       fulfillJsonSchemaFormat(e);
@@ -65,16 +64,6 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
       You must make this correction. The validator will continue to reject your
       schema until you replace "enum" with the proper "oneOf" + "const" structure.
     `;
-    return true;
-  }
-  return false;
-};
-
-const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
-  if (e.value === undefined && e.path.endsWith(".description")) {
-    // no description
-    e.description =
-      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_DESCRIPTION;
     return true;
   }
   return false;
