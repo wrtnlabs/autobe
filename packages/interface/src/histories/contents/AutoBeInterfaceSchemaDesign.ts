@@ -27,7 +27,8 @@ export interface AutoBeInterfaceSchemaDesign {
    *
    *   - Computed/aggregated types (e.g., statistics, summaries from multiple
    *       tables)
-   *   - Pure request parameter types (e.g., search filters, pagination)
+   *   - Types composed purely by business logic (e.g., search filters,
+   *       pagination)
    *   - Embedded JSON structures without dedicated tables
    *
    * When `null`, the `specification` field becomes critical for downstream

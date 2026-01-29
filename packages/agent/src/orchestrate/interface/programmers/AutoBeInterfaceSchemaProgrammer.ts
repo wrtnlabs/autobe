@@ -96,7 +96,16 @@ export namespace AutoBeInterfaceSchemaProgrammer {
         expected: props.everyModels.map((s) => JSON.stringify(s)).join(" | "),
         value: props.design.databaseSchema,
         description: StringUtil.trim`
-          @todo
+          You set "databaseSchema" to ${JSON.stringify(props.design.databaseSchema)},
+          but no database model with that name exists.
+
+          Available database models are:
+          ${props.everyModels.map((m) => `- ${m.name}`).join("\n")}
+
+          Fix: Use one of the available model names above, or set to null
+          if this type does not map to a single database table (e.g.,
+          computed/aggregated types, types composed purely by business logic,
+          or embedded JSON structures).
         `,
       });
   };

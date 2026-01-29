@@ -97,7 +97,8 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
 
           Choose one of the following actions:
           1. If you made a typo and a similar property exists above, correct it
-          2. If this property is computed (not from DB), set the value to null
+          2. If this property is computed/aggregated or composed purely by
+             business logic (not from DB), set the value to null
           3. If no similar property exists above, delete this property entirely
             from the schema - the property itself should not exist
 
@@ -171,21 +172,33 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           2,
         ),
         value: props.revise.schema,
-        description: StringUtil.trim`@todo`,
+        description: StringUtil.trim`
+          The database column "${props.property.key}" is nullable, but your
+          schema does not allow null. Wrap it with oneOf including
+          { type: "null" } as shown in the expected value above.
+        `,
       });
     else if (props.revise.type === "nullish")
       props.errors.push({
         path: `${props.path}.nullable`,
         expected: "true",
         value: props.revise.nullable,
-        description: StringUtil.trim`@todo`,
+        description: StringUtil.trim`
+          The database column "${props.property.key}" is nullable, so
+          "nullable" must be true. You set it to false.
+        `,
       });
     else
       props.errors.push({
         path: props.path,
         expected: "AutoBeInterfaceSchemaPropertyUpdate",
         value: props.revise,
-        description: StringUtil.trim`@todo`,
+        description: StringUtil.trim`
+          The database column "${props.property.key}" is nullable, but the
+          current schema does not allow null. Change this revision to an
+          "update" type and provide a schema wrapped with oneOf including
+          { type: "null" }.
+        `,
       });
   };
 }

@@ -1130,7 +1130,7 @@ This ordering enforces **grounded reasoning** - the AI must first establish the 
 1. **STEP 1 - Database Context**: `databaseSchema`
    - First, establish which database model this schema maps to
    - Set to model name (e.g., `"users"`, `"bbs_articles"`) for direct mappings
-   - Set to `null` for computed types, request parameters, or embedded JSON structures
+   - Set to `null` for computed types, types composed purely by business logic, or embedded JSON structures
 
 2. **STEP 2 - HOW (Implementation)**: `specification`
    - Document HOW each property will be implemented
@@ -5521,7 +5521,7 @@ export namespace IAutoBeInterfaceSchemaApplication {
 
 **design**: A structured object containing four fields:
 
-- **databaseSchema**: Database model name this schema maps to (e.g., `"shopping_customers"`, `"bbs_articles"`), or `null` for computed/aggregated types, pure request parameter types, or embedded JSON structures without dedicated tables. When `null`, the `specification` field becomes critical for downstream agents.
+- **databaseSchema**: Database model name this schema maps to (e.g., `"shopping_customers"`, `"bbs_articles"`), or `null` for computed/aggregated types, types composed purely by business logic, or embedded JSON structures without dedicated tables. When `null`, the `specification` field becomes critical for downstream agents.
 
 - **specification**: Implementation specification for downstream agents (Realize Agent, Test Agent). This is internal documentation - NOT exposed in public API docs. For direct mappings, can be brief. For computed/derived types, MUST include: source tables and columns, JOIN conditions, aggregation formulas, business rules, and edge cases. Must be precise enough for implementation.
 
