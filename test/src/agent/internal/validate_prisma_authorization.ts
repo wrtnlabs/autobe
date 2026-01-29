@@ -3,12 +3,10 @@ import { orchestratePrismaAuthorization } from "@autobe/agent/src/orchestrate/pr
 import { orchestratePrismaAuthorizationReview } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaAuthorizationReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
-  AutoBeAnalyzeActor,
   AutoBeDatabaseComponent,
   AutoBeDatabaseGroup,
   AutoBeExampleProject,
 } from "@autobe/interface";
-import { Pair } from "tstl";
 
 import { validate_prisma_group } from "./validate_prisma_group";
 
@@ -16,7 +14,7 @@ export const validate_prisma_authorization = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<AutoBeDatabaseComponent[]> => {
+}): Promise<AutoBeDatabaseComponent | null> => {
   // Get groups first (need authorization group)
   const groups: AutoBeDatabaseGroup[] =
     (await AutoBeExampleStorage.load({
@@ -25,16 +23,18 @@ export const validate_prisma_authorization = async (props: {
       file: "prisma.group.json",
     })) ?? (await validate_prisma_group(props));
 
-  // Process authorization tables for each actor
-  const pairs: Pair<AutoBeAnalyzeActor, AutoBeDatabaseComponent>[] =
+  // Process authorization tables for all actors
+  const component: AutoBeDatabaseComponent | null =
     await orchestratePrismaAuthorization(props.agent.getContext(), {
       instruction: "",
       groups,
     });
-  const reviewed: AutoBeDatabaseComponent[] =
+  if (component === null) return null;
+
+  const reviewed: AutoBeDatabaseComponent =
     await orchestratePrismaAuthorizationReview(props.agent.getContext(), {
       instruction: "",
-      pairs,
+      component,
     });
 
   await AutoBeExampleStorage.save({
