@@ -179,9 +179,10 @@ const fulfillJsonSchemaFormat = (e: IValidation.IError): boolean => {
   ) {
     e.expected = "undefined";
     e.description = StringUtil.trim`
-      **Invalid "format" Value: "${e.value}" is not supported.**
+      **Invalid "format" Value: ${JSON.stringify(e.value)} is not supported.**
 
-      The "format" property value "${e.value}" is not recognized by AutoBE.
+      The "format" property value ${JSON.stringify(e.value)} is not supported in the
+      JSOn schema specification (type: \`AutoBeOpenApi.IJsonSchema.IString.format\`).
 
       Supported values are:
       
