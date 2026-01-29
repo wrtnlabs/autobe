@@ -7,6 +7,8 @@ import { plural } from "pluralize";
 import { IValidation } from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
+import { AutoBeDatabaseComponentProgrammer } from "./AutoBeDatabaseComponentProgrammer";
+
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /** Validate authorization tables for an actor. */
   export const validate = (props: {
@@ -16,11 +18,18 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     prefix: string | null;
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
-    const actor: string = NamingConvention.snake(props.actor.name);
-    const prefix: string = props.prefix ? `${props.prefix}_` : "";
+    // validate prefix
     const tableNames: string[] = props.tables.map((t) => t.name);
+    AutoBeDatabaseComponentProgrammer.validatePrefix({
+      errors: props.errors,
+      path: (i) => `${props.path}[${i}].name`,
+      prefix: props.prefix,
+      tableNames,
+    });
 
     // Validation: all tables must contain actor name
+    const actor: string = NamingConvention.snake(props.actor.name);
+    const actorPrefix: string = props.prefix ? `${props.prefix}_` : "";
     props.tables.forEach((table, i) => {
       if (table.name.includes(actor) === false)
         props.errors.push({
@@ -37,7 +46,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     });
 
     // Validation: actor table must exist
-    const expectedActorTable: string = `${prefix}${plural(actor)}`;
+    const expectedActorTable: string = `${actorPrefix}${plural(actor)}`;
     if (tableNames.includes(expectedActorTable) === false)
       props.errors.push({
         path: props.path,
@@ -55,7 +64,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
       });
 
     // Validation: session table must exist
-    const expectedSessionTable: string = `${prefix}${actor}_sessions`;
+    const expectedSessionTable: string = `${actorPrefix}${actor}_sessions`;
     if (tableNames.includes(expectedSessionTable) === false)
       props.errors.push({
         path: props.path,
