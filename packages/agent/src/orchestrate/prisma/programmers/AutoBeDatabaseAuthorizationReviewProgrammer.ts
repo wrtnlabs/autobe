@@ -30,7 +30,7 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
       if (actorNames.some((an) => next.value.startsWith(an) === true)) return;
       props.errors.push({
         path: next.path,
-        expected: `\`${prefix}\${${actorNames.map((s) => JSON.stringify(s)).join(" | ")}}\`\${string}`,
+        expected: `\`\${${actorNames.map((s) => JSON.stringify(s)).join(" | ")}}\${string}\``,
         value: next.value,
         description: StringUtil.trim`
           Table "${next.value}" does not start with none of below:

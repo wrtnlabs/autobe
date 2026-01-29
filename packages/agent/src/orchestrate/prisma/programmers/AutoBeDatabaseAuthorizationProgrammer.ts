@@ -30,7 +30,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
       if (actorNames.some((an) => table.name.startsWith(an)) === false)
         props.errors.push({
           path: `${props.path}[${i}].name`,
-          expected: `\`${prefix}\${${actorNames.map((s) => JSON.stringify(s)).join(" | ")}}\`\${string}`,
+          expected: `\`\${${actorNames.map((s) => JSON.stringify(s)).join(" | ")}}\${string}\``,
           value: table.name,
           description: StringUtil.trim`
             Table "${table.name}" does not start with none of below:
