@@ -89,6 +89,11 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Review ${JSON.stringify(props.typeName)} type named JSON schema component.
+    Review the JSON schema for ${JSON.stringify(props.typeName)} type.
+
+    You MUST provide a revision for every single property without exception:
+    ${Object.keys(props.reviewSchema.properties)
+      .map((k) => `- ${k}`)
+      .join("\n")}
   `,
 });

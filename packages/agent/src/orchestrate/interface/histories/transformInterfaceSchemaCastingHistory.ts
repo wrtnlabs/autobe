@@ -117,7 +117,6 @@ export const transformInterfaceSchemaCastingHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Analyze the type \`${props.typeName}\` to determine if it is a degenerate
-    primitive type that needs refinement.
+    Review \`${props.typeName}\` type and convert it to a proper object type if needed.
   `,
 });

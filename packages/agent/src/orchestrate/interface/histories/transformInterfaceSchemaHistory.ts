@@ -82,7 +82,7 @@ export const transformInterfaceSchemaHistory = (props: {
       },
     ],
     userMessage: StringUtil.trim`
-      Make ${JSON.stringify(props.typeName)} type named JSON schema component.
+      Design the JSON schema for ${JSON.stringify(props.typeName)} type.
     `,
   };
 };
