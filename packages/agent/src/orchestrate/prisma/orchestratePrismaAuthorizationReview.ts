@@ -96,6 +96,7 @@ async function process(
       controller: createController({
         preliminary,
         prefix: props.prefix,
+        component: props.component,
         otherTableNames: props.otherTableNames,
         build: (next) => {
           pointer.value = next;
@@ -179,6 +180,7 @@ function createController(props: {
   >;
   prefix: string | null;
   otherTableNames: Set<string>;
+  component: AutoBeDatabaseComponent;
   build: (
     next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,
   ) => void;
@@ -203,6 +205,7 @@ function createController(props: {
       prefix: props.prefix,
       revises: result.data.request.revises,
       path: "$input.request.revises",
+      component: props.component,
     });
     if (errors.length > 0)
       return {

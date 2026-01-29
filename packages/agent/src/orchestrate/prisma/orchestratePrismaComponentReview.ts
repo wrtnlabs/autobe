@@ -100,6 +100,7 @@ async function process(
         build: (next) => {
           pointer.value = next;
         },
+        component: props.component,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -183,6 +184,7 @@ function createController(props: {
   >;
   otherTableNames: Set<string>;
   prefix: string | null;
+  component: AutoBeDatabaseComponent;
   build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
@@ -204,6 +206,7 @@ function createController(props: {
       prefix: props.prefix,
       path: "$input.request.revises",
       revises: result.data.request.revises,
+      component: props.component,
     });
     if (errors.length > 0)
       return {

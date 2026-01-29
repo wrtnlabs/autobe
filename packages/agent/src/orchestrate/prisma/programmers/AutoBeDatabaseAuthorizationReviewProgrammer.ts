@@ -1,5 +1,6 @@
 import {
   AutoBeAnalyzeActor,
+  AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableRevise,
 } from "@autobe/interface";
 import { IValidation } from "typia";
@@ -13,6 +14,7 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
     prefix: string | null;
     actor: AutoBeAnalyzeActor;
     revises: AutoBeDatabaseComponentTableRevise[];
+    component: AutoBeDatabaseComponent;
   }): void => {
     AutoBeDatabaseComponentReviewProgrammer.validate(props);
 
