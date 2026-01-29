@@ -14,39 +14,34 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
   export const validate = (props: {
     errors: IValidation.IError[];
     path: string;
-    actor: AutoBeAnalyzeActor;
     prefix: string | null;
+    actor: AutoBeAnalyzeActor;
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
-    // validate prefix
-    const tableNames: string[] = props.tables.map((t) => t.name);
-    AutoBeDatabaseComponentProgrammer.validatePrefix({
-      errors: props.errors,
-      path: (i) => `${props.path}[${i}].name`,
-      prefix: props.prefix,
-      tableNames,
-    });
+    // validate common logic
+    AutoBeDatabaseComponentProgrammer.validate(props);
 
     // Validation: all tables must contain actor name
     const actor: string = NamingConvention.snake(props.actor.name);
-    const actorPrefix: string = props.prefix ? `${props.prefix}_` : "";
+    const prefix: string = props.prefix ? `${props.prefix}_` : "";
     props.tables.forEach((table, i) => {
       if (table.name.includes(actor) === false)
         props.errors.push({
           path: `${props.path}[${i}].name`,
-          expected: `\`${actor}\`\${string}`,
+          expected: `\`${prefix}${actor}\`\${string}`,
           value: table.name,
           description: StringUtil.trim`
-            Table "${table.name}" does not contain actor name "${actor}".
-
-            Fix: Add "${actor}" to the table name, or remove this table
+            Table "${table.name}" does not contain actor name "${prefix}${actor}".
+            
+            Fix: Add "${prefix}${actor}" to the table name, or remove this table
             if it is unrelated to "${props.actor.name}" actor.
           `,
         });
     });
 
     // Validation: actor table must exist
-    const expectedActorTable: string = `${actorPrefix}${plural(actor)}`;
+    const tableNames: string[] = props.tables.map((t) => t.name);
+    const expectedActorTable: string = `${prefix}${plural(actor)}`;
     if (tableNames.includes(expectedActorTable) === false)
       props.errors.push({
         path: props.path,
@@ -64,7 +59,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
       });
 
     // Validation: session table must exist
-    const expectedSessionTable: string = `${actorPrefix}${actor}_sessions`;
+    const expectedSessionTable: string = `${prefix}${actor}_sessions`;
     if (tableNames.includes(expectedSessionTable) === false)
       props.errors.push({
         path: props.path,

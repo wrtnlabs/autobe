@@ -8,7 +8,6 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
-import { plural } from "pluralize";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -18,6 +17,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationReviewHistory } from "./histories/transformPrismaAuthorizationReviewHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
+import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseAuthorizationReviewApplication } from "./structures/IAutoBeDatabaseAuthorizationReviewApplication";
 
 export async function orchestratePrismaAuthorizationReview(
@@ -197,54 +197,19 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // make plural
-    for (const revise of result.data.request.revises)
-      if (revise.type === "create") revise.table = plural(revise.table);
-      else if (revise.type === "erase") revise.table = plural(revise.table);
-      else if (revise.type === "update") {
-        revise.original = plural(revise.original);
-        revise.updated = plural(revise.updated);
-      } else revise satisfies never;
-
-    // list up candidates
-    interface ICandidate {
-      path: string;
-      value: string;
-    }
-    const candidates: ICandidate[] = result.data.request.revises
-      .map((revise, i) => {
-        if (revise.type === "create" || revise.type === "erase")
-          return [
-            {
-              path: `$input.request.revises[${i}].table`,
-              value: revise.table,
-            },
-          ];
-        else if (revise.type === "update")
-          return [
-            {
-              path: `$input.request.revises[${i}].original`,
-              value: revise.original,
-            },
-            {
-              path: `$input.request.revises[${i}].updated`,
-              value: revise.updated,
-            },
-          ];
-        revise satisfies never;
-        return [];
-      })
-      .flat();
-
-    // validate table names
     const errors: IValidation.IError[] = [];
-    AutoBeDatabaseComponentProgrammer.validatePrefix({
+    AutoBeDatabaseComponentReviewProgrammer.validate({
       errors,
       prefix: props.prefix,
-      tableNames: candidates.map((c) => c.value),
-      path: (i) => candidates[i].path,
+      revises: result.data.request.revises,
+      path: "$input.request.revises",
     });
-    if (errors.length > 0) return { success: false, data: result.data, errors };
+    if (errors.length > 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
     return result;
   };
 
