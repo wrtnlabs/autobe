@@ -14,7 +14,6 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
   >;
   component: AutoBeDatabaseComponent;
   actors: AutoBeAnalyzeActor[];
-  allTableNames: string[];
   instruction: string;
   prefix: string | null;
 }): IAutoBeOrchestrateHistory => {
@@ -73,13 +72,9 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
 
           The following tables are currently assigned to this authorization component:
 
-          ${JSON.stringify(props.component.tables, null, 2)}
-
-          ### Tables in Other Components (For Reference)
-
-          These tables belong to OTHER components' domains. Focus on YOUR authorization domain only:
-
-          ${JSON.stringify(props.allTableNames.filter((t) => !props.component.tables.some((ct) => ct.name === t)).sort())}
+          \`\`\`json
+          ${JSON.stringify(props.component.tables)}
+          \`\`\`
 
           ### User Instructions
 
