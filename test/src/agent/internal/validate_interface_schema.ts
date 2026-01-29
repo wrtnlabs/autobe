@@ -1,6 +1,8 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { orchestrateInterfaceSchema } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchema";
+import { orchestrateInterfaceSchemaCasting } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaCasting";
+import { orchestrateInterfaceSchemaRefine } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
@@ -24,25 +26,49 @@ export const validate_interface_schema = async (props: {
     })) ?? (await validate_interface_operation(props));
 
   // Initial schema generation
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
-    await orchestrateInterfaceSchema(props.agent.getContext(), {
-      operations,
-      instruction: "Design API specs carefully considering the security.",
-    });
-
-  // Build document for review
   const document: AutoBeOpenApi.IDocument = {
     operations,
     components: {
       authorizations: props.agent.getContext().state().analyze?.actors ?? [],
-      schemas,
+      schemas: await orchestrateInterfaceSchema(props.agent.getContext(), {
+        operations,
+        instruction: "Design API specs carefully considering the security.",
+      }),
     },
   };
+
+  // Casting schemas
+  Object.assign(
+    document.components.schemas,
+    await orchestrateInterfaceSchemaCasting(props.agent.getContext(), {
+      document,
+      schemas: document.components.schemas,
+      instruction: "",
+      progress: {
+        completed: 0,
+        total: 0,
+      },
+    }),
+  );
+
+  // Refine schemas
+  Object.assign(
+    document.components.schemas,
+    await orchestrateInterfaceSchemaRefine(props.agent.getContext(), {
+      instruction: "",
+      document,
+      schemas: document.components.schemas,
+      progress: {
+        completed: 0,
+        total: 0,
+      },
+    }),
+  );
 
   // Review schemas with all reviewers
   const reviewProgress: AutoBeProgressEventBase = {
     completed: 0,
-    total: Object.keys(schemas).length * REVIEWERS.length,
+    total: Object.keys(document.components.schemas).length * REVIEWERS.length,
   };
 
   for (const config of REVIEWERS) {
