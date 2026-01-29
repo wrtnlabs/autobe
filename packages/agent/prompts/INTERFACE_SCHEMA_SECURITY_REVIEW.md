@@ -976,7 +976,7 @@ The `specification` (from the design structure) contains ALL conceptual informat
   - Shows if sensitive data is being directly exposed
   - **For Security Review**: Check for exposed hashed passwords, internal IDs, or server-managed fields
 
-- **Note**: Property-level descriptions are handled by the Refine agent in a post-processing step. Focus on `specification` for security assessment.
+- Focus on `specification` for security assessment.
 
 **How to Use These Fields for Security Review**:
 

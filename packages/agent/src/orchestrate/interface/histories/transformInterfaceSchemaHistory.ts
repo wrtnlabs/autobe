@@ -85,39 +85,9 @@ export const transformInterfaceSchemaHistory = (props: {
       Make ${JSON.stringify(props.typeName)} type named JSON schema component
       based on the provided API design instructions and relevant operations.
 
-      Note that, not making "Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>"
-      type, but making "AutoBeOpenApi.IJsonSchemaDescriptive" type directly for
-      the ${JSON.stringify(props.typeName)} type.
-
-      ## CRITICAL: Object Type Property Construction Rules
-
-      When designing schemas, prefer object types whenever semantically appropriate.
-
-      For ALL object type schemas, you MUST follow these ABSOLUTE rules:
-
-      **1. MANDATORY Property Field Order:**
-      Every property MUST be constructed in this exact order:
-      \`\`\`
-      1. x-autobe-specification           →  HOW to implement/compute?
-      2. description                      →  WHAT for API consumers?
-      3. Type metadata (type, format...)  →  WHAT technically?
-      \`\`\`
-
-      **2. NEVER Omit Required Fields:**
-      - \`x-autobe-specification\`: MANDATORY on every property (implementation details)
-      - Omitting this field is a CRITICAL ERROR that will cause validation failure
-
-      **3. Example - Correct Property Structure:**
-      \`\`\`json
-      {
-        "email": {
-          "x-autobe-specification": "Direct mapping from users.email column.",
-          "description": "User's email address for login.",
-          "type": "string",
-          "format": "email"
-        }
-      }
-      \`\`\`
+      Note that you are creating a single \`AutoBeInterfaceSchemaDesign\` for
+      the ${JSON.stringify(props.typeName)} type, containing \`databaseSchema\`,
+      \`specification\`, \`description\`, and \`schema\` fields.
 
       ## ABSOLUTE: Validation Feedback Compliance
 

@@ -72,6 +72,12 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
    * Complete schema review with property-level revisions.
    */
   export interface IComplete {
+    /**
+     * Type discriminator for the request.
+     *
+     * Value "complete" indicates this is the final review submission after
+     * all preliminary data has been gathered.
+     */
     type: "complete";
 
     /** Summary of issues found and fixes applied. */

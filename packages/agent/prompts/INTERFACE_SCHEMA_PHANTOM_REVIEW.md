@@ -379,7 +379,7 @@ The `specification` (from the design structure) contains ALL conceptual informat
   - Describes how the property should be implemented
   - **For Phantom Review**: Verify the claimed data source actually exists in the database
 
-- **Note**: Property-level descriptions are handled by the Refine agent in a post-processing step. Focus on `specification` for phantom detection.
+- Focus on `specification` for phantom detection.
 
 **How to Use These Fields for Phantom Detection**:
 

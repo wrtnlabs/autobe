@@ -7,8 +7,9 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * clear organization of implementation details (`specification`), API
  * documentation (`description`), and the type structure (`schema`).
  *
- * The design will be transformed into a complete `IJsonSchemaDescriptive` by
- * merging these fields appropriately.
+ * The `specification` and `description` fields are documented at the
+ * design level, separate from the `schema` field which holds the pure
+ * type structure.
  *
  * @author Samchon
  */

@@ -109,6 +109,12 @@ export namespace IAutoBeInterfaceSchemaApplication {
      */
     rationale: string;
 
+    /**
+     * Design structure for the schema being generated.
+     *
+     * Contains `databaseSchema`, `specification`, `description`, and `schema`
+     * fields that together define a complete DTO type component.
+     */
     design: AutoBeInterfaceSchemaDesign;
   }
 }

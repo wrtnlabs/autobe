@@ -68,7 +68,7 @@ export interface AutoBeInterfaceSchemaCasting {
    * Guidelines:
    *
    * - Describe the object's purpose and structure clearly
-   * - Document each property's meaning and constraints
+   * - Explain the overall business meaning and usage context
    * - Organize into multiple paragraphs for complex types
    * - Keep accessible to API consumers (no implementation details)
    * - MUST be written in English

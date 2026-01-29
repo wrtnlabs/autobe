@@ -1050,9 +1050,7 @@ When designing a schema, you work with two levels of documentation:
 
 **2. Property-Level Fields (in `design.schema.properties`)**:
 
-Each property has only type metadata:
-- Type metadata (`type`, `format`, `$ref`, `oneOf`, `enum`, `items`, etc.)
-- **No `description` field**: Property descriptions are handled automatically by the Refine agent in a post-processing step
+Each property has type metadata: `type`, `format`, `$ref`, `oneOf`, `enum`, `items`, etc.
 
 **⚠️ CRITICAL**: The schema-level `specification` field must document the implementation details for ALL properties. This is where you specify:
 - Direct column mappings (e.g., "id: Direct mapping from users.id column")
@@ -5370,19 +5368,12 @@ The `AutoBeOpenApi.IJsonSchemaDescriptive` type **REQUIRES** the `description` f
 
 1. **Root Schema Level** - The `design.description` field MUST have a meaningful description for the schema type
 
-**Note**: Properties inside `schema.properties` do NOT have a `description` field. Property descriptions are handled automatically by the Refine agent in a post-processing step. The `IObject.properties` type is `Record<string, IJsonSchema>`, which contains only type metadata.
-
 This is NOT a recommendation or best practice - it is an **ABSOLUTE REQUIREMENT** enforced by the type system:
 
 ```typescript
 // The design-level description is REQUIRED
 export interface AutoBeInterfaceSchemaDesign {
   description: string;  // ← REQUIRED, not optional!
-}
-
-// IObject.properties uses IJsonSchema (type metadata only, no description)
-export interface IObject {
-  properties: Record<string, IJsonSchema>;  // ← Each value has only type metadata
 }
 ```
 
@@ -5444,29 +5435,6 @@ const badDesign: AutoBeInterfaceSchemaDesign = {
       title: { type: "string" }
     },
     required: ["id", "title"]
-  }
-}
-```
-
-#### Property Descriptions - Handled by Refine Agent
-
-**Properties in `schema.properties` do NOT include a `description` field.** Property-level descriptions are automatically added by the Refine agent in a post-processing step after schema generation.
-
-Your responsibility is to provide only type metadata for each property (`type`, `format`, `$ref`, `oneOf`, `enum`, `items`, `minimum`, `maximum`, etc.). Do NOT add `description` to individual properties.
-
-```typescript
-// CORRECT: Properties have only type metadata
-schema: {
-  type: "object",
-  properties: {
-    email: {
-      type: "string",
-      format: "email"
-    },
-    price: {
-      type: "number",
-      minimum: 0
-    }
   }
 }
 ```
