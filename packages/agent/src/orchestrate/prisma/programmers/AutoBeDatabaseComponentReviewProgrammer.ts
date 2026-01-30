@@ -14,6 +14,7 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
     prefix: string | null;
     revises: AutoBeDatabaseComponentTableRevise[];
     component: AutoBeDatabaseComponent;
+    otherTables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
     // pluralize table names in revises
     for (const revise of props.revises)
@@ -63,6 +64,43 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
       else if (revise.type !== "create") revise satisfies never;
     });
 
+    // validate duplication with other tables
+    const otherTableMap: Map<string, string> = new Map(
+      props.otherTables.map((t) => [t.name, t.description]),
+    );
+    const predicateOtherDuplication = (next: {
+      path: string;
+      value: string;
+    }): void => {
+      const description: string | undefined = otherTableMap.get(next.value);
+      if (description === undefined) return;
+      props.errors.push({
+        path: next.path,
+        expected: `unique table name not in other components`,
+        value: next.value,
+        description: StringUtil.trim`
+          Table "${next.value}" already exists in another component.
+
+          Existing table description: "${description}"
+
+          Fix: Do not create this table. If it exists in this component
+          but belongs to another domain, use "erase" to remove it.
+        `,
+      });
+    };
+    props.revises.forEach((revise, i) => {
+      if (revise.type === "create")
+        predicateOtherDuplication({
+          path: `${props.path}[${i}].table`,
+          value: revise.table,
+        });
+      else if (revise.type === "update")
+        predicateOtherDuplication({
+          path: `${props.path}[${i}].updated`,
+          value: revise.updated,
+        });
+    });
+
     // validate prefix
     if (props.prefix === null) return;
 
@@ -105,19 +143,26 @@ export namespace AutoBeDatabaseComponentReviewProgrammer {
       props.component.tables.map((t) => [t.name, t]),
     );
     for (const revise of props.revises)
-      if (revise.type === "create")
-        map.set(revise.table, {
-          name: revise.table,
-          description: revise.description,
-        });
-      else if (revise.type === "update") {
-        map.delete(revise.original);
-        map.set(revise.updated, {
-          name: revise.updated,
-          description: revise.description,
-        });
-      } else if (revise.type === "erase") map.delete(revise.table);
-      else revise satisfies never;
+      if (revise.type === "create") {
+        if (map.has(revise.table) === false)
+          map.set(revise.table, {
+            name: revise.table,
+            description: revise.description,
+          });
+      } else if (revise.type === "update") {
+        if (
+          map.has(revise.original) === true &&
+          map.has(revise.updated) === false
+        ) {
+          map.delete(revise.original);
+          map.set(revise.updated, {
+            name: revise.updated,
+            description: revise.description,
+          });
+        }
+      } else if (revise.type === "erase") {
+        if (map.has(revise.table) === true) map.delete(revise.table);
+      } else revise satisfies never;
     return Array.from(map.values());
   };
 }

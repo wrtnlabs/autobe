@@ -7,14 +7,15 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseAuthorizationApplication {
   /**
-   * Process authorization table design task for a specific actor or preliminary
+   * Process authorization table design task for all actors or preliminary
    * data requests.
    *
-   * Receives a single actor definition (name, kind, description) and generates
-   * all authentication and authorization related tables for that actor type
-   * (guest/member/admin). This includes:
+   * Receives all actor definitions (name, kind, description for each) and
+   * generates all authentication and authorization related tables for every
+   * actor type (guest/member/admin) in a single call. This includes for each
+   * actor:
    *
-   * - The main actor table (e.g., users, administrators)
+   * - The main actor table (e.g., users, administrators, guests)
    * - Session tables for JWT token management
    * - Authentication support tables (password reset, email verification, etc.)
    *
@@ -22,7 +23,7 @@ export interface IAutoBeDatabaseAuthorizationApplication {
    * Component agent will NOT create any actor or authentication tables.
    *
    * @param props Request containing either preliminary data request or complete
-   *   table design
+   *   table design for all actors
    */
   process(props: IAutoBeDatabaseAuthorizationApplication.IProps): void;
 }
@@ -70,16 +71,15 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
   }
 
   /**
-   * Request to complete the authorization table design for a specific actor.
+   * Request to complete the authorization table design for all actors.
    *
-   * Takes an actor definition (name, kind, description already provided) and
-   * generates all database tables required for this actor's authentication and
-   * authorization needs, including the main actor table, session table, and any
-   * authentication support tables.
+   * Takes all actor definitions (name, kind, description for each) and
+   * generates all database tables required for every actor's authentication
+   * and authorization needs, including main actor tables, session tables, and
+   * any authentication support tables for each actor.
    *
-   * This is NOT about creating tables for multiple actors - the actor identity
-   * is fixed. This is ONLY about designing the tables that belong to this
-   * single actor.
+   * This is about creating tables for ALL actors in a single call. Each actor
+   * must have at minimum a main actor table and a session table.
    */
   export interface IComplete {
     /**
@@ -92,14 +92,14 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
     type: "complete";
 
     /**
-     * Analysis of the actor's authentication requirements.
+     * Analysis of all actors' authentication requirements.
      *
-     * Documents the agent's understanding of the actor's authentication needs:
+     * Documents the agent's understanding of each actor's authentication needs:
      *
-     * - What is the actor kind (guest/member/admin) and its authentication
-     *   patterns?
+     * - What actors exist and their kinds (guest/member/admin)?
+     * - What authentication patterns apply to each actor kind?
      * - What authentication features are required (login, registration, etc.)?
-     * - What are the session management requirements?
+     * - What are the session management requirements for each actor?
      * - Are there any special authentication mechanisms (2FA, OAuth, etc.)?
      */
     analysis: string;
@@ -109,30 +109,30 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      *
      * Explains why tables were designed this way:
      *
-     * - Why was each table created?
+     * - Why was each table created for each actor?
      * - What is the relationship between actor and session tables?
-     * - How do tables support the authentication workflow?
+     * - How do tables support the authentication workflow for all actors?
      * - What normalization decisions were made for auth-related data?
      */
     rationale: string;
 
     /**
-     * Array of table designs for THIS ACTOR's authentication domain.
+     * Array of table designs for ALL ACTORS' authentication domains.
      *
-     * Contains all database tables required for the actor's authentication and
-     * authorization needs. Each table design includes table name (snake_case,
-     * plural) and description explaining the table's purpose.
+     * Contains all database tables required for every actor's authentication
+     * and authorization needs. Each table design includes table name
+     * (snake_case, plural) and description explaining the table's purpose.
      *
      * The AI agent must design tables based on:
      *
-     * - The actor's kind (guest/member/admin) and its authentication patterns
+     * - Each actor's kind (guest/member/admin) and its authentication patterns
      * - Authentication requirements from analysis files
      * - Session management requirements (JWT, refresh tokens)
      * - Security requirements (password policies, 2FA)
      *
-     * MUST include:
+     * MUST include for EACH actor:
      *
-     * - Main actor table (e.g., `users`, `administrators`)
+     * - Main actor table (e.g., `users`, `administrators`, `guests`)
      * - Session table (e.g., `user_sessions`, `administrator_sessions`)
      *
      * MAY include (based on requirements):

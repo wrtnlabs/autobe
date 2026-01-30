@@ -151,7 +151,6 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseAuthorization")
       content.push(
-        `  - actor: ${event.actorName} (kind: ${event.actorKind})`,
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),

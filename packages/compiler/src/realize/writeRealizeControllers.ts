@@ -42,7 +42,8 @@ export const writeRealizeControllers = async (
         const authorization: AutoBeRealizeAuthorization | undefined =
           operate.authorizationActor !== null &&
           operate.authorizationType !== "join" &&
-          operate.authorizationType !== "login"
+          operate.authorizationType !== "login" &&
+          operate.authorizationType !== "refresh"
             ? props.authorizations.find(
                 (d) => d.actor.name === operate.authorizationActor,
               )

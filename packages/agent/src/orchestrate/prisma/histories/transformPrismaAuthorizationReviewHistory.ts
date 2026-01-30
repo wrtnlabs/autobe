@@ -1,5 +1,7 @@
-import { AutoBeDatabaseComponent } from "@autobe/interface";
+import { AutoBeAnalyzeActor, AutoBeDatabaseComponent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { plural } from "pluralize";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -11,72 +13,95 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
-  allTableNames: string[];
+  actors: AutoBeAnalyzeActor[];
   instruction: string;
   prefix: string | null;
-}): IAutoBeOrchestrateHistory => ({
-  histories: [
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.DATABASE_AUTHORIZATION,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.DATABASE_AUTHORIZATION_REVIEW,
-    },
-    ...props.preliminary.getHistories(),
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        ## Authorization Component to Review
+}): IAutoBeOrchestrateHistory => {
+  const prefix: string = props.prefix ? `${props.prefix}_` : "";
 
-        ${props.prefix !== null ? `**Table Prefix**: \`${props.prefix}\`` : ""}
+  const requiredTables: string = props.actors
+    .map((actor) => {
+      const actorName: string = NamingConvention.snake(actor.name);
+      return `- **${actor.name}**: \`${prefix}${plural(actorName)}\` + \`${prefix}${actorName}_sessions\``;
+    })
+    .join("\n");
 
-        ### Target Component
+  return {
+    histories: [
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "systemMessage",
+        text: AutoBeSystemPromptConstant.DATABASE_AUTHORIZATION,
+      },
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "systemMessage",
+        text: AutoBeSystemPromptConstant.DATABASE_AUTHORIZATION_REVIEW,
+      },
+      ...props.preliminary.getHistories(),
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          ## Authorization Component to Review
 
-        - **Namespace**: \`${props.component.namespace}\`
-        - **Filename**: \`${props.component.filename}\`
+          ${props.prefix !== null ? `**Table Prefix**: \`${props.prefix}\`` : ""}
 
-        ### Current Tables
+          ### Target Component
 
-        The following tables are currently assigned to this authorization component:
+          - **Namespace**: \`${props.component.namespace}\`
+          - **Filename**: \`${props.component.filename}\`
 
-        ${JSON.stringify(props.component.tables, null, 2)}
+          ### Actors to Cover
 
-        ### Tables in Other Components (For Reference)
+          The following actors must ALL have authentication tables:
 
-        These tables belong to OTHER components' domains. Focus on YOUR authorization domain only:
+          \`\`\`json
+          ${JSON.stringify(props.actors)}
+          \`\`\`
 
-        ${JSON.stringify(props.allTableNames.filter((t) => !props.component.tables.some((ct) => ct.name === t)).sort())}
+          ### Required Tables (Minimum)
 
-        ### User Instructions
+          Each actor MUST have at least:
+          ${requiredTables}
 
-        ${props.instruction}
-      `,
-    },
-  ],
-  userMessage: StringUtil.trim`
-    Review the "${props.component.namespace}" authorization component's table list and apply necessary revisions.
+          ### Current Tables
 
-    **IMPORTANT - Authorization Domain Rule**:
-    Only CREATE tables related to authentication and authorization.
-    Do NOT create business domain tables (orders, products, etc.).
+          The following tables are currently assigned to this authorization component:
 
-    1. First, fetch analysis files using \`getAnalysisFiles\` to understand authentication requirements
-    2. Verify each actor has: main actor table + session table + auth support tables
-    3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
+          \`\`\`json
+          ${JSON.stringify(props.component.tables)}
+          \`\`\`
 
-    Use revises to:
-    - **Create**: Add missing authentication tables (session tables, password reset, etc.)
-    - **Update**: Rename tables with naming convention issues
-    - **Erase**: Remove tables that are not related to authentication/authorization
+          ### User Instructions
 
-    If no changes are needed, return an empty revises array.
-  `,
-});
+          ${props.instruction}
+        `,
+      },
+    ],
+    userMessage: StringUtil.trim`
+      Review the "${props.component.namespace}" authorization component's table list and apply necessary revisions.
+
+      **IMPORTANT - Authorization Domain Rule**:
+      Only CREATE tables related to authentication and authorization.
+      Do NOT create business domain tables (orders, products, etc.).
+
+      **IMPORTANT - All Actors Must Be Covered**:
+      Verify that EVERY actor has: main actor table + session table + auth support tables.
+
+      1. First, fetch analysis files using \`getAnalysisFiles\` to understand authentication requirements
+      2. Verify EACH actor has: main actor table + session table + auth support tables
+      3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
+
+      Use revises to:
+      - **Create**: Add missing authentication tables (session tables, password reset, etc.)
+      - **Update**: Rename tables with naming convention issues
+      - **Erase**: Remove tables that are not related to authentication/authorization
+
+      If no changes are needed, return an empty revises array.
+    `,
+  };
+};
