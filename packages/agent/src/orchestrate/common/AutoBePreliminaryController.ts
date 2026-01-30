@@ -309,6 +309,8 @@ export namespace AutoBePreliminaryController {
   /** Controller configuration options. */
   export interface IConfig<Kind extends AutoBePreliminaryKind> {
     /** Database schema format: `"ast"` (JSON) or `"text"` (Database DSL). */
-    database: Kind extends "databaseSchemas" ? "ast" | "text" : never;
+    database: Kind extends "databaseSchemas" | "previousDatabaseSchemas"
+      ? "ast" | "text"
+      : never;
   }
 }

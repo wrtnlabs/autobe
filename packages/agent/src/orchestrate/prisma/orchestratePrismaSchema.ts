@@ -85,6 +85,9 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    config: {
+      database: "ast",
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseSchemaApplication.IComplete | null> =
