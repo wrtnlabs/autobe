@@ -456,6 +456,15 @@ process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: ["users"] 
 ```
 **When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
 
+**process() - Load previous version Interface Operations**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads API operation definitions from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({ request: { type: "getPreviousInterfaceOperations", endpoints: [{ path: "/statistics/sales", method: "get" }] }})
+```
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline endpoint design. **Important**: Only available when a previous version exists.
+
 ### 4.3. Input Materials Rules
 
 - **NEVER re-request already loaded materials**

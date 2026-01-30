@@ -58,7 +58,7 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
-**For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles):
+**For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas):
 ```typescript
 {
   thinking: "Missing authentication requirements for password policy. Don't have them.",

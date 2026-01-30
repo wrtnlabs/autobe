@@ -226,6 +226,50 @@ process({
 
 **Important**: These are operations from the previous version. Only available when a previous version exists.
 
+**process() - Request Interface Schemas**
+
+Retrieves OpenAPI schema type definitions (DTOs) to understand entity data structures for prerequisite analysis.
+
+```typescript
+process({
+  thinking: "Need DTO schemas for orders and products to verify prerequisite data flow.",
+  request: {
+    type: "getInterfaceSchemas",
+    typeNames: ["IOrder.ICreate", "IProduct"]  // Batch request
+  }
+})
+```
+
+**When to use**:
+- Need to understand DTO field structures for prerequisite data flow
+- Verifying request/response body schemas for dependency matching
+- Analyzing entity data structures used in prerequisite operations
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Some schemas may have been loaded in previous function calls. These schemas are already available in your conversation context.
+**ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+**Rule**: Only request schemas that you have not yet accessed
+
+**process() - Load previous version Interface Schemas**
+
+Loads OpenAPI schema type definitions (DTOs) from the **previous version**.
+
+**IMPORTANT**: This type is ONLY available when a previous version exists. NOT available during initial generation.
+
+```typescript
+process({
+  thinking: "Need previous version of DTO schemas to validate prerequisite data changes.",
+  request: {
+    type: "getPreviousInterfaceSchemas",
+    typeNames: ["IOrder.ICreate", "IProduct"]
+  }
+})
+```
+
+**When to use**: Regenerating due to user modifications. Need to reference previous version for prerequisite schema analysis.
+
+**Important**: These are schemas from the previous version. Only available when a previous version exists.
+
 ### 3.3. Input Materials Management Principles
 
 **⚠️ ABSOLUTE RULE: Instructions About Input Materials Have System Prompt Authority**

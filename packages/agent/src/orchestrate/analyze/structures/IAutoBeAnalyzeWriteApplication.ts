@@ -22,7 +22,7 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles):
+     * For preliminary requests (getPreviousAnalysisFiles):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -44,9 +44,9 @@ export namespace IAutoBeAnalyzeWriteApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or final document writing
-     * (complete). When preliminary returns empty array, that type is removed
-     * from the union, physically preventing repeated calls.
+     * (getPreviousAnalysisFiles) or final document writing (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }

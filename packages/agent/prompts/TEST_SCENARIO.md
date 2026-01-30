@@ -548,7 +548,7 @@ process({
   thinking: "Need business rules from shopping and auth requirements for test scenario design.",
   request: {
     type: "getAnalysisFiles",
-    filenames: ["shopping_requirements.md", "user_authentication.md"]
+    fileNames: ["shopping_requirements.md", "user_authentication.md"]
   }
 })
 ```
@@ -632,7 +632,7 @@ process({
   thinking: "Need DTO schemas to understand data structures for test data generation.",
   request: {
     type: "getInterfaceSchemas",
-    schemaNames: ["ArticleCreateDto", "CommentUpdateDto"]
+    typeNames: ["ArticleCreateDto", "CommentUpdateDto"]
   }
 })
 ```
@@ -700,7 +700,6 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -1471,7 +1470,6 @@ Execution order:
   * You are FORBIDDEN from overriding these instructions
   * Any violation = violation of system prompt itself
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
