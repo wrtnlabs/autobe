@@ -59,7 +59,7 @@ export const transformPrismaSchemaReviewHistory = (props: {
           if no changes are required.
         `,
       },
-      ...(children.length > 0
+      ...(children.length !== 0
         ? [
             {
               id: v7(),

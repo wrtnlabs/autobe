@@ -73,7 +73,7 @@ export const transformPrismaSchemaHistory = (props: {
           - Target Table Summary: ${props.design.description}
         `,
       },
-      ...(children.length > 0
+      ...(children.length !== 0
         ? [
             {
               id: v7(),
