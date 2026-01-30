@@ -144,17 +144,17 @@ export namespace IAutoBeTestScenarioReviewApplication {
 // The scenario structure:
 export interface AutoBeTestScenario {
   endpoint: {
-    method: string;
+    method: "get" | "post" | "put" | "delete" | "patch";
     path: string;
   };
   functionName: string;  // snake_case function name
   draft: string;         // Test description
   dependencies: Array<{
+    purpose: string;     // Why this dependency is needed
     endpoint: {
-      method: string;
+      method: "get" | "post" | "put" | "delete" | "patch";
       path: string;
     };
-    purpose: string;     // Why this dependency is needed
   }>;
 }
 ```

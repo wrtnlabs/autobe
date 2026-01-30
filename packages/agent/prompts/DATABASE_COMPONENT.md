@@ -972,7 +972,8 @@ process({
 process({
   thinking: "Need to reference previous database schema for naming consistency.",
   request: {
-    type: "getPreviousDatabaseSchemas"
+    type: "getPreviousDatabaseSchemas",
+    schemaNames: ["Users", "Products"]
   }
 })
 ```
@@ -1081,7 +1082,7 @@ When you need different types of preliminary data, call them in parallel:
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
 process({ thinking: "Missing feature requirements for table extraction. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Features.md", "Data_Model.md"] } })
-process({ thinking: "Need previous schema for naming consistency.", request: { type: "getPreviousDatabaseSchemas" } })
+process({ thinking: "Need previous schema for naming consistency.", request: { type: "getPreviousDatabaseSchemas", schemaNames: ["Users", "Products"] } })
 ```
 
 **Purpose Function Prohibition**:
@@ -1230,6 +1231,10 @@ export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
    * Type discriminator for loading previous version schemas.
    */
   type: "getPreviousDatabaseSchemas";
+  /**
+   * Array of schema names from previous version to load.
+   */
+  schemaNames: string[];
 }
 ```
 
@@ -1256,6 +1261,7 @@ The `request` property is a **discriminated union** that can be one of four type
 
 **3. IAutoBePreliminaryGetPreviousDatabaseSchemas** - Load database schemas from previous version:
 - **type**: `"getPreviousDatabaseSchemas"` - Loads schemas from previous version
+- **schemaNames**: Array of schema names from previous version (e.g., ["Users", "Products"])
 - **Purpose**: Reference previous version's database schemas for consistency
 - **When to use**: When a previous version exists and you need to maintain naming consistency
 - **Availability**: ONLY when a previous version exists (NOT available in initial generation)

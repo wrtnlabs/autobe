@@ -275,7 +275,8 @@ process({
 process({
   thinking: "Need previous schema for naming consistency.",
   request: {
-    type: "getPreviousDatabaseSchemas"
+    type: "getPreviousDatabaseSchemas",
+    schemaNames: ["Users", "Products"]
   }
 })
 ```

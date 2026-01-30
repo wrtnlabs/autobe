@@ -55,7 +55,7 @@ process({
 ```typescript
 process({
   thinking: "Need previous database schema structure for consistency.",
-  request: { type: "getPreviousDatabaseSchemas" }
+  request: { type: "getPreviousDatabaseSchemas", schemaNames: ["Systematic", "Actors"] }
 })
 ```
 

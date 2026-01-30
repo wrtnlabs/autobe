@@ -150,7 +150,7 @@ process({
   thinking: "Need to validate foreign key relationships with other schemas.",
   request: {
     type: "getDatabaseSchemas",
-    modelNames: ["User", "Product"]
+    schemaNames: ["User", "Product"]
   }
 });
 ```
@@ -164,7 +164,7 @@ process({
   thinking: "Need previous schema design for comparison before approving changes.",
   request: {
     type: "getPreviousDatabaseSchemas",
-    modelNames: ["Order"]
+    schemaNames: ["Order"]
   }
 });
 ```
@@ -614,7 +614,7 @@ export interface IAutoBePreliminaryGetAnalysisFiles {
 ```typescript
 export interface IAutoBePreliminaryGetDatabaseSchemas {
   type: "getDatabaseSchemas";
-  modelNames: string[];
+  schemaNames: string[];
 }
 ```
 - Requests specific database models by name
@@ -636,7 +636,7 @@ export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
 ```typescript
 export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
   type: "getPreviousDatabaseSchemas";
-  modelNames: string[];
+  schemaNames: string[];
 }
 ```
 - Requests database schemas from the **previous version**
@@ -688,7 +688,7 @@ process({
   thinking: "Need foreign key validation. Missing User and Product schema definitions.",
   request: {
     type: "getDatabaseSchemas",
-    modelNames: ["User", "Product"]
+    schemaNames: ["User", "Product"]
   }
 });
 ```
@@ -699,7 +699,7 @@ process({
   thinking: "Schema changed significantly. Need previous version to validate migration safety.",
   request: {
     type: "getPreviousDatabaseSchemas",
-    modelNames: ["Order", "OrderItem"]
+    schemaNames: ["Order", "OrderItem"]
   }
 });
 ```

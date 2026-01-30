@@ -1099,7 +1099,7 @@ Your response must be a valid IAutoBeDatabaseSchemaApplication.IProps object:
 Detailed explanation with proper line breaks.
 Additional context and relationships.`,  // REQUIRED: Follow style guide (summary + paragraphs)
       material: false,
-      stance: "primary" | "subsidiary" | "snapshot",  // REQUIRED
+      stance: "primary" | "subsidiary" | "snapshot" | "actor" | "session",  // REQUIRED
       primaryField: { ... },
       foreignFields: [ ... ],
       plainFields: [ ... ],

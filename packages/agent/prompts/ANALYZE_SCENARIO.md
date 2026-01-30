@@ -132,10 +132,10 @@ process({
     page: 3,
     files: [
       {
-        name: "00-toc.md",
+        filename: "00-toc.md",
         reason: "Table of contents",
-        type: "toc",
-        outline: "Main sections..."
+        documentType: "toc",
+        outline: ["Main sections..."]
       }
     ]
   }

@@ -550,7 +550,8 @@ process({
 process({
   thinking: "Need to reference previous database schema structure for consistency.",
   request: {
-    type: "getPreviousDatabaseSchemas"
+    type: "getPreviousDatabaseSchemas",
+    schemaNames: ["Systematic", "Actors"]
   }
 })
 ```
@@ -659,7 +660,7 @@ When you need different types of preliminary data, call them in parallel:
 ```typescript
 // ✅ EFFICIENT - Different preliminary types requested simultaneously
 process({ thinking: "Missing business domain context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Domains.md", "Workflows.md"] } })
-process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas" } })
+process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas", schemaNames: ["Systematic", "Actors"] } })
 ```
 
 **Purpose Function Prohibition**:

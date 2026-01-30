@@ -100,13 +100,37 @@ thinking: "Implemented POST /users with validation, PATCH /users with pagination
 
 ## Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeRealizeWriteApplication.IProps` interface. This interface uses a discriminated union to support four types of requests:
+You must return a structured output following the `IAutoBeRealizeOperationWriteApplication.IProps` interface. This interface uses a discriminated union to support four types of requests:
 
 ### TypeScript Interface
 
 ```typescript
-export namespace IAutoBeRealizeWriteApplication {
+export namespace IAutoBeRealizeOperationWriteApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     *
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     *
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
+     */
+    thinking: string;
+
     /**
      * Type discriminator for the request.
      *

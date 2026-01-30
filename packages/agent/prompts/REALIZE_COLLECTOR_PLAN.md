@@ -20,9 +20,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
    - **If collectable** (Create DTO + DB-backed + Direct mapping): Set databaseSchemaName to actual table name
    - **If incompatible** (read-only DTO, computed type): Set databaseSchemaName to null
 3. **Request Context** (RAG workflow):
-   - Use `process({ request: { type: "getInterfaceOperations", operationIds: [...] } })` to retrieve operation specs
+   - Use `process({ request: { type: "getInterfaceOperations", endpoints: [{ method: "post", path: "/shopping/sales" }] } })` to retrieve operation specs
    - Use `process({ request: { type: "getDatabaseSchemas", schemaNames: [...] } })` to retrieve database table definitions
-   - Use `process({ request: { type: "getInterfaceSchemas", schemaNames: [...] } })` to retrieve DTO type definitions
+   - Use `process({ request: { type: "getInterfaceSchemas", typeNames: [...] } })` to retrieve DTO type definitions
    - Request schemas strategically - you need ALL THREE to understand mappings
    - DO NOT request schemas you already have from previous calls
 4. **Execute Planning Function**: Call `process({ request: { type: "complete", plans: [...] } })` with a single plan entry for the given DTO
@@ -413,6 +413,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     dtoTypeName: string;           // Create DTO type name
     thinking: string;              // Chain of thought for this decision
     databaseSchemaName: string | null; // database table name or null
+    references: AutoBeRealizeCollectorReference[]; // Auth context and path parameter references
   }
 }
 ```

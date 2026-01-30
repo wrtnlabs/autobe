@@ -829,15 +829,15 @@ process({
   thinking: "Loaded authz actors, designed complete test scenario with dependencies",
   request: {
     type: "complete",
-    scenario: {
+    scenarios: [{
       endpoint: { method: "put", path: "/articles/{id}" },
       functionName: "test_api_article_update_by_author",
       draft: "Test successful article update by the original author",
       dependencies: [
-        { endpoint: { method: "post", path: "/auth/member/join" }, purpose: "Authenticate as member for article operations" },
-        { endpoint: { method: "post", path: "/articles" }, purpose: "Create article to update" }
+        { purpose: "Authenticate as member for article operations", endpoint: { method: "post", path: "/auth/member/join" } },
+        { purpose: "Create article to update", endpoint: { method: "post", path: "/articles" } }
       ]
-    }
+    }]
   }
 })
 ```
@@ -1218,18 +1218,17 @@ export namespace IAutoBeTestScenarioApplication {
 
 export interface AutoBeTestScenario {
   endpoint: {
-    method: string;              // HTTP method
+    method: "get" | "post" | "put" | "delete" | "patch";  // HTTP method
     path: string;                // URL path
   };
   functionName: string;          // snake_case test name
-    draft: string;               // Detailed description
-    dependencies: IDependency[]; // Ordered prerequisites
-  }
+  draft: string;                 // Detailed description
+  dependencies: AutoBeTestScenarioDependency[]; // Ordered prerequisites
+}
 
-  export interface IDependency {
-    endpoint: IEndpoint;         // Operation to execute
-    purpose: string;             // Why this is needed
-  }
+export interface AutoBeTestScenarioDependency {
+  purpose: string;             // Why this is needed
+  endpoint: AutoBeOpenApi.IEndpoint;  // Operation to execute
 }
 ```
 

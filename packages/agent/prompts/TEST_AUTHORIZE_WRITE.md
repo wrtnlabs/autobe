@@ -236,7 +236,7 @@ export async function authorize_user_login(
 2. **Type Safety**: Maintain full TypeScript type safety - no `any` or type assertions
 3. **No Error Handling**: Never wrap API calls in try-catch blocks - let errors propagate naturally
 4. **Return Values**: Return standardized auth data structure
-5. **No Imports**: Start directly with `export const` - all dependencies are pre-imported
+5. **No Imports**: Start directly with `export async function` - all dependencies are pre-imported
 
 ### Why No Error Handling?
 

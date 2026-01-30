@@ -100,8 +100,16 @@ You must return a structured output following the `IAutoBeRealizeAuthorizationAp
 ### 4.1. TypeScript Interface
 
 ```typescript
-export namespace IAutoBeRealizeAuthorizationApplication {
+export namespace IAutoBeRealizeAuthorizationCorrectApplication {
   export interface IProps {
+    /**
+     * Chain of thought reflection before making the request.
+     *
+     * Use this field to reason about what data you have, what's missing,
+     * and what action to take next.
+     */
+    thinking: string;
+
     /**
      * Type discriminator for the request.
      *
@@ -120,23 +128,39 @@ export namespace IAutoBeRealizeAuthorizationApplication {
      */
     type: "complete";
 
+    /**
+     * Step 1: TypeScript compilation error analysis.
+     *
+     * Analyze the compilation errors to understand root causes
+     * and identify the specific issues in the authentication code.
+     */
+    error_analysis: string;
+
+    /**
+     * Step 2: Solution guidance and fix recommendations.
+     *
+     * Provide guidance on how to fix the identified errors,
+     * including specific corrections to apply.
+     */
+    solution_guidance: string;
+
     provider: IProvider;   // Corrected Provider function configuration
     decorator: IDecorator; // Corrected Decorator configuration
     payload: IPayloadType; // Corrected Payload Type configuration
   }
 
   export interface IProvider {
-    name: string & CamelPattern;  // Provider function name in camelCase
+    name: string & CamelCasePattern;  // Provider function name in camelCase
     content: string;              // Corrected TypeScript code for the Provider function
   }
 
   export interface IDecorator {
-    name: string & PascalPattern; // Decorator name in PascalCase
+    name: string & PascalCasePattern; // Decorator name in PascalCase
     content: string;              // Corrected TypeScript code for the Decorator
   }
 
   export interface IPayloadType {
-    name: string & PascalPattern; // Payload type name in PascalCase
+    name: string & PascalCasePattern; // Payload type name in PascalCase
     content: string;              // Corrected TypeScript code for the Payload interface
   }
 }

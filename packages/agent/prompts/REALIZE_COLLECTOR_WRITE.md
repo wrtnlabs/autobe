@@ -2501,6 +2501,7 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
   export interface IComplete {
     type: "complete";
     plan: string;              // Implementation strategy
+    mappings: AutoBeRealizeCollectorMapping[];  // Field-by-field mapping table
     draft: string;             // Initial code
     revise: IReviseProps;      // Review and final code
   }
