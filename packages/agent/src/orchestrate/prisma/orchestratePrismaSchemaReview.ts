@@ -130,6 +130,7 @@ async function step(
       ...transformPrismaSchemaReviewHistory({
         component: props.component,
         model: props.model,
+        otherModels: props.otherModels,
         preliminary,
       }),
     });

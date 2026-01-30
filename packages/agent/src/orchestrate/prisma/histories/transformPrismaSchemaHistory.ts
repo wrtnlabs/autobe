@@ -1,8 +1,10 @@
+import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { singular } from "pluralize";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -17,87 +19,79 @@ export const transformPrismaSchemaHistory = (props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-}): IAutoBeOrchestrateHistory => ({
-  histories: [
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: AutoBeSystemPromptConstant.DATABASE_SCHEMA,
-    },
-    ...props.preliminary.getHistories(),
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "assistantMessage",
-      text: StringUtil.trim`
-        ## Database Design Instructions
+}): IAutoBeOrchestrateHistory => {
+  const children: string[] = [props.component, ...props.otherComponents]
+    .flatMap((c) => c.tables.map((t) => t.name))
+    .filter((s) => s !== props.design.name)
+    .filter((s) => s.startsWith(singular(props.design.name) + "_"));
+  return {
+    histories: [
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "systemMessage",
+        text: AutoBeSystemPromptConstant.DATABASE_SCHEMA,
+      },
+      ...props.preliminary.getHistories(),
+      {
+        id: v7(),
+        created_at: new Date().toISOString(),
+        type: "assistantMessage",
+        text: StringUtil.trim`
+          ## Database Design Instructions
 
-        The following database-specific instructions were extracted from
-        the user's requirements. These focus on database schema design aspects
-        such as table structure, relationships, constraints, and indexing strategies.
+          The following database-specific instructions were extracted from
+          the user's requirements. These focus on database schema design aspects
+          such as table structure, relationships, constraints, and indexing strategies.
 
-        Follow these instructions when designing the DB schema. Carefully distinguish between:
-        - Suggestions or recommendations (consider these as guidance)
-        - Direct specifications or explicit commands (these must be followed exactly)
+          Follow these instructions when designing the DB schema. Carefully distinguish between:
+          - Suggestions or recommendations (consider these as guidance)
+          - Direct specifications or explicit commands (these must be followed exactly)
 
-        When instructions contain direct specifications or explicit design decisions,
-        follow them precisely even if you believe you have better alternatives.
+          When instructions contain direct specifications or explicit design decisions,
+          follow them precisely even if you believe you have better alternatives.
 
-        ${props.instruction}
+          ${props.instruction}
 
-        ## Component Context
+          ## Component Context
 
-        Here is the component context for generating DB schema.
+          Here is the component context for generating DB schema.
 
-        \`\`\`json
-        ${JSON.stringify({
-          targetComponent: props.component,
-          otherComponents: props.otherComponents,
-        })}
-        \`\`\`
+          \`\`\`json
+          ${JSON.stringify({
+            targetComponent: props.component,
+            otherComponents: props.otherComponents,
+          })}
+          \`\`\`
 
-        ## Table Context
+          ## Table Context
 
-        You are generating the database schema for the target table:
+          You are generating the database schema for the target table:
 
-        - Component Namespace: ${props.component.namespace}
-        - Target Table Name: ${props.design.name}
-        - Target Table Summary: ${props.design.description}
-      `,
-    },
-    {
-      id: v7(),
-      created_at: new Date().toISOString(),
-      type: "systemMessage",
-      text: StringUtil.trim`
-        ## Critical Reminder: Target Table and Child Tables
+          - Component Namespace: ${props.component.namespace}
+          - Target Table Name: ${props.design.name}
+          - Target Table Summary: ${props.design.description}
+        `,
+      },
+      ...(children.length > 0
+        ? [
+            {
+              id: v7(),
+              created_at: new Date().toISOString(),
+              type: "assistantMessage",
+              text: StringUtil.trim`
+                ## Child Table Collision Warning
 
-        You must create models for the target table specified below.
-        The target table model is MANDATORY, and you may also create
-        child tables that follow the First Normal Form (1NF) principle —
-        when a column would contain repeating groups or non-atomic values,
-        split them into separate child tables.
+                The following child tables are already assigned to other
+                agents, so do NOT recreate them and your child table names
+                must NOT collide with any of them:
 
-        Child table names must start with the singular form of the target
-        table name as a prefix (e.g., for target "shopping_orders", child
-        tables must be named like "shopping_order_items",
-        "shopping_order_payments", etc.).
-
-        Child table names must NOT collide with tables already assigned
-        to other components or other tables in the same component.
-        Do NOT create models for other tables already listed in the
-        component or other components — they are handled separately.
-
-        \`\`\`json
-        ${JSON.stringify({
-          targetComponent: props.component,
-          targetTable: props.design.name,
-          targetTableSummary: props.design.description,
-        })}
-        \`\`\`
-      `,
-    },
-  ],
-  userMessage: "Make database schema please",
-});
+                ${children.map((t) => `- ${t}`).join("\n")}
+              `,
+            } satisfies IMicroAgenticaHistoryJson,
+          ]
+        : []),
+    ],
+    userMessage: "Make database schema please",
+  };
+};
