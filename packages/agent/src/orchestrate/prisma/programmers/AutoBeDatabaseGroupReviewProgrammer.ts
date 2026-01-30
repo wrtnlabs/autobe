@@ -173,7 +173,10 @@ export namespace AutoBeDatabaseGroupReviewProgrammer {
         if (groupMap.has(revise.group.namespace) === false)
           groupMap.set(revise.group.namespace, revise.group);
       } else if (revise.type === "update") {
-        if (groupMap.has(revise.originalNamespace) === true) {
+        if (
+          groupMap.has(revise.originalNamespace) === true &&
+          groupMap.has(revise.group.namespace) === false
+        ) {
           groupMap.delete(revise.originalNamespace);
           groupMap.set(revise.group.namespace, revise.group);
         }
