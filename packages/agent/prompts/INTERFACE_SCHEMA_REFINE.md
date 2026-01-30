@@ -509,7 +509,7 @@ Properties come from **two sources**:
 
 **Common Phantom Patterns**:
 - Fields hallucinated by the schema agent that don't exist in any table and are not demanded by requirements
-- Internal/admin-only database fields that should not be in the API (e.g., `internal_notes`, `admin_flags`)
+- Computed-sounding fields with no requirements-driven rationale (e.g., `popularity_score`, `trending_rank` when requirements never mention them)
 - Duplicated fields with slightly different names (e.g., both `createdAt` and `created_at`)
 
 **Example — Removing a Phantom Field**:
@@ -1032,7 +1032,7 @@ Repeat these as you refine:
 1. **"Every property needs three documentation fields"** (databaseSchemaProperty, specification, description)
 2. **"WHICH → HOW → WHAT"** (Follow the mandatory field order)
 3. **"`depict` for existing correct types, `create`/`update` for fixes"**
-4. **"Never imagine database fields - always verify"**
+4. **"Never imagine fields — verify against database AND requirements"**
 5. **"Object-level enrichment comes with property enrichment"**
 
 **Pre-Review Hardening**:
