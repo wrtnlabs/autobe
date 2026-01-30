@@ -218,7 +218,7 @@ gantt
   Interface Schema Parser          : planned, 2026-02-22, 28d
   Requirements Sync Agent          : planned, 2026-03-08, 24d
 
-  section Miscenallenous
+  section Miscellaneous
   System Prompt Simplification     : planned, 2026-02-01, 28d
   Playground Service Enhancement   : planned, 2026-02-15, 28d
   PR Articles Writing              : planned, 2026-02-15, 30d
