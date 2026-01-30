@@ -293,6 +293,7 @@ The empty array means: "All data you requested is already loaded. Move on to com
 **REQUIRED BEHAVIOR**:
 - ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
+- ✅ When deciding if a non-DB field is requirements-driven or phantom → MUST verify against loaded requirements (call `getAnalysisFiles` if not yet loaded)
 - ✅ ALWAYS verify actual data before making decisions
 - ✅ Request FIRST, then work with loaded materials
 
@@ -441,14 +442,14 @@ Properties come from **two sources**:
 2. **Requirements-driven fields**: Computed, aggregated, or derived values defined by business requirements (e.g., `postsCount`, `averageRating`, `fullName`, `totalPrice`). These have `databaseSchemaProperty: null` and rely on `specification` for implementation guidance.
 
 **Process**:
-1. Compare the schema properties against the loaded database model — identify DB columns missing from the DTO
-2. Review the requirements analysis — identify computed/derived fields demanded by business logic that are missing from the DTO
+1. Compare the schema properties against the loaded database model — identify DB columns missing from the DTO. If you haven't loaded the database model yet, call `getDatabaseSchemas` first.
+2. Review the requirements analysis — identify computed/derived fields demanded by business logic that are missing from the DTO. If you haven't loaded the relevant requirements, call `getAnalysisFiles` first.
 3. For each missing field (whether DB-mapped or requirements-driven), determine if it should be included based on DTO type:
    - **Read DTO (IEntity)**: Include ALL DB columns (except security-filtered ones) AND all requirements-driven computed fields
    - **Create DTO (IEntity.ICreate)**: Include user-provided fields. Exclude auto-generated (`id`), system-managed (`created_at`, `updated_at`), auth-context fields, and computed fields (user doesn't provide computed values)
    - **Update DTO (IEntity.IUpdate)**: Include mutable fields. Exclude immutable (`id`, `created_at`) and computed fields
    - **Summary DTO (IEntity.ISummary)**: Include display essentials only — may include key computed fields if they are essential for display
-3. Use `create` to add missing fields with proper documentation
+4. Use `create` to add missing fields with proper documentation
 
 **Nullable Field Rules by DTO Type**:
 
@@ -460,17 +461,33 @@ Properties come from **two sources**:
 
 **ABSOLUTE RULE**: DB nullable → DTO non-null is **FORBIDDEN** (causes runtime errors when DB returns NULL).
 
-**Example — Adding a Missing Field**:
+**Example — Adding a Missing DB Field**:
 ```typescript
 {
   type: "create",
-  reason: "Database field 'verified' exists in users table but missing from IUser",
+  reason: "CONTENT: Database field 'verified' exists in users table but missing from IUser",
   key: "verified",
   databaseSchemaProperty: "verified",
   specification: "Direct mapping from users.verified column. Boolean indicating email verification status.",
   description: "Whether the user has verified their email address.",
   schema: {
     type: "boolean"
+  },
+  required: true
+}
+```
+
+**Example — Adding a Missing Requirements-Driven Computed Field**:
+```typescript
+{
+  type: "create",
+  reason: "CONTENT: Requirements specify 'total order amount' for customer display, but ICustomer is missing this computed field",
+  key: "totalOrderAmount",
+  databaseSchemaProperty: null,
+  specification: "Computed aggregation from requirements. SELECT COALESCE(SUM(amount), 0) FROM orders WHERE customer_id = customers.id AND status = 'completed'. Returns cumulative spending.",
+  description: "Total amount of all completed orders placed by this customer.",
+  schema: {
+    type: "number"
   },
   required: true
 }
@@ -499,7 +516,7 @@ Properties come from **two sources**:
 ```typescript
 {
   type: "erase",
-  reason: "Phantom field - 'popularity_score' does not exist in products table and has no computed rationale",
+  reason: "Phantom field - 'popularity_score' does not exist in products table and is not demanded by requirements",
   key: "popularity_score"
 }
 ```
@@ -880,7 +897,7 @@ process({
       },
       {
         type: "erase",
-        reason: "Phantom field - internal_status does not exist in database",
+        reason: "Phantom field - 'internal_status' does not exist in database and is not demanded by requirements",
         key: "internal_status"
       }
     ]
@@ -894,7 +911,7 @@ process({
 // Refining ICustomer (Actor type, kind: "member")
 // Database: customers table with FK to customer_sessions
 process({
-  thinking: "Enriched properties, found phantom field, missing DB field, missing relation, and password exposed in response DTO.",
+  thinking: "Enriched properties, found phantom field, missing DB field, missing requirements-driven field, missing relation, and password exposed in response DTO.",
   request: {
     type: "complete",
     review: `## Schema Refinement Summary
@@ -902,7 +919,9 @@ process({
 ### ICustomer
 - Enriched existing properties with documentation
 - [CONTENT] Added missing 'verified' field from database
-- [PHANTOM] Removed 'loyalty_tier' - does not exist in database
+- [CONTENT] Added missing 'totalOrderAmount' computed field from requirements
+- [PHANTOM] Removed 'loyalty_tier' - not in database and not demanded by requirements
+- [PHANTOM] Kept 'orderCount' - no DB column but valid requirements-driven aggregation
 - [RELATION] Added 'sessions' relation via $ref to ICustomerSession
 - [SECURITY] Removed 'password_hashed' - must not be exposed in response DTO`,
     databaseSchema: "customers",
@@ -946,14 +965,49 @@ process({
         required: true
       },
       {
+        type: "create",
+        reason: "CONTENT: Requirements specify 'total order amount' for customer profile display, but missing from ICustomer",
+        key: "totalOrderAmount",
+        databaseSchemaProperty: null,
+        specification: "Computed aggregation from requirements. SELECT COALESCE(SUM(amount), 0) FROM orders WHERE customer_id = customers.id AND status = 'completed'.",
+        description: "Total amount of all completed orders placed by this customer.",
+        schema: {
+          type: "number"
+        },
+        required: true
+      },
+      {
+        type: "depict",
+        reason: "PHANTOM-SAFE: No DB column, but valid requirements-driven aggregation — keeping with documentation",
+        key: "orderCount",
+        databaseSchemaProperty: null,
+        specification: "Computed aggregation from requirements. SELECT COUNT(*) FROM orders WHERE customer_id = customers.id. Returns total number of orders.",
+        description: "Total number of orders placed by this customer."
+      },
+      {
         type: "erase",
-        reason: "PHANTOM: 'loyalty_tier' does not exist in customers table and has no computed rationale",
+        reason: "PHANTOM: 'loyalty_tier' does not exist in customers table and is not demanded by requirements",
         key: "loyalty_tier"
       },
       {
         type: "erase",
         reason: "SECURITY: password_hashed must never be exposed in response DTOs",
         key: "password_hashed"
+      },
+      {
+        type: "create",
+        reason: "RELATION: Database has customer_id FK in customer_sessions table, but ICustomer is missing the sessions relation",
+        key: "sessions",
+        databaseSchemaProperty: null,
+        specification: "Join from customer_sessions.customer_id to customers.id. Returns all sessions as ICustomerSession array.",
+        description: "Active sessions associated with this customer.",
+        schema: {
+          type: "array",
+          items: {
+            $ref: "#/components/schemas/ICustomerSession"
+          }
+        },
+        required: true
       },
       {
         type: "depict",
@@ -1058,7 +1112,9 @@ Before submitting your refinement:
 ### 10.3. Zero Imagination Policy
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
   * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
-  * NEVER assumed/guessed any field descriptions without loading requirements
+  * NEVER assumed/guessed any field descriptions without loading requirements via getAnalysisFiles
+  * NEVER assumed a non-DB field is requirements-driven without verifying against loaded requirements
+  * NEVER assumed a non-DB field is phantom without checking both database schema AND requirements
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"
   * If you needed schema/requirement details → You called the appropriate function FIRST
   * ALL data used in your output was actually loaded and verified via function calling
