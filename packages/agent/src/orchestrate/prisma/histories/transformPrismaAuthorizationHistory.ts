@@ -1,5 +1,7 @@
 import { AutoBeAnalyzeActor, AutoBeDatabaseGroup } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { plural } from "pluralize";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -7,16 +9,48 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformPrismaAuthorizationHistory = (props: {
-    actor: AutoBeAnalyzeActor;
-    prefix: string | null;
-    authGroup: AutoBeDatabaseGroup;
-    instruction: string;
-    preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
-    >;
-  },
-): IAutoBeOrchestrateHistory => {
-  const prefix: string | null = props.prefix;
+  actors: AutoBeAnalyzeActor[];
+  prefix: string | null;
+  group: AutoBeDatabaseGroup;
+  instruction: string;
+  preliminary: AutoBePreliminaryController<
+    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+  >;
+}): IAutoBeOrchestrateHistory => {
+  const prefix: string = props.prefix ? `${props.prefix}_` : "";
+
+  const requiredTables: string = props.actors
+    .map((actor) => {
+      const actorName: string = NamingConvention.snake(actor.name);
+      if (actor.kind === "guest") {
+        return StringUtil.trim`
+          ### ${actor.name} (${actor.kind})
+          1. \`${prefix}${plural(actorName)}\` - Guest actor table with minimal identification fields (no password)
+          2. \`${prefix}${actorName}_sessions\` - Temporary session tokens for guest access
+        `;
+      } else {
+        return StringUtil.trim`
+          ### ${actor.name} (${actor.kind})
+          1. \`${prefix}${plural(actorName)}\` - Actor table with email/password authentication fields
+          2. \`${prefix}${actorName}_sessions\` - JWT session table with access and refresh tokens
+
+          **Optional Tables** (add if requirements support):
+          - \`${prefix}${actorName}_password_resets\` - For password recovery
+          - \`${prefix}${actorName}_email_verifications\` - For email verification
+        `;
+      }
+    })
+    .join("\n\n");
+
+  const mandatoryOutput: string = props.actors
+    .map((actor) => {
+      const actorName: string = NamingConvention.snake(actor.name);
+      return StringUtil.trim`
+        - **${actor.name}**: \`${prefix}${plural(actorName)}\` + \`${prefix}${actorName}_sessions\`
+      `;
+    })
+    .join("\n");
+
   return {
     histories: [
       {
@@ -35,8 +69,8 @@ export const transformPrismaAuthorizationHistory = (props: {
 
           Your tables will be placed in the following authorization group:
 
-          - **Filename**: \`${props.authGroup.filename}\`
-          - **Namespace**: \`${props.authGroup.namespace}\`
+          - **Filename**: \`${props.group.filename}\`
+          - **Namespace**: \`${props.group.namespace}\`
 
           This group was determined by the Database Group Agent and validated to be
           the single authorization group for this application.
@@ -46,13 +80,11 @@ export const transformPrismaAuthorizationHistory = (props: {
           ## Prefix Configuration
 
           ${
-            prefix
-              ? `- Service Prefix: \`${prefix}\`
-                 - All table names MUST start with: \`${prefix}_\`
-                 - Example: \`${prefix}_${props.actor.name.toLowerCase()}s\`, \`${prefix}_${props.actor.name.toLowerCase()}_sessions\``
+            props.prefix !== null
+              ? `- Service Prefix: \`${props.prefix}\`
+                 - All table names MUST start with: \`${prefix}\``
               : `- No prefix configured
-                 - Table names do NOT require a prefix
-                 - Example: \`${props.actor.name.toLowerCase()}s\`, \`${props.actor.name.toLowerCase()}_sessions\``
+                 - Table names do NOT require a prefix`
           }
         `,
       },
@@ -67,7 +99,7 @@ export const transformPrismaAuthorizationHistory = (props: {
           requirements. These focus on database design aspects such as table naming,
           field patterns, and authentication requirements.
 
-          Follow these instructions when designing authorization tables for ${props.actor.name}.
+          Follow these instructions when designing authorization tables for ALL actors.
           Carefully distinguish between:
           - Suggestions or recommendations (consider these as guidance)
           - Direct specifications or explicit commands (these must be followed exactly)
@@ -79,64 +111,47 @@ export const transformPrismaAuthorizationHistory = (props: {
 
           ---
 
-          ## Target Actor Information
+          ## Target Actors Information
 
-          You are designing authentication/authorization tables for the following actor:
+          You are designing authentication/authorization tables for ALL of the following actors:
 
           \`\`\`json
-          ${JSON.stringify(props.actor, null, 2)}
+          ${JSON.stringify(props.actors)}
           \`\`\`
-
-          **Actor Details**:
-          - **Name**: ${props.actor.name}
-          - **Kind**: ${props.actor.kind}
-          - **Description**: ${props.actor.description}
 
           ---
 
-          ## Required Tables
+          ## Required Tables for Each Actor
 
-          Based on actor kind "${props.actor.kind}", you MUST create at minimum:
+          You MUST create tables for EVERY actor listed above. Here are the minimum required tables:
 
-          ${
-            props.actor.kind === "guest"
-              ? `**Guest Authentication Tables**:
-                 1. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Guest actor table with minimal identification fields (no password)
-                 2. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - Temporary session tokens for guest access`
-              : `**${props.actor.kind === "admin" ? "Admin" : "Member"} Authentication Tables**:
-                 1. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\` - Actor table with email/password authentication fields
-                 2. \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\` - JWT session table with access and refresh tokens
-
-                 **Optional Tables** (add if requirements support):
-                 - \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_password_resets\` - For password recovery
-                 - \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_email_verifications\` - For email verification`
-          }
+          ${requiredTables}
         `,
       },
     ],
     userMessage: StringUtil.trim`
-      ## Your Task: Design Authorization Tables for ${props.actor.name}
+      ## Your Task: Design Authorization Tables for ALL Actors
 
       **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via
-      \`getAnalysisFiles\` to identify authentication requirements for this actor.
+      \`getAnalysisFiles\` to identify authentication requirements for all actors.
 
       **MANDATORY STEPS**:
 
       1. **FIRST**: Call \`getAnalysisFiles\` to load authentication requirement documents
          - NEVER skip this step - Requirements are the ONLY valid source for authentication design
-      2. **THEN**: Analyze the LOADED requirements to design authorization tables for "${props.actor.name}" actor (kind: "${props.actor.kind}")
-      3. **FINALLY**: Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables
+      2. **THEN**: Analyze the LOADED requirements to design authorization tables for ALL actors
+      3. **FINALLY**: Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors
 
       **ABSOLUTE PROHIBITIONS**:
 
       - NEVER generate tables without loading requirement documents first
       - NEVER work from assumptions, imagination, or "typical patterns"
       - NEVER skip loading requirements under any circumstances
+      - NEVER forget any actor - ALL actors must have their tables
 
-      **MANDATORY OUTPUT**:
-      - Main actor table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}s\`
-      - Session table: \`${prefix ? prefix + "_" : ""}${props.actor.name.toLowerCase()}_sessions\`
-      - Any additional auth support tables based on requirements
+      **MANDATORY OUTPUT** (for each actor, at minimum):
+      ${mandatoryOutput}
+      - Plus any additional auth support tables based on requirements
 
       Begin by calling \`getAnalysisFiles\` to load the authentication requirement documents you need to analyze.
     `,

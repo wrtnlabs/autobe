@@ -6,19 +6,20 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseAuthorizationReviewApplication {
   /**
-   * Analyze requirements and review the authorization component's table list.
+   * Analyze requirements and review the single authorization component
+   * containing tables for ALL actors.
    *
    * Your PRIMARY task is to deeply analyze authentication requirements and
-   * ensure complete table coverage for all actor types in the authorization
-   * component. Review existing tables and identify necessary modifications
-   * using create, update, or erase operations.
+   * ensure complete table coverage for EVERY actor type in the authorization
+   * component. The component contains tables for all actors (guest/member/admin),
+   * and you must verify that each actor has its required tables.
    *
    * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
    * what authentication features are required, then systematically verify
-   * actor table and session table coverage and apply corrections.
+   * that EVERY actor has main actor table + session table, and apply corrections.
    *
    * @param props Request containing either preliminary data request or complete
-   *   task with table revisions
+   *   task with table revisions for all actors
    */
   process(props: IAutoBeDatabaseAuthorizationReviewApplication.IProps): void;
 }
@@ -61,8 +62,11 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
    *
    * Call this after you have:
    * 1. Fetched and analyzed authentication requirements documents
-   * 2. Verified all actor types have main actor and session tables
+   * 2. Verified EVERY actor has main actor and session tables
    * 3. Prepared create/update/erase operations with clear reasons
+   *
+   * The authorization component contains tables for ALL actors, so ensure
+   * no actor is missing its required tables.
    */
   export interface IComplete {
     /**

@@ -4,17 +4,17 @@ import {
 } from "../histories/contents";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Database agent reviews and validates the authorization
  * component's table organization during the database design process.
  *
  * This event occurs after the initial authorization table generation phase,
- * where the Database Authorization agent has created actor and session tables.
- * The review validates the authorization tables against authentication
- * requirements, checks for missing session tables, verifies naming conventions,
- * and ensures proper actor-specific patterns.
+ * where the Database Authorization agent has created actor and session tables
+ * for ALL actors in a single component. The review validates the authorization
+ * tables against authentication requirements, checks for missing session tables
+ * for each actor, verifies naming conventions, and ensures proper actor-specific
+ * patterns.
  *
  * The review process ensures that the authorization component provides a solid
  * foundation for authentication and session management by identifying and
@@ -24,8 +24,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  */
 export interface AutoBeDatabaseAuthorizationReviewEvent
   extends AutoBeEventBase<"databaseAuthorizationReview">,
-    AutoBeAggregateEventBase,
-    AutoBeProgressEventBase {
+    AutoBeAggregateEventBase {
   /**
    * Comprehensive review analysis of the authorization component organization.
    *

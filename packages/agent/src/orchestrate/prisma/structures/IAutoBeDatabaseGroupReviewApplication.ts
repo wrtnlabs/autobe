@@ -8,14 +8,14 @@ export interface IAutoBeDatabaseGroupReviewApplication {
   /**
    * Analyze requirements and review the component group skeletons.
    *
-   * Your PRIMARY task is to verify that the group structure provides
-   * complete, well-organized coverage of all business domains described
-   * in the requirements. Review existing groups and identify necessary
-   * modifications using create, update, or erase operations.
+   * Your PRIMARY task is to verify that the group structure provides complete,
+   * well-organized coverage of all business domains described in the
+   * requirements. Review existing groups and identify necessary modifications
+   * using create, update, or erase operations.
    *
    * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
-   * what business domains exist, then systematically verify group coverage
-   * and apply corrections.
+   * what business domains exist, then systematically verify group coverage and
+   * apply corrections.
    *
    * @param props Request containing either preliminary data request or complete
    *   task with group revisions
@@ -46,8 +46,8 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
      * Request type discriminator.
      *
      * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
-     * documents. Use complete to submit group revisions after thorough
-     * domain coverage analysis.
+     * documents. Use complete to submit group revisions after thorough domain
+     * coverage analysis.
      */
     request:
       | IComplete
@@ -60,21 +60,20 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
    * Submit group revisions after domain coverage analysis.
    *
    * Call this after you have:
+   *
    * 1. Fetched and analyzed business requirements documents
    * 2. Verified all business domains have corresponding groups
    * 3. Prepared create/update/erase operations with clear reasons
    */
   export interface IComplete {
-    /**
-     * Type discriminator. Value "complete" indicates final submission.
-     */
+    /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";
 
     /**
      * Domain coverage analysis.
      *
-     * Document how you analyzed business requirements and mapped them
-     * to group modifications:
+     * Document how you analyzed business requirements and mapped them to group
+     * modifications:
      *
      * - What business domains are defined in requirements?
      * - Does each domain have a corresponding group?
@@ -90,49 +89,59 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
      * Array of group revision operations.
      *
      * Include all create, update, and erase operations identified during
-     * review. Each operation must include a reason explaining why the
-     * change is necessary.
+     * review. Each operation must include a reason explaining why the change is
+     * necessary.
      *
      * ## Operation Types:
      *
      * ### Create - Add missing groups
+     *
      * Use when a business domain has no corresponding group.
+     *
      * ```typescript
      * {
-     *   type: "create",
-     *   reason: "Notification functionality exists in requirements but has no group",
-     *   group: {
-     *     thinking: "...", review: "...", rationale: "...",
-     *     namespace: "Notifications",
-     *     filename: "schema-10-notifications.prisma",
-     *     kind: "domain"
+     *   "type": "create",
+     *   "reason": "Notification functionality exists in requirements but has no group",
+     *   "group": {
+     *     "thinking": "...",
+     *     "review": "...",
+     *     "rationale": "...",
+     *     "namespace": "Notifications",
+     *     "filename": "schema-10-notifications.prisma",
+     *     "kind": "domain"
      *   }
      * }
      * ```
      *
      * ### Update - Modify existing groups
+     *
      * Use when a group has property issues.
+     *
      * ```typescript
      * {
-     *   type: "update",
-     *   reason: "Namespace uses incorrect casing",
-     *   original_namespace: "products_catalog",
-     *   group: {
-     *     thinking: "...", review: "...", rationale: "...",
-     *     namespace: "Products",
-     *     filename: "schema-03-products.prisma",
-     *     kind: "domain"
+     *   "type": "update",
+     *   "reason": "Namespace uses incorrect casing",
+     *   "originalNamespace": "products_catalog",
+     *   "group": {
+     *     "thinking": "...",
+     *     "review": "...",
+     *     "rationale": "...",
+     *     "namespace": "Products",
+     *     "filename": "schema-03-products.prisma",
+     *     "kind": "domain"
      *   }
      * }
      * ```
      *
      * ### Erase - Remove groups
+     *
      * Use when a group is unnecessary.
+     *
      * ```typescript
      * {
-     *   type: "erase",
-     *   reason: "Group is redundant with existing Products group",
-     *   namespace: "Catalog"
+     *   "type": "erase",
+     *   "reason": "Group is redundant with existing Products group",
+     *   "namespace": "Catalog"
      * }
      * ```
      *

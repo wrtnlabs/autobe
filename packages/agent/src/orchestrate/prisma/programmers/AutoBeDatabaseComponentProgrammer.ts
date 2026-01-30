@@ -39,12 +39,25 @@ export namespace AutoBeDatabaseComponentProgrammer {
   export const removeDuplicatedTable = (
     components: AutoBeDatabaseComponent[],
   ): AutoBeDatabaseComponent[] => {
-    const tableSet: Set<string> = new Set(
-      components.flatMap((c) => c.tables.map((t) => t.name)),
+    // 1. First, remove duplicates within each component
+    const deduplicatedComponents: AutoBeDatabaseComponent[] = components.map(
+      (c) => ({
+        ...c,
+        tables: c.tables.filter(
+          (table, index, self) =>
+            self.findIndex((t) => t.name === table.name) === index,
+        ),
+      }),
     );
-    const sorted: Pair<AutoBeDatabaseComponent, number>[] = components
-      .map((c, i) => new Pair(c, i))
-      .sort((a, b) => a.first.tables.length - b.first.tables.length);
+
+    // 2. Then, remove duplicates across components
+    const tableSet: Set<string> = new Set(
+      deduplicatedComponents.flatMap((c) => c.tables.map((t) => t.name)),
+    );
+    const sorted: Pair<AutoBeDatabaseComponent, number>[] =
+      deduplicatedComponents
+        .map((c, i) => new Pair(c, i))
+        .sort((a, b) => a.first.tables.length - b.first.tables.length);
     return sorted
       .map(
         (p) =>
