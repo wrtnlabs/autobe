@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentReviewEvent,
+  AutoBeDatabaseComponentTableDesign,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -26,9 +27,6 @@ export async function orchestratePrismaComponentReview(
   },
 ): Promise<AutoBeDatabaseComponent[]> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const allTableNames: string[] = props.components.flatMap((c) =>
-    c.tables.map((t) => t.name),
-  );
   const progress: AutoBeProgressEventBase = {
     completed: 0,
     total: props.components.length,
@@ -37,15 +35,12 @@ export async function orchestratePrismaComponentReview(
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
-      const otherTableNames: Set<string> = new Set(
-        props.components
-          .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables.map((t) => t.name)),
-      );
+      const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
+        .filter((c) => c.filename !== component.filename)
+        .flatMap((c) => c.tables);
       const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
         component,
-        otherTableNames,
-        allTableNames,
+        otherTables,
         instruction: props.instruction,
         prefix,
         progress,
@@ -62,8 +57,7 @@ async function process(
   ctx: AutoBeContext,
   props: {
     component: AutoBeDatabaseComponent;
-    otherTableNames: Set<string>;
-    allTableNames: string[];
+    otherTables: AutoBeDatabaseComponentTableDesign[];
     instruction: string;
     prefix: string | null;
     progress: AutoBeProgressEventBase;
@@ -92,7 +86,7 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        otherTableNames: props.otherTableNames,
+        otherTables: props.otherTables,
         prefix: props.prefix,
         build: (next) => {
           pointer.value = next;
@@ -103,7 +97,7 @@ async function process(
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaComponentReviewHistory({
         component: props.component,
-        allTableNames: props.allTableNames,
+        otherTables: props.otherTables,
         instruction: props.instruction,
         prefix: props.prefix,
         preliminary,
@@ -143,9 +137,9 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  otherTableNames: Set<string>;
-  prefix: string | null;
   component: AutoBeDatabaseComponent;
+  otherTables: AutoBeDatabaseComponentTableDesign[];
+  prefix: string | null;
   build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate = (
@@ -168,6 +162,7 @@ function createController(props: {
       path: "$input.request.revises",
       revises: result.data.request.revises,
       component: props.component,
+      otherTables: props.otherTables,
     });
     if (errors.length > 0)
       return {

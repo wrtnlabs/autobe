@@ -135,6 +135,13 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      * - Each operation must have a clear, requirement-based reason
      * - Empty array is valid if no modifications are needed
      *
+     * ## Validation Rules:
+     *
+     * - CREATE/UPDATE table names are checked against "Tables in Other Components"
+     * - If the table name already exists in another component → validation FAILS
+     * - Always check "Tables in Other Components" before CREATE/UPDATE operations
+     * - Your revises only affect Target Component, never other components' tables
+     *
      * ## Naming Conventions:
      *
      * - Snake case: `user_profiles` not `userProfiles`

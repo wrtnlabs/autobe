@@ -1,6 +1,8 @@
-import { AutoBeDatabaseComponent } from "@autobe/interface";
+import {
+  AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentTableDesign,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -12,7 +14,7 @@ export const transformPrismaComponentReviewHistory = (props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
-  allTableNames: string[];
+  otherTables: AutoBeDatabaseComponentTableDesign[];
   instruction: string;
   prefix: string | null;
 }): IAutoBeOrchestrateHistory => ({
@@ -37,24 +39,21 @@ export const transformPrismaComponentReviewHistory = (props: {
       text: StringUtil.trim`
         ## Component to Review
 
-        ${props.prefix !== null ? `**Table Prefix**: \`${NamingConvention.snake(props.prefix)}\`` : ""}
+        ${props.prefix !== null ? `**Table Prefix**: \`${props.prefix}\`` : ""}
 
         ### Target Component
 
-        - **Namespace**: \`${props.component.namespace}\`
-        - **Filename**: \`${props.component.filename}\`
-
-        ### Current Tables
-
-        The following tables are currently assigned to this component:
-
-        ${JSON.stringify(props.component.tables, null, 2)}
+        \`\`\`json
+        ${JSON.stringify(props.component)}
+        \`\`\`
 
         ### Tables in Other Components (For Reference)
 
         These tables belong to OTHER components' domains. Focus on YOUR domain only:
 
-        ${JSON.stringify(props.allTableNames.filter((t) => !props.component.tables.some((ct) => ct.name === t)).sort())}
+        \`\`\`json
+        ${JSON.stringify(props.otherTables)}
+        \`\`\`
 
         ### User Instructions
 
@@ -63,21 +62,36 @@ export const transformPrismaComponentReviewHistory = (props: {
     },
   ],
   userMessage: StringUtil.trim`
-    Review the "${props.component.namespace}" component's table list and apply necessary revisions.
+    Review the "${props.component.namespace}" component and apply necessary revisions.
 
-    **IMPORTANT - Domain Boundary Rule**:
-    Only CREATE tables that CLEARLY belong to the "${props.component.namespace}" domain.
-    If a table could belong to another domain → DO NOT CREATE (let that domain's agent handle it).
+    ## Your Task
 
-    1. First, fetch analysis files using \`getAnalysisFiles\` to understand requirements
-    2. Identify issues: missing tables, naming problems, or misplaced tables
-    3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
+    1. **Analyze**: Fetch analysis files using \`getAnalysisFiles\` to understand requirements
+    2. **Compare**: Review Target Component tables against requirements AND "Tables in Other Components"
+    3. **Revise**: Apply CREATE/UPDATE/ERASE to Target Component ONLY
 
-    Use revises to:
-    - **Create**: Add missing tables that CLEARLY belong to THIS component's domain
-    - **Update**: Rename tables with naming convention issues
-    - **Erase**: Remove tables that belong to other components
+    ## Critical Rules
 
-    If no changes are needed, return an empty revises array.
+    **Target Component ONLY**: Your revises affect ONLY the Target Component ("${props.component.namespace}")
+
+    **Reference Other Tables**: Use "Tables in Other Components" to:
+    - Check if a table already exists elsewhere (→ do NOT create duplicates)
+    - Identify misplaced tables in Target Component (→ ERASE them)
+
+    **Validation Will FAIL If**:
+    - You CREATE a table that exists in "Tables in Other Components"
+    - You UPDATE a table name to one that exists in "Tables in Other Components"
+
+    ## Revises Operations
+
+    - **Create**: Add missing tables that belong to "${props.component.namespace}" domain
+    - **Update**: Fix naming convention issues (snake_case, plural, prefix)
+    - **Erase**: Remove tables that belong to other components' domains
+
+    ## Submit
+
+    Call \`process({ request: { type: "complete", review: "...", revises: [...] } })\`
+
+    If no changes needed, submit empty revises array: \`revises: []\`
   `,
 });
