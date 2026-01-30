@@ -1,8 +1,10 @@
 import { AutoBeDatabase } from "@autobe/interface";
 import { plural, singular } from "pluralize";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseModelProgrammer {
   export const emend = (model: AutoBeDatabase.IModel): void => {
+    model.name = plural(NamingConvention.snake(model.name));
     for (const ff of model.foreignFields) {
       ff.relation.oppositeName = ff.unique
         ? singular(ff.relation.oppositeName)

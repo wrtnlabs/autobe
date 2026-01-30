@@ -113,7 +113,8 @@ export const orchestratePrisma = async (
       namespace: comp.namespace,
       models: schemaEvents
         .filter((se) => se.namespace === comp.namespace)
-        .map((se) => se.model),
+        .map((se) => se.models)
+        .flat(),
     })),
   };
 
@@ -127,14 +128,17 @@ export const orchestratePrisma = async (
   for (const event of reviewEvents) {
     if (event.content === null) continue;
 
-    const model: AutoBeDatabase.IModel = event.content;
+    const models: AutoBeDatabase.IModel[] = event.content;
     const file: AutoBeDatabase.IFile | undefined = application.files.find(
       (f) => f.namespace === event.namespace,
     );
     if (file === undefined) continue;
 
-    const index: number = file.models.findIndex((m) => m.name === model.name);
-    if (index !== -1) file.models[index] = model;
+    for (const x of models) {
+      const index: number = file.models.findIndex((y) => x.name === y.name);
+      if (index !== -1) file.models[index] = x;
+      else file.models.push(x);
+    }
   }
 
   // VALIDATE

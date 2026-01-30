@@ -117,24 +117,37 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
     plan: string;
 
     /**
-     * Modified database model based on review feedback.
+     * Modified database models based on review feedback, or null if no
+     * changes needed.
      *
-     * Contains the single modified model if changes are required, or null
-     * if the table passes validation. The model is a complete table definition
-     * with all fields, relationships, indexes, and documentation.
+     * Contains the corrected set of models (target table and its child
+     * tables) if changes are required, or null if all models pass
+     * validation. When not null, this array replaces the entire set of
+     * models for the reviewed target table.
+     *
+     * The array must always include the target table model (with the exact
+     * name matching the reviewed table), and may include child tables that
+     * enforce First Normal Form (1NF) — decomposing repeating groups or
+     * non-atomic values into separate normalized tables.
      *
      * Model requirements:
      *
-     * - Complete model: Must be a complete model definition
-     * - Targeted change: Only the single table that needs modification
+     * - Target table model: Must be present with the exact reviewed table
+     *   name
+     * - Child table naming: Must use singular form of target table name as
+     *   prefix (e.g., for "shopping_orders": "shopping_order_items")
+     * - No collision: Child table names must not collide with tables
+     *   already assigned to other components
+     * - Complete models: Each model must be a complete definition
      * - AST compliance: Follows AutoBeDatabase.IModel interface structure
      * - Relationship integrity: All foreign keys reference valid models
      * - Index optimization: Strategic indexes without redundancy
      * - Documentation: Comprehensive English descriptions
      *
-     * If null, the original model remains unchanged from the original schema.
-     * If not null, the modification must resolve issues identified in the review.
+     * If null, the original models remain unchanged from the original
+     * schema. If not null, the modifications must resolve issues identified
+     * in the review.
      */
-    content: AutoBeDatabase.IModel | null;
+    content: AutoBeDatabase.IModel[] | null;
   }
 }

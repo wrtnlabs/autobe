@@ -78,17 +78,22 @@ export namespace IAutoBeDatabaseSchemaApplication {
     /**
      * Strategic database design analysis and planning.
      *
-     * Contains the database architecture strategy for the single target table,
+     * Contains the database architecture strategy for the target table and
+     * any child tables needed for First Normal Form (1NF) compliance,
      * including structure, relationships, normalization approach, indexing
      * strategies, and business requirement mapping. This planning phase defines
-     * the blueprint for the table model implementation.
+     * the blueprint for the model implementations.
      *
      * Key planning aspects:
      *
      * - Assignment validation: Extract targetTable as the assignment
-     * - Table responsibility: Create exactly ONE table matching targetTable
+     * - Target table: The primary table matching targetTable is mandatory
+     * - Child tables: Additional tables to decompose repeating groups or
+     *   non-atomic values into separate normalized tables (1NF compliance)
+     * - Child table naming: Must use singular form of targetTable as prefix
+     *   (e.g., for "shopping_orders": "shopping_order_items")
      * - Other tables: Identify existing tables from otherComponents for foreign
-     *   key relationships
+     *   key relationships — never recreate them
      * - Normalization: Strict adherence to 1NF, 2NF, 3NF principles
      * - Snapshot architecture: Design for historical data preservation
      * - Junction tables: Plan M:N relationships with proper naming
@@ -98,16 +103,25 @@ export namespace IAutoBeDatabaseSchemaApplication {
     plan: string;
 
     /**
-     * Production-ready database schema model for a single table.
+     * Production-ready database schema models for the target table and its
+     * child tables.
      *
-     * Complete AST representation of ONE database table for the target
-     * component. The model implements the planned structure, relationships,
-     * indexes, and constraints following best practices.
+     * Complete AST representations of database tables for the target
+     * component. The array must always contain the target table model
+     * (with the exact name from targetTable parameter), and may also contain
+     * child table models that enforce First Normal Form (1NF) — decomposing
+     * repeating groups or non-atomic column values into separate tables.
      *
-     * Implementation requirements:
+     * Child table naming convention:
      *
-     * - Exactly one model for the specific targetTable
-     * - Table name: EXACT name from targetTable parameter - no modifications
+     * - Must start with the singular form of targetTable as a prefix
+     *   (e.g., for target "shopping_orders": "shopping_order_items",
+     *   "shopping_order_payments")
+     * - Must not collide with table names already assigned to other
+     *   components or other tables in the same component
+     *
+     * Implementation requirements for each model:
+     *
      * - Primary keys: Always UUID type with field name "id"
      * - Foreign keys: Proper IRelation configurations for all relationships
      * - Business fields: Only raw data fields - no calculated or derived values
@@ -130,6 +144,6 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * - Proper historical data preservation where needed
      * - Optimized index strategy for expected query patterns
      */
-    model: AutoBeDatabase.IModel;
+    models: AutoBeDatabase.IModel[];
   }
 }

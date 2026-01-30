@@ -4,20 +4,23 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Database agent generates a single database table model
- * during the database design process.
+ * Event fired when the Database agent generates database models for a target
+ * table (and its child tables for 1NF compliance) during the database design
+ * process.
  *
  * This event occurs when the Database agent has successfully designed and
- * generated ONE specific database table within a business domain. The agent
- * follows a systematic 2-step process: strategic planning (plan) and model
- * generation (model), producing a production-ready database table model that
- * maintains data integrity and business logic accuracy. The generated model
- * will be reviewed by a separate review agent.
+ * generated the target table and any child tables needed to enforce the First
+ * Normal Form (1NF) — decomposing repeating groups or non-atomic column values
+ * into separate normalized tables. The agent follows a systematic 2-step
+ * process: strategic planning (plan) and model generation (models), producing
+ * production-ready database table models that maintain data integrity and
+ * business logic accuracy. The generated models will be reviewed by a separate
+ * review agent.
  *
- * Each event represents the completion of a single table within a namespace.
- * Multiple events are emitted for each namespace, one per table, enabling
- * fine-grained progress tracking and parallel generation of tables within the
- * same business domain.
+ * Each event represents the completion of one target table (and its children)
+ * within a namespace. Multiple events are emitted for each namespace, one per
+ * target table, enabling fine-grained progress tracking and parallel generation
+ * of tables within the same business domain.
  *
  * @author Samchon
  */
@@ -27,18 +30,21 @@ export interface AutoBeDatabaseSchemaEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Strategic database design analysis and planning phase for the target table.
+   * Strategic database design analysis and planning phase for the target table
+   * and its child tables.
    *
-   * Contains the AI agent's comprehensive analysis of the specific table being
-   * designed and its database design strategy. The agent evaluates the table's
-   * structure, relationships with other tables, normalization requirements, and
-   * performance considerations to create a well-architected table model that
-   * aligns with business objectives and technical best practices.
+   * Contains the AI agent's comprehensive analysis of the target table being
+   * designed and its database design strategy, including identification of child
+   * tables needed for First Normal Form (1NF) compliance. The agent evaluates
+   * the table's structure, relationships with other tables, normalization
+   * requirements, and performance considerations to create well-architected
+   * table models that align with business objectives and technical best
+   * practices.
    *
-   * This planning phase establishes the foundation for the single table design,
-   * ensuring proper field organization, relationship mapping, and adherence to
-   * database normalization principles while considering future scalability and
-   * maintainability requirements.
+   * This planning phase establishes the foundation for the target table and any
+   * child table designs, ensuring proper field organization, relationship
+   * mapping, and adherence to database normalization principles while
+   * considering future scalability and maintainability requirements.
    */
   plan: string;
 
@@ -59,19 +65,24 @@ export interface AutoBeDatabaseSchemaEvent
   namespace: string;
 
   /**
-   * Single Prisma schema model generated based on the strategic plan.
+   * Prisma schema models generated based on the strategic plan.
    *
-   * Contains the production-ready AST representation of a single Prisma schema
-   * model generated following the strategic plan. This model implements the
-   * planned table structure, relationships, and constraints using the
-   * AutoBeDatabase.IModel interface. The model is designed to be
-   * production-ready from the start.
+   * Contains the production-ready AST representations of Prisma schema models
+   * generated following the strategic plan. The array always includes the
+   * target table model (mandatory), and may include child table models that
+   * enforce First Normal Form (1NF) — decomposing repeating groups or
+   * non-atomic column values into separate normalized tables.
    *
-   * The model includes the exact table name from requirements, proper UUID
-   * primary field, foreign key relationships, business fields with appropriate
-   * types, strategic indexes, and comprehensive English-only descriptions.
+   * Child table names start with the singular form of the target table name
+   * as a prefix (e.g., for target "shopping_orders": "shopping_order_items",
+   * "shopping_order_payments"). Child table names never collide with tables
+   * already assigned to other components.
+   *
+   * Each model includes the proper table name, UUID primary field, foreign key
+   * relationships, business fields with appropriate types, strategic indexes,
+   * and comprehensive English-only descriptions.
    */
-  model: AutoBeDatabase.IModel;
+  models: AutoBeDatabase.IModel[];
 
   /**
    * Iteration number of the requirements analysis this schema was generated
