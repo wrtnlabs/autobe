@@ -40,14 +40,8 @@ pnpm run archive:go --vendor z-ai/glm-4.7 --project shopping > archive.z-ai-glm-
 ######################################################
 # KIMI
 ######################################################
-# moonshotai/kimi-k2-0905 (0.39)
-pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project todo > archive.moonshotai-kimi-k2-0905.todo.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project bbs > archive.moonshotai-kimi-k2-0905.bbs.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project reddit > archive.moonshotai-kimi-k2-0905.reddit.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-0905 --project shopping > archive.moonshotai-kimi-k2-0905.shopping.log
-
-# moonshotai/kimi-k2-thinking (0.40)
-pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project todo > archive.moonshotai-kimi-k2-thinking.todo.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project bbs > archive.moonshotai-kimi-k2-thinking.bbs.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project reddit > archive.moonshotai-kimi-k2-thinking.reddit.log
-pnpm run archive:go --vendor moonshotai/kimi-k2-thinking --project shopping > archive.moonshotai-kimi-k2-thinking.shopping.log
+# moonshotai/kimi-k2.5 (0.5)
+pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project todo > archive.moonshotai-kimi-k2.5.todo.log
+pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project bbs > archive.moonshotai-kimi-k2.5.bbs.log
+pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project reddit > archive.moonshotai-kimi-k2.5.reddit.log
+pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project shopping > archive.moonshotai-kimi-k2.5.shopping.log

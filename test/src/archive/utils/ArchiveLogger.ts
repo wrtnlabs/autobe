@@ -249,6 +249,17 @@ export namespace ArchiveLogger {
         `  - original: ${JSON.stringify(event.original)}`,
         `  - refined: ${!!event.refined}`,
       );
+    else if (event.type === "interfaceSchemaRefine")
+      content.push(
+        `  - typeName: ${event.typeName}`,
+        `  - databaseSchema: ${event.databaseSchema}`,
+        `  - specification: ${JSON.stringify(event.specification)}`,
+        `  - refines:`,
+        ...event.refines.map(
+          (r) =>
+            `    - ${r.key}: ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+        ),
+      );
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,

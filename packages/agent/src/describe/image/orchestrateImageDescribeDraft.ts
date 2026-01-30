@@ -98,6 +98,7 @@ async function process(
         describe: false,
       },
       retry: ctx.retry,
+      stream: false,
     },
     histories: transformImageDescribeDraftHistories(),
     controllers: [

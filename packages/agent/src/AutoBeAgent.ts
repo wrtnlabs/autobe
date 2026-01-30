@@ -173,6 +173,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
           execute: () => transformFacadeStateMessage(this.state_),
         },
         retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+        stream: false,
       },
       controllers: [
         createAutoBeFacadeController({
