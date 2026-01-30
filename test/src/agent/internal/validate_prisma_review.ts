@@ -39,7 +39,8 @@ export const validate_prisma_schema_review = async (props: {
           namespace: c.namespace,
           models: writeEvents
             .filter((we) => we.namespace === c.namespace)
-            .map((we) => we.model),
+            .map((we) => we.models)
+            .flat(),
         })),
       } satisfies AutoBeDatabase.IApplication,
       components,

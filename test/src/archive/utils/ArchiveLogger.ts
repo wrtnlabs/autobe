@@ -141,7 +141,9 @@ export namespace ArchiveLogger {
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
         ...event.revises
           .filter((r) => r.type === "update")
-          .map((r) => `      - ${r.original_namespace} => ${r.group.namespace}`),
+          .map(
+            (r) => `      - ${r.original_namespace} => ${r.group.namespace}`,
+          ),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
         ...event.revises
           .filter((r) => r.type === "erase")
@@ -200,7 +202,9 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseSchema")
       content.push(
-        `  - model: ${event.model.name} (stance: ${event.model.stance})`,
+        // `  - models: ${event.models.name} (stance: ${event.model.stance})`,
+        `  - models:`,
+        ...event.models.map((m) => `    - ${m.name} (stance: ${m.stance})`),
       );
     else if (event.type === "databaseValidate")
       content.push(
