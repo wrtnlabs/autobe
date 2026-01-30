@@ -145,7 +145,7 @@ Use when a group has issues that need correction:
 {
   type: "update",
   reason: "Namespace uses incorrect casing and kind should be domain not authorization",
-  original_namespace: "products_catalog",
+  originalNamespace: "products_catalog",
   group: {
     thinking: "Product catalog and product management entities",
     review: "Products are business domain, not authentication",
