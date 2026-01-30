@@ -7,6 +7,7 @@ import {
   AutoBeDatabaseHistory,
   AutoBeDatabaseSchemaEvent,
   AutoBeDatabaseSchemaReviewEvent,
+  AutoBeProgressEventBase,
   IAutoBeCompiler,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
@@ -118,15 +119,23 @@ export const orchestratePrisma = async (
   };
 
   // REVIEW
+  const reviewProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
   const reviewedModelNames: Set<string> = new Set();
-  for (;;) {
+  while (
+    application.files
+      .flatMap((f) => f.models)
+      .every((m) => reviewedModelNames.has(m.name)) === false
+  ) {
     const reviewEvents: AutoBeDatabaseSchemaReviewEvent[] =
-      await orchestratePrismaSchemaReview(
-        ctx,
+      await orchestratePrismaSchemaReview(ctx, {
         application,
-        reviewedAllComponents,
-        reviewedModelNames,
-      );
+        components: reviewedAllComponents,
+        reviewed: reviewedModelNames,
+        progress: reviewProgress,
+      });
     for (const event of reviewEvents) {
       reviewedModelNames.add(event.modelName);
       if (event.content === null) continue;
@@ -143,11 +152,6 @@ export const orchestratePrisma = async (
         else file.models.push(x);
       }
     }
-    // repeat if new unreviewed models were added during this round
-    const unreviewedExists: boolean = application.files.some((f) =>
-      f.models.some((m) => !reviewedModelNames.has(m.name)),
-    );
-    if (!unreviewedExists) break;
   }
 
   // VALIDATE

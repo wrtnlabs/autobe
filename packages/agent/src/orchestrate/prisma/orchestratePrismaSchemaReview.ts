@@ -20,30 +20,30 @@ import { IAutoBeDatabaseSchemaReviewApplication } from "./structures/IAutoBeData
 
 export async function orchestratePrismaSchemaReview(
   ctx: AutoBeContext,
-  application: AutoBeDatabase.IApplication,
-  componentList: AutoBeDatabaseComponent[],
-  reviewedModelNames: Set<string>,
+  props: {
+    application: AutoBeDatabase.IApplication;
+    components: AutoBeDatabaseComponent[];
+    reviewed: Set<string>;
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeDatabaseSchemaReviewEvent[]> {
   // Flatten into individual model tasks, skipping already-reviewed models
   const tableTasks: Array<{
     component: AutoBeDatabaseComponent;
     table: string;
     model: AutoBeDatabase.IModel;
-  }> = componentList.flatMap((component) => {
-    const file: AutoBeDatabase.IFile | undefined = application.files.find(
+  }> = props.components.flatMap((component) => {
+    const file: AutoBeDatabase.IFile | undefined = props.application.files.find(
       (f) => f.namespace === component.namespace,
     );
     if (file === undefined) return [];
     return file.models
-      .filter((m) => !reviewedModelNames.has(m.name))
+      .filter((m) => !props.reviewed.has(m.name))
       .map((model) => ({ component, table: model.name, model }));
   });
   if (tableTasks.length === 0) return [];
 
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: tableTasks.length,
-  };
+  props.progress.total += tableTasks.length;
 
   return (
     await executeCachedBatch(
@@ -51,17 +51,17 @@ export async function orchestratePrismaSchemaReview(
       tableTasks.map((task) => async (promptCacheKey) => {
         try {
           return await step(ctx, {
-            application,
+            application: props.application,
             component: task.component,
             model: task.model,
-            otherModels: application.files
+            otherModels: props.application.files
               .flatMap((f) => f.models)
               .filter((m) => m.name !== task.model.name),
-            progress,
+            progress: props.progress,
             promptCacheKey,
           });
         } catch {
-          ++progress.completed;
+          ++props.progress.completed;
           return null;
         }
       }),

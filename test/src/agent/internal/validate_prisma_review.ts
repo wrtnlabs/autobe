@@ -31,9 +31,8 @@ export const validate_prisma_schema_review = async (props: {
     })) ?? (await validate_prisma_schema(props));
 
   const events: AutoBeDatabaseSchemaReviewEvent[] =
-    await orchestratePrismaSchemaReview(
-      props.agent.getContext(),
-      {
+    await orchestratePrismaSchemaReview(props.agent.getContext(), {
+      application: {
         files: components.map((c) => ({
           filename: c.filename,
           namespace: c.namespace,
@@ -44,7 +43,12 @@ export const validate_prisma_schema_review = async (props: {
         })),
       } satisfies AutoBeDatabase.IApplication,
       components,
-    );
+      reviewed: new Set(),
+      progress: {
+        completed: 0,
+        total: 0,
+      },
+    });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
