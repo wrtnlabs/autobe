@@ -39,11 +39,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
-**For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles):
+**For preliminary requests** (getPreviousAnalysisFiles):
 ```typescript
 {
   thinking: "Missing related workflow context for comprehensive documentation. Don't have them.",
-  request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md", "Related_System.md"] }
+  request: { type: "getPreviousAnalysisFiles", fileNames: ["Feature_A.md", "Related_System.md"] }
 }
 ```
 
