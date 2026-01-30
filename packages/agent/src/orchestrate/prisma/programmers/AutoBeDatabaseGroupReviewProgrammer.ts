@@ -115,6 +115,23 @@ export namespace AutoBeDatabaseGroupReviewProgrammer {
             `,
           });
         }
+        // Cannot update to a namespace that already exists on another group
+        if (
+          groupMap.has(revise.group.namespace) === true &&
+          revise.group.namespace !== revise.originalNamespace
+        ) {
+          props.errors.push({
+            path: `${props.path}[${i}].group.namespace`,
+            expected: "unique namespace",
+            value: revise.group.namespace,
+            description: StringUtil.trim`
+              Cannot update group "${revise.originalNamespace}" to namespace "${revise.group.namespace}" because another group already uses that namespace.
+              Each group namespace must be unique.
+              
+              Fix: Choose a namespace that is not already used by another group.
+            `,
+          });
+        }
       } else if (revise.type === "erase") {
         // Cannot erase authorization group
         if (authorizationNamespaces.has(revise.namespace) === true) {
