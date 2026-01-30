@@ -22,8 +22,9 @@ export async function orchestratePrismaSchemaReview(
   ctx: AutoBeContext,
   application: AutoBeDatabase.IApplication,
   componentList: AutoBeDatabaseComponent[],
+  reviewedModelNames: Set<string>,
 ): Promise<AutoBeDatabaseSchemaReviewEvent[]> {
-  // Flatten component list into individual table tasks
+  // Flatten into individual model tasks, skipping already-reviewed models
   const tableTasks: Array<{
     component: AutoBeDatabaseComponent;
     table: string;
@@ -33,14 +34,11 @@ export async function orchestratePrismaSchemaReview(
       (f) => f.namespace === component.namespace,
     );
     if (file === undefined) return [];
-    return component.tables
-      .map((table) => {
-        const model = file.models.find((m) => m.name === table.name);
-        if (model === undefined) return null;
-        return { component, table: table.name, model };
-      })
-      .filter((task): task is NonNullable<typeof task> => task !== null);
+    return file.models
+      .filter((m) => !reviewedModelNames.has(m.name))
+      .map((model) => ({ component, table: model.name, model }));
   });
+  if (tableTasks.length === 0) return [];
 
   const progress: AutoBeProgressEventBase = {
     completed: 0,

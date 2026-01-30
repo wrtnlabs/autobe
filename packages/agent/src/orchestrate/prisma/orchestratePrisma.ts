@@ -118,26 +118,36 @@ export const orchestratePrisma = async (
   };
 
   // REVIEW
-  const reviewEvents: AutoBeDatabaseSchemaReviewEvent[] =
-    await orchestratePrismaSchemaReview(
-      ctx,
-      application,
-      reviewedAllComponents,
-    );
-  for (const event of reviewEvents) {
-    if (event.content === null) continue;
+  const reviewedModelNames: Set<string> = new Set();
+  for (;;) {
+    const reviewEvents: AutoBeDatabaseSchemaReviewEvent[] =
+      await orchestratePrismaSchemaReview(
+        ctx,
+        application,
+        reviewedAllComponents,
+        reviewedModelNames,
+      );
+    for (const event of reviewEvents) {
+      reviewedModelNames.add(event.modelName);
+      if (event.content === null) continue;
 
-    const models: AutoBeDatabase.IModel[] = event.content;
-    const file: AutoBeDatabase.IFile | undefined = application.files.find(
-      (f) => f.namespace === event.namespace,
-    );
-    if (file === undefined) continue;
+      const models: AutoBeDatabase.IModel[] = event.content;
+      const file: AutoBeDatabase.IFile | undefined = application.files.find(
+        (f) => f.namespace === event.namespace,
+      );
+      if (file === undefined) continue;
 
-    for (const x of models) {
-      const index: number = file.models.findIndex((y) => x.name === y.name);
-      if (index !== -1) file.models[index] = x;
-      else file.models.push(x);
+      for (const x of models) {
+        const index: number = file.models.findIndex((y) => x.name === y.name);
+        if (index !== -1) file.models[index] = x;
+        else file.models.push(x);
+      }
     }
+    // repeat if new unreviewed models were added during this round
+    const unreviewedExists: boolean = application.files.some((f) =>
+      f.models.some((m) => !reviewedModelNames.has(m.name)),
+    );
+    if (!unreviewedExists) break;
   }
 
   // VALIDATE
