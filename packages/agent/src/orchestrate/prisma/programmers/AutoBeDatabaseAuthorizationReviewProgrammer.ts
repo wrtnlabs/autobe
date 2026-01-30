@@ -21,7 +21,10 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
     component: AutoBeDatabaseComponent;
   }): void => {
     // common logic
-    AutoBeDatabaseComponentReviewProgrammer.validate(props);
+    AutoBeDatabaseComponentReviewProgrammer.validate({
+      ...props,
+      otherTables: [],
+    });
 
     // naming convention
     const prefix: string = props.prefix ? `${props.prefix}_` : "";
