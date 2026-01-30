@@ -2,7 +2,6 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabaseGroup,
   AutoBeDatabaseGroupReviewEvent,
-  AutoBeDatabaseGroupRevise,
   AutoBeEventSource,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -13,7 +12,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaGroupReviewHistory } from "./histories/transformPrismaGroupReviewHistory";
-import { AutoBeDatabaseGroupProgrammer } from "./programmers/AutoBeDatabaseGroupProgrammer";
+import { AutoBeDatabaseGroupReviewProgrammer } from "./programmers/AutoBeDatabaseGroupReviewProgrammer";
 import { IAutoBeDatabaseGroupReviewApplication } from "./structures/IAutoBeDatabaseGroupReviewApplication";
 
 export async function orchestratePrismaGroupReview(
@@ -36,6 +35,9 @@ export async function orchestratePrismaGroupReview(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    local: {
+      analysisFiles: ctx.state().analyze?.files?.slice(0, 1) ?? [],
+    },
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -47,7 +49,7 @@ export async function orchestratePrismaGroupReview(
       controller: createController({
         pointer,
         preliminary,
-        currentGroups: props.groups,
+        groups: props.groups,
       }),
       enforceFunctionCall: true,
       ...transformPrismaGroupReviewHistory({
@@ -59,43 +61,17 @@ export async function orchestratePrismaGroupReview(
     if (pointer.value === null) return out(result)(null);
 
     // Apply revises to the group list
-    const groupMap = new Map<string, AutoBeDatabaseGroup>(
-      props.groups.map((g) => [g.namespace, g]),
-    );
-
-    const appliedRevises: AutoBeDatabaseGroupRevise[] = [];
-    for (const revise of pointer.value.revises) {
-      if (revise.type === "create") {
-        if (!groupMap.has(revise.group.namespace)) {
-          groupMap.set(revise.group.namespace, revise.group);
-          appliedRevises.push(revise);
-        }
-      } else if (revise.type === "update") {
-        if (groupMap.has(revise.original_namespace)) {
-          groupMap.delete(revise.original_namespace);
-          groupMap.set(revise.group.namespace, revise.group);
-          appliedRevises.push(revise);
-        }
-      } else if (revise.type === "erase") {
-        if (groupMap.has(revise.namespace)) {
-          groupMap.delete(revise.namespace);
-          appliedRevises.push(revise);
-        }
-      } else {
-        revise satisfies never;
-      }
-    }
-
-    const reviewedGroups: AutoBeDatabaseGroup[] = Array.from(
-      groupMap.values(),
-    );
+    const reviewedGroups = AutoBeDatabaseGroupReviewProgrammer.execute({
+      groups: props.groups,
+      revises: pointer.value.revises,
+    });
 
     const event: AutoBeDatabaseGroupReviewEvent = {
       type: SOURCE,
       id: v7(),
       created_at: start.toISOString(),
       review: pointer.value.review,
-      revises: appliedRevises,
+      revises: pointer.value.revises,
       groups: reviewedGroups,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -112,7 +88,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  currentGroups: AutoBeDatabaseGroup[];
+  groups: AutoBeDatabaseGroup[];
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
@@ -128,26 +104,13 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // Complete request validation - simulate applying revises and check kind rules
-    const groupMap = new Map<string, AutoBeDatabaseGroup>(
-      props.currentGroups.map((g) => [g.namespace, g]),
-    );
-    for (const revise of result.data.request.revises) {
-      if (revise.type === "create") {
-        groupMap.set(revise.group.namespace, revise.group);
-      } else if (revise.type === "update") {
-        groupMap.delete(revise.original_namespace);
-        groupMap.set(revise.group.namespace, revise.group);
-      } else if (revise.type === "erase") {
-        groupMap.delete(revise.namespace);
-      }
-    }
-
+    // Complete request validation - validate revises and check kind rules after applying
     const errors: IValidation.IError[] = [];
-    AutoBeDatabaseGroupProgrammer.validate({
+    AutoBeDatabaseGroupReviewProgrammer.validate({
       errors,
-      path: "$input.request.revises (after applying)",
-      groups: Array.from(groupMap.values()),
+      path: "$input.request.revises",
+      groups: props.groups,
+      revises: result.data.request.revises,
     });
     if (errors.length > 0)
       return {
