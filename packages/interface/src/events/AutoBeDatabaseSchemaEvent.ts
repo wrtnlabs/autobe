@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { AutoBeDatabase } from "../database";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -34,12 +36,12 @@ export interface AutoBeDatabaseSchemaEvent
    * and its child tables.
    *
    * Contains the AI agent's comprehensive analysis of the target table being
-   * designed and its database design strategy, including identification of child
-   * tables needed for First Normal Form (1NF) compliance. The agent evaluates
-   * the table's structure, relationships with other tables, normalization
-   * requirements, and performance considerations to create well-architected
-   * table models that align with business objectives and technical best
-   * practices.
+   * designed and its database design strategy, including identification of
+   * child tables needed for First Normal Form (1NF) compliance. The agent
+   * evaluates the table's structure, relationships with other tables,
+   * normalization requirements, and performance considerations to create
+   * well-architected table models that align with business objectives and
+   * technical best practices.
    *
    * This planning phase establishes the foundation for the target table and any
    * child table designs, ensuring proper field organization, relationship
@@ -73,8 +75,8 @@ export interface AutoBeDatabaseSchemaEvent
    * enforce First Normal Form (1NF) — decomposing repeating groups or
    * non-atomic column values into separate normalized tables.
    *
-   * Child table names start with the singular form of the target table name
-   * as a prefix (e.g., for target "shopping_orders": "shopping_order_items",
+   * Child table names start with the singular form of the target table name as
+   * a prefix (e.g., for target "shopping_orders": "shopping_order_items",
    * "shopping_order_payments"). Child table names never collide with tables
    * already assigned to other components.
    *
@@ -82,7 +84,7 @@ export interface AutoBeDatabaseSchemaEvent
    * relationships, business fields with appropriate types, strategic indexes,
    * and comprehensive English-only descriptions.
    */
-  models: AutoBeDatabase.IModel[];
+  models: AutoBeDatabase.IModel[] & tags.MinItems<1>;
 
   /**
    * Iteration number of the requirements analysis this schema was generated

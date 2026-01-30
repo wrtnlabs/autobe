@@ -179,6 +179,11 @@ function createController(props: {
         request: result.data.request,
       });
     else if (result.data.request.content === null) return result;
+    else if (
+      result.data.request.content !== null &&
+      result.data.request.content.length === 0
+    )
+      result.data.request.content = null;
 
     const errors: IValidation.IError[] = [];
     if (result.data.request.content !== null)

@@ -1,3 +1,5 @@
+import { tags } from "typia";
+
 import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -10,8 +12,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * This event occurs when the Database agent has completed a comprehensive
  * review of the target table model and its child tables, validating them
- * against best practices, business requirements, and technical constraints.
- * The review process ensures that the tables maintain data integrity, follow
+ * against best practices, business requirements, and technical constraints. The
+ * review process ensures that the tables maintain data integrity, follow
  * normalization principles (including 1NF compliance through proper child table
  * decomposition), and optimize for performance while aligning with business
  * logic.
@@ -132,10 +134,11 @@ export interface AutoBeDatabaseSchemaReviewEvent
   /**
    * Modified models based on review feedback, or null if no changes needed.
    *
-   * Contains the corrected set of models (target table and its child tables)
-   * if the review identified issues requiring modification. If all models pass
+   * Contains the corrected set of models (target table and its child tables) if
+   * the review identified issues requiring modification. If all models pass
    * validation checks, this field is null. When present, this array replaces
-   * the entire set of models for the reviewed target table in the final schema.
+   * the entire set of models for the reviewed target table in the final
+   * schema.
    *
    * The array must always include the target table model (matching
    * {@link modelName}), and may include child tables that enforce First Normal
@@ -146,8 +149,8 @@ export interface AutoBeDatabaseSchemaReviewEvent
    *
    * - **Target Table**: Must include the target table model (same name as
    *   {@link modelName})
-   * - **Child Table Naming**: Child tables must use singular form of target
-   *   table name as prefix
+   * - **Child Table Naming**: Child tables must use singular form of target table
+   *   name as prefix
    * - **No Collision**: Child table names must not collide with tables already
    *   assigned to other components
    * - **Complete Models**: Each model must be a complete definition, not partial
@@ -162,7 +165,7 @@ export interface AutoBeDatabaseSchemaReviewEvent
    * - If not null, these models completely replace the originals
    * - All modifications must resolve issues identified in the review
    */
-  content: AutoBeDatabase.IModel[] | null;
+  content: (AutoBeDatabase.IModel[] & tags.MinItems<1>) | null;
 
   /**
    * Iteration number of the requirements analysis this review was performed

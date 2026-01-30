@@ -1,4 +1,5 @@
 import { AutoBeDatabase } from "@autobe/interface";
+import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
@@ -78,11 +79,11 @@ export namespace IAutoBeDatabaseSchemaApplication {
     /**
      * Strategic database design analysis and planning.
      *
-     * Contains the database architecture strategy for the target table and
-     * any child tables needed for First Normal Form (1NF) compliance,
-     * including structure, relationships, normalization approach, indexing
-     * strategies, and business requirement mapping. This planning phase defines
-     * the blueprint for the model implementations.
+     * Contains the database architecture strategy for the target table and any
+     * child tables needed for First Normal Form (1NF) compliance, including
+     * structure, relationships, normalization approach, indexing strategies,
+     * and business requirement mapping. This planning phase defines the
+     * blueprint for the model implementations.
      *
      * Key planning aspects:
      *
@@ -106,19 +107,19 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * Production-ready database schema models for the target table and its
      * child tables.
      *
-     * Complete AST representations of database tables for the target
-     * component. The array must always contain the target table model
-     * (with the exact name from targetTable parameter), and may also contain
-     * child table models that enforce First Normal Form (1NF) — decomposing
-     * repeating groups or non-atomic column values into separate tables.
+     * Complete AST representations of database tables for the target component.
+     * The array must always contain the target table model (with the exact name
+     * from targetTable parameter), and may also contain child table models that
+     * enforce First Normal Form (1NF) — decomposing repeating groups or
+     * non-atomic column values into separate tables.
      *
      * Child table naming convention:
      *
-     * - Must start with the singular form of targetTable as a prefix
-     *   (e.g., for target "shopping_orders": "shopping_order_items",
+     * - Must start with the singular form of targetTable as a prefix (e.g., for
+     *   target "shopping_orders": "shopping_order_items",
      *   "shopping_order_payments")
-     * - Must not collide with table names already assigned to other
-     *   components or other tables in the same component
+     * - Must not collide with table names already assigned to other components or
+     *   other tables in the same component
      *
      * Implementation requirements for each model:
      *
@@ -144,6 +145,6 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * - Proper historical data preservation where needed
      * - Optimized index strategy for expected query patterns
      */
-    models: AutoBeDatabase.IModel[];
+    models: AutoBeDatabase.IModel[] & tags.MinItems<1>;
   }
 }
