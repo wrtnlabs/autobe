@@ -27,9 +27,6 @@ export async function orchestratePrismaGroup(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
-    local: {
-      analysisFiles: ctx.state().analyze?.files?.slice(0, 1) ?? [],
-    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseGroupApplication.IComplete | null> =

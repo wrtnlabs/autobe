@@ -109,6 +109,19 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
+    if (
+      (
+        this as any as AutoBePreliminaryController<AutoBePreliminaryKind>
+      ).kinds.includes("analysisFiles")
+    ) {
+      const controller: AutoBePreliminaryController<"analysisFiles"> =
+        this as any;
+      if (controller.local.analysisFiles.length === 0)
+        controller.local.analysisFiles.push(
+          ...controller.all.analysisFiles.slice(0, 1),
+        );
+    }
+
     complementPreliminaryCollection({
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,

@@ -172,12 +172,21 @@ const correct = async <
                 ),
               },
             ];
-          return await process(ctx, {
-            programmer: props.programmer,
-            progress: props.progress,
-            function: localFunction,
-            failures: localFailures,
-          });
+          try {
+            return await process(ctx, {
+              programmer: props.programmer,
+              progress: props.progress,
+              function: localFunction,
+              failures: localFailures,
+            });
+          } catch (error) {
+            console.log("realizeCorrectOverall", localFunction.location, error);
+            ++props.progress.completed;
+            return {
+              type: "exception",
+              function: localFunction,
+            };
+          }
         },
       ),
     );

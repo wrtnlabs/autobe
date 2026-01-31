@@ -90,12 +90,14 @@ async function process(
     if (pointer.value === null) return out(result)(null);
 
     // Remove duplicated tables using shared utility
-    const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([
-      {
-        ...props.group,
-        tables: pointer.value.tables,
-      },
-    ]);
+    const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
+      [
+        {
+          ...props.group,
+          tables: pointer.value.tables,
+        },
+      ],
+    );
     ctx.dispatch({
       type: SOURCE,
       id: v7(),

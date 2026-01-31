@@ -92,7 +92,12 @@ async function predicate<
 ): Promise<AutoBeTestValidateEvent<Procedure["function"]>> {
   if (props.validate.result.type === "failure") {
     ctx.dispatch(props.validate);
-    return await correct(ctx, props, life - 1);
+    try {
+      return await correct(ctx, props, life - 1);
+    } catch (error) {
+      console.log("testCorrectOverall", error);
+      return await correct(ctx, props, life - 2);
+    }
   }
   return props.validate;
 }

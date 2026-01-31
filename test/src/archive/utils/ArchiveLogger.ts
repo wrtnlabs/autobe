@@ -7,7 +7,11 @@ import {
 import typia from "typia";
 
 export namespace ArchiveLogger {
-  export const event = (start: Date, event: AutoBeEvent): void => {
+  export const event = (
+    start: Date,
+    event: AutoBeEvent,
+    total: IAutoBeTokenUsageJson,
+  ): void => {
     // DEFAULT TITLE
     const time = (prev: Date) =>
       ((new Date().getTime() - prev.getTime()) / 60_000).toLocaleString() +
@@ -22,10 +26,9 @@ export namespace ArchiveLogger {
     if (typia.is<TokenUsageEvent>(event))
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
-        `  - log10 of input token usage: ${Math.log10(
-          event.tokenUsage.input.total,
-        )}`,
+        `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
       );
+
     //----
     // FUNCTION CALLING
     //----

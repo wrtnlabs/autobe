@@ -21,7 +21,9 @@ export const prepare_analyze_agent = async (props: {
     compiler: (listener) => new AutoBeCompiler(listener),
   });
   for (const type of typia.misc.literals<AutoBeEventOfSerializable.Type>())
-    agent.on(type, (event) => ArchiveLogger.event(start, event));
+    agent.on(type, (event) =>
+      ArchiveLogger.event(start, event, agent.getTokenUsage()),
+    );
 
   agent.getHistories().push(
     await describe(agent.getContext(), {
