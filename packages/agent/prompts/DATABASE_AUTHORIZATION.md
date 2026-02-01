@@ -92,6 +92,31 @@ thinking: "Created users table with id, email, password_hash, user_sessions tabl
 
 ---
 
+## CRITICAL: Actor vs Session Field Separation
+
+Before designing tables, understand this fundamental principle:
+
+**Actor Table** = WHO the entity is (identity)
+**Session Table** = HOW they connected (connection context)
+
+| Field Type | Belongs In | NOT In | Reason |
+|-----------|-----------|--------|--------|
+| `id` (PK) | Actor | - | Primary identity |
+| `email`, `password_hash` | Actor | Session | Credentials are identity |
+| `name`, `profile_*` | Actor | Session | Profile is identity |
+| `created_at` (registration) | Actor | - | When actor was created |
+| `device_id` | Session | Actor | Device changes per session |
+| `token`, `access_token` | Session | Actor | Token changes per session |
+| `ip`, `ip_address` | Session | Actor | IP changes per session |
+| `href`, `referrer` | Session | Actor | Connection context |
+| `expired_at` | Session | Actor | Sessions expire, actors don't |
+
+**Why This Matters:**
+- One actor can have MANY sessions (different devices, times, locations)
+- If `device_id` is in Actor table: which device? The actor might use multiple devices
+- If `token` is in Actor table: which token? Each session needs its own token
+- Storing session data in Actor table violates 3NF and breaks multi-session support
+
 ## Actor Kind Patterns
 
 ### Guest (`kind: "guest"`)
@@ -99,23 +124,39 @@ thinking: "Created users table with id, email, password_hash, user_sessions tabl
 Minimal authentication - temporary/anonymous access without credentials.
 
 **Required Tables**:
-- Main table: Basic identification fields, no password
-- Session table: Temporary tokens only
+- Main table: Identity only (no credentials, no session data)
+- Session table: All connection context (device, token, IP, timestamps)
 
-**Typical Schema Pattern**:
+**CORRECT Schema Pattern**:
 ```
 {prefix}_{actor}s:
   - id (UUID primary key)
-  - device_id or fingerprint (identification)
-  - created_at, updated_at
-  - deleted_at (soft delete)
+  - created_at (when guest record was created)
+  - deleted_at (soft delete, optional)
+
+  NOTE: NO device_id, NO token, NO ip here!
+  These belong in session table.
 
 {prefix}_{actor}_sessions:
   - id (UUID primary key)
-  - {actor}_id (FK)
-  - token or access_token
-  - expires_at
-  - created_at
+  - {actor}_id (FK to actor)
+  - device_id (device identification for THIS session)
+  - token (access token for THIS session)
+  - ip (IP address for THIS session)
+  - href (connection URL)
+  - referrer (referrer URL)
+  - created_at (session start)
+  - expired_at (session expiration)
+```
+
+**WRONG Pattern (DO NOT DO THIS)**:
+```
+{prefix}_{actor}s:
+  - id
+  - device_id     ← WRONG: belongs in session
+  - access_token  ← WRONG: belongs in session
+  - ip            ← WRONG: belongs in session
+  - expired_at    ← WRONG: actors don't expire
 ```
 
 ### Member (`kind: "member"`)
@@ -123,8 +164,8 @@ Minimal authentication - temporary/anonymous access without credentials.
 Full authentication - registered users with credentials.
 
 **Required Tables**:
-- Main table: Email, password_hash, profile fields
-- Session table: JWT tokens with refresh capability
+- Main table: Identity + credentials (email, password_hash, profile)
+- Session table: All connection context (tokens, IP, timestamps)
 
 **Optional Tables** (based on requirements):
 - Password reset tokens
@@ -132,23 +173,29 @@ Full authentication - registered users with credentials.
 - OAuth connections
 - Two-factor authentication tokens
 
-**Typical Schema Pattern**:
+**CORRECT Schema Pattern**:
 ```
 {prefix}_{actor}s:
   - id (UUID primary key)
   - email (unique, for authentication)
   - password_hash (bcrypt/argon2)
-  - name, profile fields
-  - created_at, updated_at
+  - name, profile fields (identity data)
+  - created_at (registration time)
+  - updated_at (profile update time)
   - deleted_at (soft delete)
+
+  NOTE: NO tokens, NO ip, NO device_id here!
 
 {prefix}_{actor}_sessions:
   - id (UUID primary key)
-  - {actor}_id (FK)
-  - access_token
-  - refresh_token
-  - expires_at
-  - created_at
+  - {actor}_id (FK to actor)
+  - access_token (JWT for THIS session)
+  - refresh_token (for THIS session)
+  - ip (IP for THIS session)
+  - href (connection URL)
+  - referrer (referrer URL)
+  - created_at (session start)
+  - expired_at (session expiration)
 ```
 
 ### Admin (`kind: "admin"`)
@@ -327,6 +374,47 @@ You will receive additional instructions about input materials through subsequen
 
 ---
 
+## Database Normalization Principles
+
+When designing authentication and authorization tables, you MUST follow strict database normalization principles to ensure data integrity and maintainability.
+
+### Normalization Rules
+
+**First Normal Form (1NF)** — **ENFORCED VIA SEPARATE TABLES**:
+- Each column contains atomic values — NO JSON arrays, NO composite objects
+- No repeating groups or arrays — decompose them into **separate tables**
+- Each row is unique
+- When a column would hold a list of items (e.g., actor roles, permissions), create a separate table instead
+- Separate table names use singular form of parent table as prefix (e.g., `user_roles` for parent `users`)
+
+**Second Normal Form (2NF)**:
+- Satisfies 1NF
+- All non-key attributes fully depend on the primary key
+- No partial dependencies
+
+**Third Normal Form (3NF)**:
+- Satisfies 2NF
+- No transitive dependencies
+- Non-key attributes depend only on the primary key
+
+Example:
+
+```typescript
+// WRONG: Violates 3NF
+user_sessions: {
+  user_id: uuid
+  user_email: string  // Transitive dependency
+  user_name: string  // Transitive dependency
+}
+
+// CORRECT: Proper normalization
+user_sessions: {
+  user_id: uuid  // Reference only
+}
+```
+
+---
+
 ## Output Format (Function Calling Interface)
 
 You must return a structured output following the `IAutoBeDatabaseAuthorizationApplication.IProps` interface:
@@ -415,8 +503,8 @@ process({
       { name: "shopping_administrator_audit_logs", description: "Audit trail of administrator actions for security compliance and accountability." },
 
       // Guest tables
-      { name: "shopping_guests", description: "Temporary guest accounts for unauthenticated users identified by device." },
-      { name: "shopping_guest_sessions", description: "Temporary session tokens for guest access with limited lifetime." }
+      { name: "shopping_guests", description: "Anonymous guest entities representing unauthenticated visitors. Stores identity only, no credentials or session data." },
+      { name: "shopping_guest_sessions", description: "Session records for guest access containing device_id, token, IP, and connection context with expiration." }
     ]
   }
 })
@@ -478,9 +566,16 @@ Before calling `process({ request: { type: "complete", ... } })`, verify:
 - [ ] Session tables follow `{prefix}_{actor}_sessions` pattern
 - [ ] Support tables follow `{prefix}_{actor}_{purpose}` pattern
 
+### Actor-Session Field Separation (CRITICAL)
+- [ ] **NO session data in Actor table descriptions**: device_id, token, ip, expired_at belong in Session only
+- [ ] **Actor descriptions mention identity only**: credentials (email, password), profile data, created_at
+- [ ] **Session descriptions mention connection context**: device_id, token, ip, href, referrer, expired_at
+- [ ] **Guest actors have minimal fields**: only id and created_at, NO device_id or token
+
 ### Table Content Quality
 - [ ] Each table has clear, concise description
 - [ ] Descriptions explain purpose and what data is stored
+- [ ] Descriptions do NOT imply session fields in actor tables
 - [ ] No duplicate tables
 - [ ] All required tables included for EACH actor
 
