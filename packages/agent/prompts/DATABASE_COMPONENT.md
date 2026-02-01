@@ -195,7 +195,49 @@ Trace through user workflows described in requirements. Every step that stores o
 
 **Missing ANY of these = Broken workflow = Incomplete application**
 
-**Step 5: Check Normalization Patterns**
+**Step 5: Pattern Detection Checklist (MANDATORY)**
+
+Before finalizing tables, scan your requirements for these keywords and ensure corresponding tables exist:
+
+| Requirement Keywords | Required Table Pattern | Example |
+|---------------------|----------------------|---------|
+| "question", "answer", "Q&A", "ask", "inquiry" | `{entity}_questions` + `{entity}_question_answers` (MUST be separate) | `sale_questions`, `sale_question_answers` |
+| "review", "rating", "feedback", "evaluate" | `{entity}_reviews` | `product_reviews`, `sale_reviews` |
+| "comment", "reply", "discussion" | `{entity}_comments` | `article_comments`, `post_comments` |
+| "history", "audit", "track changes", "version", "changelog" | `{entity}_snapshots` or `{entity}_histories` | `order_snapshots`, `price_histories` |
+| "attachment", "file", "image", "upload", "media", "photo" | `{entity}_attachments` or `{entity}_files` or `{entity}_images` | `product_images`, `article_attachments` |
+| "favorite", "wishlist", "bookmark", "save for later" | `{entity}_favorites` or `{entity}_wishlists` | `product_favorites`, `sale_wishlists` |
+| "notification", "alert", "notify" | `{entity}_notifications` | `order_notifications`, `user_notifications` |
+| "setting", "preference", "configuration" | `{entity}_settings` or `{entity}_preferences` | `user_settings`, `notification_preferences` |
+| "tag", "label" | `{entity}_tags` (junction table) | `product_tags`, `article_tags` |
+| "category", "categorize", "classify" | `{entity}_categories` (junction for N:N) | `product_categories` |
+| "view count", "statistics", "analytics", "metrics" | `{entity}_view_stats` or `{entity}_statistics` | `product_view_stats`, `sale_statistics` |
+| "log", "activity", "event", "action history" | `{entity}_logs` or `{entity}_activities` | `order_status_logs`, `user_activities` |
+| "vote", "like", "upvote", "helpful" | `{entity}_votes` or `{entity}_likes` | `review_votes`, `comment_likes` |
+| "report", "flag", "abuse" | `{entity}_reports` | `review_reports`, `comment_reports` |
+| "multiple actors create", "both customer and seller can" | Polymorphic: `{entity}` + `{entity}_of_{actor}s` | `issues`, `issue_of_customers`, `issue_of_sellers` |
+
+**How to Use This Checklist:**
+
+1. **Scan all requirements** for keywords in the left column
+2. **For each match**, verify the corresponding table pattern exists in your tables array
+3. **If missing**, add the table immediately
+4. **Do NOT skip** - every keyword match MUST have corresponding tables
+
+**Example Application:**
+
+Requirements mention:
+- "Customers can ask questions about products" → ✅ Need `product_questions` + `product_question_answers`
+- "Sellers provide answers to questions" → ✅ Confirms separate `product_question_answers` table
+- "Customers can write product reviews" → ✅ Need `product_reviews`
+- "Users can vote reviews as helpful" → ✅ Need `product_review_votes`
+- "Products have multiple images" → ✅ Need `product_images`
+- "Users can favorite products" → ✅ Need `product_favorites`
+- "System tracks view counts" → ✅ Need `product_view_stats`
+
+**If you find a keyword but no matching table → ADD IT IMMEDIATELY**
+
+**Step 6: Check Normalization Patterns**
 
 Verify you've applied normalization principles from the system prompt:
 
@@ -447,6 +489,42 @@ tables: [
 ## 🔗 DATABASE NORMALIZATION PRINCIPLES
 
 When identifying and naming tables, you MUST follow strict database normalization principles to ensure data integrity and maintainability.
+
+### Normalization Rules
+
+**First Normal Form (1NF)** — **ENFORCED VIA SEPARATE TABLES**:
+- Each column contains atomic values — NO JSON arrays, NO composite objects
+- No repeating groups or arrays — decompose them into **separate tables**
+- Each row is unique
+- When a column would hold a list of items (e.g., order items, tags, attachments), create a separate table instead
+- Separate table names use singular form of parent table as prefix (e.g., `shopping_order_items` for parent `shopping_orders`)
+
+**Second Normal Form (2NF)**:
+- Satisfies 1NF
+- All non-key attributes fully depend on the primary key
+- No partial dependencies
+
+**Third Normal Form (3NF)**:
+- Satisfies 2NF
+- No transitive dependencies
+- Non-key attributes depend only on the primary key
+
+Example:
+
+```typescript
+// WRONG: Violates 3NF
+bbs_article_comments: {
+  bbs_article_id: uuid
+  article_title: string  // Transitive dependency
+  article_author: string  // Transitive dependency
+}
+
+// CORRECT: Proper normalization
+bbs_article_comments: {
+  stance: "primary"
+  bbs_article_id: uuid  // Reference only
+}
+```
 
 ### SEPARATE ENTITIES PATTERN (Avoid Nullable Field Proliferation)
 

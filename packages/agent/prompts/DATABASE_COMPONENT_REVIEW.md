@@ -552,7 +552,108 @@ process({
 
 ---
 
-## 6. Common Patterns to Look For
+## 6. Automatic Pattern Detection Rules (CRITICAL)
+
+### Keyword-to-Table Detection Matrix
+
+When reviewing requirements, **automatically detect** these keywords and verify corresponding tables exist. If tables are missing, **CREATE them immediately**.
+
+| Requirement Keywords | Required Table Pattern | Action if Missing |
+|---------------------|----------------------|-------------------|
+| "question", "answer", "Q&A", "ask", "inquiry" | `{entity}_questions` + `{entity}_question_answers` | CREATE both (MUST be separate tables) |
+| "review", "rating", "feedback", "evaluate" | `{entity}_reviews` | CREATE review table |
+| "comment", "reply", "discussion" | `{entity}_comments` | CREATE comment table |
+| "history", "audit", "track changes", "version" | `{entity}_snapshots` or `{entity}_histories` | CREATE snapshot/history table |
+| "attachment", "file", "image", "upload", "media" | `{entity}_attachments` or `{entity}_images` | CREATE attachment/image table |
+| "favorite", "wishlist", "bookmark", "save" | `{entity}_favorites` or `{entity}_wishlists` | CREATE favorite table |
+| "notification", "alert", "notify" | `{entity}_notifications` | CREATE notification table |
+| "setting", "preference", "configuration" | `{entity}_settings` or `{entity}_preferences` | CREATE settings table |
+| "tag", "label" | `{entity}_tags` (junction) | CREATE junction table |
+| "category" (N:N relationship) | `{entity}_categories` (junction) | CREATE junction table |
+| "view count", "statistics", "analytics" | `{entity}_view_stats` or `{entity}_statistics` | CREATE stats table |
+| "log", "activity", "event history" | `{entity}_logs` or `{entity}_activities` | CREATE log table |
+| "vote", "like", "upvote", "helpful" | `{entity}_votes` or `{entity}_likes` | CREATE vote table |
+| "report", "flag", "abuse" | `{entity}_reports` | CREATE report table |
+| "multiple actors create same entity" | Polymorphic: `{entity}` + `{entity}_of_{actor}s` | CREATE main + subtype tables |
+
+### How to Apply Detection Rules
+
+**Step 1: Keyword Scan**
+- Read through all requirements related to this component
+- Highlight/note every keyword from the left column above
+
+**Step 2: Table Verification**
+- For EACH detected keyword, check if corresponding table exists in current component
+- Mark as ✅ (exists) or ❌ (missing)
+
+**Step 3: CREATE Revisions for Missing Tables**
+- For every ❌, add a CREATE revision with:
+  - Clear reason citing the requirement
+  - Proper table name following conventions
+  - Concise description
+
+### Detection Examples
+
+**Example 1: Sales Component Review**
+
+Requirements state:
+- "Customers can ask questions about sales" → Keyword: "question"
+- "Sellers provide answers" → Keyword: "answer"
+- "Customers write reviews with ratings" → Keywords: "review", "rating"
+- "Users can vote reviews as helpful" → Keyword: "vote", "helpful"
+- "Sales have multiple images" → Keyword: "image"
+
+Current tables: `[sales, sale_snapshots, sale_units]`
+
+**Detection Result:**
+| Keyword | Required Table | Exists? | Action |
+|---------|---------------|---------|--------|
+| question | `sale_questions` | ❌ | CREATE |
+| answer | `sale_question_answers` | ❌ | CREATE |
+| review, rating | `sale_reviews` | ❌ | CREATE |
+| vote, helpful | `sale_review_votes` | ❌ | CREATE |
+| image | `sale_images` | ❌ | CREATE |
+
+**Required CREATE Revisions:**
+```typescript
+revises: [
+  { type: "create", reason: "Requirements specify Q&A functionality - questions need dedicated table", table: "sale_questions", description: "Customer questions about sales" },
+  { type: "create", reason: "Requirements specify Q&A - answers must be separate for normalization (different actor owns)", table: "sale_question_answers", description: "Seller answers to customer questions" },
+  { type: "create", reason: "Requirements specify customer reviews with ratings", table: "sale_reviews", description: "Customer reviews and ratings for sales" },
+  { type: "create", reason: "Requirements specify helpful vote functionality on reviews", table: "sale_review_votes", description: "Helpful votes on sale reviews" },
+  { type: "create", reason: "Requirements specify multiple images per sale", table: "sale_images", description: "Multiple product images for sales" }
+]
+```
+
+### Special Detection: Separate Entity Pattern
+
+**CRITICAL**: When you detect BOTH "question" AND "answer" keywords:
+- You MUST create TWO separate tables: `{entity}_questions` AND `{entity}_question_answers`
+- NEVER combine them into one table
+- Reason: Different actors (customer asks, seller answers) = different ownership = separate tables
+
+**Same rule applies to:**
+- Request + Response/Approval
+- Application + Decision
+- Inquiry + Reply (when different actors)
+
+### Special Detection: Polymorphic Pattern
+
+**When you see**: "Both customers and sellers can create issues" or "Multiple actor types can..."
+
+**You MUST create:**
+1. Main entity table: `{entity}s` (e.g., `order_good_issues`)
+2. Subtype for each actor: `{entity}_of_{actor}s` (e.g., `order_good_issue_of_customers`, `order_good_issue_of_sellers`)
+
+**Detection keywords:**
+- "both X and Y can create"
+- "multiple actors"
+- "customers or sellers"
+- "any user type can"
+
+---
+
+## 7. Common Patterns Quick Reference
 
 ### For Each Feature, Check:
 
@@ -577,7 +678,7 @@ process({
 
 ---
 
-## 7. Thinking Field Guidelines
+## 8. Thinking Field Guidelines
 
 ```typescript
 // GOOD - summarizes revision operations
@@ -595,7 +696,7 @@ thinking: "Fixed some tables."
 
 ---
 
-## 8. Working Language
+## 9. Working Language
 
 - **Technical terms**: Always English (table names, field names, descriptions)
 - **Analysis content**: Use the language specified by user requirements
@@ -603,7 +704,7 @@ thinking: "Fixed some tables."
 
 ---
 
-## 9. Success Criteria
+## 10. Success Criteria
 
 A successful review demonstrates:
 
@@ -615,7 +716,7 @@ A successful review demonstrates:
 
 ---
 
-## 10. Final Execution Checklist
+## 11. Final Execution Checklist
 
 Before calling `process({ request: { type: "complete", review: "...", revises: [...] } })`, verify:
 
