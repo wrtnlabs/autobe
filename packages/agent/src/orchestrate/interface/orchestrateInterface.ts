@@ -209,11 +209,18 @@ export const orchestrateInterface =
           AutoBeJsonSchemaFactory.presets(new Set(Object.keys(schemas))),
         );
 
-        // special logics for standardization
+        // naming convention
         AutoBeJsonSchemaNamingConvention.normalize({
           operations: document.operations,
           collection,
         });
+        await orchestrateInterfaceSchemaRename(ctx, {
+          operations: document.operations,
+          progress: renameProgress,
+          collection,
+        });
+
+        // special logics
         AutoBeJsonSchemaFactory.authorize(document.components.schemas);
         AutoBeJsonSchemaFactory.finalize({
           application: ctx.state().database!.result.data,
@@ -221,13 +228,6 @@ export const orchestrateInterface =
           collection,
         });
         if (Object.keys(schemas).length === 0) return;
-
-        // rename by agent
-        await orchestrateInterfaceSchemaRename(ctx, {
-          operations: document.operations,
-          progress: renameProgress,
-          collection,
-        });
       };
 
       // initialize schemas

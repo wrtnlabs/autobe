@@ -4,11 +4,11 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
-# qwen/qwen3-coder (0.22)
-pnpm run archive:go --vendor qwen/qwen3-coder --project todo > archive.qwen-qwen3-coder.todo.log
-pnpm run archive:go --vendor qwen/qwen3-coder --project bbs > archive.qwen-qwen3-coder.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-coder --project reddit > archive.qwen-qwen3-coder.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-coder --project shopping > archive.qwen-qwen3-coder.shopping.log
+# qwen/qwen3-coder:exacto (0.22) -> not working
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-qwen3-coder.todo.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
 
 # qwen/qwen3-next-80b-a3b-instruct (0.09) -> working
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > archive.qwen-qwen3-next-80b-a3b-instruct.todo.log
@@ -25,7 +25,7 @@ pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping
 ######################################################
 # KIMI
 ######################################################
-# moonshotai/kimi-k2.5 (0.5)
+# moonshotai/kimi-k2.5 (0.5) -> not working
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project todo > archive.moonshotai-kimi-k2.5.todo.log
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project bbs > archive.moonshotai-kimi-k2.5.bbs.log
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project reddit > archive.moonshotai-kimi-k2.5.reddit.log
@@ -34,7 +34,7 @@ pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project shopping > archive.m
 ######################################################
 # GLM
 ######################################################
-# z-ai/glm-4.7 (0.4)
+# z-ai/glm-4.7 (0.4) -> not working
 pnpm run archive:go --vendor z-ai/glm-4.7 --project todo > archive.z-ai-glm-4.7.todo.log
 pnpm run archive:go --vendor z-ai/glm-4.7 --project bbs > archive.z-ai-glm-4.7.bbs.log
 pnpm run archive:go --vendor z-ai/glm-4.7 --project reddit > archive.z-ai-glm-4.7.reddit.log
@@ -49,7 +49,7 @@ pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project bbs > archive.deep
 pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project reddit > archive.deepseek-deepseek-v3.2.reddit.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project shopping > archive.deepseek-deepseek-v3.2.shopping.log
 
-# deepseek/deepseek-v3.1-terminus:exacto (0.21) -> working
+# deepseek/deepseek-v3.1-terminus:exacto (0.21) -> not working
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project todo > archive.deepseek-deepseek-v3.1-terminus-exacto.todo.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project bbs > archive.deepseek-deepseek-v3.1-terminus-exacto.bbs.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project reddit > archive.deepseek-deepseek-v3.1-terminus-exacto.reddit.log
@@ -58,19 +58,19 @@ pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project sh
 ######################################################
 # OPENAI
 ######################################################
-# openai/gpt-5.2 (1.75)
+# openai/gpt-5.2 (1.75) -> working
 pnpm run archive:go --vendor openai/gpt-5.2 --project todo > archive.openai-gpt-5.2.todo.log
 pnpm run archive:go --vendor openai/gpt-5.2 --project bbs > archive.openai-gpt-5.2.bbs.log
 pnpm run archive:go --vendor openai/gpt-5.2 --project reddit > archive.openai-gpt-5.2.reddit.log
 pnpm run archive:go --vendor openai/gpt-5.2 --project shopping > archive.openai-gpt-5.2.shopping.log
 
-# openai/gpt-5-mini (0.25)
+# openai/gpt-5-mini (0.25) -> working
 pnpm run archive:go --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
 pnpm run archive:go --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5-mini.bbs.log
 pnpm run archive:go --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
 pnpm run archive:go --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
 
-# openai/gpt-4.1-mini (0.4)
+# openai/gpt-4.1-mini (0.4) -> working
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project todo > archive.openai-gpt-4.1-mini.todo.log
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project bbs > archive.openai-gpt-4.1-mini.bbs.log
 pnpm run archive:go --vendor openai/gpt-4.1-mini --project reddit > archive.openai-gpt-4.1-mini.reddit.log
