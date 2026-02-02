@@ -37,7 +37,7 @@ export namespace AutoBeDatabaseSchemaProgrammer {
       props.definition.newDesigns.splice(i, 1);
     }
 
-    // check whether target table exsits
+    // check whether target table exists
     if (props.targetTable !== props.definition.model.name)
       props.errors.push({
         path: `${props.path}.model.name`,
