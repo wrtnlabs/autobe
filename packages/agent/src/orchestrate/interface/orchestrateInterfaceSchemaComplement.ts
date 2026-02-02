@@ -51,7 +51,7 @@ export const orchestrateInterfaceSchemaComplement = async (
           promptCacheKey,
         });
       } catch (error) {
-        ++props.progress.completed;
+        --props.progress.total;
         console.log("interfaceSchemaComplement failure", it, error);
         const count: number | undefined = props.failures.get(it);
         if (count === undefined) props.failures.set(it, 1);

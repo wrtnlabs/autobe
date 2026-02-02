@@ -24,6 +24,7 @@ export async function orchestratePrismaSchema(
     instruction: string;
     components: AutoBeDatabaseComponent[];
     written: Set<string>;
+    failed: Map<string, number>;
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeDatabaseSchemaEvent[]> {
@@ -47,24 +48,38 @@ export async function orchestratePrismaSchema(
         design: table,
       })),
   );
-  return await executeCachedBatch(
-    ctx,
-    designPairs.map((task) => async (promptCacheKey) => {
-      const otherComponents: AutoBeDatabaseComponent[] =
-        props.components.filter((c) => c !== task.component);
-      const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
-        instruction: props.instruction,
-        progress: props.progress,
-        component: task.component,
-        design: task.design,
-        otherComponents,
-        start,
-        promptCacheKey,
-      });
-      ctx.dispatch(event);
-      return event;
-    }),
-  );
+  const events: Array<AutoBeDatabaseSchemaEvent | null> =
+    await executeCachedBatch(
+      ctx,
+      designPairs.map((task) => async (promptCacheKey) => {
+        try {
+          const otherComponents: AutoBeDatabaseComponent[] =
+            props.components.filter((c) => c !== task.component);
+          const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
+            instruction: props.instruction,
+            progress: props.progress,
+            component: task.component,
+            design: task.design,
+            otherComponents,
+            start,
+            promptCacheKey,
+          });
+          ctx.dispatch(event);
+          return event;
+        } catch (error) {
+          --props.progress.total;
+          console.log("database schema error", task.design.name, error);
+
+          const count: number | undefined = props.failed.get(task.design.name);
+          if (count === undefined) props.failed.set(task.design.name, 1);
+          else if (count < 3) props.failed.set(task.design.name, count + 1);
+          else throw error;
+
+          return null;
+        }
+      }),
+    );
+  return events.filter((e) => e !== null);
 }
 
 async function process(

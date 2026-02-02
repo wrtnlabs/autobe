@@ -187,6 +187,7 @@ const orchestrateSchema = async (
   // completion set
   const reviewed: Set<string> = new Set();
   const written: Set<string> = new Set();
+  const failed: Map<string, number> = new Map();
   const complete = () =>
     components
       .flatMap((g) => g.tables)
@@ -263,6 +264,7 @@ const orchestrateSchema = async (
           instruction: props.instruction,
           components,
           written,
+          failed,
           progress: writeProgress,
         },
       );
