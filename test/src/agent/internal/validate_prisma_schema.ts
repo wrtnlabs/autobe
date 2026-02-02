@@ -27,6 +27,7 @@ export const validate_prisma_schema = async (props: {
       instruction: "",
       components,
       written: new Set(),
+      failed: new Map(),
       progress: {
         completed: 0,
         total: 0,
