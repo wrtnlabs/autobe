@@ -28,9 +28,8 @@ export interface AutoBeDatabaseSchemaDefinition {
    * review.
    *
    * When the agent determines that 1NF decomposition or other normalization
-   * requires child tables that do not yet exist, it declares them here as name
-   *
-   * - Description pairs instead of full model definitions.
+   * requires child tables that do not yet exist, it declares them here as
+   * name+description pairs rather than full model definitions.
    *
    * These designs are fed back into the schema generation pipeline so that each
    * new table is produced by its own dedicated call.
