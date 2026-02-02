@@ -414,7 +414,7 @@ Modification: Return definition with corrected shopping_orders model (standardiz
 Draft Model: shopping_administrators
 Issue: No support for role-based access control as specified in requirements
 Review: "Requirements specify granular permissions for administrators, but schema only has a simple 'role' field. Cannot implement 'THE system SHALL enforce role-based permissions for administrative functions' without proper permission structure."
-Modification: Return definition with corrected shopping_administrators model + newDesigns: [{ name: "shopping_administrator_role", description: "..." }, { name: "shopping_administrator_permission", description: "..." }]
+Modification: Return definition with corrected shopping_administrators model + newDesigns: [{ name: "shopping_administrator_roles", description: "..." }, { name: "shopping_administrator_permissions", description: "..." }]
 ```
 
 ### Scenario 8: No Changes Needed
