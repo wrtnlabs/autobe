@@ -225,10 +225,18 @@ const orchestrateSchema = async (
 
     // mark as done
     written.add(myTable.name);
-    pairs.push({
-      namespace: next.namespace,
-      model: next.definition.model,
-    });
+    const existing: number = pairs.findIndex(
+      (p) =>
+        p.namespace === next.namespace &&
+        p.model.name === next.definition.model.name,
+    );
+    if (existing !== -1)
+      pairs[existing] = {
+        namespace: next.namespace,
+        model: next.definition.model,
+      };
+    else
+      pairs.push({ namespace: next.namespace, model: next.definition.model });
 
     // prepare new designs
     for (const design of next.definition.newDesigns)
@@ -272,12 +280,14 @@ const orchestrateSchema = async (
         reviewed,
         progress: reviewProgress,
       });
-    for (const e of events)
+    for (const e of events) {
+      reviewed.add(e.modelName);
       if (e.content !== null)
         define({
           namespace: e.namespace,
           definition: e.content,
         });
+    }
   }
   return application();
 };
