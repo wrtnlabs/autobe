@@ -202,9 +202,8 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseSchema")
       content.push(
-        // `  - models: ${event.models.name} (stance: ${event.model.stance})`,
-        `  - models:`,
-        ...event.models.map((m) => `    - ${m.name} (stance: ${m.stance})`),
+        `  - model: ${event.definition.model.name} (stance: ${event.definition.model.stance})`,
+        `  - new designs: ${event.definition.newDesigns.map((d) => d.name).join(", ")}`,
       );
     else if (event.type === "databaseValidate")
       content.push(

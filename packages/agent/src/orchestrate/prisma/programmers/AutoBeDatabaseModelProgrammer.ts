@@ -4,12 +4,16 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseModelProgrammer {
   export const emend = (model: AutoBeDatabase.IModel): void => {
-    model.name = plural(NamingConvention.snake(model.name));
+    model.name = fixName(model.name);
     for (const ff of model.foreignFields) {
       ff.relation.oppositeName = ff.unique
         ? singular(ff.relation.oppositeName)
         : plural(ff.relation.oppositeName);
     }
+  };
+
+  export const fixName = (name: string): string => {
+    return plural(NamingConvention.snake(name));
   };
 
   export const getNeighbors = (props: {

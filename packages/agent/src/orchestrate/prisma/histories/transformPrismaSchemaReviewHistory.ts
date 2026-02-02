@@ -46,17 +46,16 @@ export const transformPrismaSchemaReviewHistory = (props: {
           in the "${props.component.namespace}" namespace.
 
           Focus your review exclusively on the target table
-          "${props.model.name}" and its child tables (if any).
+          "${props.model.name}".
 
-          When reviewing, ensure the target table model exists and any
-          additional models follow the First Normal Form (1NF) principle —
-          child tables that decompose repeating groups or non-atomic values
-          into separate tables. Child table names must start with the
-          singular form of the target table name as a prefix.
+          When reviewing, ensure the model is correctly designed. If
+          the table needs additional child tables for 1NF decomposition
+          (repeating groups or non-atomic values), declare them as
+          newDesigns entries with names starting with the
+          "${singular(props.model.name)}_" prefix.
 
-          If modifications are needed, return the full set of models
-          (target table and child tables together) as an array, or null
-          if no changes are required.
+          If modifications are needed, return the corrected model
+          and any newDesigns, or null if no changes are required.
         `,
       },
       ...(children.length !== 0

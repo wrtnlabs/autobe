@@ -45,8 +45,7 @@ export const validate_prisma_correct = async (props: {
       namespace: comp.namespace,
       models: writeEvents
         .filter((we) => we.namespace === comp.namespace)
-        .map((we) => we.models)
-        .flat(),
+        .map((we) => we.definition.model),
     })),
   };
   for (const review of reviewEvents) {
@@ -55,11 +54,12 @@ export const validate_prisma_correct = async (props: {
       (f) => f.namespace === review.namespace,
     );
     if (file === undefined) continue;
-    for (const model of review.content) {
-      const index: number = file.models.findIndex((m) => m.name === model.name);
-      if (index !== -1) file.models[index] = model;
-      else file.models.push(model);
-    }
+    else if (review.content === null) continue;
+    const index: number = file.models.findIndex(
+      (m) => m.name === review.content!.model.name,
+    );
+    if (index !== -1) file.models[index] = review.content!.model;
+    else file.models.push(review.content!.model);
   }
 
   const result: IAutoBeDatabaseValidation = await orchestratePrismaCorrect(

@@ -4,6 +4,7 @@ import {
   AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseSchemaEvent,
   AutoBeEventSource,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -19,40 +20,45 @@ import { IAutoBeDatabaseSchemaApplication } from "./structures/IAutoBeDatabaseSc
 
 export async function orchestratePrismaSchema(
   ctx: AutoBeContext,
-  instruction: string,
-  componentList: AutoBeDatabaseComponent[],
+  props: {
+    instruction: string;
+    components: AutoBeDatabaseComponent[];
+    written: Set<string>;
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeDatabaseSchemaEvent[]> {
   const start: Date = new Date();
-  const total: number = componentList
-    .map((c) => c.tables.length)
+  const total: number = props.components
+    .map(
+      (c) => c.tables.filter((n) => props.written.has(n.name) === false).length,
+    )
     .reduce((x, y) => x + y, 0);
-  const completed: IPointer<number> = { value: 0 };
+  props.progress.total += total;
 
   // Flatten component list into individual table tasks
   const designPairs: Array<{
     component: AutoBeDatabaseComponent;
     design: AutoBeDatabaseComponentTableDesign;
-  }> = componentList.flatMap((component) =>
-    component.tables.map((table) => ({
-      component,
-      design: table,
-    })),
+  }> = props.components.flatMap((component) =>
+    component.tables
+      .filter((table) => props.written.has(table.name) === false)
+      .map((table) => ({
+        component,
+        design: table,
+      })),
   );
-
   return await executeCachedBatch(
     ctx,
     designPairs.map((task) => async (promptCacheKey) => {
-      const otherComponents: AutoBeDatabaseComponent[] = componentList.filter(
-        (c) => c !== task.component,
-      );
+      const otherComponents: AutoBeDatabaseComponent[] =
+        props.components.filter((c) => c !== task.component);
       const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
-        instruction,
+        instruction: props.instruction,
+        progress: props.progress,
         component: task.component,
         design: task.design,
         otherComponents,
         start,
-        total,
-        completed,
         promptCacheKey,
       });
       ctx.dispatch(event);
@@ -65,12 +71,11 @@ async function process(
   ctx: AutoBeContext,
   props: {
     instruction: string;
+    progress: AutoBeProgressEventBase;
     component: AutoBeDatabaseComponent;
     design: AutoBeDatabaseComponentTableDesign;
     otherComponents: AutoBeDatabaseComponent[];
     start: Date;
-    total: number;
-    completed: IPointer<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseSchemaEvent> {
@@ -124,11 +129,11 @@ async function process(
       created_at: props.start.toISOString(),
       plan: pointer.value.plan,
       namespace: props.component.namespace,
-      models: pointer.value.models,
+      definition: pointer.value.definition,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: ++props.completed.value,
-      total: props.total,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeDatabaseSchemaEvent);
   });
@@ -156,13 +161,13 @@ function createController(props: {
 
     const errors: IValidation.IError[] = [];
     AutoBeDatabaseSchemaProgrammer.validate({
-      path: "$input.request.models",
+      path: "$input.request.definition",
       errors,
       targetTable: props.design.name,
       otherTables: [props.targetComponent, ...props.otherComponents]
         .flatMap((c) => c.tables.map((t) => t.name))
         .filter((s) => s !== props.design.name),
-      models: result.data.request.models,
+      definition: result.data.request.definition,
     });
     if (errors.length !== 0)
       return {

@@ -1,4 +1,7 @@
-import { AutoBeDatabase } from "@autobe/interface";
+import {
+  AutoBeDatabaseComponentTableDesign,
+  AutoBeDatabaseSchemaDefinition,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 import { IValidation } from "typia";
@@ -11,81 +14,79 @@ export namespace AutoBeDatabaseSchemaProgrammer {
     errors: IValidation.IError[];
     targetTable: string;
     otherTables: string[];
-    models: AutoBeDatabase.IModel[];
+    definition: AutoBeDatabaseSchemaDefinition;
   }): void => {
-    for (const m of props.models) AutoBeDatabaseModelProgrammer.emend(m);
-    for (let i: number = props.models.length - 1; i >= 0; i--) {
-      const name: string = props.models[i]!.name;
-      if (props.otherTables.includes(name) === false) continue;
-      else if (
-        props.models.some((m) => m.name.startsWith(`${singular(name)}_`))
-      )
+    // emend and fix table names
+    AutoBeDatabaseModelProgrammer.emend(props.definition.model);
+    for (const design of props.definition.newDesigns)
+      design.name = AutoBeDatabaseModelProgrammer.fixName(design.name);
+
+    // remove wrong named designs
+    for (let i: number = props.definition.newDesigns.length - 1; i >= 0; i--) {
+      const design: AutoBeDatabaseComponentTableDesign =
+        props.definition.newDesigns[i]!;
+      if (props.otherTables.includes(design.name) === false) {
+        // to give validation feedback
         continue;
-      props.models.splice(i, 1);
+      } else if (
+        design.name.startsWith(singular(props.definition.model.name))
+      ) {
+        // correct and intended name
+        continue;
+      }
+      props.definition.newDesigns.splice(i, 1);
     }
 
+    // check whether target table exsits
+    if (props.targetTable !== props.definition.model.name)
+      props.errors.push({
+        path: `${props.path}.model.name`,
+        expected: `"${props.targetTable}"`,
+        value: props.definition.model.name,
+        description: StringUtil.trim`
+          The model must be named exactly "${props.targetTable}",
+          which is the target table assigned to this agent.
+
+          Fix: Rename the model to "${props.targetTable}".
+        `,
+      });
+
     const prefix: string = `${singular(props.targetTable)}_`;
-    props.models.forEach((model, i) => {
-      if (
-        model.name !== props.targetTable &&
-        model.name.startsWith(prefix) === false
-      )
+    props.definition.newDesigns.forEach((design, i) => {
+      if (design.name.startsWith(prefix) === false)
         props.errors.push({
           path: `${props.path}[${i}].name`,
           expected: `"${props.targetTable}" | \`${prefix}\${string}\``,
-          value: model.name,
+          value: design.name,
           description: StringUtil.trim`
-            Model name "${model.name}" violates the child table naming
-            convention for target table "${props.targetTable}".
+            New design "${design.name}" violates the naming convention.
 
-            Every model must be either the target table itself
-            ("${props.targetTable}") or a 1NF child table whose name
+            Every newDesigns entry must be a 1NF child table whose name
             starts with the singular prefix "${prefix}"
             (e.g., "${prefix}items", "${prefix}details").
 
-            Fix: Rename "${model.name}" to "${props.targetTable}" or
-            to a name starting with "${prefix}".
+            Reconsider whether "${design.name}" is truly needed, or
+            rename it to start with "${prefix}" if it belongs to
+            this target table.
           `,
         });
-      else if (props.otherTables.includes(model.name) === true)
+      else if (props.otherTables.includes(design.name) === true)
         props.errors.push({
           path: `${props.path}[${i}].name`,
           expected: `A name not colliding with neighboring tables`,
-          value: model.name,
+          value: design.name,
           description: StringUtil.trim`
-            Model name "${model.name}" collides with a table already
-            assigned to another component.
+            New design "${design.name}" collides with a table that
+            already exists or is assigned to another agent.
 
-            Each table is owned by exactly one component. To reference
-            "${model.name}" from your models, declare a foreign key
-            field pointing to it — do not recreate the model itself.
-
-            Neighboring tables you must not collide with:
+            Tables you must not collide with:
             ${props.otherTables.map((t) => `- ${t}`).join("\n")}
 
-            Fix: Choose a different child table name with the
-            "${prefix}" prefix that does not overlap with any of the
-            above tables.
+            Reconsider whether this new design is necessary, or
+            choose a different name with the "${prefix}" prefix
+            that does not overlap with any of the above tables.
           `,
         });
     });
-    if (props.models.find((m) => m.name === props.targetTable) === undefined)
-      props.errors.push({
-        path: props.path,
-        expected: `A model named "${props.targetTable}"`,
-        value: props.models,
-        description: StringUtil.trim`
-          The target table "${props.targetTable}" is missing from the
-          models array.
-
-          Your assignment is to design "${props.targetTable}". Child
-          tables (prefixed with "${prefix}") are optional for 1NF
-          decomposition, but the target table itself is mandatory — it
-          is the primary deliverable.
-
-          Fix: Add a model named exactly "${props.targetTable}" to the
-          models array.
-        `,
-      });
   };
 }
