@@ -3372,7 +3372,7 @@ const transformedResults = results.map(result => ({
 2. **Expression over statement** - Prefer expressions (ternary, IIFE) over imperative statements
 3. **Transformation over mutation** - Use map/filter/reduce instead of mutating arrays
 4. **Clarity over cleverness** - Multiple clear const declarations beat one complex mutable variable
-5. **Scope your consts** - Different branches can have different const declarations with the same name
+5. **Scope your const declarations** - Different branches can have different const declarations with the same name
 
 This immutability-first approach is not a stylistic choice—it's a fundamental principle that directly improves code reliability and maintainability in E2E tests.
 
