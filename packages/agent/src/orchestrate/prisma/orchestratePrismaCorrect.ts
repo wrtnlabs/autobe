@@ -58,8 +58,17 @@ async function iterate(
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
   });
-  const next: IExecutionResult = await process(ctx, result);
-  return iterate(ctx, next.correction, life - 1);
+
+  const data: AutoBeDatabase.IApplication = await (async () => {
+    try {
+      const next: IExecutionResult = await process(ctx, result);
+      return next.correction;
+    } catch (error) {
+      console.log("prismaCorrect iterate failure", error);
+      return result.data;
+    }
+  })();
+  return await iterate(ctx, data, life - 1);
 }
 
 async function process(
