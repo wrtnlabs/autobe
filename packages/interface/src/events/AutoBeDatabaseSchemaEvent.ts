@@ -1,28 +1,21 @@
-import { tags } from "typia";
-
-import { AutoBeDatabase } from "../database";
+import { AutoBeDatabaseSchemaDefinition } from "../histories/contents/AutoBeDatabaseSchemaDefinition";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired when the Database agent generates database models for a target
- * table (and its child tables for 1NF compliance) during the database design
- * process.
+ * Event fired when the Database agent generates a single database model for a
+ * target table during the database design process.
  *
- * This event occurs when the Database agent has successfully designed and
- * generated the target table and any child tables needed to enforce the First
- * Normal Form (1NF) — decomposing repeating groups or non-atomic column values
- * into separate normalized tables. The agent follows a systematic 2-step
- * process: strategic planning (plan) and model generation (models), producing
- * production-ready database table models that maintain data integrity and
- * business logic accuracy. The generated models will be reviewed by a separate
- * review agent.
+ * Each AI call produces exactly one target table model. If the agent
+ * determines that additional child tables are needed (e.g. for 1NF
+ * decomposition), it declares them as lightweight designs in
+ * {@link AutoBeDatabaseSchemaDefinition.newDesigns} so they can be generated
+ * by their own dedicated pipeline calls.
  *
- * Each event represents the completion of one target table (and its children)
- * within a namespace. Multiple events are emitted for each namespace, one per
- * target table, enabling fine-grained progress tracking and parallel generation
- * of tables within the same business domain.
+ * Each event represents the completion of one target table within a namespace.
+ * Multiple events are emitted per namespace, one per target table, enabling
+ * fine-grained progress tracking and parallel generation.
  *
  * @author Samchon
  */
@@ -32,21 +25,11 @@ export interface AutoBeDatabaseSchemaEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Strategic database design analysis and planning phase for the target table
-   * and its child tables.
+   * Strategic database design analysis and planning phase for the target table.
    *
-   * Contains the AI agent's comprehensive analysis of the target table being
-   * designed and its database design strategy, including identification of
-   * child tables needed for First Normal Form (1NF) compliance. The agent
-   * evaluates the table's structure, relationships with other tables,
-   * normalization requirements, and performance considerations to create
-   * well-architected table models that align with business objectives and
-   * technical best practices.
-   *
-   * This planning phase establishes the foundation for the target table and any
-   * child table designs, ensuring proper field organization, relationship
-   * mapping, and adherence to database normalization principles while
-   * considering future scalability and maintainability requirements.
+   * Contains the AI agent's analysis of the target table being designed,
+   * including its structure, relationships with other tables, normalization
+   * requirements, and performance considerations.
    */
   plan: string;
 
@@ -67,24 +50,17 @@ export interface AutoBeDatabaseSchemaEvent
   namespace: string;
 
   /**
-   * Prisma schema models generated based on the strategic plan.
+   * Schema definition containing the single target table model and any newly
+   * discovered table designs.
    *
-   * Contains the production-ready AST representations of Prisma schema models
-   * generated following the strategic plan. The array always includes the
-   * target table model (mandatory), and may include child table models that
-   * enforce First Normal Form (1NF) — decomposing repeating groups or
-   * non-atomic column values into separate normalized tables.
-   *
-   * Child table names start with the singular form of the target table name as
-   * a prefix (e.g., for target "shopping_orders": "shopping_order_items",
-   * "shopping_order_payments"). Child table names never collide with tables
-   * already assigned to other components.
-   *
-   * Each model includes the proper table name, UUID primary field, foreign key
-   * relationships, business fields with appropriate types, strategic indexes,
-   * and comprehensive English-only descriptions.
+   * Carries exactly one model (the target table) produced by a single schema
+   * generation call so that the AI output stays within the LLM's maximum
+   * output token limit. Additional child tables needed for normalization are
+   * declared in {@link AutoBeDatabaseSchemaDefinition.newDesigns} as
+   * lightweight name + description pairs and are generated by subsequent
+   * pipeline calls.
    */
-  models: AutoBeDatabase.IModel[] & tags.MinItems<1>;
+  definition: AutoBeDatabaseSchemaDefinition;
 
   /**
    * Iteration number of the requirements analysis this schema was generated

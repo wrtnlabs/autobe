@@ -20,6 +20,7 @@ export * from "./AutoBeDatabaseGroupRevise";
 export * from "./AutoBeDatabaseGroupReviseCreate";
 export * from "./AutoBeDatabaseGroupReviseUpdate";
 export * from "./AutoBeDatabaseGroupReviseErase";
+export * from "./AutoBeDatabaseSchemaDefinition";
 
 export * from "./AutoBeInterfaceAuthorization";
 export * from "./AutoBeInterfaceGroup";
