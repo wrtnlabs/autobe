@@ -4,11 +4,13 @@ import { orchestrateInterfaceBaseEndpoint } from "@autobe/agent/src/orchestrate/
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
+  AutoBeInterfaceAuthorization,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceGroupEvent,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 
+import { validate_interface_authorization } from "./validate_interface_authorization";
 import { validate_interface_group } from "./validate_interface_group";
 
 export const validate_interface_endpoint = async (props: {
@@ -22,6 +24,12 @@ export const validate_interface_endpoint = async (props: {
       project: props.project,
       file: "interface.group.json",
     })) ?? (await validate_interface_group(props));
+  const authorizations: AutoBeInterfaceAuthorization[] =
+    (await AutoBeExampleStorage.load<AutoBeInterfaceAuthorization[]>({
+      vendor: props.vendor,
+      project: props.project,
+      file: "interface.authorization.json",
+    })) ?? (await validate_interface_authorization(props));
 
   const progress: AutoBeProgressEventBase = {
     completed: 0,
@@ -37,6 +45,7 @@ export const validate_interface_endpoint = async (props: {
       groups: group.groups,
       progress,
       reviewProgress,
+      authorizeOperations: authorizations.map((a) => a.operations).flat(),
     });
   const actionEndpoints: AutoBeInterfaceEndpointDesign[] =
     await orchestrateInterfaceActionEndpoint(props.agent.getContext(), {
@@ -45,6 +54,7 @@ export const validate_interface_endpoint = async (props: {
       baseEndpoints,
       progress,
       reviewProgress,
+      authorizeOperations: authorizations.map((a) => a.operations).flat(),
     });
   const endpoints: AutoBeInterfaceEndpointDesign[] = [
     ...baseEndpoints,
