@@ -23,15 +23,12 @@ const RAW = StringUtil.trim`
     input?: DeepPartial<IShoppingMallBroadcastNotification.ICreate> | undefined,
   ): IShoppingMallBroadcastNotification.ICreate {
     return {
-      content:
-        input?.content ?? RandomGenerator.content({
+      content: input?.content ?? RandomGenerator.content({
           paragraphs: typia.random<
             number & tags.Type<"uint32"> & tags.Minimum<2> & tags.Maximum<4>
-          >(),
-          sentenceMin: 5,
-          sentenceMax: 12,
-          wordMin: 4,
-          wordMax: 8,
+          >(), 
+          sentenceMin: 5, sentenceMax: 12,
+          wordMin: 4, wordMax: 8,
         }).substring(0, 500),
     };
   }
