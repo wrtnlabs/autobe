@@ -110,6 +110,8 @@ export const orchestrateInterfaceEndpointReview = async (
     } satisfies AutoBeInterfaceEndpointReviewEvent);
     return out(result)(
       AutoBeInterfaceEndpointReviewProgrammer.execute({
+        kind: props.programmer.kind,
+        actors: ctx.state().analyze?.actors ?? [],
         designs: props.designs,
         revises: pointer.value.revises,
       }),

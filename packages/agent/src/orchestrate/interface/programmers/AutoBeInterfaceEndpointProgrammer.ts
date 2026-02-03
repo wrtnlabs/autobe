@@ -38,12 +38,23 @@ export namespace AutoBeInterfaceEndpointProgrammer {
       props.design.authorizationType === "refresh"
     )
       return false;
-    else if (
-      props.design.authorizationType === "session" &&
-      props.design.endpoint.method !== "get" &&
-      props.design.endpoint.method !== "patch"
-    )
-      return false;
+    else if (props.design.authorizationType === "session") {
+      props.design.authorizationActors =
+        props.design.authorizationActors.filter((name) => {
+          const actor: AutoBeAnalyzeActor | undefined = props.actors.find(
+            (a) => a.name === name,
+          );
+          if (actor === undefined) return false;
+          return actor.kind !== "guest";
+        });
+      if (props.design.authorizationActors.length === 0) return false;
+      else if (
+        props.design.endpoint.method !== "get" &&
+        props.design.endpoint.method !== "patch"
+      )
+        return false;
+      return true;
+    }
     return true;
   };
 

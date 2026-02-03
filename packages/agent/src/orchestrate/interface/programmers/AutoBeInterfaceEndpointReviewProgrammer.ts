@@ -98,6 +98,8 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
   };
 
   export const execute = (props: {
+    kind: "base" | "action";
+    actors: AutoBeAnalyzeActor[];
     designs: AutoBeInterfaceEndpointDesign[];
     revises: AutoBeInterfaceEndpointRevise[];
   }): AutoBeInterfaceEndpointDesign[] => {
@@ -118,6 +120,12 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
       } else if (revise.type === "erase") {
       } else revise satisfies never;
     }
-    return output;
+    return output.filter((design) =>
+      AutoBeInterfaceEndpointProgrammer.filter({
+        kind: props.kind,
+        actors: props.actors,
+        design,
+      }),
+    );
   };
 }
