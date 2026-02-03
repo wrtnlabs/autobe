@@ -1,6 +1,7 @@
 import {
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceGroup,
+  AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 
@@ -14,6 +15,7 @@ export const orchestrateInterfaceActionEndpoint = (
   ctx: AutoBeContext,
   props: {
     instruction: string;
+    authorizeOperations: AutoBeOpenApi.IOperation[];
     groups: AutoBeInterfaceGroup[];
     baseEndpoints: AutoBeInterfaceEndpointDesign[];
     progress: AutoBeProgressEventBase;
@@ -26,9 +28,10 @@ export const orchestrateInterfaceActionEndpoint = (
       history: (next) =>
         transformInterfaceActionEndpointWriteHistory({
           state: ctx.state(),
-          baseEndpoints: props.baseEndpoints.map((e) => e.endpoint),
           instruction: props.instruction,
+          authorizeOperations: props.authorizeOperations,
           group: next.group,
+          baseEndpoints: props.baseEndpoints.map((e) => e.endpoint),
           preliminary: next.preliminary,
         }),
       review: (next) =>
@@ -41,6 +44,7 @@ export const orchestrateInterfaceActionEndpoint = (
                 preliminary: future.preliminary,
                 designs: future.designs,
                 group: future.group,
+                authorizeOperations: props.authorizeOperations,
               }),
           },
           group: next.group,

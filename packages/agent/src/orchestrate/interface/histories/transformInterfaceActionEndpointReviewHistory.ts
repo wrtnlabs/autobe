@@ -9,6 +9,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { transformInterfaceEndpointAuthorizationSection } from "./transformInterfaceEndpointAuthorizationSection";
 
 export const transformInterfaceActionEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
@@ -21,6 +22,7 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
   designs: AutoBeInterfaceEndpointDesign[];
   baseEndpoints: AutoBeOpenApi.IEndpoint[];
   group: AutoBeInterfaceGroup;
+  authorizeOperations: AutoBeOpenApi.IOperation[];
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -55,6 +57,8 @@ export const transformInterfaceActionEndpointReviewHistory = (props: {
         - **Description**: ${props.group.description}
         - **Related Database Schemas**: ${props.group.databaseSchemas.join(", ")}
 
+        ${transformInterfaceEndpointAuthorizationSection(props.authorizeOperations)}
+        
         ## Action Endpoint Designs for Review (YOUR TASK)
 
         ⚠️ CRITICAL: These are the ONLY endpoints you can review.

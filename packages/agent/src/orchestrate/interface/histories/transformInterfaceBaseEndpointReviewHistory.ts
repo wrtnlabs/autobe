@@ -1,6 +1,7 @@
 import {
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceGroup,
+  AutoBeOpenApi,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -8,6 +9,7 @@ import { v7 } from "uuid";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { transformInterfaceEndpointAuthorizationSection } from "./transformInterfaceEndpointAuthorizationSection";
 
 export const transformInterfaceBaseEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
@@ -19,26 +21,26 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
   >;
   designs: AutoBeInterfaceEndpointDesign[];
   group: AutoBeInterfaceGroup;
-}): IAutoBeOrchestrateHistory => {
-  return {
-    histories: [
-      {
-        type: "systemMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.INTERFACE_BASE_ENDPOINT_WRITE,
-      },
-      {
-        type: "systemMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.INTERFACE_BASE_ENDPOINT_REVIEW,
-      },
-      ...props.preliminary.getHistories(),
-      {
-        id: v7(),
-        type: "assistantMessage",
-        text: StringUtil.trim`
+  authorizeOperations: AutoBeOpenApi.IOperation[];
+}): IAutoBeOrchestrateHistory => ({
+  histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_BASE_ENDPOINT_WRITE,
+    },
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_BASE_ENDPOINT_REVIEW,
+    },
+    ...props.preliminary.getHistories(),
+    {
+      id: v7(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
         ## Target Group
 
         You are reviewing endpoints for the **${props.group.name}** group.
@@ -46,6 +48,8 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         - **Description**: ${props.group.description}
         - **Related Database Schemas**: ${props.group.databaseSchemas.join(", ")}
 
+        ${transformInterfaceEndpointAuthorizationSection(props.authorizeOperations)}
+        
         ## Base CRUD Endpoint Designs for Review (YOUR TASK)
 
         ⚠️ CRITICAL: These are the ONLY endpoints you can review.
@@ -60,9 +64,8 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
 
         Review according to the criteria in the system prompt. Call \`process()\` with \`type: "complete"\` containing all \`revises\`.
       `,
-        created_at: new Date().toISOString(),
-      },
-    ],
-    userMessage: `Review the base CRUD endpoints for the ${props.group.name} group and fix any issues found.`,
-  };
-};
+      created_at: new Date().toISOString(),
+    },
+  ],
+  userMessage: `Review the base CRUD endpoints for the ${props.group.name} group and fix any issues found.`,
+});

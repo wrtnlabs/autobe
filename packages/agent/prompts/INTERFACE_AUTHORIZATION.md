@@ -133,26 +133,26 @@ A table specifying the required authorization operations and their **exact type 
 
 **Table Structure**:
 
-| Authorization Type | Request Body Type Name | Response Body Type Name |
-|--------------------|------------------------|-------------------------|
-| join | `I{Prefix}{Actor}.IJoin` | `I{Prefix}{Actor}.IAuthorized` |
-| login | `I{Prefix}{Actor}.ILogin` | `I{Prefix}{Actor}.IAuthorized` |
-| refresh | `I{Prefix}{Actor}.IRefresh` | `I{Prefix}{Actor}.IAuthorized` |
+| Authorization Type | Request Body Type           | Response Body Type             |
+|--------------------|-----------------------------|--------------------------------|
+| join               | `I{Prefix}{Actor}.IJoin`    | `I{Prefix}{Actor}.IAuthorized` |
+| login              | `I{Prefix}{Actor}.ILogin`   | `I{Prefix}{Actor}.IAuthorized` |
+| refresh            | `I{Prefix}{Actor}.IRefresh` | `I{Prefix}{Actor}.IAuthorized` |
 
-**Example** (for service prefix `shopping-mall` and actor `user`):
+**Example** (for service prefix `shopping` and actor `seller`):
 
-| Authorization Type | Request Body Type Name | Response Body Type Name |
-|--------------------|------------------------|-------------------------|
-| join | `IShoppingMallUser.IJoin` | `IShoppingMallUser.IAuthorized` |
-| login | `IShoppingMallUser.ILogin` | `IShoppingMallUser.IAuthorized` |
-| refresh | `IShoppingMallUser.IRefresh` | `IShoppingMallUser.IAuthorized` |
+| Authorization Type | Request Body Type          | Response Body Type            |
+|--------------------|----------------------------|-------------------------------|
+| join               | `IShoppingSeller.IJoin`    | `IShoppingSeller.IAuthorized` |
+| login              | `IShoppingSeller.ILogin`   | `IShoppingSeller.IAuthorized` |
+| refresh            | `IShoppingSeller.IRefresh` | `IShoppingSeller.IAuthorized` |
 
 **Column Definitions**:
 - **Authorization Type**: The value for `AutoBeOpenApi.IOperation.authorizationType` (one of `"join"`, `"login"`, or `"refresh"`)
 - **Request Body Type Name**: The exact DTO type name for `requestBody.typeName`
 - **Response Body Type Name**: The exact DTO type name for `responseBody.typeName` (always `IAuthorized` containing tokens)
 
-**Note**: For `guest` kind actors, `login` row is excluded from the table (guests authenticate via join only, not login).
+**Note**: For `guest` kind actors, `login` row is excluded from the table (only `join` and `refresh` operations exist).
 
 **⚠️ MANDATORY REQUIREMENT**:
 - You MUST generate ALL operations listed in the provided table - no exceptions

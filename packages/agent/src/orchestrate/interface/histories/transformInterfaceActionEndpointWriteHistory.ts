@@ -6,6 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { transformInterfaceEndpointAuthorizationSection } from "./transformInterfaceEndpointAuthorizationSection";
 
 export const transformInterfaceActionEndpointWriteHistory = (props: {
   state: AutoBeState;
@@ -18,22 +19,22 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
+  authorizeOperations: AutoBeOpenApi.IOperation[];
   instruction: string;
-}): IAutoBeOrchestrateHistory => {
-  return {
-    histories: [
-      {
-        type: "systemMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT_WRITE,
-      },
-      ...props.preliminary.getHistories(),
-      {
-        type: "assistantMessage",
-        id: v7(),
-        created_at: new Date().toISOString(),
-        text: StringUtil.trim`
+}): IAutoBeOrchestrateHistory => ({
+  histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_ACTION_ENDPOINT_WRITE,
+    },
+    ...props.preliminary.getHistories(),
+    {
+      type: "assistantMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: StringUtil.trim`
         ## API Design Instructions (Reference)
 
         The following API-specific instructions were extracted from
@@ -59,6 +60,8 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
         ${JSON.stringify(props.baseEndpoints)}
         \`\`\`
 
+        ${transformInterfaceEndpointAuthorizationSection(props.authorizeOperations)}
+        
         ## Target Group for Design (YOUR TASK)
 
         You are designing action endpoints for the **${props.group.name}** group.
@@ -69,8 +72,7 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
 
         Design action endpoints that fulfill the requirements for this group.
         `,
-      },
-    ],
-    userMessage: `Design action endpoints for the ${props.group.name} group please`,
-  };
-};
+    },
+  ],
+  userMessage: `Design action endpoints for the ${props.group.name} group please`,
+});

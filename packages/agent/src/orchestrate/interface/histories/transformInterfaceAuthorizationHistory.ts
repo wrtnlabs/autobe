@@ -27,8 +27,8 @@ export const transformInterfaceAuthorizationHistory = (props: {
     actor: props.actor.name,
   });
   const table: string = StringUtil.trim`
-    Authorization Type | Request Body Type Name | Response Body Type Name
-    -------------------|------------------------|--------------------------
+    Authorization Type | Request Body Type | Response Body Type
+    -------------------|-------------------|--------------------
     ${["join", ...(props.actor.kind !== "guest" ? ["login"] : []), "refresh"]
       .map((type) =>
         [
@@ -108,7 +108,12 @@ export const transformInterfaceAuthorizationHistory = (props: {
 
           ${table}
 
-          ${props.actor.kind === "guest" ? "**Note**: This actor is `guest` kind, so `login` operation is excluded. Guests authenticate via join only.\n" : ""}
+          ${
+            props.actor.kind === "guest"
+              ? "> This actor is `guest` kind, so `login` operation is excluded. Guests authenticate via join/refresh only."
+              : ""
+          }
+
           **⚠️ MANDATORY REQUIREMENT**: You MUST generate ALL operations listed in the table above.
           Every single row represents a required operation - do NOT skip or omit any of them.
           The validator will reject your output if any operation is missing.

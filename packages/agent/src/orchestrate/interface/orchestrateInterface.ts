@@ -102,14 +102,16 @@ export const orchestrateInterface =
     const baseEndpoints: AutoBeInterfaceEndpointDesign[] =
       await orchestrateInterfaceBaseEndpoint(ctx, {
         instruction: props.instruction,
+        authorizeOperations: authOperations,
         groups: init.groups,
-        progress: endpointProgress,
         reviewProgress: endpointReviewProgress,
+        progress: endpointProgress,
       });
     // ACTION ENDPOINTS
     const actionEndpoints: AutoBeInterfaceEndpointDesign[] =
       await orchestrateInterfaceActionEndpoint(ctx, {
         instruction: props.instruction,
+        authorizeOperations: authOperations,
         groups: init.groups,
         baseEndpoints: baseEndpoints,
         progress: endpointProgress,
