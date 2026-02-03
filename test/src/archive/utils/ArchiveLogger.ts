@@ -202,8 +202,6 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseDeduplication") {
       content.push(
-        `  - process: progress`,
-        `  - progress: (${event.completed} of ${event.total})`,
         `  - namespace: ${event.namespace}`,
         `  - duplicated tables: ${event.duplicateGroups.map((g) => g.tables.map((t) => t.name).join(", ")).join(", ")}`,
       );
