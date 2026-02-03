@@ -197,62 +197,62 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
         `,
       });
   };
+
+  export const validateAuthorizationTypes = (props: {
+    actor: AutoBeAnalyzeActor;
+    operations: AutoBeOpenApi.IOperation[];
+    accessor: string;
+    errors: IValidation.IError[];
+  }): void => {
+    type AuthorizationType = AutoBeOpenApi.IOperation["authorizationType"];
+    for (const type of typia.misc.literals<AuthorizationType>()) {
+      // Skip null - these are handled by Base/Action Endpoint generators
+      if (type === null) continue;
+      if (props.actor.kind === "guest" && type === "login") continue;
+      const count: number = props.operations.filter(
+        (o) => o.authorizationType === type,
+      ).length;
+      if (count === 0)
+        props.errors.push({
+          path: props.accessor,
+          value: props.operations,
+          expected: StringUtil.trim`
+            {
+              ...(AutoBeOpenApi.IOperation data),
+              authorizationType: "${type}"
+            }
+          `,
+          description: StringUtil.trim`
+            There must be an operation that has defined 
+            (AutoBeOpenApi.IOperation.authorizationType := "${type}")
+            for the "${props.actor.name}" role's authorization activity; "${type}".
+
+            However, none of the operations have the 
+            (AutoBeOpenApi.IOperation.authorizationType := "${type}") value, 
+            so that the "${props.actor.name}" cannot perform the authorization ${type} activity.
+
+            Please make that operation at the next function calling. You have to do it.
+          `,
+        });
+      else if (count > 1)
+        props.errors.push({
+          path: props.accessor,
+          value: props.operations,
+          expected: `Only one operation with authorizationType "${type}"`,
+          description: StringUtil.trim`
+            There must be only one operation that has defined 
+            (AutoBeOpenApi.IOperation.authorizationType := "${type}")
+            for the "${props.actor.name}" role's authorization activity; "${type}".
+
+            However, multiple operations (${count} operations) have the
+            (AutoBeOpenApi.IOperation.authorizationType := "${type}") value,
+            so that the "${props.actor.name}" cannot determine which operation to use
+            for the authorization ${type} activity.
+
+            Please ensure that only one operation is defined for each
+            authorizationType per actor.
+          `,
+        });
+    }
+  };
 }
-
-export const validateAuthorizationTypes = (props: {
-  actor: AutoBeAnalyzeActor;
-  operations: AutoBeOpenApi.IOperation[];
-  accessor: string;
-  errors: IValidation.IError[];
-}): void => {
-  type AuthorizationType = AutoBeOpenApi.IOperation["authorizationType"];
-  for (const type of typia.misc.literals<AuthorizationType>()) {
-    // Skip null - these are handled by Base/Action Endpoint generators
-    if (type === null) continue;
-    if (props.actor.kind === "guest" && type === "login") continue;
-    const count: number = props.operations.filter(
-      (o) => o.authorizationType === type,
-    ).length;
-    if (count === 0)
-      props.errors.push({
-        path: props.accessor,
-        value: props.operations,
-        expected: StringUtil.trim`
-          {
-            ...(AutoBeOpenApi.IOperation data),
-            authorizationType: "${type}"
-          }
-        `,
-        description: StringUtil.trim`
-          There must be an operation that has defined 
-          (AutoBeOpenApi.IOperation.authorizationType := "${type}")
-          for the "${props.actor.name}" role's authorization activity; "${type}".
-
-          However, none of the operations have the 
-          (AutoBeOpenApi.IOperation.authorizationType := "${type}") value, 
-          so that the "${props.actor.name}" cannot perform the authorization ${type} activity.
-
-          Please make that operation at the next function calling. You have to do it.
-        `,
-      });
-    else if (count > 1)
-      props.errors.push({
-        path: props.accessor,
-        value: props.operations,
-        expected: `Only one operation with authorizationType "${type}"`,
-        description: StringUtil.trim`
-          There must be only one operation that has defined 
-          (AutoBeOpenApi.IOperation.authorizationType := "${type}")
-          for the "${props.actor.name}" role's authorization activity; "${type}".
-
-          However, multiple operations (${count} operations) have the
-          (AutoBeOpenApi.IOperation.authorizationType := "${type}") value,
-          so that the "${props.actor.name}" cannot determine which operation to use
-          for the authorization ${type} activity.
-
-          Please ensure that only one operation is defined for each
-          authorizationType per actor.
-        `,
-      });
-  }
-};

@@ -92,6 +92,7 @@ async function process(
           pointer.value = next;
         },
         preliminary,
+        prefix,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -125,6 +126,7 @@ async function process(
 }
 
 function createController(props: {
+  prefix: string | null;
   actor: AutoBeAnalyzeActor;
   preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -156,6 +158,7 @@ function createController(props: {
     result.data.request.operations.forEach((operation, index) =>
       AutoBeInterfaceAuthorizationProgrammer.validateOperation({
         errors,
+        prefix: props.prefix,
         actor: props.actor,
         operation,
         accessor: `$input.request.operations[${index}]`,
