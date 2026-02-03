@@ -11,7 +11,7 @@ export const transformPrismaDeduplicationHistory = (props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  component: AutoBeDatabaseComponent;
+  target: AutoBeDatabaseComponent;
   otherComponents: Pick<AutoBeDatabaseComponent, "namespace" | "tables">[];
   instruction: string;
   prefix: string | null;
@@ -36,13 +36,13 @@ export const transformPrismaDeduplicationHistory = (props: {
 
           ### Target Component
 
-          - **Namespace**: \`${props.component.namespace}\`
-          - **Filename**: \`${props.component.filename}\`
+          - **Namespace**: \`${props.target.namespace}\`
+          - **Filename**: \`${props.target.filename}\`
 
           ### Target Component Tables
 
           \`\`\`json
-          ${JSON.stringify(props.component.tables)}
+          ${JSON.stringify(props.target.tables)}
           \`\`\`
 
           ### Other Components Tables
@@ -61,16 +61,16 @@ export const transformPrismaDeduplicationHistory = (props: {
       },
     ],
     userMessage: StringUtil.trim`
-      Review the "${props.component.namespace}" component's tables for semantic duplicates.
+      Review the "${props.target.namespace}" component's tables for semantic duplicates.
 
-      **Your task**: Compare each table in the "${props.component.namespace}" component against
+      **Your task**: Compare each table in the "${props.target.namespace}" component against
       tables in other components. Identify tables that serve the **same purpose**
       even if they have different names.
 
       ## How to identify duplicates
 
       1. First, fetch analysis files using \`getAnalysisFiles\` to understand the business context
-      2. For each table in "${props.component.namespace}", **read its \`description\` field carefully**
+      2. For each table in "${props.target.namespace}", **read its \`description\` field carefully**
       3. For each table in other components, **read its \`description\` field carefully**
       4. **Compare the descriptions**: If two tables describe the **same purpose** (storing the same kind of data for the same business reason), they are duplicates
       5. Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", duplicateGroups: [...] } })\`
@@ -85,7 +85,7 @@ export const transformPrismaDeduplicationHistory = (props: {
       ## Rules
 
       - Each duplicate group must have at least 2 tables
-      - Each group must include at least 1 table from "${props.component.namespace}"
+      - Each group must include at least 1 table from "${props.target.namespace}"
       - Parent-child relationships are NOT duplicates
       - Snapshot/history tables are NOT duplicates of their source tables
       - If no duplicates found, return an empty duplicateGroups array

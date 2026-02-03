@@ -101,7 +101,7 @@ async function process(
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaDeduplicationHistory({
-        component: props.target,
+        target: props.target,
         otherComponents: props.otherComponents,
         instruction: props.instruction,
         prefix: props.prefix,

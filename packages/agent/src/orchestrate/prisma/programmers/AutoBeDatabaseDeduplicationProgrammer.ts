@@ -71,7 +71,7 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
       });
 
       // Each group must include at least 1 table from target component
-      const hasTargetTable = group.tables.some(
+      const hasTargetTable: boolean = group.tables.some(
         (t) => t.namespace === props.target.namespace,
       );
       if (!hasTargetTable)
