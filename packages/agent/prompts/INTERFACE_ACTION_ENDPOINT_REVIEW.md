@@ -295,9 +295,9 @@ When an authenticated actor accesses their **own** analytics, metrics, or dashbo
 **Action - UPDATE to Remove Actor ID from Path**:
 ```typescript
 {
-  type: "update",
   reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
   endpoint: { path: "/customers/{customerId}/metrics", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/customers/metrics", method: "get" },
     description: "Get customer's own metrics and analytics.",
@@ -399,9 +399,9 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 
 ```typescript
 {
-  type: "erase",
   reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
-  endpoint: { path: "/statistic/sales/monthly", method: "get" }
+  endpoint: { path: "/statistic/sales/monthly", method: "get" },
+  type: "erase"
 }
 ```
 
@@ -410,9 +410,9 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 
 ```typescript
 {
-  type: "update",
   reason: "Converting singular 'report' to plural 'reports' for REST convention.",
   endpoint: { path: "/report/revenue/summary", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/reports/revenue/summary", method: "get" },
     description: "Get revenue summary report.",
@@ -432,21 +432,21 @@ process({
     revises: [
       // KEEP endpoints that are correct
       {
-        type: "keep",
         reason: "Endpoint follows REST conventions with proper hierarchical structure.",
-        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+        endpoint: { path: "/statistics/sales/monthly", method: "get" },
+        type: "keep"
       },
       // ERASE duplicate (singular form where plural exists)
       {
-        type: "erase",
         reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
-        endpoint: { path: "/statistic/sales/monthly", method: "get" }
+        endpoint: { path: "/statistic/sales/monthly", method: "get" },
+        type: "erase"
       },
       // UPDATE singular-only endpoints to plural
       {
-        type: "update",
         reason: "Converting singular 'report' to plural 'reports'.",
         endpoint: { path: "/report/revenue/summary", method: "get" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/reports/revenue/summary", method: "get" },
           description: "Get revenue summary report.",
@@ -455,9 +455,9 @@ process({
         }
       },
       {
-        type: "update",
         reason: "Converting singular segments to plural: analytic→analytics, customer→customers.",
         endpoint: { path: "/analytic/customer/behavior", method: "patch" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/analytics/customers/behavior", method: "patch" },
           description: "Analyze customer behavior patterns.",
@@ -517,9 +517,9 @@ PATCH /reports/revenue  (needs filter parameters)
 **Action - UPDATE to Correct Method**:
 ```typescript
 {
-  type: "update",
   reason: "Complex analytics query requires request body for filters. PATCH is appropriate.",
   endpoint: { path: "/analytics/sales", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/analytics/sales", method: "patch" },
     description: "Sales analytics with date range and category filters.",
@@ -810,21 +810,21 @@ process({
     revises: [
       // KEEP endpoints that are correct and justified
       {
-        type: "keep",
         reason: "Justified by requirements: 'Admins SHALL view dashboard overview'. Properly structured.",
-        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+        endpoint: { path: "/dashboard/admin/overview", method: "get" },
+        type: "keep"
       },
       // ERASE unjustified endpoint
       {
-        type: "erase",
         reason: "No requirements mention customer behavior analytics.",
-        endpoint: { path: "/analytics/customer/behavior", method: "patch" }
+        endpoint: { path: "/analytics/customer/behavior", method: "patch" },
+        type: "erase"
       },
       // UPDATE camelCase to hierarchical
       {
-        type: "update",
         reason: "Converting camelCase to hierarchical structure.",
         endpoint: { path: "/statistics/salesByMonth", method: "get" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/statistics/sales/monthly", method: "get" },
           description: "Get monthly sales statistics.",
@@ -834,9 +834,9 @@ process({
       },
       // UPDATE HTTP method
       {
-        type: "update",
         reason: "Global search requires complex request body. PATCH is appropriate.",
         endpoint: { path: "/search/global", method: "get" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/search/global", method: "patch" },
           description: "Search across all entities with complex filters.",
@@ -846,8 +846,8 @@ process({
       },
       // CREATE missing endpoint from requirements
       {
-        type: "create",
         reason: "Requirements specify 'Administrators SHALL view monthly sales trends'.",
+        type: "create",
         design: {
           endpoint: { path: "/reports/monthly/summary", method: "get" },
           description: "Get monthly summary report for trend analysis.",
@@ -881,14 +881,14 @@ process({
     type: "complete",
     revises: [
       {
-        type: "keep",
         reason: "Justified by requirements. Follows hierarchical structure and REST conventions.",
-        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+        endpoint: { path: "/statistics/sales/monthly", method: "get" },
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Justified by 'Admins SHALL view dashboard overview' requirement.",
-        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+        endpoint: { path: "/dashboard/admin/overview", method: "get" },
+        type: "keep"
       },
       // ... keep for EVERY endpoint in the provided list
     ],
@@ -915,8 +915,8 @@ process({
 ```typescript
 // Public analytics endpoint
 {
-  type: "create",
   reason: "Requirements specify public access to statistics.",
+  type: "create",
   design: {
     endpoint: { path: "/statistics/overview", method: "get" },
     description: "Public statistics overview.",
@@ -927,9 +927,9 @@ process({
 
 // Admin-only dashboard
 {
-  type: "update",
   reason: "Dashboard should be admin-only.",
   endpoint: { path: "/dashboard/overview", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/dashboard/overview", method: "get" },
     description: "Admin dashboard overview.",
@@ -940,8 +940,8 @@ process({
 
 // Multi-actor endpoint (seller and admin)
 {
-  type: "create",
   reason: "Both sellers and admins need access to sales reports.",
+  type: "create",
   design: {
     endpoint: { path: "/reports/sales", method: "patch" },
     description: "Sales report with filtering.",

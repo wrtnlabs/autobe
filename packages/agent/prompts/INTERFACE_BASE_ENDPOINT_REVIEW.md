@@ -99,9 +99,9 @@ The Base Endpoint Agent generates only business CRUD endpoints. Authentication o
 
 ```typescript
 {
-  type: "erase",
   reason: "Authentication endpoints are handled by Authorization Agent, not Base Endpoint Agent.",
-  endpoint: { path: "/auth/members/login", method: "post" }
+  endpoint: { path: "/auth/members/login", method: "post" },
+  type: "erase"
 }
 ```
 
@@ -113,9 +113,9 @@ User registration is handled by the Authorization Agent's `join` endpoint. If yo
 
 ```typescript
 {
-  type: "erase",
   reason: "Actor table POST (user creation) is handled by Authorization Agent's join endpoint.",
-  endpoint: { path: "/members", method: "post" }
+  endpoint: { path: "/members", method: "post" },
+  type: "erase"
 }
 ```
 
@@ -152,30 +152,30 @@ Even administrators CANNOT create, update, or delete sessions via API endpoints.
 ```typescript
 // DELETE session creation endpoint
 {
-  type: "erase",
   reason: "Session creation is handled by login/join auth flow, not API endpoints. Applies to ALL actors.",
-  endpoint: { path: "/sessions", method: "post" }
+  endpoint: { path: "/sessions", method: "post" },
+  type: "erase"
 }
 
 // DELETE session update endpoint
 {
-  type: "erase",
   reason: "Session modification is handled by refresh auth flow, not API endpoints. Applies to ALL actors.",
-  endpoint: { path: "/sessions/{sessionId}", method: "put" }
+  endpoint: { path: "/sessions/{sessionId}", method: "put" },
+  type: "erase"
 }
 
 // DELETE session delete endpoint
 {
-  type: "erase",
   reason: "Session termination is handled by logout auth flow, not API endpoints. Applies to ALL actors.",
-  endpoint: { path: "/sessions/{sessionId}", method: "delete" }
+  endpoint: { path: "/sessions/{sessionId}", method: "delete" },
+  type: "erase"
 }
 
 // DELETE even if admin-only
 {
-  type: "erase",
   reason: "Even admin cannot delete sessions via API. Session termination must go through logout auth flow.",
-  endpoint: { path: "/members/{memberId}/sessions/{sessionId}", method: "delete" }
+  endpoint: { path: "/members/{memberId}/sessions/{sessionId}", method: "delete" },
+  type: "erase"
 }
 ```
 
@@ -192,9 +192,9 @@ Snapshot tables store point-in-time historical records that are **immutable by n
 **Action**: DELETE snapshot PUT/DELETE endpoints only when requirements don't explicitly request them:
 ```typescript
 {
-  type: "erase",
   reason: "Snapshot tables should not have UPDATE (PUT) endpoints by default. No explicit requirement found.",
-  endpoint: { path: "/article_snapshots/{snapshotId}", method: "put" }
+  endpoint: { path: "/article_snapshots/{snapshotId}", method: "put" },
+  type: "erase"
 }
 ```
 
@@ -239,9 +239,9 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 **Action - UPDATE to Remove Actor ID from Path**:
 ```typescript
 {
-  type: "update",
   reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
   endpoint: { path: "/customers/{customerId}/addresses", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/customers/addresses", method: "get" },
     description: "Get customer's own addresses.",
@@ -251,9 +251,9 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 }
 
 {
-  type: "update",
   reason: "Actor ID must not be in path for self-access. Member ID comes from JWT token.",
   endpoint: { path: "/members/{memberId}/orders/{orderId}", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/members/orders/{orderId}", method: "get" },
     description: "Get member's specific order.",
@@ -475,9 +475,9 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 
 ```typescript
 {
-  type: "erase",
   reason: "Duplicate of /guests/{guestId}. Removing singular form.",
-  endpoint: { path: "/guest/{guestId}", method: "get" }
+  endpoint: { path: "/guest/{guestId}", method: "get" },
+  type: "erase"
 }
 ```
 
@@ -486,9 +486,9 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 
 ```typescript
 {
-  type: "update",
   reason: "Converting singular 'article' to plural 'articles' for REST convention.",
   endpoint: { path: "/article/{articleId}", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/articles/{articleId}", method: "get" },
     description: "Get an article by ID.",
@@ -508,20 +508,20 @@ process({
     revises: [
       // ERASE duplicates first (singular forms where plural exists)
       {
-        type: "erase",
         reason: "Duplicate of /guests/{guestId}. Removing singular form.",
-        endpoint: { path: "/guest/{guestId}", method: "get" }
+        endpoint: { path: "/guest/{guestId}", method: "get" },
+        type: "erase"
       },
       {
-        type: "erase",
         reason: "Duplicate of /articles. Removing singular form.",
-        endpoint: { path: "/article", method: "patch" }
+        endpoint: { path: "/article", method: "patch" },
+        type: "erase"
       },
       // UPDATE singular-only endpoints to plural
       {
-        type: "update",
         reason: "Converting singular 'category' to plural 'categories'.",
         endpoint: { path: "/category/{categoryId}", method: "get" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/categories/{categoryId}", method: "get" },
           description: "Get a category by ID.",
@@ -530,9 +530,9 @@ process({
         }
       },
       {
-        type: "update",
         reason: "Converting singular segments to plural: member→members, address→addresses.",
         endpoint: { path: "/member/{memberId}/address", method: "post" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/members/{memberId}/addresses", method: "post" },
           description: "Create address for a member.",
@@ -542,9 +542,9 @@ process({
       },
       // KEEP endpoints that are correct
       {
-        type: "keep",
         reason: "Endpoint follows REST conventions and is properly structured.",
-        endpoint: { path: "/users/{userId}", method: "get" }
+        endpoint: { path: "/users/{userId}", method: "get" },
+        type: "keep"
       }
       // ... keep for ALL other correct endpoints
     ],
@@ -631,9 +631,9 @@ POST /articles/{articleId}/snapshots
 ```typescript
 // Fix search endpoint using wrong method
 {
-  type: "update",
   reason: "Search/pagination requires request body. PATCH is appropriate, not GET.",
   endpoint: { path: "/articles", method: "get" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/articles", method: "patch" },
     description: "Search and filter articles with pagination.",
@@ -644,9 +644,9 @@ POST /articles/{articleId}/snapshots
 
 // Fix update endpoint using wrong method
 {
-  type: "update",
   reason: "Resource update should use PUT, not PATCH or POST.",
   endpoint: { path: "/articles/{articleId}", method: "patch" },
+  type: "update",
   newDesign: {
     endpoint: { path: "/articles/{articleId}", method: "put" },
     description: "Update an article.",
@@ -935,20 +935,20 @@ process({
     revises: [
       // KEEP endpoints that are correct
       {
-        type: "keep",
         reason: "Endpoint follows REST conventions and is properly structured.",
-        endpoint: { path: "/users/{userId}", method: "get" }
+        endpoint: { path: "/users/{userId}", method: "get" },
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Properly nested subsidiary endpoint with correct plural form.",
-        endpoint: { path: "/articles/{articleId}/comments", method: "patch" }
+        endpoint: { path: "/articles/{articleId}/comments", method: "patch" },
+        type: "keep"
       },
       // UPDATE camelCase to hierarchical
       {
-        type: "update",
         reason: "Converting camelCase path to hierarchical structure.",
         endpoint: { path: "/moderationLogs", method: "patch" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/moderation/logs", method: "patch" },
           description: "Search moderation logs with filters.",
@@ -958,9 +958,9 @@ process({
       },
       // UPDATE singular to plural
       {
-        type: "update",
         reason: "Normalizing singular 'guest' to plural 'guests'.",
         endpoint: { path: "/guest/{guestId}", method: "get" },
+        type: "update",
         newDesign: {
           endpoint: { path: "/guests/{guestId}", method: "get" },
           description: "Get a guest by ID.",
@@ -970,14 +970,14 @@ process({
       },
       // ERASE duplicate
       {
-        type: "erase",
         reason: "Redundant. PATCH /users already handles search.",
-        endpoint: { path: "/users/search", method: "patch" }
+        endpoint: { path: "/users/search", method: "patch" },
+        type: "erase"
       },
       // CREATE missing nested endpoint
       {
-        type: "create",
         reason: "Comments are subsidiary and need delete through parent.",
+        type: "create",
         design: {
           endpoint: { path: "/articles/{articleId}/comments/{commentId}", method: "delete" },
           description: "Delete a comment under an article.",
@@ -1011,14 +1011,14 @@ process({
     type: "complete",
     revises: [
       {
-        type: "keep",
         reason: "Follows REST conventions with proper plural form and hierarchical structure.",
-        endpoint: { path: "/users", method: "patch" }
+        endpoint: { path: "/users", method: "patch" },
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Correct single resource retrieval endpoint.",
-        endpoint: { path: "/users/{userId}", method: "get" }
+        endpoint: { path: "/users/{userId}", method: "get" },
+        type: "keep"
       },
       // ... keep for EVERY endpoint in the provided list
     ],
