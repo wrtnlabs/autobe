@@ -611,13 +611,18 @@ When an authenticated actor accesses their **own** resources or metrics, the act
 
 Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's data:
 ```
-✅ GET /admin/customers/{customerId}/metrics      ← Admin viewing customer's metrics
-✅ GET /admin/sellers/{sellerId}/analytics        ← Admin viewing seller's analytics
+✅ GET /customers/{customerId}/metrics
+   authorizationActors: ["admin"]                 ← Admin viewing customer's metrics
+
+✅ GET /sellers/{sellerId}/analytics
+   authorizationActors: ["admin", "moderator"]    ← Admin/Moderator viewing seller's analytics
 ```
 
+**Note**: The actor prefix (e.g., `/admin/`) is automatically added by the system. Do NOT manually include it in the path.
+
 **Detection Rule**:
-- If `authorizationActors` includes the SAME actor type as the resource owner → Actor ID MUST NOT be in path
-- If `authorizationActors` is admin/moderator accessing DIFFERENT actor's resources → Actor ID MAY be in path
+- If `authorizationActors` includes the SAME actor type as the path parameter → **VIOLATION** (self-access should not have actor ID in path)
+- If `authorizationActors` contains ONLY admin/moderator accessing a DIFFERENT actor's resources → Actor ID in path is **ALLOWED**
 
 ### 6.1. Statistics & Analytics
 

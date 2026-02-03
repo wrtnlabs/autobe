@@ -122,29 +122,57 @@ User registration is handled by the Authorization Agent's `join` endpoint. If yo
 - `PUT /{actors}/{id}` - Update profile
 - `DELETE /{actors}/{id}` - Delete account
 
-### 3.3. Session & Snapshot Table Restrictions
+### 3.3. Session Table Restrictions - READ ONLY (CRITICAL)
 
-**Session tables** and **Snapshot tables** have default endpoint restrictions based on their nature.
+**Session tables** (e.g., `sessions`, `member_sessions`, `auth_sessions`) are **READ ONLY**. All session lifecycle operations are managed **exclusively** through authentication flows (join/login/refresh/logout).
 
-#### Session Tables (e.g., `sessions`, `member_sessions`, `auth_sessions`)
+**🚨 This Applies to ALL Actors Including Admin/Moderator 🚨**
 
-Session state changes are managed through authentication flows, not direct CRUD operations.
+Even administrators CANNOT create, update, or delete sessions via API endpoints.
 
-**FORBIDDEN endpoints for session tables**:
-- ❌ `PUT /{sessions}/{sessionId}` - Session modification goes through auth flows (refresh token)
-- ❌ `POST /{sessions}` - Session creation is handled by Authorization Agent's login/join
+**FORBIDDEN endpoints for session tables (DELETE ALL OF THESE)**:
+- ❌ `POST /{sessions}` - Session creation is handled by login/join auth flow
+- ❌ `PUT /{sessions}/{sessionId}` - Session modification is handled by refresh auth flow
+- ❌ `DELETE /{sessions}/{sessionId}` - Session termination is handled by logout auth flow
 
-**ALLOWED endpoints for session tables**:
-- ✅ `PATCH /{sessions}` - Search/list sessions
-- ✅ `GET /{sessions}/{sessionId}` - View session details
-- ✅ `DELETE /{sessions}/{sessionId}` - Revoke session
+**ALLOWED endpoints for session tables (ONLY THESE)**:
+- ✅ `PATCH /{sessions}` - Search/list sessions (read-only)
+- ✅ `GET /{sessions}/{sessionId}` - View session details (read-only)
 
-**Action**: DELETE forbidden session endpoints:
+**Why This Is Critical**:
+1. **Security**: Direct session manipulation bypasses authentication safeguards
+2. **Integrity**: Sessions must only be created through proper authentication
+3. **Audit Trail**: Auth flows ensure proper logging of session lifecycle
+4. **Token Binding**: Sessions are cryptographically bound to tokens issued during auth flows
+
+**Action**: DELETE all CUD session endpoints:
 ```typescript
+// DELETE session creation endpoint
 {
   type: "erase",
-  reason: "Session tables cannot have UPDATE (PUT) endpoints. Session modification must go through auth flows.",
+  reason: "Session creation is handled by login/join auth flow, not API endpoints. Applies to ALL actors.",
+  endpoint: { path: "/sessions", method: "post" }
+}
+
+// DELETE session update endpoint
+{
+  type: "erase",
+  reason: "Session modification is handled by refresh auth flow, not API endpoints. Applies to ALL actors.",
   endpoint: { path: "/sessions/{sessionId}", method: "put" }
+}
+
+// DELETE session delete endpoint
+{
+  type: "erase",
+  reason: "Session termination is handled by logout auth flow, not API endpoints. Applies to ALL actors.",
+  endpoint: { path: "/sessions/{sessionId}", method: "delete" }
+}
+
+// DELETE even if admin-only
+{
+  type: "erase",
+  reason: "Even admin cannot delete sessions via API. Session termination must go through logout auth flow.",
+  endpoint: { path: "/members/{memberId}/sessions/{sessionId}", method: "delete" }
 }
 ```
 
@@ -236,9 +264,14 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 
 Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's resources:
 ```
-✅ GET /admin/customers/{customerId}/addresses    ← Admin viewing customer's addresses
-✅ GET /admin/members/{memberId}/orders           ← Admin viewing member's orders
+✅ GET /customers/{customerId}/addresses
+   authorizationActors: ["admin"]                 ← Admin viewing customer's addresses
+
+✅ GET /members/{memberId}/orders
+   authorizationActors: ["admin", "moderator"]    ← Admin/Moderator viewing member's orders
 ```
+
+**Note**: The actor prefix (e.g., `/admin/`) is automatically added by the system. Do NOT manually include it in the path.
 
 ### 3.5. Necessity Check
 
@@ -946,7 +979,7 @@ process({
 - [ ] **No authentication operations exist** (deleted if found - Authorization Agent handles these)
 - [ ] **No duplicates with Already Generated Authorization Operations** (if table provided)
 - [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization Agent's join)
-- [ ] **Session tables have NO PUT (update) and NO POST (create) endpoints**
+- [ ] **Session tables have ONLY GET/PATCH (READ operations)** - NO POST/PUT/DELETE for ANY actor including admin
 - [ ] **Snapshot tables have no PUT/DELETE by default** (unless requirements explicitly request them)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**

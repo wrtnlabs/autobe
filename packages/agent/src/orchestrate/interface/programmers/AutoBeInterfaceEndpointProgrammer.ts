@@ -31,12 +31,8 @@ export namespace AutoBeInterfaceEndpointProgrammer {
       return props.design.authorizationType === null;
     }
 
-    // Base endpoints: remove guest actors and specific auth types
-    props.design.authorizationActors = props.design.authorizationActors.filter(
-      (actorName) => actorName !== "guest",
-    );
-    if (props.design.authorizationActors.length === 0) return false;
-    else if (
+    // remove specific auth types
+    if (
       props.design.authorizationType === "login" ||
       props.design.authorizationType === "join" ||
       props.design.authorizationType === "refresh" ||

@@ -147,13 +147,66 @@ Only generate **non-authentication CRUD operations** for actor tables:
 
 **Note**: No `POST /members` - all user creation is handled by the Authorization Agent's join operation.
 
-### 2.3. Session Tables - No Updates
+### 2.3. Session Tables - READ ONLY (CRITICAL)
 
-**Session tables** store authentication session data. Update operations are not allowed because session state changes are managed through authentication flows.
+**Session tables** store authentication session data. **ONLY READ operations are allowed.** All session lifecycle operations (create, modify, delete) are managed **exclusively** through authentication flows (join/login/refresh/logout), NEVER through direct API endpoints.
+
+**🚨 ABSOLUTE PROHIBITION - No CUD Operations for Sessions 🚨**
+
+This restriction applies to **ALL actors**, including admin/moderator. Even administrators CANNOT create, update, or delete sessions through API endpoints. Sessions are system-managed through authentication flows only.
+
+**Why This Is Critical**:
+1. **Security**: Direct session manipulation bypasses authentication safeguards
+2. **Integrity**: Sessions must only be created through proper authentication (login/join)
+3. **Audit Trail**: Auth flows ensure proper logging of session lifecycle events
+4. **Token Binding**: Sessions are cryptographically bound to tokens issued during auth flows
 
 **Rules for Session Tables**:
-- ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search), `POST` (create), `DELETE` (erase)
-- ❌ **FORBIDDEN**: `PUT` (update) - Session modification should go through auth flows (refresh token, etc.)
+- ✅ **ALLOWED**: `GET` (at), `PATCH` (index/search) - **READ ONLY**
+- ❌ **FORBIDDEN**: `POST` (create) - Session creation is handled by login/join auth flows
+- ❌ **FORBIDDEN**: `PUT` (update) - Session modification is handled by refresh auth flow
+- ❌ **FORBIDDEN**: `DELETE` (erase) - Session termination is handled by logout auth flow
+
+**This Applies to ALL Actors**:
+```json
+// ❌ WRONG: Even admin cannot create sessions via API
+{
+  "endpoint": { "path": "/sessions", "method": "post" },
+  "authorizationActors": ["admin"]  // STILL FORBIDDEN
+}
+
+// ❌ WRONG: Even admin cannot delete sessions via API
+{
+  "endpoint": { "path": "/sessions/{sessionId}", "method": "delete" },
+  "authorizationActors": ["admin"]  // STILL FORBIDDEN
+}
+
+// ✅ CORRECT: Admin can LIST other users' sessions (read-only)
+{
+  "endpoint": { "path": "/members/{memberId}/sessions", "method": "patch" },
+  "authorizationActors": ["admin"]  // READ is allowed
+}
+
+// ✅ CORRECT: Admin can VIEW a specific session (read-only)
+{
+  "endpoint": { "path": "/sessions/{sessionId}", "method": "get" },
+  "authorizationActors": ["admin"]  // READ is allowed
+}
+
+// ✅ CORRECT: User can list their own sessions (read-only)
+{
+  "endpoint": { "path": "/members/sessions", "method": "patch" },
+  "authorizationActors": ["member"]  // READ is allowed
+}
+```
+
+**Session Lifecycle is Managed By**:
+| Operation | Managed By | NOT By |
+|-----------|------------|--------|
+| Session Creation | `login` / `join` auth flow | ❌ POST /sessions |
+| Session Modification | `refresh` auth flow | ❌ PUT /sessions/{id} |
+| Session Termination | `logout` auth flow | ❌ DELETE /sessions/{id} |
+| Session Viewing | ✅ API endpoints (GET, PATCH) | - |
 
 ### 2.4. Snapshot Tables
 
@@ -171,7 +224,7 @@ Only generate **non-authentication CRUD operations** for actor tables:
 Before generating endpoints for a table, verify:
 
 - [ ] For **Actor tables**: POST endpoint has `authorizationType: "join"`
-- [ ] For **Session tables**: Skip PUT (update) - session modification goes through auth flows
+- [ ] For **Session tables**: **ONLY generate GET (at) and PATCH (index)** - NO POST/PUT/DELETE (all CUD goes through auth flows)
 - [ ] For **Snapshot tables**: By default, skip PUT (update) and DELETE (erase) unless requirements explicitly request them
 - [ ] IS intended for user interaction based on requirements
 
@@ -286,37 +339,47 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 
 **EXCEPTION: Admin/Moderator Accessing OTHER Users' Resources**
 
-The ONLY case where actor ID belongs in the path is when an **administrator or moderator** accesses **another user's** resources:
+The ONLY case where actor ID belongs in the path is when an **administrator or moderator** accesses **another user's** resources. In this case:
+- The path includes the target user's ID (e.g., `{customerId}`)
+- `authorizationActors` specifies only admin/moderator (NOT the resource owner)
 
 ```
-✅ GET /admin/customers/{customerId}/addresses    ← Admin viewing customer's addresses
-✅ GET /admin/members/{memberId}/orders           ← Admin viewing member's orders
-✅ PUT /moderator/sellers/{sellerId}/profile      ← Moderator editing seller's profile
+✅ GET /customers/{customerId}/addresses
+   authorizationActors: ["admin"]                 ← Admin viewing customer's addresses
+
+✅ GET /members/{memberId}/orders
+   authorizationActors: ["admin", "moderator"]    ← Admin/Moderator viewing member's orders
+
+✅ PUT /sellers/{sellerId}/profile
+   authorizationActors: ["moderator"]             ← Moderator editing seller's profile
 ```
+
+**Note**: The actor prefix (e.g., `/admin/`, `/moderator/`) is automatically added by the system based on `authorizationActors`. You should NOT manually include it in the path.
 
 **Detection Rule**:
-- If `authorizationActors` includes the SAME actor type as the resource owner → Actor ID MUST NOT be in path
-- If `authorizationActors` is admin/moderator accessing DIFFERENT actor's resources → Actor ID MAY be in path
+- If `authorizationActors` includes the SAME actor type as the path parameter → **VIOLATION** (self-access should not have actor ID in path)
+- If `authorizationActors` contains ONLY admin/moderator accessing a DIFFERENT actor's resources → Actor ID in path is **ALLOWED**
 
 **Examples**:
 ```json
-// ❌ WRONG: Customer accessing their own addresses
+// ❌ WRONG: Customer accessing their own addresses (actor ID in path for self-access)
 {
   "endpoint": { "path": "/customers/{customerId}/addresses", "method": "get" },
   "authorizationActors": ["customer"]  // Customer accessing customer resource = WRONG
 }
 
-// ✅ CORRECT: Customer accessing their own addresses
+// ✅ CORRECT: Customer accessing their own addresses (no actor ID in path)
 {
   "endpoint": { "path": "/customers/addresses", "method": "get" },
   "authorizationActors": ["customer"]  // Actor ID from JWT, not path
 }
 
-// ✅ CORRECT: Admin accessing a customer's addresses
+// ✅ CORRECT: Admin accessing a specific customer's addresses
 {
-  "endpoint": { "path": "/admin/customers/{customerId}/addresses", "method": "get" },
+  "endpoint": { "path": "/customers/{customerId}/addresses", "method": "get" },
   "authorizationActors": ["admin"]  // Admin accessing OTHER user's resource = OK
 }
+// Note: System auto-generates path as /prefix/admin/customers/{customerId}/addresses
 ```
 
 ### 4.1. Prefer Code Over ID
@@ -917,7 +980,7 @@ model article_snapshots {
 
 ### Special Table Handling
 - [ ] Verified **actor tables** have NO POST (create) and NO authentication operations - handled by Authorization Agent
-- [ ] Verified **session tables** have NO PUT (update) - session modification goes through auth flows
+- [ ] Verified **session tables** have ONLY GET/PATCH (READ operations) - NO POST/PUT/DELETE (all CUD goes through auth flows)
 - [ ] Verified **snapshot tables** have no PUT/DELETE by default (unless requirements explicitly request them)
 - [ ] Verified ALL endpoints have `authorizationType: null` (auth endpoints are handled by Authorization Agent)
 - [ ] **No duplicates with Already Generated Authorization Operations** (if table provided)

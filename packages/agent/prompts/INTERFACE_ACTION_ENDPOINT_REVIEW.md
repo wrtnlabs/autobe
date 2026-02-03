@@ -308,9 +308,14 @@ When an authenticated actor accesses their **own** analytics, metrics, or dashbo
 
 Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's data:
 ```
-✅ GET /admin/customers/{customerId}/metrics      ← Admin viewing customer's metrics
-✅ GET /admin/sellers/{sellerId}/analytics        ← Admin viewing seller's analytics
+✅ GET /customers/{customerId}/metrics
+   authorizationActors: ["admin"]                 ← Admin viewing customer's metrics
+
+✅ GET /sellers/{sellerId}/analytics
+   authorizationActors: ["admin", "moderator"]    ← Admin/Moderator viewing seller's analytics
 ```
+
+**Note**: The actor prefix (e.g., `/admin/`) is automatically added by the system. Do NOT manually include it in the path.
 
 ### 3.5. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
 
