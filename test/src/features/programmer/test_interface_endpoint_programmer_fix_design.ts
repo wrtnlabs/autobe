@@ -115,7 +115,10 @@ const testFixDesign = (props: {
   description: string;
 }): void => {
   const design: AutoBeInterfaceEndpointDesign = createMockDesign(props.input);
-  AutoBeInterfaceEndpointProgrammer.fixDesign(design);
+  AutoBeInterfaceEndpointProgrammer.fixDesign({
+    actors: [],
+    design,
+  });
   TestValidator.equals(props.description, props.expected, design.endpoint.path);
 };
 

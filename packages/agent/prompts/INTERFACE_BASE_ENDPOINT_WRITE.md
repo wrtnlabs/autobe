@@ -114,10 +114,12 @@ The following operation types are **exclusively handled by the Authorization Age
 |----------------|---------------|
 | Registration / Join | Authorization Agent generates this |
 | Login / Sign-in | Authorization Agent generates this |
+| Withdraw / Deactivation | Authorization Agent generates this |
 | Token Refresh | Authorization Agent generates this |
 | Password Reset / Change | Authorization Agent generates this |
 | Any operation with non-null `authorizationType` | Authorization Agent's domain |
 | `POST /{actors}` (user creation) | User creation = registration = Authorization Agent's join |
+| `DELETE /{actors}/{id}` (account deletion) | Account deletion = withdrawal = Authorization Agent's withdraw |
 
 **Why This Separation?**
 - The Authorization Agent analyzes actor schemas to generate comprehensive authentication operations
@@ -133,19 +135,17 @@ Only generate **non-authentication CRUD operations** for actor tables:
 | `PATCH /{actors}` | PATCH | `null` | Search/filter actors |
 | `GET /{actors}/{id}` | GET | `null` | Get actor by ID |
 | `PUT /{actors}/{id}` | PUT | `null` | Update actor profile |
-| `DELETE /{actors}/{id}` | DELETE | `null` | Delete actor account |
 
 **Example for `members` table**:
 ```json
 [
   {"description": "Search and filter members", "endpoint": {"path": "/members", "method": "patch"}, "authorizationType": null, "authorizationActors": []},
   {"description": "Get member by ID", "endpoint": {"path": "/members/{memberId}", "method": "get"}, "authorizationType": null, "authorizationActors": []},
-  {"description": "Update member profile", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]},
-  {"description": "Delete member account", "endpoint": {"path": "/members/{memberId}", "method": "delete"}, "authorizationType": null, "authorizationActors": ["member"]}
+  {"description": "Update member profile", "endpoint": {"path": "/members/{memberId}", "method": "put"}, "authorizationType": null, "authorizationActors": ["member"]}
 ]
 ```
 
-**Note**: No `POST /members` - all user creation is handled by the Authorization Agent's join operation.
+**Note**: No `POST /members` (user creation) and no `DELETE /members/{memberId}` (account deletion) - these are handled by the Authorization Agent's join and withdraw operations respectively.
 
 ### 2.3. Session Tables - READ ONLY (CRITICAL)
 
@@ -979,7 +979,7 @@ model article_snapshots {
 ## 9. Final Execution Checklist
 
 ### Special Table Handling
-- [ ] Verified **actor tables** have NO POST (create) and NO authentication operations - handled by Authorization Agent
+- [ ] Verified **actor tables** have NO POST (create), NO DELETE (withdraw), and NO authentication operations - handled by Authorization Agent
 - [ ] Verified **session tables** have ONLY GET/PATCH (READ operations) - NO POST/PUT/DELETE (all CUD goes through auth flows)
 - [ ] Verified **snapshot tables** have no PUT/DELETE by default (unless requirements explicitly request them)
 - [ ] Verified ALL endpoints have `authorizationType: null` (auth endpoints are handled by Authorization Agent)
@@ -1010,4 +1010,4 @@ model article_snapshots {
 
 ---
 
-**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate any authentication operations (registration/join, login, token refresh, password management) - these are handled by the Authorization Agent. All endpoints must have `authorizationType: null`. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.
+**YOUR MISSION**: Generate standard CRUD endpoints for all tables in the assigned group. Do NOT generate any authentication operations (registration/join, login, withdraw/deactivation, token refresh, password management) - these are handled by the Authorization Agent. All endpoints must have `authorizationType: null`. Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` immediately.

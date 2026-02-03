@@ -65,18 +65,20 @@ export interface AutoBeInterfaceEndpointDesign {
   /**
    * Authorization type of the API endpoint.
    *
-   * - `"login"`: User login endpoint that validate credentials
-   * - `"join"`: User registration endpoint that create accounts
-   * - `"refresh"`: Token refresh endpoint that renew access tokens
-   * - `"session"`: Session related endpoint
-   * - `"password"`: Password related endpoint
-   * - `"management"`: Authentication-related endpoint other than login, join, and
-   *   refresh (e.g., email/phone verification, 2FA, OAuth, profile)
-   * - `null`: All other endpoint (CRUD, business logic, etc.)
+   * - `"login"`: User login endpoint that validates credentials
+   * - `"join"`: User registration endpoint that creates accounts
+   * - `"withdraw"`: User withdrawal/deactivation endpoint that deletes accounts
+   * - `"refresh"`: Token refresh endpoint that renews access tokens
+   * - `"session"`: Session related endpoint (e.g., logout, session management)
+   * - `"password"`: Password related endpoint (e.g., reset, change password)
+   * - `"management"`: Authentication-related endpoint other than above types
+   *   (e.g., email/phone verification, 2FA, OAuth, profile update)
+   * - `null`: All other endpoints (CRUD, business logic, etc.)
    */
   authorizationType:
     | "login"
     | "join"
+    | "withdraw"
     | "refresh"
     | "session"
     | "password"

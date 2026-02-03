@@ -44,21 +44,21 @@ export const orchestrateInterfaceEndpointOverall = async (
   const matrix: AutoBeInterfaceEndpointDesign[][] = await executeCachedBatch(
     ctx,
     props.groups.map((group) => async (promptCacheKey) => {
-      const designs: AutoBeInterfaceEndpointDesign[] =
+      let designs: AutoBeInterfaceEndpointDesign[] =
         await orchestrateInterfaceEndpointWrite(ctx, {
           ...props,
           group,
           promptCacheKey,
         });
-      try {
-        return await props.programmer.review({
-          group,
-          designs,
-          promptCacheKey: promptCacheKey + "_review",
-        });
-      } catch {
-        return designs;
-      }
+      for (let i: number = 0; i < 2; ++i)
+        try {
+          designs = await props.programmer.review({
+            group,
+            designs,
+            promptCacheKey: promptCacheKey + "_review",
+          });
+        } catch {}
+      return designs;
     }),
   );
   return new HashMap(

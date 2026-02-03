@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
@@ -43,12 +44,17 @@ export async function orchestrateInterfaceOperation(
       ctx,
       props.designs.map((design) => async (promptCacheKey) => {
         try {
-          const row: AutoBeOpenApi.IOperation[] = await process(ctx, {
-            design,
-            progress,
-            promptCacheKey,
-            instruction: props.instruction,
-          });
+          const row: AutoBeOpenApi.IOperation[] = await forceRetry(
+            () =>
+              process(ctx, {
+                design,
+                progress,
+                promptCacheKey,
+                instruction: props.instruction,
+              }),
+            3,
+            () => true,
+          );
           return row;
         } catch (error) {
           console.log("operation", design, error);

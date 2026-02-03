@@ -108,7 +108,12 @@ export const orchestrateInterfaceEndpointWrite = async (
       AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
-      .map((it) => AutoBeInterfaceEndpointProgrammer.fixDesign(it.second))
+      .map((it) =>
+        AutoBeInterfaceEndpointProgrammer.fixDesign({
+          actors,
+          design: it.second,
+        }),
+      )
       .filter((design) =>
         AutoBeInterfaceEndpointProgrammer.filter({
           kind: props.programmer.kind,

@@ -95,7 +95,7 @@ thinking: "Updated /guest to /guests, /article to /articles, /member to /members
 
 **All endpoints from Base Endpoint Agent MUST have `authorizationType: null`.**
 
-The Base Endpoint Agent generates only business CRUD endpoints. Authentication operations (registration/join, login, token refresh, password management - any operation with non-null `authorizationType`) are handled by the **Authorization Agent**, not the Base Endpoint Agent.
+The Base Endpoint Agent generates only business CRUD endpoints. Authentication operations (registration/join, login, withdraw/deactivation, token refresh, password management - any operation with non-null `authorizationType`) are handled by the **Authorization Agent**, not the Base Endpoint Agent.
 
 **If you see any non-null `authorizationType` values, DELETE them**:
 
@@ -107,16 +107,25 @@ The Base Endpoint Agent generates only business CRUD endpoints. Authentication o
 }
 ```
 
-### 3.2. Actor Table POST Endpoint Validation (CRITICAL)
+### 3.2. Actor Table POST/DELETE Endpoint Validation (CRITICAL)
 
-**Actor tables (users, members, admins, guests, etc.) must NOT have POST (create) endpoints.**
+**Actor tables (users, members, admins, guests, etc.) must NOT have POST (create) or DELETE (withdraw) endpoints.**
 
-User registration is handled by the Authorization Agent's `join` endpoint. If you find a `POST /{actors}` endpoint for an actor table, DELETE it:
+- User registration is handled by the Authorization Agent's `join` endpoint
+- User withdrawal/deactivation is handled by the Authorization Agent's `withdraw` endpoint
+
+If you find a `POST /{actors}` or `DELETE /{actors}/{id}` endpoint for an actor table, DELETE it:
 
 ```typescript
 {
   reason: "Actor table POST (user creation) is handled by Authorization Agent's join endpoint.",
   endpoint: { path: "/members", method: "post" },
+  type: "erase"
+}
+
+{
+  reason: "Actor table DELETE (account deletion) is handled by Authorization Agent's withdraw endpoint.",
+  endpoint: { path: "/members/{memberId}", method: "delete" },
   type: "erase"
 }
 ```
@@ -125,7 +134,6 @@ User registration is handled by the Authorization Agent's `join` endpoint. If yo
 - `PATCH /{actors}` - Search/filter
 - `GET /{actors}/{id}` - Get by ID
 - `PUT /{actors}/{id}` - Update profile
-- `DELETE /{actors}/{id}` - Delete account
 
 ### 3.3. Session Table Restrictions - READ ONLY (CRITICAL)
 
@@ -1039,7 +1047,7 @@ When creating or updating endpoints, you must include `authorizationType` and `a
 
 **For this agent, `authorizationType` is ALWAYS `null`.**
 
-All authentication operations (registration/join, login, token refresh, password management) are handled by the Authorization Agent, not this agent. This agent only reviews business CRUD endpoints, which always have `authorizationType: null`.
+All authentication operations (registration/join, login, withdraw/deactivation, token refresh, password management) are handled by the Authorization Agent, not this agent. This agent only reviews business CRUD endpoints, which always have `authorizationType: null`.
 
 If you find any endpoint with non-null `authorizationType`, DELETE it.
 
@@ -1090,7 +1098,7 @@ This field specifies which actors **can call** this endpoint:
 - [ ] **All endpoints have `authorizationType: null`** (auth endpoints are handled by Authorization Agent)
 - [ ] **No authentication operations exist** (deleted if found - Authorization Agent handles these)
 - [ ] **No duplicates with Already Generated Authorization Operations** (if table provided)
-- [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization Agent's join)
+- [ ] **Actor tables have NO POST (create) and NO DELETE (withdraw) endpoints** (handled by Authorization Agent)
 - [ ] **Session tables have ONLY GET/PATCH (READ operations)** - NO POST/PUT/DELETE for ANY actor including admin
 - [ ] **Snapshot tables have no PUT/DELETE by default** (unless requirements explicitly request them)
 - [ ] **HTTP methods are correct**: GET (read), PATCH (search/pagination), POST (create), PUT (update), DELETE (erase)

@@ -9,6 +9,7 @@ import {
   IValidation,
   LlmTypeChecker,
 } from "@samchon/openapi";
+import { singular } from "pluralize";
 import typia from "typia";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
@@ -35,7 +36,8 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     if (
       props.design.authorizationType === "login" ||
       props.design.authorizationType === "join" ||
-      props.design.authorizationType === "refresh"
+      props.design.authorizationType === "refresh" ||
+      props.design.authorizationType === "withdraw"
     )
       return false;
     else if (props.design.authorizationType === "session") {
@@ -58,11 +60,27 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     return true;
   };
 
-  export const fixDesign = (
-    design: AutoBeInterfaceEndpointDesign,
-  ): AutoBeInterfaceEndpointDesign => {
-    design.endpoint.path = fixPath(design.endpoint.path);
-    return design;
+  export const fixDesign = (props: {
+    actors: AutoBeAnalyzeActor[];
+    design: AutoBeInterfaceEndpointDesign;
+  }): AutoBeInterfaceEndpointDesign => {
+    props.design.endpoint.path = fixPath(props.design.endpoint.path);
+    if (props.design.authorizationActors.length === 1) {
+      const actor: AutoBeAnalyzeActor | undefined = props.actors.find(
+        (a) => a.name === props.design.authorizationActors[0],
+      );
+      if (actor !== undefined && actor.kind !== "admin") {
+        const param: string =
+          NamingConvention.camel(singular(actor.name)) + "Id";
+        const bracket: string = `{${param}}`;
+        if (props.design.endpoint.path.includes(bracket) === true)
+          props.design.endpoint.path = props.design.endpoint.path.replace(
+            bracket,
+            "",
+          );
+      }
+    }
+    return props.design;
   };
 
   export const fixPath = (path: string): string => {

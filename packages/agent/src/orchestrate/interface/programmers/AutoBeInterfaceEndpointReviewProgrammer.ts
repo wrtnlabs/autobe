@@ -106,10 +106,18 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
     const output: AutoBeInterfaceEndpointDesign[] = [];
     for (const revise of props.revises) {
       if (revise.type === "create")
-        output.push(AutoBeInterfaceEndpointProgrammer.fixDesign(revise.design));
+        output.push(
+          AutoBeInterfaceEndpointProgrammer.fixDesign({
+            actors: props.actors,
+            design: revise.design,
+          }),
+        );
       else if (revise.type === "update")
         output.push(
-          AutoBeInterfaceEndpointProgrammer.fixDesign(revise.newDesign),
+          AutoBeInterfaceEndpointProgrammer.fixDesign({
+            actors: props.actors,
+            design: revise.newDesign,
+          }),
         );
       else if (revise.type === "keep") {
         const found: AutoBeInterfaceEndpointDesign | undefined =

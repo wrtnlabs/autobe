@@ -545,11 +545,12 @@ Each endpoint design must include `authorizationType` and `authorizationActors` 
 
 **Action endpoints MUST always use `authorizationType: null`.**
 
-Action endpoints are business logic endpoints (analytics, dashboards, search, reports, etc.), NOT authentication endpoints. All authentication-related endpoints (login, join, refresh, session, password, management) are handled by the **Authorization Agent**.
+Action endpoints are business logic endpoints (analytics, dashboards, search, reports, etc.), NOT authentication endpoints. All authentication-related endpoints (login, join, withdraw, refresh, session, password, management) are handled by the **Authorization Agent**.
 
 **❌ NEVER create these in Action Endpoints**:
 - Registration / Join operations
 - Login / Sign-in operations
+- Withdraw / Deactivation operations
 - Token refresh operations
 - Session management operations
 - Password management operations
@@ -875,6 +876,8 @@ This rule applies to **resource collections** (entities stored in database), NOT
 ### Validation
 - [ ] NO CRUD endpoints created (those are for Base Endpoint Generator)
 - [ ] NO exact (path + method) duplicates with Base CRUD endpoints
+- [ ] **NO authentication operations** (login, join, withdraw, refresh, session, password - handled by Authorization Agent)
+- [ ] **All endpoints have `authorizationType: null`** (auth endpoints are handled by Authorization Agent)
 - [ ] **All resource collection names are PLURAL (no singular forms)**
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
