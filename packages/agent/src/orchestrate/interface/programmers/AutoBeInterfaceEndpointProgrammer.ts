@@ -35,8 +35,13 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     if (
       props.design.authorizationType === "login" ||
       props.design.authorizationType === "join" ||
-      props.design.authorizationType === "refresh" ||
-      props.design.authorizationType === "session"
+      props.design.authorizationType === "refresh"
+    )
+      return false;
+    else if (
+      props.design.authorizationType === "session" &&
+      props.design.endpoint.method !== "get" &&
+      props.design.endpoint.method !== "patch"
     )
       return false;
     return true;

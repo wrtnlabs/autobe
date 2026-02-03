@@ -71,7 +71,7 @@ export interface AutoBeInterfaceEndpointDesign {
    * - `"session"`: Session related endpoint
    * - `"password"`: Password related endpoint
    * - `"management"`: Authentication-related endpoint other than login, join, and
-   *   refresh (e.g., logout, email/phone verification, 2FA, OAuth, profile)
+   *   refresh (e.g., email/phone verification, 2FA, OAuth, profile)
    * - `null`: All other endpoint (CRUD, business logic, etc.)
    */
   authorizationType:
