@@ -117,6 +117,6 @@ export namespace AutoBeInterfaceEndpointProgrammer {
 
     // @todo check existence of update.original
 
-    // @todo check existance of databaseSchema
+    // @todo check existence of databaseSchema
   };
 }
