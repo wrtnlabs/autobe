@@ -96,7 +96,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       props.errors.push({
         path: `${props.accessor}.parameters`,
         expected: "[] // (empty array)",
-        value: props.operation,
+        value: props.operation.parameters,
         description: StringUtil.trim`
           Authorization operations (join/login/refresh) cannot have 
           path parameters. All necessary data must be provided in 
@@ -131,7 +131,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       props.errors.push({
         path: `${props.accessor}.requestBody`,
         expected: `AutoBeOpenApi.IRequestBody // typeName: ${requestTypeName}`,
-        value: props.operation,
+        value: props.operation.requestBody,
         description: StringUtil.trim`
           Request body is required for authentication 
           ${props.operation.authorizationType} operation.
@@ -148,7 +148,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       props.errors.push({
         path: `${props.accessor}.requestBody.typeName`,
         expected: `AutoBeOpenApi.IOperation with requestBody.typeName: ${requestTypeName}`,
-        value: props.operation,
+        value: props.operation.requestBody.typeName,
         description: StringUtil.trim`
           Wrong request body type name: "${props.operation.requestBody.typeName}"
 
@@ -168,7 +168,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       props.errors.push({
         path: `${props.accessor}.responseBody`,
         expected: `AutoBeOpenApi.IResponseBody // typeName: ${responseTypeName}`,
-        value: props.operation,
+        value: props.operation.responseBody,
         description: StringUtil.trim`
           Response body is required for authentication ${props.operation.authorizationType} operation.
 
@@ -182,9 +182,9 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
       });
     else if (props.operation.responseBody.typeName !== responseTypeName)
       props.errors.push({
-        path: `${props.accessor}`,
+        path: `${props.accessor}.responseBody.typeName`,
         expected: JSON.stringify(responseTypeName),
-        value: props.operation,
+        value: props.operation.responseBody.typeName,
         description: StringUtil.trim`
           Wrong response body type name: "${props.operation.responseBody.typeName}"
 
