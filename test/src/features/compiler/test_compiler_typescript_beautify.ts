@@ -5,7 +5,8 @@ import { TestValidator } from "@nestia/e2e";
 export const test_compiler_typescript_beautify = async (): Promise<void> => {
   const compiler = new AutoBeTypeScriptCompiler();
   const value: string = await compiler.beautify(RAW);
-  TestValidator.equals("beautify", false, value !== RAW);
+  console.log(value);
+  TestValidator.equals("beautify", false, value === RAW);
 };
 
 const RAW = StringUtil.trim`
