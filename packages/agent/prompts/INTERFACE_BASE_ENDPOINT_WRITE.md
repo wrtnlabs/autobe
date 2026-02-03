@@ -251,6 +251,74 @@ By default, no PUT (update) or DELETE (erase) for snapshot entities. If requirem
 
 ## 4. Path Parameter Rules
 
+### 4.0. CRITICAL: Never Put Authenticated Actor's Own ID in Path
+
+**🚨 ABSOLUTE PROHIBITION: Actor ID Path Parameter for Self-Access 🚨**
+
+When an authenticated actor accesses their **own** resources, the actor's ID MUST NEVER appear as a path parameter. The actor's identity is obtained from the JWT token (via `Authorization` header), NOT from the URL path.
+
+**Why This Is Critical**:
+1. **Security**: Putting actor ID in path allows URL manipulation attacks (accessing other users' data by changing the ID)
+2. **Redundancy**: The authenticated actor's ID is already known from the JWT token
+3. **API Design**: Self-referencing resources should not require the client to provide their own ID
+
+**FORBIDDEN Pattern** (Actor accessing their OWN resources):
+```
+❌ GET /customers/{customerId}/addresses          ← WRONG: customer ID in path
+❌ GET /customers/{customerId}/addresses/{addressId}  ← WRONG: customer ID in path
+❌ GET /members/{memberId}/orders                 ← WRONG: member ID in path
+❌ PUT /sellers/{sellerId}/profile                ← WRONG: seller ID in path
+❌ GET /users/{userId}/settings                   ← WRONG: user ID in path
+```
+
+**CORRECT Pattern** (Actor accessing their OWN resources):
+```
+✅ GET /customers/addresses                       ← Actor ID from JWT
+✅ GET /customers/addresses/{addressId}           ← Actor ID from JWT, address ID in path
+✅ GET /members/orders                            ← Actor ID from JWT
+✅ PUT /sellers/profile                           ← Actor ID from JWT
+✅ GET /users/settings                            ← Actor ID from JWT
+```
+
+**Path Structure for Actor-Owned Resources**:
+- `/{actors}/{ownedResources}` - List own resources (actor ID from JWT)
+- `/{actors}/{ownedResources}/{resourceId}` - Access specific own resource (actor ID from JWT)
+
+**EXCEPTION: Admin/Moderator Accessing OTHER Users' Resources**
+
+The ONLY case where actor ID belongs in the path is when an **administrator or moderator** accesses **another user's** resources:
+
+```
+✅ GET /admin/customers/{customerId}/addresses    ← Admin viewing customer's addresses
+✅ GET /admin/members/{memberId}/orders           ← Admin viewing member's orders
+✅ PUT /moderator/sellers/{sellerId}/profile      ← Moderator editing seller's profile
+```
+
+**Detection Rule**:
+- If `authorizationActors` includes the SAME actor type as the resource owner → Actor ID MUST NOT be in path
+- If `authorizationActors` is admin/moderator accessing DIFFERENT actor's resources → Actor ID MAY be in path
+
+**Examples**:
+```json
+// ❌ WRONG: Customer accessing their own addresses
+{
+  "endpoint": { "path": "/customers/{customerId}/addresses", "method": "get" },
+  "authorizationActors": ["customer"]  // Customer accessing customer resource = WRONG
+}
+
+// ✅ CORRECT: Customer accessing their own addresses
+{
+  "endpoint": { "path": "/customers/addresses", "method": "get" },
+  "authorizationActors": ["customer"]  // Actor ID from JWT, not path
+}
+
+// ✅ CORRECT: Admin accessing a customer's addresses
+{
+  "endpoint": { "path": "/admin/customers/{customerId}/addresses", "method": "get" },
+  "authorizationActors": ["admin"]  // Admin accessing OTHER user's resource = OK
+}
+```
+
 ### 4.1. Prefer Code Over ID
 
 When a table has a unique `code` field, use it as the path parameter:
@@ -858,6 +926,7 @@ model article_snapshots {
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context in child name (/items not /cart-items under /carts)**
+- [ ] **NO actor ID in path for self-access** (e.g., `/customers/addresses` NOT `/customers/{customerId}/addresses`)
 - [ ] Used `{entityCode}` when unique code exists
 - [ ] Used `{entityId}` only when no unique code
 - [ ] Included parent path for composite unique keys

@@ -171,7 +171,76 @@ Snapshot tables store point-in-time historical records that are **immutable by n
 - Check database schema for `stance: "snapshot"` property
 - Table names often contain: `snapshot`, `history`, `audit`, `log`, `archive`
 
-### 3.4. Necessity Check
+### 3.4. Actor ID Path Parameter Validation (CRITICAL)
+
+**🚨 ABSOLUTE PROHIBITION: Actor ID in Path for Self-Access 🚨**
+
+When an authenticated actor accesses their **own** resources, the actor's ID MUST NEVER appear as a path parameter. The actor's identity comes from the JWT token, NOT the URL path.
+
+**Why This Matters**:
+1. **Security Vulnerability**: Putting actor ID in path enables URL manipulation attacks
+2. **Redundant Data**: JWT already contains the authenticated actor's ID
+3. **Bad API Design**: Self-referencing resources should never require the client to supply their own ID
+
+**FORBIDDEN Patterns to DELETE or UPDATE**:
+```
+❌ GET /customers/{customerId}/addresses          ← DELETE or UPDATE
+❌ GET /customers/{customerId}/addresses/{addressId}  ← DELETE or UPDATE
+❌ GET /members/{memberId}/orders                 ← DELETE or UPDATE
+❌ PUT /sellers/{sellerId}/profile                ← DELETE or UPDATE
+❌ GET /users/{userId}/settings                   ← DELETE or UPDATE
+```
+
+**CORRECT Patterns**:
+```
+✅ GET /customers/addresses                       ← Actor ID from JWT
+✅ GET /customers/addresses/{addressId}           ← Actor ID from JWT
+✅ GET /members/orders                            ← Actor ID from JWT
+✅ PUT /sellers/profile                           ← Actor ID from JWT
+✅ GET /users/settings                            ← Actor ID from JWT
+```
+
+**Detection Rule**:
+- Check if `authorizationActors` includes the SAME actor type as the path parameter
+- If `authorizationActors: ["customer"]` and path has `{customerId}` → **VIOLATION**
+- If `authorizationActors: ["member"]` and path has `{memberId}` → **VIOLATION**
+
+**Action - UPDATE to Remove Actor ID from Path**:
+```typescript
+{
+  type: "update",
+  reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
+  original: { path: "/customers/{customerId}/addresses", method: "get" },
+  updated: {
+    endpoint: { path: "/customers/addresses", method: "get" },
+    description: "Get customer's own addresses.",
+    authorizationType: null,
+    authorizationActors: ["customer"]
+  }
+}
+
+{
+  type: "update",
+  reason: "Actor ID must not be in path for self-access. Member ID comes from JWT token.",
+  original: { path: "/members/{memberId}/orders/{orderId}", method: "get" },
+  updated: {
+    endpoint: { path: "/members/orders/{orderId}", method: "get" },
+    description: "Get member's specific order.",
+    authorizationType: null,
+    authorizationActors: ["member"]
+  }
+}
+```
+
+**EXCEPTION: Admin/Moderator Accessing OTHER Users' Resources**
+
+Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's resources:
+```
+✅ GET /admin/customers/{customerId}/addresses    ← Admin viewing customer's addresses
+✅ GET /admin/members/{memberId}/orders           ← Admin viewing member's orders
+```
+
+### 3.5. Necessity Check
 
 Each endpoint must be justified by service requirements.
 
@@ -183,7 +252,7 @@ Each endpoint must be justified by service requirements.
 **Endpoints to DELETE**:
 - Endpoints for functionality not mentioned in requirements
 
-### 3.4. Naming Consistency
+### 3.6. Naming Consistency
 
 All paths must follow hierarchical `/` structure. NO camelCase, NO kebab-case, NO redundant parent context.
 
@@ -220,13 +289,13 @@ All paths must follow hierarchical `/` structure. NO camelCase, NO kebab-case, N
 
 **Action**: UPDATE endpoints with camelCase, kebab-case, or redundant context to clean hierarchical structure.
 
-### 3.5. Duplicate & Semantic Similarity Detection (Within Group)
+### 3.7. Duplicate & Semantic Similarity Detection (Within Group)
 
 **You MUST compare endpoints within THIS GROUP and identify duplicates or semantically similar endpoints.**
 
 **Note**: You are reviewing a single group's endpoints. Cross-group duplicates (e.g., same endpoint in different groups) are handled by final deduplication after all groups are reviewed. Focus on duplicates within the provided endpoint list.
 
-#### 3.5.1. Path-Based Duplicates
+#### 3.7.1. Path-Based Duplicates
 
 Endpoints with same functionality but different paths:
 
@@ -241,7 +310,7 @@ PATCH /users/query
 → DELETE all but one, consolidate into single PATCH /users
 ```
 
-#### 3.5.2. Semantic Similarity Detection (Compare Descriptions)
+#### 3.7.2. Semantic Similarity Detection (Compare Descriptions)
 
 **CRITICAL**: Compare descriptions of ALL endpoints to find semantically identical or overlapping functionality.
 
@@ -276,7 +345,7 @@ GET /orders/{orderId}/info
 → DELETE all but one, keep /orders/{orderId} or most appropriate
 ```
 
-#### 3.5.3. Detection Checklist
+#### 3.7.3. Detection Checklist
 
 Before completing review, verify NO semantic duplicates exist:
 
@@ -287,7 +356,7 @@ Before completing review, verify NO semantic duplicates exist:
 
 **Action**: DELETE semantically duplicate endpoints, keeping the most RESTful one.
 
-### 3.6. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
+### 3.8. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
 
 **🚨 Resource collection names in paths MUST be PLURAL. 🚨**
 
@@ -295,7 +364,7 @@ Before completing review, verify NO semantic duplicates exist:
 
 This rule applies to **resource collections** (database entities like users, articles, orders), NOT to functional categories in hierarchical paths.
 
-#### 3.6.1. Scan Every Path Segment
+#### 3.8.1. Scan Every Path Segment
 
 Check EACH segment of EVERY path for singular forms:
 
@@ -313,7 +382,7 @@ Check EACH segment of EVERY path for singular forms:
   plural    param       plural     param
 ```
 
-#### 3.6.2. Common Singular → Plural Conversions for Resource Collections
+#### 3.8.2. Common Singular → Plural Conversions for Resource Collections
 
 **Note**: This rule applies to **resource collections** (database entities). Functional categories like `/moderation/logs` or `/audit/logs` follow hierarchical naming, not pluralization rules.
 
@@ -332,7 +401,7 @@ Check EACH segment of EVERY path for singular forms:
 | `/status` | `/statuses` |
 | `/address` | `/addresses` |
 
-#### 3.6.3. Detect Singular/Plural Duplicate Pairs
+#### 3.8.3. Detect Singular/Plural Duplicate Pairs
 
 **CRITICAL**: The generator often creates BOTH singular AND plural versions of the same endpoint. You MUST detect and fix these pairs.
 
@@ -363,7 +432,7 @@ PATCH /user/{userId}/address              ← BOTH segments singular (DELETE)
 PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 ```
 
-#### 3.6.4. Action Rules
+#### 3.8.4. Action Rules
 
 **IF both singular AND plural exist for same endpoint:**
 → **DELETE the singular form**
@@ -393,7 +462,7 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 }
 ```
 
-#### 3.6.5. Full Example - Batch Fix
+#### 3.8.5. Full Example - Batch Fix
 
 ```typescript
 process({
@@ -441,7 +510,7 @@ process({
 })
 ```
 
-### 3.7. Stance Rule Compliance
+### 3.9. Stance Rule Compliance
 
 Check database schema `stance` property for each entity.
 
@@ -480,7 +549,7 @@ GET /articles/{articleId}/snapshots/{snapshotId}
 POST /articles/{articleId}/snapshots
 ```
 
-### 3.8. Composite Unique Constraint Compliance
+### 3.10. Composite Unique Constraint Compliance
 
 Check database schema for `@@unique([parent_id, code])` constraints.
 
@@ -882,6 +951,7 @@ process({
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
+- [ ] **NO actor ID in path for self-access** (e.g., `/customers/addresses` NOT `/customers/{customerId}/addresses`)
 - [ ] **All resource names are PLURAL (no singular forms like /article, /user, /guest)**
 - [ ] **No singular/plural duplicate pairs exist (e.g., both /guest and /guests)**
 - [ ] No duplicate functionality exists

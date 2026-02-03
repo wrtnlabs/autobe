@@ -580,6 +580,45 @@ Each actor in the array generates a SEPARATE endpoint with that actor's path pre
 
 ## 6. Endpoint Path Patterns
 
+### 6.0. CRITICAL: Never Put Authenticated Actor's Own ID in Path
+
+**🚨 ABSOLUTE PROHIBITION: Actor ID Path Parameter for Self-Access 🚨**
+
+When an authenticated actor accesses their **own** resources or metrics, the actor's ID MUST NEVER appear as a path parameter. The actor's identity is obtained from the JWT token (via `Authorization` header), NOT from the URL path.
+
+**Why This Is Critical**:
+1. **Security**: Putting actor ID in path allows URL manipulation attacks
+2. **Redundancy**: The authenticated actor's ID is already known from the JWT token
+3. **API Design**: Self-referencing resources should not require the client to provide their own ID
+
+**FORBIDDEN Pattern** (Actor accessing their OWN analytics/metrics):
+```
+❌ GET /customers/{customerId}/metrics            ← WRONG: customer ID in path
+❌ GET /sellers/{sellerId}/analytics              ← WRONG: seller ID in path
+❌ GET /members/{memberId}/dashboard              ← WRONG: member ID in path
+❌ PATCH /users/{userId}/reports                  ← WRONG: user ID in path
+```
+
+**CORRECT Pattern** (Actor accessing their OWN analytics/metrics):
+```
+✅ GET /customers/metrics                         ← Actor ID from JWT
+✅ GET /sellers/analytics                         ← Actor ID from JWT
+✅ GET /members/dashboard                         ← Actor ID from JWT
+✅ PATCH /users/reports                           ← Actor ID from JWT
+```
+
+**EXCEPTION: Admin/Moderator Accessing OTHER Users' Data**
+
+Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's data:
+```
+✅ GET /admin/customers/{customerId}/metrics      ← Admin viewing customer's metrics
+✅ GET /admin/sellers/{sellerId}/analytics        ← Admin viewing seller's analytics
+```
+
+**Detection Rule**:
+- If `authorizationActors` includes the SAME actor type as the resource owner → Actor ID MUST NOT be in path
+- If `authorizationActors` is admin/moderator accessing DIFFERENT actor's resources → Actor ID MAY be in path
+
 ### 6.1. Statistics & Analytics
 
 ```
@@ -834,6 +873,7 @@ This rule applies to **resource collections** (entities stored in database), NOT
 - [ ] **All resource collection names are PLURAL (no singular forms)**
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
+- [ ] **NO actor ID in path for self-access** (e.g., `/customers/metrics` NOT `/customers/{customerId}/metrics`)
 - [ ] All paths use hierarchical `/` structure (NOT camelCase concatenation)
 - [ ] All paths start with `/`
 - [ ] No domain/role prefixes

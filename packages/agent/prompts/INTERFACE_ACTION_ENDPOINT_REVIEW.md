@@ -257,7 +257,62 @@ Before completing review, verify NO semantic duplicates exist:
 
 **Action**: DELETE semantically duplicate endpoints, keeping the most appropriate one.
 
-### 3.4. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
+### 3.4. Actor ID Path Parameter Validation (CRITICAL)
+
+**🚨 ABSOLUTE PROHIBITION: Actor ID in Path for Self-Access 🚨**
+
+When an authenticated actor accesses their **own** analytics, metrics, or dashboards, the actor's ID MUST NEVER appear as a path parameter. The actor's identity comes from the JWT token, NOT the URL path.
+
+**Why This Matters**:
+1. **Security Vulnerability**: Putting actor ID in path enables URL manipulation attacks
+2. **Redundant Data**: JWT already contains the authenticated actor's ID
+3. **Bad API Design**: Self-referencing resources should never require the client to supply their own ID
+
+**FORBIDDEN Patterns to DELETE or UPDATE**:
+```
+❌ GET /customers/{customerId}/metrics            ← DELETE or UPDATE
+❌ GET /sellers/{sellerId}/analytics              ← DELETE or UPDATE
+❌ GET /members/{memberId}/dashboard              ← DELETE or UPDATE
+❌ PATCH /users/{userId}/reports                  ← DELETE or UPDATE
+```
+
+**CORRECT Patterns**:
+```
+✅ GET /customers/metrics                         ← Actor ID from JWT
+✅ GET /sellers/analytics                         ← Actor ID from JWT
+✅ GET /members/dashboard                         ← Actor ID from JWT
+✅ PATCH /users/reports                           ← Actor ID from JWT
+```
+
+**Detection Rule**:
+- Check if `authorizationActors` includes the SAME actor type as the path parameter
+- If `authorizationActors: ["customer"]` and path has `{customerId}` → **VIOLATION**
+- If `authorizationActors: ["seller"]` and path has `{sellerId}` → **VIOLATION**
+
+**Action - UPDATE to Remove Actor ID from Path**:
+```typescript
+{
+  type: "update",
+  reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
+  original: { path: "/customers/{customerId}/metrics", method: "get" },
+  updated: {
+    endpoint: { path: "/customers/metrics", method: "get" },
+    description: "Get customer's own metrics and analytics.",
+    authorizationType: null,
+    authorizationActors: ["customer"]
+  }
+}
+```
+
+**EXCEPTION: Admin/Moderator Accessing OTHER Users' Data**
+
+Actor ID in path is ONLY valid when admin/moderator accesses ANOTHER user's data:
+```
+✅ GET /admin/customers/{customerId}/metrics      ← Admin viewing customer's metrics
+✅ GET /admin/sellers/{sellerId}/analytics        ← Admin viewing seller's analytics
+```
+
+### 3.5. Plural/Singular Normalization (FIRST PRIORITY - CHECK THIS FIRST!)
 
 **🚨 Resource collection names in paths MUST be PLURAL. 🚨**
 
@@ -265,7 +320,7 @@ Before completing review, verify NO semantic duplicates exist:
 
 This rule applies to **resource collections** (database entities like sales, customers, products), NOT to functional categories (statistics, analytics, dashboard) or view type suffixes (summary, overview).
 
-#### 3.4.1. Scan Every Path Segment
+#### 3.5.1. Scan Every Path Segment
 
 Check EACH segment of EVERY path for singular forms:
 
@@ -283,7 +338,7 @@ Check EACH segment of EVERY path for singular forms:
   plural     plural   adjective
 ```
 
-#### 3.4.2. Common Singular → Plural Conversions for Resource Collections
+#### 3.5.2. Common Singular → Plural Conversions for Resource Collections
 
 **Note**: This rule applies to **resource collections** (entities stored in database), NOT to functional categories or view types.
 
@@ -306,7 +361,7 @@ Check EACH segment of EVERY path for singular forms:
 - `.../summary` - view type suffix ✅
 - `.../overview` - view type suffix ✅
 
-#### 3.4.3. Detect Singular/Plural Duplicate Pairs
+#### 3.5.3. Detect Singular/Plural Duplicate Pairs
 
 **CRITICAL**: The generator often creates BOTH singular AND plural versions of the same endpoint. You MUST detect and fix these pairs.
 
@@ -329,7 +384,7 @@ GET /statistic/sale/category       ← ALL segments singular (DELETE)
 GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 ```
 
-#### 3.4.4. Action Rules
+#### 3.5.4. Action Rules
 
 **IF both singular AND plural exist for same endpoint:**
 → **DELETE the singular form**
@@ -359,7 +414,7 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 }
 ```
 
-#### 3.4.5. Full Example - Batch Fix
+#### 3.5.5. Full Example - Batch Fix
 
 ```typescript
 process({
@@ -402,7 +457,7 @@ process({
 })
 ```
 
-### 3.5. HTTP Method Appropriateness
+### 3.6. HTTP Method Appropriateness
 
 Action endpoints should use appropriate HTTP methods.
 
@@ -426,7 +481,7 @@ PATCH /reports/revenue  (needs filter parameters)
 
 **Action**: UPDATE method if inappropriate (e.g., complex search using GET instead of PATCH).
 
-### 3.6. Over-Engineering Detection
+### 3.7. Over-Engineering Detection
 
 Action endpoints should not be overly granular.
 
@@ -449,7 +504,7 @@ GET /dashboard/admin/orders/completed
 
 **Action**: DELETE over-engineered endpoints.
 
-### 3.7. Security Considerations
+### 3.8. Security Considerations
 
 Action endpoints should not expose sensitive data.
 
@@ -866,6 +921,7 @@ process({
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
+- [ ] **NO actor ID in path for self-access** (e.g., `/customers/metrics` NOT `/customers/{customerId}/metrics`)
 - [ ] **All resource names are PLURAL (no singular forms)**
 - [ ] **No singular/plural duplicate pairs exist**
 - [ ] No duplicates among action endpoints
