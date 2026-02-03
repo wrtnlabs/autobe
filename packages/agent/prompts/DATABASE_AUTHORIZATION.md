@@ -212,6 +212,80 @@ Same authentication pattern as member but may have additional security considera
 
 ---
 
+## 📝 TABLE DESCRIPTION REQUIREMENTS FOR DEDUPLICATION
+
+**CRITICAL**: Table descriptions are the PRIMARY source for deduplication analysis.
+Brief descriptions cause duplicate detection failures. Write RICH descriptions.
+
+### Required Elements (ALL 5 must be included)
+
+| Element | Purpose | Example |
+|---------|---------|---------|
+| **1. Role Tag** | Quick classification | `[MASTER DATA]`, `[INPUT]`, `[AUDIT]`, `[CONFIG]`, `[SNAPSHOT]`, `[JUNCTION]` |
+| **2. Core Entity** | What specific business entity is stored | "customer authentication credentials" |
+| **3. Key Data Fields** | Main data this table contains | "stores email, password_hash, 2FA settings" |
+| **4. Business Context** | What workflow/process uses this | "used in login, password reset, session creation flows" |
+| **5. Distinguishing Characteristics** | How it differs from similar tables | "does NOT store profile data - see customer_profiles" |
+
+### Role Tag Definitions for Authorization Tables
+
+| Tag | Meaning | Typical Authorization Use |
+|-----|---------|---------------------------|
+| `[MASTER DATA]` | Core actor identity | Actor tables (users, customers, administrators) |
+| `[MASTER DATA]` | Session management | Session tables (user_sessions, customer_sessions) |
+| `[INPUT]` | Auth requests | Password reset requests, verification requests |
+| `[AUDIT]` | Auth logging | Login attempts, security events |
+| `[CONFIG]` | Auth settings | 2FA settings, notification preferences |
+| `[JUNCTION]` | Auth relationships | OAuth connections, role assignments |
+
+### Description Examples for Authorization
+
+#### ❌ BAD - Too vague, causes deduplication failures
+
+```typescript
+{ name: "shopping_customers", description: "Customer accounts" }
+// → Cannot distinguish from customer tables in other components
+```
+
+#### ✅ GOOD - Rich descriptions enable accurate deduplication
+
+```typescript
+// [MASTER DATA] - Actor identity with explicit scope separation
+{
+  name: "shopping_customers",
+  description: "[MASTER DATA] Customer actor identity for authentication. Stores authentication credentials (email, password_hash), 2FA settings, and account status. Created during customer registration. Used exclusively in authentication flow (login, password reset, session validation). Does NOT store personal profile (name, address) - those belong in business domain tables that reference this actor."
+}
+
+// [INPUT] - Auth request with lifecycle distinction
+{
+  name: "shopping_customer_password_resets",
+  description: "[INPUT] Password reset request tokens for customers. Stores reset token (token_hash, expires_at), customer reference, and request metadata (requested_ip). Created when customer requests password reset. Consumed and invalidated after use. Part of password recovery workflow - different from customer_sessions which are login sessions."
+}
+
+// [AUDIT] - Compliance log distinguished from active sessions
+{
+  name: "shopping_administrator_audit_logs",
+  description: "[AUDIT] Immutable record of administrator actions for security compliance. Stores action details (action_type, target_entity, changes_made), admin reference, timestamp, and request context (ip, session). Created automatically on any admin action. Used for security auditing and compliance. Different from administrator_sessions which tracks active logins."
+}
+```
+
+### Why Rich Descriptions Matter for Authorization Tables
+
+Authorization tables are particularly prone to duplication across components because:
+- Multiple components might create their own "users" or "customers" tables
+- Session tables might be duplicated if domain boundaries are unclear
+
+**With vague descriptions:**
+- "Customer accounts" vs "Shopping customers" → Cannot determine if duplicate
+- "User sessions" vs "Customer sessions" → Looks like duplicate but might be different actors
+
+**With rich descriptions:**
+- Actor type clearly identified (customer vs admin vs guest)
+- Authentication scope explicitly stated
+- Relationship to profile/business data clarified
+
+---
+
 ## Table Naming Conventions
 
 ### Required Naming Rules
@@ -492,19 +566,46 @@ process({
     rationale: "Created main actor + session tables for each actor. Added password_resets for user/admin since requirements specify password recovery. Added audit_logs for admin per security requirements. Guest has minimal tables without password support.",
     tables: [
       // User (member) tables
-      { name: "shopping_users", description: "Registered user accounts with email/password authentication credentials and profile information." },
-      { name: "shopping_user_sessions", description: "JWT session tokens for user authentication with access and refresh token support." },
-      { name: "shopping_user_password_resets", description: "Password reset tokens with expiration for secure user password recovery workflow." },
+      {
+        name: "shopping_users",
+        description: "[MASTER DATA] Registered user actor for authentication. Stores credentials (email, password_hash), 2FA settings, account status, and registration timestamp. Created during user signup. Used in login, password reset, and session validation flows. Does NOT store profile details (name, avatar) - those belong in user_profiles table in business domain."
+      },
+      {
+        name: "shopping_user_sessions",
+        description: "[MASTER DATA] Active authentication sessions for users. Stores session context (access_token, refresh_token, device_id, ip_address, user_agent), creation and expiration timestamps. Created on successful login. Used for authenticating all user requests. Multiple concurrent sessions supported per user."
+      },
+      {
+        name: "shopping_user_password_resets",
+        description: "[INPUT] Password reset request tokens for users. Stores reset token (token_hash, expires_at), user reference, request metadata (requested_ip, requested_at). Created when user initiates password reset. Single-use token consumed after password change. Different from sessions which are for authenticated access."
+      },
 
       // Admin tables
-      { name: "shopping_administrators", description: "Administrator accounts with elevated privileges for platform management." },
-      { name: "shopping_administrator_sessions", description: "JWT session tokens for administrator authentication with access and refresh token support." },
-      { name: "shopping_administrator_password_resets", description: "Password reset tokens with expiration for secure administrator password recovery." },
-      { name: "shopping_administrator_audit_logs", description: "Audit trail of administrator actions for security compliance and accountability." },
+      {
+        name: "shopping_administrators",
+        description: "[MASTER DATA] Administrator actor for platform management. Stores admin credentials (email, password_hash), role/permission level, and account status. Created by super admin or system setup. Used in admin authentication with elevated privilege checks. Separate from users due to different security requirements and access patterns."
+      },
+      {
+        name: "shopping_administrator_sessions",
+        description: "[MASTER DATA] Active authentication sessions for administrators. Stores session context (access_token, ip_address, user_agent), security metadata, and shorter expiration for security. Created on admin login with stricter validation. Used for admin request authentication. Separate from user_sessions due to elevated security requirements."
+      },
+      {
+        name: "shopping_administrator_password_resets",
+        description: "[INPUT] Password reset request tokens for administrators. Stores reset token (token_hash, expires_at), admin reference, request metadata with additional security logging. Created when admin requests password reset. Enhanced security compared to user resets including notification to other admins."
+      },
+      {
+        name: "shopping_administrator_audit_logs",
+        description: "[AUDIT] Immutable compliance record of all administrator actions. Stores action type, target entity, before/after state, admin reference, timestamp, and request context (ip, session_id). Created automatically on any admin modification. Used for security auditing, compliance reporting, and incident investigation. Write-only, never modified or deleted."
+      },
 
       // Guest tables
-      { name: "shopping_guests", description: "Anonymous guest entities representing unauthenticated visitors. Stores identity only, no credentials or session data." },
-      { name: "shopping_guest_sessions", description: "Session records for guest access containing device_id, token, IP, and connection context with expiration." }
+      {
+        name: "shopping_guests",
+        description: "[MASTER DATA] Anonymous guest actor for unauthenticated visitors. Stores minimal identity (id, created_at) with NO credentials or password. Created on first anonymous visit. Used to track anonymous shopping carts and enable guest checkout. Can be linked to user account upon registration. Does NOT store session data - see guest_sessions."
+      },
+      {
+        name: "shopping_guest_sessions",
+        description: "[MASTER DATA] Session tracking for anonymous guests. Stores session context (device_id, token, ip_address, href, referrer, user_agent), expiration timestamp. Created when guest is identified. Used for cart persistence and anonymous user tracking. Shorter expiration than authenticated sessions. Multiple sessions per guest supported."
+      }
     ]
   }
 })
@@ -523,15 +624,36 @@ process({
     rationale: "Both actors need main + session tables with full auth fields. Added email_verifications for both per requirements. Added oauth_connections only for customer since requirements specify social login for buyers only.",
     tables: [
       // Customer tables
-      { name: "customers", description: "Customer accounts for buyers with email/password authentication." },
-      { name: "customer_sessions", description: "JWT session tokens for customer authentication." },
-      { name: "customer_email_verifications", description: "Email verification tokens for customer registration confirmation." },
-      { name: "customer_oauth_connections", description: "OAuth provider connections for customer social login." },
+      {
+        name: "customers",
+        description: "[MASTER DATA] Customer actor for buyers on the marketplace. Stores authentication credentials (email, password_hash), verification status, and account state. Created during customer registration. Used in customer login, checkout, and order flows. Does NOT store shipping addresses or payment methods - those are in customer_addresses and customer_payment_methods in order domain."
+      },
+      {
+        name: "customer_sessions",
+        description: "[MASTER DATA] Active authentication sessions for customers. Stores session tokens (access_token, refresh_token), device info (device_id, ip_address, user_agent), and expiration. Created on customer login. Used to authenticate all customer API requests. Supports multiple concurrent sessions for cross-device shopping."
+      },
+      {
+        name: "customer_email_verifications",
+        description: "[INPUT] Email verification tokens for customer registration. Stores verification token (token_hash, expires_at), customer reference, and email being verified. Created during registration. Single-use token consumed when customer clicks verification link. Required before customer can place orders."
+      },
+      {
+        name: "customer_oauth_connections",
+        description: "[JUNCTION] OAuth provider links for customer social login. Stores provider info (provider_name, provider_user_id, access_token), customer reference. Created when customer connects social account. Enables login via Google, Facebook, etc. One customer can have multiple OAuth connections for different providers."
+      },
 
       // Seller tables
-      { name: "sellers", description: "Seller accounts for merchants with email/password authentication." },
-      { name: "seller_sessions", description: "JWT session tokens for seller authentication." },
-      { name: "seller_email_verifications", description: "Email verification tokens for seller registration confirmation." }
+      {
+        name: "sellers",
+        description: "[MASTER DATA] Seller actor for merchants on the marketplace. Stores authentication credentials (email, password_hash), verification status, seller tier/status. Created during seller application approval. Used in seller dashboard login and product management flows. Does NOT store store details or bank info - those are in seller_profiles and seller_payment_accounts in seller domain."
+      },
+      {
+        name: "seller_sessions",
+        description: "[MASTER DATA] Active authentication sessions for sellers. Stores session tokens (access_token, refresh_token), device info, and expiration. Created on seller login. Used to authenticate seller dashboard and API requests. Separate from customer_sessions due to different permission scopes and security requirements."
+      },
+      {
+        name: "seller_email_verifications",
+        description: "[INPUT] Email verification tokens for seller registration. Stores verification token (token_hash, expires_at), seller reference, and email being verified. Created during seller application. Single-use token consumed on verification. Part of seller onboarding workflow which includes additional business verification steps."
+      }
     ]
   }
 })
@@ -573,8 +695,12 @@ Before calling `process({ request: { type: "complete", ... } })`, verify:
 - [ ] **Guest actors have minimal fields**: only id and created_at, NO device_id or token
 
 ### Table Content Quality
-- [ ] Each table has clear, concise description
-- [ ] Descriptions explain purpose and what data is stored
+- [ ] **TABLE DESCRIPTIONS - ALL 5 ELEMENTS**: Every description includes:
+  - [ ] Role Tag: `[MASTER DATA]`, `[INPUT]`, `[AUDIT]`, `[CONFIG]`, or `[JUNCTION]`
+  - [ ] Core Entity: What specific authentication entity is stored
+  - [ ] Key Data Fields: Main data this table contains
+  - [ ] Business Context: What authentication workflow uses this table
+  - [ ] Distinguishing Characteristics: How it differs from similar tables (especially across components)
 - [ ] Descriptions do NOT imply session fields in actor tables
 - [ ] No duplicate tables
 - [ ] All required tables included for EACH actor

@@ -13,9 +13,15 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
     errors: IValidation.IError[];
     path: string;
     target: AutoBeDatabaseComponent;
-    allComponents: AutoBeDatabaseComponent[];
+    otherComponents: Pick<AutoBeDatabaseComponent, "namespace" | "tables">[];
     duplicateGroups: AutoBeDatabaseDeduplicationGroup[];
   }): void => {
+    // Combine target + otherComponents for validation
+    const allComponents: Pick<
+      AutoBeDatabaseComponent,
+      "namespace" | "tables"
+    >[] = [props.target, ...props.otherComponents];
+
     props.duplicateGroups.forEach((group, i) => {
       // Each group must have at least 2 tables
       if (group.tables.length < 2)
@@ -33,8 +39,11 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
 
       // Each table must exist in actual components
       group.tables.forEach((table, j) => {
-        const component: AutoBeDatabaseComponent | undefined =
-          props.allComponents.find((c) => c.namespace === table.namespace);
+        const component:
+          | Pick<AutoBeDatabaseComponent, "namespace" | "tables">
+          | undefined = allComponents.find(
+          (c) => c.namespace === table.namespace,
+        );
         if (component === undefined)
           props.errors.push({
             path: `${props.path}[${i}].tables[${j}].namespace`,
@@ -44,10 +53,10 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
               Component namespace "${table.namespace}" does not exist.
 
               Fix: Use one of the existing component namespaces:
-              - ${props.allComponents.map((c) => c.namespace).join(", ")}
+              - ${allComponents.map((c) => c.namespace).join(", ")}
             `,
           });
-        else if (!component.tables.some((t) => t.name === table.name))
+        else if (component.tables.some((t) => t.name === table.name) === false)
           props.errors.push({
             path: `${props.path}[${i}].tables[${j}].name`,
             expected: `existing table in "${table.namespace}" component`,
@@ -89,18 +98,77 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
     components: AutoBeDatabaseComponent[],
     events: AutoBeDatabaseDeduplicationEvent[],
   ): AutoBeDatabaseComponent[] => {
+    console.log("\n");
+    console.log(
+      "╔══════════════════════════════════════════════════════════════╗",
+    );
+    console.log(
+      "║     AutoBeDatabaseDeduplicationProgrammer.resolve() START    ║",
+    );
+    console.log(
+      "╚══════════════════════════════════════════════════════════════╝",
+    );
+    console.log(`[Resolve] Input components: ${components.length}`);
+    console.log(`[Resolve] Input events: ${events.length}`);
+
     // 1. Collect all duplicate groups from events
     const duplicatedGroups: AutoBeDatabaseDeduplicationGroup[] = events.flatMap(
       (e) => e.duplicateGroups,
     );
-    if (duplicatedGroups.length === 0) return components;
+
+    console.log(
+      `[Resolve] Total duplicate groups collected: ${duplicatedGroups.length}`,
+    );
+    events.forEach((event, i) => {
+      console.log(
+        `[Resolve]   Event[${i}] from "${event.namespace}": ${event.duplicateGroups.length} groups`,
+      );
+    });
+
+    if (duplicatedGroups.length === 0) {
+      console.log(
+        "[Resolve] No duplicate groups found. Returning original components.",
+      );
+      console.log(
+        "╔══════════════════════════════════════════════════════════════╗",
+      );
+      console.log(
+        "║     AutoBeDatabaseDeduplicationProgrammer.resolve() END      ║",
+      );
+      console.log(
+        "╚══════════════════════════════════════════════════════════════╝\n",
+      );
+      return components;
+    }
 
     // 2. Merge overlapping groups into clusters using Union-Find
     const clusters: AutoBeDatabaseDeduplicationGroup.ITable[][] =
       mergeGroups(duplicatedGroups);
 
     // 3. Remove duplicates, keeping table from smallest component
-    return removeDuplicates(components, clusters);
+    const result = removeDuplicates(components, clusters);
+
+    console.log("\n[Resolve] Summary:");
+    console.log(
+      `[Resolve]   Input tables: ${components.reduce((sum, c) => sum + c.tables.length, 0)}`,
+    );
+    console.log(
+      `[Resolve]   Output tables: ${result.reduce((sum, c) => sum + c.tables.length, 0)}`,
+    );
+    console.log(
+      `[Resolve]   Removed tables: ${components.reduce((sum, c) => sum + c.tables.length, 0) - result.reduce((sum, c) => sum + c.tables.length, 0)}`,
+    );
+    console.log(
+      "╔══════════════════════════════════════════════════════════════╗",
+    );
+    console.log(
+      "║     AutoBeDatabaseDeduplicationProgrammer.resolve() END      ║",
+    );
+    console.log(
+      "╚══════════════════════════════════════════════════════════════╝\n",
+    );
+
+    return result;
   };
 
   /**
@@ -115,6 +183,15 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
   const mergeGroups = (
     groups: AutoBeDatabaseDeduplicationGroup[],
   ): AutoBeDatabaseDeduplicationGroup.ITable[][] => {
+    console.log("\n========== [Union-Find] mergeGroups START ==========");
+    console.log(`[Union-Find] Input groups count: ${groups.length}`);
+    groups.forEach((group, i) => {
+      console.log(
+        `[Union-Find] Group[${i}]: ${group.tables.map((t) => `${t.namespace}::${t.name}`).join(" = ")}`,
+      );
+      console.log(`[Union-Find]   Reason: ${group.reason}`);
+    });
+
     // Build table key → index mapping
     const tableKeys: string[] = [];
     const tableKeyToIndex: Map<string, number> = new Map<string, number>();
@@ -126,6 +203,7 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
         index = tableKeys.length;
         tableKeys.push(key);
         tableKeyToIndex.set(key, index);
+        console.log(`[Union-Find] Register table: ${key} → index ${index}`);
       }
       return index;
     };
@@ -136,6 +214,9 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
         getOrCreateIndex(table.namespace, table.name);
       }
     }
+
+    console.log(`\n[Union-Find] Total unique tables: ${tableKeys.length}`);
+    console.log(`[Union-Find] Table keys: [${tableKeys.join(", ")}]`);
 
     // Union-Find: each table starts as its own parent
     const parent: number[] = tableKeys.map((_, i) => i);
@@ -152,20 +233,35 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
     const union = (a: number, b: number): void => {
       const rootA: number = find(a);
       const rootB: number = find(b);
-      if (rootA === rootB) return;
+      if (rootA === rootB) {
+        console.log(
+          `[Union-Find] Union(${tableKeys[a]}, ${tableKeys[b]}): Already in same set (root=${tableKeys[rootA]})`,
+        );
+        return;
+      }
 
       // Union by rank: attach smaller tree under larger tree
       if (rank[rootA] < rank[rootB]) {
         parent[rootA] = rootB;
+        console.log(
+          `[Union-Find] Union(${tableKeys[a]}, ${tableKeys[b]}): Merged ${tableKeys[rootA]} → ${tableKeys[rootB]} (rank)`,
+        );
       } else if (rank[rootA] > rank[rootB]) {
         parent[rootB] = rootA;
+        console.log(
+          `[Union-Find] Union(${tableKeys[a]}, ${tableKeys[b]}): Merged ${tableKeys[rootB]} → ${tableKeys[rootA]} (rank)`,
+        );
       } else {
         parent[rootB] = rootA;
         rank[rootA]++;
+        console.log(
+          `[Union-Find] Union(${tableKeys[a]}, ${tableKeys[b]}): Merged ${tableKeys[rootB]} → ${tableKeys[rootA]} (tie, rank++)`,
+        );
       }
     };
 
     // Union all tables within each group
+    console.log("\n[Union-Find] Processing union operations...");
     for (const group of groups) {
       if (group.tables.length < 2) continue;
       const firstIndex: number = getOrCreateIndex(
@@ -180,6 +276,15 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
         union(firstIndex, idx);
       }
     }
+
+    // Log parent array state
+    console.log("\n[Union-Find] Final parent array:");
+    tableKeys.forEach((key, i) => {
+      const root = find(i);
+      console.log(
+        `[Union-Find]   ${key} (idx=${i}) → root=${tableKeys[root]} (idx=${root})`,
+      );
+    });
 
     // Group tables by their root → clusters
     const clusterMap = new Map<
@@ -197,7 +302,18 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
       cluster.push({ namespace: namespace!, name: name! });
     }
 
-    return [...clusterMap.values()];
+    const result = [...clusterMap.values()];
+
+    // Log final clusters
+    console.log("\n[Union-Find] Final clusters:");
+    result.forEach((cluster, i) => {
+      console.log(
+        `[Union-Find]   Cluster[${i}]: ${cluster.map((t) => `${t.namespace}::${t.name}`).join(", ")}`,
+      );
+    });
+    console.log("========== [Union-Find] mergeGroups END ==========\n");
+
+    return result;
   };
 
   /**
@@ -217,6 +333,15 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
     components: AutoBeDatabaseComponent[],
     clusters: AutoBeDatabaseDeduplicationGroup.ITable[][],
   ): AutoBeDatabaseComponent[] => {
+    console.log("\n========== [Dedup] removeDuplicates START ==========");
+    console.log(`[Dedup] Input components: ${components.length}`);
+    components.forEach((c) => {
+      console.log(
+        `[Dedup]   ${c.namespace}: [${c.tables.map((t) => t.name).join(", ")}] (${c.tables.length} tables)`,
+      );
+    });
+    console.log(`[Dedup] Input clusters: ${clusters.length}`);
+
     // Build tableKey → clusterId mapping
     const tableToCluster: Map<string, number> = new Map<string, number>();
     clusters.forEach((cluster, clusterId) => {
@@ -225,15 +350,29 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
       }
     });
 
+    console.log("\n[Dedup] Table to Cluster mapping:");
+    for (const [key, clusterId] of tableToCluster) {
+      console.log(`[Dedup]   ${key} → Cluster[${clusterId}]`);
+    }
+
     // Track which clusters already have a kept table
     const clusterSet: Set<number> = new Set<number>();
+    const keptTables: Map<number, string> = new Map<number, string>(); // For logging
 
     // Sort by table count (smallest first), keep original index
     const sorted: Pair<AutoBeDatabaseComponent, number>[] = components
       .map((c, i) => new Pair(c, i))
       .sort((a, b) => a.first.tables.length - b.first.tables.length);
 
+    console.log("\n[Dedup] Processing order (sorted by table count):");
+    sorted.forEach((p, i) => {
+      console.log(
+        `[Dedup]   ${i + 1}. ${p.first.namespace} (${p.first.tables.length} tables)`,
+      );
+    });
+
     // Filter tables: keep first encountered per cluster
+    console.log("\n[Dedup] Processing tables...");
     const processed: Pair<AutoBeDatabaseComponent, number>[] = sorted.map(
       (p) =>
         new Pair(
@@ -244,15 +383,25 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
               const clusterId: number | undefined = tableToCluster.get(key);
 
               // Not in any cluster → keep
-              if (clusterId === undefined) return true;
+              if (clusterId === undefined) {
+                console.log(`[Dedup]   KEEP ${key}: Not in any cluster`);
+                return true;
+              }
 
               // First in cluster → keep and mark
               if (!clusterSet.has(clusterId)) {
                 clusterSet.add(clusterId);
+                keptTables.set(clusterId, key);
+                console.log(
+                  `[Dedup]   KEEP ${key}: First in Cluster[${clusterId}]`,
+                );
                 return true;
               }
 
               // Already have one from this cluster → remove
+              console.log(
+                `[Dedup]   REMOVE ${key}: Cluster[${clusterId}] already has ${keptTables.get(clusterId)}`,
+              );
               return false;
             }),
           },
@@ -261,9 +410,19 @@ export namespace AutoBeDatabaseDeduplicationProgrammer {
     );
 
     // Restore original order and filter empty components
-    return processed
+    const result = processed
       .sort((a, b) => a.second - b.second)
       .map((p) => p.first)
       .filter((c) => c.tables.length > 0);
+
+    console.log("\n[Dedup] Final result:");
+    result.forEach((c) => {
+      console.log(
+        `[Dedup]   ${c.namespace}: [${c.tables.map((t) => t.name).join(", ")}] (${c.tables.length} tables)`,
+      );
+    });
+    console.log("========== [Dedup] removeDuplicates END ==========\n");
+
+    return result;
   };
 }

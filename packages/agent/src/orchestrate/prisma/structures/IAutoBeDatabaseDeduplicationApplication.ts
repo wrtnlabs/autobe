@@ -73,24 +73,72 @@ export namespace IAutoBeDatabaseDeduplicationApplication {
     /**
      * Analysis of the deduplication comparison process.
      *
-     * Documents the agent's understanding and comparison approach:
+     * **REQUIRED STRUCTURE - Follow this Chain of Thought:**
      *
-     * - What tables in the target component were analyzed?
-     * - What tables in other components were compared against?
-     * - What semantic patterns were identified across components?
-     * - How were table purposes determined from names and descriptions?
+     * ## Step 1: Target Table Inventory
+     *
+     * For EACH table in target component, extract from its description:
+     *
+     * - Table name
+     * - Role tag: `[MASTER DATA]`, `[INPUT]`, `[OUTPUT]`, `[AUDIT]`, `[CONFIG]`,
+     *   `[SNAPSHOT]`, `[JUNCTION]`
+     * - Core entity it stores
+     * - Business workflow context
+     * - Distinguishing characteristics (especially "does NOT store X" phrases)
+     *
+     * ## Step 2: Systematic Comparison
+     *
+     * For EACH target table, compare against EACH table in other components:
+     *
+     * ```
+     * ### Comparing: {target_table} vs {other_component}.{other_table}
+     *
+     * **Target description**: "{quoted description}"
+     * **Other description**: "{quoted description}"
+     *
+     * Role Match: [MASTER DATA] vs [MASTER DATA] → SAME / DIFFERENT
+     * Entity Match: "customer identity" vs "customer credentials" → SAME /
+     *   DIFFERENT
+     * Workflow Match: "registration flow" vs "auth flow" → SAME / DIFFERENT
+     * Distinguishing Check: Does either explicitly exclude the other's purpose?
+     *
+     * VERDICT: DUPLICATE / NOT DUPLICATE
+     * REASON: {specific reason based on description comparison}
+     * ```
+     *
+     * ## Step 3: Summary
+     *
+     * - Total tables in target component: X
+     * - Total tables in other components: X
+     * - Total comparisons made: X
+     * - Duplicate groups found: X
      */
     analysis: string;
 
     /**
      * Rationale for the duplicate group decisions.
      *
-     * Explains why specific tables were grouped as duplicates:
+     * **REQUIRED STRUCTURE:**
      *
-     * - Why are identified groups considered semantically equivalent?
-     * - What evidence supports each grouping decision?
-     * - Why were certain similar-looking tables NOT grouped?
-     * - What distinguishes true duplicates from related but distinct tables?
+     * ## For EACH duplicate group identified:
+     *
+     * - Quote BOTH descriptions showing same purpose
+     * - Identify matching elements: same role tag, same core entity, same
+     *   workflow
+     * - Explain WHY these descriptions indicate same business function
+     *
+     * ## For tables explicitly NOT grouped (similar-looking but different):
+     *
+     * Common patterns to explicitly address and explain why NOT duplicates:
+     *
+     * - `[INPUT]` vs `[OUTPUT]` in same workflow (questions vs answers)
+     * - `[MASTER DATA]` vs `[SNAPSHOT]` of same entity (orders vs
+     *   order_snapshots)
+     * - `[MASTER DATA]` vs `[AUDIT]` (entities vs logs)
+     * - Tables with explicit "does NOT store X" that excludes the other
+     * - Different actor ownership (customer creates vs seller creates)
+     *
+     * Quote the distinguishing parts of descriptions that prove non-duplication.
      */
     rationale: string;
 
@@ -106,26 +154,86 @@ export namespace IAutoBeDatabaseDeduplicationApplication {
      * - Each group must include at least 1 table from the target component
      * - Each table can appear in only one group
      *
-     * ## Example:
+     * ## ⚠️ CRITICAL: 4-Step Duplicate Detection Using Rich Descriptions
      *
-     * ```typescript
-     * [
-     *   {
-     *     reason: "Both tables store customer authentication data",
-     *     tables: [
-     *       { namespace: "Authorization", name: "customers" },
-     *       { namespace: "Sales", name: "shopping_customers" }
-     *     ]
-     *   }
-     * ]
+     * Tables now have structured descriptions with role tags and distinguishing
+     * characteristics. Use this 4-step process:
+     *
+     * **Step 1: Extract and Compare Role Tags**
+     *
+     * Read the `[ROLE TAG]` at the start of each description:
+     *
+     * - Same role tag → Proceed to Step 2
+     * - Different role tags → NOT duplicates (stop here)
+     *   - `[INPUT]` ≠ `[OUTPUT]` (workflow stages)
+     *   - `[MASTER DATA]` ≠ `[SNAPSHOT]` (live vs point-in-time)
+     *   - `[MASTER DATA]` ≠ `[AUDIT]` (entity vs log)
+     *
+     * **Step 2: Compare Core Entity**
+     *
+     * What SPECIFIC business entity does each table store?
+     *
+     * - "customer identity" vs "customer credentials" → DIFFERENT entities
+     * - "customer identity" vs "customer accounts" → SAME entity (investigate)
+     * - "order cancellation requests" vs "refund processing" → DIFFERENT
+     *
+     * **Step 3: Compare Business Context**
+     *
+     * What workflow uses this table? What's the creation trigger?
+     *
+     * - Same workflow position = likely duplicate
+     * - Different workflow stages = NOT duplicate
+     * - Different creation triggers = likely NOT duplicate
+     *
+     * **Step 4: Check Distinguishing Characteristics**
+     *
+     * Look for explicit exclusions in descriptions:
+     *
+     * - "does NOT store X - see Y for that" → X and Y are NOT duplicates
+     * - "different from Z which tracks..." → NOT duplicate of Z
+     * - "separate because different actor owns" → NOT duplicate
+     *
+     * ## Example: Duplicate Found
+     *
+     * ```
+     * Table A: "[MASTER DATA] Customer identity for shopping platform.
+     *   Stores name, phone, address..."
+     * Table B: "[MASTER DATA] Customer accounts for marketplace.
+     *   Stores name, email, phone..."
+     *
+     * Step 1: Both [MASTER DATA] ✓
+     * Step 2: Both "customer identity/accounts" = SAME entity ✓
+     * Step 3: Both for customer management workflow ✓
+     * Step 4: No explicit exclusions
+     *
+     * → DUPLICATE: Same customer entity in different components
      * ```
      *
-     * ## Judgment Criteria:
+     * ## Example: NOT Duplicate (Different Roles)
      *
-     * - Read both name AND description to determine purpose
-     * - Same purpose = duplicate (even with different names)
-     * - Different purpose = NOT duplicate (even with same name)
-     * - Parent-child or snapshot relationships = NOT duplicates
+     * ```
+     * Table A: "[INPUT] Customer questions about products..."
+     * Table B: "[OUTPUT] Seller answers to customer questions..."
+     *
+     * Step 1: [INPUT] vs [OUTPUT] = DIFFERENT roles ✗
+     *
+     * → NOT DUPLICATE: Different workflow stages (stop at Step 1)
+     * ```
+     *
+     * ## Example: NOT Duplicate (Explicit Exclusion)
+     *
+     * ```
+     * Table A: "[MASTER DATA] Customer authentication credentials...
+     *   Does NOT store profile data - see customer_profiles"
+     * Table B: "[MASTER DATA] Customer profile information...
+     *   Stores name, address, preferences..."
+     *
+     * Step 1: Both [MASTER DATA] ✓
+     * Step 2: "credentials" vs "profile" = DIFFERENT entities ✗
+     * Step 4: Explicit "does NOT store profile data"
+     *
+     * → NOT DUPLICATE: Explicitly separated concerns
+     * ```
      */
     duplicateGroups: AutoBeDatabaseDeduplicationGroup[];
   }

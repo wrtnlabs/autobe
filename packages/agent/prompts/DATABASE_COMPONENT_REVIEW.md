@@ -289,31 +289,31 @@ Verify the existing tables follow normalization patterns:
   type: "create",
   reason: "Requirement 3.5 specifies customer reviews on sales, but no review table exists",
   table: "sale_reviews",
-  description: "Customer reviews and ratings for sales with helpful votes"
+  description: "[INPUT] Customer reviews and ratings for purchased sales. Stores review content (rating, title, body, images), customer reference, verified_purchase flag, timestamps. Created after customer receives order. Used in product page display and seller rating calculation. Does NOT store review responses - see sale_review_replies for seller responses."
 },
 {
   type: "create",
   reason: "Requirement 3.7 specifies Q&A functionality for sales, but no question table exists",
   table: "sale_questions",
-  description: "Customer questions about sales"
+  description: "[INPUT] Customer inquiries about sale listings before purchase. Stores question text, customer reference, target sale. Created when customer asks question on sale page. Part of Q&A workflow - awaits seller response. Answers stored separately in sale_question_answers (different owner: seller)."
 },
 {
   type: "create",
   reason: "Requirement 3.7 specifies Q&A functionality for sales, answers need separate table for normalization",
   table: "sale_question_answers",
-  description: "Seller answers to customer questions about sales"
+  description: "[OUTPUT] Seller responses to customer questions. Stores answer text, seller reference, parent question link, timestamps. Created when seller responds. Completes Q&A workflow. Separate from questions because different actor (seller) owns this data with different creation lifecycle."
 },
 {
   type: "create",
   reason: "Requirement 2.4 specifies multiple images per sale, but no image table exists",
   table: "sale_images",
-  description: "Multiple images per sale for product display"
+  description: "[MASTER DATA] Product images for sale listings. Stores image URL, display_order, alt_text, is_primary flag. Created when seller uploads images. Used in product display across all channels. Multiple images per sale with ordering. Different from sale_snapshots which captures entire sale state."
 },
 {
   type: "create",
   reason: "Requirement 4.2 specifies promotional campaigns on sales, but no promotion table exists",
   table: "sale_promotions",
-  description: "Active promotions and discounts on sales"
+  description: "[MASTER DATA] Active promotional campaigns on sales. Stores discount_type, discount_value, start_date, end_date, conditions. Created by seller or admin. Used during cart calculation and checkout. Different from discount_codes which are customer-entered codes requiring validation."
 }
 ```
 
@@ -347,6 +347,56 @@ process({
 
 ---
 
+## 📝 TABLE DESCRIPTION REQUIREMENTS FOR DEDUPLICATION
+
+**CRITICAL**: When creating or updating tables, descriptions MUST enable accurate deduplication.
+
+### Required Elements (ALL 5 must be included in CREATE/UPDATE descriptions)
+
+| Element | Purpose | Example |
+|---------|---------|---------|
+| **1. Role Tag** | Quick classification | `[MASTER DATA]`, `[INPUT]`, `[OUTPUT]`, `[AUDIT]`, `[CONFIG]`, `[SNAPSHOT]`, `[JUNCTION]` |
+| **2. Core Entity** | What specific business entity is stored | "order cancellation records" |
+| **3. Key Data Fields** | Main data this table contains | "stores cancellation reason, refund status, timestamps" |
+| **4. Business Context** | What workflow/process uses this | "part of order cancellation workflow" |
+| **5. Distinguishing Characteristics** | How it differs from similar tables | "different from order_refunds which tracks refund processing" |
+
+### Role Tag Definitions
+
+| Tag | Meaning | Examples |
+|-----|---------|----------|
+| `[MASTER DATA]` | Core business entities | users, products, orders |
+| `[INPUT]` | Data triggering processes | reports, requests, questions |
+| `[OUTPUT]` | Results of processing | decisions, approvals, answers |
+| `[AUDIT]` | Immutable compliance records | logs, histories, audit trails |
+| `[CONFIG]` | System/entity settings | preferences, feature flags |
+| `[SNAPSHOT]` | Point-in-time copies | order_snapshots, price_histories |
+| `[JUNCTION]` | Many-to-many relationships | product_categories, user_roles |
+
+### Description Quality Check for CREATE/UPDATE
+
+Before adding a CREATE or UPDATE revision, verify the description includes ALL 5 elements:
+
+```typescript
+// ❌ BAD - Missing elements, will cause deduplication issues
+{
+  type: "create",
+  reason: "Requirement 3.2 specifies order cancellation",
+  table: "shopping_order_cancellations",
+  description: "Stores cancellation records"  // Missing role tag, context, distinguishing characteristics
+}
+
+// ✅ GOOD - All 5 elements present
+{
+  type: "create",
+  reason: "Requirement 3.2 specifies order cancellation",
+  table: "shopping_order_cancellations",
+  description: "[INPUT] Order cancellation requests initiated by customers. Stores cancellation reason, requested_at timestamp, customer reference, and order reference. Created when customer requests cancellation. Part of cancellation workflow - awaits admin approval. Different from order_refunds which tracks actual refund processing after approval."
+}
+```
+
+---
+
 ## 3. Revision Operations
 
 ### Create - Add Missing Tables
@@ -356,9 +406,9 @@ Use when a table is needed to fulfill requirements but doesn't exist:
 ```typescript
 {
   type: "create",
-  reason: "Requirement 3.2 specifies order cancellation tracking, but no table exists",  // Keep concise
+  reason: "Requirement 3.2 specifies order cancellation tracking, but no table exists",
   table: "shopping_order_cancellations",
-  description: "Stores cancellation records with reasons, timestamps, and refund status"  // Keep concise
+  description: "[INPUT] Customer requests to cancel orders. Stores cancellation reason, requested_at timestamp, order reference, and customer reference. Created when customer initiates cancellation. Part of cancellation workflow - awaits processing. Different from order_refunds which tracks refund execution after cancellation approval."
 }
 ```
 
@@ -374,10 +424,10 @@ Use when a table has naming convention issues:
 ```typescript
 {
   type: "update",
-  reason: "Table name violates snake_case convention and missing domain prefix",  // Keep concise
+  reason: "Table name violates snake_case convention and missing domain prefix",
   original: "orderCancel",
   updated: "shopping_order_cancellations",
-  description: "Stores cancellation records with reasons, timestamps, and refund status"  // Keep concise
+  description: "[INPUT] Customer requests to cancel orders. Stores cancellation reason, requested_at timestamp, order reference, and customer reference. Created when customer initiates cancellation. Part of cancellation workflow - awaits processing. Different from order_refunds which tracks refund execution after cancellation approval."
 }
 ```
 
@@ -499,32 +549,32 @@ process({
         type: "create",
         reason: "Requirement 3.2 - cancellation lifecycle requires dedicated tracking with status, reason, and initiator",
         table: "shopping_order_cancellations",
-        description: "Stores order cancellation records including cancellation reason, status (requested/approved/completed), initiator (customer/admin), and timestamps"
+        description: "[INPUT] Customer requests to cancel orders. Stores cancellation reason, status (requested/approved/completed), initiator type (customer/admin), order reference, timestamps. Created when cancellation is requested. Part of cancellation workflow - triggers refund processing upon approval. Different from order_refunds which tracks actual money movement."
       },
       {
         type: "create",
         reason: "Requirement 3.4 - refund processing has its own lifecycle separate from cancellation",
         table: "shopping_order_refunds",
-        description: "Stores refund records with requested/approved amounts, refund reason, approval status, processor info, and processing timestamps"
+        description: "[OUTPUT] Refund processing records after cancellation approval. Stores refund amount (requested/approved), payment method, processing status, processor reference, timestamps. Created when refund is initiated. Part of refund workflow - executes money transfer. Different from order_cancellations which is the customer request."
       },
       {
         type: "create",
         reason: "Requirement 3.5 - delivery requires tracking carrier info, tracking numbers, and current status",
         table: "shopping_order_deliveries",
-        description: "Stores delivery information including carrier, tracking number, estimated delivery date, and current delivery status"
+        description: "[MASTER DATA] Delivery information for shipped orders. Stores carrier info, tracking number, estimated_delivery_date, current_status, shipping_address snapshot. Created when order is shipped. Used by delivery tracking and notification workflows. One order can have multiple deliveries for split shipments."
       },
       {
         type: "create",
         reason: "Requirement 3.5 - delivery status changes over time need history tracking for customer visibility",
         table: "shopping_order_delivery_histories",
-        description: "Stores delivery status change history with timestamp, location, status, and optional notes for each update"
+        description: "[AUDIT] Delivery status change history for tracking visibility. Stores status, location, timestamp, and carrier notes for each update. Created automatically on each delivery status change. Used for customer tracking page and delivery analytics. Immutable log - different from deliveries which stores current state."
       },
       {
         type: "update",
         reason: "Naming convention violation - camelCase and missing domain prefix",
         original: "orderItems",
         updated: "shopping_order_items",
-        description: "Line items within orders with quantity, unit price, subtotal, and product/variant references"
+        description: "[MASTER DATA] Individual line items within orders. Stores product reference, variant reference, quantity, unit_price, subtotal, and item-level discounts. Created during checkout. Used in order display, fulfillment, and refund calculation. Child of shopping_orders - one order has multiple items."
       }
     ]
   }
@@ -617,11 +667,36 @@ Current tables: `[sales, sale_snapshots, sale_units]`
 **Required CREATE Revisions:**
 ```typescript
 revises: [
-  { type: "create", reason: "Requirements specify Q&A functionality - questions need dedicated table", table: "sale_questions", description: "Customer questions about sales" },
-  { type: "create", reason: "Requirements specify Q&A - answers must be separate for normalization (different actor owns)", table: "sale_question_answers", description: "Seller answers to customer questions" },
-  { type: "create", reason: "Requirements specify customer reviews with ratings", table: "sale_reviews", description: "Customer reviews and ratings for sales" },
-  { type: "create", reason: "Requirements specify helpful vote functionality on reviews", table: "sale_review_votes", description: "Helpful votes on sale reviews" },
-  { type: "create", reason: "Requirements specify multiple images per sale", table: "sale_images", description: "Multiple product images for sales" }
+  {
+    type: "create",
+    reason: "Requirements specify Q&A functionality - questions need dedicated table",
+    table: "sale_questions",
+    description: "[INPUT] Customer inquiries about sales before purchase. Stores question text, customer reference, target sale, timestamps. Created when customer submits question. Part of Q&A workflow - awaits seller response. Answers in separate table (different owner)."
+  },
+  {
+    type: "create",
+    reason: "Requirements specify Q&A - answers must be separate for normalization (different actor owns)",
+    table: "sale_question_answers",
+    description: "[OUTPUT] Seller responses to customer questions. Stores answer text, seller reference, parent question link, timestamps. Created when seller responds. Completes Q&A workflow. Separate because seller owns with different lifecycle."
+  },
+  {
+    type: "create",
+    reason: "Requirements specify customer reviews with ratings",
+    table: "sale_reviews",
+    description: "[INPUT] Customer reviews for purchased sales. Stores rating, title, body, customer reference, verified_purchase flag. Created after delivery. Used for product display and seller rating. Does NOT store votes - see sale_review_votes."
+  },
+  {
+    type: "create",
+    reason: "Requirements specify helpful vote functionality on reviews",
+    table: "sale_review_votes",
+    description: "[INPUT] Helpfulness votes on sale reviews. Stores review_id, customer_id, is_helpful flag. Created when customer votes. Used for sorting reviews. One vote per customer per review. Different from reviews which contain content."
+  },
+  {
+    type: "create",
+    reason: "Requirements specify multiple images per sale",
+    table: "sale_images",
+    description: "[MASTER DATA] Product images for sale listings. Stores image URL, display_order, alt_text, is_primary. Created on image upload. Used in product display. Multiple per sale with ordering. Different from sale_snapshots."
+  }
 ]
 ```
 
@@ -786,10 +861,14 @@ Before calling `process({ request: { type: "complete", review: "...", revises: [
 
 ### Review Quality
 - [ ] Review field contains comprehensive analysis of the component
-- [ ] Each revision has clear, requirement-based **concise** reason (one or two sentences maximum)
-- [ ] Each CREATE revision has meaningful **concise** table description (one or two sentences maximum)
-- [ ] Each UPDATE revision specifies both original and updated names with **concise** description (one or two sentences maximum)
-- [ ] Each ERASE revision explains why table doesn't belong with **concise** reason (one or two sentences maximum)
+- [ ] Each revision has clear, requirement-based reason
+- [ ] **CREATE/UPDATE DESCRIPTIONS - ALL 5 ELEMENTS**: Each description includes:
+  - [ ] Role Tag: `[MASTER DATA]`, `[INPUT]`, `[OUTPUT]`, `[AUDIT]`, `[CONFIG]`, `[SNAPSHOT]`, or `[JUNCTION]`
+  - [ ] Core Entity: What specific business entity is stored
+  - [ ] Key Data Fields: Main data this table contains
+  - [ ] Business Context: What workflow/process uses this table
+  - [ ] Distinguishing Characteristics: How it differs from similar tables
+- [ ] Each ERASE revision explains why table doesn't belong
 - [ ] All table names follow snake_case, plural, domain prefix conventions
 - [ ] All descriptions written in English
 

@@ -73,6 +73,8 @@ export const orchestratePrisma = async (
       instruction: props.instruction,
     },
   );
+  console.log(`----------- DATABASE DEDUPLICATION -------------`);
+  console.log(JSON.stringify(components, null, 2));
   const application: AutoBeDatabase.IApplication = await orchestrateSchema(
     ctx,
     {
@@ -161,13 +163,20 @@ const orchestrateComponent = async (
       instruction: props.instruction,
       groups: props.groups,
     });
-  return [
-    ...(authorization ? [authorization] : []),
-    ...(await orchestratePrismaComponentReview(ctx, {
-      instruction: props.instruction,
-      components,
-    })),
-  ];
+  const allComponents: AutoBeDatabaseComponent[] =
+    AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([
+      ...(authorization ? [authorization] : []),
+      ...(await orchestratePrismaComponentReview(ctx, {
+        instruction: props.instruction,
+        components,
+      })),
+    ]);
+  console.log(`----------- ALL COMPONENTS -------------`);
+  console.log(JSON.stringify(allComponents, null, 2));
+  return await orchestratePrismaDeduplication(ctx, {
+    instruction: props.instruction,
+    components: allComponents,
+  });
 };
 
 const orchestrateSchema = async (

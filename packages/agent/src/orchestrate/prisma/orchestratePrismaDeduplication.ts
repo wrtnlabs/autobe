@@ -32,9 +32,16 @@ export async function orchestratePrismaDeduplication(
   const events: AutoBeDatabaseDeduplicationEvent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
+      const otherComponents: Pick<
+        AutoBeDatabaseComponent,
+        "namespace" | "tables"
+      >[] = props.components
+        .filter((c) => c.namespace !== component.namespace)
+        .map((c) => ({ namespace: c.namespace, tables: c.tables }));
+
       const event: AutoBeDatabaseDeduplicationEvent = await process(ctx, {
         target: component,
-        allComponents: props.components,
+        otherComponents,
         instruction: props.instruction,
         prefix,
         progress,
@@ -44,18 +51,17 @@ export async function orchestratePrismaDeduplication(
       return event;
     }),
   );
-  // Resolve duplicates
-  const results: AutoBeDatabaseComponent[] =
-    AutoBeDatabaseDeduplicationProgrammer.resolve(props.components, events);
-
-  return results;
+  return AutoBeDatabaseDeduplicationProgrammer.resolve(
+    props.components,
+    events,
+  );
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
     target: AutoBeDatabaseComponent;
-    allComponents: AutoBeDatabaseComponent[];
+    otherComponents: Pick<AutoBeDatabaseComponent, "namespace" | "tables">[];
     instruction: string;
     prefix: string | null;
     progress: AutoBeProgressEventBase;
@@ -87,7 +93,7 @@ async function process(
       controller: createController({
         preliminary,
         target: props.target,
-        allComponents: props.allComponents,
+        otherComponents: props.otherComponents,
         build: (next) => {
           pointer.value = next;
         },
@@ -96,7 +102,7 @@ async function process(
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaDeduplicationHistory({
         component: props.target,
-        allComponents: props.allComponents,
+        otherComponents: props.otherComponents,
         instruction: props.instruction,
         prefix: props.prefix,
         preliminary,
@@ -126,7 +132,7 @@ function createController(props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   target: AutoBeDatabaseComponent;
-  allComponents: AutoBeDatabaseComponent[];
+  otherComponents: Pick<AutoBeDatabaseComponent, "namespace" | "tables">[];
   build: (next: IAutoBeDatabaseDeduplicationApplication.IComplete) => void;
 }): IAgenticaController.IClass {
   const validate: Validator = (input) => {
@@ -145,7 +151,7 @@ function createController(props: {
       errors,
       path: "$input.request.duplicateGroups",
       target: props.target,
-      allComponents: props.allComponents,
+      otherComponents: props.otherComponents,
       duplicateGroups: result.data.request.duplicateGroups,
     });
     if (errors.length > 0)

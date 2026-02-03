@@ -274,9 +274,9 @@ Consistency across components indicates completeness.
   request: {
     type: "complete",
     tables: [
-      { name: "sales", description: "Main sale listings" },
-      { name: "sale_snapshots", description: "Audit trail for sales" },
-      { name: "sale_units", description: "Individual units within a sale" }
+      { name: "sales", description: "[MASTER DATA] Main sale listings. Stores product info and pricing." },
+      { name: "sale_snapshots", description: "[SNAPSHOT] Audit trail for sales. Stores point-in-time copies." },
+      { name: "sale_units", description: "[MASTER DATA] Individual units within a sale. Stores stock info." }
     ]
   }
 }
@@ -306,24 +306,60 @@ Consistency across components indicates completeness.
     type: "complete",
     tables: [
       // Core sale entities
-      { name: "sales", description: "Main sale listings with product, pricing, seller" },
-      { name: "sale_snapshots", description: "Point-in-time snapshots for audit trail" },
-      { name: "sale_units", description: "Individual stock units within a sale" },
+      {
+        name: "sales",
+        description: "[MASTER DATA] Main sale listings representing products for sale. Stores sale metadata (title, description, price, status, seller_id), inventory info, and timestamps. Created when seller lists a product. Used in product browsing, cart, checkout, and order workflows. Parent entity for sale_images, sale_units, sale_reviews."
+      },
+      {
+        name: "sale_snapshots",
+        description: "[SNAPSHOT] Point-in-time copy of sale state for audit and order integrity. Stores complete sale data (price, description, seller info) at moment of purchase. Created when order is placed. Used for order history display, refund calculation, and dispute resolution. Immutable after creation - different from sales which can be updated."
+      },
+      {
+        name: "sale_units",
+        description: "[MASTER DATA] Individual stock units within a sale for inventory tracking. Stores unit-specific data (SKU, stock_quantity, variant_options like size/color). Created alongside sale. Used by inventory management and cart validation. One sale can have multiple units for different variants."
+      },
 
       // Sale content
-      { name: "sale_images", description: "Multiple images per sale for product display" },
-      { name: "sale_specifications", description: "Product specifications and technical details" },
+      {
+        name: "sale_images",
+        description: "[MASTER DATA] Product images for sale listings. Stores image metadata (url, display_order, alt_text, is_primary). Created when seller uploads images. Used in product display across all channels. Multiple images per sale with ordering. Different from sale_snapshots which captures entire sale state."
+      },
+      {
+        name: "sale_specifications",
+        description: "[MASTER DATA] Technical specifications and attributes for sale products. Stores key-value pairs (spec_name, spec_value, display_order). Created when seller adds product details. Used for product comparison and filtering. Separate from sale description which is free-form text."
+      },
 
       // Customer interaction
-      { name: "sale_reviews", description: "Customer reviews and ratings for sales" },
-      { name: "sale_review_votes", description: "Helpful votes on reviews" },
-      { name: "sale_questions", description: "Customer questions about sales" },
-      { name: "sale_question_answers", description: "Seller answers to customer questions" },
+      {
+        name: "sale_reviews",
+        description: "[INPUT] Customer reviews and ratings for purchased sales. Stores review content (rating, title, body, images), customer reference, and verified_purchase flag. Created after customer receives order. Used in product page display and seller rating calculation. Does NOT store review responses - see sale_review_replies for seller responses."
+      },
+      {
+        name: "sale_review_votes",
+        description: "[INPUT] Customer votes on review helpfulness. Stores vote data (review_id, customer_id, is_helpful). Created when customer votes on a review. Used for sorting reviews by helpfulness. One vote per customer per review. Different from sale_reviews which contains the review content itself."
+      },
+      {
+        name: "sale_questions",
+        description: "[INPUT] Customer inquiries about sale listings before purchase. Stores question content (title, body), customer reference, and target sale. Created when customer asks question on sale page. Part of Q&A workflow - awaits seller response. Answers stored in sale_question_answers (different owner: seller creates answers)."
+      },
+      {
+        name: "sale_question_answers",
+        description: "[OUTPUT] Seller responses to customer questions. Stores answer content (body), seller reference, and parent question link. Created when seller responds to a question. Completes Q&A workflow started by sale_questions. Separate table because different actor (seller) owns this data with different creation lifecycle."
+      },
 
       // Sale management
-      { name: "sale_promotions", description: "Active promotions and discounts on sales" },
-      { name: "sale_favorites", description: "User favorites/wishlists for sales" },
-      { name: "sale_view_stats", description: "View count and analytics for sales" }
+      {
+        name: "sale_promotions",
+        description: "[MASTER DATA] Active promotional campaigns and discounts on sales. Stores promotion rules (discount_type, discount_value, start_date, end_date, conditions). Created by seller or admin. Used during cart calculation and checkout. Different from discount_codes which are customer-entered codes."
+      },
+      {
+        name: "sale_favorites",
+        description: "[JUNCTION] Customer wishlists linking customers to favorite sales. Stores customer_id, sale_id, and added_at timestamp. Created when customer favorites a sale. Used for wishlist display and back-in-stock notifications. Many-to-many relationship between customers and sales."
+      },
+      {
+        name: "sale_view_stats",
+        description: "[AUDIT] Analytics tracking for sale page views. Stores aggregated metrics (view_count, unique_visitors, last_viewed_at) per sale. Updated on each page view. Used for seller analytics dashboard and trending products algorithm. Does NOT store individual view events - see sale_view_logs for detailed tracking."
+      }
     ]
   }
 }
@@ -409,6 +445,82 @@ Consistency across components indicates completeness.
 - **Junction Tables**: Use both entity names (e.g., `user_roles`, `product_categories`)
 - **Sessions**: Use `{actor_base}_sessions` pattern (e.g., `user_sessions`, `administrator_sessions`, `shopping_customer_sessions`)
 - **Materialized Views**: Will be handled by schema generation agent with `mv_` prefix
+
+---
+
+## 📝 TABLE DESCRIPTION REQUIREMENTS FOR DEDUPLICATION
+
+**CRITICAL**: Table descriptions are the PRIMARY source for deduplication analysis.
+Brief descriptions cause duplicate detection failures. Write RICH descriptions.
+
+### Required Elements (ALL 5 must be included)
+
+| Element | Purpose | Example |
+|---------|---------|---------|
+| **1. Role Tag** | Quick classification | `[MASTER DATA]`, `[INPUT]`, `[OUTPUT]`, `[AUDIT]`, `[CONFIG]`, `[SNAPSHOT]`, `[JUNCTION]` |
+| **2. Core Entity** | What specific business entity is stored | "customer identity and authentication credentials" |
+| **3. Key Data Fields** | Main data this table contains | "stores email, password_hash, name, phone, and address" |
+| **4. Business Context** | What workflow/process uses this | "used in registration, login, and profile management flows" |
+| **5. Distinguishing Characteristics** | How it differs from similar tables | "does NOT store order history - see customer_orders for that" |
+
+### Role Tag Definitions
+
+| Tag | Meaning | Lifecycle | Examples |
+|-----|---------|-----------|----------|
+| `[MASTER DATA]` | Core business entities | Long-lived, frequently updated | users, products, orders |
+| `[INPUT]` | Data triggering processes | Created by user action | reports, requests, questions |
+| `[OUTPUT]` | Results of processing | Created by system/admin | decisions, approvals, answers |
+| `[AUDIT]` | Immutable compliance records | Write-once, never modified | logs, histories, audit trails |
+| `[CONFIG]` | System/entity settings | Rarely changed | preferences, feature flags |
+| `[SNAPSHOT]` | Point-in-time copies | Created at specific moments | order_snapshots, price_histories |
+| `[JUNCTION]` | Many-to-many relationships | Linking records | product_categories, user_roles |
+
+### Description Examples
+
+#### ❌ BAD - Too vague, causes deduplication failures
+
+```typescript
+{ name: "shopping_customers", description: "Customer accounts for shopping" }
+{ name: "customers", description: "Customer data" }
+// → Cannot determine if these are duplicates or intentionally separate
+```
+
+#### ✅ GOOD - Rich descriptions enable accurate deduplication
+
+```typescript
+// Pair 1: Same role [MASTER DATA], same entity (customer) but explicitly separated
+{
+  name: "shopping_customers",
+  description: "[MASTER DATA] Customer identity for the shopping platform. Stores personal profile (name, phone, address) and shopping preferences. Created during customer registration. Used by order placement, delivery, and customer service workflows. Does NOT store authentication credentials - see shopping_customer_authentications for login data."
+}
+{
+  name: "customers",
+  description: "[MASTER DATA] Customer authentication credentials for the general platform. Stores email, password_hash, and 2FA settings. Created during signup. Used exclusively in authentication flow (login, password reset, session creation). Does NOT store profile data - see customer_profiles for personal information."
+}
+
+// Pair 2: Different roles [INPUT] vs [OUTPUT] — NOT duplicates
+{
+  name: "sale_questions",
+  description: "[INPUT] Customer inquiries about sale listings. Stores question text, customer reference, and target sale. Created when customer submits question on sale page. Part of Q&A workflow - awaits seller response. Answers stored separately in sale_question_answers (different owner: seller vs customer)."
+}
+{
+  name: "sale_question_answers",
+  description: "[OUTPUT] Seller responses to customer questions. Stores answer text, seller reference, and parent question link. Created when seller responds to a question. Completes Q&A workflow. Separate from questions because different actor (seller) owns this data with different lifecycle."
+}
+```
+
+### Why Rich Descriptions Matter for Deduplication
+
+The Database Deduplication Agent compares tables across components by reading descriptions.
+
+**With vague descriptions:**
+- "Customer accounts" vs "Customer data" → Cannot determine if duplicate
+- "Order information" vs "Purchase records" → Looks like duplicate but might not be
+
+**With rich descriptions:**
+- Role tags immediately show if tables serve same role
+- Business context shows if they're in same workflow
+- Distinguishing characteristics explicitly state differences
 
 ---
 
@@ -866,7 +978,7 @@ Each table must follow the `AutoBeDatabaseComponentTableDesign` structure:
 ```typescript
 interface AutoBeDatabaseComponentTableDesign {
   name: string & tags.Pattern<"^[a-z][a-z0-9_]*$">;  // snake_case, plural
-  description: string;  // Brief, concise explanation of why this table is needed and what it stores
+  description: string;  // Rich description with 5 elements: [ROLE TAG] + Core Entity + Key Data + Business Context + Distinguishing Characteristics
 }
 ```
 
@@ -875,7 +987,7 @@ interface AutoBeDatabaseComponentTableDesign {
 - **Using Component Skeleton**: Use EXACT namespace and filename from the component skeleton provided
 - **Table Completeness**: Include ALL tables required for THIS COMPONENT'S domain based on its rationale
 - **Pattern Compliance**: All table names must match the regex pattern `^[a-z][a-z0-9_]*$`
-- **Table Descriptions**: Each table MUST include a clear and **concise** description explaining its purpose and what data it stores (keep it brief - one or two sentences maximum)
+- **Table Descriptions**: Each table MUST include a RICH description with ALL 5 elements: [ROLE TAG], Core Entity, Key Data Fields, Business Context, and Distinguishing Characteristics. See "TABLE DESCRIPTION REQUIREMENTS FOR DEDUPLICATION" section above.
 - **Thinking Field**: Brief summary of what tables you designed (in IProps.thinking field)
 - **Request Structure**: Provide `{ type: "complete", analysis: "...", rationale: "...", tables: [...] }` - analysis and rationale document TABLE DESIGN reasoning
 
@@ -903,9 +1015,18 @@ const output: IAutoBeDatabaseComponentApplication.IProps = {
   request: {
     type: "complete",
     tables: [
-      { name: "channels", description: "Sales channels (e.g., online store, mobile app) with branding and configuration." },
-      { name: "sections", description: "Sections within a channel for organizing content and products hierarchically." },
-      { name: "configurations", description: "System-wide configuration settings and feature flags." }
+      {
+        name: "channels",
+        description: "[MASTER DATA] Sales channels representing different storefronts (online store, mobile app, kiosk). Stores channel metadata (name, code, branding settings, timezone, currency). Created during system setup. Used by all customer-facing workflows to determine display settings and business rules. Each channel operates independently with its own configurations."
+      },
+      {
+        name: "sections",
+        description: "[MASTER DATA] Hierarchical content sections within a channel. Stores section metadata (name, parent_section_id, display_order, visibility settings). Created by administrators. Used for organizing products, articles, and navigation menus. Supports nested structure via parent_section_id. Different from categories which classify products - sections organize UI layout."
+      },
+      {
+        name: "configurations",
+        description: "[CONFIG] System-wide configuration settings and feature flags. Stores key-value pairs (config_key, config_value, config_type, last_modified_by). Created during deployment, updated by administrators. Used by all system components to control behavior (payment gateways, notification settings, rate limits). Does NOT store per-user preferences - see user_settings for that."
+      }
     ]
   }
 };
@@ -1452,7 +1573,12 @@ Before calling `process({ request: { type: "complete", analysis: "...", rational
 - [ ] Using the EXACT namespace and filename from the component skeleton
 - [ ] No duplicate table names within this component
 - [ ] All table names match the required regex pattern `^[a-z][a-z0-9_]*$`
-- [ ] **TABLE DESCRIPTIONS**: Every table has a meaningful description explaining its purpose
+- [ ] **TABLE DESCRIPTIONS - ALL 5 ELEMENTS**: Every description includes:
+  - [ ] Role Tag: `[MASTER DATA]`, `[INPUT]`, `[OUTPUT]`, `[AUDIT]`, `[CONFIG]`, `[SNAPSHOT]`, or `[JUNCTION]`
+  - [ ] Core Entity: What specific business entity is stored
+  - [ ] Key Data Fields: Main data this table contains
+  - [ ] Business Context: What workflow/process uses this table
+  - [ ] Distinguishing Characteristics: How it differs from similar tables
 - [ ] **NO PREFIX DUPLICATION**: No table name has duplicated domain prefixes (e.g., `prefix_prefix_tablename`)
 - [ ] All descriptions written in English
 
