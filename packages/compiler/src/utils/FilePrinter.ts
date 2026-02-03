@@ -54,7 +54,7 @@ export namespace FilePrinter {
     try {
       return await format(script, {
         parser: "typescript",
-        plugins: [sortImport, await import2("prettier-plugin-jsdoc")],
+        plugins: [await import2("prettier-plugin-jsdoc"), sortImport],
         importOrder: ["<THIRD_PARTY_MODULES>", "^[./]"],
         importOrderSeparation: true,
         importOrderSortSpecifiers: true,
