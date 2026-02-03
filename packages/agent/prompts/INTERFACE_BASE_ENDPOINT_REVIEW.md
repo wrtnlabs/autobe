@@ -32,9 +32,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Failing to call the purpose function wastes all prior work
 
 **AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
-- `create`: Add endpoint with `endpoint`, `description`, `authorizationType`, `authorizationActors`, and `reason`
-- `update`: Modify endpoint with `original`, `updated`, `description`, `authorizationType`, `authorizationActors`, and `reason`
+- `keep`: Approve endpoint as-is with `endpoint` and `reason` - use when endpoint is correct
+- `create`: Add new endpoint with `design` and `reason`
+- `update`: Fix endpoint with `endpoint`, `newDesign`, and `reason`
 - `erase`: Remove endpoint with `endpoint` and `reason`
+
+**⚠️ CRITICAL: EVERY endpoint in the provided list MUST have a revision (keep, update, or erase). No omissions allowed.**
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -238,8 +241,8 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 {
   type: "update",
   reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
-  original: { path: "/customers/{customerId}/addresses", method: "get" },
-  updated: {
+  endpoint: { path: "/customers/{customerId}/addresses", method: "get" },
+  newDesign: {
     endpoint: { path: "/customers/addresses", method: "get" },
     description: "Get customer's own addresses.",
     authorizationType: null,
@@ -250,8 +253,8 @@ When an authenticated actor accesses their **own** resources, the actor's ID MUS
 {
   type: "update",
   reason: "Actor ID must not be in path for self-access. Member ID comes from JWT token.",
-  original: { path: "/members/{memberId}/orders/{orderId}", method: "get" },
-  updated: {
+  endpoint: { path: "/members/{memberId}/orders/{orderId}", method: "get" },
+  newDesign: {
     endpoint: { path: "/members/orders/{orderId}", method: "get" },
     description: "Get member's specific order.",
     authorizationType: null,
@@ -485,8 +488,8 @@ PATCH /users/{userId}/addresses           ← BOTH segments plural (KEEP)
 {
   type: "update",
   reason: "Converting singular 'article' to plural 'articles' for REST convention.",
-  original: { path: "/article/{articleId}", method: "get" },
-  updated: {
+  endpoint: { path: "/article/{articleId}", method: "get" },
+  newDesign: {
     endpoint: { path: "/articles/{articleId}", method: "get" },
     description: "Get an article by ID.",
     authorizationType: null,
@@ -503,7 +506,7 @@ process({
   request: {
     type: "complete",
     revises: [
-      // DELETE duplicates first (singular forms where plural exists)
+      // ERASE duplicates first (singular forms where plural exists)
       {
         type: "erase",
         reason: "Duplicate of /guests/{guestId}. Removing singular form.",
@@ -518,8 +521,8 @@ process({
       {
         type: "update",
         reason: "Converting singular 'category' to plural 'categories'.",
-        original: { path: "/category/{categoryId}", method: "get" },
-        updated: {
+        endpoint: { path: "/category/{categoryId}", method: "get" },
+        newDesign: {
           endpoint: { path: "/categories/{categoryId}", method: "get" },
           description: "Get a category by ID.",
           authorizationType: null,
@@ -529,14 +532,21 @@ process({
       {
         type: "update",
         reason: "Converting singular segments to plural: member→members, address→addresses.",
-        original: { path: "/member/{memberId}/address", method: "post" },
-        updated: {
+        endpoint: { path: "/member/{memberId}/address", method: "post" },
+        newDesign: {
           endpoint: { path: "/members/{memberId}/addresses", method: "post" },
           description: "Create address for a member.",
           authorizationType: null,
           authorizationActors: ["member"]
         }
+      },
+      // KEEP endpoints that are correct
+      {
+        type: "keep",
+        reason: "Endpoint follows REST conventions and is properly structured.",
+        endpoint: { path: "/users/{userId}", method: "get" }
       }
+      // ... keep for ALL other correct endpoints
     ],
     review: "Fixed 6 singular/plural issues. Erased 2 duplicate singular forms. Updated 4 singular paths to plural."
   }
@@ -623,8 +633,8 @@ POST /articles/{articleId}/snapshots
 {
   type: "update",
   reason: "Search/pagination requires request body. PATCH is appropriate, not GET.",
-  original: { path: "/articles", method: "get" },
-  updated: {
+  endpoint: { path: "/articles", method: "get" },
+  newDesign: {
     endpoint: { path: "/articles", method: "patch" },
     description: "Search and filter articles with pagination.",
     authorizationType: null,
@@ -636,8 +646,8 @@ POST /articles/{articleId}/snapshots
 {
   type: "update",
   reason: "Resource update should use PUT, not PATCH or POST.",
-  original: { path: "/articles/{articleId}", method: "patch" },
-  updated: {
+  endpoint: { path: "/articles/{articleId}", method: "patch" },
+  newDesign: {
     endpoint: { path: "/articles/{articleId}", method: "put" },
     description: "Update an article.",
     authorizationType: null,
@@ -919,41 +929,52 @@ Call `process()` with `type: "complete"` when the review is finished. Include al
 
 ```typescript
 process({
-  thinking: "Reviewed all endpoints. Found camelCase paths, singular forms, and duplicates.",
+  thinking: "Reviewed all endpoints. Found camelCase paths, singular forms, and duplicates. Providing revision for every endpoint.",
   request: {
     type: "complete",
     revises: [
-      // Update camelCase to hierarchical
+      // KEEP endpoints that are correct
+      {
+        type: "keep",
+        reason: "Endpoint follows REST conventions and is properly structured.",
+        endpoint: { path: "/users/{userId}", method: "get" }
+      },
+      {
+        type: "keep",
+        reason: "Properly nested subsidiary endpoint with correct plural form.",
+        endpoint: { path: "/articles/{articleId}/comments", method: "patch" }
+      },
+      // UPDATE camelCase to hierarchical
       {
         type: "update",
         reason: "Converting camelCase path to hierarchical structure.",
-        original: { path: "/moderationLogs", method: "patch" },
-        updated: {
+        endpoint: { path: "/moderationLogs", method: "patch" },
+        newDesign: {
           endpoint: { path: "/moderation/logs", method: "patch" },
           description: "Search moderation logs with filters.",
           authorizationType: null,
           authorizationActors: ["admin"]
         }
       },
-      // Fix singular to plural
+      // UPDATE singular to plural
       {
         type: "update",
         reason: "Normalizing singular 'guest' to plural 'guests'.",
-        original: { path: "/guest/{guestId}", method: "get" },
-        updated: {
+        endpoint: { path: "/guest/{guestId}", method: "get" },
+        newDesign: {
           endpoint: { path: "/guests/{guestId}", method: "get" },
           description: "Get a guest by ID.",
           authorizationType: null,
           authorizationActors: []
         }
       },
-      // Erase duplicate
+      // ERASE duplicate
       {
         type: "erase",
         reason: "Redundant. PATCH /users already handles search.",
         endpoint: { path: "/users/search", method: "patch" }
       },
-      // Create missing nested endpoint
+      // CREATE missing nested endpoint
       {
         type: "create",
         reason: "Comments are subsidiary and need delete through parent.",
@@ -964,16 +985,20 @@ process({
           authorizationActors: ["member"]
         }
       }
+      // ... must include keep/update/erase for ALL other endpoints
     ],
-    review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Erased 3 duplicate endpoints and 2 endpoints for subsidiary entities that should be nested. Final count: 40 endpoints."
+    review: "Reviewed 45 base CRUD endpoints. Updated 5 paths from camelCase to hierarchical structure. Erased 3 duplicate endpoints. Kept 37 correctly structured endpoints. Final count: 40 endpoints."
   }
 })
 ```
 
 **Action Types**:
+- `keep`: Approve endpoint with `type`, `reason` (why it's correct), and `endpoint` - **USE FOR ALL CORRECT ENDPOINTS**
 - `create`: Add endpoint with `type`, `reason` (why adding), and `design` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
-- `update`: Fix path/method with `type`, `reason` (why changing), `original`, and `updated` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
+- `update`: Fix path/method with `type`, `reason` (why changing), `endpoint` (the original), and `newDesign` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
 - `erase`: Remove endpoint with `type`, `reason` (why removing), and `endpoint`
+
+**⚠️ CRITICAL**: You MUST provide a revision for EVERY endpoint. Do NOT omit any endpoint from the revises array.
 
 ### 5.3. Authorization Fields in Revises
 
@@ -999,16 +1024,28 @@ This field specifies which actors **can call** this endpoint:
 
 **Tip**: When updating an endpoint, preserve the original `authorizationActors` unless specifically changing access control.
 
-### 5.2. No Modifications Needed
+### 5.2. All Endpoints Correct (No Modifications Needed)
 
-If no modifications are needed, call `complete` with an empty `revises` array.
+If all endpoints are correct, you MUST still provide a `keep` revision for each one. **Never submit an empty revises array.**
 
 ```typescript
 process({
-  thinking: "Reviewed all endpoints. All are properly named and structured.",
+  thinking: "Reviewed all endpoints. All are properly named and structured. Approving each with keep.",
   request: {
     type: "complete",
-    revises: [],
+    revises: [
+      {
+        type: "keep",
+        reason: "Follows REST conventions with proper plural form and hierarchical structure.",
+        endpoint: { path: "/users", method: "patch" }
+      },
+      {
+        type: "keep",
+        reason: "Correct single resource retrieval endpoint.",
+        endpoint: { path: "/users/{userId}", method: "get" }
+      },
+      // ... keep for EVERY endpoint in the provided list
+    ],
     review: "Reviewed 40 base CRUD endpoints. All endpoints follow naming conventions and are properly structured. No modifications needed."
   }
 })
@@ -1070,7 +1107,8 @@ process({
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient
 - [ ] Review analysis documented (summary of issues found)
-- [ ] Revises array contains all modifications
+- [ ] **Revises array contains a revision for EVERY endpoint (keep, update, or erase)**
+- [ ] **No endpoints omitted - used `keep` for all correct endpoints**
 - [ ] Ready to call `process()` with `type: "complete"`
 
 ---

@@ -52,14 +52,17 @@ export const transformInterfaceBaseEndpointReviewHistory = (props: {
         
         ## Base CRUD Endpoint Designs for Review (YOUR TASK)
 
-        ⚠️ CRITICAL: These are the ONLY endpoints you can review.
+        ⚠️ CRITICAL: You MUST provide a revision for EVERY endpoint listed below.
 
-        You can ONLY create new endpoints, update these endpoints, or erase these endpoints.
+        - Use **keep** to approve endpoints that are correct
+        - Use **update** to fix endpoints with issues
+        - Use **erase** to remove invalid endpoints
+        - Use **create** to add missing endpoints
 
-        DO NOT reference any endpoint that is not listed here.
+        DO NOT omit any endpoint. DO NOT reference endpoints not listed here.
 
         \`\`\`json
-        ${JSON.stringify(props.designs, null, 2)}
+        ${JSON.stringify(props.designs)}
         \`\`\`
 
         Review according to the criteria in the system prompt. Call \`process()\` with \`type: "complete"\` containing all \`revises\`.

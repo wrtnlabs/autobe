@@ -35,9 +35,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Failing to call the purpose function wastes all prior work
 
 **AVAILABLE ACTIONS** (inside `complete`) - each action MUST have a `reason` field:
-- `create`: Add endpoint with `endpoint`, `description`, `authorizationType`, `authorizationActors`, and `reason`
-- `update`: Modify endpoint with `original`, `updated`, `description`, `authorizationType`, `authorizationActors`, and `reason`
+- `keep`: Approve endpoint as-is with `endpoint` and `reason` - use when endpoint is correct
+- `create`: Add new endpoint with `design` and `reason`
+- `update`: Fix endpoint with `endpoint`, `newDesign`, and `reason`
 - `erase`: Remove endpoint with `endpoint` and `reason`
+
+**⚠️ CRITICAL: EVERY endpoint in the provided list MUST have a revision (keep, update, or erase). No omissions allowed.**
 
 **ABSOLUTE PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests
@@ -294,8 +297,8 @@ When an authenticated actor accesses their **own** analytics, metrics, or dashbo
 {
   type: "update",
   reason: "Actor ID must not be in path for self-access. Customer ID comes from JWT token.",
-  original: { path: "/customers/{customerId}/metrics", method: "get" },
-  updated: {
+  endpoint: { path: "/customers/{customerId}/metrics", method: "get" },
+  newDesign: {
     endpoint: { path: "/customers/metrics", method: "get" },
     description: "Get customer's own metrics and analytics.",
     authorizationType: null,
@@ -409,8 +412,8 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 {
   type: "update",
   reason: "Converting singular 'report' to plural 'reports' for REST convention.",
-  original: { path: "/report/revenue/summary", method: "get" },
-  updated: {
+  endpoint: { path: "/report/revenue/summary", method: "get" },
+  newDesign: {
     endpoint: { path: "/reports/revenue/summary", method: "get" },
     description: "Get revenue summary report.",
     authorizationType: null,
@@ -423,11 +426,17 @@ GET /statistics/sales/categories   ← ALL segments plural (KEEP)
 
 ```typescript
 process({
-  thinking: "Found 4 singular/plural issues: 1 duplicate pair to erase, 3 singular-only to update.",
+  thinking: "Found 4 singular/plural issues: 1 duplicate pair to erase, 3 singular-only to update. Providing revision for every endpoint.",
   request: {
     type: "complete",
     revises: [
-      // DELETE duplicate (singular form where plural exists)
+      // KEEP endpoints that are correct
+      {
+        type: "keep",
+        reason: "Endpoint follows REST conventions with proper hierarchical structure.",
+        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+      },
+      // ERASE duplicate (singular form where plural exists)
       {
         type: "erase",
         reason: "Duplicate of /statistics/sales/monthly. Removing singular form.",
@@ -437,8 +446,8 @@ process({
       {
         type: "update",
         reason: "Converting singular 'report' to plural 'reports'.",
-        original: { path: "/report/revenue/summary", method: "get" },
-        updated: {
+        endpoint: { path: "/report/revenue/summary", method: "get" },
+        newDesign: {
           endpoint: { path: "/reports/revenue/summary", method: "get" },
           description: "Get revenue summary report.",
           authorizationType: null,
@@ -448,14 +457,15 @@ process({
       {
         type: "update",
         reason: "Converting singular segments to plural: analytic→analytics, customer→customers.",
-        original: { path: "/analytic/customer/behavior", method: "patch" },
-        updated: {
+        endpoint: { path: "/analytic/customer/behavior", method: "patch" },
+        newDesign: {
           endpoint: { path: "/analytics/customers/behavior", method: "patch" },
           description: "Analyze customer behavior patterns.",
           authorizationType: null,
           authorizationActors: ["admin", "analyst"]
         }
       }
+      // ... must include keep/update/erase for ALL other endpoints
     ],
     review: "Fixed 4 singular/plural issues. Erased 1 duplicate singular form. Updated 3 singular paths to plural."
   }
@@ -509,8 +519,8 @@ PATCH /reports/revenue  (needs filter parameters)
 {
   type: "update",
   reason: "Complex analytics query requires request body for filters. PATCH is appropriate.",
-  original: { path: "/analytics/sales", method: "get" },
-  updated: {
+  endpoint: { path: "/analytics/sales", method: "get" },
+  newDesign: {
     endpoint: { path: "/analytics/sales", method: "patch" },
     description: "Sales analytics with date range and category filters.",
     authorizationType: null,
@@ -794,41 +804,47 @@ Call `process()` with `type: "complete"` when the review is finished. Include al
 
 ```typescript
 process({
-  thinking: "Reviewed all action endpoints. Found unjustified endpoints, camelCase paths, and duplicates.",
+  thinking: "Reviewed all action endpoints. Found unjustified endpoints, camelCase paths, and duplicates. Providing revision for every endpoint.",
   request: {
     type: "complete",
     revises: [
-      // Erase unjustified endpoint
+      // KEEP endpoints that are correct and justified
+      {
+        type: "keep",
+        reason: "Justified by requirements: 'Admins SHALL view dashboard overview'. Properly structured.",
+        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+      },
+      // ERASE unjustified endpoint
       {
         type: "erase",
         reason: "No requirements mention customer behavior analytics.",
         endpoint: { path: "/analytics/customer/behavior", method: "patch" }
       },
-      // Update camelCase to hierarchical
+      // UPDATE camelCase to hierarchical
       {
         type: "update",
         reason: "Converting camelCase to hierarchical structure.",
-        original: { path: "/statistics/salesByMonth", method: "get" },
-        updated: {
+        endpoint: { path: "/statistics/salesByMonth", method: "get" },
+        newDesign: {
           endpoint: { path: "/statistics/sales/monthly", method: "get" },
           description: "Get monthly sales statistics.",
           authorizationType: null,
           authorizationActors: ["admin"]
         }
       },
-      // Fix HTTP method
+      // UPDATE HTTP method
       {
         type: "update",
         reason: "Global search requires complex request body. PATCH is appropriate.",
-        original: { path: "/search/global", method: "get" },
-        updated: {
+        endpoint: { path: "/search/global", method: "get" },
+        newDesign: {
           endpoint: { path: "/search/global", method: "patch" },
           description: "Search across all entities with complex filters.",
           authorizationType: null,
           authorizationActors: []
         }
       },
-      // Create missing endpoint from requirements
+      // CREATE missing endpoint from requirements
       {
         type: "create",
         reason: "Requirements specify 'Administrators SHALL view monthly sales trends'.",
@@ -839,16 +855,20 @@ process({
           authorizationActors: ["admin"]
         }
       }
+      // ... must include keep/update/erase for ALL other endpoints
     ],
-    review: "Reviewed 12 action endpoints. Erased 4 unjustified endpoints (no requirements backing). Updated 3 paths from camelCase to hierarchical. Final count: 8 action endpoints, all justified by requirements."
+    review: "Reviewed 12 action endpoints. Erased 4 unjustified endpoints. Updated 3 paths. Kept 5 correctly structured endpoints. Final count: 8 action endpoints."
   }
 })
 ```
 
 **Action Types**:
+- `keep`: Approve endpoint with `type`, `reason` (why it's correct), and `endpoint` - **USE FOR ALL CORRECT ENDPOINTS**
 - `create`: Add endpoint with `type`, `reason`, and `design` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
-- `update`: Fix path/method with `type`, `reason`, `original`, and `updated` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
+- `update`: Fix path/method with `type`, `reason`, `endpoint` (the original), and `newDesign` (containing `endpoint`, `description`, `authorizationType`, `authorizationActors`)
 - `erase`: Remove endpoint with `type`, `reason`, and `endpoint`
+
+**⚠️ CRITICAL**: You MUST provide a revision for EVERY endpoint. Do NOT omit any endpoint from the revises array.
 
 ### 5.3. Authorization Fields in Revises
 
@@ -904,16 +924,28 @@ process({
 }
 ```
 
-### 5.2. No Modifications Needed
+### 5.2. All Endpoints Correct (No Modifications Needed)
 
-If no modifications are needed, call `complete` with an empty `revises` array.
+If all endpoints are correct, you MUST still provide a `keep` revision for each one. **Never submit an empty revises array.**
 
 ```typescript
 process({
-  thinking: "Reviewed all action endpoints. All are properly justified and named.",
+  thinking: "Reviewed all action endpoints. All are properly justified and named. Approving each with keep.",
   request: {
     type: "complete",
-    revises: [],
+    revises: [
+      {
+        type: "keep",
+        reason: "Justified by requirements. Follows hierarchical structure and REST conventions.",
+        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+      },
+      {
+        type: "keep",
+        reason: "Justified by 'Admins SHALL view dashboard overview' requirement.",
+        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+      },
+      // ... keep for EVERY endpoint in the provided list
+    ],
     review: "Reviewed 8 action endpoints. All endpoints are justified by requirements and follow naming conventions. No modifications needed."
   }
 })
@@ -971,7 +1003,8 @@ process({
 - [ ] For preliminary requests: Explained what critical information is missing
 - [ ] For completion: Summarized key accomplishments and why it's sufficient
 - [ ] Review analysis documented (summary of issues found)
-- [ ] Revises array contains all modifications
+- [ ] **Revises array contains a revision for EVERY endpoint (keep, update, or erase)**
+- [ ] **No endpoints omitted - used `keep` for all correct endpoints**
 - [ ] Ready to call `process()` with `type: "complete"`
 
 ---
