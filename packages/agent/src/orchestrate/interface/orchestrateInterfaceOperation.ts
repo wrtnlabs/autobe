@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeHistory,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceOperationEvent,
@@ -18,6 +19,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
+import { AutoBeInterfaceAuthorizationProgrammer } from "./programmers/AutoBeInterfaceAuthorizationProgrammer";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterfaceOperationApplication";
 import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
@@ -98,7 +100,27 @@ export async function orchestrateInterfaceOperation(
     operations,
     collection: new AutoBeJsonSchemaCollection({}, {}),
   });
-  return operations;
+
+  const analyze: AutoBeAnalyzeHistory = ctx.state().analyze!;
+  const sessionTypeNames: string[] = analyze.actors.map((actor) =>
+    AutoBeInterfaceAuthorizationProgrammer.getSessionTypeName({
+      prefix: analyze.prefix,
+      actor: actor.name,
+    }),
+  );
+  if (sessionTypeNames.length === 0) return operations;
+  return operations.filter((op) => {
+    const predicate = (typeName: string | undefined): boolean => {
+      if (typeName === undefined) return true;
+      return sessionTypeNames.every(
+        (x) => typeName !== `${x}.ICreate` && typeName !== `${x}.IUpdate`,
+      );
+    };
+    return (
+      predicate(op.requestBody?.typeName) &&
+      predicate(op.responseBody?.typeName)
+    );
+  });
 }
 
 async function process(
