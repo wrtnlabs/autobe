@@ -466,6 +466,14 @@ process({
 
 Action endpoints should use appropriate HTTP methods.
 
+**Method Convention Summary**:
+| Method | Use Case | Example |
+|--------|----------|---------|
+| **GET** | Simple computed data, no complex request body | `GET /dashboard/admin/overview` |
+| **PATCH** | Search/filter with complex criteria in request body | `PATCH /analytics/sales`, `PATCH /search/global` |
+| **POST** | Actions with side effects (creates records) | `POST /reports/generate` |
+| **PUT/DELETE** | Almost never for action endpoints | - |
+
 **GET**: Simple computed data without complex request body
 ```
 GET /dashboard/admin/overview
@@ -484,7 +492,32 @@ PATCH /reports/revenue  (needs filter parameters)
 - POST: Only for actions with side effects (e.g., `POST /reports/generate` that creates a record)
 - PUT/DELETE: Almost never for action endpoints
 
-**Action**: UPDATE method if inappropriate (e.g., complex search using GET instead of PATCH).
+**Common Violations to Fix**:
+```
+❌ GET /analytics/sales (with complex filters)
+   → Should be PATCH /analytics/sales (needs request body for filters)
+
+❌ GET /search/products (with search criteria)
+   → Should be PATCH /search/products (search needs request body)
+
+❌ PUT /reports/revenue (for fetching report)
+   → Should be GET or PATCH depending on complexity
+```
+
+**Action - UPDATE to Correct Method**:
+```typescript
+{
+  type: "update",
+  reason: "Complex analytics query requires request body for filters. PATCH is appropriate.",
+  original: { path: "/analytics/sales", method: "get" },
+  updated: {
+    endpoint: { path: "/analytics/sales", method: "patch" },
+    description: "Sales analytics with date range and category filters.",
+    authorizationType: null,
+    authorizationActors: ["admin"]
+  }
+}
+```
 
 ### 3.7. Over-Engineering Detection
 
@@ -930,7 +963,7 @@ process({
 - [ ] **All resource names are PLURAL (no singular forms)**
 - [ ] **No singular/plural duplicate pairs exist**
 - [ ] No duplicates among action endpoints
-- [ ] HTTP methods are appropriate (GET for simple, PATCH for complex)
+- [ ] **HTTP methods are appropriate**: GET (simple computed data), PATCH (search/filter with request body), POST (side effects only), PUT/DELETE (rarely used)
 - [ ] No over-engineered granular endpoints
 
 ### 8.4. Function Calling Verification

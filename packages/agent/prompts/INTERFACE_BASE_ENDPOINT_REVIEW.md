@@ -582,7 +582,78 @@ GET /articles/{articleId}/snapshots/{snapshotId}
 POST /articles/{articleId}/snapshots
 ```
 
-### 3.10. Composite Unique Constraint Compliance
+### 3.10. HTTP Method Appropriateness (CRITICAL)
+
+**Base CRUD endpoints MUST follow these HTTP method conventions:**
+
+| Operation | Method | Pattern | Purpose |
+|-----------|--------|---------|---------|
+| **at** | GET | `/resources/{resourceId}` | Read a single resource |
+| **index** | PATCH | `/resources` | Search/filter with pagination (request body) |
+| **create** | POST | `/resources` | Create a new resource |
+| **update** | PUT | `/resources/{resourceId}` | Update an existing resource |
+| **erase** | DELETE | `/resources/{resourceId}` | Delete a resource |
+
+**Method Purpose Summary**:
+- **GET**: Reading data (single resource retrieval)
+- **PATCH**: Pagination/search with complex criteria in request body
+- **POST**: Creating new resources
+- **PUT**: Updating existing resources
+- **DELETE**: Removing resources
+
+**Common Violations to Fix**:
+
+```
+❌ GET /resources (for search/pagination)
+   → Should be PATCH /resources (search needs request body)
+
+❌ POST /resources/{resourceId} (for update)
+   → Should be PUT /resources/{resourceId}
+
+❌ PATCH /resources/{resourceId} (for update)
+   → Should be PUT /resources/{resourceId}
+
+❌ PUT /resources (for create)
+   → Should be POST /resources
+```
+
+**Action - UPDATE to Correct Method**:
+```typescript
+// Fix search endpoint using wrong method
+{
+  type: "update",
+  reason: "Search/pagination requires request body. PATCH is appropriate, not GET.",
+  original: { path: "/articles", method: "get" },
+  updated: {
+    endpoint: { path: "/articles", method: "patch" },
+    description: "Search and filter articles with pagination.",
+    authorizationType: null,
+    authorizationActors: []
+  }
+}
+
+// Fix update endpoint using wrong method
+{
+  type: "update",
+  reason: "Resource update should use PUT, not PATCH or POST.",
+  original: { path: "/articles/{articleId}", method: "patch" },
+  updated: {
+    endpoint: { path: "/articles/{articleId}", method: "put" },
+    description: "Update an article.",
+    authorizationType: null,
+    authorizationActors: ["member"]
+  }
+}
+```
+
+**Verification Checklist**:
+- [ ] All collection search/filter endpoints use PATCH (not GET)
+- [ ] All single resource retrieval endpoints use GET
+- [ ] All create endpoints use POST
+- [ ] All update endpoints use PUT
+- [ ] All delete endpoints use DELETE
+
+### 3.11. Composite Unique Constraint Compliance
 
 Check database schema for `@@unique([parent_id, code])` constraints.
 
@@ -981,6 +1052,7 @@ process({
 - [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization Agent's join)
 - [ ] **Session tables have ONLY GET/PATCH (READ operations)** - NO POST/PUT/DELETE for ANY actor including admin
 - [ ] **Snapshot tables have no PUT/DELETE by default** (unless requirements explicitly request them)
+- [ ] **HTTP methods are correct**: GET (read), PATCH (search/pagination), POST (create), PUT (update), DELETE (erase)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**
 - [ ] **NO redundant parent context (/items not /cart-items under /carts)**
