@@ -70,6 +70,7 @@ Two tables have **DIFFERENT purposes** when:
 | `admin_sessions`: "[MASTER DATA] Sessions for administrators..." | `customer_sessions`: "[MASTER DATA] Sessions for customers..." | **NO** | Different actor types explicitly stated |
 | `configurations`: "[CONFIG] System settings..." | `admins`: "[MASTER DATA] Administrator accounts..." | **NO** | Different role tags: [CONFIG] vs [MASTER DATA] |
 | `moderation_actions`: "[OUTPUT] Moderator decisions..." | `audit_logs`: "[AUDIT] Immutable compliance record..." | **NO** | Different role tags: [OUTPUT] vs [AUDIT] |
+| `configurations`: "[CONFIG] Generic system settings as key-value pairs... Stores config_key, config_value, config_type" | `payment_methods`: "[CONFIG] Structured payment method definitions... Stores method_name, fee_percentage, min/max_amount, is_active" | **NO** | Generic key-value store ≠ Structured domain entity. A generic table mentioning a domain as example does NOT duplicate that domain's dedicated table |
 
 ---
 
@@ -88,6 +89,7 @@ Two tables have **DIFFERENT purposes** when:
 | "Both belong to the same domain" | Same domain can have many non-duplicate tables |
 | "Both are about reporting/moderation" | Reports (input) ≠ actions (output) ≠ logs (audit) |
 | "Both store similar metadata" | Metadata for different entities serves different purposes |
+| "Both configure the same domain" | A generic key-value config store mentioning "payment gateways" as an example ≠ a structured payment_methods table with dedicated columns |
 
 **If you find yourself using any of these phrases, STOP and re-read the descriptions.**
 
@@ -189,6 +191,23 @@ Table B: "[MASTER DATA] Customer authentication credentials..."
 → Need more investigation
 ```
 
+**⚠️ Step 2 Special Case: Generic vs Specific (same role tag)**
+
+When both tables share the same role tag (especially `[CONFIG]`), check whether one is a **generic infrastructure table** and the other is a **structured domain entity**:
+
+- **Generic infrastructure table**: Stores arbitrary data as key-value pairs, generic event entries, or flexible JSON blobs. Core entity is "system settings" or "generic records" — not a specific business concept.
+- **Structured domain entity**: Has dedicated typed columns for a specific business concept (e.g., `method_name`, `fee_percentage`, `is_active`). Core entity is a specific business object.
+
+```
+Table A: "[CONFIG] Generic system settings as key-value pairs. Stores config_key, config_value..."
+Table B: "[CONFIG] Structured payment method definitions. Stores method_name, fee_percentage..."
+
+→ Generic key-value store vs Structured domain entity = DIFFERENT core entities
+→ NOT DUPLICATE — even if the generic table mentions the domain as an example
+```
+
+**Key Rule**: A generic table that *mentions* a domain (e.g., "controls behavior of payment gateways, notifications...") is NOT a duplicate of that domain's dedicated structured table. The mention is just an example of usage, not the table's core purpose.
+
 **Step 3: Compare Business Context (if same entity)**
 
 What workflow uses this table? What triggers creation?
@@ -213,16 +232,7 @@ Table B: "...Does NOT store profile data - see X for personal information"
 → These are deliberately separated tables
 ```
 
-### 4.5 Key Judgment Rules Summary
-
-1. **Different role tags = NOT duplicate** (stop immediately)
-2. **Same role tag = INVESTIGATE further** (proceed to entity comparison)
-3. **Explicit "does NOT store X" = NOT duplicate of X**
-4. **Different workflow stages = NOT duplicate** (input ≠ output ≠ audit)
-5. **Different actor ownership = NOT duplicate** (customer creates ≠ seller creates)
-6. **Same entity + same role + same workflow + no exclusions = DUPLICATE**
-
-### 4.2 Common Misconception: Similar Domain ≠ Duplicate
+### 4.5 Common Misconception: Similar Domain ≠ Duplicate
 
 Tables in the same domain (e.g., "moderation", "reporting") often serve **completely different purposes**:
 
@@ -238,9 +248,9 @@ These are THREE DIFFERENT tables serving THREE DIFFERENT purposes in ONE workflo
   User Report (INPUT) → Moderator Decision (OUTPUT) → Audit Record (AUDIT)
 ```
 
-### 4.3 The Definitive Test
+### 4.6 Verification: The Definitive Test
 
-Ask yourself these questions:
+After completing the 4-Step Process (Section 4.4), use these 3 questions as a **final verification** to confirm your conclusion:
 
 1. **"If I inserted the same row into both tables, would it make sense?"**
    - YES → Likely duplicates (same entity)
@@ -255,15 +265,26 @@ Ask yourself these questions:
    - YES, and quotes clearly match → Duplicates
    - NO, descriptions show different purposes → NOT duplicates
 
-### 4.4 Judgment Rules Summary
+**If the 4-Step Process and this Verification Test disagree, trust the 4-Step Process** — it uses structured description analysis and is more reliable than intuitive checks.
 
-1. **ALWAYS read the `description` field carefully** — this is the most reliable indicator of what a table stores
-2. **Tables with the same purpose in their descriptions = DUPLICATE** (even if names differ)
-3. **Tables with different purposes in their descriptions = NOT duplicate** (even if names look similar)
-4. **Do NOT rely on table names alone** — names can be misleading
-5. **Parent-child or snapshot relationships = NOT duplicates** (they are complementary)
-6. **Different actor types of the same pattern = NOT duplicates** (each actor needs its own tables)
-7. **Different roles in the same workflow = NOT duplicates** (input ≠ output ≠ audit)
+### 4.7 Judgment Rules Summary
+
+**Primary Rules (from 4-Step Process):**
+
+1. **Different role tags = NOT duplicate** (stop immediately at Step 1)
+2. **Same role tag = INVESTIGATE further** (proceed to Step 2: entity comparison)
+3. **Explicit "does NOT store X" = NOT duplicate of X** (Step 4 exclusion)
+4. **Different workflow stages = NOT duplicate** (input ≠ output ≠ audit)
+5. **Different actor ownership = NOT duplicate** (customer creates ≠ seller creates)
+6. **Same entity + same role + same workflow + no exclusions = DUPLICATE**
+
+**General Rules:**
+
+7. **ALWAYS read the `description` field carefully** — this is the most reliable indicator of what a table stores
+8. **Tables with the same purpose in their descriptions = DUPLICATE** (even if names differ)
+9. **Tables with different purposes in their descriptions = NOT duplicate** (even if names look similar)
+10. **Do NOT rely on table names alone** — names can be misleading
+11. **Parent-child or snapshot relationships = NOT duplicates** (they are complementary)
 
 ---
 
@@ -379,11 +400,11 @@ export interface IComplete {
 }
 ```
 
-| Field | Focus |
-|-------|-------|
-| `analysis` | Which tables were analyzed, what comparisons were made, and what patterns were identified |
-| `rationale` | Why specific tables were grouped as duplicates and why certain tables were NOT grouped |
-| `duplicateGroups` | Array of duplicate groups — empty array if no duplicates exist |
+| Field | Focus | Required Structure |
+|-------|-------|--------------------|
+| `analysis` | Which tables were analyzed, what comparisons were made, and what patterns were identified | **Step 1**: Target Table Inventory (role tag, core entity, business context, distinguishing traits per table). **Step 2**: Systematic Comparison (each target table vs each other table with Role/Entity/Workflow/Distinguishing verdicts). **Step 3**: Summary (total tables, comparisons, groups found). |
+| `rationale` | Why specific tables were grouped as duplicates and why certain tables were NOT grouped | For each duplicate group: quote BOTH descriptions, identify matching elements (role, entity, workflow), explain WHY. For non-grouped similar tables: quote distinguishing parts proving non-duplication. |
+| `duplicateGroups` | Array of duplicate groups — empty array if no duplicates exist | Each group: `reason` with **quoted descriptions**, at least 2 tables, at least 1 from target component. |
 
 ---
 

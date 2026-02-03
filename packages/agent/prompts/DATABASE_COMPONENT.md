@@ -463,6 +463,9 @@ Brief descriptions cause duplicate detection failures. Write RICH descriptions.
 | **4. Business Context** | What workflow/process uses this | "used in registration, login, and profile management flows" |
 | **5. Distinguishing Characteristics** | How it differs from similar tables | "does NOT store order history - see customer_orders for that" |
 
+> **⚠️ Element 5 — Special Rule for Generic/Infrastructure Tables:**
+> Generic tables (key-value config stores, generic event logs, flexible metadata stores, etc.) MUST include an explicit "Does NOT replace domain-specific X tables" statement. Without this, the Deduplication Agent cannot distinguish a generic key-value `configurations` table from a structured domain table like `payment_methods`, even though they serve completely different purposes. Example: "Does NOT replace domain-specific configuration tables — stores only simple key-value settings, not structured domain entities like payment_methods or notification_preferences."
+
 ### Role Tag Definitions
 
 | Tag | Meaning | Lifecycle | Examples |
@@ -506,6 +509,16 @@ Brief descriptions cause duplicate detection failures. Write RICH descriptions.
 {
   name: "sale_question_answers",
   description: "[OUTPUT] Seller responses to customer questions. Stores answer text, seller reference, and parent question link. Created when seller responds to a question. Completes Q&A workflow. Separate from questions because different actor (seller) owns this data with different lifecycle."
+}
+
+// Pair 3: Same role [CONFIG] but generic key-value store vs structured domain table
+{
+  name: "shopping_configurations",
+  description: "[CONFIG] Generic system-wide settings as key-value pairs. Stores config_key, config_value, config_type, last_modified_by. Used by all system components for feature flags and toggles (e.g., maintenance mode, rate limits). Does NOT replace domain-specific configuration tables — stores only simple key-value settings, not structured domain entities like payment_methods or notification_preferences."
+}
+{
+  name: "shopping_payment_methods",
+  description: "[CONFIG] Structured payment method definitions for the platform. Stores method_name (stripe, paypal), fee_percentage, min/max_transaction_amount, regional_restrictions, is_active. Created by platform admin. Used by checkout and payment processing workflows. Does NOT store arbitrary system settings — see shopping_configurations for generic key-value feature flags."
 }
 ```
 
