@@ -15,6 +15,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointWriteApplication } from "./structures/IAutoBeInterfaceEndpointWriteApplication";
@@ -48,6 +51,25 @@ export const orchestrateInterfaceEndpointWrite = async (
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
   const start: Date = new Date();
+
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const queryText = [
+    "interface",
+    "endpoint",
+    props.group.name,
+    ...props.group.databaseSchemas,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfaceEndpointWrite");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const databaseSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
     ctx
       .state()
@@ -73,6 +95,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     source: SOURCE,
     state: ctx.state(),
     local: {
+      analysisFiles: ragAnalysisFiles,
       databaseSchemas: props.group.databaseSchemas
         .map((key) => databaseSchemas.get(key))
         .filter((m) => m !== undefined),
@@ -210,3 +233,4 @@ const createController = (props: {
 };
 
 const SOURCE = "interfaceEndpoint" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

@@ -107,4 +107,41 @@ export interface IAutoBeConfig {
    * operations that may fail due to temporary issues.
    */
   backoffStrategy?: (props: { count: number; error: unknown }) => number;
+
+  /**
+   * RAG (Retrieval-Augmented Generation) configuration.
+   *
+   * Controls the global RAG behavior for all orchestrators. When enabled,
+   * orchestrators use TOPK mode to retrieve relevant analysis files using
+   * semantic search. When disabled, orchestrators use their configured
+   * off-mode (typically FULL or NONE).
+   */
+  rag?: IAutoBeConfig.IRag;
+}
+
+export namespace IAutoBeConfig {
+  /**
+   * RAG configuration options.
+   */
+  export interface IRag {
+    /**
+     * Global RAG enable/disable switch.
+     *
+     * When true, orchestrators use TOPK retrieval mode.
+     * When false, orchestrators use their configured off-mode (FULL or NONE).
+     *
+     * @default true
+     */
+    enabled?: boolean;
+
+    /**
+     * Global logging switch for RAG operations.
+     *
+     * When true, logs are emitted for RAG context building,
+     * including mode, file counts, character counts, and reduction percentages.
+     *
+     * @default false
+     */
+    log?: boolean;
+  }
 }

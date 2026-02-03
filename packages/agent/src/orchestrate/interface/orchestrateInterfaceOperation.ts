@@ -17,6 +17,12 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
+import { getEmbedder } from "../../utils/getEmbedder";
+import {
+  RagModePreset,
+  getContextModeSettings,
+} from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
@@ -138,6 +144,30 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
+  // RAG TOPK_NONE
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const pathSegments = props.design.endpoint.path
+    .split("/")
+    .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
+  const queryText = [
+    "operation",
+    props.design.endpoint.method,
+    ...pathSegments,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(
+    ctx.config,
+    RAG_PRESET,
+    "interfaceOperation",
+  );
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -156,6 +186,9 @@ async function process(
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
+    local: {
+      analysisFiles: ragAnalysisFiles,
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceOperationApplication.IComplete | null> =
@@ -292,3 +325,4 @@ function createController(props: {
 }
 
 const SOURCE = "interfaceOperation" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";
