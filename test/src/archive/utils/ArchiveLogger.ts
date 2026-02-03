@@ -203,7 +203,11 @@ export namespace ArchiveLogger {
     else if (event.type === "databaseDeduplication") {
       content.push(
         `  - namespace: ${event.namespace}`,
-        `  - duplicated tables: ${event.duplicateGroups.map((g) => g.tables.map((t) => t.name).join(", ")).join(", ")}`,
+        `  - duplicated groups:`,
+        ...event.duplicateGroups.map(
+          (g, idx) =>
+            `    - group ${idx + 1}: [${g.tables.map((t) => t.name).join(", ")}] (reason: ${g.reason})`,
+        ),
       );
     } else if (event.type === "databaseSchema")
       content.push(
