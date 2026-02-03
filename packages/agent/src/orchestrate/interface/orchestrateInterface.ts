@@ -229,7 +229,6 @@ export const orchestrateInterface =
           operations: document.operations,
           collection,
         });
-        if (Object.keys(schemas).length === 0) return;
       };
 
       // initialize schemas
