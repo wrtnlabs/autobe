@@ -79,6 +79,14 @@ export namespace AutoBeInterfaceEndpointProgrammer {
             "",
           );
       }
+    } else if (
+      props.design.authorizationActors.length > 1 &&
+      props.design.endpoint.path.includes("{actorId}")
+    ) {
+      props.design.endpoint.path = props.design.endpoint.path.replace(
+        "{actorId}",
+        "",
+      );
     }
     return props.design;
   };
