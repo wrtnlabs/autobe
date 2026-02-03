@@ -73,8 +73,6 @@ export const orchestratePrisma = async (
       instruction: props.instruction,
     },
   );
-  console.log(`----------- DATABASE DEDUPLICATION -------------`);
-  console.log(JSON.stringify(components, null, 2));
   const application: AutoBeDatabase.IApplication = await orchestrateSchema(
     ctx,
     {
@@ -171,8 +169,6 @@ const orchestrateComponent = async (
         components,
       })),
     ]);
-  console.log(`----------- ALL COMPONENTS -------------`);
-  console.log(JSON.stringify(allComponents, null, 2));
   return await orchestratePrismaDeduplication(ctx, {
     instruction: props.instruction,
     components: allComponents,
