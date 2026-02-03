@@ -15,9 +15,6 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointErase {
-  /** Type discriminator indicating this is an erase operation. */
-  type: "erase";
-
   /**
    * Reason for deletion.
    *
@@ -33,4 +30,7 @@ export interface AutoBeInterfaceEndpointErase {
    * exactly (path + method).
    */
   endpoint: AutoBeOpenApi.IEndpoint;
+
+  /** Type discriminator indicating this is an erase operation. */
+  type: "erase";
 }

@@ -13,8 +13,11 @@ export interface IAutoBeInterfaceEndpointReviewApplication {
    * Reviews and validates generated endpoints to ensure they meet quality
    * standards. The review process examines endpoint design, identifies issues
    * such as duplicates or inconsistencies, and applies corrections through
-   * create, update, or erase operations. This ensures the final API structure
-   * is clean, consistent, and maintainable.
+   * revision operations (keep, create, update, or erase).
+   *
+   * **Critical**: Every endpoint in the provided list MUST receive a revision
+   * decision. No omissions are allowed - use "keep" to explicitly approve
+   * endpoints that need no changes.
    *
    * @param props Request containing either preliminary data request or endpoint
    *   review completion
@@ -70,10 +73,16 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
   /**
    * Request to complete the endpoint review process.
    *
-   * Finalizes the review by submitting all identified endpoint modifications.
-   * The modifications (create, update, erase) are applied to ensure the final
-   * API structure is consistent, free of duplicates, properly designed, and
-   * aligned with RESTful conventions and AutoBE standards.
+   * Finalizes the review by submitting revision decisions for ALL endpoints.
+   * Every endpoint in the provided list must have exactly one revision:
+   *
+   * - **keep**: Approve endpoint as-is (explicitly confirm it's correct)
+   * - **create**: Add a new endpoint that was missing
+   * - **update**: Fix an incorrectly structured endpoint
+   * - **erase**: Remove an invalid or duplicate endpoint
+   *
+   * The revisions ensure the final API structure is consistent, free of
+   * duplicates, properly designed, and aligned with RESTful conventions.
    */
   export interface IComplete {
     /**
@@ -99,11 +108,18 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
     review: string;
 
     /**
-     * All endpoint revisions to apply.
+     * Revision decisions for ALL endpoints.
      *
-     * Include all create, update, and erase operations identified during review.
-     * Revisions are validated and applied in order. If no modifications are
-     * needed, provide an empty array.
+     * You MUST provide exactly one revision for each endpoint in the provided
+     * list. No omissions allowed.
+     *
+     * - Use **keep** for endpoints that are correct (do NOT simply omit them)
+     * - Use **create** to add missing endpoints
+     * - Use **update** to fix incorrectly structured endpoints
+     * - Use **erase** to remove invalid or duplicate endpoints
+     *
+     * The endpoint field in keep, update, and erase must exactly match an
+     * endpoint from the provided list (path + method).
      *
      * @see AutoBeInterfaceEndpointRevise - Discriminated union of revision types
      */

@@ -29,7 +29,21 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
             expected: `An endpoint matching one of the provided designs (path + method)`,
             value: revise.endpoint,
             description: StringUtil.trim`
-              @todo
+              The endpoint referenced in this revision does not exist in the
+              provided designs list.
+
+              You can only use keep, update, or erase for endpoints that were
+              given to you for review. Check the path and method carefully -
+              they must match exactly.
+
+              If you want to add a new endpoint that doesn't exist yet, use the
+              "create" revision type instead.
+
+              Here are all valid endpoints you can reference:
+
+              | Method | Path |
+              |--------|------|
+              ${props.designs.map((d) => `| ${d.endpoint.method} | ${d.endpoint.path} |`).join("\n")}
             `,
           });
       }
@@ -70,7 +84,14 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
           value: undefined,
           expected: `AutoBeInterfaceEndpointRevise (corresponding to the design with path: ${design.endpoint.path} and method: ${design.endpoint.method})`,
           description: StringUtil.trim`
-            @todo
+            Every endpoint in the provided designs list MUST have a
+            corresponding revision.
+
+            You cannot omit any endpoint - if an endpoint is correct and needs
+            no changes, use the "keep" revision type to explicitly approve it.
+
+            This ensures complete review coverage with no accidentally skipped
+            endpoints.
           `,
         });
     }
