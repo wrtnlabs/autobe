@@ -935,28 +935,28 @@ For Security Review, you use `erase`, `create`, and `keep` revisions:
 ```typescript
 // Erase revision - remove security-violating field
 interface AutoBeInterfaceSchemaPropertyErase {
-  type: "erase";
   reason: string;  // Why this field is being removed (security violation type)
   key: string;     // Property name to remove
+  type: "erase";
 }
 
 // Create revision - add missing required field (e.g., password, session context)
 interface AutoBeInterfaceSchemaPropertyCreate {
-  type: "create";
   reason: string;   // Why this field is being added
   key: string;      // Property name to add
   databaseSchemaProperty: string | null;  // Database property name or null for virtual fields
   specification: string;  // Implementation spec for Realize Agent
   description: string;  // API documentation for consumers
+  type: "create";
   schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean; // Whether the field is required
 }
 
 // Keep revision - keep existing property unchanged
 interface AutoBeInterfaceSchemaPropertyKeep {
-  type: "keep";
   reason: string;  // Why this property is kept unchanged
   key: string;     // Property name to keep
+  type: "keep";
 }
 ```
 
@@ -1025,12 +1025,12 @@ This ordering enforces **grounded reasoning**:
 **Example - Correct Create Revision Structure**:
 ```typescript
 {
-  type: "create",
   reason: "CRITICAL: Login DTO requires password field for authentication",
   key: "password",
   databaseSchemaProperty: null,  // Virtual field - not stored directly
   specification: "Plaintext password for authentication. Server compares hashed value against users.password_hashed column.",
   description: "User's password for authentication. Will be securely hashed before storage.",
+  type: "create",
   schema: {
     type: "string"
   },
@@ -1039,6 +1039,8 @@ This ordering enforces **grounded reasoning**:
 ```
 
 This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
+**⚠️ Specification-Schema Consistency**: When writing a `create` revision, the `specification` and `schema` MUST be semantically consistent. Never let the two contradict each other.
 
 ### 5.3. Output Examples
 
@@ -1059,36 +1061,36 @@ process({
 
     revises: [
       {
-        type: "erase",
         reason: "CRITICAL: Clients must not send pre-hashed passwords",
-        key: "password_hashed"
+        key: "password_hashed",
+        type: "erase"
       },
       {
-        type: "create",
         reason: "CRITICAL: Login DTO requires password field for authentication",
         key: "password",
         databaseSchemaProperty: "password_hashed",
         specification: "Plaintext password for authentication. Server compares hashed value against customers.password_hashed column.",
         description: "User's plaintext password for authentication. Will be verified against hashed password in database.",
+        type: "create",
         schema: {
           type: "string"
         },
         required: true
       },
       {
-        type: "keep",
         reason: "Required identifier field for login",
-        key: "email"
+        key: "email",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Session context field - connection metadata",
-        key: "href"
+        key: "href",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Session context field - connection metadata",
-        key: "referrer"
+        key: "referrer",
+        type: "keep"
       }
     ]
   }
@@ -1111,24 +1113,24 @@ process({
 
     revises: [
       {
-        type: "erase",
         reason: "CRITICAL: Password hash must never be exposed in responses",
-        key: "password_hashed"
+        key: "password_hashed",
+        type: "erase"
       },
       {
-        type: "erase",
         reason: "CRITICAL: Password salt must never be exposed in responses",
-        key: "salt"
+        key: "salt",
+        type: "erase"
       },
       {
-        type: "keep",
         reason: "Required actor identifier",
-        key: "id"
+        key: "id",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Required authentication token",
-        key: "token"
+        key: "token",
+        type: "keep"
       }
     ]
   }
@@ -1153,26 +1155,26 @@ process({
 
     revises: [
       {
-        type: "create",
         reason: "CRITICAL: Member registration DTO requires password field",
         key: "password",
         databaseSchemaProperty: "password_hashed",
         specification: "Plaintext password for new account. Server will hash and store in sellers.password_hashed column.",
         description: "Password for the new seller account. Will be hashed before storage.",
+        type: "create",
         schema: {
           type: "string"
         },
         required: true
       },
       {
-        type: "keep",
         reason: "Required identifier field",
-        key: "email"
+        key: "email",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Business field",
-        key: "name"
+        key: "name",
+        type: "keep"
       }
     ]
   }
@@ -1196,14 +1198,14 @@ process({
 
     revises: [
       {
-        type: "keep",
         reason: "Session context field - required",
-        key: "href"
+        key: "href",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Session context field - required",
-        key: "referrer"
+        key: "referrer",
+        type: "keep"
       }
     ]
   }
@@ -1227,38 +1229,38 @@ process({
 
     revises: [
       {
-        type: "create",
         reason: "Required session context field for session creation",
         key: "href",
         databaseSchemaProperty: "href",
         specification: "Connection URL provided by client. Server stores in sessions.href column for analytics.",
         description: "Connection URL (current page URL). For analytics and security tracking.",
+        type: "create",
         schema: {
           type: "string"
         },
         required: true
       },
       {
-        type: "create",
         reason: "Required session context field for session creation",
         key: "referrer",
         databaseSchemaProperty: null,
         specification: "Referrer URL provided by client. Server stores in sessions.referrer column for analytics.",
         description: "Referrer URL (previous page URL). For analytics and security tracking.",
+        type: "create",
         schema: {
           type: "string"
         },
         required: true
       },
       {
-        type: "keep",
         reason: "Required identifier field",
-        key: "email"
+        key: "email",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Required for member authentication",
-        key: "password"
+        key: "password",
+        type: "keep"
       }
     ]
   }

@@ -352,7 +352,21 @@ This ordering enforces **grounded reasoning**:
 
 ## 4. Refinement Operations
 
-You have four operations available for property refinement:
+You have four operations available for property refinement.
+
+### 4.0. Core Principle: Specification-Schema Consistency
+
+`specification` is the natural-language description of HOW a property is implemented. `schema` is its technical JSON Schema type definition. **These two MUST be semantically consistent.**
+
+If `specification` says "list of attachments uploaded by the user", the `schema` MUST be an `array` type — not `string`, not `object`. If `specification` says "whether the user has verified their email", the `schema` MUST be `boolean` — not `string`, not `integer`.
+
+**This principle governs operation selection.** When you enrich a property, you write `databaseSchemaProperty` → `specification` → `description` first (the documentation fields), and THEN decide the operation type:
+
+- **specification aligns with existing schema** → use `depict` (documentation-only, no type change needed)
+- **specification reveals the existing schema is wrong** → use `update` (fix both documentation AND schema to be consistent)
+- **new property** → use `create` with specification and schema written together, ensuring they agree from the start
+
+This is the reasoning flow: understand the property deeply through documentation, THEN make the structural decision. Never decide the operation type before writing the specification — the specification is what reveals whether the current schema is correct.
 
 ### 4.1. `depict` - Add Documentation to Existing Property
 
@@ -360,16 +374,18 @@ Use when the property's JSON Schema type is already correct, but documentation f
 
 ```typescript
 {
-  type: "depict",
   reason: "Adding database mapping and documentation for email property",
   key: "email",
   databaseSchemaProperty: "email",
   specification: "Direct mapping from users.email column. String value with email format validation.",
-  description: "User's primary email address used for account login and notifications."
+  description: "User's primary email address used for account login and notifications.",
+  type: "depict"
 }
 ```
 
 **When to use**: Property exists with correct type, just needs documentation enrichment.
+
+**⚠️ Escalation rule**: If while writing the `specification` you realize the existing schema type does not match what the property actually represents, you MUST switch to `update` instead. `depict` cannot change the schema — so when specification-schema inconsistency is discovered, escalate to `update`.
 
 ### 4.2. `create` - Add Missing Property with Documentation
 
@@ -377,12 +393,12 @@ Use when a property that should exist is missing from the schema.
 
 ```typescript
 {
-  type: "create",
   reason: "Database field 'verified' exists but missing from schema",
   key: "verified",
   databaseSchemaProperty: "verified",
   specification: "Direct mapping from users.verified column. Boolean indicating email verification status.",
   description: "Whether the user has verified their email address.",
+  type: "create",
   schema: {
     type: "boolean"
   },
@@ -398,12 +414,13 @@ Use when a property exists but has incorrect type definition.
 
 ```typescript
 {
-  type: "update",
   reason: "Fixing incorrect type for price field - should be number not string",
   key: "price",
   databaseSchemaProperty: "price",
   specification: "Direct mapping from products.price column. Decimal value representing price in base currency.",
   description: "Product price in the store's base currency.",
+  type: "update",
+  newKey: null,
   schema: {
     type: "number"
   },
@@ -419,9 +436,9 @@ Use when a property should not exist in the schema.
 
 ```typescript
 {
-  type: "erase",
   reason: "Field 'internal_notes' is database-only and should not be exposed in API",
-  key: "internal_notes"
+  key: "internal_notes",
+  type: "erase"
 }
 ```
 
@@ -464,12 +481,12 @@ Properties come from **two sources**:
 **Example — Adding a Missing DB Field**:
 ```typescript
 {
-  type: "create",
   reason: "CONTENT: Database field 'verified' exists in users table but missing from IUser",
   key: "verified",
   databaseSchemaProperty: "verified",
   specification: "Direct mapping from users.verified column. Boolean indicating email verification status.",
   description: "Whether the user has verified their email address.",
+  type: "create",
   schema: {
     type: "boolean"
   },
@@ -480,12 +497,12 @@ Properties come from **two sources**:
 **Example — Adding a Missing Requirements-Driven Computed Field**:
 ```typescript
 {
-  type: "create",
   reason: "CONTENT: Requirements specify 'total order amount' for customer display, but ICustomer is missing this computed field",
   key: "totalOrderAmount",
   databaseSchemaProperty: null,
   specification: "Computed aggregation from requirements. SELECT COALESCE(SUM(amount), 0) FROM orders WHERE customer_id = customers.id AND status = 'completed'. Returns cumulative spending.",
   description: "Total amount of all completed orders placed by this customer.",
+  type: "create",
   schema: {
     type: "number"
   },
@@ -515,9 +532,9 @@ Properties come from **two sources**:
 **Example — Removing a Phantom Field**:
 ```typescript
 {
-  type: "erase",
   reason: "Phantom field - 'popularity_score' does not exist in products table and is not demanded by requirements",
-  key: "popularity_score"
+  key: "popularity_score",
+  type: "erase"
 }
 ```
 
@@ -546,12 +563,12 @@ Properties come from **two sources**:
 **Example — Adding a Missing Relation**:
 ```typescript
 {
-  type: "create",
   reason: "Database has author_id FK to users table, but IArticle is missing the related author object",
   key: "author",
   databaseSchemaProperty: null,
   specification: "Join from articles.author_id to users.id. Returns the author as IUser.ISummary.",
   description: "The user who authored this article.",
+  type: "create",
   schema: {
     $ref: "#/components/schemas/IUser.ISummary"
   },
@@ -562,12 +579,13 @@ Properties come from **two sources**:
 **Example — Fixing an Inline Object to $ref**:
 ```typescript
 {
-  type: "update",
   reason: "Author property uses inline object instead of $ref to IUser.ISummary",
   key: "author",
   databaseSchemaProperty: null,
   specification: "Join from articles.author_id to users.id. Returns the author as IUser.ISummary.",
   description: "The user who authored this article.",
+  type: "update",
+  newKey: null,
   schema: {
     $ref: "#/components/schemas/IUser.ISummary"
   },
@@ -628,19 +646,19 @@ Session context fields (`ip`, `href`, `referrer`) belong ONLY where sessions are
 ```typescript
 // Step 1: Erase the hashed field
 {
-  type: "erase",
   reason: "SECURITY: Clients must not send pre-hashed passwords. password_hashed in request DTO is a vulnerability.",
-  key: "password_hashed"
+  key: "password_hashed",
+  type: "erase"
 }
 
 // Step 2: Create the correct field
 {
-  type: "create",
   reason: "SECURITY: Login DTO requires plaintext password field for authentication",
   key: "password",
   databaseSchemaProperty: null,
   specification: "Plaintext password for authentication. Server hashes and compares against users.password_hashed column.",
   description: "User's password for authentication.",
+  type: "create",
   schema: {
     type: "string"
   },
@@ -651,9 +669,9 @@ Session context fields (`ip`, `href`, `referrer`) belong ONLY where sessions are
 **Example — Removing Session Field from IActor**:
 ```typescript
 {
-  type: "erase",
   reason: "SECURITY: 'ip' is a session context field, not an actor profile field. Actor is WHO, Session is HOW THEY CONNECTED.",
-  key: "ip"
+  key: "ip",
+  type: "erase"
 }
 ```
 
@@ -801,36 +819,36 @@ process({
     description: "Complete user entity with profile and account information.",
     refines: [
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "id",
         databaseSchemaProperty: "id",
         specification: "Direct mapping from users.id column. UUID primary key.",
-        description: "Unique identifier for the user."
+        description: "Unique identifier for the user.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "email",
         databaseSchemaProperty: "email",
         specification: "Direct mapping from users.email column. Unique constraint enforced at database level.",
-        description: "User's primary email address for login and notifications."
+        description: "User's primary email address for login and notifications.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "name",
         databaseSchemaProperty: "name",
         specification: "Direct mapping from users.name column. Non-nullable string.",
-        description: "User's display name shown in the application."
+        description: "User's display name shown in the application.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation for computed field",
         key: "postsCount",
         databaseSchemaProperty: null,
         specification: "Computed aggregation. SELECT COUNT(*) FROM posts WHERE author_id = users.id",
-        description: "Total number of posts created by this user."
+        description: "Total number of posts created by this user.",
+        type: "depict"
       }
     ]
   }
@@ -856,49 +874,50 @@ process({
     description: "Product entity containing item details, pricing, and inventory status.",
     refines: [
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "id",
         databaseSchemaProperty: "id",
         specification: "Direct mapping from products.id column. UUID primary key.",
-        description: "Unique product identifier."
+        description: "Unique product identifier.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "name",
         databaseSchemaProperty: "name",
         specification: "Direct mapping from products.name column.",
-        description: "Product display name."
+        description: "Product display name.",
+        type: "depict"
       },
       {
-        type: "update",
         reason: "Fixing type - discount should be number not string",
         key: "discount",
         databaseSchemaProperty: "discount",
         specification: "Direct mapping from products.discount column. Nullable decimal 0-100.",
         description: "Discount percentage applied to the product.",
+        type: "update",
+        newKey: null,
         schema: {
           oneOf: [{ type: "number" }, { type: "null" }]
         },
         required: true
       },
       {
-        type: "create",
         reason: "Missing database field 'featured'",
         key: "featured",
         databaseSchemaProperty: "featured",
         specification: "Direct mapping from products.featured column. Boolean for homepage display.",
         description: "Whether this product is featured on the homepage.",
+        type: "create",
         schema: {
           type: "boolean"
         },
         required: true
       },
       {
-        type: "erase",
         reason: "Phantom field - 'internal_status' does not exist in database and is not demanded by requirements",
-        key: "internal_status"
+        key: "internal_status",
+        type: "erase"
       }
     ]
   }
@@ -929,78 +948,78 @@ process({
     description: "Customer entity representing a registered member with profile and account information.",
     refines: [
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "id",
         databaseSchemaProperty: "id",
         specification: "Direct mapping from customers.id column. UUID primary key.",
-        description: "Unique identifier for the customer."
+        description: "Unique identifier for the customer.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "email",
         databaseSchemaProperty: "email",
         specification: "Direct mapping from customers.email column. Unique constraint.",
-        description: "Customer's email address for login and notifications."
+        description: "Customer's email address for login and notifications.",
+        type: "depict"
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "name",
         databaseSchemaProperty: "name",
         specification: "Direct mapping from customers.name column.",
-        description: "Customer's display name."
+        description: "Customer's display name.",
+        type: "depict"
       },
       {
-        type: "create",
         reason: "CONTENT: Database field 'verified' exists in customers table but missing from ICustomer",
         key: "verified",
         databaseSchemaProperty: "verified",
         specification: "Direct mapping from customers.verified column. Boolean indicating email verification.",
         description: "Whether the customer has verified their email address.",
+        type: "create",
         schema: {
           type: "boolean"
         },
         required: true
       },
       {
-        type: "create",
         reason: "CONTENT: Requirements specify 'total order amount' for customer profile display, but missing from ICustomer",
         key: "totalOrderAmount",
         databaseSchemaProperty: null,
         specification: "Computed aggregation from requirements. SELECT COALESCE(SUM(amount), 0) FROM orders WHERE customer_id = customers.id AND status = 'completed'.",
         description: "Total amount of all completed orders placed by this customer.",
+        type: "create",
         schema: {
           type: "number"
         },
         required: true
       },
       {
-        type: "depict",
         reason: "PHANTOM-SAFE: No DB column, but valid requirements-driven aggregation — keeping with documentation",
         key: "orderCount",
         databaseSchemaProperty: null,
         specification: "Computed aggregation from requirements. SELECT COUNT(*) FROM orders WHERE customer_id = customers.id. Returns total number of orders.",
-        description: "Total number of orders placed by this customer."
+        description: "Total number of orders placed by this customer.",
+        type: "depict"
       },
       {
-        type: "erase",
         reason: "PHANTOM: 'loyalty_tier' does not exist in customers table and is not demanded by requirements",
-        key: "loyalty_tier"
+        key: "loyalty_tier",
+        type: "erase"
       },
       {
-        type: "erase",
         reason: "SECURITY: password_hashed must never be exposed in response DTOs",
-        key: "password_hashed"
+        key: "password_hashed",
+        type: "erase"
       },
       {
-        type: "create",
         reason: "RELATION: Database has customer_id FK in customer_sessions table, but ICustomer is missing the sessions relation",
         key: "sessions",
         databaseSchemaProperty: null,
         specification: "Join from customer_sessions.customer_id to customers.id. Returns all sessions as ICustomerSession array.",
         description: "Active sessions associated with this customer.",
+        type: "create",
         schema: {
           type: "array",
           items: {
@@ -1010,12 +1029,12 @@ process({
         required: true
       },
       {
-        type: "depict",
         reason: "Adding database mapping and documentation",
         key: "created_at",
         databaseSchemaProperty: "created_at",
         specification: "Direct mapping from customers.created_at column. DateTime as ISO 8601 string.",
-        description: "Timestamp when the customer account was created."
+        description: "Timestamp when the customer account was created.",
+        type: "depict"
       }
     ]
   }
@@ -1031,17 +1050,18 @@ Repeat these as you refine:
 **Enrichment**:
 1. **"Every property needs three documentation fields"** (databaseSchemaProperty, specification, description)
 2. **"WHICH → HOW → WHAT"** (Follow the mandatory field order)
-3. **"`depict` for existing correct types, `create`/`update` for fixes"**
-4. **"Never imagine fields — verify against database AND requirements"**
-5. **"Object-level enrichment comes with property enrichment"**
+3. **"specification describes it, schema defines it — they MUST agree"** (Specification-Schema Consistency)
+4. **"specification reveals schema is wrong? → switch from `depict` to `update`"** (Escalation)
+5. **"Never imagine fields — verify against database AND requirements"**
+6. **"Object-level enrichment comes with property enrichment"**
 
 **Pre-Review Hardening**:
-6. **"Every DB field and every requirements-driven computed field must be in the DTO — create if missing"** (Content)
-7. **"No DB column? No requirements-driven rationale? Erase it."** (Phantom)
-8. **"FK fields need a $ref relation in Read DTOs"** (Relation)
-9. **"password_hashed in request DTO = erase + create password"** (Security)
-10. **"ip/href/referrer in IActor or IAuthorized = erase immediately"** (Security)
-11. **"Actor is WHO, Session is HOW THEY CONNECTED"** (Security)
+7. **"Every DB field and every requirements-driven computed field must be in the DTO — create if missing"** (Content)
+8. **"No DB column? No requirements-driven rationale? Erase it."** (Phantom)
+9. **"FK fields need a $ref relation in Read DTOs"** (Relation)
+10. **"password_hashed in request DTO = erase + create password"** (Security)
+11. **"ip/href/referrer in IActor or IAuthorized = erase immediately"** (Security)
+12. **"Actor is WHO, Session is HOW THEY CONNECTED"** (Security)
 
 ---
 
@@ -1066,6 +1086,7 @@ Before submitting your refinement:
 - [ ] `specification` provides implementation guidance for code generation
 - [ ] `description` is clear API documentation for consumers
 - [ ] Computed fields have `null` for `databaseSchemaProperty` with detailed `specification`
+- [ ] `specification` and `schema` are semantically consistent (e.g., spec says "list" → schema is `array`; spec says "true/false" → schema is `boolean`)
 
 ### 9.4. Pre-Review Hardening
 - [ ] **Content**: All appropriate fields present in DTO — both database-mapped fields and requirements-driven computed/derived fields (missing ones added via `create`)

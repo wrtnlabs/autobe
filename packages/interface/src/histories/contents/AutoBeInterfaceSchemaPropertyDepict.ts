@@ -1,6 +1,6 @@
 /**
- * Update documentation and metadata of an existing property without changing its
- * type structure.
+ * Update documentation and metadata of an existing property without changing
+ * its type structure.
  *
  * Use when the property's JSON Schema type is already correct, but the
  * documentation fields are missing, incomplete, or incorrect.
@@ -8,21 +8,25 @@
  * Common use cases:
  *
  * - Adding missing `databaseSchemaProperty` mapping for DB-backed properties
- * - Correcting wrong `databaseSchemaProperty` value (e.g., `"user_id"` → `"customer_id"`)
+ * - Correcting wrong `databaseSchemaProperty` value (e.g., `"user_id"` →
+ *   `"customer_id"`)
  * - Writing or revising `specification` instructions for downstream agents
  * - Improving or fixing inaccurate `description` for Swagger UI
  * - Documenting computed or aggregated properties (where `databaseSchemaProperty`
  *   is `null` and `specification` explains the computation logic)
  *
  * **Key difference from `update`**: This type ONLY modifies documentation
- * fields. Use `update` when you need to change the property's JSON Schema type.
+ * fields. Use `update` when you need to change the property's JSON Schema
+ * type.
+ *
+ * **Escalation rule**: If while writing the `specification` you discover
+ * the existing schema type is semantically inconsistent with the property's
+ * actual meaning, switch to `update` instead — `depict` cannot fix the
+ * schema.
  *
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaPropertyDepict {
-  /** Discriminator for property revision type. */
-  type: "depict";
-
   /**
    * Reason for updating the documentation.
    *
@@ -40,7 +44,8 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
    * Use the exact property name from the Prisma schema (e.g., `"customer_id"`,
    * `"created_at"` for columns, `"orders"` for relations).
    *
-   * Set to `null` for properties that don't directly map to a database schema property:
+   * Set to `null` for properties that don't directly map to a database schema
+   * property:
    *
    * - Computed/aggregated values (e.g., `totalPrice`, `averageRating`)
    * - Derived fields from business logic
@@ -60,9 +65,10 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
    * - Validation rules: Constraints beyond what JSON Schema expresses
    * - Edge cases: How to handle nulls, empty values, or special conditions
    *
-   * **CRITICAL when `databaseSchemaProperty` is `null`**: For computed/aggregated
-   * properties, this is the ONLY guidance downstream agents have. Be explicit
-   * about the computation formula, data sources, and expected behavior.
+   * **CRITICAL when `databaseSchemaProperty` is `null`**: For
+   * computed/aggregated properties, this is the ONLY guidance downstream agents
+   * have. Be explicit about the computation formula, data sources, and expected
+   * behavior.
    */
   specification: string;
 
@@ -79,4 +85,7 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
    * Avoid implementation details - those belong in `specification`.
    */
   description: string;
+
+  /** Discriminator for property revision type. */
+  type: "depict";
 }

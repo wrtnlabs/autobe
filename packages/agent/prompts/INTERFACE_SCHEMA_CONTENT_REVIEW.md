@@ -711,12 +711,12 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 ```typescript
 {
-  type: "create",
   reason: "Database field 'stock' exists but was missing from IProduct",
   key: "stock",
   databaseSchemaProperty: "stock",
   specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
   description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  type: "create",
   schema: {
     type: "integer"
   },
@@ -785,12 +785,12 @@ This ordering enforces **grounded reasoning**:
 **Example - Correct Create Revision Structure**:
 ```typescript
 {
-  type: "create",
   reason: "Database field 'stock' exists but missing from IProduct",
   key: "stock",
   databaseSchemaProperty: "stock",
   specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
   description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  type: "create",
   schema: {
     type: "integer",
     minimum: 0
@@ -800,6 +800,8 @@ This ordering enforces **grounded reasoning**:
 ```
 
 This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
+**⚠️ Specification-Schema Consistency**: When writing a `create` revision, the `specification` and `schema` MUST be semantically consistent. If `specification` describes a list, `schema` must be `array`. If it describes a boolean flag, `schema` must be `boolean`. Never let the two contradict each other.
 
 **Revision Rules by DTO Type**:
 
@@ -814,12 +816,12 @@ This order is a prompt engineering technique that ensures reasoning consistency.
 **When DB non-null → DTO nullable/optional**: You MUST explain why in the `description`:
 ```typescript
 {
-  type: "create",
   reason: "Adding role field from database",
   key: "role",
   databaseSchemaProperty: "role",
   specification: "Direct mapping from users.role column. Uses @default value 'user' when not provided.",
   description: "User role. Optional - if not provided, defaults to 'user'.",
+  type: "create",
   schema: {
     type: "string"
   },
@@ -900,21 +902,21 @@ For Content Review, you primarily use `create` and `keep` revisions:
 ```typescript
 // Create revision - add missing property
 interface AutoBeInterfaceSchemaPropertyCreate {
-  type: "create";
   reason: string;  // Why this field is being added
   key: string;     // Property name to add
   databaseSchemaProperty: string | null;  // Database property name or null for computed
   specification: string;  // Implementation spec for Realize Agent
   description: string;  // API documentation for consumers
+  type: "create";
   schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean;  // Add to required array?
 }
 
 // Keep revision - keep existing property unchanged
 interface AutoBeInterfaceSchemaPropertyKeep {
-  type: "keep";
   reason: string;  // Why this property is kept unchanged
   key: string;     // Property name to keep
+  type: "keep";
 }
 ```
 
@@ -940,48 +942,48 @@ process({
 - createdAt: Timestamp field exists but missing from schema`,
     revises: [
       {
-        type: "create",
         reason: "Database field 'stock' exists but missing from IProduct",
         key: "stock",
         databaseSchemaProperty: "stock",
         specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
         description: "Current inventory quantity. Automatically decremented when orders are placed.",
+        type: "create",
         schema: {
           type: "integer"
         },
         required: true
       },
       {
-        type: "create",
         reason: "Database field 'featured' exists but missing from IProduct",
         key: "featured",
         databaseSchemaProperty: "featured",
         specification: "Direct mapping from products.featured column. Boolean flag for homepage display.",
         description: "Whether this product is featured on the homepage.",
+        type: "create",
         schema: {
           type: "boolean"
         },
         required: true
       },
       {
-        type: "create",
         reason: "Database field 'discount' (optional) exists but missing from IProduct",
         key: "discount",
         databaseSchemaProperty: "discount",
         specification: "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
         description: "Discount percentage applied to the product price.",
+        type: "create",
         schema: {
           type: "number"
         },
         required: false
       },
       {
-        type: "create",
         reason: "Database field 'createdAt' exists but missing from IProduct",
         key: "createdAt",
         databaseSchemaProperty: "created_at",
         specification: "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
         description: "Timestamp when the product was created.",
+        type: "create",
         schema: {
           type: "string",
           format: "date-time"
@@ -1003,24 +1005,24 @@ process({
     review: "No missing fields found. All database fields are properly mapped to the schema.",
     revises: [
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "id"
+        key: "id",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "name"
+        key: "name",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "price"
+        key: "price",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "createdAt"
+        key: "createdAt",
+        type: "keep"
       }
     ]
   }

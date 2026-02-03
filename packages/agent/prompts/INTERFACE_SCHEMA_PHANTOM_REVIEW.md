@@ -729,16 +729,16 @@ For Phantom Review, you use `erase`, `nullish`, and `keep` revisions:
 ```typescript
 // Erase revision - remove phantom field
 interface AutoBeInterfaceSchemaPropertyErase {
-  type: "erase";
   reason: string;  // Why this field is being removed
   key: string;     // Property name to remove
+  type: "erase";
 }
 
 // Nullish revision - correct nullable/required (DB nullable → DTO non-null only!)
 interface AutoBeInterfaceSchemaPropertyNullish {
-  type: "nullish";
   reason: string;            // Why nullability is being changed
   key: string;               // Property name
+  type: "nullish";
   specification: string | null; // null = keep existing, string = replace specification
   description: string | null;   // null = keep existing, string = replace description
   nullable: boolean;         // Should use oneOf with null?
@@ -747,9 +747,9 @@ interface AutoBeInterfaceSchemaPropertyNullish {
 
 // Keep revision - keep existing property unchanged
 interface AutoBeInterfaceSchemaPropertyKeep {
-  type: "keep";
   reason: string;  // Why this property is kept unchanged
   key: string;     // Property name to keep
+  type: "keep";
 }
 ```
 
@@ -787,28 +787,28 @@ process({
 
     revises: [
       {
-        type: "erase",
         reason: "Phantom field: 'updatedAt' does not exist in database model User",
-        key: "updatedAt"
+        key: "updatedAt",
+        type: "erase"
       },
       {
-        type: "erase",
         reason: "Phantom field: 'deletedAt' does not exist in database model User",
-        key: "deletedAt"
+        key: "deletedAt",
+        type: "erase"
       },
       {
-        type: "nullish",
         reason: "DB field 'bio' is nullable (String?) but DTO is non-null. Must allow null.",
         key: "bio",
+        type: "nullish",
         specification: null,  // Keep existing specification
         description: "User's biography. Can be null if not provided by the user.",  // Update description
         nullable: true,
         required: true
       },
       {
-        type: "nullish",
         reason: "DB field 'avatar_url' is nullable but DTO is non-null.",
         key: "avatarUrl",
+        type: "nullish",
         specification: null,  // Keep existing specification
         description: null,    // Keep existing description
         nullable: true,
@@ -829,24 +829,24 @@ process({
     review: "No phantom fields or nullish mismatches found. All schemas are consistent with their database models.",
     revises: [
       {
-        type: "keep",
         reason: "Field exists in database and nullish status is correct",
-        key: "id"
+        key: "id",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Field exists in database and nullish status is correct",
-        key: "email"
+        key: "email",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Field exists in database and nullish status is correct",
-        key: "name"
+        key: "name",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Field exists in database and nullish status is correct",
-        key: "createdAt"
+        key: "createdAt",
+        type: "keep"
       }
     ]
   }

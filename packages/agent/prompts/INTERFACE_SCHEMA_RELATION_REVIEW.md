@@ -730,13 +730,13 @@ This ordering enforces **grounded reasoning**:
 **Example - Correct FK Transformation Update Revision**:
 ```typescript
 {
-  type: "update",
   reason: "Transform FK author_id to author with $ref to IBbsMember.ISummary",
   key: "author_id",
-  newKey: "author",
   databaseSchemaProperty: "bbs_member_id",
   specification: "Join via bbs_members table using bbs_articles.bbs_member_id. Returns ISummary variant with id, name, avatar only.",
   description: "Author who wrote this article. Contains essential member information for display.",
+  type: "update",
+  newKey: "author",
   schema: {
     $ref: "#/components/schemas/IBbsMember.ISummary"
   },
@@ -745,6 +745,8 @@ This ordering enforces **grounded reasoning**:
 ```
 
 This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
+**⚠️ Specification-Schema Consistency**: When writing an `update` revision, the `specification` and `schema` MUST be semantically consistent. If `specification` says "Join via FK to users table, returns ISummary", `schema` must be `{ $ref: "...ISummary" }` — not an inline object, not an array. If `specification` says "Composition relation, returns array of items", `schema` must be an `array` with `$ref` items. Never let the two contradict each other.
 
 ---
 
@@ -3854,29 +3856,29 @@ For Relation Review, you use `update`, `erase`, and `keep` revisions:
 ```typescript
 // Update revision - transform FK to $ref reference (with optional rename)
 interface AutoBeInterfaceSchemaPropertyUpdate {
-  type: "update";
   reason: string;     // Why this field is being transformed
   key: string;        // Current property key to update
-  newKey: string | null;  // New key after update (null = keep same key)
   databaseSchemaProperty: string | null;  // Database property name or null for computed
   specification: string;  // Implementation spec for Realize Agent
   description: string;  // API documentation for consumers
+  type: "update";
+  newKey: string | null;  // New key after update (null = keep same key)
   schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean;  // Whether to include in required array
 }
 
 // Erase revision - remove incorrect reverse relation
 interface AutoBeInterfaceSchemaPropertyErase {
-  type: "erase";
   reason: string;  // Why this field is being removed
   key: string;     // Property name to remove
+  type: "erase";
 }
 
 // Keep revision - keep existing property unchanged
 interface AutoBeInterfaceSchemaPropertyKeep {
-  type: "keep";
   reason: string;  // Why this property is kept unchanged
   key: string;     // Property name to keep
+  type: "keep";
 }
 ```
 
@@ -3930,26 +3932,26 @@ process({
 
     revises: [
       {
-        type: "update",
         reason: "Transform FK author_id to author with $ref to IUser.ISummary",
         key: "author_id",      // Current FK field
-        newKey: "author",      // Rename to object field
         databaseSchemaProperty: "author", // belongs to relation
         specification: "Join via articles.author_id FK to users table. Returns ISummary variant with essential user fields.",
         description: "Author who created this article.",
+        type: "update",
+        newKey: "author",      // Rename to object field
         schema: {
           $ref: "#/components/schemas/IUser.ISummary"
         },
         required: true
       },
       {
-        type: "update",
         reason: "Transform FK category_id to category with $ref to ICategory.ISummary",
         key: "category_id",    // Current FK field
-        newKey: "category",    // Rename to object field
         databaseSchemaProperty: "category", // belongs to relation
         specification: "Join via articles.category_id FK to categories table. Returns ISummary variant with essential category fields.",
         description: "Category this article belongs to.",
+        type: "update",
+        newKey: "category",    // Rename to object field
         schema: {
           $ref: "#/components/schemas/ICategory.ISummary"
         },
@@ -3974,9 +3976,9 @@ process({
 
     revises: [
       {
-        type: "erase",
         reason: "Actor reversal: User should not contain articles array. Access via /users/:id/articles instead.",
-        key: "articles"
+        key: "articles",
+        type: "erase"
       }
     ]
   }
@@ -3997,13 +3999,13 @@ process({
 
     revises: [
       {
-        type: "update",
         reason: "Replace inline object with $ref to IOrderItem. INTERFACE_COMPLEMENT will create the type definition.",
         key: "items",
-        newKey: null,  // Keep same key
         databaseSchemaProperty: "order_items", // has relation
         specification: "Composition relation with order_items table. Items are created atomically with the order in the same transaction.",
         description: "Order line items. Each item represents a product in the order with quantity and pricing.",
+        type: "update",
+        newKey: null,  // Keep same key
         schema: {
           type: "array",
           items: {
@@ -4027,24 +4029,24 @@ process({
     review: "No relation or structure issues found. All relations are properly structured.",
     revises: [
       {
-        type: "keep",
         reason: "Relation is properly structured with correct $ref",
-        key: "author"
+        key: "author",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Business field - no relation concerns",
-        key: "title"
+        key: "title",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Business field - no relation concerns",
-        key: "content"
+        key: "content",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Relation array is properly scoped",
-        key: "comments"
+        key: "comments",
+        type: "keep"
       }
     ]
   }
