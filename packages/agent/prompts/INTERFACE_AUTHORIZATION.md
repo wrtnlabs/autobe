@@ -95,6 +95,7 @@ thinking: "Created POST /auth/user/join, POST /auth/admin/login..."
 - Profile information updates (except security-related)
 - User preference management
 - Non-security related account settings
+- **Logout operations** - Logout is NOT an API operation; clients simply discard their JWT tokens
 
 ## 2. Input Materials
 
@@ -102,27 +103,65 @@ You will receive the following materials to guide your operation generation:
 
 ### 2.1. Initially Provided Materials
 
-**Requirements Analysis Report**
+#### 2.1.1. Requirements Analysis Report
+
 - Complete business requirements documentation
 - User actor definitions and permissions
 - Authentication requirements
 - **Note**: Initial context includes a subset of requirements - additional files can be requested
 
-**Database Schema Information**
+#### 2.1.2. Database Schema Information
+
 - Generated database schema files
 - Table structures for each actor
 - Available fields for authentication features
 - **Note**: Initial context includes a subset of schemas - additional models can be requested
 
-**Service Configuration**
+#### 2.1.3. Service Configuration
+
 - Service prefix for naming conventions
 - Project-specific settings
 
-**Target Actor Information**
+#### 2.1.4. Target Actor Information
+
 - Specific actor details (name, kind, description)
 - Actor-based authentication requirements
 
-**API Design Instructions**
+#### 2.1.5. Authorization Operations Table
+
+A table specifying the required authorization operations and their **exact type names** you MUST use.
+
+**Table Structure**:
+
+| Authorization Type | Request Body Type Name | Response Body Type Name |
+|--------------------|------------------------|-------------------------|
+| join | `I{Prefix}{Actor}.IJoin` | `I{Prefix}{Actor}.IAuthorized` |
+| login | `I{Prefix}{Actor}.ILogin` | `I{Prefix}{Actor}.IAuthorized` |
+| refresh | `I{Prefix}{Actor}.IRefresh` | `I{Prefix}{Actor}.IAuthorized` |
+
+**Example** (for service prefix `shopping-mall` and actor `user`):
+
+| Authorization Type | Request Body Type Name | Response Body Type Name |
+|--------------------|------------------------|-------------------------|
+| join | `IShoppingMallUser.IJoin` | `IShoppingMallUser.IAuthorized` |
+| login | `IShoppingMallUser.ILogin` | `IShoppingMallUser.IAuthorized` |
+| refresh | `IShoppingMallUser.IRefresh` | `IShoppingMallUser.IAuthorized` |
+
+**Column Definitions**:
+- **Authorization Type**: The value for `AutoBeOpenApi.IOperation.authorizationType` (one of `"join"`, `"login"`, or `"refresh"`)
+- **Request Body Type Name**: The exact DTO type name for `requestBody.typeName`
+- **Response Body Type Name**: The exact DTO type name for `responseBody.typeName` (always `IAuthorized` containing tokens)
+
+**Note**: For `guest` kind actors, `login` row is excluded from the table (guests authenticate via join only, not login).
+
+**⚠️ MANDATORY REQUIREMENT**:
+- You MUST generate ALL operations listed in the provided table - no exceptions
+- Every row in the table represents a required operation that MUST be created
+- The validator will reject your output if any operation is missing or uses incorrect type names
+- Do NOT deviate from the specified type names - use them exactly as provided
+
+#### 2.1.6. API Design Instructions
+
 - Authentication patterns and security requirements
 - Token management strategies
 - Session handling preferences
@@ -417,7 +456,23 @@ ELSE IF actor.kind === "member" OR actor.kind === "admin":
 - **Login**: `/auth/{actorName}/login` → `"login"` → Authenticate admin and issue access tokens (Public)
 - **Token Refresh**: `/auth/{actorName}/refresh` → `"refresh"` → Refresh access tokens using a valid refresh token (Valid refresh token)
 
-### 3.2. Schema-Driven Additional Operations
+### 3.2. Logout is NOT an API Operation
+
+**ABSOLUTE PROHIBITION**: Do NOT create any logout API endpoint.
+
+Logout is fundamentally a client-side operation. When a user wants to "log out":
+1. The client simply discards (deletes) the JWT access token and refresh token from local storage
+2. No server-side action is required or desirable
+3. The JWT becomes unusable once the client no longer sends it
+
+**Why No Logout API?**
+- **Stateless JWT Design**: JWTs are self-contained and stateless by design. The server doesn't track "logged in" sessions.
+- **Security**: A logout API would imply server-side session state, which defeats the purpose of JWT.
+- **Simplicity**: Token expiration handles invalidation automatically.
+
+**If you think you need logout, you're wrong.** The client throwing away its token IS the logout.
+
+### 3.3. Schema-Driven Additional Operations
 
 **Analyze the database schema for the actor's table and generate additional operations ONLY for features that are clearly supported by the schema fields.**
 
@@ -623,9 +678,14 @@ Your implementation should provide a complete authentication system with actor-a
 - [ ] `rationale` field explains why operations were included/excluded and design decisions
 - [ ] Guest actors: `join` and `refresh` operations generated (NO login)
 - [ ] Member/Admin actors: `join`, `login`, and `refresh` operations generated
+- [ ] **⚠️ Authorization Operations Table Compliance**:
+  * ALL operations listed in the Authorization Operations Table are generated - NONE missing
+  * `authorizationType` matches exactly (`"join"`, `"login"`, or `"refresh"`)
+  * `requestBody.typeName` matches the **Request Body Type Name** column exactly
+  * `responseBody.typeName` matches the **Response Body Type Name** column exactly
+- [ ] **⚠️ NO Logout API**: Logout operation is NOT generated (logout is client-side token discard, NOT an API)
 - [ ] Additional operations generated ONLY for schema-supported features
 - [ ] All referenced fields EXIST in the database schema
-- [ ] Response type naming follows `I{PascalPrefixName}{ActorName}.IAuthorized` for auth operations
 - [ ] Endpoint paths follow `/auth/{actorName}/{action}` convention
 - [ ] Function names are camelCase and action-oriented
 - [ ] Descriptions reference actual schema fields (5 paragraphs each)
@@ -633,8 +693,10 @@ Your implementation should provide a complete authentication system with actor-a
 ### 7.3. Function Calling Verification
 - [ ] `analysis` field filled with actor type, schema context, and supported features
 - [ ] `rationale` field filled with design decisions and justifications
-- [ ] All actor-appropriate essential operations included
+- [ ] All operations from Authorization Operations Table included with exact type names
 - [ ] All schema-supported additional operations included
 - [ ] Operation uniqueness verified per actor
-- [ ] Response body typeNames correctly formatted
+- [ ] Request body `typeName` matches Authorization Operations Table exactly
+- [ ] Response body `typeName` matches Authorization Operations Table exactly
+- [ ] NO logout operation exists in the output
 - [ ] Ready to call `process()` with `type: "complete"`, `analysis`, `rationale`, and `operations`

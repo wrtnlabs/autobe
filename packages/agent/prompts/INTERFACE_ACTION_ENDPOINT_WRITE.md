@@ -527,13 +527,15 @@ Each endpoint design must include `authorizationType` and `authorizationActors` 
 
 **Action endpoints MUST always use `authorizationType: null`.**
 
-Action endpoints are business logic endpoints (analytics, dashboards, search, reports, etc.), NOT authentication endpoints. All authentication-related endpoints (login, join, refresh, session, password, management) are handled by the **Base Endpoint Generator**.
+Action endpoints are business logic endpoints (analytics, dashboards, search, reports, etc.), NOT authentication endpoints. All authentication-related endpoints (login, join, refresh, session, password, management) are handled by the **Authorization Agent**.
 
 **❌ NEVER create these in Action Endpoints**:
-- `/auth/*` paths
-- Login, join, refresh endpoints
-- Session management endpoints
-- Password management endpoints
+- Registration / Join operations
+- Login / Sign-in operations
+- Token refresh operations
+- Session management operations
+- Password management operations
+- Any operation with non-null `authorizationType`
 
 #### `authorizationActors`
 
@@ -556,8 +558,7 @@ Each actor in the array generates a SEPARATE endpoint with that actor's path pre
 1. Dashboard endpoints typically require specific actor access (`["admin"]`, `["seller"]`)
 2. Global search may be public (`[]`) or require authentication (`["member"]`)
 3. Analytics endpoints are usually admin-only (`["admin"]`)
-4. For auth endpoints (login/join/refresh): Include the actor name from the path
-5. Minimize actors to prevent endpoint multiplication
+4. Minimize actors to prevent endpoint multiplication
 
 ## 6. Endpoint Path Patterns
 

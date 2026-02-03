@@ -88,135 +88,41 @@ thinking: "Updated /guest to /guests, /article to /articles, /member to /members
 
 ### 3.1. Authorization Type Validation (CRITICAL)
 
-**You MUST check all endpoints for correct `authorizationType` values.**
+**All endpoints from Base Endpoint Agent MUST have `authorizationType: null`.**
 
-Scan the provided endpoints and find any that match the patterns below but have `authorizationType: null`. These endpoints MUST be updated with the correct `authorizationType`.
+The Base Endpoint Agent generates only business CRUD endpoints. Authentication operations (registration/join, login, token refresh, password management - any operation with non-null `authorizationType`) are handled by the **Authorization Agent**, not the Base Endpoint Agent.
 
-**Detection Pattern**:
-| Pattern | Required `authorizationType` |
-|---------|------------------------------|
-| Path ends with `*/login` | `"login"` |
-| Path ends with `*/join` | `"join"` |
-| Path ends with `*/refresh` | `"refresh"` |
-| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
-| `*/password`, `*/password/*` | `"password"` |
-| **POST `/{actors}`** (actor table create) | `"join"` |
-| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
-| All other paths | `null` |
-
-**Actor Table Create = Join**:
-
-When you see a `POST` endpoint for an **actor table** (users, members, admins, guests, etc.), this is user registration and MUST have `authorizationType: "join"`.
-
-```
-// Actor table create endpoints - these are registration endpoints
-POST /members          → authorizationType: "join"
-POST /users            → authorizationType: "join"
-POST /admins           → authorizationType: "join"
-POST /guests           → authorizationType: "join"
-```
-
-**Example - Endpoints to UPDATE**:
-```
-// WRONG: actor create endpoint but authorizationType is null
-{
-  "endpoint": {"path": "/members", "method": "post"},
-  "authorizationType": null  ← WRONG!
-}
-
-// CORRECT: must have authorizationType: "join"
-{
-  "endpoint": {"path": "/members", "method": "post"},
-  "authorizationType": "join"  ← CORRECT
-}
-```
-
-**Action**: UPDATE endpoints with mismatched `authorizationType`:
+**If you see any non-null `authorizationType` values, DELETE them**:
 
 ```typescript
 {
-  type: "update",
-  reason: "POST /members is actor creation (registration). Setting authorizationType to 'join'.",
-  original: { path: "/members", method: "post" },
-  updated: {
-    endpoint: { path: "/members", method: "post" },
-    description: "Create a new member (user registration).",
-    authorizationType: "join",  // ← INJECT CORRECT VALUE
-    authorizationActors: ["member"]  // ← Associated with member actor
-  }
+  type: "erase",
+  reason: "Authentication endpoints are handled by Authorization Agent, not Base Endpoint Agent.",
+  endpoint: { path: "/auth/members/login", method: "post" }
 }
 ```
 
-**Full Example**:
-```typescript
-// If you find these endpoints with wrong authorizationType:
-// - POST /members (authorizationType: null) ← actor create
-// - POST /auth/members/login (authorizationType: null)
-// - POST /auth/members/refresh (authorizationType: null)
-// - GET /auth/members/sessions (authorizationType: null) ← session path
-// - PUT /auth/members/password (authorizationType: null) ← password path
+### 3.2. Actor Table POST Endpoint Validation (CRITICAL)
 
-// You MUST update them:
-revises: [
-  {
-    type: "update",
-    reason: "POST /members is actor creation (registration). Setting authorizationType to 'join'.",
-    original: { path: "/members", method: "post" },
-    updated: {
-      endpoint: { path: "/members", method: "post" },
-      description: "Create a new member (user registration).",
-      authorizationType: "join",
-      authorizationActors: ["member"]
-    }
-  },
-  {
-    type: "update",
-    reason: "Injecting authorizationType 'login' for login endpoint.",
-    original: { path: "/auth/members/login", method: "post" },
-    updated: {
-      endpoint: { path: "/auth/members/login", method: "post" },
-      description: "User login with credentials.",
-      authorizationType: "login",
-      authorizationActors: ["member"]
-    }
-  },
-  {
-    type: "update",
-    reason: "Injecting authorizationType 'refresh' for token refresh endpoint.",
-    original: { path: "/auth/members/refresh", method: "post" },
-    updated: {
-      endpoint: { path: "/auth/members/refresh", method: "post" },
-      description: "Refresh authentication token.",
-      authorizationType: "refresh",
-      authorizationActors: ["member"]
-    }
-  },
-  {
-    type: "update",
-    reason: "Injecting authorizationType 'session' for session endpoint.",
-    original: { path: "/auth/members/sessions", method: "get" },
-    updated: {
-      endpoint: { path: "/auth/members/sessions", method: "get" },
-      description: "Get current sessions.",
-      authorizationType: "session",
-      authorizationActors: ["member"]
-    }
-  },
-  {
-    type: "update",
-    reason: "Injecting authorizationType 'password' for password endpoint.",
-    original: { path: "/auth/members/password", method: "put" },
-    updated: {
-      endpoint: { path: "/auth/members/password", method: "put" },
-      description: "Change password.",
-      authorizationType: "password",
-      authorizationActors: ["member"]
-    }
-  }
-]
+**Actor tables (users, members, admins, guests, etc.) must NOT have POST (create) endpoints.**
+
+User registration is handled by the Authorization Agent's `join` endpoint. If you find a `POST /{actors}` endpoint for an actor table, DELETE it:
+
+```typescript
+{
+  type: "erase",
+  reason: "Actor table POST (user creation) is handled by Authorization Agent's join endpoint.",
+  endpoint: { path: "/members", method: "post" }
+}
 ```
 
-### 3.2. Session & Snapshot Table Restrictions
+**Actor tables should only have these endpoints**:
+- `PATCH /{actors}` - Search/filter
+- `GET /{actors}/{id}` - Get by ID
+- `PUT /{actors}/{id}` - Update profile
+- `DELETE /{actors}/{id}` - Delete account
+
+### 3.3. Session & Snapshot Table Restrictions
 
 **Session tables** and **Snapshot tables** have default endpoint restrictions based on their nature.
 
@@ -226,12 +132,12 @@ Session state changes are managed through authentication flows, not direct CRUD 
 
 **FORBIDDEN endpoints for session tables**:
 - ❌ `PUT /{sessions}/{sessionId}` - Session modification goes through auth flows (refresh token)
+- ❌ `POST /{sessions}` - Session creation is handled by Authorization Agent's login/join
 
 **ALLOWED endpoints for session tables**:
 - ✅ `PATCH /{sessions}` - Search/list sessions
 - ✅ `GET /{sessions}/{sessionId}` - View session details
-- ✅ `POST /{sessions}` - Create session (login flow)
-- ✅ `DELETE /{sessions}/{sessionId}` - Revoke/logout session
+- ✅ `DELETE /{sessions}/{sessionId}` - Revoke session
 
 **Action**: DELETE forbidden session endpoints:
 ```typescript
@@ -265,7 +171,7 @@ Snapshot tables store point-in-time historical records that are **immutable by n
 - Check database schema for `stance: "snapshot"` property
 - Table names often contain: `snapshot`, `history`, `audit`, `log`, `archive`
 
-### 3.3. Necessity Check
+### 3.4. Necessity Check
 
 Each endpoint must be justified by service requirements.
 
@@ -884,42 +790,23 @@ When creating or updating endpoints, you must include `authorizationType` and `a
 
 #### `authorizationType`
 
-Identifies special authorization endpoints. **You MUST set this value based on the endpoint's path pattern:**
+**For this agent, `authorizationType` is ALWAYS `null`.**
 
-| Path Pattern | `authorizationType` |
-|--------------|---------------------|
-| `*/login` | `"login"` |
-| `*/join` | `"join"` |
-| `*/refresh` | `"refresh"` |
-| `*/session`, `*/sessions`, `*/sessions/*` | `"session"` |
-| `*/password`, `*/password/*` | `"password"` |
-| Other `/auth/*` paths (logout, verify, 2fa, oauth, me) | `"management"` |
-| All other paths | `null` |
+All authentication operations (registration/join, login, token refresh, password management) are handled by the Authorization Agent, not this agent. This agent only reviews business CRUD endpoints, which always have `authorizationType: null`.
 
-- `"login"` - User login endpoint (e.g., `/auth/members/login`)
-- `"join"` - User registration endpoint (e.g., `/auth/members/join`)
-- `"refresh"` - Token refresh endpoint (e.g., `/auth/members/refresh`)
-- `"session"` - Session endpoint (e.g., `/auth/members/session`, `/auth/members/sessions`, `/auth/members/sessions/{sessionId}`)
-- `"password"` - Password endpoint (e.g., `/auth/members/password`, `/auth/members/password/reset`, `/auth/members/password/change`)
-- `"management"` - Other auth-related operations (logout, verify, 2fa, oauth, me)
-- `null` - Regular business endpoint (most common for CRUD)
+If you find any endpoint with non-null `authorizationType`, DELETE it.
 
 #### `authorizationActors`
 
-This field specifies which actors are **associated with** the endpoint:
-
-1. **The actor can call this endpoint**: Requires authentication from this actor type.
-2. **The endpoint is related to the actor**: Path contains the actor name (e.g., `/auth/members/login` → `["member"]`).
+This field specifies which actors **can call** this endpoint:
 
 **Guidelines**:
-- `[]` - Public endpoint with no actor association
-- `["member"]` - Associated with member actor (either can call, or path contains "member")
-- `["admin"]` - Associated with admin actor
+- `[]` - Public endpoint, no authentication required
+- `["member"]` - Only members can call this endpoint
+- `["admin"]` - Only admins can call this endpoint
 - Use actor names matching the Analyze phase definitions
 
-**Important**: For auth operations (login, join, refresh), include the actor from the path even though these endpoints remain publicly accessible.
-
-**Tip**: When updating an endpoint, preserve the original authorization settings unless specifically changing them. When creating a new endpoint, determine appropriate access based on the operation type. For auth endpoints, include the actor from the path.
+**Tip**: When updating an endpoint, preserve the original `authorizationActors` unless specifically changing access control.
 
 ### 5.2. No Modifications Needed
 
@@ -968,8 +855,10 @@ process({
 - [ ] **⚠️ ZERO IMAGINATION**: All data used was actually loaded via function calling
 
 ### 8.3. Review Compliance
-- [ ] **Auth endpoints have correct `authorizationType`**: /login → `"login"`, /join → `"join"`, /refresh → `"refresh"`, /session(s) → `"session"`, /password → `"password"`, other /auth/* → `"management"`, actor POST → `"join"`
-- [ ] **Session tables have NO PUT (update) endpoints**
+- [ ] **All endpoints have `authorizationType: null`** (auth endpoints are handled by Authorization Agent)
+- [ ] **No authentication operations exist** (deleted if found - Authorization Agent handles these)
+- [ ] **Actor tables have NO POST (create) endpoints** (handled by Authorization Agent's join)
+- [ ] **Session tables have NO PUT (update) and NO POST (create) endpoints**
 - [ ] **Snapshot tables have no PUT/DELETE by default** (unless requirements explicitly request them)
 - [ ] All paths use hierarchical `/` structure (no camelCase)
 - [ ] **Prefer hierarchy over kebab-case (use /orders/{orderId}/items not /order-items)**

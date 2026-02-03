@@ -32,24 +32,22 @@ export async function orchestrateInterfaceAuthorization(
     total: actors.length,
     completed: 0,
   };
-  const authorizations: AutoBeInterfaceAuthorization[] =
-    await executeCachedBatch(
-      ctx,
-      actors.map((a) => async (promptCacheKey) => {
-        const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
-          actor: a,
-          progress,
-          promptCacheKey,
-          instruction: props.instruction,
-        });
-        ctx.dispatch(event);
-        return {
-          name: a.name,
-          operations: event.operations,
-        };
-      }),
-    );
-  return authorizations;
+  return await executeCachedBatch(
+    ctx,
+    actors.map((a) => async (promptCacheKey) => {
+      const event: AutoBeInterfaceAuthorizationEvent = await process(ctx, {
+        actor: a,
+        progress,
+        promptCacheKey,
+        instruction: props.instruction,
+      });
+      ctx.dispatch(event);
+      return {
+        name: a.name,
+        operations: event.operations,
+      };
+    }),
+  );
 }
 
 async function process(
@@ -98,12 +96,14 @@ async function process(
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceAuthorizationHistory({
         state: ctx.state(),
+        prefix,
         instruction: props.instruction,
         actor: props.actor,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
+
     const operations: AutoBeOpenApi.IOperation[] =
       AutoBeInterfaceAuthorizationProgrammer.fixOperations({
         operations: pointer.value?.operations ?? [],
