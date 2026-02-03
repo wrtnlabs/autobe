@@ -61,13 +61,12 @@ export namespace AutoBeJsonSchemaFactory {
           ...parent.properties,
           ...value.properties,
         };
-        if (value.properties.token === undefined)
-          value.properties.token = {
-            "x-autobe-specification":
-              "Authorization token comes from the session table.",
-            description: "Authorization token.",
-            $ref: "#/components/schemas/IAuthorizationToken",
-          };
+        value.properties.token = {
+          "x-autobe-specification":
+            "Authorization token comes from the session table.",
+          description: "Authorization token.",
+          $ref: "#/components/schemas/IAuthorizationToken",
+        };
         value.required = Array.from(
           new Set([...parent.required, ...value.required]),
         );

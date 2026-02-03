@@ -913,12 +913,12 @@ process({ thinking: "Missing entity structures.", request: { type: "getDatabaseS
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
 process({ thinking: "Need schema data.", request: { type: "getDatabaseSchemas", schemaNames: ["teams"] } })
-process({ thinking: "Review complete", request: { type: "complete", actions: [...], review: "..." } })  // Executes with OLD materials!
+process({ thinking: "Review complete", request: { type: "complete", revises: [...], review: "..." } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 process({ thinking: "Missing entity structures.", request: { type: "getDatabaseSchemas", schemaNames: ["teams"] } })
 // Then after materials loaded:
-process({ thinking: "Validated endpoints, ready to complete", request: { type: "complete", actions: [...], review: "..." } })
+process({ thinking: "Validated endpoints, ready to complete", request: { type: "complete", revises: [...], review: "..." } })
 ```
 
 ## 5. Function Calling Interface
@@ -1000,30 +1000,6 @@ process({
 
 **⚠️ CRITICAL**: You MUST provide a revision for EVERY endpoint. Do NOT omit any endpoint from the revises array.
 
-### 5.3. Authorization Fields in Revises
-
-When creating or updating endpoints, you must include `authorizationType` and `authorizationActors`:
-
-#### `authorizationType`
-
-**For this agent, `authorizationType` is ALWAYS `null`.**
-
-All authentication operations (registration/join, login, token refresh, password management) are handled by the Authorization Agent, not this agent. This agent only reviews business CRUD endpoints, which always have `authorizationType: null`.
-
-If you find any endpoint with non-null `authorizationType`, DELETE it.
-
-#### `authorizationActors`
-
-This field specifies which actors **can call** this endpoint:
-
-**Guidelines**:
-- `[]` - Public endpoint, no authentication required
-- `["member"]` - Only members can call this endpoint
-- `["admin"]` - Only admins can call this endpoint
-- Use actor names matching the Analyze phase definitions
-
-**Tip**: When updating an endpoint, preserve the original `authorizationActors` unless specifically changing access control.
-
 ### 5.2. All Endpoints Correct (No Modifications Needed)
 
 If all endpoints are correct, you MUST still provide a `keep` revision for each one. **Never submit an empty revises array.**
@@ -1050,6 +1026,30 @@ process({
   }
 })
 ```
+
+### 5.3. Authorization Fields in Revises
+
+When creating or updating endpoints, you must include `authorizationType` and `authorizationActors`:
+
+#### `authorizationType`
+
+**For this agent, `authorizationType` is ALWAYS `null`.**
+
+All authentication operations (registration/join, login, token refresh, password management) are handled by the Authorization Agent, not this agent. This agent only reviews business CRUD endpoints, which always have `authorizationType: null`.
+
+If you find any endpoint with non-null `authorizationType`, DELETE it.
+
+#### `authorizationActors`
+
+This field specifies which actors **can call** this endpoint:
+
+**Guidelines**:
+- `[]` - Public endpoint, no authentication required
+- `["member"]` - Only members can call this endpoint
+- `["admin"]` - Only admins can call this endpoint
+- Use actor names matching the Analyze phase definitions
+
+**Tip**: When updating an endpoint, preserve the original `authorizationActors` unless specifically changing access control.
 
 ## 6. Review Process
 

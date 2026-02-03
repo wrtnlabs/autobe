@@ -788,12 +788,12 @@ process({ thinking: "Missing table info for conflict check.", request: { type: "
 ```typescript
 // ❌ FORBIDDEN - Calling complete while preliminary requests pending
 process({ thinking: "Need requirements.", request: { type: "getAnalysisFiles", fileNames: ["Analytics.md"] } })
-process({ thinking: "Review complete", request: { type: "complete", actions: [...], review: "..." } })  // Executes with OLD materials!
+process({ thinking: "Review complete", request: { type: "complete", revises: [...], review: "..." } })  // Executes with OLD materials!
 
 // ✅ CORRECT - Sequential execution
 process({ thinking: "Missing requirements context.", request: { type: "getAnalysisFiles", fileNames: ["Analytics.md"] } })
 // Then after materials loaded:
-process({ thinking: "Validated endpoints against requirements, ready to complete", request: { type: "complete", actions: [...], review: "..." } })
+process({ thinking: "Validated endpoints against requirements, ready to complete", request: { type: "complete", revises: [...], review: "..." } })
 ```
 
 ## 5. Function Calling Interface
@@ -870,6 +870,33 @@ process({
 
 **⚠️ CRITICAL**: You MUST provide a revision for EVERY endpoint. Do NOT omit any endpoint from the revises array.
 
+### 5.2. All Endpoints Correct (No Modifications Needed)
+
+If all endpoints are correct, you MUST still provide a `keep` revision for each one. **Never submit an empty revises array.**
+
+```typescript
+process({
+  thinking: "Reviewed all action endpoints. All are properly justified and named. Approving each with keep.",
+  request: {
+    type: "complete",
+    revises: [
+      {
+        type: "keep",
+        reason: "Justified by requirements. Follows hierarchical structure and REST conventions.",
+        endpoint: { path: "/statistics/sales/monthly", method: "get" }
+      },
+      {
+        type: "keep",
+        reason: "Justified by 'Admins SHALL view dashboard overview' requirement.",
+        endpoint: { path: "/dashboard/admin/overview", method: "get" }
+      },
+      // ... keep for EVERY endpoint in the provided list
+    ],
+    review: "Reviewed 8 action endpoints. All endpoints are justified by requirements and follow naming conventions. No modifications needed."
+  }
+})
+```
+
 ### 5.3. Authorization Fields in Revises
 
 **IMPORTANT**: For `create` and `update` actions, you MUST include authorization fields:
@@ -902,8 +929,8 @@ process({
 {
   type: "update",
   reason: "Dashboard should be admin-only.",
-  original: { path: "/dashboard/overview", method: "get" },
-  updated: {
+  endpoint: { path: "/dashboard/overview", method: "get" },
+  newDesign: {
     endpoint: { path: "/dashboard/overview", method: "get" },
     description: "Admin dashboard overview.",
     authorizationType: null,
@@ -924,40 +951,13 @@ process({
 }
 ```
 
-### 5.2. All Endpoints Correct (No Modifications Needed)
-
-If all endpoints are correct, you MUST still provide a `keep` revision for each one. **Never submit an empty revises array.**
-
-```typescript
-process({
-  thinking: "Reviewed all action endpoints. All are properly justified and named. Approving each with keep.",
-  request: {
-    type: "complete",
-    revises: [
-      {
-        type: "keep",
-        reason: "Justified by requirements. Follows hierarchical structure and REST conventions.",
-        endpoint: { path: "/statistics/sales/monthly", method: "get" }
-      },
-      {
-        type: "keep",
-        reason: "Justified by 'Admins SHALL view dashboard overview' requirement.",
-        endpoint: { path: "/dashboard/admin/overview", method: "get" }
-      },
-      // ... keep for EVERY endpoint in the provided list
-    ],
-    review: "Reviewed 8 action endpoints. All endpoints are justified by requirements and follow naming conventions. No modifications needed."
-  }
-})
-```
-
 ## 6. Review Process
 
 1. **Review Requirements**: Check analysis files for action endpoint keywords
 2. **Cross-Reference Endpoints**: Match each endpoint to a requirement
 3. **Check Base CRUD**: Ensure no overlap with base CRUD endpoints
 4. **Verify Naming**: All paths should be hierarchical, not camelCase
-5. **Complete**: Call `process()` with `type: "complete"` containing all `actions`
+5. **Complete**: Call `process()` with `type: "complete"` containing all `revises`
 
 ## 7. Important Notes
 
