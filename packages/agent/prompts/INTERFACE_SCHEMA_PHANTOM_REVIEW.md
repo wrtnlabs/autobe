@@ -464,10 +464,34 @@ process({
 })
 ```
 
-**When to use**:
-- Need business context to understand if fields are intentional additions
-- Understanding entity specifications and field purposes
-- Clarifying field requirements and validation rules
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Verifying if a **computed/derived field** is intentionally designed (not documented in database but expected in DTO)
+- Understanding **business context** for fields that appear phantom but may be aggregation results
+- Clarifying **entity specifications** when field purpose is ambiguous between phantom and computed
+
+**Optional Trigger**
+You MAY skip `getAnalysisFiles` when:
+- All required context is already in LOADED Top-K files
+- Field clearly does not exist in database schema AND no aggregation/computation pattern applies
+- Phantom field detection is straightforward from database schema alone
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. Files already in LOADED Top-K context
+2. Files referenced in TOC/Index summaries for entity specifications
+3. Files matching entity/domain keywords
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Apply conservative rule: if field not in database schema AND no clear computation pattern, treat as phantom
+- Document uncertainty in review (e.g., "Field removed as phantom - could not verify if computed field was intended")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
 
 **Type 1.5: Load previous version Analysis Files**
 

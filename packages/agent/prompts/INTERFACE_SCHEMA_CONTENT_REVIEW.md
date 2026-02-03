@@ -184,10 +184,35 @@ process({
 })
 ```
 
-**When to use**:
-- Need to verify field completeness against business requirements
-- Understanding entity business rules and validation requirements
-- Clarifying field purposes and documentation needs
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Verifying **field completeness** against business requirements (missing required fields)
+- Evaluating **field naming conventions** against domain-specific terminology in requirements
+- Checking if **description/documentation** accurately reflects business rules
+- Validating **enum values** or **constraints** against documented business specifications
+
+**Optional Trigger**
+You MAY skip `getAnalysisFiles` when:
+- All required context is already in LOADED Top-K files
+- Schema structure is self-explanatory and matches common patterns
+- Field names and types are standard database conventions with no business-specific rules
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. Files already in LOADED Top-K context
+2. Files referenced in TOC/Index summaries
+3. Files matching entity/domain keywords
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Evaluate schema content based on database conventions and schema structure alone
+- Document uncertainty in review feedback (e.g., "Unable to verify against requirements - assuming standard conventions")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
 
 **Type 1.5: Load previous version Analysis Files**
 

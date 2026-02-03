@@ -235,11 +235,39 @@ process({
 })
 ```
 
-**When to use**:
-- Need deeper understanding of business entity relationships
-- Relation semantics unclear from database schema alone
-- Want to verify relation design against business requirements
-- Need to understand domain boundaries and composition rules
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Verifying **entity relationship semantics** not evident from database FK alone (e.g., "belongs to" vs "references")
+- Understanding **domain boundaries** and composition/aggregation rules
+- Clarifying **cascade behavior** or **lifecycle dependencies** mentioned in requirements
+- Validating **relation naming conventions** against business terminology
+
+**Optional Trigger**
+You MAY skip `getAnalysisFiles` when:
+- All required context is already in LOADED Top-K files
+- Relation patterns are straightforward from database schema annotations
+- Review is purely structural (type checking, nullability fixes)
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. Files already in LOADED Top-K context
+2. Files referenced in TOC/Index summaries for entity relationships
+3. Files matching keywords: entity, relationship, domain, composition, aggregation, cascade
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Determine relation patterns based on database FK and schema annotations alone
+- Document uncertainty in review (e.g., "Relation semantics inferred from schema FK; business context unverified")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Some requirements files may have been loaded in previous function calls. These materials are already available in your conversation context.
+**Rule**: Only request materials that you have not yet accessed
 
 **Type 1.5: Load previous version Analysis Files**
 

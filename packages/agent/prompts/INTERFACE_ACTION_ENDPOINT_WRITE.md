@@ -186,7 +186,129 @@ process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } }
 
 ```typescript
 process({
+<<<<<<< HEAD
   thinking: "Identified analytics and dashboard requirements not covered by CRUD.",
+=======
+  thinking: "Missing analytics workflow details for endpoint design. Don't have them.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["Feature_A.md", "Feature_B.md"]  // Batch request for specific features
+  }
+})
+```
+
+**Index-First Rule (MANDATORY)**
+If an INDEX/TOC analysis file exists in the available list, you MUST request it FIRST before selecting any detailed section files. Only after reading the INDEX can you determine which detailed files are relevant.
+
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Minimal File Set Rule**
+After reading INDEX, request ONLY the minimal set of detailed requirement sections needed (typically 1–3 files). Do NOT request the entire corpus; maximum 4 files per batch (INDEX + 1–3 detail files). Exception: requirements contradiction/gap detection may justify additional files.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Identifying **analytics/dashboard requirements** not evident from schema alone (e.g., "monthly trends", "KPI overview")
+- Understanding **cross-entity search** or **aggregation requirements** spanning multiple tables
+- Clarifying **report generation** or **business intelligence** feature specifications
+- Verifying **integration/webhook/notification** workflows mentioned in requirements
+
+**Skip Criteria Tightening**
+You MAY NOT skip `getAnalysisFiles` for:
+- Analytics/dashboard endpoint design → Index summary alone is INSUFFICIENT
+- Cross-entity aggregation requirements → Index summary alone is INSUFFICIENT
+- Integration/webhook workflow design → Index summary alone is INSUFFICIENT
+
+You MAY only skip when requirements are clearly CRUD-based with no action endpoints needed.
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. INDEX/TOC file (if exists)
+2. Files already in LOADED Top-K context
+3. Files referenced in TOC/Index summaries for analytics/dashboard/search
+4. Files matching keywords: analytics, dashboard, search, report, integration, notification, workflow
+
+**Evidence-Gating Rule**
+For any action endpoint design decision, you MUST cite concrete evidence (section-level reference) from loaded analysis files. Example: "Per Dashboard_Specs.md §4.2, KPI overview endpoint requires..."
+If evidence cannot be loaded, mark `evidenceUnavailable` and apply conservative design (schema-based only).
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Generate action endpoints only for clearly evident requirements from schema relationships
+- Return empty designs array if no clear action endpoint requirements are found
+- Document uncertainty (e.g., "Action endpoints based on schema analysis only - detailed requirements not verified")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Some requirement files may have been loaded in previous function calls. These materials are already available in your conversation context.
+
+**ABSOLUTE PROHIBITION**: If materials have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+
+**Rule**: Only request materials that you have not yet accessed
+
+**process() - Load previous version Analysis Files**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({ request: { type: "getPreviousAnalysisFiles", fileNames: ["Requirements.md"] }})
+```
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline requirements. **Important**: Only available when a previous version exists.
+
+**process() - Request Database Schemas**
+
+Retrieves database model definitions to understand database structure and relationships.
+
+```typescript
+process({
+  thinking: "Need shopping_sales and shopping_orders schemas to verify stance properties",
+  request: {
+    type: "getDatabaseSchemas",
+    schemaNames: ["shopping_sales", "shopping_orders"]  // Only specific schemas needed
+  }
+})
+```
+
+**When to use**:
+- Designing endpoints for entities whose schemas aren't yet loaded
+- Need to understand the `stance` property to determine endpoint types
+- Want to verify field availability for endpoint design
+- Need to understand relationships for nested endpoint design
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+
+Some database schemas may have been loaded in previous function calls. These models are already available in your conversation context.
+
+**ABSOLUTE PROHIBITION**: If schemas have already been loaded, you MUST NOT request them again through function calling. Re-requesting wastes your limited 8-call budget and provides no benefit since they are already available.
+
+**Rule**: Only request schemas that you have not yet accessed
+
+**process() - Load previous version Database Schemas**
+
+**IMPORTANT**: This function is ONLY available when a previous version exists. Loads database schemas from the **previous version**, NOT from earlier calls within the same execution.
+
+```typescript
+process({ request: { type: "getPreviousDatabaseSchemas", schemaNames: ["users"] }})
+```
+**When to use**: Regenerating due to user modifications. Need to reference previous version to understand baseline schema design. **Important**: Only available when a previous version exists.
+
+### 4.3. Input Materials Rules
+
+- **NEVER re-request already loaded materials**
+- **Check conversation history** for previously loaded schemas/files
+- **Maximum 8 material requests** before calling complete
+
+## 5. Output Format
+
+Call `process()` with `type: "complete"`:
+
+```typescript
+process({
+  thinking: "Generated analytics and dashboard endpoints based on requirements.",
+>>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
   request: {
     type: "complete",
     analysis: "Found requirements for sales analytics and dashboard...",

@@ -83,6 +83,10 @@ const main = async (): Promise<void> => {
                 TestGlobal.env.TIMEOUT && TestGlobal.env.TIMEOUT !== "NULL"
                   ? Number(TestGlobal.env.TIMEOUT)
                   : null,
+              rag: {
+                enabled: true,
+                log: true,
+              },
             },
             compiler: (listener) => new AutoBeCompiler(listener),
             histories: next.histories,

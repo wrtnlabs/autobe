@@ -14,6 +14,9 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerPlanHistory } from "./histories/transformRealizeTransformerPlanHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
@@ -72,15 +75,36 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerPlan[]> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+
+  const queryText = [
+    "transformer",
+    "plan",
+    "dto",
+    "prisma",
+    props.dtoTypeName,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "realizeTransformerPlan");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas"
+    "analysisFiles" | "databaseSchemas" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeTransformerPlanApplication>(),
-    kinds: ["databaseSchemas", "interfaceSchemas"],
+    kinds: ["analysisFiles", "databaseSchemas", "interfaceSchemas"],
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceSchemas: Object.fromEntries(
         Object.entries(props.document.components.schemas).filter(
           ([key]) => key === props.dtoTypeName,
@@ -142,7 +166,7 @@ function createController(props: {
   dtoTypeName: string;
   build: (next: IAutoBeRealizeTransformerPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas"
+    "analysisFiles" | "databaseSchemas" | "interfaceSchemas"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {
@@ -223,3 +247,4 @@ type Validator = (
 ) => IValidation<IAutoBeRealizeTransformerPlanApplication.IProps>;
 
 const SOURCE = "realizePlan" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

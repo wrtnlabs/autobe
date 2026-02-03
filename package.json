@@ -62,5 +62,12 @@
         "title": "🔨 Code Refactoring"
       }
     }
+  },
+  "dependencies": {
+    "@agentica/core": "^0.39.0",
+    "@nestia/core": "^10.0.1",
+    "@nestia/fetcher": "^10.0.1",
+    "@nestia/migrate": "^10.0.1",
+    "prettier-plugin-java-for-cjs": "^2.8.4"
   }
 }

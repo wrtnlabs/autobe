@@ -25,6 +25,7 @@ import {
 } from "@autobe/interface";
 import { ILlmController } from "@samchon/openapi";
 
+import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { AutoBeState } from "./AutoBeState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";
 
@@ -49,6 +50,7 @@ export interface AutoBeContext {
   vendor: IAgenticaVendor;
   locale: string;
   retry: number;
+  config: IAutoBeConfig;
 
   // accessors
   aggregates: AutoBeProcessAggregateCollection;

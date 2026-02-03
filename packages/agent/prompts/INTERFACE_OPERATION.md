@@ -541,11 +541,42 @@ process({
 })
 ```
 
-**When to use**:
-- Need deeper understanding of business requirements
-- Operations involve complex business logic not clear from other sources
-- Want to reference specific requirement details in specifications
-- Requirements mention related features you want to reference
+**File Name Source Rule**
+
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+LOADED TOC/Index and Top-K documents are guidance for prioritization, not a source for inventing filenames.
+
+**Mandatory Trigger**
+
+You MUST call `getAnalysisFiles` when:
+- Operation involves **authorization decisions** not evident from endpoint definition alone (e.g., "only admin can delete", "owner-only access")
+- Operation requires **business validation rules** (e.g., "max 5 items per order", "approval workflow required")
+- Operation **description** must reference specific business workflows or constraints not in schema
+- **requestBody/responseBody** design depends on business rules not derivable from schema alone
+
+**Optional Trigger**
+
+You MAY skip `getAnalysisFiles` when:
+- Endpoint is standard CRUD with no special business logic
+- All required context is already in LOADED Top-K files
+- Schema structure is self-explanatory for the operation's purpose
+- Authorization pattern is clear from endpoint path (e.g., `/admin/...` implies admin-only)
+
+**Batching Rule**
+
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not perform iterative single-file probing.
+
+File selection priority:
+1. AVAILABLE files that are also in LOADED Top-K (highest relevance)
+2. AVAILABLE files referenced in TOC/Index for this entity/workflow
+3. AVAILABLE files matching keywords: permission, validation, workflow, constraint, authorization
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+
+If the index does not contain discoverable fileNames for the pending decision:
+- Design the operation based on schema structure and endpoint definition alone
+- Document uncertainty in operation description (e.g., "Authorization rules assumed based on endpoint pattern")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
 
 **Type 1.5: Load previous version Analysis Files**
 

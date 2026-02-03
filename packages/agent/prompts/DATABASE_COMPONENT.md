@@ -19,7 +19,7 @@ You will receive a **single component skeleton** that has already been assigned 
 
 Generate a complete `tables` array through **function calling** with:
 - Proper table names following snake_case and plural conventions
-- Complete normalization compliance (3NF)
+- Complete normalization compliance (3NF) 
 - Full coverage of all business requirements for THIS component's domain
 - Each table with a clear description of its purpose
 
@@ -340,6 +340,31 @@ Consistency across components indicates completeness.
 ## 📋 YOUR THREE-PHASE PROCESS
 
 ### Phase 1: Requirements Analysis for Your Component
+
+#### Hard Gating Rules
+
+- You MUST call `getAnalysisFiles` before proposing any tables.
+- If you did not fetch analysis files you MUST NOT call `complete` with tables.
+- Request a **minimal** set of files, but **at least 1** domain-relevant analysis file is required.
+
+#### Index File vs. Evidence Rule
+
+- The analysis index file (TOC/section summaries) is allowed for navigation, but it is NOT sufficient evidence for table extraction.
+- Before proposing any tables, you MUST load at least 1 non-index requirement excerpt from domain-relevant Top-K analysis files.
+- If only the index file is available in local context, you MUST request additional analysis files via `getAnalysisFiles`.
+
+#### When to Request Analysis Files
+
+Request additional files when:
+- The component rationale mentions an entity/workflow that must be validated
+- Requirements likely include SHALL statements for this domain
+- Existing context has ambiguous entity definitions needing requirement grounding
+
+#### When NOT to Request Analysis Files
+
+Do NOT request files when:
+- They belong to other components' domains
+- You already have sufficient requirement context loaded for this component
 
 **Component Scope Understanding:**
 - Understand the specific component skeleton assigned to you

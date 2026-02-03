@@ -15,6 +15,12 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import {
+  RagModePreset,
+  getContextModeSettings,
+} from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaComplementHistory } from "./histories/transformInterfaceSchemaComplementHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
@@ -73,6 +79,37 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const relatedOp = props.document.operations.find(
+    (o) =>
+      o.requestBody?.typeName === props.typeName ||
+      o.responseBody?.typeName === props.typeName,
+  );
+
+  const opHint = relatedOp ? `${relatedOp.method} ${relatedOp.path}` : "";
+
+  const task = props.instruction.replace(/\s+/g, " ").trim().slice(0, 200);
+
+  const queryText = `
+Type: ${props.typeName}
+Ops: ${opHint || "N/A"}
+Task: ${task}
+`.trim();
+
+  const ragSettings = getContextModeSettings(
+    ctx.config,
+    RAG_PRESET,
+    "interfaceComplement",
+  );
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -102,6 +139,7 @@ async function process(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: props.document.operations.filter((o) => {
         const predicate = (key: string | undefined): boolean => {
           if (key === undefined) return false;
@@ -290,3 +328,4 @@ const isReferenced = (
   });
   return found;
 };
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

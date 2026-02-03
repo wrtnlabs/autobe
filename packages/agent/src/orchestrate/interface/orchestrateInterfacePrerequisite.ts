@@ -12,6 +12,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
 import { AutoBeInterfacePrerequisiteProgrammer } from "./programmers/AutoBeInterfacePrerequisiteProgrammer";
@@ -61,6 +64,30 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfacePrerequisiteEvent | null> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+
+  const domains = Array.from(
+    new Set(
+      props.operation.path.split("/").filter((p) => p && !p.startsWith(":") && !p.startsWith("{")),
+    ),
+  ).join(", ");
+
+  const paths = props.operation.path;
+
+  const queryText = `
+    Domains: ${domains}
+    Task: ${paths}
+  `.trim();
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfacePrerequisite");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -90,7 +117,9 @@ async function process(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: [props.operation],
+
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -206,3 +235,4 @@ function createController(props: {
 }
 
 const SOURCE = "interfacePrerequisite" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

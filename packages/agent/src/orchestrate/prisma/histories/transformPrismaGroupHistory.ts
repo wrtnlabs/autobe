@@ -24,7 +24,7 @@ export const transformPrismaGroupHistory = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.DATABASE_GROUP,
+        text: AutoBeSystemPromptConstant.DATABASE_COMPONENT,
       },
       ...props.preliminary.getHistories(),
       {

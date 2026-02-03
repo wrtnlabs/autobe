@@ -101,10 +101,40 @@ process({
 })
 ```
 
-**When to use**:
-- Need to understand workflow dependencies from requirements
-- Business logic dependencies are unclear from initial context
-- Want to verify prerequisite chains against user workflows
+**File Name Source Rule**
+
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+LOADED TOC/Index and Top-K documents are guidance for prioritization, not a source for inventing filenames.
+
+**Mandatory Trigger**
+
+You MUST call `getAnalysisFiles` when:
+- Prerequisite chain depends on **workflow sequences** not evident from schema alone (e.g., "approval before submission")
+- Required IDs have **conditional dependencies** based on business rules
+- Operation description references **business processes** that affect prerequisite ordering
+
+**Optional Trigger**
+
+You MAY skip `getAnalysisFiles` when:
+- Prerequisite analysis is straightforward from schema foreign keys
+- All required IDs map directly to obvious POST operations
+- Loaded Top-K context already contains sufficient workflow information
+
+**Batching Rule**
+
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not perform iterative single-file probing.
+
+File selection priority:
+1. AVAILABLE files that are also in LOADED Top-K (highest relevance)
+2. AVAILABLE files referenced in TOC/Index for this entity/workflow
+3. AVAILABLE files matching keywords: workflow, process, sequence, dependency, prerequisite
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+
+If the index does not contain discoverable fileNames for the pending decision:
+- Determine prerequisites based on schema foreign key relationships alone
+- Document uncertainty in prerequisite description (e.g., "Prerequisite determined from schema FK; workflow not verified")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 Some requirement files may have been loaded in previous function calls. These materials are already available in your conversation context.

@@ -9,6 +9,18 @@ export interface RequirementSection {
   level: 2 | 3;
 }
 
+/**
+ * Minimal interface for analysis files used in RAG operations.
+ * This is compatible with AutoBeAnalyzeFile from @autobe/interface.
+ */
+export interface IAnalyzeFileInput {
+  filename: `${string}.md`;
+  content: string;
+}
+
+/**
+ * @deprecated Use IAnalyzeFileInput instead. Kept for backward compatibility.
+ */
 export interface AutoBeAnalyzeFile {
   filename: `${string}.md`;
   content: string;
@@ -150,7 +162,7 @@ function buildDf(indexDocs: { tokens: string[] }[]): Map<string, number> {
   for (const d of indexDocs) {
     const uniq = new Set(d.tokens);
     for (const term of uniq) df.set(term, (df.get(term) ?? 0) + 1);
-  }
+  } 
   return df;
 }
 
@@ -243,17 +255,16 @@ function percentile(sortedAsc: number[], p: number): number {
   return a + (b - a) * rest;
 }
 
-function computeDynamicK(scores: number[], kMin: number, kMax: number): number {
-  if (scores.length === 0) return kMin;
-  const sorted = [...scores].sort((a, b) => a - b);
-  const p90 = percentile(sorted, 90);
-  const p50 = percentile(sorted, 50);
-  const gap = p90 - p50;
-  
-  const GAP_MIN = 0.02;
-  const GAP_MAX = 0.20;
-  const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
-  return Math.round(kMin + (1 - sharpness) * (kMax - kMin));
+// Debug info for Dynamic K analysis
+export interface DynamicKDebugInfo {
+  kMin: number;
+  kMax: number;
+  computedK: number;
+  p90: number;
+  p50: number;
+  gap: number;
+  sharpness: number;
+  totalHits: number;
 }
 
 // Hybrid Retrieval
@@ -262,14 +273,15 @@ export async function retrieveTopKAdaptiveHybrid(
   queryText: string,
   index: VectorIndexItem[],
   bm25: Bm25Stats,
-  kMin: number = 5,
+  kMin: number = 3,
   kMax?: number,
   wVec: number = 0.6,
-  wBm25: number = 0.4
+  wBm25: number = 0.4,
+  debug: boolean = false
 ): Promise<RetrievalHit[]> {
   const N = index.length;
   const effectiveKMax =
-    kMax ?? Math.min(50, Math.max(30, Math.ceil(0.15 * N)));
+    kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
 
   const qVecs = await embedder.embed([queryText]);
   const qVec = qVecs[0];
@@ -296,8 +308,110 @@ export async function retrieveTopKAdaptiveHybrid(
     };
   });
 
-  const K = computeDynamicK(hits.map((h) => h.score), kMin, effectiveKMax);
+  // Compute Dynamic K with debug info
+  const scores = hits.map((h) => h.score);
+  const sorted = [...scores].sort((a, b) => a - b);
+  const p90 = percentile(sorted, 90);
+  const p50 = percentile(sorted, 50);
+  const gap = p90 - p50;
+  const GAP_MIN = 0.02;
+  const GAP_MAX = 0.50;
+  const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
+  const K = Math.round(kMin + (1 - sharpness) * (effectiveKMax - kMin));
+
+  if (debug) {
+    console.log(`[DYNAMIC-K-DEBUG]`);
+    console.log(`  kMin=${kMin}, kMax=${effectiveKMax}, computedK=${K}`);
+    console.log(`  p90=${p90.toFixed(4)}, p50=${p50.toFixed(4)}, gap=${gap.toFixed(4)}`);
+    console.log(`  sharpness=${sharpness.toFixed(4)} (0=flat, 1=sharp)`);
+    console.log(`  totalHits=${hits.length}`);
+  }
+
   return hits.sort((a, b) => b.score - a.score).slice(0, K);
+}
+
+// Extended version that returns all hits for OOD detection
+export interface RetrievalResultEx {
+  topK: RetrievalHit[];       // Sliced top-K results
+  all: RetrievalHit[];        // All hits sorted by score (before slice)
+  K: number;                  // Computed K value
+  stats: {
+    p90: number;
+    p50: number;
+    gap: number;
+    sharpness: number;
+    vecRawMax: number;        // Raw cosine similarity max (before normalization)
+    bm25RawMax: number;       // Raw BM25 score max (before normalization)
+  };
+}
+
+export async function retrieveTopKAdaptiveHybridEx(
+  embedder: EmbeddingProvider,
+  queryText: string,
+  index: VectorIndexItem[],
+  bm25: Bm25Stats,
+  kMin: number = 3,
+  kMax?: number,
+  wVec: number = 0.6,
+  wBm25: number = 0.4,
+): Promise<RetrievalResultEx> {
+  const N = index.length;
+  const effectiveKMax =
+    kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
+
+  const qVecs = await embedder.embed([queryText]);
+  const qVec = qVecs[0];
+  if (!qVec) {
+    return {
+      topK: [],
+      all: [],
+      K: 0,
+      stats: { p90: 0, p50: 0, gap: 0, sharpness: 0, vecRawMax: 0, bm25RawMax: 0 },
+    };
+  }
+
+  const qTokens = tokenize(queryText);
+
+  const vecScores = index.map((item) => cosineSimilarity(qVec, item.vector));
+  const bmScores = index.map((item) =>
+    bm25Score(qTokens, item.tf, item.docLen, bm25)
+  );
+
+  // Raw max values for OOD detection
+  const vecRawMax = Math.max(...vecScores);
+  const bm25RawMax = Math.max(...bmScores);
+
+  const vecNorm = minMaxNormalize(vecScores);
+  const bmNorm = minMaxNormalize(bmScores);
+
+  const hits: RetrievalHit[] = index.map((item, i) => {
+    const score = wVec * vecNorm[i]! + wBm25 * bmNorm[i]!;
+    return {
+      section: item.section,
+      score,
+      reason: `hybrid=${score.toFixed(4)} (vec=${vecNorm[i]!.toFixed(3)}, bm25=${bmNorm[i]!.toFixed(3)})`,
+    };
+  });
+
+  // Compute Dynamic K
+  const scores = hits.map((h) => h.score);
+  const sorted = [...scores].sort((a, b) => a - b);
+  const p90 = percentile(sorted, 90);
+  const p50 = percentile(sorted, 50);
+  const gap = p90 - p50;
+  const GAP_MIN = 0.02;
+  const GAP_MAX = 0.50;
+  const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
+  const K = Math.round(kMin + (1 - sharpness) * (effectiveKMax - kMin));
+
+  const allSorted = hits.sort((a, b) => b.score - a.score);
+
+  return {
+    topK: allSorted.slice(0, K),
+    all: allSorted,
+    K,
+    stats: { p90, p50, gap, sharpness, vecRawMax, bm25RawMax },
+  };
 }
 
 // Caching
@@ -393,18 +507,39 @@ export function hitsToAnalysisFiles(hits: RetrievalHit[]): RagAnalysisFile[] {
   return result;
 }
 
+export interface RetrieveAnalysisFilesOptions {
+  kMin?: number;
+  kMax?: number;
+  h3MaxLength?: number;
+  splitCount?: number;
+  log?: boolean;
+  logPrefix?: string;
+}
+
 export async function retrieveRelevantAnalysisFiles(
   embedder: EmbeddingProvider,
   files: AutoBeAnalyzeFile[],
   query: string,
-  options?: {
-    kMin?: number;
-    kMax?: number;
-    h3MaxLength?: number;
-    splitCount?: number;
-  }
+  options?: RetrieveAnalysisFilesOptions
 ): Promise<RagAnalysisFile[]> {
+  const log = options?.log ?? false;
+  const prefix = options?.logPrefix ? `[${options.logPrefix}]` : "";
+
+  // [RAG][ENTER]
+  const inputTotalChars = files.reduce(
+    (sum, f) => sum + (f.content?.length ?? 0),
+    0,
+  );
+  if (log) {
+    console.log(
+      `[RAG]${prefix}[ENTER] queryLen=${query.length} files=${files.length} inputChars=${inputTotalChars}`,
+    );
+  }
+
   if (files.length === 0 || !query.trim()) {
+    if (log) {
+      console.log(`[RAG]${prefix}[RESULT] hits=0 totalChars=0 (early return)`);
+    }
     return [];
   }
 
@@ -416,6 +551,9 @@ export async function retrieveRelevantAnalysisFiles(
     );
 
     if (index.length === 0) {
+      if (log) {
+        console.log(`[RAG]${prefix}[RESULT] hits=0 totalChars=0 (empty index)`);
+      }
       return [];
     }
 
@@ -432,9 +570,28 @@ export async function retrieveRelevantAnalysisFiles(
       kMax
     );
 
-    return hitsToAnalysisFiles(hits);
+    const results = hitsToAnalysisFiles(hits);
+
+    // [RAG][RESULT]
+    if (log) {
+      const resultTotalChars = results.reduce(
+        (sum, f) => sum + (f.content?.length ?? 0),
+        0,
+      );
+      const reduction = inputTotalChars > 0
+        ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
+        : "0";
+      console.log(
+        `[RAG]${prefix}[RESULT] hits=${results.length} totalChars=${resultTotalChars} reduction=${reduction}%`,
+      );
+    }
+
+    return results;
   } catch (error) {
-    console.error("[vectorDB] retrieveRelevantAnalysisFiles failed:", error);
+    if (log) {
+      console.error(`[RAG]${prefix}[ERROR] retrieveRelevantAnalysisFiles failed:`, error);
+      console.log(`[RAG]${prefix}[RESULT] hits=0 totalChars=0 (error)`);
+    }
     return [];
   }
 }
@@ -442,4 +599,106 @@ export async function retrieveRelevantAnalysisFiles(
 export function clearIndexCache(): void {
   _indexCache.clear();
   _buildingPromises.clear();
+}
+
+// ============================================================================
+// Analysis Context Mode - Unified RAG control
+// ============================================================================
+
+/**
+ * Analysis context mode for RAG control.
+ * - "TOPK": Use RAG retrieval (calls retrieveRelevantAnalysisFiles)
+ * - "FULL": Use all analysis files without filtering (no RAG call)
+ * - "NONE": Use no analysis files (no RAG call)
+ */
+export type AnalysisContextMode = "TOPK" | "FULL" | "NONE";
+
+export interface BuildAnalysisContextOptions {
+  kMin?: number;
+  kMax?: number;
+  h3MaxLength?: number;
+  splitCount?: number;
+  log?: boolean;
+  logPrefix?: string;
+}
+
+/**
+ * Build analysis context files based on the specified mode.
+ *
+ * This is the central function for RAG policy enforcement.
+ * - NONE: Returns [] without calling retrieveRelevantAnalysisFiles
+ * - FULL: Returns all files without calling retrieveRelevantAnalysisFiles
+ * - TOPK: Calls retrieveRelevantAnalysisFiles for filtered results
+ *
+ * The function uses generics to preserve the input file type for FULL mode,
+ * while TOPK mode returns RagAnalysisFile[].
+ *
+ * @param embedder - Embedding provider for vector search (only used in TOPK mode)
+ * @param files - Source analysis files (any type with filename and content)
+ * @param query - Query text for retrieval (only used in TOPK mode)
+ * @param mode - Analysis context mode
+ * @param options - Optional parameters
+ * @returns Filtered or full analysis files based on mode
+ */
+export async function buildAnalysisContextFiles<
+  T extends IAnalyzeFileInput
+>(
+  embedder: EmbeddingProvider,
+  files: T[],
+  query: string,
+  mode: AnalysisContextMode,
+  options?: BuildAnalysisContextOptions
+): Promise<T[]> {
+  const log = options?.log ?? false;
+  const prefix = options?.logPrefix ? `[${options.logPrefix}]` : "";
+
+  const inputTotalChars = files.reduce(
+    (sum, f) => sum + (f.content?.length ?? 0),
+    0
+  );
+
+  if (mode === "NONE") {
+    if (log) {
+      console.log(
+        `[RAG-CONTEXT]${prefix} mode=NONE files=0 chars=0 (skipped)`
+      );
+    }
+    return [];
+  }
+
+  if (mode === "FULL") {
+    if (log) {
+      console.log(
+        `[RAG-CONTEXT]${prefix} mode=FULL files=${files.length} chars=${inputTotalChars} (pass-through)`
+      );
+    }
+    return files;
+  }
+
+  // mode === "TOPK"
+  const result = await retrieveRelevantAnalysisFiles(embedder, files, query, {
+    kMin: options?.kMin,
+    kMax: options?.kMax,
+    h3MaxLength: options?.h3MaxLength,
+    splitCount: options?.splitCount,
+    log,
+    logPrefix: options?.logPrefix,
+  });
+
+  if (log) {
+    const resultTotalChars = result.reduce(
+      (sum, f) => sum + (f.content?.length ?? 0),
+      0
+    );
+    const reduction = inputTotalChars > 0
+      ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
+      : "0";
+    console.log(
+      `[RAG-CONTEXT]${prefix} mode=TOPK files=${result.length} chars=${resultTotalChars} reduction=${reduction}%`
+    );
+  }
+
+  // RagAnalysisFile extends the input type with 'reason' field
+  // Cast is safe because RagAnalysisFile is a superset of IAnalyzeFileInput
+  return result as unknown as T[];
 }

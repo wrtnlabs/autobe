@@ -14,6 +14,9 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorPlanHistory } from "./histories/transformRealizeCollectorPlanHistory";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
@@ -67,15 +70,36 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+
+  const queryText = [
+    "collector",
+    "plan",
+    "dto",
+    "prisma",
+    props.dtoTypeName,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "realizeCollectorPlan");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
+    "analysisFiles" | "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
   > = new AutoBePreliminaryController({
     state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
-    kinds: ["databaseSchemas", "interfaceSchemas", "interfaceOperations"],
+    kinds: ["analysisFiles", "databaseSchemas", "interfaceSchemas", "interfaceOperations"],
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: props.document.operations.filter(
         (op) => op.requestBody?.typeName === props.dtoTypeName,
       ),
@@ -141,7 +165,7 @@ function createController(props: {
   dtoTypeName: string;
   build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
+    "analysisFiles" | "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {
@@ -222,3 +246,4 @@ type Validator = (
 ) => IValidation<IAutoBeRealizeCollectorPlanApplication.IProps>;
 
 const SOURCE = "realizePlan" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

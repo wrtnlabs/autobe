@@ -13,6 +13,12 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
+import { getEmbedder } from "../../utils/getEmbedder";
+import {
+  RagModePreset,
+  getContextModeSettings,
+} from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { AutoBeInterfaceEndpointReviewProgrammer } from "./programmers/AutoBeInterfaceEndpointReviewProgrammer";
@@ -43,6 +49,30 @@ export const orchestrateInterfaceEndpointReview = async (
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
+  // RAG TOPK_FULL
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const queryText = [
+    "interface",
+    "endpoint",
+    "review",
+    props.group.name,
+    ...props.group.databaseSchemas,
+    ...props.designs.map((d) => `${d.endpoint.method} ${d.endpoint.path}`),
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(
+    ctx.config,
+    RAG_PRESET,
+    "interfaceEndpointReview",
+  );
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
     { value: null };
   const preliminary: AutoBePreliminaryController<
@@ -64,7 +94,7 @@ export const orchestrateInterfaceEndpointReview = async (
     ],
     state: ctx.state(),
     local: {
-      analysisFiles: ctx.state().analyze?.files ?? [],
+      analysisFiles: ragAnalysisFiles,
       databaseSchemas:
         ctx
           .state()
@@ -185,3 +215,4 @@ const createController = (props: {
 };
 
 const SOURCE = "interfaceEndpointReview" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_FULL";

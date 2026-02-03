@@ -12,6 +12,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
@@ -61,6 +64,25 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const queryText = [
+    "prisma",
+    "schema",
+    "component",
+    props.group.filename,
+    props.group.namespace,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "prismaComponent");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
@@ -72,6 +94,9 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    local: {
+      analysisFiles: ragAnalysisFiles,
+    },
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -176,3 +201,4 @@ type Validator = (
 ) => IValidation<IAutoBeDatabaseComponentApplication.IProps>;
 
 const SOURCE = "databaseComponent" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

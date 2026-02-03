@@ -216,6 +216,40 @@ process({
 })
 ```
 
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Verifying **security policies** or **access control requirements** for sensitive field exposure rules
+- Understanding **PII/GDPR compliance** requirements affecting field filtering or masking
+- Clarifying **authentication/authorization** field requirements (tokens, sessions, credentials)
+- Validating **audit logging** or **data retention** policies that affect security review decisions
+
+**Optional Trigger**
+You MAY skip `getAnalysisFiles` when:
+- All required context is already in LOADED Top-K files
+- Security patterns are straightforward from database schema annotations (e.g., `@sensitive`, `@pii`)
+- Review is purely structural (type checking, nullability fixes on non-sensitive fields)
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. Files already in LOADED Top-K context
+2. Files referenced in TOC/Index summaries for security/privacy/compliance
+3. Files matching keywords: security, privacy, access, permission, PII, GDPR, authentication, authorization
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Apply conservative security defaults: filter sensitive fields, mask PII, restrict exposure
+- Document uncertainty in review (e.g., "Security policy inferred from schema annotations; detailed requirements unverified")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+
+**⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
+Some requirements files may have been loaded in previous function calls. These materials are already available in your conversation context.
+**Rule**: Only request materials that you have not yet accessed
+
 **Type 1.5: Load previous version Analysis Files**
 
 **IMPORTANT**: This type is ONLY available when a previous version exists. Loads analysis files from the **previous version**, NOT from earlier calls within the same execution.

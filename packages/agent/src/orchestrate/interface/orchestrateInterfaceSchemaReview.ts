@@ -14,8 +14,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { LocalEmbeddingProvider } from "../../utils/LocalEmbeddingProvider";
-import { retrieveRelevantAnalysisFiles } from "../../utils/vectorDB";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
@@ -29,19 +30,6 @@ import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMe
 interface IConfig {
   kind: AutoBeInterfaceSchemaReviewEvent["kind"];
   systemPrompt: string;
-}
-
-let _embedder: LocalEmbeddingProvider | null = null;
-function getEmbedder(): LocalEmbeddingProvider {
-  if (!_embedder) {
-    _embedder = new LocalEmbeddingProvider({
-      modelIdOrPath: "Xenova/all-MiniLM-L6-v2",
-      quantized: true,
-      batchSize: 32,
-      enableCache: true,
-    });
-  }
-  return _embedder;
 }
 
 export async function orchestrateInterfaceSchemaReview(
@@ -122,21 +110,24 @@ async function process(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
   const analyzeFiles = ctx.state().analyze?.files ?? [];
-  const previousAnalyzeFiles = ctx.state().previousAnalyze?.files ?? [];
 
-  const schemaNames = Object.keys(props.reviewSchemas);
+  const schemaNames = [props.typeName];
   const opSummaries = props.reviewOperations
     .map((op) => `${op.method} ${op.path}: ${op.name}`)
     .join("\n");
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
-
-  // K/2 + K/2
-  const [ragAnalysisFiles, ragPreviousAnalysisFiles] = await Promise.all([
-    retrieveRelevantAnalysisFiles(getEmbedder(), analyzeFiles, queryText, { splitCount: 2 }),
-    retrieveRelevantAnalysisFiles(getEmbedder(), previousAnalyzeFiles, queryText, { splitCount: 2 }),
-  ]);
+  
+  // RAG NONE_TOPK
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfaceSchemaReview");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
 
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -168,7 +159,6 @@ async function process(
     },
     local: {
       analysisFiles: ragAnalysisFiles,
-      previousAnalysisFiles: ragPreviousAnalysisFiles,
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
       databaseSchemas: (() => {
@@ -325,3 +315,4 @@ type Validator = (
 ) => IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps>;
 
 const SOURCE = "interfaceSchemaReview" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

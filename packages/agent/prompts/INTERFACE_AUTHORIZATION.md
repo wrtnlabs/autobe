@@ -200,10 +200,48 @@ process({
 })
 ```
 
-**When to use**:
-- Need deeper understanding of authentication/authorization requirements
-- Actor-specific authentication workflows unclear from initial context
-- Security policies and password requirements need clarification
+**Index-First Rule (MANDATORY)**
+If an INDEX/TOC analysis file exists in the available list, you MUST request it FIRST before selecting any detailed section files. Only after reading the INDEX can you determine which detailed files are relevant.
+
+**File Name Source Rule**
+fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
+
+**Minimal File Set Rule**
+After reading INDEX, request ONLY the minimal set of detailed requirement sections needed (typically 1–3 files). Do NOT request the entire corpus; maximum 4 files per batch (INDEX + 1–3 detail files). Exception: requirements contradiction/gap detection may justify additional files.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Actor-specific **authentication workflows** are unclear from initial context (e.g., guest vs member registration differences)
+- **Security policies** or **password requirements** need verification for operation design
+- **Multi-factor authentication** or **account verification** requirements need clarification
+
+**Skip Criteria Tightening**
+You MAY NOT skip `getAnalysisFiles` for:
+- Authentication workflow design (guest vs member, OAuth vs password) → Index summary alone is INSUFFICIENT
+- Security policy verification (password rules, lockout policies) → Index summary alone is INSUFFICIENT
+- MFA or account verification requirements → Index summary alone is INSUFFICIENT
+
+You MAY only skip when actor kind and essential operations (join/login/refresh) are straightforward from database schema with clear authentication fields.
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**File Selection Priority**:
+1. INDEX/TOC file (if exists)
+2. Files already in LOADED Top-K context
+3. Files referenced in TOC/Index summaries for authentication/security
+4. Files matching keywords: auth, login, password, security, verification, token
+
+**Evidence-Gating Rule**
+For any authentication operation design decision (beyond basic join/login/refresh), you MUST cite concrete evidence (section-level reference) from loaded analysis files. Example: "Per Security_Policy.md §2.1, password must be 12+ characters..."
+If evidence cannot be loaded, mark `evidenceUnavailable` and generate essential operations only.
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Generate only actor-appropriate essential operations (join, login, refresh based on kind)
+- Skip additional schema-driven operations if requirements are unclear
+- Document uncertainty in operation description (e.g., "Essential auth operations only - additional features not verified")
+- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 

@@ -15,6 +15,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
@@ -108,9 +111,29 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
+  // RAG NONE_TOPK
+  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const pathSegments = props.operation.path
+    .split("/")
+    .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
+  const queryText = [
+    "test",
+    "scenario",
+    props.operation.method,
+    ...pathSegments,
+  ].join(" ");
+
+  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "testScenario");
+  const ragAnalysisFiles = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    ragSettings.mode,
+    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+  );
+
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
-
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -122,6 +145,7 @@ async function process(
       interfaceOperations: props.document.operations,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: (() => {
         const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
           AutoBeOpenApiEndpointComparator.hashCode,
@@ -162,7 +186,7 @@ async function process(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioHistory({
+       ...transformTestScenarioHistory({
         state: ctx.state(),
         operation: props.operation,
         instruction: props.instruction,
@@ -262,3 +286,4 @@ function createController(props: {
 }
 
 const SOURCE = "testScenario" satisfies AutoBeEventSource;
+const RAG_PRESET: RagModePreset = "TOPK_NONE";

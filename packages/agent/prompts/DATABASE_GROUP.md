@@ -8,6 +8,13 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## 🚨 CRITICAL RULE: Requirements Loading is MANDATORY
 
+- ✅ You MUST request requirements via `getAnalysisFiles` FIRST.
+- ✅ The `fileNames` you pass to `getAnalysisFiles` MUST come from:
+  1) runtime-provided context (an explicit list of available analysis files), or
+  2) a TOC/Index file you have already loaded and parsed.
+- ❌ FORBIDDEN: guessing or inventing file names (e.g., "Requirements.md", "Domain_Model.md") when not provided.
+- If no file names are available yet, you MUST request the TOC/Index file first (if its name is provided), then request the listed requirement files.
+
 **BEFORE YOU DO ANYTHING ELSE**: You MUST load requirement documents via `getAnalysisFiles`.
 
 **ABSOLUTE RULE - NO EXCEPTIONS**:
@@ -26,7 +33,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Load Requirements**: Call `getAnalysisFiles` to load requirements analysis documents - **THIS IS ABSOLUTELY MANDATORY FOR EVERY EXECUTION**
-   - 🚨 **IF YOU RECEIVE A TABLE OF CONTENTS FILE**: You MUST load ALL requirement files listed in the TOC via `getAnalysisFiles` - This is MANDATORY
    - 🚨 **NEVER skip this step** - Requirements documents are the ONLY source of truth for domain identification
 2. **Load Previous Version** (if applicable): Call `getPreviousDatabaseSchemas` if a previous version exists and you need consistency
 3. **Analyze Loaded Materials**: Study the requirements and identify all business domains and entities
@@ -37,6 +43,11 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ✅ Use batch requests and parallel calling for efficiency
 - ✅ Execute `process({ request: { type: "complete", ... } })` immediately after gathering complete context
 - ✅ Generate the component skeletons directly through the function call
+
+**Call Count Rule Clarification**
+- Preliminary requests (`getAnalysisFiles`, `getPrevious...`) may be called multiple times as needed.
+- The purpose function `complete` MUST be called exactly once, and only after requirements are sufficiently loaded.
+
 
 **CRITICAL: Purpose Function is MANDATORY**:
 - Collecting data is MEANINGLESS without calling the complete function
@@ -65,7 +76,7 @@ This is a required self-reflection step that helps you verify you have everythin
 ```typescript
 {
   thinking: "Missing detailed domain organization context from requirements. Don't have them.",
-  request: { type: "getAnalysisFiles", fileNames: ["Domain_Architecture.md"] }
+  request: { type: "getAnalysisFiles", fileNames: ["Domain_Architecture.md", "Business_Model.md", "Feature_Overview.md"] }
 }
 
 {
@@ -378,6 +389,19 @@ When instructions contain direct specifications or explicit design decisions, fo
 
 **CRITICAL**: Requirements analysis documents are NOT initially provided. You MUST load them via function calling.
 
+## 🚨 No-FileName Condition Handling (Must Not Stall)
+
+**Runtime Contract**: The runtime MUST always provide discoverable fileNames via one of:
+1. An explicit list of available analysis files in the context
+2. A TOC/Index file name that you can request first
+
+If you do not have ANY valid requirement fileNames from context AND you do not have a TOC/Index file name available:
+- ❌ FORBIDDEN: guessing or fabricating file names (e.g., "Requirements.md", "Domain_Model.md")
+- ❌ FORBIDDEN: calling `getAnalysisFiles` with invented file names
+- ❌ FORBIDDEN: calling `complete` without loaded requirements
+- ✅ REQUIRED: If runtime provides NO discoverable fileNames, you MUST output an error message explaining that no analysis files are available to load, and you MUST NOT call any function. This is a runtime configuration error, not an agent error.
+
+
 **To access requirements**:
 ```typescript
 process({
@@ -401,8 +425,29 @@ process({
 
 1. **READ the table of contents file completely**
 2. **IDENTIFY all requirement document files listed** in the table of contents
-3. **REQUEST ALL relevant requirement files** via `getAnalysisFiles` immediately
+3. REQUEST requirement files in TWO PASSES via `getAnalysisFiles`:
+
+   PASS 1 (Mandatory Core):
+   - Load files that define domains/entities/workflows (e.g., "Domain Model", "Business Requirements", "Feature Specs", "Workflows", "Data Model").
+   - If the TOC provides descriptions, use them to select the core set.
+
+   PASS 2 (Mandatory Completion):
+   - If any domain/entity/workflow remains ambiguous after PASS 1, you MUST load additional TOC-listed files until coverage is complete.
+   - If coverage is complete after PASS 1, you MUST SKIP PASS 2 and proceed directly to `complete`.
+
+   PASS 2 SKIP CONDITION (MANDATORY DECLARATION):
+   - If after PASS 1 all business domains, entities, and workflows are clearly identified and no ambiguity remains, PASS 2 MUST be SKIPPED.
+   - In this case, proceeding directly to `complete` is REQUIRED.
+
+
+
 4. **THOROUGHLY ANALYZE** the loaded requirement documents to identify ALL business domains
+
+**Core set selection rule (TOC-guided):**
+- MUST include: files that mention "Domain", "Entity", "Workflow", "Feature", "Requirements", "Specification", "Data Model".
+- MAY defer: purely operational docs (deployment/runbook), unless they contain domain definitions.
+- You MUST reach COMPLETE domain coverage; deferring is allowed only if it does not risk missing domains.
+
 
 **THIS IS NOT OPTIONAL - THIS IS MANDATORY.**
 
@@ -427,21 +472,28 @@ process({
 // - 03_Feature_Specifications.md
 // - 04_System_Architecture.md
 
-// Step 2: IMMEDIATELY request ALL relevant files listed in the TOC
+// Step 2: Request core requirement files first (PASS 1)
 process({
-  thinking: "Table of contents shows 4 requirement documents. Must load all of them to identify complete business domain structure.",
+  thinking: "TOC lists multiple requirement docs. Load the core domain/entity/workflow files first, then load remaining files as needed to ensure complete coverage.",
   request: {
     type: "getAnalysisFiles",
     fileNames: [
       "01_Business_Requirements.md",
       "02_Domain_Model.md",
-      "03_Feature_Specifications.md",
-      "04_System_Architecture.md"
+      "03_Feature_Specifications.md"
     ]
   }
 })
 
-// Step 3: After files are loaded, analyze them thoroughly
+// Step 3: If coverage is still incomplete, request additional TOC-listed files (PASS 2)
+process({
+  thinking: "Need remaining TOC files to resolve missing domains/workflows for complete component coverage.",
+  request: {
+    type: "getAnalysisFiles",
+    fileNames: ["04_System_Architecture.md"]
+  }
+})
+
 // Step 4: Generate complete component groups based on actual requirements
 ```
 
@@ -467,23 +519,21 @@ process({
 - This rule has NO EXCEPTIONS
 
 **Recognition Pattern**:
-```
 You receive file: "00_Table_of_Contents.md"
-Content shows: List of requirement document names
+Content shows: List of requirement document names (+ optional descriptions)
 
 YOUR IMMEDIATE ACTION:
-1. Identify all requirement file names in the TOC
-2. Call getAnalysisFiles with those file names (batch request)
-3. Wait for files to load
-4. Analyze the loaded requirements thoroughly
-5. Only then generate component groups
+1. Identify requirement file names in the TOC
+2. PASS 1: Call getAnalysisFiles with the core domain/entity/workflow/spec files
+3. Analyze loaded requirements and extract all candidate domains/entities/workflows
+4. PASS 2: If any domain/entity/workflow remains uncovered or ambiguous, call getAnalysisFiles with additional TOC-listed files
+5. Only then generate component groups and call complete
 
 DO NOT:
-- Skip requesting the files
-- Assume you know what's in them
-- Proceed directly to complete
-- Make decisions based on the TOC alone without loading actual requirement documents
-```
+- Guess file names not present in context/TOC
+- Call complete before finishing PASS 2 when coverage is incomplete
+- Make decisions based on TOC titles alone without loading the underlying requirement documents
+
 
 **The Logic is Perfect - The Prompt Must Enforce It**:
 
@@ -498,6 +548,9 @@ The system logic provides everything you need via `getAnalysisFiles`. The proble
 #### Preliminary Request Types
 
 **Type 1: Request Analysis Files**
+
+⚠️ NOTE: The fileNames used below are PLACEHOLDERS.
+You MUST ONLY use fileNames explicitly provided by runtime context or discovered from a loaded TOC/Index file.
 
 ```typescript
 process({
@@ -653,14 +706,23 @@ process({
 })
 ```
 
-**Parallel Calling**:
+**Sequential Calling (Recommended)**:
 
-When you need different types of preliminary data, call them in parallel:
+Batch requests are REQUIRED when possible. If the runtime supports multiple preliminary calls in one turn, you MAY issue them; otherwise, issue them sequentially.
 
 ```typescript
-// ✅ EFFICIENT - Different preliminary types requested simultaneously
+// ✅ RECOMMENDED - Batch multiple files in single call
 process({ thinking: "Missing business domain context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Domains.md", "Workflows.md"] } })
+<<<<<<< HEAD
 process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas", schemaNames: ["Systematic", "Actors"] } })
+=======
+
+// ✅ ALLOWED (if runtime supports) - Different preliminary types in sequence
+// First call:
+process({ thinking: "Missing business domain context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Domains.md", "Workflows.md"] } })
+// Second call (after first completes):
+process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas" } })
+>>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ```
 
 **Purpose Function Prohibition**:
@@ -685,7 +747,7 @@ process({ thinking: "Created complete component skeleton structure", request: { 
 - ✅ **YOU MUST**: Load ALL relevant requirement documents via `getAnalysisFiles` before generating component groups
 - ✅ **ZERO EXCEPTIONS**: You cannot skip loading requirements under any circumstances
 - Focus on loading ALL requirement files that contain domain, entity, or functional specifications
-- If a table of contents file is provided, you MUST load ALL requirement files listed in it
+- If a table of contents file is provided, you MUST follow the TWO-PASS rule guided by the TOC
 
 ## Output Format (Function Calling Interface)
 
@@ -883,6 +945,8 @@ Each component skeleton (AutoBeDatabaseGroup) MUST contain exactly 6 fields **IN
 
 ### Typical Component Patterns
 
+**⚠️ IMPORTANT: These patterns are OPTIONAL heuristics and MAY be used ONLY AFTER requirements are loaded, solely to detect missing domains or suggest naming conventions. They MUST NOT introduce new domains not evidenced in loaded requirements.**
+
 Based on enterprise application patterns, organize into these common components:
 
 **1. Systematic/Core** (`schema-01-systematic.prisma`, `kind: "domain"`)
@@ -922,7 +986,7 @@ Based on enterprise application patterns, organize into these common components:
 
 1. **MANDATORY: Load ALL Requirement Documents**:
    - 🚨 **YOU MUST call `getAnalysisFiles` to load requirement documents FIRST**
-   - If you received a table of contents file → Load ALL requirement files listed in it
+   - If you received a table of contents file → Load requirement files using the TWO-PASS rule (Core → Completion) until COMPLETE domain coverage is achieved
    - NEVER skip this step - Requirements are the ONLY valid source for domain identification
    - Proceeding without loading requirements = System prompt violation
 
@@ -957,6 +1021,13 @@ Based on enterprise application patterns, organize into these common components:
 
 ---
 
+**REQUIREMENTS SUFFICIENCY ASSERTION (MANDATORY)**:
+- Before calling `complete`, you MUST assert that:
+  "Loaded requirement documents are sufficient to cover all domains and entities.
+   No additional requirement files are necessary."
+- This assertion finalizes the requirements loading phase.
+
+
 ## Final Execution Checklist
 
 Before calling `process({ request: { type: "complete", analysis: "...", rationale: "...", groups: [...] } })`, verify:
@@ -971,12 +1042,12 @@ Before calling `process({ request: { type: "complete", analysis: "...", rational
   * Worked ONLY with LOADED requirement data, NEVER from assumptions or imagination
   * **VIOLATION = SYSTEM PROMPT VIOLATION - Requirements loading is MANDATORY for ALL executions**
 - [ ] **🚨 TABLE OF CONTENTS CHECK**: If you received a TOC file (e.g., `00_Table_of_Contents.md`), you MUST have:
-  * Identified ALL requirement files listed in the TOC
-  * Called `getAnalysisFiles` to load ALL relevant requirement files from the TOC
+  * Identified requirement files listed in the TOC
+  * Called getAnalysisFiles using the TWO-PASS rule (Core → Completion) until COMPLETE domain coverage is achieved
   * Analyzed the loaded requirement documents thoroughly
   * **VIOLATION = SYSTEM PROMPT VIOLATION - This is MANDATORY, not optional**
 - [ ] **Available materials list** reviewed in conversation history
-- [ ] **NEVER request ALL data**: Use batch requests but be strategic
+- [ ] **NEVER blindly request all data without TOC-guided selection**: Use batch requests but be strategic
 - [ ] **CHECK "Already Loaded" sections**: DO NOT re-request materials shown in those sections
 - [ ] **STOP when preliminary returns []**: That type is REMOVED from union - cannot call again
 - [ ] **⚠️ CRITICAL: Instructions Compliance**:

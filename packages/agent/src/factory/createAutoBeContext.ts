@@ -69,17 +69,19 @@ export const createAutoBeContext = (props: {
   dispatch: (event: AutoBeEvent) => Promise<void>;
   aggregates: AutoBeProcessAggregateCollection;
 }): AutoBeContext => {
-  const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
-    {
-      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
-      locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
-    };
+  const config: Required<
+    Omit<IAutoBeConfig, "backoffStrategy" | "timezone" | "rag">
+  > = {
+    retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
+    locale: props.config.locale ?? "en-US",
+    timeout: props.config.timeout ?? null,
+  };
   const critical: Semaphore = new Semaphore(2);
   return {
     vendor: props.vendor,
     retry: config.retry,
     locale: config.locale,
+    config: props.config,
     aggregates: props.aggregates,
     compilerListener: props.compilerListener,
     compiler: async () => {
