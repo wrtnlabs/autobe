@@ -16,9 +16,6 @@ import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointUpdate {
-  /** Type discriminator indicating this is an update operation. */
-  type: "update";
-
   /**
    * Reason for this update.
    *
@@ -33,12 +30,15 @@ export interface AutoBeInterfaceEndpointUpdate {
    * DO NOT reference endpoints that are not in the provided list. Must match
    * exactly (path + method).
    */
-  original: AutoBeOpenApi.IEndpoint;
+  endpoint: AutoBeOpenApi.IEndpoint;
+
+  /** Type discriminator indicating this is an update operation. */
+  type: "update";
 
   /**
    * The updated endpoint definition.
    *
    * Contains the corrected path and/or method.
    */
-  updated: AutoBeInterfaceEndpointDesign;
+  newDesign: AutoBeInterfaceEndpointDesign;
 }

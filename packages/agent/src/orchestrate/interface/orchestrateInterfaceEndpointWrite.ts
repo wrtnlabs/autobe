@@ -4,7 +4,6 @@ import {
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointEvent,
-  AutoBeInterfaceEndpointRevise,
   AutoBeInterfaceGroup,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -36,7 +35,7 @@ interface IProgrammer {
     group: AutoBeInterfaceGroup;
     designs: AutoBeInterfaceEndpointDesign[];
     promptCacheKey: string;
-  }): Promise<AutoBeInterfaceEndpointRevise[]>;
+  }): Promise<AutoBeInterfaceEndpointDesign[]>;
 }
 
 export const orchestrateInterfaceEndpointWrite = async (
@@ -101,9 +100,6 @@ export const orchestrateInterfaceEndpointWrite = async (
       }),
     });
     if (pointer.value === null) return out(result)(null);
-    pointer.value.designs.forEach((d) =>
-      AutoBeInterfaceEndpointProgrammer.fixDesign({ design: d }),
-    );
 
     const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
@@ -112,7 +108,7 @@ export const orchestrateInterfaceEndpointWrite = async (
       AutoBeOpenApiEndpointComparator.equals,
     )
       .toJSON()
-      .map((it) => it.second)
+      .map((it) => AutoBeInterfaceEndpointProgrammer.fixDesign(it.second))
       .filter((design) =>
         AutoBeInterfaceEndpointProgrammer.filter({
           kind: props.programmer.kind,
@@ -166,8 +162,6 @@ const createController = (props: {
       result.data.request.designs;
     const errors: IValidation.IError[] = [];
 
-    if (props.actors.length === 0)
-      designs.forEach((d) => (d.authorizationActors = []));
     designs.forEach((d, i) => {
       AutoBeInterfaceEndpointProgrammer.validateDesign({
         actors: props.actors,

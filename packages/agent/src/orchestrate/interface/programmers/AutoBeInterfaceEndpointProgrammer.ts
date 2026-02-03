@@ -47,10 +47,11 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     return true;
   };
 
-  export const fixDesign = (props: {
-    design: AutoBeInterfaceEndpointDesign;
-  }): void => {
-    props.design.endpoint.path = fixPath(props.design.endpoint.path);
+  export const fixDesign = (
+    design: AutoBeInterfaceEndpointDesign,
+  ): AutoBeInterfaceEndpointDesign => {
+    design.endpoint.path = fixPath(design.endpoint.path);
+    return design;
   };
 
   export const fixPath = (path: string): string => {
@@ -99,6 +100,8 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     path: string;
     errors: IValidation.IError[];
   }): void => {
+    // if (props.actors.length === 0) props.design.authorizationActors = [];
+
     props.design.authorizationActors.forEach((actorName, i) => {
       if (props.actors.find((actor) => actor.name === actorName) === undefined)
         props.errors.push({
@@ -114,9 +117,5 @@ export namespace AutoBeInterfaceEndpointProgrammer {
           `,
         });
     });
-
-    // @todo check existence of update.original
-
-    // @todo check existence of databaseSchema
   };
 }

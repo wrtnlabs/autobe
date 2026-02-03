@@ -1,5 +1,6 @@
 import { AutoBeInterfaceEndpointCreate } from "./AutoBeInterfaceEndpointCreate";
 import { AutoBeInterfaceEndpointErase } from "./AutoBeInterfaceEndpointErase";
+import { AutoBeInterfaceEndpointKeep } from "./AutoBeInterfaceEndpointKeep";
 import { AutoBeInterfaceEndpointUpdate } from "./AutoBeInterfaceEndpointUpdate";
 
 /**
@@ -19,4 +20,5 @@ import { AutoBeInterfaceEndpointUpdate } from "./AutoBeInterfaceEndpointUpdate";
 export type AutoBeInterfaceEndpointRevise =
   | AutoBeInterfaceEndpointCreate
   | AutoBeInterfaceEndpointUpdate
-  | AutoBeInterfaceEndpointErase;
+  | AutoBeInterfaceEndpointErase
+  | AutoBeInterfaceEndpointKeep;

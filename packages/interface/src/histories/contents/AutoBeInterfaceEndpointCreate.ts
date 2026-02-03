@@ -14,9 +14,6 @@ import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointCreate {
-  /** Type discriminator indicating this is a create operation. */
-  type: "create";
-
   /**
    * Reason for creating this endpoint.
    *
@@ -24,6 +21,9 @@ export interface AutoBeInterfaceEndpointCreate {
    * from the initial generation.
    */
   reason: string;
+
+  /** Type discriminator indicating this is a create operation. */
+  type: "create";
 
   /** The new endpoint to add. */
   design: AutoBeInterfaceEndpointDesign;
