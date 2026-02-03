@@ -6,7 +6,6 @@ import {
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -16,37 +15,35 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaReviewHistory } from "./histories/transformPrismaSchemaReviewHistory";
-import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
+import { AutoBeDatabaseSchemaProgrammer } from "./programmers/AutoBeDatabaseSchemaProgrammer";
 import { IAutoBeDatabaseSchemaReviewApplication } from "./structures/IAutoBeDatabaseSchemaReviewApplication";
 
 export async function orchestratePrismaSchemaReview(
   ctx: AutoBeContext,
-  application: AutoBeDatabase.IApplication,
-  componentList: AutoBeDatabaseComponent[],
+  props: {
+    application: AutoBeDatabase.IApplication;
+    components: AutoBeDatabaseComponent[];
+    reviewed: Set<string>;
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeDatabaseSchemaReviewEvent[]> {
-  // Flatten component list into individual table tasks
+  // Flatten into individual model tasks, skipping already-reviewed models
   const tableTasks: Array<{
     component: AutoBeDatabaseComponent;
     table: string;
     model: AutoBeDatabase.IModel;
-  }> = componentList.flatMap((component) => {
-    const file: AutoBeDatabase.IFile | undefined = application.files.find(
+  }> = props.components.flatMap((component) => {
+    const file: AutoBeDatabase.IFile | undefined = props.application.files.find(
       (f) => f.namespace === component.namespace,
     );
     if (file === undefined) return [];
-    return component.tables
-      .map((table) => {
-        const model = file.models.find((m) => m.name === table.name);
-        if (model === undefined) return null;
-        return { component, table: table.name, model };
-      })
-      .filter((task): task is NonNullable<typeof task> => task !== null);
+    return file.models
+      .filter((m) => !props.reviewed.has(m.name))
+      .map((model) => ({ component, table: model.name, model }));
   });
+  if (tableTasks.length === 0) return [];
 
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: tableTasks.length,
-  };
+  props.progress.total += tableTasks.length;
 
   return (
     await executeCachedBatch(
@@ -54,14 +51,17 @@ export async function orchestratePrismaSchemaReview(
       tableTasks.map((task) => async (promptCacheKey) => {
         try {
           return await step(ctx, {
-            application,
+            application: props.application,
             component: task.component,
             model: task.model,
-            progress,
+            otherModels: props.application.files
+              .flatMap((f) => f.models)
+              .filter((m) => m.name !== task.model.name),
+            progress: props.progress,
             promptCacheKey,
           });
         } catch {
-          ++progress.completed;
+          ++props.progress.completed;
           return null;
         }
       }),
@@ -75,6 +75,7 @@ async function step(
     application: AutoBeDatabase.IApplication;
     component: AutoBeDatabaseComponent;
     model: AutoBeDatabase.IModel;
+    otherModels: AutoBeDatabase.IModel[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -119,20 +120,20 @@ async function step(
           pointer.value = next;
         },
         targetComponent: props.component,
-        targetTable: props.model.name,
+        model: props.model,
+        otherModels: props.otherModels,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaSchemaReviewHistory({
         component: props.component,
         model: props.model,
+        otherModels: props.otherModels,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    if (pointer.value.content !== null)
-      AutoBeDatabaseModelProgrammer.emend(pointer.value.content);
     const event: AutoBeDatabaseSchemaReviewEvent = {
       type: SOURCE,
       id: v7(),
@@ -162,7 +163,8 @@ function createController(props: {
   >;
   build: (next: IAutoBeDatabaseSchemaReviewApplication.IComplete) => void;
   targetComponent: AutoBeDatabaseComponent;
-  targetTable: string;
+  model: AutoBeDatabase.IModel;
+  otherModels: AutoBeDatabase.IModel[];
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
@@ -177,38 +179,23 @@ function createController(props: {
       });
     else if (result.data.request.content === null) return result;
 
-    const actual: AutoBeDatabase.IModel = result.data.request.content;
-    const expected: string = props.targetTable;
+    const errors: IValidation.IError[] = [];
+    if (result.data.request.content !== null)
+      AutoBeDatabaseSchemaProgrammer.validate({
+        path: "$input.request.content",
+        errors,
+        targetTable: props.model.name,
+        otherTables: props.otherModels.map((m) => m.name),
+        definition: result.data.request.content,
+      });
 
-    if (actual.name === expected) return result;
-    return {
-      success: false,
-      data: result.data,
-      errors: [
-        {
-          path: "$input.request.content.name",
-          value: actual.name,
-          expected: JSON.stringify(expected),
-          description: StringUtil.trim`
-            You modified a model with the wrong table name.
-
-            You are responsible for reviewing exactly ONE table with the exact name specified.
-
-            - filename: current domain's filename
-            - namespace: current domain's namespace
-            - expected table name: ${expected}
-            - actual table name: ${actual.name}
-
-            ${JSON.stringify({
-              filename: props.targetComponent.filename,
-              namespace: props.targetComponent.namespace,
-              targetTable: expected,
-              actualTableName: actual.name,
-            })}
-          `,
-        },
-      ],
-    };
+    if (errors.length !== 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
+    return result;
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(

@@ -39,7 +39,9 @@ export const transformPrismaGroupReviewHistory = (props: {
 
         ### Current Groups
 
-        ${JSON.stringify(props.groups, null, 2)}
+        \`\`\`json
+        ${JSON.stringify(props.groups)}
+        \`\`\`
 
         ### User Instructions
 
@@ -50,21 +52,27 @@ export const transformPrismaGroupReviewHistory = (props: {
   userMessage: StringUtil.trim`
     Review the component group structure and apply necessary revisions.
 
+    **🚨 CRITICAL: Authorization Group is PROTECTED**
+    - The authorization group (\`kind: "authorization"\`) is **IMMUTABLE**
+    - You can ONLY review and revise **domain groups** (\`kind: "domain"\`)
+    - ❌ Cannot create/update/erase authorization groups
+
     **Group Structure Rules:**
-    - Exactly 1 group with \`kind: "authorization"\` (for actor/authentication tables)
+    - Exactly 1 group with \`kind: "authorization"\` - DO NOT MODIFY
     - At least 1 group with \`kind: "domain"\` (for business domain tables)
-    - Each group should cover a focused business domain (3-15 estimated tables)
+    - Each domain group should cover a focused business domain (3-15 estimated tables)
     - Namespace must be PascalCase, filename must follow \`schema-{number}-{domain}.prisma\` format
 
-    1. First, fetch analysis files using \`getAnalysisFiles\` to understand business requirements
-    2. Verify every business domain has a corresponding group
-    3. Check group boundaries, kind assignments, and naming conventions
-    4. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
+    **Steps:**
+    1. Fetch analysis files using \`getAnalysisFiles\` to understand business requirements
+    2. Verify every business domain has a corresponding domain group
+    3. Check domain group boundaries and naming conventions (skip authorization group)
+    4. Call \`process({ request: { type: "complete", review: "...", revises: [...] } })\`
 
-    Use revises to:
-    - **Create**: Add groups for missing business domains
-    - **Update**: Fix groups with naming, kind, or scope issues
-    - **Erase**: Remove redundant or unnecessary groups
+    **Revisions (domain groups only):**
+    - **Create**: Add domain groups for missing business domains (\`kind: "domain"\` only)
+    - **Update**: Fix domain groups with naming or scope issues
+    - **Erase**: Remove redundant domain groups
 
     If no changes are needed, return an empty revises array.
   `,

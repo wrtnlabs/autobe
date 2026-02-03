@@ -569,6 +569,8 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
   export interface IComplete {
     type: "complete";
     think: string;
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
     draft: string;
     revise: IReviseProps;
   }
@@ -599,6 +601,8 @@ export interface IAutoBePreliminaryGetDatabaseSchemas {
 **2. IComplete** - Generate corrected code:
 - **type**: `"complete"`
 - **think**: Error analysis and correction strategy
+- **selectMappings**: Field-by-field selection mapping verification for select()
+- **transformMappings**: DTO property-by-property mapping verification for transform()
 - **draft**: Initial correction attempt
 - **revise**: Two-step refinement (review + final)
 

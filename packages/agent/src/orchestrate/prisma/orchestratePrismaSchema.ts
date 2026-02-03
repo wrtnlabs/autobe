@@ -1,11 +1,11 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeDatabase,
   AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseSchemaEvent,
   AutoBeEventSource,
+  AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -15,60 +15,82 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaSchemaHistory } from "./histories/transformPrismaSchemaHistory";
-import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
+import { AutoBeDatabaseSchemaProgrammer } from "./programmers/AutoBeDatabaseSchemaProgrammer";
 import { IAutoBeDatabaseSchemaApplication } from "./structures/IAutoBeDatabaseSchemaApplication";
 
 export async function orchestratePrismaSchema(
   ctx: AutoBeContext,
-  instruction: string,
-  componentList: AutoBeDatabaseComponent[],
+  props: {
+    instruction: string;
+    components: AutoBeDatabaseComponent[];
+    written: Set<string>;
+    failed: Map<string, number>;
+    progress: AutoBeProgressEventBase;
+  },
 ): Promise<AutoBeDatabaseSchemaEvent[]> {
   const start: Date = new Date();
-  const total: number = componentList
-    .map((c) => c.tables.length)
+  const total: number = props.components
+    .map(
+      (c) => c.tables.filter((n) => props.written.has(n.name) === false).length,
+    )
     .reduce((x, y) => x + y, 0);
-  const completed: IPointer<number> = { value: 0 };
+  props.progress.total += total;
 
   // Flatten component list into individual table tasks
-  const tableTasks: Array<{
+  const designPairs: Array<{
     component: AutoBeDatabaseComponent;
-    table: string;
-  }> = componentList.flatMap((component) =>
-    component.tables.map((table) => ({ component, table: table.name })),
+    design: AutoBeDatabaseComponentTableDesign;
+  }> = props.components.flatMap((component) =>
+    component.tables
+      .filter((table) => props.written.has(table.name) === false)
+      .map((table) => ({
+        component,
+        design: table,
+      })),
   );
+  const events: Array<AutoBeDatabaseSchemaEvent | null> =
+    await executeCachedBatch(
+      ctx,
+      designPairs.map((task) => async (promptCacheKey) => {
+        try {
+          const otherComponents: AutoBeDatabaseComponent[] =
+            props.components.filter((c) => c !== task.component);
+          const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
+            instruction: props.instruction,
+            progress: props.progress,
+            component: task.component,
+            design: task.design,
+            otherComponents,
+            start,
+            promptCacheKey,
+          });
+          ctx.dispatch(event);
+          return event;
+        } catch (error) {
+          --props.progress.total;
+          console.log("database schema error", task.design.name, error);
 
-  return await executeCachedBatch(
-    ctx,
-    tableTasks.map((task) => async (promptCacheKey) => {
-      const otherComponents: AutoBeDatabaseComponent[] = componentList.filter(
-        (c) => c !== task.component,
-      );
-      const event: AutoBeDatabaseSchemaEvent = await process(ctx, {
-        instruction,
-        targetComponent: task.component,
-        targetTable: task.table,
-        otherComponents,
-        start,
-        total,
-        completed,
-        promptCacheKey,
-      });
-      ctx.dispatch(event);
-      return event;
-    }),
-  );
+          const count: number | undefined = props.failed.get(task.design.name);
+          if (count === undefined) props.failed.set(task.design.name, 1);
+          else if (count < 3) props.failed.set(task.design.name, count + 1);
+          else throw error;
+
+          return null;
+        }
+      }),
+    );
+  return events.filter((e) => e !== null);
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    targetComponent: AutoBeDatabaseComponent;
-    targetTable: string;
+    progress: AutoBeProgressEventBase;
+    component: AutoBeDatabaseComponent;
+    design: AutoBeDatabaseComponentTableDesign;
     otherComponents: AutoBeDatabaseComponent[];
     start: Date;
-    total: number;
-    completed: IPointer<number>;
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseSchemaEvent> {
@@ -83,6 +105,9 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    config: {
+      database: "ast",
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeDatabaseSchemaApplication.IComplete | null> =
@@ -93,8 +118,9 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        targetComponent: props.targetComponent,
-        targetTable: props.targetTable,
+        targetComponent: props.component,
+        otherComponents: props.otherComponents,
+        design: props.design,
         build: (next) => {
           pointer.value = next;
         },
@@ -103,8 +129,8 @@ async function process(
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaSchemaHistory({
-        targetComponent: props.targetComponent,
-        targetTable: props.targetTable,
+        component: props.component,
+        design: props.design,
         otherComponents: props.otherComponents,
         instruction: props.instruction,
         preliminary,
@@ -112,18 +138,17 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    AutoBeDatabaseModelProgrammer.emend(pointer.value.model);
     return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: props.start.toISOString(),
       plan: pointer.value.plan,
-      namespace: props.targetComponent.namespace,
-      model: pointer.value.model,
+      namespace: props.component.namespace,
+      definition: pointer.value.definition,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: ++props.completed.value,
-      total: props.total,
+      completed: ++props.progress.completed,
+      total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     } satisfies AutoBeDatabaseSchemaEvent);
   });
@@ -134,7 +159,8 @@ function createController(props: {
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   targetComponent: AutoBeDatabaseComponent;
-  targetTable: string;
+  otherComponents: AutoBeDatabaseComponent[];
+  design: AutoBeDatabaseComponentTableDesign;
   build: (next: IAutoBeDatabaseSchemaApplication.IComplete) => void;
   dispatch: AutoBeContext["dispatch"];
 }): IAgenticaController.IClass {
@@ -148,39 +174,23 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // Validate that the generated model matches the target table name
-    const actual: AutoBeDatabase.IModel = result.data.request.model;
-    const expected: string = props.targetTable;
-
-    if (actual.name === expected) return result;
-    return {
-      success: false,
-      data: result.data,
-      errors: [
-        {
-          path: "$input.request.model.name",
-          value: actual.name,
-          expected: JSON.stringify(expected),
-          description: StringUtil.trim`
-            You created a model with the wrong table name.
-
-            You are responsible for creating exactly ONE table with the exact name specified.
-
-            - filename: current domain's filename
-            - namespace: current domain's namespace
-            - expected table name: ${expected}
-            - actual table name: ${actual.name}
-
-            ${JSON.stringify({
-              filename: props.targetComponent.filename,
-              namespace: props.targetComponent.namespace,
-              targetTable: expected,
-              actualTableName: actual.name,
-            })}
-          `,
-        },
-      ],
-    };
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseSchemaProgrammer.validate({
+      path: "$input.request.definition",
+      errors,
+      targetTable: props.design.name,
+      otherTables: [props.targetComponent, ...props.otherComponents]
+        .flatMap((c) => c.tables.map((t) => t.name))
+        .filter((s) => s !== props.design.name),
+      definition: result.data.request.definition,
+    });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
+    return result;
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeDatabaseSchemaApplication>({

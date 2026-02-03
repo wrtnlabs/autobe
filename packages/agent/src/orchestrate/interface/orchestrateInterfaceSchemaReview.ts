@@ -185,7 +185,7 @@ async function process(
 
     // Apply revises to generate the modified schema content
     const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaReviewProgrammer.revise({
+      AutoBeInterfaceSchemaReviewProgrammer.execute({
         schema: props.reviewSchema,
         revises: pointer.value.revises,
       });
@@ -242,12 +242,14 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeInterfaceSchemaReviewProgrammer.validate(ctx, {
+    AutoBeInterfaceSchemaReviewProgrammer.validate({
       typeName: props.typeName,
       schema: props.schema,
       revises: result.data.request.revises,
       errors,
       path: `$input.request`,
+      everyModels:
+        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [],
     });
     return errors.length
       ? {

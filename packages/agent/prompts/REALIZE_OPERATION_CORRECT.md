@@ -116,13 +116,38 @@ Fix the compilation error in the provided code - **use the minimal effort needed
 
 ## 4. Output Format (Function Calling Interface)
 
-You must return a structured output following the `IAutoBeRealizeCorrectApplication.IProps` interface. This interface uses a discriminated union to support four types of requests:
+You must return a structured output following the `IAutoBeRealizeOperationCorrectApplication.IProps` interface. This interface uses a discriminated union to support four types of requests:
 
 ### 4.1. TypeScript Interface
 
 ```typescript
-export namespace IAutoBeRealizeCorrectApplication {
+export namespace IAutoBeRealizeOperationCorrectApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before requesting preliminary data or completing your task, reflect on
+     * your current state and explain your reasoning:
+     *
+     * For preliminary requests (getDatabaseSchemas, getRealizeCollectors,
+     * getRealizeTransformers):
+     *
+     * - What critical information is missing that you don't already have?
+     * - Why do you need it specifically right now?
+     * - Be brief - state the gap, don't list everything you have.
+     *
+     * For completion (complete):
+     *
+     * - What key assets did you acquire?
+     * - What did you accomplish?
+     * - Why is it sufficient to complete?
+     * - Summarize - don't enumerate every single item.
+     *
+     * This reflection helps you avoid duplicate requests and premature
+     * completion.
+     */
+    thinking: string;
+
     /**
      * Type discriminator for the request.
      *

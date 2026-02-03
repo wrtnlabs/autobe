@@ -1,5 +1,7 @@
 import {
   AutoBeAnalyzeScenarioEvent,
+  AutoBeDatabaseAuthorizationEvent,
+  AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseGroupEvent,
   AutoBeDatabaseGroupReviewEvent,
   AutoBeInterfaceGroupEvent,
@@ -12,6 +14,8 @@ import { EventCard, EventContent, EventHeader } from "./common";
 export interface IAutoBeScenarioEventMovieProps {
   event:
     | AutoBeAnalyzeScenarioEvent
+    | AutoBeDatabaseAuthorizationEvent
+    | AutoBeDatabaseAuthorizationReviewEvent
     | AutoBeDatabaseGroupEvent
     | AutoBeDatabaseGroupReviewEvent
     | AutoBeInterfaceGroupEvent
@@ -78,6 +82,32 @@ function getState(event: IAutoBeScenarioEventMovieProps["event"]): IState {
             Revisions applied: #{event.revises.length}
             <br />
             Final groups: #{event.groups.length}
+          </>
+        ),
+      };
+    case "databaseAuthorization":
+      return {
+        title: "Database Authorization",
+        description: (
+          <>
+            Generated authorization tables for all actors.
+            <br />
+            <br />
+            Tables created: #{event.component.tables.length}
+          </>
+        ),
+      };
+    case "databaseAuthorizationReview":
+      return {
+        title: "Database Authorization Review",
+        description: (
+          <>
+            Reviewed authorization tables.
+            <br />
+            <br />
+            Revisions applied: #{event.revises.length}
+            <br />
+            Final tables: #{event.modification.tables.length}
           </>
         ),
       };

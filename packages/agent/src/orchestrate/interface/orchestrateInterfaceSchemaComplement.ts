@@ -31,14 +31,14 @@ export const orchestrateInterfaceSchemaComplement = async (
     failures: Map<string, number>;
     progress: AutoBeProgressEventBase;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchema>> => {
   const typeNames: string[] = missedOpenApiSchemas(props.document).filter(
     (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
   );
   if (typeNames.length === 0) return {};
   props.progress.total += typeNames.length;
 
-  const result: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const result: Record<string, AutoBeOpenApi.IJsonSchema> = {};
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
@@ -51,7 +51,7 @@ export const orchestrateInterfaceSchemaComplement = async (
           promptCacheKey,
         });
       } catch (error) {
-        ++props.progress.completed;
+        --props.progress.total;
         console.log("interfaceSchemaComplement failure", it, error);
         const count: number | undefined = props.failures.get(it);
         if (count === undefined) props.failures.set(it, 1);
@@ -72,7 +72,7 @@ async function process(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
+): Promise<AutoBeOpenApi.IJsonSchema> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -154,8 +154,9 @@ async function process(
 
     ++props.progress.completed;
 
-    const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      AutoBeJsonSchemaFactory.fixDesign(pointer.value.design);
+    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
+      pointer.value.design,
+    );
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -212,13 +213,13 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeJsonSchemaValidator.validateSchema({
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
       errors,
-      models: everyModels,
+      everyModels,
       operations: props.operations,
       typeName: props.typeName,
-      schema: result.data.request.design.schema,
-      path: "$input.request.design.schema",
+      design: result.data.request.design,
     });
     if (errors.length !== 0)
       return {

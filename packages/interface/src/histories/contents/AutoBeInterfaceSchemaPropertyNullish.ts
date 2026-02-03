@@ -21,9 +21,6 @@
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaPropertyNullish {
-  /** Discriminator for property revision type. */
-  type: "nullish";
-
   /**
    * Reason for changing nullability (should explain DB nullable → DTO non-null
    * issue).
@@ -33,25 +30,8 @@ export interface AutoBeInterfaceSchemaPropertyNullish {
   /** Property key to modify. */
   key: string;
 
-  /**
-   * Optional: Updated implementation specification for downstream agents.
-   *
-   * When changing nullability, you may need to update the specification to
-   * document how null values should be handled during implementation.
-   *
-   * - If provided, replaces the existing specification
-   * - If `null`, the existing specification is preserved
-   */
-  specification: string | null;
-
-  /**
-   * Optional: Updated description for the property.
-   *
-   * When changing nullability, you may want to update the description to
-   * document the nullable behavior. If provided, replaces the existing
-   * description. If `null`, the existing description is preserved.
-   */
-  description: string | null;
+  /** Discriminator for property revision type. */
+  type: "nullish";
 
   /**
    * Whether property should accept null values.
@@ -72,4 +52,24 @@ export interface AutoBeInterfaceSchemaPropertyNullish {
    * - Update DTOs: Always `false` (partial update)
    */
   required: boolean;
+
+  /**
+   * Optional: Updated implementation specification for downstream agents.
+   *
+   * When changing nullability, you may need to update the specification to
+   * document how null values should be handled during implementation.
+   *
+   * - If provided, replaces the existing specification
+   * - If `null`, the existing specification is preserved
+   */
+  specification: string | null;
+
+  /**
+   * Optional: Updated description for the property.
+   *
+   * When changing nullability, you may want to update the description to
+   * document the nullable behavior. If provided, replaces the existing
+   * description. If `null`, the existing description is preserved.
+   */
+  description: string | null;
 }

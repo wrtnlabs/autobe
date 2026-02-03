@@ -436,9 +436,12 @@ The `props.request` parameter uses a **discriminated union type**:
 
 ```typescript
 request:
-  | IComplete                           // Final purpose: operation review
-  | IAutoBePreliminaryGetAnalysisFiles // Preliminary: request analysis files
-  | IAutoBePreliminaryGetDatabaseSchemas // Preliminary: request database schemas
+  | IComplete                                          // Final purpose: operation review
+  | IAutoBePreliminaryGetAnalysisFiles                // Preliminary: request analysis files
+  | IAutoBePreliminaryGetDatabaseSchemas              // Preliminary: request database schemas
+  | IAutoBePreliminaryGetPreviousAnalysisFiles        // Preliminary: request previous analysis files
+  | IAutoBePreliminaryGetPreviousDatabaseSchemas      // Preliminary: request previous database schemas
+  | IAutoBePreliminaryGetPreviousInterfaceOperations  // Preliminary: request previous interface operations
 ```
 
 #### How the Union Type Pattern Works

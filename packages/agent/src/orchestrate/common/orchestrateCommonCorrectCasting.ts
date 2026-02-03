@@ -78,7 +78,12 @@ const predicate = async <
 ): Promise<ValidateEvent> => {
   if (event.result.type === "failure") {
     ctx.dispatch(event);
-    return await correct(ctx, factory, failures, script, event, life - 1);
+    try {
+      return await correct(ctx, factory, failures, script, event, life - 1);
+    } catch (error) {
+      console.log("correctCasting", error);
+      return await correct(ctx, factory, failures, script, event, life - 2);
+    }
   }
   return event;
 };

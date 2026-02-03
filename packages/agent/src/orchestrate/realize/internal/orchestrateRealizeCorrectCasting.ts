@@ -115,81 +115,38 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
       ctx,
       errorLocations.map(
         (location) => async (): Promise<ICorrectionResult<RealizeFunction>> => {
-          const func: RealizeFunction = props.functions.find(
+          const localFunction: RealizeFunction = props.functions.find(
             (f) => f.location === location,
           )!;
-          const template: string = props.programmer.template(func);
-
-          const pointer: IPointer<
-            IAutoBeCommonCorrectCastingApplication.IProps | false | null
-          > = {
-            value: null,
-          };
-          const { metric, tokenUsage } = await ctx.conversate({
-            source: "realizeCorrect",
-            controller: createController({
-              then: (next) => {
-                pointer.value = next;
-              },
-              reject: () => {
-                pointer.value = false;
-              },
-            }),
-            enforceFunctionCall: true,
-            ...transformRealizeCorrectCastingHistory({
-              template,
-              function: func,
-              failures: [
-                ...props.previousFailures
-                  .map(
-                    (pf) =>
-                      pf.find((f) => f.function.location === func.location) ??
-                      null,
-                  )
-                  .filter((x) => x !== null),
-                {
-                  function: func,
-                  diagnostics: failure.diagnostics.filter(
-                    (d) => d.file === func.location,
-                  ),
-                },
-              ],
-            }),
-          });
-          ++props.progress.completed;
-
-          if (pointer.value === null)
-            return { type: "exception" as const, function: func };
-          else if (pointer.value === false)
-            return { type: "ignore" as const, function: func };
-
-          const content: string =
-            await props.programmer.replaceImportStatements({
-              function: func,
-              code: pointer.value.revise.final ?? pointer.value.draft,
+          const localPreviousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[] =
+            props.previousFailures
+              .map(
+                (pf) =>
+                  pf.find(
+                    (f) => f.function.location === localFunction.location,
+                  ) ?? null,
+              )
+              .filter((x) => x !== null);
+          const localDiagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[] =
+            failure.diagnostics.filter(
+              (d) => d.file === localFunction.location,
+            );
+          try {
+            return await process(ctx, {
+              programmer: props.programmer,
+              function: localFunction,
+              previousFailures: localPreviousFailures,
+              diagnostic: localDiagnostics,
+              progress: props.progress,
             });
-          ctx.dispatch({
-            id: v7(),
-            type: "realizeCorrect",
-            kind: "casting",
-            function: {
-              ...func,
-              content,
-            },
-            created_at: new Date().toISOString(),
-            step: ctx.state().analyze?.step ?? 0,
-            metric,
-            tokenUsage,
-            completed: props.progress.completed,
-            total: props.progress.total,
-          });
-          return {
-            type: "success" as const,
-            function: {
-              ...func,
-              content,
-            },
-          };
+          } catch (error) {
+            console.log("realizeCorrectCasting", localFunction.location, error);
+            ++props.progress.completed;
+            return {
+              type: "exception",
+              function: localFunction,
+            };
+          }
         },
       ),
     );
@@ -267,6 +224,124 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
     life - 1,
   );
   return [...success, ...ignored, ...retriedFunctions, ...unchangedFunctions];
+};
+
+const process = async <RealizeFunction extends AutoBeRealizeFunction>(
+  ctx: AutoBeContext,
+  props: {
+    programmer: IProgrammer<RealizeFunction>;
+    function: RealizeFunction;
+    previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
+    diagnostic: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<ICorrectionResult<RealizeFunction>> => {
+  const template: string = props.programmer.template(props.function);
+  const pointer: IPointer<
+    IAutoBeCommonCorrectCastingApplication.IProps | false | null
+  > = {
+    value: null,
+  };
+  const { metric, tokenUsage } = await ctx.conversate({
+    source: "realizeCorrect",
+    controller: createController({
+      then: (next) => {
+        pointer.value = next;
+      },
+      reject: () => {
+        pointer.value = false;
+      },
+    }),
+    enforceFunctionCall: true,
+    ...transformRealizeCorrectCastingHistory({
+      template,
+      function: props.function,
+      failures: [
+        ...props.previousFailures,
+        {
+          function: props.function,
+          diagnostics: props.diagnostic,
+        },
+      ],
+    }),
+  });
+  ++props.progress.completed;
+
+  if (pointer.value === null)
+    return {
+      type: "exception",
+      function: props.function,
+    };
+  else if (pointer.value === false)
+    return {
+      type: "ignore",
+      function: props.function,
+    };
+
+  const content: string = await props.programmer.replaceImportStatements({
+    function: props.function,
+    code: pointer.value.revise.final ?? pointer.value.draft,
+  });
+  ctx.dispatch({
+    id: v7(),
+    type: "realizeCorrect",
+    kind: "casting",
+    function: {
+      ...props.function,
+      content,
+    },
+    created_at: new Date().toISOString(),
+    step: ctx.state().analyze?.step ?? 0,
+    metric,
+    tokenUsage,
+    completed: props.progress.completed,
+    total: props.progress.total,
+  });
+  return {
+    type: "success",
+    function: {
+      ...props.function,
+      content,
+    },
+  };
+};
+
+const createController = (props: {
+  then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
+  reject: () => void;
+}): ILlmController => {
+  const validate = (
+    input: unknown,
+  ): IValidation<IAutoBeCommonCorrectCastingApplication.IProps> => {
+    const result: IValidation<IAutoBeCommonCorrectCastingApplication.IProps> =
+      typia.validate<IAutoBeCommonCorrectCastingApplication.IProps>(input);
+    if (result.success === false) return result;
+    // @todo: validate empty code?
+    return result;
+  };
+  const application: ILlmApplication =
+    typia.llm.application<IAutoBeCommonCorrectCastingApplication>({
+      validate: {
+        rewrite: validate,
+        reject: () => ({
+          success: true,
+          data: undefined,
+        }),
+      },
+    });
+  return {
+    protocol: "class",
+    name: "correctInvalidRequest",
+    application,
+    execute: {
+      rewrite: (next) => {
+        props.then(next);
+      },
+      reject: () => {
+        props.reject();
+      },
+    } satisfies IAutoBeCommonCorrectCastingApplication,
+  };
 };
 
 /**
@@ -349,42 +424,4 @@ const separateCorrectionResults = <
     .filter((c) => c.type === "ignore" || c.type === "exception")
     .map((c) => c.function);
   return { success, failed, ignored };
-};
-
-const createController = (props: {
-  then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
-  reject: () => void;
-}): ILlmController => {
-  const validate = (
-    input: unknown,
-  ): IValidation<IAutoBeCommonCorrectCastingApplication.IProps> => {
-    const result: IValidation<IAutoBeCommonCorrectCastingApplication.IProps> =
-      typia.validate<IAutoBeCommonCorrectCastingApplication.IProps>(input);
-    if (result.success === false) return result;
-    // @todo: validate empty code?
-    return result;
-  };
-  const application: ILlmApplication =
-    typia.llm.application<IAutoBeCommonCorrectCastingApplication>({
-      validate: {
-        rewrite: validate,
-        reject: () => ({
-          success: true,
-          data: undefined,
-        }),
-      },
-    });
-  return {
-    protocol: "class",
-    name: "correctInvalidRequest",
-    application,
-    execute: {
-      rewrite: (next) => {
-        props.then(next);
-      },
-      reject: () => {
-        props.reject();
-      },
-    } satisfies IAutoBeCommonCorrectCastingApplication,
-  };
 };

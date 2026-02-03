@@ -14,7 +14,7 @@ export const validate_prisma_schema = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeDatabaseSchemaEvent[]> => {
-  const component: AutoBeDatabaseComponent[] =
+  const components: AutoBeDatabaseComponent[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
@@ -23,8 +23,16 @@ export const validate_prisma_schema = async (props: {
 
   const events: AutoBeDatabaseSchemaEvent[] = await orchestratePrismaSchema(
     props.agent.getContext(),
-    "",
-    component,
+    {
+      instruction: "",
+      components,
+      written: new Set(),
+      failed: new Map(),
+      progress: {
+        completed: 0,
+        total: 0,
+      },
+    },
   );
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

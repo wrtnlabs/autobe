@@ -561,10 +561,10 @@ model Article {
 {
   "type": "object",
   "properties": {
-    "title": { "type": "string", "description": "..." },
-    "subtitle": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." },
-    "content": { "type": "string", "description": "..." },
-    "summary": { "oneOf": [{ "type": "string" }, { "type": "null" }], "description": "..." }
+    "title": { "type": "string" },
+    "subtitle": { "oneOf": [{ "type": "string" }, { "type": "null" }] },
+    "content": { "type": "string" },
+    "summary": { "oneOf": [{ "type": "string" }, { "type": "null" }] }
   },
   "required": ["title", "subtitle", "content", "summary"]  // ALL fields required (present in response)
 }
@@ -575,10 +575,10 @@ model Article {
 {
   "type": "object",
   "properties": {
-    "title": { "type": "string", "description": "..." },
-    "subtitle": { "type": "string", "description": "..." },
-    "content": { "type": "string", "description": "..." },
-    "summary": { "type": "string", "description": "..." }
+    "title": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "content": { "type": "string" },
+    "summary": { "type": "string" }
   },
   "required": ["title", "content"]  // Only non-nullable fields
 }
@@ -711,12 +711,12 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 ```typescript
 {
-  type: "create",
   reason: "Database field 'stock' exists but was missing from IProduct",
   key: "stock",
   databaseSchemaProperty: "stock",
   specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
   description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  type: "create",
   schema: {
     type: "integer"
   },
@@ -728,20 +728,18 @@ If IProduct is missing `stock`, `featured`, `discount`, or `createdAt`, create `
 
 **⚠️ CRITICAL: Carefully Examine Existing Properties' Fields**
 
-The `specification` (from the design structure) and `description` fields in existing properties contain ALL conceptual information about the schema's design intent. Use them to understand the patterns, then compare against the actual database schema to find what's MISSING.
+The `specification` (from the design structure) contains ALL conceptual information about each property's intended implementation. Use it to understand the patterns, then compare against the actual database schema to find what's MISSING.
 
 - **`specification`** (in design structure): Implementation specification for Realize Agent (HOW to implement/compute)
   - Shows the data mapping patterns used in this schema
   - Reveals the naming conventions (e.g., `users.email` → `email`)
   - **For Content Review**: Follow the same patterns when adding missing fields
 
-- **`description`** (on each property): API documentation for consumers (WHAT/WHY)
-  - Explains the semantic meaning of each property
-  - **For Content Review**: Helps understand the DTO's purpose and what fields it should include
+- Focus on `specification` for content review.
 
 **How to Use These Fields for Content Review**:
 
-1. **Study existing properties' `specification`** - Understand the mapping patterns
+1. **Study existing `specification`** - Understand the mapping patterns
 2. **Compare against the database schema** - Which DB fields are NOT represented?
 3. **For each missing field** → Create a `create` revision following the same patterns
 4. **Write `specification`** for new fields using the same style as existing ones
@@ -787,12 +785,12 @@ This ordering enforces **grounded reasoning**:
 **Example - Correct Create Revision Structure**:
 ```typescript
 {
-  type: "create",
   reason: "Database field 'stock' exists but missing from IProduct",
   key: "stock",
   databaseSchemaProperty: "stock",
   specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
   description: "Current inventory quantity. Automatically decremented when orders are placed.",
+  type: "create",
   schema: {
     type: "integer",
     minimum: 0
@@ -802,6 +800,8 @@ This ordering enforces **grounded reasoning**:
 ```
 
 This order is a prompt engineering technique that ensures reasoning consistency. Follow it without exception.
+
+**⚠️ Specification-Schema Consistency**: When writing a `create` revision, the `specification` and `schema` MUST be semantically consistent. If `specification` describes a list, `schema` must be `array`. If it describes a boolean flag, `schema` must be `boolean`. Never let the two contradict each other.
 
 **Revision Rules by DTO Type**:
 
@@ -816,12 +816,12 @@ This order is a prompt engineering technique that ensures reasoning consistency.
 **When DB non-null → DTO nullable/optional**: You MUST explain why in the `description`:
 ```typescript
 {
-  type: "create",
   reason: "Adding role field from database",
   key: "role",
   databaseSchemaProperty: "role",
   specification: "Direct mapping from users.role column. Uses @default value 'user' when not provided.",
   description: "User role. Optional - if not provided, defaults to 'user'.",
+  type: "create",
   schema: {
     type: "string"
   },
@@ -902,21 +902,21 @@ For Content Review, you primarily use `create` and `keep` revisions:
 ```typescript
 // Create revision - add missing property
 interface AutoBeInterfaceSchemaPropertyCreate {
-  type: "create";
   reason: string;  // Why this field is being added
   key: string;     // Property name to add
   databaseSchemaProperty: string | null;  // Database property name or null for computed
   specification: string;  // Implementation spec for Realize Agent
   description: string;  // API documentation for consumers
+  type: "create";
   schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;  // NO inline objects! Use $ref
   required: boolean;  // Add to required array?
 }
 
 // Keep revision - keep existing property unchanged
 interface AutoBeInterfaceSchemaPropertyKeep {
-  type: "keep";
   reason: string;  // Why this property is kept unchanged
   key: string;     // Property name to keep
+  type: "keep";
 }
 ```
 
@@ -942,48 +942,48 @@ process({
 - createdAt: Timestamp field exists but missing from schema`,
     revises: [
       {
-        type: "create",
         reason: "Database field 'stock' exists but missing from IProduct",
         key: "stock",
         databaseSchemaProperty: "stock",
         specification: "Direct mapping from products.stock column. Integer value representing available inventory.",
         description: "Current inventory quantity. Automatically decremented when orders are placed.",
+        type: "create",
         schema: {
           type: "integer"
         },
         required: true
       },
       {
-        type: "create",
         reason: "Database field 'featured' exists but missing from IProduct",
         key: "featured",
         databaseSchemaProperty: "featured",
         specification: "Direct mapping from products.featured column. Boolean flag for homepage display.",
         description: "Whether this product is featured on the homepage.",
+        type: "create",
         schema: {
           type: "boolean"
         },
         required: true
       },
       {
-        type: "create",
         reason: "Database field 'discount' (optional) exists but missing from IProduct",
         key: "discount",
         databaseSchemaProperty: "discount",
         specification: "Direct mapping from products.discount column. Nullable decimal value representing discount percentage.",
         description: "Discount percentage applied to the product price.",
+        type: "create",
         schema: {
           type: "number"
         },
         required: false
       },
       {
-        type: "create",
         reason: "Database field 'createdAt' exists but missing from IProduct",
         key: "createdAt",
         databaseSchemaProperty: "created_at",
         specification: "Direct mapping from products.created_at column. DateTime value converted to ISO 8601 string format.",
         description: "Timestamp when the product was created.",
+        type: "create",
         schema: {
           type: "string",
           format: "date-time"
@@ -1005,24 +1005,24 @@ process({
     review: "No missing fields found. All database fields are properly mapped to the schema.",
     revises: [
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "id"
+        key: "id",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "name"
+        key: "name",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "price"
+        key: "price",
+        type: "keep"
       },
       {
-        type: "keep",
         reason: "Property correctly maps to database field with proper type",
-        key: "createdAt"
+        key: "createdAt",
+        type: "keep"
       }
     ]
   }

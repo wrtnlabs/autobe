@@ -7,7 +7,11 @@ import {
 import typia from "typia";
 
 export namespace ArchiveLogger {
-  export const event = (start: Date, event: AutoBeEvent): void => {
+  export const event = (
+    start: Date,
+    event: AutoBeEvent,
+    total: IAutoBeTokenUsageJson,
+  ): void => {
     // DEFAULT TITLE
     const time = (prev: Date) =>
       ((new Date().getTime() - prev.getTime()) / 60_000).toLocaleString() +
@@ -22,10 +26,9 @@ export namespace ArchiveLogger {
     if (typia.is<TokenUsageEvent>(event))
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
-        `  - log10 of input token usage: ${Math.log10(
-          event.tokenUsage.input.total,
-        )}`,
+        `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
       );
+
     //----
     // FUNCTION CALLING
     //----
@@ -141,9 +144,7 @@ export namespace ArchiveLogger {
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
         ...event.revises
           .filter((r) => r.type === "update")
-          .map(
-            (r) => `      - ${r.original_namespace} => ${r.group.namespace}`,
-          ),
+          .map((r) => `      - ${r.originalNamespace} => ${r.group.namespace}`),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
         ...event.revises
           .filter((r) => r.type === "erase")
@@ -153,7 +154,6 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "databaseAuthorization")
       content.push(
-        `  - actor: ${event.actorName} (kind: ${event.actorKind})`,
         `  - namespace: ${event.component.namespace}`,
         `  - tables: ${event.component.tables.length}`,
         ...event.component.tables.map((t) => `    - ${t.name}`),
@@ -209,7 +209,8 @@ export namespace ArchiveLogger {
       );
     } else if (event.type === "databaseSchema")
       content.push(
-        `  - model: ${event.model.name} (stance: ${event.model.stance})`,
+        `  - model: ${event.definition.model.name} (stance: ${event.definition.model.stance})`,
+        `  - new designs: ${event.definition.newDesigns.map((d) => d.name).join(", ")}`,
       );
     else if (event.type === "databaseValidate")
       content.push(
@@ -256,6 +257,17 @@ export namespace ArchiveLogger {
         `  - typeName: ${event.typeName}`,
         `  - original: ${JSON.stringify(event.original)}`,
         `  - refined: ${!!event.refined}`,
+      );
+    else if (event.type === "interfaceSchemaRefine")
+      content.push(
+        `  - typeName: ${event.typeName}`,
+        `  - databaseSchema: ${event.databaseSchema}`,
+        `  - specification: ${JSON.stringify(event.specification)}`,
+        `  - refines:`,
+        ...event.refines.map(
+          (r) =>
+            `    - ${r.key}: ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+        ),
       );
     else if (event.type === "interfaceSchemaReview")
       content.push(

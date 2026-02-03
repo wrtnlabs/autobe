@@ -18,6 +18,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformInterfaceSchemaRenameHistory } from "./histories/transformInterfaceSchemaRenameHistory";
 import { IAutoBeInterfaceSchemaRenameApplication } from "./structures/IAutoBeInterfaceSchemaRenameApplication";
 import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
+import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 
 export async function orchestrateInterfaceSchemaRename(
   ctx: AutoBeContext,
@@ -195,6 +196,11 @@ const uniqueRefactors = (
 ): AutoBeInterfaceSchemaRefactor[] => {
   // Remove self-references (A->A)
   refactors = refactors.filter((r) => r.from !== r.to);
+
+  // Remove presets
+  refactors = refactors.filter(
+    (r) => AutoBeJsonSchemaFactory.DEFAULT_SCHEMAS[r.from] === undefined,
+  );
 
   // Remove duplicates (keep the first occurrence)
   refactors = Array.from(new Map(refactors.map((r) => [r.from, r])).values());

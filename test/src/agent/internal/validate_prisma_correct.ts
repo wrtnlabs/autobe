@@ -45,20 +45,21 @@ export const validate_prisma_correct = async (props: {
       namespace: comp.namespace,
       models: writeEvents
         .filter((we) => we.namespace === comp.namespace)
-        .map((we) => we.model),
+        .map((we) => we.definition.model),
     })),
   };
   for (const review of reviewEvents) {
     if (review.content === null) continue;
-    const model: AutoBeDatabase.IModel = review.content;
     const file: AutoBeDatabase.IFile | undefined = application.files.find(
       (f) => f.namespace === review.namespace,
     );
     if (file === undefined) continue;
+    else if (review.content === null) continue;
     const index: number = file.models.findIndex(
-      (m) => m.name === review.modelName,
+      (m) => m.name === review.content!.model.name,
     );
-    if (index !== -1) file.models[index] = model;
+    if (index !== -1) file.models[index] = review.content!.model;
+    else file.models.push(review.content!.model);
   }
 
   const result: IAutoBeDatabaseValidation = await orchestratePrismaCorrect(

@@ -1,44 +1,63 @@
-import { AutoBeDatabaseComponent } from "@autobe/interface";
+import {
+  AutoBeDatabaseComponent,
+  AutoBeDatabaseComponentTableDesign,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { plural } from "pluralize";
 import { Pair } from "tstl";
 import { IValidation } from "typia";
 
 export namespace AutoBeDatabaseComponentProgrammer {
-  export const validatePrefix = (props: {
+  export const validate = (props: {
     errors: IValidation.IError[];
     path: string;
     prefix: string | null;
-    tableNames: string[];
+    tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
+    // pluralize table names in designs
+    for (const design of props.tables) design.name = plural(design.name);
     if (props.prefix === null) return;
 
-    const prefix = props.prefix + "_";
-    props.tableNames.forEach((name, i) => {
-      if (!name.startsWith(prefix)) {
+    // validate prefix
+    const prefix: string = props.prefix + "_";
+    props.tables.forEach((design, i) => {
+      if (design.name.startsWith(prefix) === false)
         props.errors.push({
-          path: `${props.path}[${i}]`,
-          expected: `table name starting with "${prefix}"`,
-          value: name,
+          path: `${props.path}[${i}].name`,
+          expected: `${prefix}${design.name} | \`${prefix}\${string}\``,
+          value: design.name,
           description: StringUtil.trim`
-            Table "${name}" does not start with required prefix "${prefix}".
+            Table "${design.name}" does not start with required prefix "${prefix}".
 
-            Fix: Rename the table to "${prefix}${name}" or use appropriate
+            Fix: Rename the table to "${prefix}${design.name}" or use appropriate
             prefix that matches the configured naming convention.
           `,
         });
-      }
     });
   };
 
   export const removeDuplicatedTable = (
     components: AutoBeDatabaseComponent[],
   ): AutoBeDatabaseComponent[] => {
-    const tableSet: Set<string> = new Set(
-      components.flatMap((c) => c.tables.map((t) => t.name)),
+    // 1. First, remove duplicates within each component
+    const deduplicatedComponents: AutoBeDatabaseComponent[] = components.map(
+      (c) => ({
+        ...c,
+        tables: c.tables.filter(
+          (table, index, self) =>
+            self.findIndex((t) => t.name === table.name) === index,
+        ),
+      }),
     );
-    const sorted: Pair<AutoBeDatabaseComponent, number>[] = components
-      .map((c, i) => new Pair(c, i))
-      .sort((a, b) => a.first.tables.length - b.first.tables.length);
+
+    // 2. Then, remove duplicates across components
+    const tableSet: Set<string> = new Set(
+      deduplicatedComponents.flatMap((c) => c.tables.map((t) => t.name)),
+    );
+    const sorted: Pair<AutoBeDatabaseComponent, number>[] =
+      deduplicatedComponents
+        .map((c, i) => new Pair(c, i))
+        .sort((a, b) => a.first.tables.length - b.first.tables.length);
     return sorted
       .map(
         (p) =>

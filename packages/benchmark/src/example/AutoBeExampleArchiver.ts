@@ -28,7 +28,7 @@ export namespace AutoBeExampleArchiver {
     project: AutoBeExampleProject;
     imagePath?: string;
     agent: (props: IAgentProps) => Promise<IAutoBeAgent>;
-    on: (snapshot: AutoBeEventSnapshot) => void;
+    on: (snapshot: AutoBeEventSnapshot, agent: IAutoBeAgent) => void;
   }
 
   export interface IAgentProps {
@@ -159,7 +159,7 @@ export namespace AutoBeExampleArchiver {
             agent.getTokenUsage(),
           ),
         };
-        ctx.on(s);
+        ctx.on(s, agent);
         snapshots.push(s);
       });
     }

@@ -1,14 +1,21 @@
-import { AutoBeDatabase } from "@autobe/interface";
+import {
+  AutoBeDatabase,
+  AutoBeInterfaceSchemaDesign,
+  AutoBeOpenApi,
+} from "@autobe/interface";
+import { StringUtil } from "@autobe/utils";
 import {
   ILlmApplication,
   ILlmFunction,
   ILlmSchema,
+  IValidation,
   LlmTypeChecker,
 } from "@samchon/openapi";
 import { plural } from "pluralize";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeDatabaseModelProgrammer } from "../../prisma/programmers/AutoBeDatabaseModelProgrammer";
+import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 
 export namespace AutoBeInterfaceSchemaProgrammer {
   export interface IDatabaseSchemaMember {
@@ -34,7 +41,7 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     });
   };
 
-  export const getDatabaseSchemaMembers = (props: {
+  export const getDatabaseSchemaProperties = (props: {
     everyModels: AutoBeDatabase.IModel[];
     model: AutoBeDatabase.IModel;
   }): IDatabaseSchemaMember[] => [
@@ -61,6 +68,47 @@ export namespace AutoBeInterfaceSchemaProgrammer {
       )
       .flat(),
   ];
+
+  export const validate = (props: {
+    // common
+    errors: IValidation.IError[];
+    path: string;
+    everyModels: AutoBeDatabase.IModel[];
+    operations: AutoBeOpenApi.IOperation[];
+    // specific
+    typeName: string;
+    design: AutoBeInterfaceSchemaDesign;
+  }): void => {
+    AutoBeJsonSchemaValidator.validateSchema({
+      errors: props.errors,
+      operations: props.operations,
+      typeName: props.typeName,
+      schema: props.design.schema,
+      path: `${props.path}.schema`,
+    });
+    if (
+      props.design.databaseSchema !== null &&
+      props.everyModels.some((m) => m.name === props.design.databaseSchema) ===
+        false
+    )
+      props.errors.push({
+        path: `${props.path}.databaseSchema`,
+        expected: props.everyModels.map((m) => JSON.stringify(m.name)).join(" | "),
+        value: props.design.databaseSchema,
+        description: StringUtil.trim`
+          You set "databaseSchema" to ${JSON.stringify(props.design.databaseSchema)},
+          but no database model with that name exists.
+
+          Available database models are:
+          ${props.everyModels.map((m) => `- ${m.name}`).join("\n")}
+
+          Fix: Use one of the available model names above, or set to null
+          if this type does not map to a single database table (e.g.,
+          computed/aggregated types, types composed purely by business logic,
+          or embedded JSON structures).
+        `,
+      });
+  };
 
   export const fixApplication = (props: {
     application: ILlmApplication;

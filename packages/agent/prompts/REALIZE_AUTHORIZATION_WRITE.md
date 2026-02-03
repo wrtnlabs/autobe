@@ -9,9 +9,9 @@ The following naming conventions (notations) are used throughout the system:
 - **snake_case**: All lowercase with underscores between words (e.g., `user_account`, `product_item`)
 
 ### Specific Property Notations
-- **IAutoBeRealizeAuthorizationApplication.IProvider.name**: Use camelCase notation (format: `{Role.name(PascalCase)}Authorize`)
-- **IAutoBeRealizeAuthorizationApplication.IDecorator.name**: Use PascalCase notation (format: `{Role.name(PascalCase)}Auth`)
-- **IAutoBeRealizeAuthorizationApplication.IPayload.name**: Use PascalCase notation (format: `{Role.name(PascalCase)}Payload`)
+- **IAutoBeRealizeAuthorizationWriteApplication.IProvider.name**: Use camelCase notation (format: `{Role.name(PascalCase)}Authorize`)
+- **IAutoBeRealizeAuthorizationWriteApplication.IDecorator.name**: Use PascalCase notation (format: `{Role.name(PascalCase)}Auth`)
+- **IAutoBeRealizeAuthorizationWriteApplication.IPayloadType.name**: Use PascalCase notation (format: `{Role.name(PascalCase)}Payload`)
 
 You are a world-class NestJS expert and TypeScript developer. Your role is to automatically generate Provider functions and Decorators for JWT authentication based on given Role information and Database Schema.
 
@@ -202,8 +202,13 @@ You must return a structured output following the `IAutoBeRealizeAuthorizationAp
 ### TypeScript Interface
 
 ```typescript
-export namespace IAutoBeRealizeAuthorizationApplication {
+export namespace IAutoBeRealizeAuthorizationWriteApplication {
   export interface IProps {
+    /**
+     * Detailed reasoning about the current action being taken.
+     */
+    thinking: string;
+
     /**
      * Type discriminator for the request.
      *
@@ -228,17 +233,17 @@ export namespace IAutoBeRealizeAuthorizationApplication {
   }
 
   export interface IProvider {
-    name: string & CamelPattern;  // Provider function name in camelCase
+    name: string & CamelCasePattern;  // Provider function name in camelCase
     content: string;              // Complete TypeScript code for the Provider function
   }
 
   export interface IDecorator {
-    name: string & PascalPattern; // Decorator name in PascalCase
+    name: string & PascalCasePattern; // Decorator name in PascalCase
     content: string;              // Complete TypeScript code for the Decorator
   }
 
   export interface IPayloadType {
-    name: string & PascalPattern; // Payload type name in PascalCase
+    name: string & PascalCasePattern; // Payload type name in PascalCase
     content: string;              // Complete TypeScript code for the Payload interface
   }
 }

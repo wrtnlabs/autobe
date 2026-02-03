@@ -30,16 +30,26 @@ export const validate_interface_schema = async (props: {
     operations,
     components: {
       authorizations: props.agent.getContext().state().analyze?.actors ?? [],
-      schemas: await orchestrateInterfaceSchema(props.agent.getContext(), {
-        operations,
-        instruction: "Design API specs carefully considering the security.",
-      }),
+      schemas: {},
     },
   };
+  const assign = (
+    next: Record<
+      string,
+      AutoBeOpenApi.IJsonSchema | AutoBeOpenApi.IJsonSchemaDescriptive
+    >,
+  ): void => {
+    Object.assign(document.components.schemas, next);
+  };
+  assign(
+    await orchestrateInterfaceSchema(props.agent.getContext(), {
+      operations,
+      instruction: "Design API specs carefully considering the security.",
+    }),
+  );
 
   // Casting schemas
-  Object.assign(
-    document.components.schemas,
+  assign(
     await orchestrateInterfaceSchemaCasting(props.agent.getContext(), {
       document,
       schemas: document.components.schemas,
@@ -52,8 +62,7 @@ export const validate_interface_schema = async (props: {
   );
 
   // Refine schemas
-  Object.assign(
-    document.components.schemas,
+  assign(
     await orchestrateInterfaceSchemaRefine(props.agent.getContext(), {
       instruction: "",
       document,
@@ -82,7 +91,7 @@ export const validate_interface_schema = async (props: {
         progress: reviewProgress,
       },
     );
-    Object.assign(document.components.schemas, reviewed);
+    assign(reviewed);
   }
 
   await AutoBeExampleStorage.save({

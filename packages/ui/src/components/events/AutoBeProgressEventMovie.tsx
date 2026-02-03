@@ -49,16 +49,6 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Review",
           description: "Reviewing the analysis results",
         };
-      case "databaseAuthorization":
-        return {
-          title: "Database Authorization",
-          description: "Generating authorization tables",
-        };
-      case "databaseAuthorizationReview":
-        return {
-          title: "Authorization Review",
-          description: "Reviewing authorization tables",
-        };
       case "databaseComponent":
         return {
           title: "Database Components",

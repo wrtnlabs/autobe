@@ -11,10 +11,10 @@ import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
+import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
   export const filterSecurity = (props: {
@@ -57,16 +57,17 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
   };
 
-  export const validate = (
-    ctx: AutoBeContext,
-    props: {
-      typeName: string;
-      schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-      revises: AutoBeInterfaceSchemaPropertyRevise[];
-      path: string;
-      errors: IValidation.IError[];
-    },
-  ): void => {
+  export const validate = (props: {
+    // common
+    path: string;
+    errors: IValidation.IError[];
+    everyModels: AutoBeDatabase.IModel[];
+    // special
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
+  }): void => {
+    // validate property key existence and schema correctness
     props.revises.forEach((revise, i) => {
       if (
         revise.type !== "create" &&
@@ -91,9 +92,6 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           operations: [],
           path: `${props.path}.revises[${i}].schema`,
           errors: props.errors,
-          models: ctx
-            .state()
-            .database!.result.data.files.flatMap((f) => f.models),
         });
     });
     for (const key of Object.keys(props.schema.properties))
@@ -112,9 +110,37 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             to modify or erase the property.
           `,
         });
+
+    // validate database schema existence
+    props.revises.forEach((revise, i) =>
+      AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
+        path: `${props.path}.revises[${i}]`,
+        errors: props.errors,
+        everyModels: props.everyModels,
+        model: props.schema["x-autobe-database-schema"]
+          ? (props.everyModels.find(
+              (m) => m.name === props.schema["x-autobe-database-schema"],
+            ) ?? null)
+          : null,
+        revise,
+        originalDtoSchema: props.schema.properties[revise.key],
+        noModelDescription: StringUtil.trim`
+          You have defined "databaseSchemaProperty" property referencing
+          a database schema property, but its parent schema (object type)
+          does not reference any database schema.
+
+          To make it correct, you have to change the "databaseSchemaProperty"
+          to be \`null\` at the next time, and then depict what this property 
+          is for in the "specification" property.
+
+          Note that, this is not a recommendation, but an instruction 
+          you must obey. I repeat that, change the value to be \`null\`.
+        `,
+      }),
+    );
   };
 
-  export const revise = (props: {
+  export const execute = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {

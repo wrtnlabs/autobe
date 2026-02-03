@@ -1,3 +1,4 @@
+import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import typia, { IValidation } from "typia";
 
@@ -10,9 +11,9 @@ export const fulfillJsonSchemaErrorMessages = (
     fulfillTypeAsArrayError(e) ||
       fulfillEnumInsteadOfConstError(e) ||
       fulfillNoRequiredError(e) ||
-      fulfillNoDescriptionError(e) ||
       fulfillObjectMetadataMisplacement(e) ||
-      fulfillNestedObjectError(e);
+      fulfillNestedObjectError(e) ||
+      fulfillJsonSchemaFormat(e);
 };
 
 const fulfillTypeAsArrayError = (e: IValidation.IError): boolean => {
@@ -63,16 +64,6 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
       You must make this correction. The validator will continue to reject your
       schema until you replace "enum" with the proper "oneOf" + "const" structure.
     `;
-    return true;
-  }
-  return false;
-};
-
-const fulfillNoDescriptionError = (e: IValidation.IError): boolean => {
-  if (e.value === undefined && e.path.endsWith(".description")) {
-    // no description
-    e.description =
-      AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_DESCRIPTION;
     return true;
   }
   return false;
@@ -160,6 +151,40 @@ const fulfillNestedObjectError = (e: IValidation.IError): boolean => {
     // nested object
     e.description =
       AutoBeSystemPromptConstant.INTERFACE_SCHEMA_MISSING_NESTED_OBJECT;
+    return true;
+  }
+  return false;
+};
+
+const fulfillJsonSchemaFormat = (e: IValidation.IError): boolean => {
+  const supported: string[] =
+    typia.misc.literals<
+      Required<AutoBeOpenApi.IJsonSchema.IString>["format"]
+    >();
+  if (
+    e.path.endsWith(".format") &&
+    typeof e.value === "string" &&
+    supported.every((s) => e.expected.includes(JSON.stringify(s)))
+  ) {
+    e.expected = "undefined";
+    e.description = StringUtil.trim`
+      **Invalid "format" Value: ${JSON.stringify(e.value)} is not supported.**
+
+      The "format" property value ${JSON.stringify(e.value)} is not supported in the
+      JSOn schema specification (type: \`AutoBeOpenApi.IJsonSchema.IString.format\`).
+
+      Supported values are:
+      
+      ${supported.map((s) => `- ${s}`).join("\n")}
+
+      If your intended format does not exactly match one of the above values,
+      you must remove the "format" property entirely from this schema.
+      Do not attempt to use similar or alternative format strings.
+      Simply delete the "format" property — it is optional.
+
+      The validator will continue to reject your schema until the "format"
+      property is either removed or set to an exactly matching supported value.
+    `;
     return true;
   }
   return false;

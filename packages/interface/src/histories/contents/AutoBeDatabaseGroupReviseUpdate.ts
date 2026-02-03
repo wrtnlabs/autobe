@@ -30,7 +30,7 @@ export interface AutoBeDatabaseGroupReviseUpdate {
    *
    * Must match exactly an existing group's namespace.
    */
-  original_namespace: string;
+  originalNamespace: string;
 
   /**
    * The updated group definition.

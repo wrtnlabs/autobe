@@ -10,10 +10,10 @@ import { StringUtil } from "@autobe/utils";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
-import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
+import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
 export namespace AutoBeInterfaceSchemaRefineProgrammer {
   export const fixApplication = (props: {
@@ -41,16 +41,18 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
   };
 
-  export const validate = (
-    ctx: AutoBeContext,
-    props: {
-      typeName: string;
-      schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-      refines: AutoBeInterfaceSchemaPropertyRefine[];
-      path: string;
-      errors: IValidation.IError[];
-    },
-  ): void => {
+  export const validate = (props: {
+    // common
+    path: string;
+    errors: IValidation.IError[];
+    everyModels: AutoBeDatabase.IModel[];
+    // special
+    typeName: string;
+    databaseSchema: string | null;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+    refines: AutoBeInterfaceSchemaPropertyRefine[];
+  }): void => {
+    // validate property key existence and schema correctness
     props.refines.forEach((refine, i) => {
       if (
         refine.type !== "create" &&
@@ -75,14 +77,88 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           operations: [],
           path: `${props.path}.refines[${i}].schema`,
           errors: props.errors,
-          models: ctx
-            .state()
-            .database!.result.data.files.flatMap((f) => f.models),
         });
     });
+    for (const key of Object.keys(props.schema.properties))
+      if (props.refines.some((refine) => refine.key === key) === false)
+        props.errors.push({
+          path: `${props.path}.refines[]`,
+          value: undefined,
+          expected: `AutoBeInterfaceSchemaPropertyRefine (key: ${JSON.stringify(key)})`,
+          description: StringUtil.trim`
+            Missing refine for property ${JSON.stringify(key)}.
+
+            You MUST provide a refine for EVERY property in the object schema.
+          `,
+        });
+
+    // validate database schema existence
+    if (
+      props.databaseSchema !== null &&
+      props.everyModels.find((m) => m.name === props.databaseSchema) ===
+        undefined
+    )
+      props.errors.push({
+        path: `${props.path}.databaseSchema`,
+        expected: props.everyModels
+          .map((m) => JSON.stringify(m.name))
+          .join(" | "),
+        value: props.databaseSchema,
+        description: StringUtil.trim`
+          You've referenced a non-existing database schema name
+          ${JSON.stringify(props.databaseSchema)} in "databaseSchema" 
+          property. Make sure that the referenced database schema name 
+          exists in your database schema files.
+
+          Never assume non-existing models. This is not recommendation,
+          but an instruction you must follow. Never repeat the same
+          value again. You have to choose one of below:
+
+          **Option 1: Reference an existing database schema**
+          ${props.everyModels.map((m) => `- ${m.name}`).join("\n")}
+
+          **Option 2: Set to null (for DTOs with no database reference)**
+          If this DTO represents pure computed/statistical data or logic-only
+          structures that have no direct relationship to any database table,
+          set "databaseSchema" to null. In this case, all properties in the
+          object type must also have 
+          "AutoBeInterfaceSchemaPropertyRefine.databaseSchemaProperty" 
+          (except "AutoBeInterfaceSchemaPropertyErase" type) set to null.
+        `,
+      });
+    else
+      props.refines.forEach((refine, i) => {
+        AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
+          path: `${props.path}.refines[${i}]`,
+          errors: props.errors,
+          everyModels: props.everyModels,
+          model: props.databaseSchema
+            ? (props.everyModels.find((m) => m.name === props.databaseSchema) ??
+              null)
+            : null,
+          revise: refine,
+          originalDtoSchema: props.schema.properties[refine.key],
+          noModelDescription: StringUtil.trim`
+            You have defined "databaseSchemaProperty" property referencing 
+            a database schema property, but its parent schema (object type) 
+            does not reference any database schema.
+
+            To reference a database schema property, you have to configure
+            "IAutoBeInterfaceSchemaRefineApplication.IComplete.databaseSchema"
+            property with a valid database schema name.
+
+            If not, set this "databaseSchemaProperty" property to null value
+            at the next time, and then depict what this property is for
+            in the "specification" property.
+
+            Note that, this is not a recommendation, 
+            but an instruction you must obey.
+          `,
+        });
+      });
   };
 
-  export const refine = (props: {
+  export const execute = (props: {
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     databaseSchema: string | null;
     specification: string;

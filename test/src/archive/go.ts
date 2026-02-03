@@ -95,7 +95,8 @@ const main = async (): Promise<void> => {
         imagePath: imagePath ?? undefined,
         phases,
         progress: () => {},
-        on: (event) => ArchiveLogger.event(start, event),
+        on: (event, agent) =>
+          ArchiveLogger.event(start, event, agent.getTokenUsage()),
       },
     );
     console.log("completed");

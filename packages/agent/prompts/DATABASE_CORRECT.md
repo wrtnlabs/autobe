@@ -160,7 +160,7 @@ process({
   thinking: "Need related schemas to fix foreign key errors.",
   request: {
     type: "getDatabaseSchemas",
-    modelNames: ["User", "Product"]
+    schemaNames: ["User", "Product"]
   }
 });
 ```
@@ -174,7 +174,7 @@ process({
   thinking: "Need previous version of schema design to understand original structure before fixing.",
   request: {
     type: "getPreviousDatabaseSchemas",
-    modelNames: ["Order"]
+    schemaNames: ["Order"]
   }
 });
 ```

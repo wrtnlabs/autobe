@@ -105,5 +105,10 @@ export const transformInterfaceSchemaRefineHistory = (props: {
 
     When \`databaseSchemaProperty\` or \`databaseSchema\` is \`null\`, the
     \`specification\` becomes the ONLY source of truth for downstream agents.
+
+    You MUST provide a refinement for every single property without exception:
+    ${Object.keys(props.refineSchema.properties)
+      .map((k) => `- ${k}`)
+      .join("\n")}
   `,
 });

@@ -28,7 +28,7 @@ export async function orchestrateInterfaceSchema(
     operations: AutoBeOpenApi.IOperation[];
     instruction: string;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchema>> {
   // gather type names
   const collection: Set<string> = new Set();
   const gather = (key: string): void => {
@@ -40,7 +40,7 @@ export async function orchestrateInterfaceSchema(
     if (op.requestBody !== null) gather(op.requestBody.typeName);
     if (op.responseBody !== null) gather(op.responseBody.typeName);
   }
-  const presets: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+  const presets: Record<string, AutoBeOpenApi.IJsonSchema> =
     AutoBeJsonSchemaFactory.presets(collection);
 
   // divide and conquer
@@ -51,7 +51,7 @@ export async function orchestrateInterfaceSchema(
     total: typeNames.length,
     completed: 0,
   };
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {
+  const x: Record<string, AutoBeOpenApi.IJsonSchema> = {
     ...presets,
   };
   await executeCachedBatch(
@@ -67,7 +67,7 @@ export async function orchestrateInterfaceSchema(
           (op.responseBody && predicate(op.responseBody.typeName)),
       );
       try {
-        const row: AutoBeOpenApi.IJsonSchemaDescriptive = await process(ctx, {
+        const row: AutoBeOpenApi.IJsonSchema = await process(ctx, {
           operations,
           progress,
           otherTypeNames: typeNames.filter((k) => k !== it),
@@ -95,7 +95,7 @@ async function process(
     promptCacheKey: string;
     instruction: string;
   },
-): Promise<AutoBeOpenApi.IJsonSchemaDescriptive> {
+): Promise<AutoBeOpenApi.IJsonSchema> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -165,8 +165,9 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    const schema: AutoBeOpenApi.IJsonSchemaDescriptive =
-      AutoBeJsonSchemaFactory.fixDesign(pointer.value.design);
+    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
+      pointer.value.design,
+    );
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -221,13 +222,13 @@ function createController(
 
     // Check all IAuthorized types
     const errors: IValidation.IError[] = [];
-    AutoBeJsonSchemaValidator.validateSchema({
+    AutoBeInterfaceSchemaProgrammer.validate({
+      path: "$input.request.design",
       errors,
-      models: everyModels,
       operations: props.operations,
+      everyModels,
       typeName: props.typeName,
-      schema: result.data.request.design.schema,
-      path: "$input.request.design.schema",
+      design: result.data.request.design,
     });
     if (errors.length !== 0)
       return {

@@ -23,7 +23,9 @@ export const prepare_interface_agent = async (props: {
     }),
   });
   for (const type of typia.misc.literals<AutoBeEvent.Type>())
-    agent.on(type, (event) => ArchiveLogger.event(start, event));
+    agent.on(type, (event) =>
+      ArchiveLogger.event(start, event, agent.getTokenUsage()),
+    );
 
   agent.getHistories().push({
     id: v7(),

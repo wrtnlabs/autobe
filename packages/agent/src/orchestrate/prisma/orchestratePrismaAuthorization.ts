@@ -2,10 +2,8 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeActor,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
-  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -13,7 +11,6 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationHistory } from "./histories/transformPrismaAuthorizationHistory";
 import { AutoBeDatabaseAuthorizationProgrammer } from "./programmers/AutoBeDatabaseAuthorizationProgrammer";
@@ -26,49 +23,32 @@ export async function orchestratePrismaAuthorization(
     groups: AutoBeDatabaseGroup[];
     instruction: string;
   },
-): Promise<AutoBeDatabaseComponent[]> {
+): Promise<AutoBeDatabaseComponent | null> {
   const authorizationGroup: AutoBeDatabaseGroup | undefined = props.groups
     .filter((g) => g.kind === "authorization")
     .at(0);
-  if (authorizationGroup === undefined) return [];
-  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
-  const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: actors.length,
-  };
+  if (authorizationGroup === undefined) return null;
 
-  const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
-    ctx,
-    actors.map((actor) => async (promptCacheKey) => {
-      const component: AutoBeDatabaseComponent = await process(ctx, {
-        actor,
-        prefix,
-        group: authorizationGroup,
-        instruction: props.instruction,
-        progress,
-        promptCacheKey,
-      });
-      return component;
-    }),
-  );
-  const deduped: AutoBeDatabaseComponent[] =
-    AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
-  const tables: AutoBeDatabaseComponentTableDesign[] = deduped.flatMap(
-    (c) => c.tables,
-  );
-  return [{ ...authorizationGroup, tables }];
+  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  if (actors.length === 0) return null;
+
+  const prefix: string | null = ctx.state().analyze?.prefix ?? null;
+
+  return await process(ctx, {
+    actors,
+    prefix,
+    group: authorizationGroup,
+    instruction: props.instruction,
+  });
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
-    actor: AutoBeAnalyzeActor;
+    actors: AutoBeAnalyzeActor[];
     prefix: string | null;
     group: AutoBeDatabaseGroup;
     instruction: string;
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
   const preliminary: AutoBePreliminaryController<
@@ -95,40 +75,39 @@ async function process(
       controller: createController({
         pointer,
         preliminary,
-        actor: props.actor,
+        actors: props.actors,
         prefix: props.prefix,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
       ...transformPrismaAuthorizationHistory({
-        actor: props.actor,
+        actors: props.actors,
         prefix: props.prefix,
-        authGroup: props.group,
+        group: props.group,
         instruction: props.instruction,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const component: AutoBeDatabaseComponent = {
-      ...props.group,
-      tables: pointer.value.tables,
-    };
-
+    // Remove duplicated tables using shared utility
+    const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
+      [
+        {
+          ...props.group,
+          tables: pointer.value.tables,
+        },
+      ],
+    );
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
-      actorName: props.actor.name,
-      actorKind: props.actor.kind,
       component,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
     });
     return out(result)(component);
   });
@@ -139,7 +118,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  actor: AutoBeAnalyzeActor;
+  actors: AutoBeAnalyzeActor[];
   prefix: string | null;
 }): IAgenticaController.IClass {
   const validate = (
@@ -148,8 +127,7 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseAuthorizationApplication.IProps> =
       typia.validate<IAutoBeDatabaseAuthorizationApplication.IProps>(input);
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
@@ -159,7 +137,7 @@ function createController(props: {
     AutoBeDatabaseAuthorizationProgrammer.validate({
       errors,
       path: "$input.request.tables",
-      actor: props.actor,
+      actors: props.actors,
       prefix: props.prefix,
       tables: result.data.request.tables,
     });

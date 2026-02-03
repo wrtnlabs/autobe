@@ -18,9 +18,6 @@
  * @author Samchon
  */
 export interface AutoBeInterfaceSchemaPropertyKeep {
-  /** Discriminator for property revision type. */
-  type: "keep";
-
   /**
    * Reason for keeping this property unchanged.
    *
@@ -31,4 +28,7 @@ export interface AutoBeInterfaceSchemaPropertyKeep {
 
   /** Property key to keep. */
   key: string;
+
+  /** Discriminator for property revision type. */
+  type: "keep";
 }

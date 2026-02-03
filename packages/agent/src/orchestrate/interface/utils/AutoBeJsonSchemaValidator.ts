@@ -1,4 +1,4 @@
-import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
@@ -35,7 +35,6 @@ export namespace AutoBeJsonSchemaValidator {
 
   export interface IProps {
     errors: IValidation.IError[];
-    models: AutoBeDatabase.IModel[];
     operations: AutoBeOpenApi.IOperation[];
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchema;
@@ -49,7 +48,6 @@ export namespace AutoBeJsonSchemaValidator {
       path: props.path,
     });
     validateAuthorization(props);
-    validateDatabaseSchema(props);
     validateRecursive(props);
     validateReferenceId(props);
     validatePropertyNames(props);
@@ -316,77 +314,6 @@ export namespace AutoBeJsonSchemaValidator {
           });
       },
     });
-  };
-
-  const validateDatabaseSchema = (props: IProps): void => {
-    // fulfill error messages for "x-autobe-database-schema" misplacement
-    for (const e of props.errors) {
-      if (e.path.endsWith(`.properties["x-autobe-database-schema"]`) === false)
-        continue;
-      e.expected =
-        "undefined value (remove this property and re-define it in the root schema)";
-      e.description = StringUtil.trim`
-        You have defined a property named "x-autobe-database-schema"
-        somewhere wrong place.
-
-        You have defined a property name "x-autobe-database-schema" as
-        an object type. However, this "x-autobe-database-schema" property
-        must be defined only in the root schema object as a metadata,
-        not in the nested object property.
-
-        Remove this property at the next time, and re-define it in the
-        root object schema.
-
-        - Current path (wrong): ${e.path}
-        - Must be (object root): ${e.path.replace(
-          `.properties["x-autobe-database-schema"]`,
-          `["x-autobe-database-schema"]`,
-        )}
-
-        Note that, this is not a recommendation, but an instruction you must follow.
-      `;
-    }
-
-    // check database schema existence
-    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
-    else if (
-      props.schema["x-autobe-database-schema"] === null ||
-      props.schema["x-autobe-database-schema"] === undefined
-    ) {
-      // No validation needed when x-autobe-database-schema is null
-      // x-autobe-database-schema-property is now @internal and hidden from AI
-    } else {
-      const next: AutoBeOpenApi.IJsonSchema.IObject = props.schema;
-      const model: AutoBeDatabase.IModel | undefined = props.models.find(
-        (m) => m.name === next["x-autobe-database-schema"],
-      );
-      if (model === undefined)
-        props.errors.push({
-          path: `${props.path}["x-autobe-database-schema"]`,
-          expected:
-            props.models.map((s) => JSON.stringify(s.name)).join(" | ") +
-            " | null",
-          value: next["x-autobe-database-schema"],
-          description: StringUtil.trim`
-            You've referenced a non-existing database schema name
-            ${JSON.stringify(next["x-autobe-database-schema"])} in
-            "x-autobe-database-schema" property. Make sure that the
-            referenced database schema name exists in your database schema files.
-
-            Never assume non-existing models. This is not recommendation,
-            but an instruction you must follow. Never repeat the same
-            value again. You have to choose one of below:
-
-            **Option 1: Reference an existing database schema**
-            ${props.models.map((m) => `- ${m.name}`).join("\n")}
-
-            **Option 2: Set to null (for DTOs with no database reference)**
-            If this DTO represents pure computed/statistical data or logic-only
-            structures that have no direct relationship to any database table,
-            set "x-autobe-database-schema" to null.
-          `,
-        });
-    }
   };
 
   const validateRecursive = (props: IProps): void => {

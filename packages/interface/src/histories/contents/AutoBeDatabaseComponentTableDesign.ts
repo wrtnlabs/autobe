@@ -26,6 +26,7 @@ export interface AutoBeDatabaseComponentTableDesign {
    * - Why this table is necessary for the component's domain
    *
    * **IMPORTANT**:
+   *
    * - Keep it **concise** - one or two sentences maximum
    * - Description must be written in English
    *

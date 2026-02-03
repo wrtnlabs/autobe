@@ -112,6 +112,12 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
      */
     rationale: string;
 
+    /**
+     * Design structure for the missing schema being complemented.
+     *
+     * Contains `databaseSchema`, `specification`, `description`, and `schema`
+     * fields that together define a complete DTO type component.
+     */
     design: AutoBeInterfaceSchemaDesign;
   }
 }

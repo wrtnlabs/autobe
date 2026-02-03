@@ -186,13 +186,14 @@ export const orchestrateInterface =
       total: 0,
     };
     const iterate = async (
-      initialize: () => Promise<
-        Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>
-      >,
+      initialize: () => Promise<Record<string, AutoBeOpenApi.IJsonSchema>>,
     ) => {
       const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
       const overwrite = async (
-        next: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+        next: Record<
+          string,
+          AutoBeOpenApi.IJsonSchema | AutoBeOpenApi.IJsonSchemaDescriptive
+        >,
       ) => {
         for (const [k, v] of Object.entries(next))
           if (v === undefined) delete next[k];
@@ -201,16 +202,25 @@ export const orchestrateInterface =
         // assign schemas
         const collection: AutoBeJsonSchemaCollection =
           new AutoBeJsonSchemaCollection(document.components.schemas, schemas);
-        collection.assign(next);
+        collection.assign(
+          next as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+        );
         collection.assign(
           AutoBeJsonSchemaFactory.presets(new Set(Object.keys(schemas))),
         );
 
-        // special logics for standardization
+        // naming convention
         AutoBeJsonSchemaNamingConvention.normalize({
           operations: document.operations,
           collection,
         });
+        await orchestrateInterfaceSchemaRename(ctx, {
+          operations: document.operations,
+          progress: renameProgress,
+          collection,
+        });
+
+        // special logics
         AutoBeJsonSchemaFactory.authorize(document.components.schemas);
         AutoBeJsonSchemaFactory.finalize({
           application: ctx.state().database!.result.data,
@@ -218,13 +228,6 @@ export const orchestrateInterface =
           collection,
         });
         if (Object.keys(schemas).length === 0) return;
-
-        // rename by agent
-        await orchestrateInterfaceSchemaRename(ctx, {
-          operations: document.operations,
-          progress: renameProgress,
-          collection,
-        });
       };
 
       // initialize schemas

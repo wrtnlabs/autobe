@@ -102,7 +102,6 @@ async function process(
       ...props.group,
       tables: pointer.value.tables,
     };
-
     ctx.dispatch({
       type: SOURCE,
       id: v7(),
@@ -131,23 +130,25 @@ function createController(props: {
     const result: IValidation<IAutoBeDatabaseComponentApplication.IProps> =
       typia.validate<IAutoBeDatabaseComponentApplication.IProps>(input);
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
       });
 
-    // validate table prefix
     const errors: IValidation.IError[] = [];
-    AutoBeDatabaseComponentProgrammer.validatePrefix({
+    AutoBeDatabaseComponentProgrammer.validate({
       errors,
-      path: "request.tables",
       prefix: props.prefix,
-      tableNames: result.data.request.tables.map((t) => t.name),
+      tables: result.data.request.tables,
+      path: "$input.request.tables",
     });
-    if (errors.length > 0) return { success: false, data: result.data, errors };
-
+    if (errors.length > 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
     return result;
   };
   const application: ILlmApplication = props.preliminary.fixApplication(

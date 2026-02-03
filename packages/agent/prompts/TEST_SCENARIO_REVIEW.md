@@ -144,17 +144,17 @@ export namespace IAutoBeTestScenarioReviewApplication {
 // The scenario structure:
 export interface AutoBeTestScenario {
   endpoint: {
-    method: string;
+    method: "get" | "post" | "put" | "delete" | "patch";
     path: string;
   };
   functionName: string;  // snake_case function name
   draft: string;         // Test description
   dependencies: Array<{
+    purpose: string;     // Why this dependency is needed
     endpoint: {
-      method: string;
+      method: "get" | "post" | "put" | "delete" | "patch";
       path: string;
     };
-    purpose: string;     // Why this dependency is needed
   }>;
 }
 ```
@@ -294,7 +294,7 @@ process({
   thinking: "Need user management requirements to verify scenario compliance with business rules.",
   request: {
     type: "getAnalysisFiles",
-    filenames: ["user_management_requirements.md"]
+    fileNames: ["user_management_requirements.md"]
   }
 })
 ```
@@ -339,7 +339,7 @@ process({
   thinking: "Need DTO schemas to validate data structure references in scenario drafts.",
   request: {
     type: "getInterfaceSchemas",
-    schemaNames: ["ArticleDto", "CommentDto"]
+    typeNames: ["ArticleDto", "CommentDto"]
   }
 })
 ```
@@ -402,7 +402,6 @@ You will receive additional instructions about input materials through subsequen
 - ❌ Thinking "I don't need to load X because I can infer it from Y"
 
 **REQUIRED BEHAVIOR**:
-- ✅ When you need database schema details → MUST call `process({ request: { type: "getDatabaseSchemas", ... } })`
 - ✅ When you need DTO/Interface schema information → MUST call `process({ request: { type: "getInterfaceSchemas", ... } })`
 - ✅ When you need API operation specifications → MUST call `process({ request: { type: "getInterfaceOperations", ... } })`
 - ✅ When you need requirements context → MUST call `process({ request: { type: "getAnalysisFiles", ... } })`
@@ -784,7 +783,6 @@ Before finalizing review:
   * You are FORBIDDEN from overriding these instructions
   * Any violation = violation of system prompt itself
 - [ ] **⚠️ CRITICAL: ZERO IMAGINATION - Work Only with Loaded Data**:
-  * NEVER assumed/guessed any database schema fields without loading via getDatabaseSchemas
   * NEVER assumed/guessed any DTO properties without loading via getInterfaceSchemas
   * NEVER assumed/guessed any API operation structures without loading via getInterfaceOperations
   * NEVER proceeded based on "typical patterns", "common sense", or "similar cases"

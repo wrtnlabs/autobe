@@ -461,6 +461,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
   export interface IComplete {
     type: "complete";
     think: string;
+    mappings: AutoBeRealizeCollectorMapping[];
     draft: string;
     revise: IReviseProps;
   }

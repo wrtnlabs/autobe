@@ -3,7 +3,6 @@ import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentReviewEvent,
   AutoBeDatabaseComponentTableDesign,
-  AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -17,6 +16,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentReviewHistory } from "./histories/transformPrismaComponentReviewHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
+import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseComponentReviewApplication } from "./structures/IAutoBeDatabaseComponentReviewApplication";
 
 export async function orchestratePrismaComponentReview(
@@ -27,9 +27,6 @@ export async function orchestratePrismaComponentReview(
   },
 ): Promise<AutoBeDatabaseComponent[]> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const allTableNames: string[] = props.components.flatMap((c) =>
-    c.tables.map((t) => t.name),
-  );
   const progress: AutoBeProgressEventBase = {
     completed: 0,
     total: props.components.length,
@@ -38,16 +35,12 @@ export async function orchestratePrismaComponentReview(
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
-      const otherTableNames: Set<string> = new Set(
-        props.components
-          .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables.map((t) => t.name)),
-      );
-
+      const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
+        .filter((c) => c.filename !== component.filename)
+        .flatMap((c) => c.tables);
       const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
         component,
-        otherTableNames,
-        allTableNames,
+        otherTables,
         instruction: props.instruction,
         prefix,
         progress,
@@ -64,8 +57,7 @@ async function process(
   ctx: AutoBeContext,
   props: {
     component: AutoBeDatabaseComponent;
-    otherTableNames: Set<string>;
-    allTableNames: string[];
+    otherTables: AutoBeDatabaseComponentTableDesign[];
     instruction: string;
     prefix: string | null;
     progress: AutoBeProgressEventBase;
@@ -94,17 +86,18 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        otherTableNames: props.otherTableNames,
+        otherTables: props.otherTables,
         prefix: props.prefix,
         build: (next) => {
           pointer.value = next;
         },
+        component: props.component,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
       ...transformPrismaComponentReviewHistory({
         component: props.component,
-        allTableNames: props.allTableNames,
+        otherTables: props.otherTables,
         instruction: props.instruction,
         prefix: props.prefix,
         preliminary,
@@ -112,61 +105,25 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Apply revises to the component's tables
-    const tableMap = new Map<string, AutoBeDatabaseComponentTableDesign>(
-      props.component.tables.map((t) => [t.name, t]),
-    );
-
-    const revises: AutoBeDatabaseComponentTableRevise[] = [];
-    for (const revise of pointer.value.revises) {
-      if (revise.type === "create") {
-        // Only add if not in other components
-        if (!props.otherTableNames.has(revise.table)) {
-          tableMap.set(revise.table, {
-            name: revise.table,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "update") {
-        // Remove original, add updated (if not in other components)
-        tableMap.delete(revise.original);
-        if (!props.otherTableNames.has(revise.updated)) {
-          tableMap.set(revise.updated, {
-            name: revise.updated,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "erase") {
-        tableMap.delete(revise.table);
-        revises.push(revise);
-      } else {
-        revise satisfies never;
-      }
-    }
-
-    const validTables: AutoBeDatabaseComponentTableDesign[] = Array.from(
-      tableMap.values(),
-    );
-
-    const component: AutoBeDatabaseComponent = {
+    const modification: AutoBeDatabaseComponent = {
       kind: props.component.kind,
       filename: props.component.filename,
       namespace: props.component.namespace,
       thinking: props.component.thinking,
       review: pointer.value.review,
       rationale: props.component.rationale,
-      tables: validTables,
+      tables: AutoBeDatabaseComponentReviewProgrammer.execute({
+        component: props.component,
+        revises: pointer.value.revises,
+      }),
     };
-
     return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
-      review: component.review,
-      revises,
-      modification: component,
+      review: modification.review,
+      revises: pointer.value.revises,
+      modification,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,
@@ -180,7 +137,8 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  otherTableNames: Set<string>;
+  component: AutoBeDatabaseComponent;
+  otherTables: AutoBeDatabaseComponentTableDesign[];
   prefix: string | null;
   build: (next: IAutoBeDatabaseComponentReviewApplication.IComplete) => void;
 }): IAgenticaController.IClass {
@@ -197,21 +155,21 @@ function createController(props: {
         request: result.data.request,
       });
 
-    // validate revise prefix
     const errors: IValidation.IError[] = [];
-    const tableNames: string[] = result.data.request.revises
-      .map((r) =>
-        r.type === "create" ? r.table : r.type === "update" ? r.updated : null,
-      )
-      .filter((name): name is string => name !== null);
-    AutoBeDatabaseComponentProgrammer.validatePrefix({
+    AutoBeDatabaseComponentReviewProgrammer.validate({
       errors,
-      path: "request.revises",
       prefix: props.prefix,
-      tableNames,
+      path: "$input.request.revises",
+      revises: result.data.request.revises,
+      component: props.component,
+      otherTables: props.otherTables,
     });
-    if (errors.length > 0) return { success: false, data: result.data, errors };
-
+    if (errors.length > 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
     return result;
   };
 

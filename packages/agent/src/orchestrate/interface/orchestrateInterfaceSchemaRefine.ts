@@ -167,7 +167,7 @@ async function process(
 
     // Apply refines to generate the enriched schema content
     const content: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-      AutoBeInterfaceSchemaRefineProgrammer.refine({
+      AutoBeInterfaceSchemaRefineProgrammer.execute({
         schema: props.refineSchema,
         databaseSchema: pointer.value.databaseSchema,
         specification: pointer.value.specification,
@@ -229,9 +229,12 @@ function createController(
       });
 
     const errors: IValidation.IError[] = [];
-    AutoBeInterfaceSchemaRefineProgrammer.validate(ctx, {
+    AutoBeInterfaceSchemaRefineProgrammer.validate({
       typeName: props.typeName,
       schema: props.schema,
+      everyModels:
+        ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [],
+      databaseSchema: result.data.request.databaseSchema,
       refines: result.data.request.refines,
       errors,
       path: `$input.request`,

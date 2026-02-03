@@ -1,11 +1,9 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeActor,
   AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseComponent,
-  AutoBeDatabaseComponentTableDesign,
-  AutoBeDatabaseComponentTableRevise,
   AutoBeEventSource,
-  AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -13,9 +11,9 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationReviewHistory } from "./histories/transformPrismaAuthorizationReviewHistory";
+import { AutoBeDatabaseAuthorizationReviewProgrammer } from "./programmers/AutoBeDatabaseAuthorizationReviewProgrammer";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 import { IAutoBeDatabaseAuthorizationReviewApplication } from "./structures/IAutoBeDatabaseAuthorizationReviewApplication";
 
@@ -23,56 +21,29 @@ export async function orchestratePrismaAuthorizationReview(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    components: AutoBeDatabaseComponent[];
+    component: AutoBeDatabaseComponent;
   },
-): Promise<AutoBeDatabaseComponent[]> {
+): Promise<AutoBeDatabaseComponent> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const allTableNames: string[] = props.components.flatMap((c) =>
-    c.tables.map((t) => t.name),
-  );
-  const progress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: props.components.length,
-  };
+  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
 
-  const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
-    ctx,
-    props.components.map((component) => async (promptCacheKey) => {
-      const otherTableNames: Set<string> = new Set(
-        props.components
-          .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables.map((t) => t.name)),
-      );
-
-      const event: AutoBeDatabaseAuthorizationReviewEvent = await process(
-        ctx,
-        {
-          component,
-          otherTableNames,
-          allTableNames,
-          instruction: props.instruction,
-          prefix,
-          progress,
-          promptCacheKey,
-        },
-      );
-      ctx.dispatch(event);
-      return event.modification;
-    }),
-  );
-  return AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
+  const event: AutoBeDatabaseAuthorizationReviewEvent = await process(ctx, {
+    component: props.component,
+    actors,
+    instruction: props.instruction,
+    prefix,
+  });
+  ctx.dispatch(event);
+  return event.modification;
 }
 
 async function process(
   ctx: AutoBeContext,
   props: {
+    actors: AutoBeAnalyzeActor[];
     component: AutoBeDatabaseComponent;
-    otherTableNames: Set<string>;
-    allTableNames: string[];
     instruction: string;
     prefix: string | null;
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseAuthorizationReviewEvent> {
   const preliminary: AutoBePreliminaryController<
@@ -97,60 +68,23 @@ async function process(
       source: SOURCE,
       controller: createController({
         preliminary,
-        otherTableNames: props.otherTableNames,
+        prefix: props.prefix,
+        actors: props.actors,
+        component: props.component,
         build: (next) => {
           pointer.value = next;
         },
       }),
       enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
       ...transformPrismaAuthorizationReviewHistory({
         component: props.component,
-        allTableNames: props.allTableNames,
+        actors: props.actors,
         instruction: props.instruction,
         prefix: props.prefix,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
-
-    // Apply revises to the component's tables
-    const tableMap = new Map<string, AutoBeDatabaseComponentTableDesign>(
-      props.component.tables.map((t) => [t.name, t]),
-    );
-
-    const revises: AutoBeDatabaseComponentTableRevise[] = [];
-    for (const revise of pointer.value.revises) {
-      if (revise.type === "create") {
-        // Only add if not in other components
-        if (!props.otherTableNames.has(revise.table)) {
-          tableMap.set(revise.table, {
-            name: revise.table,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "update") {
-        // Remove original, add updated (if not in other components)
-        tableMap.delete(revise.original);
-        if (!props.otherTableNames.has(revise.updated)) {
-          tableMap.set(revise.updated, {
-            name: revise.updated,
-            description: revise.description,
-          });
-          revises.push(revise);
-        }
-      } else if (revise.type === "erase") {
-        tableMap.delete(revise.table);
-        revises.push(revise);
-      } else {
-        revise satisfies never;
-      }
-    }
-
-    const validTables: AutoBeDatabaseComponentTableDesign[] = Array.from(
-      tableMap.values(),
-    );
 
     const component: AutoBeDatabaseComponent = {
       kind: props.component.kind,
@@ -159,20 +93,25 @@ async function process(
       thinking: props.component.thinking,
       review: pointer.value.review,
       rationale: props.component.rationale,
-      tables: validTables,
+      tables: AutoBeDatabaseAuthorizationReviewProgrammer.execute({
+        component: props.component,
+        revises: pointer.value.revises,
+        actors: props.actors,
+        prefix: props.prefix,
+      }),
     };
+    const [modification] =
+      AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([component]);
 
     return out(result)({
       type: SOURCE,
       id: v7(),
       created_at: new Date().toISOString(),
-      review: component.review,
-      revises,
-      modification: component,
+      review: modification.review,
+      revises: pointer.value.revises,
+      modification,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
       step: ctx.state().analyze?.step ?? 0,
     });
   });
@@ -182,7 +121,9 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
-  otherTableNames: Set<string>;
+  prefix: string | null;
+  actors: AutoBeAnalyzeActor[];
+  component: AutoBeDatabaseComponent;
   build: (
     next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,
   ) => void;
@@ -195,13 +136,27 @@ function createController(props: {
         input,
       );
     if (result.success === false) return result;
-
-    if (result.data.request.type !== "complete")
+    else if (result.data.request.type !== "complete")
       return props.preliminary.validate({
         thinking: result.data.thinking,
         request: result.data.request,
       });
 
+    const errors: IValidation.IError[] = [];
+    AutoBeDatabaseAuthorizationReviewProgrammer.validate({
+      errors,
+      prefix: props.prefix,
+      revises: result.data.request.revises,
+      path: "$input.request.revises",
+      component: props.component,
+      actors: props.actors,
+    });
+    if (errors.length > 0)
+      return {
+        success: false,
+        data: result.data,
+        errors,
+      };
     return result;
   };
 

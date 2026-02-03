@@ -3026,6 +3026,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
   export interface IComplete {
     type: "complete";
     plan: string;              // Implementation strategy
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];   // DB field selection mapping
+    transformMappings: AutoBeRealizeTransformerTransformMapping[]; // DTO property transformation mapping
     draft: string;             // Initial code
     revise: IReviseProps;      // Review and final code
   }

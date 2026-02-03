@@ -26,11 +26,11 @@ export async function orchestrateInterfaceSchemaCasting(
   ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
     instruction: string;
     progress: AutoBeProgressEventBase;
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> {
+): Promise<Record<string, AutoBeOpenApi.IJsonSchema>> {
   // Filter to only process non-object type schemas (potential degenerate primitives)
   const typeNames: string[] = Object.keys(props.schemas).filter(
     (k) =>
@@ -40,7 +40,7 @@ export async function orchestrateInterfaceSchemaCasting(
   );
   props.progress.total += typeNames.length;
 
-  const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+  const x: Record<string, AutoBeOpenApi.IJsonSchema> = {};
   await executeCachedBatch(
     ctx,
     typeNames.map((it) => async (promptCacheKey) => {
@@ -55,18 +55,16 @@ export async function orchestrateInterfaceSchemaCasting(
             (op.responseBody && predicate(op.responseBody.typeName)),
         );
 
-      const originalSchema: AutoBeOpenApi.IJsonSchemaDescriptive =
-        props.schemas[it];
-      const refined: AutoBeOpenApi.IJsonSchemaDescriptive | null =
-        await process(ctx, {
-          instruction: props.instruction,
-          document: props.document,
-          typeName: it,
-          refineOperations,
-          originalSchema,
-          progress: props.progress,
-          promptCacheKey,
-        });
+      const originalSchema: AutoBeOpenApi.IJsonSchema = props.schemas[it];
+      const refined: AutoBeOpenApi.IJsonSchema | null = await process(ctx, {
+        instruction: props.instruction,
+        document: props.document,
+        typeName: it,
+        refineOperations,
+        originalSchema,
+        progress: props.progress,
+        promptCacheKey,
+      });
       if (refined !== null) x[it] = refined;
     }),
   );
@@ -80,11 +78,11 @@ async function process(
     document: AutoBeOpenApi.IDocument;
     typeName: string;
     refineOperations: AutoBeOpenApi.IOperation[];
-    originalSchema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    originalSchema: AutoBeOpenApi.IJsonSchema;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeOpenApi.IJsonSchemaDescriptive | null> {
+): Promise<AutoBeOpenApi.IJsonSchema | null> {
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -115,7 +113,11 @@ async function process(
     },
     local: {
       interfaceOperations: props.refineOperations,
-      interfaceSchemas: { [props.typeName]: props.originalSchema },
+      interfaceSchemas: {
+        // actually not "AutoBeOpenApi.IJsonSchemaDescriptive" type
+        [props.typeName]:
+          props.originalSchema as AutoBeOpenApi.IJsonSchemaDescriptive,
+      },
       databaseSchemas:
         AutoBeInterfaceSchemaProgrammer.getNeighborDatabaseSchemas({
           typeName: props.typeName,
@@ -187,7 +189,7 @@ function createController(
   ctx: AutoBeContext,
   props: {
     typeName: string;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+    schema: AutoBeOpenApi.IJsonSchema;
     operations: AutoBeOpenApi.IOperation[];
     pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null>;
     preliminary: AutoBePreliminaryController<
@@ -202,6 +204,9 @@ function createController(
     >;
   },
 ): IAgenticaController.IClass {
+  const everyModels: AutoBeDatabase.IModel[] =
+    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
+
   const validate: Validator = (next) => {
     const result: IValidation<IAutoBeInterfaceSchemaCastingApplication.IProps> =
       typia.validate<IAutoBeInterfaceSchemaCastingApplication.IProps>(next);
@@ -213,11 +218,26 @@ function createController(
         thinking: result.data.thinking,
         request: result.data.request,
       });
-    else return result;
+
+    const errors: IValidation.IError[] = [];
+    if (result.data.request.casting !== null)
+      AutoBeInterfaceSchemaProgrammer.validate({
+        path: "$input.request.design",
+        errors,
+        everyModels,
+        operations: props.operations,
+        typeName: props.typeName,
+        design: result.data.request.casting,
+      });
+    if (errors.length !== 0)
+      return {
+        success: false,
+        errors,
+        data: next,
+      };
+    return result;
   };
 
-  const everyModels: AutoBeDatabase.IModel[] =
-    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
   const application: ILlmApplication = props.preliminary.fixApplication(
     typia.llm.application<IAutoBeInterfaceSchemaCastingApplication>({
       validate: {
