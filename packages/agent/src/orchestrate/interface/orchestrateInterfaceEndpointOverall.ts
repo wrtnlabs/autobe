@@ -12,6 +12,7 @@ import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHi
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestrateInterfaceEndpointWrite } from "./orchestrateInterfaceEndpointWrite";
+import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 
 interface IProgrammer {
   kind: AutoBeInterfaceEndpointEvent["kind"];
@@ -66,5 +67,12 @@ export const orchestrateInterfaceEndpointOverall = async (
     AutoBeOpenApiEndpointComparator.equals,
   )
     .toJSON()
-    .map((it) => it.second);
+    .map((it) => it.second)
+    .filter((design) =>
+      AutoBeInterfaceEndpointProgrammer.filter({
+        design,
+        kind: props.programmer.kind,
+        actors: ctx.state().analyze?.actors ?? [],
+      }),
+    );
 };
