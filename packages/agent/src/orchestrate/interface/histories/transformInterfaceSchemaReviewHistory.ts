@@ -2,6 +2,7 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
@@ -25,6 +26,12 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
+    {
+      type: "systemMessage",
+      id: v7(),
+      created_at: new Date().toISOString(),
+      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+    },
     {
       type: "systemMessage",
       id: v7(),

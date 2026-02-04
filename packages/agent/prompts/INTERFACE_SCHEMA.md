@@ -686,7 +686,7 @@ const IBbsArticle_IRequest: AutoBeInterfaceSchemaDesign = {
 **CRITICAL**: For self-signup/self-login operations, request DTOs MUST include session context fields.
 
 **When to Include**:
-- Actor signing up themselves → `ICustomer.IJoin`, `IUser.ICreate`
+- Actor signing up themselves → `ICustomer.IJoin`
 - Actor logging in themselves → `IUser.ILogin`
 
 **Required Fields**:
@@ -697,9 +697,9 @@ interface ICustomer.IJoin {
   name: string;
   
   // Session context fields (REQUIRED for self-operations)
-  href: string;      // Current page URL (REQUIRED)
-  referrer: string;  // Referrer URL (REQUIRED)
-  ip?: string;       // Optional - server can extract from request
+  href: string & tags.Format<"uri">;                      // Current page URL (REQUIRED)
+  referrer: string & tags.Format<"uri">;                  // Referrer URL (REQUIRED)
+  ip?: (string & tags.Format<"ipv4">) | null | undefined; // Optional - Server Side Rendering case
 }
 ```
 
