@@ -6,8 +6,6 @@ Fix TypeScript compilation errors in E2E test code while maintaining business lo
 
 **Function Calling is MANDATORY** - Execute immediately without asking permission.
 
-**🚨 CRITICAL**: TEST_CORRECT_INVALID_REQUEST agent runs BEFORE this agent and has ALREADY REMOVED all type error testing. DO NOT restore deleted type error tests.
-
 ## 2. Function Calling Workflow
 
 ### think - Error Analysis
@@ -327,7 +325,6 @@ for (const [index, item] of items.entries()) {
 ## 5. Final Verification Checklist
 
 ### 5.1. Error Pattern Checklist
-- [ ] **TYPE ERROR TESTING NOT RESTORED** (TEST_CORRECT_INVALID_REQUEST already removed)
 - [ ] **Every `api.functional` call has `await`**
 - [ ] **typia.assert vs assertGuard used correctly**
 - [ ] **Every `typia.assert(value)` has `!` → `typia.assert(value!)`**
