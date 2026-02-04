@@ -26,6 +26,8 @@ Produce two outputs:
 { property: "title", how: "input?.title ?? RandomGenerator.paragraph({ sentences: 3 })" }
 ```
 
+**Exception:** If DTO is `Record<string, T>` (dynamic keys), set `mappings: []` (empty array).
+
 ### 2.2. Phase 2: Draft
 
 Write complete prepare function following your plan.
