@@ -15,7 +15,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
+import { transformInterfaceSchemaWriteHistory } from "./histories/transformInterfaceSchemaWriteHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
@@ -155,7 +155,7 @@ async function process(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaHistory({
+      ...transformInterfaceSchemaWriteHistory({
         preliminary,
         operations: props.operations,
         instruction: props.instruction,
