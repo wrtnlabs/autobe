@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
@@ -66,14 +67,16 @@ export const orchestrateTestPrepareWrite = async (
       createTypes.map((entry) => async (promptCacheKey) => {
         try {
           const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
-            await process(ctx, {
-              document: props.document,
-              typeName: entry.key,
-              schema: entry.value,
-              instruction: props.instruction,
-              promptCacheKey,
-              progress: props.progress,
-            });
+            await forceRetry(() =>
+              process(ctx, {
+                document: props.document,
+                typeName: entry.key,
+                schema: entry.value,
+                instruction: props.instruction,
+                promptCacheKey,
+                progress: props.progress,
+              }),
+            );
           ctx.dispatch(event);
           return {
             type: "prepare",

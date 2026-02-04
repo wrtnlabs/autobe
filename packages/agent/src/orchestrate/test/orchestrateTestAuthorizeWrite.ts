@@ -12,6 +12,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestAuthorizeWriteHistory } from "./histories/transformTestAuthorizeWriteHistory";
@@ -50,20 +51,22 @@ export const orchestrateTestAuthorizeWrite = async (
           path: operation.path,
         },
       });
-      const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
-        await process(ctx, {
-          operation,
+      return await forceRetry(async () => {
+        const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
+          await process(ctx, {
+            operation,
+            artifacts,
+            progress: props.progress,
+            promptCacheKey,
+          });
+        ctx.dispatch(event);
+        return {
+          type: "authorize",
           artifacts,
-          progress: props.progress,
-          promptCacheKey,
-        });
-      ctx.dispatch(event);
-      return {
-        type: "authorize",
-        artifacts,
-        function: event.function,
-        operation,
-      };
+          function: event.function,
+          operation,
+        };
+      });
     }),
   );
 };

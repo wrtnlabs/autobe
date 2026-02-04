@@ -61,6 +61,23 @@ ${Object.keys(props.schema.properties).map(
     `;
   }
 
+  export function writeRandomCode(props: {
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+  }): string {
+    return StringUtil.trim`
+      /**
+       * @todo Failed to generate by AI. Must be implemented human.
+       */
+      export function ${getFunctionName(props.typeName)}(
+        input?: DeepPartial<${props.typeName}> | undefined,
+      ): ${props.typeName} {
+        input;
+        return typia.random<${props.typeName}>();
+      }
+    `;
+  }
+
   export async function writeStructures(
     ctx: AutoBeContext,
     typeName: string,
