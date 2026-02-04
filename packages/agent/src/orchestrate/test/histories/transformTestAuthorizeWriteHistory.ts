@@ -65,10 +65,9 @@ export async function transformTestAuthorizeWriteHistory(
 
           ${AutoBeTestAuthorizeProgrammer.writeTemplate({
             operation: props.operation,
-            schema:
-              ctx.state().interface!.document.components.schemas[
-                props.operation.requestBody!.typeName
-              ],
+            schema: ctx.state().interface!.document.components.schemas[
+              props.operation.requestBody!.typeName
+            ] as AutoBeOpenApi.IJsonSchema.IObject,
           })}
         `,
       },

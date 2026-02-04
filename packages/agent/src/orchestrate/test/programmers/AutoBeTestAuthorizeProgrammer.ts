@@ -4,7 +4,7 @@ import {
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
 import { Escaper } from "typia/lib/utils/Escaper";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
@@ -42,7 +42,7 @@ export namespace AutoBeTestAuthorizeProgrammer {
   ---------------------------------------------------------------- */
   export function writeTemplate(props: {
     operation: AutoBeOpenApi.IOperation;
-    schema: AutoBeOpenApi.IJsonSchema;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
   }): string {
     if (props.operation.requestBody === null)
       throw new Error("Authorization operation needs request body.");
@@ -52,39 +52,6 @@ export namespace AutoBeTestAuthorizeProgrammer {
     const functionName: string = getFunctionName(props.operation);
     const accessor: string[] = props.operation.accessor!;
 
-    if (props.operation.authorizationActor !== "join")
-      return StringUtil.trim`
-        export async function ${functionName}(
-          connection: api.IConnection,
-          props: {
-            body: ${props.operation.requestBody.typeName}
-          },
-        ): Promise<${props.operation.responseBody.typeName}> {
-          return await api.functional.${accessor.join(".")}(
-            connection,
-            { ... },
-          );
-        }
-      `;
-    else if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false)
-      return StringUtil.trim`
-        export async function ${functionName}(
-          connection: api.IConnection,
-          props: {
-            body?: ${props.operation.requestBody.typeName}
-          },
-        ): Promise<${props.operation.responseBody.typeName}> {
-          const joinInput = {
-            ...{{YOUR_PROPERTIES_HERE}}
-          } satisfies ${props.operation.requestBody.typeName};
-          return await api.functional.${accessor.join(".")}(
-            connection,
-            {
-              body: joinInput,
-            },
-          );
-        }
-      `;
     return StringUtil.trim`
       export async function ${functionName}(
         connection: api.IConnection,
@@ -92,7 +59,7 @@ export namespace AutoBeTestAuthorizeProgrammer {
           body?: ${props.operation.requestBody.typeName}
         },
       ): Promise<${props.operation.responseBody.typeName}> {
-        const joinInput = {
+        const input = {
 ${Object.keys(props.schema.properties).map(
   (k) => `    ${Escaper.variable(k) ? k : `[${JSON.stringify(k)}]`}: ...,`,
 )}
@@ -100,7 +67,7 @@ ${Object.keys(props.schema.properties).map(
         return await api.functional.${accessor.join(".")}(
           connection,
           {
-            body: joinInput,
+            body: input,
           },
         );
       }

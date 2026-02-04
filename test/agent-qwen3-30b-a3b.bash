@@ -42,3 +42,9 @@ pnpm run build:prompt && pnpm ts-node src/agent/test.generate.ts --vendor qwen/q
 pnpm run build:prompt && pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > test.generate.bbs.log
 pnpm run build:prompt && pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > test.generate.reddit.log
 pnpm run build:prompt && pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > test.generate.shopping.log
+
+# authorize
+pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > test.authorize.todo.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > test.authorize.bbs.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > test.authorize.reddit.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > test.authorize.shopping.log

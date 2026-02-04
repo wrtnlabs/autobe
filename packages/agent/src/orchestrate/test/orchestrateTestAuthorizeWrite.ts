@@ -5,6 +5,7 @@ import {
   AutoBeTestAuthorizeFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
@@ -39,8 +40,12 @@ export const orchestrateTestAuthorizeWrite = async (
     props.document.operations.filter(
       (op) =>
         op.authorizationType !== null &&
+        op.parameters.length === 0 &&
         op.requestBody !== null &&
-        op.responseBody !== null,
+        op.responseBody !== null &&
+        AutoBeOpenApiTypeChecker.isObject(
+          props.document.components.schemas[op.requestBody.typeName] ?? {},
+        ),
     );
   return await executeCachedBatch(
     ctx,
