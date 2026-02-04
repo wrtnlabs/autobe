@@ -100,6 +100,8 @@ export const validate_test_operation = async (props: {
     created_at: new Date().toISOString(),
   });
 
+  console.log(scenarios.length, "->", testOperations.length);
+
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
