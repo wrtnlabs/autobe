@@ -6,7 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformInterfaceSchemaHistory = (props: {
+export const transformInterfaceSchemaWriteHistory = (props: {
   operations: AutoBeOpenApi.IOperation[];
   typeName: string;
   otherTypeNames: string[];
