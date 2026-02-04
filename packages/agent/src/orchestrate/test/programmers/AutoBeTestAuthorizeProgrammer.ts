@@ -52,6 +52,22 @@ export namespace AutoBeTestAuthorizeProgrammer {
     const functionName: string = getFunctionName(props.operation);
     const accessor: string[] = props.operation.accessor!;
 
+    if (props.operation.authorizationActor !== "join")
+      return StringUtil.trim`
+        export async function ${functionName}(
+          connection: api.IConnection,
+          props: {
+            body: ${props.operation.requestBody.typeName}
+          },
+        ): Promise<${props.operation.responseBody.typeName}> {
+          return await api.functional.${accessor.join(".")}(
+            connection,
+            {
+              body: props.body,
+            },
+          );
+        }
+      `;
     return StringUtil.trim`
       export async function ${functionName}(
         connection: api.IConnection,
@@ -59,7 +75,7 @@ export namespace AutoBeTestAuthorizeProgrammer {
           body?: ${props.operation.requestBody.typeName}
         },
       ): Promise<${props.operation.responseBody.typeName}> {
-        const input = {
+        const joinInput = {
 ${Object.keys(props.schema.properties).map(
   (k) => `    ${Escaper.variable(k) ? k : `[${JSON.stringify(k)}]`}: ...,`,
 )}
@@ -67,7 +83,7 @@ ${Object.keys(props.schema.properties).map(
         return await api.functional.${accessor.join(".")}(
           connection,
           {
-            body: input,
+            body: joinInput,
           },
         );
       }

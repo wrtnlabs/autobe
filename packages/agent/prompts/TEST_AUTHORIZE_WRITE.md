@@ -15,50 +15,40 @@ write({
 });
 ```
 
-Function name pattern: `authorize_{actor}_{authType}` (e.g., `authorize_user_login`, `authorize_admin_join`)
+Function name pattern: `authorize_{actor}_join` (e.g., `authorize_user_join`, `authorize_admin_join`)
 
-## 2. Authorization Types
-
-- **login**: Authenticate existing user with credentials
-- **join**: Register new user and obtain auth token
-- **refresh**: Renew expired authentication token
-- **oauth**, **apikey**, **mfa**, **session**, **custom**: Domain-specific types
-
-Analyze the `authorizationType` field and implement appropriate logic.
-
-## 3. Function Declaration Rules
+## 2. Function Declaration Rules
 
 ### ✅ CORRECT: Async Function Declaration
 ```typescript
-export async function authorize_user_login(
+export async function authorize_user_join(
   connection: api.IConnection,
-  props: { body: IUser.ILogin }
+  props: { body?: DeepPartial<IUser.IJoin> }
 ): Promise<IUser.IAuthorized> {
-  return await api.functional.auth.user.login(connection, { body: props.body });
+  // ...
 }
 ```
 
 ### ❌ FORBIDDEN Patterns
 ```typescript
 // ❌ Arrow function - COMPILATION WILL FAIL
-export const authorize_user_login = async (...) => { ... };
+export const authorize_user_join = async (...) => { ... };
 
 // ❌ Namespace wrapper - COMPILATION WILL FAIL
-export namespace AuthorizeUserLogin {
-  export async function authorize_user_login(...) { ... }
+export namespace AuthorizeUserJoin {
+  export async function authorize_user_join(...) { ... }
 }
 
 // ❌ Class wrapper - COMPILATION WILL FAIL
-export class AuthorizeUserLogin {
-  public static async authorize_user_login(...) { ... }
+export class AuthorizeUserJoin {
+  public static async authorize_user_join(...) { ... }
 }
 ```
 
-Validation requires exact pattern: `"export async function authorize_xxx("`
+Validation requires exact pattern: `"export async function authorize_xxx_join("`
 
-## 4. Implementation Patterns
+## 3. Implementation Pattern
 
-### JOIN Operation
 ```typescript
 export async function authorize_user_join(
   connection: api.IConnection,
@@ -78,17 +68,7 @@ export async function authorize_user_join(
 }
 ```
 
-### LOGIN Operation
-```typescript
-export async function authorize_user_login(
-  connection: api.IConnection,
-  props: { body: IUser.ILogin },
-): Promise<IUser.IAuthorized> {
-  return await api.functional.auth.user.login(connection, { body: props.body });
-}
-```
-
-## 5. Critical Rules
+## 4. Critical Rules
 
 1. **No imports**: Start directly with `export async function` - all dependencies pre-imported
 2. **No try-catch**: Let errors propagate naturally
@@ -96,7 +76,7 @@ export async function authorize_user_login(
 4. **Type safety**: No `any` or type assertions
 5. **Use exact SDK function**: Match the provided SDK function path
 
-## 6. Random Data Generation
+## 5. Random Data Generation
 
 ```typescript
 // Format-based (typia.random)
@@ -115,20 +95,20 @@ password: props.body?.password ?? RandomGenerator.alphaNumeric(16)
 language: props.body?.language ?? RandomGenerator.pick(["en", "ko", "ja"])
 ```
 
-## 7. Immutability (const only)
+## 6. Immutability (const only)
 
 ```typescript
 // ❌ WRONG
 let result;
-result = await api.functional.auth.login(...);
+result = await api.functional.auth.join(...);
 
 // ✅ CORRECT
-const result = await api.functional.auth.login(...);
+const result = await api.functional.auth.join(...);
 
 // ❌ WRONG: Conditional with let
-let token;
-if (condition) { token = a; } else { token = b; }
+let value;
+if (condition) { value = a; } else { value = b; }
 
 // ✅ CORRECT: Use ternary
-const token = condition ? a : b;
+const value = condition ? a : b;
 ```
