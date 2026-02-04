@@ -60,5 +60,8 @@ export const validate_test_generate = async (props: {
       ["test.generate.json"]: JSON.stringify(generates),
     },
   });
+
+  console.log("Completed", prepares.length, "->", generates.length);
+
   return generates;
 };
