@@ -348,12 +348,78 @@ created_at: new Date().toISOString(),
 updated_at: new Date().toISOString(),
 ```
 
+## 🚨 CRITICAL: DeepPartial Semantics - Nested Properties Are Also Partial
+
+### Understanding DeepPartial
+
+**`DeepPartial<T>` makes ALL nested properties optional recursively**, not just top-level properties. This is fundamentally different from `Partial<T>`:
+
+```typescript
+// Partial<T> - only top-level properties are optional
+type Partial<IOrder.ICreate> = {
+  items?: IOrderItem.ICreate[];  // Array itself is optional, but items inside are complete
+}
+
+// DeepPartial<T> - ALL nested properties are optional recursively
+type DeepPartial<IOrder.ICreate> = {
+  items?: Array<{
+    quantity?: number;      // Each property inside array elements is ALSO optional!
+    description?: string;   // This too!
+  }>;
+}
+```
+
+### 🚫 DEADLY MISTAKE: Ignoring Nested Partial Properties
+
+```typescript
+// ❌ WRONG: This pattern ignores that array elements are also partial!
+items: input.items ?? ArrayUtil.repeat(3, () => ({
+  quantity: 1,
+  description: RandomGenerator.content(),
+}))
+
+// WHY THIS IS WRONG:
+// When user provides input.items = [{ quantity: 5 }] (without description)
+// - input.items exists, so ?? doesn't trigger
+// - You return [{ quantity: 5 }] directly - MISSING description property!
+// - Compilation or runtime error: missing required property
+```
+
+### ✅ CORRECT: Apply Nullish Coalescing to EVERY Nested Property
+
+**You MUST iterate through array elements and apply nullish coalescing to each property individually:**
+
+```typescript
+// ✅ CORRECT: Handle partial properties at EVERY nesting level
+items: input?.items
+  ? input.items.map((item) => ({
+      // Each property must have its own fallback!
+      quantity: item.quantity ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+      description: item.description ?? RandomGenerator.content(),
+    }))
+  : ArrayUtil.repeat(
+      typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+      () => ({
+        quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+        description: RandomGenerator.content(),
+      })
+    ),
+```
+
+### Why This Pattern Is Mandatory
+
+1. **User may provide partial data**: `input.items = [{ quantity: 5 }]` - has array, but items lack some properties
+2. **Each element is `DeepPartial`**: Properties like `item.description` can be `undefined`
+3. **Must fill missing properties**: Map through and apply `??` to each property individually
+4. **Guarantees complete objects**: Result always has all required properties
+
 ## Handling Nested Structures
 
 ### Nested Objects
 
 ```typescript
 // For nested objects, handle both input provided and auto-generated cases
+// CRITICAL: Even when input.address exists, its properties may be undefined!
 address: input?.address ? {
   street: input.address.street ?? RandomGenerator.paragraph({ sentences: 1 }),
   city: input.address.city ?? RandomGenerator.name(1),
@@ -365,22 +431,82 @@ address: input?.address ? {
 },
 ```
 
-### Arrays
+### Arrays with Nested Objects
+
+**CRITICAL PATTERN: Arrays require special handling because:**
+1. The array itself may be undefined (`input?.items`)
+2. Each element in the array is ALSO `DeepPartial` - its properties may be undefined
+3. You MUST apply nullish coalescing to EVERY property of EVERY element
 
 ```typescript
-// For arrays, map through input or generate random array
+// ✅ CORRECT: Full DeepPartial handling for arrays
 items: input?.items
-  ? input.items.map(item => ({
-      productId: item.productId ?? typia.random<string & tags.Format<"uuid">>(),
+  ? input.items.map((item) => ({
+      // MUST apply ?? to each property - item is DeepPartial!
       quantity: item.quantity ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+      description: item.description ?? RandomGenerator.content(),
     }))
   : ArrayUtil.repeat(
       typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
       () => ({
-        productId: typia.random<string & tags.Format<"uuid">>(),
         quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+        description: RandomGenerator.content(),
       })
     ),
+
+// ❌ WRONG: Returning input.items directly ignores that elements are partial
+items: input?.items ?? ArrayUtil.repeat(3, () => ({
+  quantity: 1,
+  description: RandomGenerator.content(),
+}))
+// This fails when input.items = [{ quantity: 5 }] - missing description!
+```
+
+### Deeply Nested Arrays (Arrays within Objects within Arrays)
+
+For deeply nested structures, apply the same pattern recursively:
+
+```typescript
+// Order with items, each item has variants (array within array)
+order: input?.order ? {
+  id: input.order.id ?? typia.random<string & tags.Format<"uuid">>(),
+  items: input.order.items
+    ? input.order.items.map((item) => ({
+        product_id: item.product_id ?? typia.random<string & tags.Format<"uuid">>(),
+        quantity: item.quantity ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+        // Nested array within item - apply same pattern!
+        variants: item.variants
+          ? item.variants.map((variant) => ({
+              size: variant.size ?? RandomGenerator.pick(["S", "M", "L", "XL"] as const),
+              color: variant.color ?? RandomGenerator.pick(["red", "blue", "green"] as const),
+            }))
+          : ArrayUtil.repeat(
+              typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<3>>(),
+              () => ({
+                size: RandomGenerator.pick(["S", "M", "L", "XL"] as const),
+                color: RandomGenerator.pick(["red", "blue", "green"] as const),
+              })
+            ),
+      }))
+    : ArrayUtil.repeat(
+        typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+        () => ({
+          product_id: typia.random<string & tags.Format<"uuid">>(),
+          quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+          variants: ArrayUtil.repeat(
+            typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<3>>(),
+            () => ({
+              size: RandomGenerator.pick(["S", "M", "L", "XL"] as const),
+              color: RandomGenerator.pick(["red", "blue", "green"] as const),
+            })
+          ),
+        })
+      ),
+} : {
+  // Full auto-generation when order is not provided
+  id: typia.random<string & tags.Format<"uuid">>(),
+  items: ArrayUtil.repeat(/* ... */),
+},
 ```
 
 ## CRITICAL IMPLEMENTATION RULES
@@ -433,7 +559,6 @@ export function prepare_random_order(
   return {
     customer_id: input?.customer_id ?? typia.random<string & tags.Format<"uuid">>(),
     items: input?.items ?? ArrayUtil.repeat(itemCount, () => ({
-      product_id: typia.random<string & tags.Format<"uuid">>(),
       quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
     })),
     total: totalPrice,
@@ -523,7 +648,6 @@ if (input?.items) {
   return { items: processedItems, /* ... */ };
 } else {
   const defaultItems = ArrayUtil.repeat(3, () => ({
-    product_id: typia.random<string & tags.Format<"uuid">>(),
     quantity: 1,
   }));
   return { items: defaultItems, /* ... */ };

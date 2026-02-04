@@ -67,6 +67,62 @@ input?: DeepPartial<IUserCreate>  // Never include id!
 input?: DeepPartial<IUserCreate>  // Only user-controllable fields
 ```
 
+### 1.5. **DeepPartial Semantics Error** - CRITICAL FOR NESTED STRUCTURES
+
+**🚨 DEADLY MISTAKE: Ignoring that nested object properties are ALSO partial**
+
+`DeepPartial<T>` makes ALL nested properties optional recursively - not just top-level properties. This means array elements and nested objects have ALL their properties as optional.
+
+**Error**: Returning array directly without handling partial element properties
+```typescript
+// ❌ WRONG: Array elements are DeepPartial - their properties may be undefined!
+items: input.items ?? ArrayUtil.repeat(3, () => ({
+  quantity: 1,
+  description: RandomGenerator.content(),
+}))
+
+// WHY THIS FAILS:
+// When input.items = [{ quantity: 5 }] (user provides array but missing description)
+// - input.items exists, so ?? doesn't trigger
+// - You return [{ quantity: 5 }] directly - MISSING description!
+// - Compilation or runtime error: required property missing
+```
+
+**Solution**: Map through array and apply nullish coalescing to EVERY property
+```typescript
+// ✅ CORRECT: Handle partial properties at every nesting level
+items: input?.items
+  ? input.items.map((item) => ({
+      // MUST apply ?? to each property - item is DeepPartial!
+      quantity: item.quantity ?? typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+      description: item.description ?? RandomGenerator.content(),
+    }))
+  : ArrayUtil.repeat(
+      typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<5>>(),
+      () => ({
+        quantity: typia.random<number & tags.Type<"uint32"> & tags.Minimum<1> & tags.Maximum<10>>(),
+        description: RandomGenerator.content(),
+      })
+    ),
+```
+
+**The Pattern Applies to All Nesting Levels**:
+```typescript
+// Nested object - same principle
+address: input?.address ? {
+  // Each property needs its own fallback!
+  street: input.address.street ?? RandomGenerator.paragraph({ sentences: 1 }),
+  city: input.address.city ?? RandomGenerator.name(1),
+  zipCode: input.address.zipCode ?? typia.random<string & tags.Pattern<"^[0-9]{5}$">>(),
+} : {
+  street: RandomGenerator.paragraph({ sentences: 1 }),
+  city: RandomGenerator.name(1),
+  zipCode: typia.random<string & tags.Pattern<"^[0-9]{5}$">>(),
+},
+```
+
+**Key Insight**: Never return `input.items` or `input.nestedObject` directly with `??`. Always process nested structures to fill in potentially missing properties.
+
 ### 2. **RandomGenerator API Errors**
 
 **Error**: Using non-existent methods
