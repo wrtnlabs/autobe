@@ -78,7 +78,7 @@ export const orchestrateInterface =
         instruction: props.instruction,
       });
 
-    // THE DOCUMENT WTITH SCHEMAS
+    // THE DOCUMENT WITH SCHEMAS
     const document: AutoBeOpenApi.IDocument = {
       operations,
       components: {
