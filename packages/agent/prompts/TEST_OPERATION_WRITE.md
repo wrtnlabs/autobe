@@ -181,6 +181,8 @@ typia.assert(article);  // Validate response ONCE
 // Always provide generic type
 const userId = typia.random<string & tags.Format<"uuid">>();
 const email = typia.random<string & tags.Format<"email">>();
+const ip = typia.random<string & tags.Format<"ip">>();
+const href = typia.random<string & tags.Format<"uri">>();
 const age = typia.random<number & tags.Type<"int32"> & tags.Minimum<18>>();
 
 // Tags use <> NOT ()
@@ -189,10 +191,25 @@ const age = typia.random<number & tags.Type<"int32"> & tags.Minimum<18>>();
 
 // RandomGenerator for strings
 const name = RandomGenerator.name();
-const paragraph = RandomGenerator.paragraph();
+
+// ⚠️ paragraph() and content() take OBJECT parameters, NOT numbers!
+RandomGenerator.paragraph()                          // default
+RandomGenerator.paragraph({ sentences: 5 })          // 5 words
+RandomGenerator.content({ paragraphs: 3 })           // 3 paragraphs
 
 // Array picking - use as const
 const role = RandomGenerator.pick(["admin", "user", "guest"] as const);
+
+// String to array for character picking
+const hexChar = RandomGenerator.pick([..."0123456789ABCDEF"]);
+
+// ❌ WRONG: Casting filtered array back to readonly tuple
+const roles = ["admin", "user", "guest"] as const;
+const myRole = RandomGenerator.pick(roles);
+const others = roles.filter(r => r !== myRole) as typeof roles;  // ERROR!
+
+// ✅ CORRECT: Don't cast, work with the filtered array type
+const others = roles.filter(r => r !== myRole);  // ("admin" | "user" | "guest")[]
 ```
 
 ### 5.4. Nullable Handling
@@ -216,6 +233,14 @@ if (found) {
 // typia.assert vs typia.assertGuard
 const val1 = typia.assert(nullable!);     // Returns value - use for assignment
 typia.assertGuard(nullable!);              // No return - narrows original variable
+
+// ❌ WRONG: Using typia.assert without assignment
+typia.assert(item!);  // Returns value but not assigned!
+console.log(item.name);  // ERROR: item still nullable
+
+// ✅ CORRECT: Either use return value OR use assertGuard
+const safeItem = typia.assert(item!);  // Option 1
+typia.assertGuard(item!);              // Option 2 - narrows item itself
 ```
 
 ---
@@ -235,7 +260,31 @@ typia.assertGuard(nullable!);              // No return - narrows original varia
 | **Error Testing** | HTTP status codes (404, 403, 500) |
 | **Message Validation** | Error message content checking |
 
-### 6.2. Type Error Testing - AUTOMATIC FAILURE
+### 6.2. TestValidator.error - async/await Rule
+
+```typescript
+// ✅ Async callback → MUST use await
+await TestValidator.error("should fail", async () => {
+  await api.functional.users.create(conn, { body });
+});
+
+// ✅ Sync callback → NO await
+TestValidator.error("should throw", () => {
+  throw new Error("error");
+});
+
+// ❌ CRITICAL: Async without await = test passes even if no error!
+TestValidator.error("broken", async () => {  // Missing await!
+  await api.functional.users.create(conn, { body });
+});
+
+// ❌ WRONG: Forgetting await inside async callback
+await TestValidator.error("should fail", async () => {
+  api.functional.users.delete(conn, { id });  // NO AWAIT = won't catch error!
+});
+```
+
+### 6.3. Type Error Testing - AUTOMATIC FAILURE
 
 ```typescript
 // ❌ DELETE THESE ENTIRELY - Never implement
@@ -253,7 +302,7 @@ await TestValidator.error("missing name", async () => {
 });
 ```
 
-### 6.3. Response Validation - One typia.assert() Only
+### 6.4. Response Validation - One typia.assert() Only
 
 ```typescript
 // ❌ WRONG - Redundant validation
@@ -266,6 +315,80 @@ if (typeof user.age !== 'number') throw new Error("wrong type");
 // ✅ CORRECT - typia.assert() does everything
 const user = await api.functional.users.create(adminConnection, {...});
 typia.assert(user);  // DONE - all validation complete
+```
+
+### 6.5. Immutability - const Only
+
+```typescript
+// ✅ CORRECT - All const, create new variables
+const productA = await generate_random_product(sellerConnection, {...});
+const productB = await generate_random_product(sellerConnection, {...});
+const total = productA.price + productB.price;
+
+// ✅ Use ternary for conditional
+const status = isActive ? "active" : "inactive";
+
+// ✅ Use IIFE for complex logic
+const shipping = (() => {
+  if (order.total > 100000) return 0;
+  if (order.total > 50000) return 2500;
+  return 5000;
+})();
+
+// ❌ FORBIDDEN - Never use let
+let counter = 0;
+counter = counter + 1;  // Reassignment!
+
+let body;
+body = {...};  // Deferred assignment!
+```
+
+### 6.6. Date Handling in DTOs
+
+```typescript
+// ❌ WRONG - Date objects can't serialize to JSON
+const body = {
+  createdAt: new Date(),  // WRONG!
+  updatedAt: new Date().toString(),  // WRONG format!
+} satisfies IPost.ICreate;
+
+// ✅ CORRECT - Always use toISOString()
+const body = {
+  createdAt: new Date().toISOString(),  // "2024-01-01T12:00:00.000Z"
+  expiresAt: new Date(Date.now() + 86400000).toISOString(),
+} satisfies IPost.ICreate;
+```
+
+### 6.7. Typia Tag Type Conversion
+
+When encountering type mismatches with tagged types:
+
+```typescript
+// Problem: Type mismatch with complex intersection types
+const limit: number & tags.Type<"int32"> & tags.Minimum<1> =
+  typia.random<number & tags.Type<"int32">>();  // Error!
+
+// Solution: Use satisfies pattern
+const limit = typia.random<number & tags.Type<"int32">>() satisfies number as number;
+
+// For nullable types
+const pageNumber: (number & tags.Type<"int32">) | null = getPage();
+const result = pageNumber satisfies number | null as number | null;
+
+// With nullish coalescing - wrap with parentheses
+const y = (x ?? 0) satisfies number as number;
+```
+
+### 6.8. Request Body - No Type Annotation
+
+```typescript
+// ❌ WRONG - Type annotation forces nullable checks
+const body: IUser.ICreate = {...} satisfies IUser.ICreate;
+if (body.email) {...}  // Unnecessary check
+
+// ✅ CORRECT - satisfies only, TypeScript infers actual types
+const body = {...} satisfies IUser.ICreate;
+body.email  // No nullable check needed
 ```
 
 ---
@@ -291,25 +414,6 @@ TestValidator.equals("no recommender", member.recommender, null);  // actual fir
 
 // ❌ WRONG - Type error
 TestValidator.equals("no recommender", null, member.recommender);
-```
-
-### 7.3. Error Testing
-
-```typescript
-// Async callback → MUST await
-await TestValidator.error("should fail", async () => {
-  await api.functional.users.delete(adminConnection, { id: nonExistentId });
-});
-
-// Sync callback → No await
-TestValidator.error("throws immediately", () => {
-  throw new Error("error");
-});
-
-// ❌ CRITICAL BUG - Async without await (test passes even if no error!)
-TestValidator.error("won't catch", async () => {  // Missing await!
-  await api.functional.users.delete(adminConnection, { id });
-});
 ```
 
 ---
@@ -352,7 +456,29 @@ const registration = await registerUser();
 
 ---
 
-## 9. Object Index Access Pattern
+## 9. Anti-Hallucination Protocol
+
+**Use ONLY properties that exist in DTO definitions.**
+
+```typescript
+// ❌ HALLUCINATION - Inventing properties
+user.lastLoginDate    // "It should have login tracking"
+product.manufacturer  // "Products usually have manufacturers"
+
+// ✅ REALITY - Use ONLY what's in DTO
+user.createdAt       // Actually exists
+product.name         // Actually exists
+```
+
+**When you get "Property does not exist" errors:**
+- DO NOT try variations of the property name
+- DO NOT add type assertions to bypass
+- ACCEPT that the property genuinely doesn't exist
+- REMOVE or TRANSFORM code to use real properties
+
+---
+
+## 10. Object Index Access Pattern
 
 ```typescript
 // ❌ WRONG - Missing key returns undefined
@@ -368,7 +494,7 @@ const mimeType = input.extension
 
 ---
 
-## 10. Complete Example
+## 11. Complete Example
 
 ```typescript
 /**
@@ -460,7 +586,7 @@ export async function test_api_review_update(connection: api.IConnection) {
 
 ---
 
-## 11. Final Checklist
+## 12. Final Checklist
 
 ### Before Submitting
 
@@ -498,7 +624,7 @@ export async function test_api_review_update(connection: api.IConnection) {
 
 ---
 
-## 12. Output Format
+## 13. Output Format
 
 **CRITICAL**: Generate pure TypeScript code, NOT markdown with code blocks.
 
