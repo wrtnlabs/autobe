@@ -59,5 +59,8 @@ export const validate_test_prepare = async (props: {
       ["test.prepare.json"]: JSON.stringify(prepares),
     },
   });
+
+  console.log("Completed", typeNames.length, "->", prepares.length);
+
   return prepares;
 };

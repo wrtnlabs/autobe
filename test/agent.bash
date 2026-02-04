@@ -36,3 +36,9 @@ pnpm ts-node src/agent/test.prepare.ts --vendor qwen/qwen3-next-80b-a3b-instruct
 pnpm ts-node src/agent/test.prepare.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.prepare.bbs.log
 pnpm ts-node src/agent/test.prepare.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.prepare.reddit.log
 pnpm ts-node src/agent/test.prepare.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.prepare.shopping.log
+
+# generate
+pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.generate.todo.log
+pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.generate.bbs.log
+pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.generate.reddit.log
+pnpm ts-node src/agent/test.generate.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.generate.shopping.log
