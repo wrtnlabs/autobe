@@ -61,6 +61,20 @@ ${Object.keys(props.schema.properties).map(
     `;
   }
 
+  export function writeNonPropertyCode(props: {
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+  }): string {
+    return StringUtil.trim`
+      export function ${getFunctionName(props.typeName)}(
+        input?: DeepPartial<${props.typeName}> | undefined,
+      ): ${props.typeName} {
+        input;
+        return {};
+      }
+    `;
+  }
+
   export async function writeStructures(
     ctx: AutoBeContext,
     typeName: string,
@@ -185,6 +199,22 @@ ${Object.keys(props.schema.properties).map(
     // validate property mapping plans
     const expected: Set<string> = new Set(Object.keys(props.schema.properties));
     const actual: Set<string> = new Set(props.mappings.map((m) => m.property));
+
+    if (expected.size === 0 && actual.size !== 0) {
+      errors.push({
+        path: `$input.mappings[]`,
+        value: props.mappings,
+        expected: "[] // (empty array)",
+        description: StringUtil.trim`
+          The schema does not have any regular properties to map.
+          It has only dynamic properties that is represented by
+          "Record<string, T>" type.
+
+          Therefore, the mapping plan must be an empty array.
+        `,
+      });
+      return errors;
+    }
 
     // must be, but non-existing
     for (const e of expected) {

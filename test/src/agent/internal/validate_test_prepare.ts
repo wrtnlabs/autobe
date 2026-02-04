@@ -20,17 +20,23 @@ export const validate_test_prepare = async (props: {
   const ctx: AutoBeContext = props.agent.getContext();
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
 
-  const writeProgress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: Object.entries(document.components.schemas).filter(
+  const typeNames: string[] = Object.entries(document.components.schemas)
+    .filter(
       ([k, v]) =>
         k.endsWith(".ICreate") && AutoBeOpenApiTypeChecker.isObject(v),
-    ).length,
+    )
+    .map(([k]) => k);
+  const writeProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: typeNames.length,
   };
   const correctProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
+
+  console.log("Preparing test prepare functions for", typeNames);
+
   const prepares: AutoBeTestPrepareFunction[] = await orchestrateTestPrepare(
     ctx,
     {
@@ -53,5 +59,8 @@ export const validate_test_prepare = async (props: {
       ["test.prepare.json"]: JSON.stringify(prepares),
     },
   });
+
+  console.log("Completed", typeNames.length, "->", prepares.length);
+
   return prepares;
 };

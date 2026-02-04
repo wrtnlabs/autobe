@@ -306,7 +306,10 @@ export namespace ArchiveLogger {
         ...event.scenarios.map((s) => `    - ${s.functionName}`),
       );
     else if (event.type === "testWrite")
-      content.push(`  - function: ${event.function.type}`);
+      content.push(
+        `  - function: ${event.function.type}`,
+        `  - location: ${event.function.location}`,
+      );
     else if (event.type === "testCorrect")
       content.push(
         `  - kind: ${event.kind}`,

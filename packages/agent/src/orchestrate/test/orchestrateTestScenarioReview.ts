@@ -63,6 +63,7 @@ export async function orchestrateTestScenarioReview(
           promptCacheKey,
         });
       } catch {
+        --props.progress.total;
         return scenario;
       }
     }),

@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestOperationWriteHistory } from "./histories/transformTestOperationWriteHistory";
@@ -45,58 +46,58 @@ export async function orchestrateTestOperationWrite(
        * to generate corresponding test code and progress events.
        */
       props.scenarios.map((scenario) => async (promptCacheKey) => {
-        try {
-          const artifacts: IAutoBeTestScenarioArtifacts =
-            await getTestScenarioArtifacts(ctx, scenario);
+        const artifacts: IAutoBeTestScenarioArtifacts =
+          await getTestScenarioArtifacts(ctx, scenario);
+        const usedActors: Set<string> = new Set(
+          artifacts.document.operations
+            .map((o) => o.authorizationActor)
+            .filter((a) => a !== null),
+        );
 
-          const usedActors: Set<string> = new Set(
-            artifacts.document.operations
-              .map((o) => o.authorizationActor)
-              .filter((a) => a !== null),
+        const authorizationFunctions: AutoBeTestAuthorizeFunction[] =
+          props.authorizes.filter((f) => usedActors.has(f.actor));
+        const generationFunctions: AutoBeTestGenerateFunction[] =
+          props.generates.filter((f) =>
+            artifacts.document.operations.some(
+              (o) =>
+                o.method === f.endpoint.method && o.path === f.endpoint.path,
+            ),
+          );
+        const prepareFunctions: AutoBeTestPrepareFunction[] =
+          props.prepares.filter((f) =>
+            Object.keys(artifacts.document.components.schemas).includes(
+              f.typeName,
+            ),
           );
 
-          const authorizationFunctions: AutoBeTestAuthorizeFunction[] =
-            props.authorizes.filter((f) => usedActors.has(f.actor));
-          const generationFunctions: AutoBeTestGenerateFunction[] =
-            props.generates.filter((f) =>
-              artifacts.document.operations.some(
-                (o) =>
-                  o.method === f.endpoint.method && o.path === f.endpoint.path,
-              ),
-            );
-          const prepareFunctions: AutoBeTestPrepareFunction[] =
-            props.prepares.filter((f) =>
-              Object.keys(artifacts.document.components.schemas).includes(
-                f.typeName,
-              ),
-            );
+        try {
+          return await forceRetry(async () => {
+            const event: AutoBeTestWriteEvent = await process(ctx, {
+              document: props.document,
+              scenario,
+              authorizes: authorizationFunctions,
+              generates: generationFunctions,
+              prepares: prepareFunctions,
+              artifacts,
+              progress: props.progress,
+              promptCacheKey,
+              instruction: props.instruction,
+            });
+            ctx.dispatch(event);
 
-          const event: AutoBeTestWriteEvent = await process(ctx, {
-            document: props.document,
-            scenario,
-            authorizes: authorizationFunctions,
-            generates: generationFunctions,
-            prepares: prepareFunctions,
-            artifacts,
-            progress: props.progress,
-            promptCacheKey,
-            instruction: props.instruction,
+            if (event.function.type !== "operation")
+              throw new Error(
+                `Unexpected testOperationWrite function kind: ${event.function.type}`,
+              );
+            return {
+              type: "operation",
+              artifacts,
+              function: event.function,
+              authorizes: authorizationFunctions,
+              generates: generationFunctions,
+              prepares: prepareFunctions,
+            } satisfies IAutoBeTestOperationProcedure;
           });
-          ctx.dispatch(event);
-
-          if (event.function.type !== "operation")
-            throw new Error(
-              `Unexpected testOperationWrite function kind: ${event.function.type}`,
-            );
-
-          return {
-            type: "operation",
-            artifacts,
-            function: event.function,
-            authorizes: authorizationFunctions,
-            generates: generationFunctions,
-            prepares: prepareFunctions,
-          } satisfies IAutoBeTestOperationProcedure;
         } catch {
           return null;
         }

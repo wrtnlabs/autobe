@@ -2,6 +2,22 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApiTypeChecker } from "@samchon/openapi";
 
 export namespace AutoBeOpenApiTypeChecker {
+  export const getKind = (schema: AutoBeOpenApi.IJsonSchema): string => {
+    if (isReference(schema)) return "$ref";
+    else if (isConstant(schema)) return JSON.stringify(schema.const);
+    else if (isOneOf(schema))
+      return schema.oneOf.map((s) => getKind(s)).join(" | ");
+    else if (isArray(schema)) return `Array<${getKind(schema.items)}>`;
+    else if (isObject(schema)) return "object";
+    else if (isString(schema)) return "string";
+    else if (isInteger(schema)) return "integer";
+    else if (isNumber(schema)) return "number";
+    else if (isBoolean(schema)) return "boolean";
+    else if (isNull(schema)) return "null";
+    schema satisfies never;
+    return "unknown";
+  };
+
   export const isArray = (
     schema: AutoBeOpenApi.IJsonSchema,
   ): schema is AutoBeOpenApi.IJsonSchema.IArray =>
@@ -26,6 +42,11 @@ export namespace AutoBeOpenApiTypeChecker {
     schema: AutoBeOpenApi.IJsonSchema,
   ): schema is AutoBeOpenApi.IJsonSchema.IConstant =>
     (schema as AutoBeOpenApi.IJsonSchema.IConstant).const !== undefined;
+
+  export const isBoolean = (
+    schema: AutoBeOpenApi.IJsonSchema,
+  ): schema is AutoBeOpenApi.IJsonSchema.IBoolean =>
+    (schema as AutoBeOpenApi.IJsonSchema.IBoolean).type === "boolean";
 
   export const isInteger = (
     schema: AutoBeOpenApi.IJsonSchema,

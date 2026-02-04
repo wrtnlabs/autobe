@@ -68,7 +68,7 @@ export const orchestrateTestScenario = async (
         });
       } catch (error) {
         console.log(operation, error);
-        ++progress.completed;
+        --progress.total;
         return [];
       }
     }),

@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestGenerateWriteHistory } from "./histories/transformTestGenerationWriteHistory";
@@ -55,31 +56,34 @@ export const orchestrateTestGenerateWrite = async (
           );
         if (prepareFunction === undefined) return null;
 
-        try {
-          const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
-            endpoint: {
-              path: operation.path,
-              method: operation.method,
-            },
-          });
-          const event: AutoBeTestWriteEvent = await process(ctx, {
-            prepare: prepareFunction,
-            artifacts,
-            operation,
-            progress: props.progress,
-            promptCacheKey,
-            instruction: props.instruction,
-          });
-          if (event.function.type !== "generate") return null;
+        const artifacts: IAutoBeTestArtifacts = await getTestArtifacts(ctx, {
+          endpoint: {
+            path: operation.path,
+            method: operation.method,
+          },
+        });
 
-          ctx.dispatch(event);
-          return {
-            type: "generate",
-            prepare: prepareFunction,
-            artifacts,
-            function: event.function,
-            operation,
-          } satisfies IAutoBeTestGenerateProcedure;
+        try {
+          return await forceRetry(async () => {
+            const event: AutoBeTestWriteEvent = await process(ctx, {
+              prepare: prepareFunction,
+              artifacts,
+              operation,
+              progress: props.progress,
+              promptCacheKey,
+              instruction: props.instruction,
+            });
+            if (event.function.type !== "generate") return null;
+
+            ctx.dispatch(event);
+            return {
+              type: "generate",
+              prepare: prepareFunction,
+              artifacts,
+              function: event.function,
+              operation,
+            } satisfies IAutoBeTestGenerateProcedure;
+          });
         } catch {
           return null;
         }

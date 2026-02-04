@@ -5,13 +5,19 @@ import {
   AutoBeTestAuthorizeFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import {
+  AutoBeFunctionCallingMetricFactory,
+  AutoBeOpenApiTypeChecker,
+} from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeTokenUsageComponent } from "../../context/AutoBeTokenUsageComponent";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { getTestArtifacts } from "./compile/getTestArtifacts";
 import { transformTestAuthorizeWriteHistory } from "./histories/transformTestAuthorizeWriteHistory";
@@ -37,9 +43,14 @@ export const orchestrateTestAuthorizeWrite = async (
   const authOperations: AutoBeOpenApi.IOperation[] =
     props.document.operations.filter(
       (op) =>
+        op.authorizationActor !== null &&
         op.authorizationType !== null &&
+        op.parameters.length === 0 &&
         op.requestBody !== null &&
-        op.responseBody !== null,
+        op.responseBody !== null &&
+        AutoBeOpenApiTypeChecker.isObject(
+          props.document.components.schemas[op.requestBody.typeName] ?? {},
+        ),
     );
   return await executeCachedBatch(
     ctx,
@@ -51,12 +62,21 @@ export const orchestrateTestAuthorizeWrite = async (
         },
       });
       const event: AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction> =
-        await process(ctx, {
-          operation,
-          artifacts,
-          progress: props.progress,
-          promptCacheKey,
-        });
+        operation.authorizationType === "join"
+          ? await forceRetry(() =>
+              process(ctx, {
+                operation,
+                artifacts,
+                progress: props.progress,
+                promptCacheKey,
+              }),
+            )
+          : await write(ctx, {
+              document: props.document,
+              progress: props.progress,
+              artifacts,
+              operation,
+            });
       ctx.dispatch(event);
       return {
         type: "authorize",
@@ -67,6 +87,63 @@ export const orchestrateTestAuthorizeWrite = async (
     }),
   );
 };
+
+async function write(
+  ctx: AutoBeContext,
+  props: {
+    document: AutoBeOpenApi.IDocument;
+    operation: AutoBeOpenApi.IOperation;
+    artifacts: IAutoBeTestArtifacts;
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>> {
+  const schema: AutoBeOpenApi.IJsonSchema | undefined =
+    props.document.components.schemas[
+      props.operation.requestBody?.typeName ?? ""
+    ];
+  if (
+    schema === undefined ||
+    AutoBeOpenApiTypeChecker.isObject(schema) === false
+  )
+    throw new Error("Authorization operation needs object request body.");
+  else if (props.operation.authorizationActor === null)
+    throw new Error("Operation is not an authorization operation.");
+
+  const functionName: string = AutoBeTestAuthorizeProgrammer.getFunctionName(
+    props.operation,
+  );
+  const content: string = AutoBeTestAuthorizeProgrammer.writeTemplate({
+    operation: props.operation,
+    schema,
+  });
+  const authorizationFunction: AutoBeTestAuthorizeFunction = {
+    type: "authorize",
+    endpoint: {
+      method: props.operation.method,
+      path: props.operation.path,
+    },
+    actor: props.operation.authorizationActor,
+    authType: props.operation.authorizationType!,
+    location: `test/authorize/${functionName}.ts`,
+    name: functionName,
+    content: await AutoBeTestAuthorizeProgrammer.replaceImportStatements({
+      compiler: await ctx.compiler(),
+      artifacts: props.artifacts,
+      content,
+    }),
+  };
+  return {
+    type: "testWrite",
+    id: v7(),
+    created_at: new Date().toISOString(),
+    function: authorizationFunction,
+    metric: AutoBeFunctionCallingMetricFactory.create(),
+    tokenUsage: new AutoBeTokenUsageComponent(),
+    completed: ++props.progress.completed,
+    total: props.progress.total,
+    step: ctx.state().interface?.step ?? 0,
+  } satisfies AutoBeTestWriteEvent<AutoBeTestAuthorizeFunction>;
+}
 
 async function process(
   ctx: AutoBeContext,

@@ -5,14 +5,19 @@ import {
   AutoBeTestPrepareFunction,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
+import {
+  AutoBeFunctionCallingMetricFactory,
+  AutoBeOpenApiTypeChecker,
+} from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeTokenUsageComponent } from "../../context/AutoBeTokenUsageComponent";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
@@ -66,14 +71,16 @@ export const orchestrateTestPrepareWrite = async (
       createTypes.map((entry) => async (promptCacheKey) => {
         try {
           const event: AutoBeTestWriteEvent<AutoBeTestPrepareFunction> =
-            await process(ctx, {
-              document: props.document,
-              typeName: entry.key,
-              schema: entry.value,
-              instruction: props.instruction,
-              promptCacheKey,
-              progress: props.progress,
-            });
+            await forceRetry(() =>
+              process(ctx, {
+                document: props.document,
+                typeName: entry.key,
+                schema: entry.value,
+                instruction: props.instruction,
+                promptCacheKey,
+                progress: props.progress,
+              }),
+            );
           ctx.dispatch(event);
           return {
             type: "prepare",
@@ -103,6 +110,40 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestWriteEvent<AutoBeTestPrepareFunction>> {
+  if (
+    !!props.schema.additionalProperties === false &&
+    Object.keys(props.schema.properties).length === 0
+  ) {
+    const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
+      props.typeName,
+    );
+    return {
+      id: v7(),
+      type: "testWrite",
+      function: {
+        type: "prepare",
+        location: `test/prepare/${functionName}.ts`,
+        content: await AutoBeTestPrepareProgrammer.replaceImportStatements({
+          compiler: await ctx.compiler(),
+          typeName: props.typeName,
+          schemas: props.document.components.schemas,
+          content: AutoBeTestPrepareProgrammer.writeNonPropertyCode({
+            typeName: props.typeName,
+            schema: props.schema,
+          }),
+        }),
+        typeName: props.typeName,
+        name: functionName,
+      },
+      completed: ++props.progress.completed,
+      total: props.progress.total,
+      step: ctx.state().interface?.step ?? 0,
+      tokenUsage: new AutoBeTokenUsageComponent(),
+      metric: AutoBeFunctionCallingMetricFactory.create(),
+      created_at: new Date().toISOString(),
+    };
+  }
+
   const pointer: IPointer<IAutoBeTestPrepareWriteApplication.IProps | null> = {
     value: null,
   };
