@@ -22,6 +22,12 @@ pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.ts --vendor qwe
 pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > test.schema.reddit.log
 pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > test.schema.shopping.log
 
+# schema.write
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > test.schema.write.todo.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > test.schema.write.bbs.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > test.schema.write.reddit.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > test.schema.write.shopping.log
+
 # prerequisite
 pnpm run build:prompt && pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > test.prerequisite.todo.log
 pnpm run build:prompt && pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > test.prerequisite.bbs.log
