@@ -77,7 +77,7 @@ export async function orchestrateInterfaceSchemaWrite(
         });
         x[it] = row;
       } catch (error) {
-        ++progress.completed;
+        --progress.total;
         console.log("interfaceSchema failure", it, error);
       }
     }),

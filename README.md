@@ -197,7 +197,7 @@ gantt
   Dynamic K Retrieval              : done,    2026-01-15, 14d
   RAG Preliminary Prompting        : active,  2026-01-15, 28d
   RAG Benchmark & Tuning           : active,  2026-02-01, 28d
-  Analyze Agent Restructuring      : planned, 2026-02-01, 28d
+  Analyze Agent Restructuring      : active,  2026-02-01, 28d
 
   section Design Integrity
   DB Coverage Agent                : done,    2026-01-15, 28d
@@ -219,9 +219,10 @@ gantt
   Requirements Sync Agent          : planned, 2026-03-08, 24d
 
   section Miscellaneous
-  System Prompt Simplification     : planned, 2026-02-01, 28d
+  System Prompt Simplification     : active,  2026-02-01, 28d
+  Estimation Agent                 : active,  2026-02-01, 28d
   Playground Service Enhancement   : planned, 2026-02-15, 28d
-  PR Articles Writing              : planned, 2026-02-15, 30d
+  PR Articles Writing              : active,  2026-02-15, 30d
 ```
 
 AutoBE has successfully completed Alpha, Beta, and Gamma development phases, establishing a solid foundation with **100% compilation success rate**. The current **Delta Release** focuses on transitioning from horizontal expansion to vertical deepening.

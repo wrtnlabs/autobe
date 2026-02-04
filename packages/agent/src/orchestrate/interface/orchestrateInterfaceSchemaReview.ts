@@ -87,8 +87,9 @@ export async function orchestrateInterfaceSchemaReview(
             promptCacheKey,
           });
         x[it] = reviewed;
-      } catch {
-        ++props.progress.completed;
+      } catch (error) {
+        console.log("interfaceSchemaReview failure", it, error);
+        --props.progress.total;
       }
     }),
   );

@@ -72,7 +72,8 @@ export async function orchestrateInterfaceSchemaRefine(
           });
         x[it] = refined;
       } catch {
-        ++props.progress.completed;
+        console.log("interfaceSchemaRefine failure", it, error);
+        --props.progress.completed;
       }
     }),
   );
