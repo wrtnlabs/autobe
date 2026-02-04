@@ -61,7 +61,16 @@ export const validate_test_generate = async (props: {
     },
   });
 
-  console.log("Completed", prepares.length, "->", generates.length);
+  console.log(
+    "Completed",
+    document.operations.filter(
+      (o) =>
+        o.requestBody !== null &&
+        prepares.map((p) => p.typeName).includes(o.requestBody.typeName),
+    ),
+    "->",
+    generates.length,
+  );
 
   return generates;
 };
