@@ -48,3 +48,15 @@ pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/
 pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.authorize.bbs.log
 pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.authorize.reddit.log
 pnpm run build:prompt && pnpm ts-node src/agent/test.authorize.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.authorize.shopping.log
+
+# scenario
+pnpm run build:prompt && pnpm ts-node src/agent/test.scenario.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.scenario.todo.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.scenario.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.scenario.bbs.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.scenario.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.scenario.reddit.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.scenario.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.scenario.shopping.log
+
+# operation
+pnpm run build:prompt && pnpm ts-node src/agent/test.operation.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.operation.todo.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.operation.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.operation.bbs.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.operation.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.operation.reddit.log
+pnpm run build:prompt && pnpm ts-node src/agent/test.operation.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.operation.shopping.log
