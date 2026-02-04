@@ -71,7 +71,7 @@ export async function orchestrateInterfaceSchemaRefine(
             promptCacheKey,
           });
         x[it] = refined;
-      } catch {
+      } catch (error) {
         console.log("interfaceSchemaRefine failure", it, error);
         --props.progress.completed;
       }
