@@ -1,15 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeSystemPromptConstant } from "@autobe/agent/src/constants/AutoBeSystemPromptConstant";
 import { orchestrateInterfaceSchema } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchema";
-import { orchestrateInterfaceSchemaCasting } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaCasting";
-import { orchestrateInterfaceSchemaRefine } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRefine";
-import { orchestrateInterfaceSchemaReview } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import {
-  AutoBeExampleProject,
-  AutoBeOpenApi,
-  AutoBeProgressEventBase,
-} from "@autobe/interface";
+import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 
 import { validate_interface_operation } from "./validate_interface_operation";
 
@@ -30,95 +22,11 @@ export const validate_interface_schema = async (props: {
     operations,
     components: {
       authorizations: props.agent.getContext().state().analyze?.actors ?? [],
-      schemas: {},
-    },
-  };
-  const assign = (
-    next: Record<
-      string,
-      AutoBeOpenApi.IJsonSchema | AutoBeOpenApi.IJsonSchemaDescriptive
-    >,
-  ): void => {
-    Object.assign(document.components.schemas, next);
-  };
-  assign(
-    await orchestrateInterfaceSchema(props.agent.getContext(), {
-      operations,
-      instruction: "Design API specs carefully considering the security.",
-    }),
-  );
-
-  // Casting schemas
-  assign(
-    await orchestrateInterfaceSchemaCasting(props.agent.getContext(), {
-      document,
-      schemas: document.components.schemas,
-      instruction: "",
-      progress: {
-        completed: 0,
-        total: 0,
-      },
-    }),
-  );
-
-  // Refine schemas
-  assign(
-    await orchestrateInterfaceSchemaRefine(props.agent.getContext(), {
-      instruction: "",
-      document,
-      schemas: document.components.schemas,
-      progress: {
-        completed: 0,
-        total: 0,
-      },
-    }),
-  );
-
-  // Review schemas with all reviewers
-  const reviewProgress: AutoBeProgressEventBase = {
-    completed: 0,
-    total: Object.keys(document.components.schemas).length * REVIEWERS.length,
-  };
-
-  for (const config of REVIEWERS) {
-    const reviewed = await orchestrateInterfaceSchemaReview(
-      props.agent.getContext(),
-      config,
-      {
+      schemas: await orchestrateInterfaceSchema(props.agent.getContext(), {
         instruction: "",
-        document,
-        schemas: document.components.schemas,
-        progress: reviewProgress,
-      },
-    );
-    assign(reviewed);
-  }
-
-  await AutoBeExampleStorage.save({
-    vendor: props.vendor,
-    project: props.project,
-    files: {
-      ["interface.schema.json"]: JSON.stringify(document.components.schemas),
+        operations,
+      }),
     },
-  });
+  };
   return document.components.schemas;
 };
-
-const REVIEWERS = [
-  {
-    kind: "relation" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-  },
-  {
-    kind: "security" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-  },
-  {
-    kind: "content" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
-  },
-  {
-    kind: "phantom" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
-  },
-];

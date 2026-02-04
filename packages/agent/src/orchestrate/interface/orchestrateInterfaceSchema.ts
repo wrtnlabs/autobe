@@ -1,279 +1,214 @@
-import { IAgenticaController } from "@agentica/core";
-import {
-  AutoBeDatabase,
-  AutoBeEventSource,
-  AutoBeInterfaceSchemaDesign,
-  AutoBeInterfaceSchemaEvent,
-  AutoBeOpenApi,
-  AutoBeProgressEventBase,
-} from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, IValidation } from "@samchon/openapi";
-import { IPointer } from "tstl";
-import typia from "typia";
-import { v7 } from "uuid";
+import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import { AutoBeOpenApiTypeChecker, missedOpenApiSchemas } from "@autobe/utils";
 
+import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformInterfaceSchemaHistory } from "./histories/transformInterfaceSchemaHistory";
-import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
-import { IAutoBeInterfaceSchemaApplication } from "./structures/IAutoBeInterfaceSchemaApplication";
+import { orchestrateInterfaceSchemaCasting } from "./orchestrateInterfaceSchemaCasting";
+import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
+import { orchestrateInterfaceSchemaRefine } from "./orchestrateInterfaceSchemaRefine";
+import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRename";
+import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
+import { orchestrateInterfaceSchemaWrite } from "./orchestrateInterfaceSchemaWrite";
+import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
+import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
-import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-export async function orchestrateInterfaceSchema(
+export const orchestrateInterfaceSchema = async (
   ctx: AutoBeContext,
   props: {
-    operations: AutoBeOpenApi.IOperation[];
     instruction: string;
+    operations: AutoBeOpenApi.IOperation[];
   },
-): Promise<Record<string, AutoBeOpenApi.IJsonSchema>> {
-  // gather type names
-  const collection: Set<string> = new Set();
-  const gather = (key: string): void => {
-    if (AutoBeJsonSchemaValidator.isPage(key))
-      collection.add(AutoBeJsonSchemaFactory.getPageName(key));
-    collection.add(key);
+): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
+  //----
+  // PREPARATIONS
+  //----
+  // MOCK DOCUMENT
+  const document: AutoBeOpenApi.IDocument = {
+    operations: props.operations,
+    components: {
+      authorizations: ctx.state().analyze?.actors ?? [],
+      schemas: {},
+    },
   };
-  for (const op of props.operations) {
-    if (op.requestBody !== null) gather(op.requestBody.typeName);
-    if (op.responseBody !== null) gather(op.responseBody.typeName);
-  }
-  const presets: Record<string, AutoBeOpenApi.IJsonSchema> =
-    AutoBeJsonSchemaFactory.presets(collection);
 
-  // divide and conquer
-  const typeNames: string[] = Array.from(collection).filter(
-    (k) => AutoBeJsonSchemaValidator.isPreset(k) === false,
-  );
-  const progress: AutoBeProgressEventBase = {
-    total: typeNames.length,
+  // RENAME REQUEST/RESPONSE BODY TYPE NAMES
+  const renameProgress: AutoBeProgressEventBase = {
     completed: 0,
+    total: 0,
   };
-  const x: Record<string, AutoBeOpenApi.IJsonSchema> = {
-    ...presets,
+  AutoBeJsonSchemaNamingConvention.normalize({
+    operations: document.operations,
+    collection: new AutoBeJsonSchemaCollection({}, {}),
+  });
+  await orchestrateInterfaceSchemaRename(ctx, {
+    operations: document.operations,
+    progress: renameProgress,
+    collection: new AutoBeJsonSchemaCollection({}, {}),
+  });
+
+  // PREPARE ITERATOR
+  const castingProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
   };
-  await executeCachedBatch(
-    ctx,
-    typeNames.map((it) => async (promptCacheKey) => {
-      const predicate = (key: string) =>
-        key === it ||
-        (AutoBeJsonSchemaValidator.isPage(key) &&
-          AutoBeJsonSchemaFactory.getPageName(key) === it);
-      const operations: AutoBeOpenApi.IOperation[] = props.operations.filter(
-        (op) =>
-          (op.requestBody && predicate(op.requestBody.typeName)) ||
-          (op.responseBody && predicate(op.responseBody.typeName)),
+  const refineProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
+  const reviewProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
+  };
+
+  //----
+  // LOGIC FUNCTION
+  //----
+  const iterate = async (
+    initialize: () => Promise<Record<string, AutoBeOpenApi.IJsonSchema>>,
+  ) => {
+    const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
+    const overwrite = async (
+      next: Record<
+        string,
+        AutoBeOpenApi.IJsonSchema | AutoBeOpenApi.IJsonSchemaDescriptive
+      >,
+    ) => {
+      for (const [k, v] of Object.entries(next))
+        if (v === undefined) delete next[k];
+      if (Object.keys(next).length === 0) return;
+
+      // assign schemas
+      const collection: AutoBeJsonSchemaCollection =
+        new AutoBeJsonSchemaCollection(document.components.schemas, schemas);
+      collection.assign(
+        next as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
       );
-      try {
-        const row: AutoBeOpenApi.IJsonSchema = await process(ctx, {
-          operations,
-          progress,
-          otherTypeNames: typeNames.filter((k) => k !== it),
-          promptCacheKey,
-          typeName: it,
-          instruction: props.instruction,
-        });
-        x[it] = row;
-      } catch (error) {
-        ++progress.completed;
-        console.log("interfaceSchema failure", it, error);
-      }
-    }),
-  );
-  return x;
-}
+      collection.assign(
+        AutoBeJsonSchemaFactory.presets(new Set(Object.keys(schemas))),
+      );
 
-async function process(
-  ctx: AutoBeContext,
-  props: {
-    operations: AutoBeOpenApi.IOperation[];
-    typeName: string;
-    otherTypeNames: string[];
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-    instruction: string;
-  },
-): Promise<AutoBeOpenApi.IJsonSchema> {
-  const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "databaseSchemas"
-    | "interfaceOperations"
-    | "previousAnalysisFiles"
-    | "previousDatabaseSchemas"
-    | "previousInterfaceOperations"
-    | "previousInterfaceSchemas"
-  > = new AutoBePreliminaryController({
-    application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
-    source: SOURCE,
-    kinds: [
-      "analysisFiles",
-      "databaseSchemas",
-      "interfaceOperations",
-      "previousAnalysisFiles",
-      "previousDatabaseSchemas",
-      "previousInterfaceOperations",
-      "previousInterfaceSchemas",
-    ],
-    state: ctx.state(),
-    all: {
-      interfaceOperations: props.operations,
-    },
-    local: {
-      interfaceOperations: props.operations.filter((o) => {
-        const predicate = (key: string) =>
-          key === props.typeName ||
-          (AutoBeJsonSchemaValidator.isPage(key) &&
-            AutoBeJsonSchemaFactory.getPageName(key) === props.typeName);
-        return (
-          (o.requestBody && predicate(o.requestBody.typeName)) ||
-          (o.responseBody && predicate(o.responseBody.typeName))
-        );
-      }),
-      databaseSchemas:
-        AutoBeInterfaceSchemaProgrammer.getNeighborDatabaseSchemas({
-          typeName: props.typeName,
-          application: ctx.state().database!.result.data,
-        }),
-    },
-  });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
-        build: async (next) => {
-          pointer.value = next;
-        },
-        preliminary,
-        typeName: props.typeName,
-        operations: props.operations,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceSchemaHistory({
-        preliminary,
-        operations: props.operations,
-        instruction: props.instruction,
-        typeName: props.typeName,
-        otherTypeNames: props.otherTypeNames,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
-      pointer.value.design,
-    );
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      typeName: props.typeName,
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      schema,
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      completed: ++props.progress.completed,
-      total: props.progress.total,
-      step: ctx.state().database?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceSchemaEvent);
-    return out(result)(schema);
-  });
-}
-
-function createController(
-  ctx: AutoBeContext,
-  props: {
-    build: (next: IAutoBeInterfaceSchemaApplication.IComplete) => Promise<void>;
-    preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
-      | "databaseSchemas"
-      | "interfaceOperations"
-      | "previousAnalysisFiles"
-      | "previousDatabaseSchemas"
-      | "previousInterfaceOperations"
-      | "previousInterfaceSchemas"
-    >;
-    operations: AutoBeOpenApi.IOperation[];
-    typeName: string;
-  },
-): IAgenticaController.IClass {
-  const everyModels: AutoBeDatabase.IModel[] =
-    ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
-
-  const validate = (
-    next: unknown,
-  ): IValidation<IAutoBeInterfaceSchemaApplication.IProps> => {
-    const result: IValidation<IAutoBeInterfaceSchemaApplication.IProps> =
-      typia.validate<IAutoBeInterfaceSchemaApplication.IProps>(next);
-    if (result.success === false) {
-      fulfillJsonSchemaErrorMessages(result.errors);
-      return result;
-    } else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
+      // naming convention
+      AutoBeJsonSchemaNamingConvention.normalize({
+        operations: document.operations,
+        collection,
+      });
+      await orchestrateInterfaceSchemaRename(ctx, {
+        operations: document.operations,
+        progress: renameProgress,
+        collection,
       });
 
-    // Check all IAuthorized types
-    const errors: IValidation.IError[] = [];
-    AutoBeInterfaceSchemaProgrammer.validate({
-      path: "$input.request.design",
-      errors,
-      operations: props.operations,
-      everyModels,
-      typeName: props.typeName,
-      design: result.data.request.design,
-    });
-    if (errors.length !== 0)
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    return result;
+      // special logics
+      AutoBeJsonSchemaFactory.authorize(document.components.schemas);
+      AutoBeJsonSchemaFactory.finalize({
+        application: ctx.state().database!.result.data,
+        operations: document.operations,
+        collection,
+      });
+    };
+
+    // initialize schemas
+    await overwrite(await initialize());
+
+    // type casting
+    await overwrite(
+      await orchestrateInterfaceSchemaCasting(ctx, {
+        instruction: props.instruction,
+        document: {
+          operations: document.operations,
+          components: {
+            authorizations: ctx.state().analyze?.actors ?? [],
+            schemas: document.components.schemas,
+          },
+        },
+        schemas,
+        progress: castingProgress,
+      }),
+    );
+
+    // refine schemas
+    await overwrite(
+      await orchestrateInterfaceSchemaRefine(ctx, {
+        instruction: props.instruction,
+        document,
+        schemas,
+        progress: refineProgress,
+      }),
+    );
+
+    // review schemas
+    reviewProgress.total +=
+      Object.entries(schemas).filter(
+        ([k, v]) =>
+          AutoBeJsonSchemaValidator.isPreset(k) === false &&
+          AutoBeOpenApiTypeChecker.isObject(v) &&
+          Object.keys(v.properties).length !== 0,
+      ).length *
+        (REVIEWERS.length - 1) +
+      Object.keys(schemas).filter((k) =>
+        AutoBeInterfaceSchemaReviewProgrammer.filterSecurity({
+          document,
+          typeName: k,
+        }),
+      ).length;
+    for (const config of REVIEWERS)
+      await overwrite(
+        await orchestrateInterfaceSchemaReview(ctx, config, {
+          instruction: props.instruction,
+          document,
+          schemas,
+          progress: reviewProgress,
+        }),
+      );
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceSchemaApplication>({
-      validate: {
-        process: validate,
-      },
+  //----
+  // SCHEMA GENERATION LOOP
+  //----
+  // INITIAL SCHEMAS
+  await iterate(() =>
+    orchestrateInterfaceSchemaWrite(ctx, {
+      instruction: props.instruction,
+      operations: document.operations,
     }),
   );
-  if (
-    AutoBeJsonSchemaValidator.isObjectType({
-      operations: props.operations,
-      typeName: props.typeName,
-    }) === true
-  )
-    (
-      (
-        application.functions[0].parameters.$defs[
-          typia.reflect.name<AutoBeInterfaceSchemaDesign>()
-        ] as ILlmSchema.IObject
-      ).properties.schema as ILlmSchema.IReference
-    ).$ref = "AutoBeOpenApi.IJsonSchema.IObject";
-  AutoBeInterfaceSchemaProgrammer.fixApplication({
-    application,
-    everyModels,
-  });
 
-  return {
-    protocol: "class",
-    name: SOURCE,
-    application,
-    execute: {
-      process: async (next) => {
-        if (next.request.type === "complete") await props.build(next.request);
-      },
-    } satisfies IAutoBeInterfaceSchemaApplication,
+  // COMPLEMENTATION
+  const complementProgress: AutoBeProgressEventBase = {
+    completed: 0,
+    total: 0,
   };
-}
+  const failures: Map<string, number> = new Map();
+  while (missedOpenApiSchemas(document).length !== 0)
+    await iterate(() =>
+      orchestrateInterfaceSchemaComplement(ctx, {
+        instruction: props.instruction,
+        progress: complementProgress,
+        failures,
+        document,
+      }),
+    );
+  return document.components.schemas;
+};
 
-const SOURCE = "interfaceSchema" satisfies AutoBeEventSource;
+const REVIEWERS = [
+  {
+    kind: "relation" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+  },
+  {
+    kind: "content" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+  },
+  {
+    kind: "security" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+  },
+  {
+    kind: "phantom" as const,
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
+  },
+];
