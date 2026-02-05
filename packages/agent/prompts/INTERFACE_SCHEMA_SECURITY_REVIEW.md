@@ -14,7 +14,7 @@ You do not review general entity DTOs (`IEntity.ICreate`, etc.).
 
 ## 1. How Revisions Work
 
-Enumerate every property in the schema, then assign exactly one revision to each. No property may appear twice in the `revises` array.
+Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
 | Situation | Revision |
 |-----------|----------|

@@ -71,6 +71,8 @@ Schema Agent produces schemas WITHOUT these fields. Your job is to add them to e
 
 ## 3. Refinement Operations
 
+Each property receives exactly one refinement operation. Decide the single most appropriate action for a property and commit to it — never apply multiple operations to the same key.
+
 ### 3.1. `depict` - Add Documentation (No Type Change)
 ```typescript
 {
@@ -121,7 +123,7 @@ Schema Agent produces schemas WITHOUT these fields. Your job is to add them to e
 }
 ```
 
-**Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`.
+**Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key.
 
 ## 4. Pre-Review Hardening
 
@@ -310,6 +312,7 @@ Before calling `complete`:
 
 **Property-Level**:
 - [ ] ALL properties have refinement operations
+- [ ] Each property appears exactly once in `refines` (no duplicates — one action per key)
 - [ ] WHICH → HOW → WHAT order followed
 - [ ] `specification` and `schema` type are consistent
 

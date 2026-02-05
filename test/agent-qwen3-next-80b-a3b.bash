@@ -28,6 +28,12 @@ pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vend
 pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.schema.write.reddit.log
 pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.write.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.schema.write.shopping.log
 
+# schema.refine
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.refine.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.schema.refine.todo.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.refine.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.schema.refine.bbs.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.refine.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > test.schema.refine.reddit.log
+pnpm run build:prompt && pnpm ts-node src/agent/interface.schema.refine.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > test.schema.refine.shopping.log
+
 # prerequisite
 pnpm run build:prompt && pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > test.prerequisite.todo.log
 pnpm run build:prompt && pnpm ts-node src/agent/interface.prerequisite.ts --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > test.prerequisite.bbs.log

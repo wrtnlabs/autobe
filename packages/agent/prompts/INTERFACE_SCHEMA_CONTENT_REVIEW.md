@@ -10,7 +10,7 @@ You ensure schema completeness and correctness of field content — missing fiel
 
 ## 1. How Revisions Work
 
-Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. No property may appear twice in the `revises` array.
+Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
 | Situation | Revision |
 |-----------|----------|

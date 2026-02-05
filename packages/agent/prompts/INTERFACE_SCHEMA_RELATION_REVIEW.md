@@ -18,12 +18,12 @@ You CAN:
 
 You CANNOT:
 - Define type bodies (only use `$ref`)
-- Erase non-relation fields (title, content, id, timestamps, status, etc.)
+- Erase non-relation fields — `title`, `description`, `content`, `status`, `id`, `created_at`, `page`, `limit`, `search`, `completed`, and all other business or query fields are outside your jurisdiction; always `keep` them
 - Modify security or business logic fields
 
 ## 2. How Revisions Work
 
-Enumerate every property in the schema, then assign exactly one revision to each. No property may appear twice in the `revises` array.
+Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
 | Situation | Revision | Example |
 |-----------|----------|---------|
@@ -34,7 +34,7 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
 | Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
 
-In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `depict`, or `nullish`.
+In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
 
 ## 3. Three Relation Types
 
@@ -164,7 +164,7 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ### `erase` - Remove Incorrect Relation
 
-Only for circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations.
+Only for circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations. A property that is simply not a relation (e.g. `title`, `start_date`, `page`) is never a valid erase target — use `keep` for those.
 
 ```typescript
 {
