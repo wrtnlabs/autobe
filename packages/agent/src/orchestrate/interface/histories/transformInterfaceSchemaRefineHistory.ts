@@ -21,8 +21,8 @@ export const transformInterfaceSchemaRefineHistory = (props: {
     | "previousInterfaceSchemas"
   >;
   typeName: string;
-  refineOperations: AutoBeOpenApi.IOperation[];
-  refineSchema: AutoBeOpenApi.IJsonSchema.IObject;
+  operations: AutoBeOpenApi.IOperation[];
+  schema: AutoBeOpenApi.IJsonSchema.IObject;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {
@@ -71,7 +71,7 @@ export const transformInterfaceSchemaRefineHistory = (props: {
         the schema you're enriching:
 
         \`\`\`json
-        ${JSON.stringify(props.refineOperations)}
+        ${JSON.stringify(props.operations)}
         \`\`\`
 
         ## DTO type to refine
@@ -79,13 +79,13 @@ export const transformInterfaceSchemaRefineHistory = (props: {
         Here is the SPECIFIC schema that needs refinement for type "${props.typeName}":
 
         \`\`\`json
-        ${JSON.stringify(props.refineSchema)}
+        ${JSON.stringify(props.schema)}
         \`\`\`
 
         Also, here is the list of properties currently defined in this schema,
         so you have to enrich them one by one:
 
-        ${Object.keys(props.refineSchema.properties)
+        ${Object.keys(props.schema.properties)
           .map((k) => `- ${k}`)
           .join("\n")}
 
@@ -107,7 +107,7 @@ export const transformInterfaceSchemaRefineHistory = (props: {
     \`specification\` becomes the ONLY source of truth for downstream agents.
 
     You MUST provide a refinement for every single property without exception:
-    ${Object.keys(props.refineSchema.properties)
+    ${Object.keys(props.schema.properties)
       .map((k) => `- ${k}`)
       .join("\n")}
   `,

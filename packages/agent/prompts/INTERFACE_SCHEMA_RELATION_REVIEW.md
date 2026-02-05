@@ -25,6 +25,8 @@ You CANNOT:
 
 Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
+**Before setting `databaseSchemaProperty: null`**: Re-check the loaded DB schema. Relation properties use the relation name, not null.
+
 | Situation | Revision | Example |
 |-----------|----------|---------|
 | FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
@@ -64,11 +66,12 @@ FK transformation rules are opposite for Response vs Request DTOs.
 | Field name | Remove `_id` suffix | Keep `_id`/`_code` suffix |
 | Type | `IEntity.ISummary` | `string` |
 | Example | `author: IUser.ISummary` | `author_id: string` |
+| `databaseSchemaProperty` | Relation name: `"author"` | Column name: `"author_id"` |
 
 ### Response DTO - FK → Object
 
 ```typescript
-// Database: author_id, category_id
+// Database: author_id column, author relation
 interface IBbsArticle {
   author: IBbsMember.ISummary;      // author_id → author
   category: IBbsCategory.ISummary;  // category_id → category
@@ -80,7 +83,7 @@ interface IBbsArticle {
 ```typescript
 // ✅ CORRECT
 interface IBbsArticle.ICreate {
-  category_id: string;
+  category_id: string;  // databaseSchemaProperty: "category_id"
 }
 // ❌ WRONG
 interface IBbsArticle.ICreate {
@@ -139,7 +142,7 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
   reason: "Transform FK author_id to author with $ref",
   key: "author_id",
   newKey: "author",
-  databaseSchemaProperty: "bbs_member_id",
+  databaseSchemaProperty: "author",  // Relation name from DB schema
   specification: "Join via bbs_members using bbs_articles.bbs_member_id. Returns ISummary.",
   description: "Author who wrote this article.",
   schema: { $ref: "#/components/schemas/IBbsMember.ISummary" },
@@ -149,12 +152,13 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ### `create` - Add Missing Relation
 
+For composition:
 ```typescript
 {
   type: "create",
   reason: "Missing composition for units",
   key: "units",
-  databaseSchemaProperty: null,
+  databaseSchemaProperty: "units",  // Relation name from DB schema
   specification: "One-to-many composition from sale_units. Created with sale.",
   description: "Sale units defining what's being sold.",
   schema: { type: "array", items: { $ref: "#/components/schemas/ISaleUnit" } },
@@ -201,7 +205,7 @@ Schema has properties: `[id, title, content, author_id, category, attachments, c
 
 ```typescript
 process({
-  thinking: "Enumerated 8 properties. author_id needs FK transform, comments is aggregation.",
+  thinking: "Enumerated 8 properties. Checked DB schema. author_id needs FK transform (relation name: author), comments is aggregation.",
   request: {
     type: "complete",
     review: "author_id: FK not transformed. comments: unbounded aggregation.",
@@ -210,7 +214,7 @@ process({
       { type: "keep",   reason: "Business field",              key: "title" },
       { type: "keep",   reason: "Business field",              key: "content" },
       { type: "update", reason: "Transform FK to $ref",        key: "author_id", newKey: "author",
-        databaseSchemaProperty: "bbs_member_id",
+        databaseSchemaProperty: "author",  // Relation name
         specification: "Join via bbs_members. Returns ISummary.",
         description: "Author who wrote this article.",
         schema: { $ref: "#/components/schemas/IBbsMember.ISummary" }, required: true },
@@ -229,11 +233,14 @@ Note how every property appears exactly once, and non-relation fields use `keep`
 
 - [ ] Every property in the schema has exactly one revision (no missing, no duplicates)
 - [ ] Non-relation fields all use `keep`
+- [ ] Before `databaseSchemaProperty: null`: Verified NOT in DB columns or relations
+- [ ] Relation properties use relation name in `databaseSchemaProperty`
+- [ ] FK column properties use column name in `databaseSchemaProperty`
 - [ ] `erase` used only for circular refs or aggregation arrays
 - [ ] `depict` used only for wrong documentation on relation fields
 - [ ] `nullish` used only for wrong nullability on relation fields
-- [ ] FK fields in Read DTOs transformed to `$ref` objects
-- [ ] FK fields in Create/Update DTOs kept as scalar IDs/codes
+- [ ] FK fields in Read DTOs transformed to `$ref` objects with relation name
+- [ ] FK fields in Create/Update DTOs kept as scalar IDs/codes with column name
 - [ ] Compositions nested in both Read and Create DTOs
 - [ ] No circular references
 - [ ] Path parameters not duplicated in request body

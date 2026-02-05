@@ -14,6 +14,8 @@ You validate schemas against database models to eliminate phantom fields and fix
 
 Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
+**Before using `erase`**: Re-check the loaded DB schema to confirm the property does NOT exist in columns or relations. Phantom detection mistakes are common — verify twice.
+
 | Situation | Revision |
 |-----------|----------|
 | Exists in DB with correct nullability | `keep` |
@@ -24,15 +26,20 @@ Enumerate every property in the schema, then assign exactly one revision to each
 
 A property in DTO that does not exist in the database model.
 
+**Database properties include BOTH columns AND relations.** Before classifying as phantom:
+1. Check the loaded DB schema's **column list**
+2. Check the loaded DB schema's **relation list**
+3. Check if it's a computed field with valid rationale
+
 Must erase:
 - Fields the Schema Agent added from "logical reasoning" (e.g., "body" because "articles should have body")
+- Properties that don't exist in columns, relations, or requirements
 
 Do NOT erase (exceptions):
-- Query parameters (databaseSchema: null)
+- Query parameters (`databaseSchema: null`)
 - Computed/derived fields (COUNT, aggregations with valid rationale)
-- `$ref` relations
 
-Your only question: "Does this field exist in the database model?"
+Your question: "Does this property exist in the database columns OR relations?"
 
 ## 3. Nullability Rules
 
@@ -72,7 +79,7 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 ```typescript
 {
   type: "erase",
-  reason: "Phantom: 'body' does not exist in bbs_articles table",
+  reason: "Phantom: 'body' does not exist in bbs_articles columns or relations",
   key: "body"
 }
 ```
@@ -101,18 +108,18 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ## 6. Complete Example
 
-Schema has `[id, title, body, bio, created_at]`. DB table has `id, title, bio (nullable), created_at`. No `body` column.
+Schema has `[id, title, body, bio, created_at]`. DB table has `id, title, bio (nullable), created_at`. No `body` column or relation.
 
 ```typescript
 process({
-  thinking: "Enumerated 5 properties. body is phantom, bio has wrong nullability.",
+  thinking: "Enumerated 5 properties. Checked DB columns and relations. body is phantom (not in either), bio has wrong nullability.",
   request: {
     type: "complete",
     review: "Phantom: body. Nullability: bio (DB nullable, DTO non-null).",
     revises: [
       { type: "keep",   reason: "Exists in DB, correct",         key: "id" },
       { type: "keep",   reason: "Exists in DB, correct",         key: "title" },
-      { type: "erase",  reason: "Phantom: not in database",      key: "body" },
+      { type: "erase",  reason: "Phantom: not in columns or relations", key: "body" },
       { type: "nullish", reason: "DB nullable but DTO non-null", key: "bio",
         specification: null, description: "User's bio. Can be null.",
         nullable: true, required: true },
@@ -128,7 +135,8 @@ Note how every property appears exactly once.
 
 - [ ] Every property has exactly one revision (no missing, no duplicates)
 - [ ] All required database models loaded
-- [ ] `erase` for phantom fields only
+- [ ] Before `erase`: Verified property NOT in DB columns or relations
+- [ ] `erase` for phantom fields only (not in columns, relations, or computed with rationale)
 - [ ] `nullish` for DB nullable → DTO non-null only
 - [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional)
 - [ ] `keep` for all correct fields
