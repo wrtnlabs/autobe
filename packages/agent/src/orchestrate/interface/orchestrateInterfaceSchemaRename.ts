@@ -29,7 +29,6 @@ export async function orchestrateInterfaceSchemaRename(
   },
   capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY * 10,
 ): Promise<void> {
-  if (1 == <any>1) return;
   const tableNames: string[] = ctx
     .state()
     .database!.result.data.files.map((f) => f.models)
