@@ -208,6 +208,15 @@ const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
   {
     kind: "content",
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+    validate:
+      typia.createValidate<
+        IAutoBeInterfaceSchemaReviewApplication.IProps<
+          Exclude<
+            AutoBeInterfaceSchemaPropertyRevise,
+            AutoBeInterfaceSchemaPropertyErase
+          >
+        >
+      >(),
     application: (process) =>
       typia.llm.application<
         IAutoBeInterfaceSchemaReviewApplication<
@@ -221,9 +230,22 @@ const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
           process,
         },
       }),
+    jsonSchema: () =>
+      typia.json.application<
+        IAutoBeInterfaceSchemaReviewApplication<
+          Exclude<
+            AutoBeInterfaceSchemaPropertyRevise,
+            AutoBeInterfaceSchemaPropertyErase
+          >
+        >
+      >(),
   },
   {
     kind: "relation",
+    validate:
+      typia.createValidate<
+        IAutoBeInterfaceSchemaReviewApplication.IProps<AutoBeInterfaceSchemaPropertyRevise>
+      >(),
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
     application: (process) =>
       typia.llm.application<
@@ -233,10 +255,18 @@ const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
           process,
         },
       }),
+    jsonSchema: () =>
+      typia.json.application<
+        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+      >(),
   },
   {
     kind: "security",
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+    validate:
+      typia.createValidate<
+        IAutoBeInterfaceSchemaReviewApplication.IProps<AutoBeInterfaceSchemaPropertyRevise>
+      >(),
     application: (process) =>
       typia.llm.application<
         IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
@@ -245,10 +275,22 @@ const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
           process,
         },
       }),
+    jsonSchema: () =>
+      typia.json.application<
+        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+      >(),
   },
   {
     kind: "phantom" as const,
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
+    validate:
+      typia.createValidate<
+        IAutoBeInterfaceSchemaReviewApplication.IProps<
+          | AutoBeInterfaceSchemaPropertyErase
+          | AutoBeInterfaceSchemaPropertyKeep
+          | AutoBeInterfaceSchemaPropertyNullish
+        >
+      >(),
     application: (process) =>
       typia.llm.application<
         IAutoBeInterfaceSchemaReviewApplication<
@@ -261,5 +303,13 @@ const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
           process,
         },
       }),
+    jsonSchema: () =>
+      typia.json.application<
+        IAutoBeInterfaceSchemaReviewApplication<
+          | AutoBeInterfaceSchemaPropertyErase
+          | AutoBeInterfaceSchemaPropertyKeep
+          | AutoBeInterfaceSchemaPropertyNullish
+        >
+      >(),
   },
 ];

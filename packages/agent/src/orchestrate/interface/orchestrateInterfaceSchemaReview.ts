@@ -9,7 +9,6 @@ import {
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -117,8 +116,7 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
-    application:
-      typia.json.application<IAutoBeInterfaceSchemaReviewApplication<Revise>>(),
+    application: config.jsonSchema(),
     source: SOURCE,
     kinds: [
       "analysisFiles",
@@ -232,10 +230,7 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
   const validate: Validator<Revise> = (next) => {
     const result: IValidation<
       IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>
-    > =
-      typia.validate<IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>>(
-        next,
-      );
+    > = config.validate(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;

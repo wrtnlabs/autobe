@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceSchemaReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { IJsonSchemaApplication } from "typia";
 
 import { IAutoBeInterfaceSchemaReviewApplication } from "./IAutoBeInterfaceSchemaReviewApplication";
 
@@ -11,9 +12,14 @@ export interface IAutoBeInterfaceSchemaReviewConfig<
 > {
   kind: AutoBeInterfaceSchemaReviewEvent["kind"];
   systemPrompt: string;
+  validate: Validator<Revise>;
   application: (
-    validator: Validator<Revise>,
+    process: Validator<Revise>,
   ) => ILlmApplication<IAutoBeInterfaceSchemaReviewApplication<Revise>>;
+  jsonSchema: () => IJsonSchemaApplication<
+    "3.1",
+    IAutoBeInterfaceSchemaReviewApplication<Revise>
+  >;
 }
 
 type Validator<Revise extends AutoBeInterfaceSchemaPropertyRevise> = (
