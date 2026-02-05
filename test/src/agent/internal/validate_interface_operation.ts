@@ -3,13 +3,18 @@ import { orchestrateInterfaceOperation } from "@autobe/agent/src/orchestrate/int
 import { orchestrateInterfaceSchemaRename } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRename";
 import { AutoBeJsonSchemaCollection } from "@autobe/agent/src/orchestrate/interface/utils/AutoBeJsonSchemaCollection";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
+import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeExampleProject,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceEndpointDesign,
   AutoBeOpenApi,
 } from "@autobe/interface";
+import { transformOpenApiDocument } from "@autobe/utils";
+import { NestiaMigrateApplication } from "@nestia/migrate";
+import { OpenApi } from "@samchon/openapi";
 
+import { TestGlobal } from "../../TestGlobal";
 import { validate_interface_authorization } from "./validate_interface_authorization";
 import { validate_interface_endpoint } from "./validate_interface_endpoint";
 
@@ -56,6 +61,47 @@ export const validate_interface_operation = async (props: {
     project: props.project,
     files: {
       ["interface.operation.json"]: JSON.stringify(operations),
+    },
+  });
+
+  const document: OpenApi.IDocument = transformOpenApiDocument({
+    operations,
+    components: {
+      authorizations: [],
+      schemas: Object.fromEntries(
+        Array.from(
+          new Set(
+            operations
+              .map((op) => [
+                op.requestBody?.typeName ?? null,
+                op.responseBody?.typeName ?? null,
+              ])
+              .flat()
+              .filter((n) => n !== null),
+          ),
+        ).map((typeName) => [
+          typeName,
+          {
+            type: "object",
+            properties: {},
+            required: [],
+            description: "",
+          } satisfies AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+        ]),
+      ),
+    },
+  });
+  const app: NestiaMigrateApplication = new NestiaMigrateApplication(document);
+  await FileSystemIterator.save({
+    root: `${TestGlobal.ROOT}/results/interface.operation/${props.project}`,
+    files: {
+      ...app.nest({
+        simulate: false,
+        e2e: false,
+      }),
+      ...(await props.agent.getFiles({
+        dbms: "postgres",
+      })),
     },
   });
   return operations;
