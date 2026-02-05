@@ -76,7 +76,7 @@ export const test_schema_preliminary_erase = async () => {
       .map((r) => r.$ref.split("/").pop()!)
       .sort(),
     [
-      "IAutoBeInterfaceSchemaReviewApplication.IComplete",
+      "IAutoBeInterfaceSchemaReviewApplication.ICompleteAutoBeInterfaceSchemaPropertyRevise",
       "IAutoBePreliminaryGetAnalysisFiles",
       "IAutoBePreliminaryGetDatabaseSchemas",
       "IAutoBePreliminaryGetInterfaceOperations",
