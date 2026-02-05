@@ -1,7 +1,7 @@
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -47,9 +47,7 @@ export interface AutoBeAnalyzeReviewEvent
     AutoBeEventBase<"analyzeReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
-      "analysisFiles" | "previousAnalysisFiles"
-    > {
+    AutoBeAcquisitionEventBase<"analysisFiles" | "previousAnalysisFiles"> {
   /**
    * Original file content submitted for review.
    *

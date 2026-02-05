@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -25,7 +25,7 @@ export interface AutoBeInterfaceSchemaComplementEvent
     AutoBeEventBase<"interfaceSchemaComplement">,
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       | "analysisFiles"
       | "databaseSchemas"
       | "interfaceOperations"

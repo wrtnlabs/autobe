@@ -1,7 +1,7 @@
 import { AutoBeTestScenario } from "../histories/contents/AutoBeTestScenario";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -24,7 +24,7 @@ export interface AutoBeTestScenarioEvent
     AutoBeEventBase<"testScenario">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
     > {
   /**

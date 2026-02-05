@@ -2,9 +2,9 @@ import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableRevise,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 
 /**
  * Event fired when the Database agent reviews and validates the authorization
@@ -27,7 +27,7 @@ export interface AutoBeDatabaseAuthorizationReviewEvent
   extends
     AutoBeEventBase<"databaseAuthorizationReview">,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
     > {
   /**

@@ -1,7 +1,7 @@
 import { AutoBeDatabaseGroup } from "../histories/contents/AutoBeDatabaseGroup";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 
 /**
  * Event fired when the Database agent generates logical groups for organizing
@@ -30,7 +30,7 @@ export interface AutoBeDatabaseGroupEvent
   extends
     AutoBeEventBase<"databaseGroup">,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
     > {
   /**

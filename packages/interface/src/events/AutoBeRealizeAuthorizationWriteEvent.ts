@@ -1,7 +1,7 @@
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -25,7 +25,7 @@ export interface AutoBeRealizeAuthorizationWriteEvent
     AutoBeEventBase<"realizeAuthorizationWrite">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<"databaseSchemas"> {
+    AutoBeAcquisitionEventBase<"databaseSchemas"> {
   /**
    * Authorization implementation details being written.
    *

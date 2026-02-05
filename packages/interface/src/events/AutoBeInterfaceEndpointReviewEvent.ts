@@ -1,8 +1,8 @@
 import { AutoBeInterfaceEndpointDesign } from "../histories/contents/AutoBeInterfaceEndpointDesign";
 import { AutoBeInterfaceEndpointRevise } from "../histories/contents/AutoBeInterfaceEndpointRevise";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -28,7 +28,7 @@ export interface AutoBeInterfaceEndpointReviewEvent
     AutoBeEventBase<"interfaceEndpointReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       | "analysisFiles"
       | "databaseSchemas"
       | "previousAnalysisFiles"

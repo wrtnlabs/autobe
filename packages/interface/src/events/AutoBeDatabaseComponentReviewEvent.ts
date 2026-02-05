@@ -2,9 +2,9 @@ import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableRevise,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -28,7 +28,7 @@ export interface AutoBeDatabaseComponentReviewEvent
     AutoBeEventBase<"databaseComponentReview">,
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
     > {
   /**

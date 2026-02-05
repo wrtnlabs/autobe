@@ -1,7 +1,7 @@
 import { AutoBeInterfaceGroup } from "../histories/contents/AutoBeInterfaceGroup";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 
 /**
  * Event fired when the Interface agent generates logical groups for organizing
@@ -31,7 +31,7 @@ export interface AutoBeInterfaceGroupEvent
   extends
     AutoBeEventBase<"interfaceGroup">,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       | "analysisFiles"
       | "databaseSchemas"
       | "previousAnalysisFiles"

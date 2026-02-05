@@ -3,9 +3,9 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -33,7 +33,7 @@ export interface AutoBeRealizeWriteEvent
     AutoBeEventBase<"realizeWrite">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<"databaseSchemas"> {
+    AutoBeAcquisitionEventBase<"databaseSchemas"> {
   /**
    * Generated function with complete metadata.
    *

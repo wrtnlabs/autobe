@@ -1,8 +1,8 @@
 import { AutoBeDatabaseGroup } from "../histories/contents/AutoBeDatabaseGroup";
 import { AutoBeDatabaseGroupRevise } from "../histories/contents/AutoBeDatabaseGroupRevise";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 
 /**
  * Event fired when the Database agent reviews and validates the component group
@@ -25,7 +25,7 @@ export interface AutoBeDatabaseGroupReviewEvent
   extends
     AutoBeEventBase<"databaseGroupReview">,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
+    AutoBeAcquisitionEventBase<
       "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
     > {
   /**

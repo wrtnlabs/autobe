@@ -4,7 +4,7 @@ import {
   IAutoBeTokenUsageJson,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { AutoBePreliminaryAcquisitionEventBase } from "@autobe/interface/src/events/base/AutoBePreliminaryAcquisitionEventBase";
+import { AutoBeAcquisitionEventBase } from "@autobe/interface/src/events/base/AutoBeAcquisitionEventBase";
 import typia from "typia";
 
 export namespace ArchiveLogger {
@@ -29,7 +29,7 @@ export namespace ArchiveLogger {
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
         `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
       );
-    if (typia.is<AutoBePreliminaryAcquisitionEventBase<any>>(event))
+    if (typia.is<AutoBeAcquisitionEventBase<any>>(event))
       content.push(
         `  - acquisition:`,
         ...Object.entries(event.acquisition).map(

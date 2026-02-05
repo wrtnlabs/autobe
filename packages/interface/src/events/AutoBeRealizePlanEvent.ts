@@ -2,9 +2,9 @@ import {
   AutoBeRealizeCollectorPlan,
   AutoBeRealizeTransformerPlan,
 } from "../histories";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -30,9 +30,7 @@ export interface AutoBeRealizePlanEvent
     AutoBeEventBase<"realizePlan">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBePreliminaryAcquisitionEventBase<
-      "databaseSchemas" | "interfaceSchemas"
-    > {
+    AutoBeAcquisitionEventBase<"databaseSchemas" | "interfaceSchemas"> {
   /**
    * Complete list of collectors and transformers planned for generation.
    *
