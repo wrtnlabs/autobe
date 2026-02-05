@@ -1,4 +1,6 @@
 import { StringUtil } from "@autobe/utils";
+import { singular } from "pluralize";
+import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -31,8 +33,13 @@ export const transformInterfaceSchemaRenameHistory = (props: {
           2. Preserving ALL words from the table name
           3. Adding "I" prefix for interface types
 
-          **Table Names:**
-          ${props.tableNames.map((name) => `- \`${name}\``).join("\n")}
+          Table Name | Expected DTO Type Name
+          -----------|------------------------
+          ${props.tableNames
+            .map((name) =>
+              [name, `I${NamingConvention.pascal(singular(name))}`].join(" | "),
+            )
+            .join("\n")}
 
           ## Current DTO Type Names
 
