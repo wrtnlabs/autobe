@@ -82,7 +82,6 @@ export namespace AutoBeJsonSchemaFactory {
     operations: AutoBeOpenApi.IOperation[];
     collection: AutoBeJsonSchemaCollection;
   }): void => {
-    removeUnused(props);
     removeDuplicated(props);
     fixTimestamps({
       application: props.application,
@@ -106,7 +105,7 @@ export namespace AutoBeJsonSchemaFactory {
     });
   };
 
-  const removeUnused = (props: {
+  export const removeUnused = (props: {
     operations: AutoBeOpenApi.IOperation[];
     collection: AutoBeJsonSchemaCollection;
   }): void => {

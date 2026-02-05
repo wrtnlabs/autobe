@@ -201,6 +201,14 @@ export const orchestrateInterfaceSchema = async (
         document,
       }),
     );
+
+  AutoBeJsonSchemaFactory.removeUnused({
+    operations: document.operations,
+    collection: new AutoBeJsonSchemaCollection(
+      document.components.schemas,
+      document.components.schemas,
+    ),
+  });
   return document.components.schemas;
 };
 
