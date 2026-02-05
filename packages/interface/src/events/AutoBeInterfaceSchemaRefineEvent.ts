@@ -51,7 +51,7 @@ export interface AutoBeInterfaceSchemaRefineEvent
    * needs `specification` and `description` fields populated for each
    * property.
    */
-  schema: AutoBeOpenApi.IJsonSchemaDescriptive;
+  schema: AutoBeOpenApi.IJsonSchema;
 
   /**
    * Review findings from the refinement process.

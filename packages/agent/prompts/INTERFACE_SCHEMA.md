@@ -37,12 +37,12 @@ interface IComplete {
 ```
 
 **Rules**:
-| Rule | Description |
-|------|-------------|
-| 8-Call Limit | Maximum 8 preliminary requests total |
-| Batch Requests | Request multiple items per call using arrays |
+| Rule            | Description                                                    |
+|-----------------|----------------------------------------------------------------|
+| 8-Call Limit    | Maximum 8 preliminary requests total                           |
+| Batch Requests  | Request multiple items per call using arrays                   |
 | Empty = Removed | When preliminary returns `[]`, that type is removed from union |
-| Complete Last | NEVER call `complete` in parallel with preliminary requests |
+| Complete Last   | NEVER call `complete` in parallel with preliminary requests    |
 
 **Prohibitions**:
 - ❌ NEVER work from imagination - load actual data first
@@ -55,28 +55,28 @@ interface IComplete {
 
 ### 2.1. Security Rules
 
-| Field Pattern | In Request DTO | In Response DTO | Reason |
-|---------------|----------------|-----------------|--------|
-| `*_member_id`, `*_author_id` (when = auth actor) | ❌ FORBIDDEN | ✅ As object | From JWT |
-| `*_session_id` | ❌ FORBIDDEN | ❌ FORBIDDEN | Server-managed |
-| `password`, `*_hashed`, `salt`, `secret` | ❌ FORBIDDEN | ❌ FORBIDDEN | Security |
-| `id` (primary key) | ❌ FORBIDDEN | ✅ Include | Auto-generated |
-| `created_at`, `updated_at`, `deleted_at` | ❌ FORBIDDEN | ✅ If exists in DB | System-managed |
-| `*_count` (aggregations) | ❌ FORBIDDEN | ✅ Include | Computed |
+| Field Pattern                                    | In Request DTO | In Response DTO    | Reason         |
+|--------------------------------------------------|----------------|--------------------|----------------|
+| `*_member_id`, `*_author_id` (when = auth actor) | ❌ FORBIDDEN  | ✅ As object       | From JWT       |
+| `*_session_id`                                   | ❌ FORBIDDEN  | ❌ FORBIDDEN       | Server-managed |
+| `password`, `*_hashed`, `salt`, `secret`         | ❌ FORBIDDEN  | ❌ FORBIDDEN       | Security       |
+| `id` (primary key)                               | ❌ FORBIDDEN  | ✅ Include         | Auto-generated |
+| `created_at`, `updated_at`, `deleted_at`         | ❌ FORBIDDEN  | ✅ If exists in DB | System-managed |
+| `*_count` (aggregations)                         | ❌ FORBIDDEN  | ✅ Include         | Computed       |
 
 **Password Mapping**: DB `password_hashed` → Request DTO `password` (plain text, backend hashes)
 
 ### 2.2. DTO Type Rules
 
-| DTO Type | Purpose | Required Array | Forbidden Fields |
-|----------|---------|----------------|------------------|
-| `IEntity` | Full detail response | All fields (values may be null) | Passwords, secrets |
-| `IEntity.ISummary` | List/embed | Essential display fields | Large text, **HAS-MANY compositions** |
-| `IEntity.ICreate` | POST body | Non-nullable, non-default fields | id, timestamps, actor IDs |
-| `IEntity.IUpdate` | PUT body | Empty (all optional) | id, ownership, created_at, structural relations |
-| `IEntity.IRequest` | Query params | Empty (all optional) | Direct user_id |
-| `IEntity.IInvert` | Child with parent | All fields | Parent's children array |
-| `IPageIEntity` | Paginated | `["pagination", "data"]` | - |
+| DTO Type               | Purpose                       | Required Fields                            | Forbidden Fields          | `databaseSchema` |
+|------------------------|-------------------------------|--------------------------------------------|---------------------------|------------------|
+| `IEntity`              | Full detail response          | All public fields                          | Passwords, secrets        | Table name       |
+| `IEntity.ISummary`     | List/embed response           | Essential display fields                   | Large text, compositions  | Table name       |
+| `IEntity.ICreate`      | POST request body             | Business fields only                       | id, timestamps, actor IDs | Table name       |
+| `IEntity.IUpdate`      | PUT request body              | All optional (business)                    | id, ownership, created_at | Table name       |
+| `IEntity.IRequest`     | Pagination request parameters | All optional (pagination, filters, search) | Direct user_id            | Table name       |
+| `IEntity.IInvert`      | Child with parent context     | Child + parent summary                     | Parent's children array   | Table name       |
+| `IPageIEntityISummary` | Paginated response            | pagination + data array                    | -                         | `null`           |
 
 **Detail vs Summary composition rule**:
 - `IEntity` (detail): Includes BELONGS-TO as `.ISummary` + all HAS-MANY compositions as arrays
@@ -100,21 +100,21 @@ interface IComplete {
 
 ### 2.3. FK Transformation Rules
 
-| Relation Type | Response DTO | Create DTO |
-|---------------|--------------|------------|
-| **Association (BELONGS-TO)** | `$ref` to `.ISummary` (remove `_id`) | Keep as `*_id` scalar |
-| **Composition (HAS-MANY)** | Full nested array | Nested `ICreate` objects |
-| **Aggregation** | Count only (`*_count`) | N/A |
-| **Actor (auth user)** | `$ref` to `.ISummary` | ❌ FORBIDDEN |
+| Relation Type                | Response DTO                         | Create DTO               |
+|------------------------------|--------------------------------------|--------------------------|
+| **Association (BELONGS-TO)** | `$ref` to `.ISummary` (remove `_id`) | Keep as `*_id` scalar    |
+| **Composition (HAS-MANY)**   | Full nested array                    | Nested `ICreate` objects |
+| **Aggregation**              | Count only (`*_count`)               | N/A                      |
+| **Actor (auth user)**        | `$ref` to `.ISummary`                | FORBIDDEN                |
 
 ### 2.4. Naming Conventions
 
-| Pattern | Example |
-|---------|---------|
-| Main entity | `IShoppingSale`, `IBbsArticle` |
-| Variants | `IShoppingSale.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert` |
-| Paginated | `IPageIShoppingSale` |
-| Enum | `EUserRole`, `EOrderStatus` |
+| Pattern     | Example                                                                   |
+|-------------|---------------------------------------------------------------------------|
+| Main entity | `IShoppingSale`, `IBbsArticle`                                            |
+| Variants    | `IShoppingSale.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert` |
+| Paginated   | `IPageIShoppingSaleISummary`                                              |
+| Enum        | `EUserRole`, `EOrderStatus`                                               |
 
 **CRITICAL**: Use dots for variants (`.ICreate`), never concatenate (`IEntityICreate` ❌).
 
@@ -140,11 +140,11 @@ interface IComplete {
 
 ### 3.2. Nullable Handling
 
-| Database | Read DTO | Create DTO |
-|----------|----------|------------|
-| `String` (NOT NULL) | `{ type: "string" }` + required | `{ type: "string" }` + required |
-| `String?` (nullable) | `{ oneOf: [{type:"string"}, {type:"null"}] }` + required | `{ type: "string" }` + NOT required |
-| `String @default(...)` | `{ type: "string" }` + required | `{ type: "string" }` + NOT required |
+| Database               | Read DTO                                                 | Create DTO                          |
+|------------------------|----------------------------------------------------------|-------------------------------------|
+| `String` (NOT NULL)    | `{ type: "string" }` + required                          | `{ type: "string" }` + required     |
+| `String?` (nullable)   | `{ oneOf: [{type:"string"}, {type:"null"}] }` + required | `{ type: "string" }` + NOT required |
+| `String @default(...)` | `{ type: "string" }` + required                          | `{ type: "string" }` + NOT required | 
 
 **CRITICAL**: Never use `type: ["string", "null"]` - always use `oneOf`.
 

@@ -2,10 +2,10 @@ import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
+import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 
 export const transformInterfaceSchemaRefineHistory = (props: {
   state: AutoBeState;
@@ -22,7 +22,7 @@ export const transformInterfaceSchemaRefineHistory = (props: {
   >;
   typeName: string;
   refineOperations: AutoBeOpenApi.IOperation[];
-  refineSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  refineSchema: AutoBeOpenApi.IJsonSchema.IObject;
 }): IAutoBeOrchestrateHistory => ({
   histories: [
     {

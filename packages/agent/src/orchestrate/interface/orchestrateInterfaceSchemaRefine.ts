@@ -27,7 +27,7 @@ export async function orchestrateInterfaceSchemaRefine(
   ctx: AutoBeContext,
   props: {
     document: AutoBeOpenApi.IDocument;
-    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
     instruction: string;
     progress: AutoBeProgressEventBase;
   },
@@ -55,7 +55,7 @@ export async function orchestrateInterfaceSchemaRefine(
             (op.responseBody && predicate(op.responseBody.typeName)),
         );
       try {
-        const value: AutoBeOpenApi.IJsonSchemaDescriptive = props.schemas[it];
+        const value: AutoBeOpenApi.IJsonSchema = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(value) === false) {
           ++props.progress.completed;
           return;
@@ -87,7 +87,7 @@ async function process(
     document: AutoBeOpenApi.IDocument;
     typeName: string;
     refineOperations: AutoBeOpenApi.IOperation[];
-    refineSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    refineSchema: AutoBeOpenApi.IJsonSchema.IObject;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -122,7 +122,10 @@ async function process(
     },
     local: {
       interfaceOperations: props.refineOperations,
-      interfaceSchemas: { [props.typeName]: props.refineSchema },
+      interfaceSchemas: {
+        [props.typeName]:
+          props.refineSchema as AutoBeOpenApi.IJsonSchemaDescriptive,
+      },
       databaseSchemas: (() => {
         const expected: string =
           props.refineSchema["x-autobe-database-schema"] ??
@@ -200,7 +203,7 @@ function createController(
   ctx: AutoBeContext,
   props: {
     typeName: string;
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
     operations: AutoBeOpenApi.IOperation[];
     pointer: IPointer<
       IAutoBeInterfaceSchemaRefineApplication.IComplete | null | false
