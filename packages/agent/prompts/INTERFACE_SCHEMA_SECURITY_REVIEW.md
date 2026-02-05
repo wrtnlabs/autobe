@@ -21,6 +21,9 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Secure, correctly placed field | `keep` |
 | Security violation (exposed secret, misplaced session field) | `erase` |
 | Missing required security field | `create` |
+| Security field with wrong schema/type | `update` |
+| Security field with wrong documentation only | `depict` |
+| Security field with wrong nullability only | `nullish` |
 
 ## 2. Password Fields
 
@@ -66,7 +69,24 @@ Why: Actor = WHO, Session = HOW THEY CONNECTED. One Actor has many Sessions.
 
 **IAuthorized**: Allowed: Actor info, access token. Delete: `password*`, `salt`, `refresh_token`, `secret_key`.
 
-## 5. Revision Reference
+## 5. Function Calling
+
+```typescript
+process({
+  thinking: string;
+  request: IComplete | IPreliminaryRequest;
+});
+
+interface IComplete {
+  type: "complete";
+  review: string;
+  revises: AutoBeInterfaceSchemaPropertyRevise[];
+}
+```
+
+Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`.
+
+## 6. Revision Reference
 
 ### `erase`
 ```typescript
@@ -87,29 +107,21 @@ Why: Actor = WHO, Session = HOW THEY CONNECTED. One Actor has many Sessions.
 }
 ```
 
-Property construction order for `create`: `databaseSchemaProperty` → `specification` → `description` → `schema`.
+### `update` - Fix Wrong Schema/Type
+Same structure as `create`. Use when a security field exists but its `schema` is wrong (e.g., token field typed as `integer` instead of `string`).
+
+### `depict` - Fix Documentation Only
+Use when schema type is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong. Fields: `key`, `reason`, `specification`, `description`, `databaseSchemaProperty`.
+
+### `nullish` - Fix Nullability Only
+Use when schema type is correct but nullable/required is wrong. Fields: `key`, `reason`, `specification`, `description`, `nullable`, `required`.
 
 ### `keep`
 ```typescript
 { type: "keep", reason: "Required session context field", key: "href" }
 ```
 
-## 6. Function Calling
-
-```typescript
-process({
-  thinking: string;
-  request: IComplete | IPreliminaryRequest;
-});
-
-interface IComplete {
-  type: "complete";
-  review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
-}
-```
-
-Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`.
+Property construction order for `create`/`update`: `databaseSchemaProperty` → `specification` → `description` → `schema`.
 
 ## 7. Complete Example
 
@@ -144,7 +156,7 @@ process({
 })
 ```
 
-Note how every existing property appears exactly once.
+Note how every existing property appears exactly once. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
 
 ## 8. Checklist
 
@@ -161,4 +173,6 @@ Note how every existing property appears exactly once.
 
 **Coverage**:
 - [ ] Every property has exactly one revision (no missing, no duplicates)
-- [ ] `specification` present on every `create`
+- [ ] `specification` present on every `create`/`update`
+- [ ] `depict` used only for wrong documentation on security fields
+- [ ] `nullish` used only for wrong nullability on security fields

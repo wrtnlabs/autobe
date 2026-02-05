@@ -70,13 +70,33 @@ interface IComplete {
 
 | DTO Type | Purpose | Required Array | Forbidden Fields |
 |----------|---------|----------------|------------------|
-| `IEntity` | Full response | All fields (values may be null) | Passwords, secrets |
-| `IEntity.ISummary` | List/embed | Essential display fields | Large text, compositions |
+| `IEntity` | Full detail response | All fields (values may be null) | Passwords, secrets |
+| `IEntity.ISummary` | List/embed | Essential display fields | Large text, **HAS-MANY compositions** |
 | `IEntity.ICreate` | POST body | Non-nullable, non-default fields | id, timestamps, actor IDs |
-| `IEntity.IUpdate` | PUT body | Empty (all optional) | id, ownership, created_at |
+| `IEntity.IUpdate` | PUT body | Empty (all optional) | id, ownership, created_at, structural relations |
 | `IEntity.IRequest` | Query params | Empty (all optional) | Direct user_id |
 | `IEntity.IInvert` | Child with parent | All fields | Parent's children array |
 | `IPageIEntity` | Paginated | `["pagination", "data"]` | - |
+
+**Detail vs Summary composition rule**:
+- `IEntity` (detail): Includes BELONGS-TO as `.ISummary` + all HAS-MANY compositions as arrays
+- `IEntity.ISummary`: Includes BELONGS-TO as `.ISummary` only, **excludes** HAS-MANY compositions (3-10x smaller)
+
+**Update DTO relation rules**:
+- Changeable: classifications, categories (`category_id?: string`)
+- Immutable (excluded): ownership (`author_id`), structural parents (`article_id`), compositions (use separate endpoints)
+
+**IPage fixed structure** (immutable — never modify `pagination` or `data`):
+```json
+{
+  "type": "object",
+  "properties": {
+    "pagination": { "$ref": "#/components/schemas/IPage.IPagination" },
+    "data": { "type": "array", "items": { "$ref": "#/components/schemas/<EntityType>" } }
+  },
+  "required": ["pagination", "data"]
+}
+```
 
 ### 2.3. FK Transformation Rules
 
@@ -128,7 +148,64 @@ interface IComplete {
 
 **CRITICAL**: Never use `type: ["string", "null"]` - always use `oneOf`.
 
-### 3.3. Named Types ($ref)
+### 3.3. Schema Metadata Placement
+
+Schema metadata (`description`, `required`, `type`) goes at the **object level**, not inside `properties`:
+
+```typescript
+// ❌ WRONG - metadata inside properties
+schema: {
+  type: "object",
+  properties: {
+    id: { type: "string" },
+    description: "User entity",     // ❌ This is metadata!
+    required: ["id"]                 // ❌ This is metadata!
+  }
+}
+
+// ✅ CORRECT - metadata at object level
+schema: {
+  type: "object",
+  description: "User entity",       // ✅ Object-level
+  properties: { id: { type: "string" } },
+  required: ["id"]                   // ✅ Object-level
+}
+```
+
+**Test**: "Does this key appear in the actual API JSON?" YES → data field in `properties`. NO → metadata at object level.
+
+### 3.4. additionalProperties (JSON Key-Value Columns)
+
+When a DB `String` column description mentions "JSON key-value pairs", "JSON object", or "dictionary", use `additionalProperties`:
+
+```typescript
+// DB: attributes String /// JSON string containing key-value pairs
+
+// ❌ WRONG
+{ "attributes": { "type": "string" } }
+
+// ✅ CORRECT
+{
+  "attributes": {
+    "type": "object",
+    "properties": {},        // Always include (empty OK)
+    "required": [],          // Always include (empty OK)
+    "additionalProperties": { "type": "string" }
+  }
+}
+
+// Nullable JSON column (String?)
+{
+  "customFields": {
+    "oneOf": [
+      { "type": "object", "properties": {}, "required": [], "additionalProperties": { "type": "string" } },
+      { "type": "null" }
+    ]
+  }
+}
+```
+
+### 3.5. Named Types ($ref)
 
 **ABSOLUTE**: Every object type MUST use `$ref`. No inline objects.
 
@@ -140,7 +217,7 @@ interface IComplete {
 { "items": { "$ref": "#/components/schemas/IAttachment" } }
 ```
 
-### 3.4. Relation Types
+### 3.6. Relation Types
 
 | Type | Definition | How to Identify |
 |------|------------|-----------------|
@@ -153,7 +230,11 @@ interface IComplete {
 - Association: Article → Category, Sale → Seller
 - Aggregation: Article → Comments, Sale → Reviews
 
-### 3.5. Atomic Operations
+**Special cases**:
+- **Many-to-Many**: Use `.ISummary[]` array (e.g., `roles: IRole.ISummary[]`, `categories: ICategory.ISummary[]`). If the related entities are independent actors (e.g., team members), access via separate API endpoint instead.
+- **Recursive/Self-Reference**: Include immediate parent as `.ISummary`, access children via separate API (e.g., `parent: ICategory.ISummary`, children via `GET /categories/:id/children`).
+
+### 3.7. Atomic Operations
 
 **Compositions MUST be nested** in Create DTOs for single-call creation:
 
@@ -169,7 +250,7 @@ POST /sales
 }
 ```
 
-### 3.6. Path Parameters
+### 3.8. Path Parameters
 
 Never duplicate path parameters in request body:
 
@@ -242,6 +323,20 @@ Check target schema for unique identifiers:
 | Unique `username`/`slug` | `entity_username`, `entity_slug` |
 | Only UUID `id` | `entity_id: string` |
 
+**Composite unique constraints**: When the target has `@@unique([parent_id, code])`, you must provide parent context alongside the code:
+
+```typescript
+// teams has @@unique([enterprise_id, code])
+
+// ❌ WRONG - ambiguous: which enterprise's team?
+interface IProject.ICreate { team_code: string; }
+
+// ✅ CORRECT - complete reference
+interface IProject.ICreate { enterprise_code: string; team_code: string; }
+```
+
+**Decision**: Is the referenced entity in the path? → Omit from body. Otherwise, check `@@unique`: global unique → single field, composite unique → include parent context fields.
+
 ---
 
 ## 5. Complete Example
@@ -312,32 +407,35 @@ const IBbsArticle_ICreate = {
 // Update DTO
 const IBbsArticle_IUpdate = {
   databaseSchema: "bbs_articles",
-  specification: "All optional. Mutable: title, content, category_id. Immutable: bbs_member_id.",
+  specification: "All optional. Mutable: title, content, category_id. Immutable: bbs_member_id (ownership), parent_id (structural).",
   description: "Request body for updating article.",
   schema: {
     type: "object",
     properties: {
       title: { type: "string" },
       content: { type: "string" },
-      category_id: { type: "string", format: "uuid" }
+      category_id: { type: "string", format: "uuid" }  // Changeable classification
+      // ❌ bbs_member_id - ownership is immutable
+      // ❌ attachments - compositions managed via separate endpoints
     },
     required: []
   }
 }
 
-// Summary DTO
+// Summary DTO (BELONGS-TO included, HAS-MANY excluded)
 const IBbsArticle_ISummary = {
   databaseSchema: "bbs_articles",
-  specification: "Direct: id, title, created_at. Relations: author. Excluded: content (large), attachments (composition).",
+  specification: "Direct: id, title, created_at. Relations: author (BELONGS-TO). Excluded: content (large), attachments (HAS-MANY composition).",
   description: "Lightweight article for lists.",
   schema: {
     type: "object",
     properties: {
       id: { type: "string", format: "uuid" },
       title: { type: "string" },
-      author: { $ref: "#/components/schemas/IBbsMember.ISummary" },
+      author: { $ref: "#/components/schemas/IBbsMember.ISummary" },  // BELONGS-TO: included
       comments_count: { type: "integer" },
       created_at: { type: "string", format: "date-time" }
+      // ❌ attachments - HAS-MANY composition excluded from ISummary
     },
     required: ["id", "title", "author", "comments_count", "created_at"]
   }
@@ -369,13 +467,18 @@ const IBbsArticle_IRequest = {
 - [ ] All needed DB schemas loaded (not imagined)
 - [ ] Security fields excluded from request DTOs
 - [ ] `databaseSchema` set (table name or null)
-- [ ] `specification` and `description` provided at object level
+- [ ] `specification` and `description` provided at object level (not inside `properties`)
 - [ ] All relations use `$ref` (no inline objects)
 - [ ] All BELONGS-TO use `.ISummary`
+- [ ] ISummary excludes HAS-MANY compositions
 - [ ] Compositions nested in Create DTOs
+- [ ] Update DTOs: only changeable references, no ownership/structural relations
 - [ ] No phantom fields
 - [ ] `required` array correct for DTO type
 - [ ] Nullable uses `oneOf` (not array type)
+- [ ] JSON key-value columns use `additionalProperties`
+- [ ] IPage types use fixed structure (`pagination` + `data`)
+- [ ] Composite unique references include parent context
 
 ---
 

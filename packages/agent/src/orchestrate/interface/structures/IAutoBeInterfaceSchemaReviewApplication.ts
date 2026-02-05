@@ -9,7 +9,9 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
-export interface IAutoBeInterfaceSchemaReviewApplication {
+export interface IAutoBeInterfaceSchemaReviewApplication<
+  Revise extends AutoBeInterfaceSchemaPropertyRevise,
+> {
   /**
    * Process schema review task or preliminary data requests.
    *
@@ -19,10 +21,10 @@ export interface IAutoBeInterfaceSchemaReviewApplication {
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
+  process(props: IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>): void;
 }
 export namespace IAutoBeInterfaceSchemaReviewApplication {
-  export interface IProps {
+  export interface IProps<Revise extends AutoBeInterfaceSchemaPropertyRevise> {
     /**
      * Think before you act.
      *
@@ -57,7 +59,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * preventing repeated calls.
      */
     request:
-      | IComplete
+      | IComplete<Revise>
       | IAutoBePreliminaryGetAnalysisFiles
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
@@ -68,15 +70,15 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /**
-   * Complete schema review with property-level revisions.
-   */
-  export interface IComplete {
+  /** Complete schema review with property-level revisions. */
+  export interface IComplete<
+    Revise extends AutoBeInterfaceSchemaPropertyRevise,
+  > {
     /**
      * Type discriminator for the request.
      *
-     * Value "complete" indicates this is the final review submission after
-     * all preliminary data has been gathered.
+     * Value "complete" indicates this is the final review submission after all
+     * preliminary data has been gathered.
      */
     type: "complete";
 
@@ -86,16 +88,9 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     /**
      * Property-level revisions to apply.
      *
-     * Each revision is an atomic operation:
-     * - `create`: Add missing property
-     * - `erase`: Remove invalid property
-     * - `keep`: Keep existing property unchanged (explicit acknowledgment)
-     * - `nullish`: Fix nullable/required status only
-     * - `update`: Replace schema (use `newKey` to rename, e.g., FK to object)
-     *
-     * You MUST provide a revise for EVERY property in the object schema.
-     * Use `keep` for properties that need no changes.
+     * You MUST provide a revise for EVERY property in the object schema. Use
+     * `keep` for properties that need no changes.
      */
-    revises: AutoBeInterfaceSchemaPropertyRevise[];
+    revises: Revise[];
   }
 }

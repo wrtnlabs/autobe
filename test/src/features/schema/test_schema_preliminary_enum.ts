@@ -8,6 +8,7 @@ import { IAutoBePreliminaryGetInterfaceSchemas } from "@autobe/agent/src/orchest
 import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
+import { AutoBeInterfaceSchemaPropertyRevise } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
@@ -39,7 +40,9 @@ export const test_schema_preliminary_enum = async () => {
   });
 
   const application: ILlmApplication =
-    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>();
+    typia.llm.application<
+      IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+    >();
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -51,7 +54,9 @@ export const test_schema_preliminary_enum = async () => {
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
+      typia.json.application<
+        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+      >(),
     source: "interfaceSchemaReview",
     kinds: [
       "analysisFiles",

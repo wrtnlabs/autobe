@@ -1,5 +1,13 @@
-import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import {
+  AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyKeep,
+  AutoBeInterfaceSchemaPropertyNullish,
+  AutoBeInterfaceSchemaPropertyRevise,
+  AutoBeOpenApi,
+  AutoBeProgressEventBase,
+} from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, missedOpenApiSchemas } from "@autobe/utils";
+import typia from "typia";
 
 import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -10,6 +18,8 @@ import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRe
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { orchestrateInterfaceSchemaWrite } from "./orchestrateInterfaceSchemaWrite";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
+import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
+import { IAutoBeInterfaceSchemaReviewConfig } from "./structures/IAutoBeInterfaceSchemaReviewConfig";
 import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
@@ -194,21 +204,62 @@ export const orchestrateInterfaceSchema = async (
   return document.components.schemas;
 };
 
-const REVIEWERS = [
+const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
   {
-    kind: "relation" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-  },
-  {
-    kind: "content" as const,
+    kind: "content",
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
+    application: (process) =>
+      typia.llm.application<
+        IAutoBeInterfaceSchemaReviewApplication<
+          Exclude<
+            AutoBeInterfaceSchemaPropertyRevise,
+            AutoBeInterfaceSchemaPropertyErase
+          >
+        >
+      >({
+        validate: {
+          process,
+        },
+      }),
   },
   {
-    kind: "security" as const,
+    kind: "relation",
+    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
+    application: (process) =>
+      typia.llm.application<
+        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+      >({
+        validate: {
+          process,
+        },
+      }),
+  },
+  {
+    kind: "security",
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
+    application: (process) =>
+      typia.llm.application<
+        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+      >({
+        validate: {
+          process,
+        },
+      }),
   },
   {
     kind: "phantom" as const,
     systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
+    application: (process) =>
+      typia.llm.application<
+        IAutoBeInterfaceSchemaReviewApplication<
+          | AutoBeInterfaceSchemaPropertyErase
+          | AutoBeInterfaceSchemaPropertyKeep
+          | AutoBeInterfaceSchemaPropertyNullish
+        >
+      >({
+        validate: {
+          process,
+        },
+      }),
   },
 ];

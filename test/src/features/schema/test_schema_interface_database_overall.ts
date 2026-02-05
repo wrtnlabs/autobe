@@ -4,7 +4,11 @@ import { IAutoBeInterfaceSchemaCastingApplication } from "@autobe/agent/src/orch
 import { IAutoBeInterfaceSchemaComplementApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaComplementApplication";
 import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import { AutoBeDatabase, AutoBeHistory } from "@autobe/interface";
+import {
+  AutoBeDatabase,
+  AutoBeHistory,
+  AutoBeInterfaceSchemaPropertyRevise,
+} from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import {
   ILlmApplication,
@@ -74,6 +78,10 @@ export const test_schema_interface_database = async () => {
   };
   assert(typia.llm.application<IAutoBeInterfaceSchemaApplication>());
   assert(typia.llm.application<IAutoBeInterfaceSchemaCastingApplication>());
-  assert(typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>());
+  assert(
+    typia.llm.application<
+      IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
+    >(),
+  );
   assert(typia.llm.application<IAutoBeInterfaceSchemaComplementApplication>());
 };

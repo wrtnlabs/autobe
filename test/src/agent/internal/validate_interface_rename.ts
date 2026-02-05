@@ -4,8 +4,8 @@ import { AutoBeJsonSchemaCollection } from "@autobe/agent/src/orchestrate/interf
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 
-import { validate_interface_complement } from "./validate_interface_complement";
 import { validate_interface_operation } from "./validate_interface_operation";
+import { validate_interface_schema } from "./validate_interface_schema";
 
 export const validate_interface_rename = async (props: {
   agent: AutoBeAgent;
@@ -23,8 +23,8 @@ export const validate_interface_rename = async (props: {
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
-      file: "interface.complement.json",
-    })) ?? (await validate_interface_complement(props));
+      file: "interface.schema.json",
+    })) ?? (await validate_interface_schema(props));
 
   // Build document
   const document: AutoBeOpenApi.IDocument = {

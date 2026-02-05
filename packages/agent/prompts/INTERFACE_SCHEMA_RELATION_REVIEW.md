@@ -30,9 +30,11 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
 | Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
 | Circular back-reference or aggregation array | `erase` | Remove `articles[]` from User |
+| Relation field with wrong documentation only | `depict` | Fix specification/description on relation |
+| Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
 | Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
 
-In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, or `erase`.
+In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `depict`, or `nullish`.
 
 ## 3. Three Relation Types
 
@@ -172,6 +174,12 @@ Only for circular back-references, unbounded aggregation arrays, or proven incor
 }
 ```
 
+### `depict` - Fix Relation Documentation
+Use when a relation's schema is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong. Fields: `key`, `reason`, `specification`, `description`, `databaseSchemaProperty`.
+
+### `nullish` - Fix Relation Nullability
+Use when a relation's schema is correct but nullable/required is wrong. Fields: `key`, `reason`, `specification`, `description`, `nullable`, `required`.
+
 ### `keep` - Acknowledge Correct Field
 
 All non-relation fields and correctly-implemented relations:
@@ -215,13 +223,15 @@ process({
 })
 ```
 
-Note how every property appears exactly once, and non-relation fields use `keep`.
+Note how every property appears exactly once, and non-relation fields use `keep`. Use `depict` or `nullish` when a relation's documentation or nullability is wrong but its schema structure is correct.
 
 ## 10. Checklist
 
 - [ ] Every property in the schema has exactly one revision (no missing, no duplicates)
 - [ ] Non-relation fields all use `keep`
 - [ ] `erase` used only for circular refs or aggregation arrays
+- [ ] `depict` used only for wrong documentation on relation fields
+- [ ] `nullish` used only for wrong nullability on relation fields
 - [ ] FK fields in Read DTOs transformed to `$ref` objects
 - [ ] FK fields in Create/Update DTOs kept as scalar IDs/codes
 - [ ] Compositions nested in both Read and Create DTOs
