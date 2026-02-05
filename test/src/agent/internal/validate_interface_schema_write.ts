@@ -32,7 +32,7 @@ export const validate_interface_schema_write = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
-      ["interface.schema.json"]: JSON.stringify(schemas),
+      ["interface.schema.write.json"]: JSON.stringify(schemas),
     },
   });
 
