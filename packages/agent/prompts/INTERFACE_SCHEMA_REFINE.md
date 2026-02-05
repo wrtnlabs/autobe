@@ -145,9 +145,12 @@ While enriching, also inspect and fix:
 **Nullable Rule**: DB nullable → DTO MUST handle null (use `oneOf` with null for Read DTOs).
 
 ### 4.2. Phantom Detection
-- No DB column AND no requirements-driven rationale → Erase
+- No DB column AND no requirements-driven rationale AND not a `$ref` relation → Erase
+- Has DB column → always Keep (use `depict` to document it)
 - Has requirements-driven rationale (computed field) → Keep with `databaseSchemaProperty: null`
 - Is `$ref` relation → Keep
+
+When in doubt, `depict` rather than `erase` — phantom review will catch true phantoms later.
 
 ### 4.3. Relation Mapping (FK → $ref)
 
