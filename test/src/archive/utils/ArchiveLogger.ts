@@ -280,7 +280,9 @@ export namespace ArchiveLogger {
     else if (event.type === "interfaceSchemaRefine")
       content.push(
         `  - typeName: ${event.typeName}`,
-        `  - databaseSchema: ${event.databaseSchema}`,
+        `  - databaseSchema: ${event.databaseSchema} (${
+          (event.schema as any)["x-autobe-database-schema"] ?? "-"
+        })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
         `  - refines:`,
         ...event.refines.map(
