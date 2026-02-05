@@ -211,6 +211,17 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     return this.local;
   }
 
+  /**
+   * Extracts acquisition metadata from the currently loaded preliminary data.
+   *
+   * Transforms the local preliminary collection into a normalized acquisition
+   * structure that is suitable for event tracking, including only metadata
+   * such as filenames, schema names, and operation identifiers rather than
+   * full objects.
+   *
+   * @returns Acquisition metadata derived from currently loaded data,
+   *          normalized for event tracking.
+   */
   public getAcquisition(): Pick<AutoBePreliminaryAcquisition, Kind> {
     const acquisition: Partial<AutoBePreliminaryAcquisition> = {};
     const local: IAutoBePreliminaryCollection = this
