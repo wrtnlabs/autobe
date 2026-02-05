@@ -1,6 +1,7 @@
 import { AutoBeTestScenario } from "../histories/contents/AutoBeTestScenario";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -22,7 +23,10 @@ export interface AutoBeTestScenarioEvent
   extends
     AutoBeEventBase<"testScenario">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    > {
   /**
    * List of test scenarios generated for the target endpoints.
    *

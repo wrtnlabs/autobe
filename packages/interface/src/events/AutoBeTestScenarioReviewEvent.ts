@@ -2,6 +2,7 @@ import { AutoBeTestScenario } from "../histories/contents/AutoBeTestScenario";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -48,7 +49,10 @@ export interface AutoBeTestScenarioReviewEvent
   extends
     AutoBeEventBase<"testScenarioReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    > {
   /**
    * The API endpoint being tested.
    *
