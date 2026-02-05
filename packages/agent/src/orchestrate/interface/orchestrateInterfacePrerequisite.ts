@@ -122,9 +122,6 @@ async function process(
     const event: AutoBeInterfacePrerequisiteEvent = {
       type: SOURCE,
       id: v7(),
-      created_at: new Date().toISOString(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
       endpoint: {
         path: props.operation.path,
         method: props.operation.method,
@@ -132,9 +129,13 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       prerequisites: pointer.value.prerequisites,
+      acquisition: preliminary.getAcquisition(),
+      metric: result.metric,
+      tokenUsage: result.tokenUsage,
       total: props.progress.total,
       completed: ++props.progress.completed,
       step: ctx.state().database?.step ?? 0,
+      created_at: new Date().toISOString(),
     };
     ctx.dispatch(event);
     return out(result)(event);

@@ -48,7 +48,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @see AutoBeInterfaceSchemaRefactor for individual refactoring operations
  */
 export interface AutoBeInterfaceSchemaRenameEvent
-  extends AutoBeEventBase<"interfaceSchemaRename">,
+  extends
+    AutoBeEventBase<"interfaceSchemaRename">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**

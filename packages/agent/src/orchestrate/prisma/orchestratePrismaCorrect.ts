@@ -196,6 +196,7 @@ async function execute(
       failure,
       planning: pointer.value.planning,
       correction: correction,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

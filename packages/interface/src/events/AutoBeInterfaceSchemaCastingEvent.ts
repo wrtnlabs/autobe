@@ -1,6 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -27,7 +28,17 @@ export interface AutoBeInterfaceSchemaCastingEvent
   extends
     AutoBeEventBase<"interfaceSchemaCasting">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
+    > {
   /**
    * Type name of the schema being analyzed for refinement.
    *

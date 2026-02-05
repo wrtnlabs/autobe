@@ -197,6 +197,7 @@ async function process(
       schema: props.reviewSchema,
       review: pointer.value.review,
       revises: pointer.value.revises,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

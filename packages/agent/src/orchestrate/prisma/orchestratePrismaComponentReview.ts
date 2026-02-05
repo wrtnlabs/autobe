@@ -124,6 +124,7 @@ async function process(
       review: modification.review,
       revises: pointer.value.revises,
       modification,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

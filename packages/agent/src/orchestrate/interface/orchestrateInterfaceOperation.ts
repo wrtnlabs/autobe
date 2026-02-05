@@ -223,6 +223,7 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       operations: matrix,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       ...props.progress,

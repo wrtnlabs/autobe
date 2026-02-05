@@ -129,6 +129,7 @@ export const orchestrateInterfaceEndpointWrite = async (
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       designs,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: start.toISOString(),

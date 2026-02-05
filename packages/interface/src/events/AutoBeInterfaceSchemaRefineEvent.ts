@@ -2,6 +2,7 @@ import { AutoBeInterfaceSchemaPropertyRefine } from "../histories/contents/AutoB
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -33,7 +34,17 @@ export interface AutoBeInterfaceSchemaRefineEvent
   extends
     AutoBeEventBase<"interfaceSchemaRefine">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
+    > {
   /**
    * Type name of the schema being refined.
    *

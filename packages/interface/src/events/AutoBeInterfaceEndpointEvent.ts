@@ -2,6 +2,7 @@ import { AutoBeInterfaceEndpointDesign } from "../histories/contents/AutoBeInter
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -25,7 +26,14 @@ export interface AutoBeInterfaceEndpointEvent
   extends
     AutoBeEventBase<"interfaceEndpoint">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+    > {
   /**
    * Type discriminator for the endpoint event.
    *
@@ -42,8 +50,8 @@ export interface AutoBeInterfaceEndpointEvent
    * Analysis of the requirements and database schema for endpoint design.
    *
    * Documents the agent's understanding of business requirements needing API
-   * coverage, database entities and relationships, CRUD operations needed,
-   * and special operations beyond basic CRUD.
+   * coverage, database entities and relationships, CRUD operations needed, and
+   * special operations beyond basic CRUD.
    */
   analysis: string;
 
@@ -51,8 +59,8 @@ export interface AutoBeInterfaceEndpointEvent
    * Rationale for the endpoint design decisions.
    *
    * Explains why paths and methods were chosen, how endpoints map to
-   * requirements and entities, what RESTful conventions were followed, and
-   * what was excluded.
+   * requirements and entities, what RESTful conventions were followed, and what
+   * was excluded.
    */
   rationale: string;
 

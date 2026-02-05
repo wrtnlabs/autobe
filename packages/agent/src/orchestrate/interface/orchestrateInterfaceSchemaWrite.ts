@@ -175,6 +175,7 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       schema,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

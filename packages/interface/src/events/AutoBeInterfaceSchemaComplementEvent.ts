@@ -1,6 +1,7 @@
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -23,7 +24,17 @@ export interface AutoBeInterfaceSchemaComplementEvent
   extends
     AutoBeEventBase<"interfaceSchemaComplement">,
     AutoBeAggregateEventBase,
-    AutoBeProgressEventBase {
+    AutoBeProgressEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceSchemas"
+      | "previousInterfaceOperations"
+    > {
   /**
    * Type name of the schema being created.
    *

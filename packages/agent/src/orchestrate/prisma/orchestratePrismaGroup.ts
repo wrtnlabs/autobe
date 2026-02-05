@@ -54,6 +54,7 @@ export async function orchestratePrismaGroup(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       groups: pointer.value.groups,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

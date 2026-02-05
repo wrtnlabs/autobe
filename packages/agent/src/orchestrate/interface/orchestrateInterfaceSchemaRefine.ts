@@ -184,6 +184,7 @@ async function process(
       specification: pointer.value.specification,
       description: pointer.value.description,
       refines: pointer.value.refines,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

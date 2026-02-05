@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -39,9 +40,11 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeWriteEvent
-  extends AutoBeEventBase<"analyzeWrite">,
+  extends
+    AutoBeEventBase<"analyzeWrite">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<"previousAnalysisFiles"> {
   /**
    * File structure and content being written by the Analyze Writer Agent.
    *

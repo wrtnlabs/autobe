@@ -2,6 +2,7 @@ import { AutoBeInterfaceSchemaPropertyRevise } from "../histories/contents/AutoB
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
@@ -40,7 +41,17 @@ export interface AutoBeInterfaceSchemaReviewEvent
   extends
     AutoBeEventBase<"interfaceSchemaReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
+    > {
   /**
    * Review dimension discriminator.
    *

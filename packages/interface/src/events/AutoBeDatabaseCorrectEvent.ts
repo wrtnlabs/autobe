@@ -2,6 +2,7 @@ import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBePreliminaryAcquisitionEventBase } from "./base/AutoBePreliminaryAcquisitionEventBase";
 
 /**
  * Event fired when the Database agent corrects validation failures in the
@@ -22,7 +23,15 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeDatabaseCorrectEvent
-  extends AutoBeEventBase<"databaseCorrect">, AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseCorrect">,
+    AutoBeAggregateEventBase,
+    AutoBePreliminaryAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+    > {
   /**
    * The validation failure details that triggered the correction process.
    *

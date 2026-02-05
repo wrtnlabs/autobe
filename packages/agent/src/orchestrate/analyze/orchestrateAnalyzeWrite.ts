@@ -59,6 +59,7 @@ export const orchestrateAnalyzeWrite = async (
         ...props.file,
         content: pointer.value.content,
       },
+      acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,

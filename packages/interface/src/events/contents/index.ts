@@ -1,3 +1,4 @@
+export * from "./AutoBePreliminaryAcquisition";
 export * from "./AutoBeUserConversateContent";
 export * from "./AutoBeUserImageConversateContent";
 export * from "./AutoBeUserFileConversateContent";
