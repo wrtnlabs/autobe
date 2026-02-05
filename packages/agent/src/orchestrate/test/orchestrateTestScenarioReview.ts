@@ -146,6 +146,7 @@ async function process(
       endpoint: props.scenario.endpoint,
       original: props.scenario,
       improved: pointer.value,
+      acquisition: preliminary.getAcquisition(),
       total: props.progress.total,
       completed: ++props.progress.completed,
       step: ctx.state().interface?.step ?? 0,

@@ -125,6 +125,7 @@ async function process(
       type: "realizePlan",
       id: v4(),
       plans,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

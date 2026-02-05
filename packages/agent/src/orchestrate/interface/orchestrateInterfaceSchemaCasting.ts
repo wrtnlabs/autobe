@@ -172,6 +172,7 @@ async function process(
       reasoning: pointer.value.reasoning,
       verdict: pointer.value.verdict,
       refined: refinedSchema,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

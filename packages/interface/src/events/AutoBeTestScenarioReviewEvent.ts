@@ -1,5 +1,6 @@
 import { AutoBeTestScenario } from "../histories/contents/AutoBeTestScenario";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -48,7 +49,10 @@ export interface AutoBeTestScenarioReviewEvent
   extends
     AutoBeEventBase<"testScenarioReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    > {
   /**
    * The API endpoint being tested.
    *
@@ -87,6 +91,7 @@ export interface AutoBeTestScenarioReviewEvent
    *
    * - Scenario tests business logic BUT had technical issues
    * - Contains the improved version with corrections applied:
+   *
    *   - Corrected authentication operations
    *   - Complete dependency chains
    *   - Proper execution order (auth before business operations)

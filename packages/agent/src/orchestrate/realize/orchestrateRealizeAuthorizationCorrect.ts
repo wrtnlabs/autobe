@@ -138,6 +138,7 @@ export async function orchestrateRealizeAuthorizationCorrect(
       created_at: new Date().toISOString(),
       authorization: correct,
       result: compiled,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().test?.step ?? 0,

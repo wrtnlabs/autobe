@@ -1,4 +1,5 @@
 import { AutoBeDatabaseComponent } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -22,7 +23,10 @@ export interface AutoBeDatabaseComponentEvent
   extends
     AutoBeEventBase<"databaseComponent">,
     AutoBeAggregateEventBase,
-    AutoBeProgressEventBase {
+    AutoBeProgressEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Analysis of the component's scope and table requirements.
    *
@@ -53,16 +57,17 @@ export interface AutoBeDatabaseComponentEvent
    *
    * The component includes:
    *
-   * - namespace: Business domain namespace (from skeleton)
-   * - filename: Prisma schema filename (from skeleton)
-   * - thinking: Initial reasoning about component purpose (from skeleton)
-   * - review: Review of component scope (from skeleton)
-   * - rationale: Final justification for component (from skeleton)
-   * - tables: Array of complete table designs (FILLED IN by this agent)
+   * - Namespace: Business domain namespace (from skeleton)
+   * - Filename: Prisma schema filename (from skeleton)
+   * - Thinking: Initial reasoning about component purpose (from skeleton)
+   * - Review: Review of component scope (from skeleton)
+   * - Rationale: Final justification for component (from skeleton)
+   * - Tables: Array of complete table designs (FILLED IN by this agent)
    *
    * Each table in the tables array includes:
-   * - name: snake_case plural table name
-   * - description: Purpose and contents of the table
+   *
+   * - Name: snake_case plural table name
+   * - Description: Purpose and contents of the table
    */
   component: AutoBeDatabaseComponent;
 

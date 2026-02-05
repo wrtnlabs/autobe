@@ -140,6 +140,7 @@ async function process(
       id: v7(),
       type: "realizeWrite",
       function: functor,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

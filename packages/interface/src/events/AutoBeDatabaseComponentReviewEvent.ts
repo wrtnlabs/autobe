@@ -2,6 +2,7 @@ import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableRevise,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -23,9 +24,13 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Michael
  */
 export interface AutoBeDatabaseComponentReviewEvent
-  extends AutoBeEventBase<"databaseComponentReview">,
+  extends
+    AutoBeEventBase<"databaseComponentReview">,
     AutoBeAggregateEventBase,
-    AutoBeProgressEventBase {
+    AutoBeProgressEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Comprehensive review analysis of the component organization.
    *
@@ -48,10 +53,10 @@ export interface AutoBeDatabaseComponentReviewEvent
   /**
    * Array of table revision operations applied during the review.
    *
-   * Contains all create, update, and erase operations that were identified
-   * and applied during the review process. Each operation includes a reason
-   * explaining why the change was necessary, providing a clear audit trail
-   * of modifications.
+   * Contains all create, update, and erase operations that were identified and
+   * applied during the review process. Each operation includes a reason
+   * explaining why the change was necessary, providing a clear audit trail of
+   * modifications.
    *
    * - **Create**: Tables added to fulfill missing requirements
    * - **Update**: Tables renamed to fix naming convention issues

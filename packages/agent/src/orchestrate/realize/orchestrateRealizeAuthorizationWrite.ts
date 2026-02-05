@@ -143,6 +143,7 @@ async function process(
       id: v7(),
       created_at: new Date().toISOString(),
       authorization: authorization,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

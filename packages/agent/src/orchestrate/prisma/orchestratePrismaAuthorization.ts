@@ -105,6 +105,7 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       component,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

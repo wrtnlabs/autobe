@@ -143,6 +143,7 @@ async function step(
       plan: pointer.value.plan,
       modelName: props.model.name,
       content: pointer.value.content,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

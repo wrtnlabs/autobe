@@ -180,6 +180,7 @@ async function process(
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       scenarios: pointer.value,
+      acquisition: preliminary.getAcquisition(),
       total: props.progress.total,
       completed: ++props.progress.completed,
       step: ctx.state().interface?.step ?? 0,

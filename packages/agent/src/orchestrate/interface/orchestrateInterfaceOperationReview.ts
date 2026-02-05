@@ -112,6 +112,7 @@ async function process(
       review: pointer.value.review,
       plan: pointer.value.plan,
       content,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: new Date().toISOString(),

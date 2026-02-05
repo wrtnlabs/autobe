@@ -110,6 +110,7 @@ async function process(
       review: modification.review,
       revises: pointer.value.revises,
       modification,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

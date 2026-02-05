@@ -1,4 +1,5 @@
 import { AutoBeRealizeAuthorization } from "../histories/contents/AutoBeRealizeAuthorization";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -20,9 +21,11 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Michael
  */
 export interface AutoBeRealizeAuthorizationWriteEvent
-  extends AutoBeEventBase<"realizeAuthorizationWrite">,
+  extends
+    AutoBeEventBase<"realizeAuthorizationWrite">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"databaseSchemas"> {
   /**
    * Authorization implementation details being written.
    *

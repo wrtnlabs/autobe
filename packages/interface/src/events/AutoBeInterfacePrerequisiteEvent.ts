@@ -1,10 +1,12 @@
 import { AutoBeOpenApi } from "../openapi";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event emitted when a single API operation's prerequisite dependencies are analyzed.
+ * Event emitted when a single API operation's prerequisite dependencies are
+ * analyzed.
  *
  * This event is triggered when the Interface Prerequisite Agent completes
  * analyzing one API operation to determine its prerequisite dependencies. It
@@ -28,7 +30,17 @@ export interface AutoBeInterfacePrerequisiteEvent
   extends
     AutoBeEventBase<"interfacePrerequisite">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "interfaceOperations"
+      | "interfaceSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+      | "previousInterfaceSchemas"
+    > {
   /**
    * Analysis of the operation's resource dependencies.
    *
@@ -41,8 +53,8 @@ export interface AutoBeInterfacePrerequisiteEvent
   /**
    * Rationale for the prerequisite chain decisions.
    *
-   * Explains why each prerequisite operation is necessary, what resources
-   * must exist, the correct ordering of prerequisite operations, and what
+   * Explains why each prerequisite operation is necessary, what resources must
+   * exist, the correct ordering of prerequisite operations, and what
    * prerequisites were excluded.
    */
   rationale: string;

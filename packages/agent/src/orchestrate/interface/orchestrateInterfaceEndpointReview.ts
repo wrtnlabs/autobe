@@ -101,6 +101,7 @@ export const orchestrateInterfaceEndpointReview = async (
       designs: props.designs,
       review: pointer.value.review,
       revises: pointer.value.revises,
+      acquisition: preliminary.getAcquisition(),
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       completed: ++props.progress.completed,
