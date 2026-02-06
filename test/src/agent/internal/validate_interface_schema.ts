@@ -70,6 +70,7 @@ export const validate_interface_schema = async (props: {
       instruction: "",
       operations,
     });
+  console.log("completed types", Object.keys(schemas));
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
