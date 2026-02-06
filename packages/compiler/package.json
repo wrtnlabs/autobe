@@ -50,7 +50,8 @@
     "sync-request": "^6.1.0",
     "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",
-    "typescript": "catalog:typescript"
+    "typescript": "catalog:typescript",
+    "vitest": "catalog:testing"
   },
   "keywords": [
     "ai",
