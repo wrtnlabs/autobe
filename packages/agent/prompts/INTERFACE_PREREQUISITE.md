@@ -210,7 +210,7 @@ process({
     type: "complete",
 
     // Analysis of resource dependencies
-    analysis: "What resources does operation require? What FK relationships exist? What path parameters imply dependencies?",
+    analysis: "What resources does operation require? What FK relationships exist? What request body fields reference other resources? What path parameters imply dependencies?",
 
     // Rationale for prerequisite decisions
     rationale: "Why each prerequisite is necessary, what resources must exist, correct ordering.",
