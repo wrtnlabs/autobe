@@ -12,7 +12,7 @@ import { prepare_interface_agent } from "../agent/internal/prepare_interface_age
 
 const main = async (): Promise<void> => {
   const load = async <T>(file: string) => {
-    const data = await AutoBeExampleStorage.load<T>({
+    const data: T | null = await AutoBeExampleStorage.load<T>({
       vendor: "qwen/qwen3-next-80b-a3b-instruct",
       project: "todo",
       file,
