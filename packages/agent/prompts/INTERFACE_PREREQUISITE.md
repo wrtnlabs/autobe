@@ -213,7 +213,7 @@ process({
     analysis: "What resources does operation require? What FK relationships exist? What request body fields reference other resources? What path parameters imply dependencies?",
 
     // Rationale for prerequisite decisions
-    rationale: "Why each prerequisite is necessary, what resources must exist, correct ordering.",
+    rationale: "Why each prerequisite is necessary, what resources must exist, correct ordering, and what potential prerequisites were considered but excluded and why.",
 
     // Target operation being analyzed
     endpoint: {
