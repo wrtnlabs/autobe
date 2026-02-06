@@ -4,6 +4,7 @@ import {
   IAutoBeTokenUsageJson,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
+import { AutoBeAcquisitionEventBase } from "@autobe/interface/src/events/base/AutoBeAcquisitionEventBase";
 import typia from "typia";
 
 export namespace ArchiveLogger {
@@ -27,6 +28,13 @@ export namespace ArchiveLogger {
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
         `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
+      );
+    if (typia.is<AutoBeAcquisitionEventBase<any>>(event))
+      content.push(
+        `  - acquisition:`,
+        ...Object.entries(event.acquisition).map(
+          ([k, v]) => `    - ${k}: ${JSON.stringify(v)}`,
+        ),
       );
 
     //----
@@ -272,12 +280,14 @@ export namespace ArchiveLogger {
     else if (event.type === "interfaceSchemaRefine")
       content.push(
         `  - typeName: ${event.typeName}`,
-        `  - databaseSchema: ${event.databaseSchema}`,
+        `  - databaseSchema: ${event.databaseSchema} (${
+          (event.schema as any)["x-autobe-database-schema"] ?? "-"
+        })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
         `  - refines:`,
         ...event.refines.map(
           (r) =>
-            `    - ${r.key}: ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+            `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
       );
     else if (event.type === "interfaceSchemaReview")

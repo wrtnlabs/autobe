@@ -1,5 +1,6 @@
 import { AutoBeDatabase } from "../database/AutoBeDatabase";
 import { IAutoBeDatabaseValidation } from "../database/IAutoBeDatabaseValidation";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -22,7 +23,15 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeDatabaseCorrectEvent
-  extends AutoBeEventBase<"databaseCorrect">, AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseCorrect">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+    > {
   /**
    * The validation failure details that triggered the correction process.
    *

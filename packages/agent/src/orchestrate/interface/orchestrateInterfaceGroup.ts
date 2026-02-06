@@ -76,6 +76,7 @@ export async function orchestrateInterfaceGroup(
       rationale: pointer.value.rationale,
       created_at: start.toISOString(),
       groups: pointer.value.groups,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

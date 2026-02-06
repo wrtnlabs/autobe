@@ -77,7 +77,7 @@ export async function orchestrateInterfaceSchemaWrite(
         });
         x[it] = row;
       } catch (error) {
-        ++progress.completed;
+        --progress.total;
         console.log("interfaceSchema failure", it, error);
       }
     }),
@@ -116,6 +116,10 @@ async function process(
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
+    config: {
+      database: "text",
+      databaseProperty: true,
+    },
     state: ctx.state(),
     all: {
       interfaceOperations: props.operations,
@@ -175,6 +179,7 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       schema,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

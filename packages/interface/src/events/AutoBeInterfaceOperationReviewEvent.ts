@@ -1,4 +1,5 @@
 import { AutoBeOpenApi } from "../openapi";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -24,7 +25,14 @@ export interface AutoBeInterfaceOperationReviewEvent
   extends
     AutoBeEventBase<"interfaceOperationReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+    > {
   /**
    * Original API operation submitted for review.
    *

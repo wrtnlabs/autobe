@@ -1,5 +1,9 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
+import {
+  AutoBeEventSource,
+  AutoBePreliminaryAcquisition,
+  AutoBePreliminaryKind,
+} from "@autobe/interface";
 import {
   ILlmApplication,
   IValidation,
@@ -59,7 +63,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.kinds = props.kinds;
     this.config = {
       database: props.config?.database ?? "text",
-    } as AutoBePreliminaryController.IConfig<any>;
+      databaseProperty: props.config?.databaseProperty ?? false,
+    } satisfies AutoBePreliminaryController.IConfig<any> as AutoBePreliminaryController.IConfig<any>;
 
     this.argumentTypeNames = (() => {
       const func = props.application.functions.find(
@@ -208,6 +213,65 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   }
 
   /**
+   * Extracts acquisition metadata from the currently loaded preliminary data.
+   *
+   * Transforms the local preliminary collection into a normalized acquisition
+   * structure that is suitable for event tracking, including only metadata such
+   * as filenames, schema names, and operation identifiers rather than full
+   * objects.
+   *
+   * @returns Acquisition metadata derived from currently loaded data,
+   *   normalized for event tracking.
+   */
+  public getAcquisition(): Pick<AutoBePreliminaryAcquisition, Kind> {
+    const acquisition: Partial<AutoBePreliminaryAcquisition> = {};
+    const local: IAutoBePreliminaryCollection = this
+      .local as IAutoBePreliminaryCollection;
+    for (const kind of this.kinds)
+      if (kind === "analysisFiles")
+        acquisition.analysisFiles = local.analysisFiles.map((f) => f.filename);
+      else if (kind === "databaseSchemas")
+        acquisition.databaseSchemas = local.databaseSchemas.map((s) => s.name);
+      else if (kind === "interfaceOperations")
+        acquisition.interfaceOperations = local.interfaceOperations.map(
+          (o) => ({
+            path: o.path,
+            method: o.method,
+          }),
+        );
+      else if (kind === "interfaceSchemas")
+        acquisition.interfaceSchemas = Object.keys(local.interfaceSchemas);
+      else if (kind === "realizeCollectors")
+        acquisition.realizeCollectors = local.realizeCollectors.map(
+          (f) => f.plan.dtoTypeName,
+        );
+      else if (kind === "realizeTransformers")
+        acquisition.realizeTransformers = local.realizeTransformers.map(
+          (f) => f.plan.dtoTypeName,
+        );
+      else if (kind === "previousAnalysisFiles")
+        acquisition.previousAnalysisFiles = local.previousAnalysisFiles.map(
+          (f) => f.filename,
+        );
+      else if (kind === "previousDatabaseSchemas")
+        acquisition.previousDatabaseSchemas = local.previousDatabaseSchemas.map(
+          (s) => s.name,
+        );
+      else if (kind === "previousInterfaceOperations")
+        acquisition.previousInterfaceOperations =
+          local.previousInterfaceOperations.map((o) => ({
+            path: o.path,
+            method: o.method,
+          }));
+      else if (kind === "previousInterfaceSchemas")
+        acquisition.previousInterfaceSchemas = Object.keys(
+          local.previousInterfaceSchemas,
+        );
+      else kind satisfies never;
+    return acquisition as Pick<AutoBePreliminaryAcquisition, Kind>;
+  }
+
+  /**
    * Returns the current AutoBe state.
    *
    * @returns Current pipeline state containing all phase histories.
@@ -325,5 +389,6 @@ export namespace AutoBePreliminaryController {
     database: Kind extends "databaseSchemas" | "previousDatabaseSchemas"
       ? "ast" | "text"
       : never;
+    databaseProperty: boolean;
   }
 }

@@ -1,4 +1,5 @@
 import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -32,9 +33,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Enforces strict Mermaid syntax rules (no parentheses within brackets)
  * - Iterative process continues until document meets all quality standards
  *
- * The review ensures that subsequent agents (Database, Interface, Test, Realize)
- * receive well-structured, unambiguous requirements that enable fully automated
- * backend development without human intervention.
+ * The review ensures that subsequent agents (Database, Interface, Test,
+ * Realize) receive well-structured, unambiguous requirements that enable fully
+ * automated backend development without human intervention.
  *
  * For detailed information about the Analyze Review Agent's validation rules
  * and criteria, refer to packages/agent/prompts/ANALYZE_REVIEW.md
@@ -42,9 +43,11 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Kakasoo
  */
 export interface AutoBeAnalyzeReviewEvent
-  extends AutoBeEventBase<"analyzeReview">,
+  extends
+    AutoBeEventBase<"analyzeReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"analysisFiles" | "previousAnalysisFiles"> {
   /**
    * Original file content submitted for review.
    *

@@ -1,8 +1,9 @@
 import {
+  AutoBeRealizeCollectorFunction,
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
-  AutoBeRealizeCollectorFunction,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -13,8 +14,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * This unified event covers three types of code generation during the
  * implementation process:
  *
- * - **Operation** (`kind: "operation"`): API operation implementation files
- *   that contain business logic for specific endpoints
+ * - **Operation** (`kind: "operation"`): API operation implementation files that
+ *   contain business logic for specific endpoints
  * - **Transformer** (`kind: "transformer"`): DTO transformation modules that
  *   convert Prisma query results to API response DTOs (DB → API)
  * - **Collector** (`kind: "collector"`): Data collection modules that prepare
@@ -28,17 +29,20 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeWriteEvent
-  extends AutoBeEventBase<"realizeWrite">,
+  extends
+    AutoBeEventBase<"realizeWrite">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"databaseSchemas"> {
   /**
    * Generated function with complete metadata.
    *
    * Contains the complete function information including kind discriminator,
-   * file location, implementation content, and type-specific metadata (endpoint,
-   * DTO type names, etc).
+   * file location, implementation content, and type-specific metadata
+   * (endpoint, DTO type names, etc).
    *
    * The `kind` discriminator enables type-safe pattern matching:
+   *
    * - `kind: "operation"`: API operation implementation with endpoint and name
    * - `kind: "transformer"`: DB → DTO transformer with schema and DTO names
    * - `kind: "collector"`: DTO → DB collector with DTO name
@@ -58,7 +62,8 @@ export interface AutoBeRealizeWriteEvent
    *
    * The step value enables proper synchronization between implementation
    * activities and the underlying requirements, ensuring that the generated
-   * code remains relevant to the current project scope and business objectives.
+   * code remains relevant to the current project scope and business
+   * objectives.
    */
   step: number;
 }

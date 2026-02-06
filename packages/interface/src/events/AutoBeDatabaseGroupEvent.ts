@@ -1,4 +1,5 @@
 import { AutoBeDatabaseGroup } from "../histories/contents/AutoBeDatabaseGroup";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -26,8 +27,12 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeDatabaseGroupEvent
-  extends AutoBeEventBase<"databaseGroup">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseGroup">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Analysis of the requirements structure and domain organization.
    *
@@ -43,19 +48,19 @@ export interface AutoBeDatabaseGroupEvent
    *
    * Explains why the groups were organized this way, including why each
    * component group was created, why certain domains were combined or kept
-   * separate, how the grouping reflects the business domain structure, and
-   * what considerations drove the component ordering.
+   * separate, how the grouping reflects the business domain structure, and what
+   * considerations drove the component ordering.
    */
   rationale: string;
 
   /**
    * Array of database component groups organized by business domain.
    *
-   * Each group represents a logical partition of the database based on
-   * business requirements and domain analysis. Groups are mutually exclusive
-   * (no component appears in multiple groups) and collectively exhaustive (all
-   * components are covered). The array typically contains 2-10 groups
-   * depending on the project scale and domain complexity.
+   * Each group represents a logical partition of the database based on business
+   * requirements and domain analysis. Groups are mutually exclusive (no
+   * component appears in multiple groups) and collectively exhaustive (all
+   * components are covered). The array typically contains 2-10 groups depending
+   * on the project scale and domain complexity.
    *
    * These groups will be used by subsequent Database agent invocations to
    * extract components for specific subsets of the application.
@@ -70,8 +75,8 @@ export interface AutoBeDatabaseGroupEvent
    * grouping remains synchronized with evolving requirements throughout the
    * development lifecycle.
    *
-   * The step value enables proper tracking of how database organization
-   * evolves as the project requirements are refined through iterations.
+   * The step value enables proper tracking of how database organization evolves
+   * as the project requirements are refined through iterations.
    */
   step: number;
 }

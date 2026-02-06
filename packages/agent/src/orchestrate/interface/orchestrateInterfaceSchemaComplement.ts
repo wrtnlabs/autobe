@@ -133,6 +133,10 @@ Task: ${task}
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
     ],
+    config: {
+      database: "text",
+      databaseProperty: true,
+    },
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,
@@ -202,6 +206,7 @@ Task: ${task}
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       schema,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: ctx.state().analyze?.step ?? 0,

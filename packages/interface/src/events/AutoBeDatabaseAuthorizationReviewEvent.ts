@@ -2,6 +2,7 @@ import {
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableRevise,
 } from "../histories/contents";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -13,8 +14,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * where the Database Authorization agent has created actor and session tables
  * for ALL actors in a single component. The review validates the authorization
  * tables against authentication requirements, checks for missing session tables
- * for each actor, verifies naming conventions, and ensures proper actor-specific
- * patterns.
+ * for each actor, verifies naming conventions, and ensures proper
+ * actor-specific patterns.
  *
  * The review process ensures that the authorization component provides a solid
  * foundation for authentication and session management by identifying and
@@ -23,8 +24,12 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Michael
  */
 export interface AutoBeDatabaseAuthorizationReviewEvent
-  extends AutoBeEventBase<"databaseAuthorizationReview">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseAuthorizationReview">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Comprehensive review analysis of the authorization component organization.
    *
@@ -45,9 +50,9 @@ export interface AutoBeDatabaseAuthorizationReviewEvent
   /**
    * Array of table revision operations applied during the review.
    *
-   * Contains all create, update, and erase operations that were identified
-   * and applied during the authorization review process. Each operation
-   * includes a reason explaining why the change was necessary.
+   * Contains all create, update, and erase operations that were identified and
+   * applied during the authorization review process. Each operation includes a
+   * reason explaining why the change was necessary.
    *
    * - **Create**: Tables added to fulfill missing authentication requirements
    * - **Update**: Tables renamed to fix naming convention issues
@@ -58,15 +63,15 @@ export interface AutoBeDatabaseAuthorizationReviewEvent
   /**
    * The reviewed authorization component with updated table list.
    *
-   * Contains the complete authorization component definition after review,
-   * with all revisions applied. Tables that were added, removed, or renamed
-   * are reflected in this final component structure.
+   * Contains the complete authorization component definition after review, with
+   * all revisions applied. Tables that were added, removed, or renamed are
+   * reflected in this final component structure.
    */
   modification: AutoBeDatabaseComponent;
 
   /**
-   * Iteration number of the requirements analysis this authorization review
-   * was performed for.
+   * Iteration number of the requirements analysis this authorization review was
+   * performed for.
    */
   step: number;
 }

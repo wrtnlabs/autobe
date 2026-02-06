@@ -145,6 +145,7 @@ async function process(
       plan: pointer.value.plan,
       namespace: props.component.namespace,
       definition: pointer.value.definition,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       completed: ++props.progress.completed,

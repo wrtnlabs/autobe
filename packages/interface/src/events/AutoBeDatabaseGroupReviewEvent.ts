@@ -1,11 +1,12 @@
 import { AutoBeDatabaseGroup } from "../histories/contents/AutoBeDatabaseGroup";
 import { AutoBeDatabaseGroupRevise } from "../histories/contents/AutoBeDatabaseGroupRevise";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
- * Event fired when the Database agent reviews and validates the component
- * group organization during the database design process.
+ * Event fired when the Database agent reviews and validates the component group
+ * organization during the database design process.
  *
  * This event occurs after the initial group generation phase, where the
  * Database Group agent has organized business domains into logical component
@@ -14,15 +15,19 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * boundaries, and ensures proper kind assignment.
  *
  * The review process ensures that the group structure provides a solid
- * foundation for subsequent component and authorization table generation
- * by identifying and correcting organizational issues before table extraction
+ * foundation for subsequent component and authorization table generation by
+ * identifying and correcting organizational issues before table extraction
  * begins.
  *
  * @author Michael
  */
 export interface AutoBeDatabaseGroupReviewEvent
-  extends AutoBeEventBase<"databaseGroupReview">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseGroupReview">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Comprehensive review analysis of the group organization.
    *
@@ -43,8 +48,8 @@ export interface AutoBeDatabaseGroupReviewEvent
   /**
    * Array of group revision operations applied during the review.
    *
-   * Contains all create, update, and erase operations that were identified
-   * and applied during the review process. Each operation includes a reason
+   * Contains all create, update, and erase operations that were identified and
+   * applied during the review process. Each operation includes a reason
    * explaining why the change was necessary.
    *
    * - **Create**: Groups added for missing business domains
@@ -56,10 +61,10 @@ export interface AutoBeDatabaseGroupReviewEvent
   /**
    * The reviewed groups with all revisions applied.
    *
-   * Contains the complete list of component group skeletons after review,
-   * with all revisions applied. Groups that were added, removed, or modified
-   * are reflected in this final group structure used for subsequent
-   * authorization and component table generation.
+   * Contains the complete list of component group skeletons after review, with
+   * all revisions applied. Groups that were added, removed, or modified are
+   * reflected in this final group structure used for subsequent authorization
+   * and component table generation.
    */
   groups: AutoBeDatabaseGroup[];
 

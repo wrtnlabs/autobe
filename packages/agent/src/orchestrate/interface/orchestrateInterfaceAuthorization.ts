@@ -115,12 +115,13 @@ async function process(
       analysis: pointer.value.analysis,
       rationale: pointer.value.rationale,
       operations,
-      completed: ++props.progress.completed,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       created_at: new Date().toISOString(),
       step: ctx.state().analyze?.step ?? 0,
       total: props.progress.total,
+      completed: ++props.progress.completed,
     } satisfies AutoBeInterfaceAuthorizationEvent);
   });
 }

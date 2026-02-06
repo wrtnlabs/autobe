@@ -58,6 +58,7 @@ export const orchestrateAnalyzeScenario = async (
       language: pointer.value.language,
       actors: pointer.value.actors,
       files: pointer.value.files,
+      acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
       step: (ctx.state().analyze?.step ?? -1) + 1,

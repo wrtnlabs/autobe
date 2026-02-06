@@ -68,6 +68,7 @@ export const orchestrateAnalyzeReview = async (
       plan: pointer.value.plan,
       review: pointer.value.review,
       content: pointer.value.content,
+      acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       total: props.progress.total,

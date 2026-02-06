@@ -1,5 +1,6 @@
 import { AutoBeInterfaceEndpointDesign } from "../histories/contents/AutoBeInterfaceEndpointDesign";
 import { AutoBeInterfaceEndpointRevise } from "../histories/contents/AutoBeInterfaceEndpointRevise";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -26,7 +27,14 @@ export interface AutoBeInterfaceEndpointReviewEvent
   extends
     AutoBeEventBase<"interfaceEndpointReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+    > {
   /**
    * Type discriminator for the endpoint review event.
    *
@@ -54,8 +62,8 @@ export interface AutoBeInterfaceEndpointReviewEvent
    *
    * Documents all issues discovered during endpoint validation including
    * duplicates, inconsistencies, design issues, and what patterns or
-   * conventions were violated. States "No issues found." if all endpoints
-   * pass review.
+   * conventions were violated. States "No issues found." if all endpoints pass
+   * review.
    */
   review: string;
 

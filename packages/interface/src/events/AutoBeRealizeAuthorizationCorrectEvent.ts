@@ -1,5 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeRealizeAuthorizationCorrect } from "../histories/contents/AutoBeRealizeAuthorizationCorrect";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -15,8 +16,10 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Michael
  */
 export interface AutoBeRealizeAuthorizationCorrectEvent
-  extends AutoBeEventBase<"realizeAuthorizationCorrect">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"realizeAuthorizationCorrect">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"databaseSchemas"> {
   /**
    * Authorization configuration being corrected.
    *

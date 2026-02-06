@@ -1,4 +1,5 @@
 import { AutoBeInterfaceGroup } from "../histories/contents/AutoBeInterfaceGroup";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -27,8 +28,16 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeInterfaceGroupEvent
-  extends AutoBeEventBase<"interfaceGroup">,
-    AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"interfaceGroup">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      | "analysisFiles"
+      | "databaseSchemas"
+      | "previousAnalysisFiles"
+      | "previousDatabaseSchemas"
+      | "previousInterfaceOperations"
+    > {
   /**
    * Analysis of the database schema structure and grouping needs.
    *
@@ -41,8 +50,8 @@ export interface AutoBeInterfaceGroupEvent
   /**
    * Rationale for the group design decisions.
    *
-   * Explains why groups were organized this way, what entities are included
-   * in each group, how grouping reflects database schema structure, and what
+   * Explains why groups were organized this way, what entities are included in
+   * each group, how grouping reflects database schema structure, and what
    * coverage is provided for all requirements.
    */
   rationale: string;

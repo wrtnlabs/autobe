@@ -22,6 +22,7 @@ import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
+import { AutoBeInterfaceSchemaProgrammer } from "../../interface/programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
@@ -177,18 +178,20 @@ namespace PreliminaryTransformer {
                 ## Database Schema Files
 
                 \`\`\`prisma
-                ${writePrismaApplication({
-                  dbms: "postgres",
-                  application: {
-                    files: [
-                      {
-                        filename: "all.prisma",
-                        namespace: "All",
-                        models: Object.values(oldbie),
-                      },
-                    ],
-                  },
-                })}
+                ${
+                  writePrismaApplication({
+                    dbms: "postgres",
+                    application: {
+                      files: [
+                        {
+                          filename: "all.prisma",
+                          namespace: "All",
+                          models: Object.values(oldbie),
+                        },
+                      ],
+                    },
+                  })["all.prisma"]
+                }
                 \`\`\
               `,
         replace: props.previous
@@ -198,6 +201,26 @@ namespace PreliminaryTransformer {
             }
           : null,
       });
+    if (props.config.databaseProperty === true)
+      assistant.text +=
+        "\n\n" +
+        StringUtil.trim`
+        ### Database Schema Properties
+
+        \`\`\`json
+        ${JSON.stringify(
+          Object.fromEntries(
+            Object.entries(oldbie).map(([k, v]) => [
+              k,
+              AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaProperties({
+                everyModels: props.all.databaseSchemas,
+                model: v,
+              }).map((p) => p.key),
+            ]),
+          ),
+        )}
+        \`\`\`
+      `;
 
     const db: AutoBeDatabase.IApplication | undefined = props.previous
       ? props.state.previousDatabase?.result.data

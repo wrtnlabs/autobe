@@ -20,7 +20,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     application: ILlmApplication;
     typeName: string;
     everyModels: AutoBeDatabase.IModel[];
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
   }): void => {
     AutoBeInterfaceSchemaProgrammer.fixApplication({
       application: props.application,
@@ -159,7 +159,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
   };
 
   export const execute = (props: {
-    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
     databaseSchema: string | null;
     specification: string;
     description: string;
@@ -181,7 +181,9 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
       if (refine.type === "depict") {
         // Add documentation to existing property
         result.properties[refine.key] = {
-          ...props.schema.properties[refine.key],
+          ...(props.schema.properties[
+            refine.key
+          ] as AutoBeOpenApi.IJsonSchemaProperty),
           description: refine.description,
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
           "x-autobe-specification": refine.specification,

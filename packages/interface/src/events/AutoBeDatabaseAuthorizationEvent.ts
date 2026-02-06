@@ -1,4 +1,5 @@
 import { AutoBeDatabaseComponent } from "../histories";
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
@@ -14,7 +15,12 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeDatabaseAuthorizationEvent
-  extends AutoBeEventBase<"databaseAuthorization">, AutoBeAggregateEventBase {
+  extends
+    AutoBeEventBase<"databaseAuthorization">,
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<
+      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    > {
   /**
    * Analysis of all actors' authentication requirements.
    *

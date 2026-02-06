@@ -45,18 +45,27 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     everyModels: AutoBeDatabase.IModel[];
     model: AutoBeDatabase.IModel;
   }): IDatabaseSchemaMember[] => [
+    // Primary key
     {
       key: props.model.primaryField.name,
       nullable: false,
     },
+    // Plain fields (columns like title, description, created_at, etc.)
+    ...props.model.plainFields.map((f) => ({
+      key: f.name,
+      nullable: f.nullable,
+    })),
+    // Foreign key columns (e.g., todo_app_user_id)
     ...props.model.foreignFields.map((f) => ({
       key: f.name,
       nullable: f.nullable,
     })),
+    // Foreign key relation names (e.g., user)
     ...props.model.foreignFields.map((f) => ({
       key: f.relation.name,
       nullable: f.nullable,
     })),
+    // Opposite relations from other models
     ...props.everyModels
       .map((m) =>
         m.foreignFields

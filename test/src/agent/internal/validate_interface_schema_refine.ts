@@ -1,4 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { orchestrateInterfaceSchemaRefine } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaRefine";
 import { orchestrateInterfaceSchemaWrite } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceSchemaWrite";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
@@ -10,36 +11,60 @@ import { OpenApi } from "@samchon/openapi";
 import { TestGlobal } from "../../TestGlobal";
 import { validate_interface_operation } from "./validate_interface_operation";
 
-export const validate_interface_schema_write = async (props: {
+export const validate_interface_schema_refine = async (props: {
   agent: AutoBeAgent;
   project: AutoBeExampleProject;
   vendor: string;
-}): Promise<Record<string, AutoBeOpenApi.IJsonSchema>> => {
+}): Promise<Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>> => {
   const operations: AutoBeOpenApi.IOperation[] =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
       file: "interface.operation.json",
     })) ?? (await validate_interface_operation(props));
-
-  const schemas: Record<string, AutoBeOpenApi.IJsonSchema> =
-    await orchestrateInterfaceSchemaWrite(props.agent.getContext(), {
+  const original: Record<string, AutoBeOpenApi.IJsonSchema> =
+    (await AutoBeExampleStorage.load({
+      vendor: props.vendor,
+      project: props.project,
+      file: "interface.schema.write.json",
+    })) ??
+    (await orchestrateInterfaceSchemaWrite(props.agent.getContext(), {
       instruction: "",
       operations,
+    }));
+  const refined: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
+    await orchestrateInterfaceSchemaRefine(props.agent.getContext(), {
+      document: {
+        operations,
+        components: {
+          schemas: original as Record<
+            string,
+            AutoBeOpenApi.IJsonSchemaDescriptive
+          >,
+          authorizations:
+            props.agent.getContext().state().analyze?.actors ?? [],
+        },
+      },
+      schemas: original,
+      instruction: "",
+      progress: {
+        total: 0,
+        completed: 0,
+      },
     });
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {
-      ["interface.schema.write.json"]: JSON.stringify(schemas),
+      ["interface.schema.refine.json"]: JSON.stringify(refined),
     },
   });
 
   const document: OpenApi.IDocument = transformOpenApiDocument({
     operations,
     components: {
-      schemas: schemas as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+      schemas: refined,
       authorizations: props.agent.getContext().state().analyze?.actors ?? [],
     },
   });
@@ -49,15 +74,14 @@ export const validate_interface_schema_write = async (props: {
     e2e: true,
   });
   await FileSystemIterator.save({
-    root: `${TestGlobal.ROOT}/results/interface.schema.write/${props.project}`,
+    root: `${TestGlobal.ROOT}/results/interface.schema.refine/${props.project}`,
     files: {
       ...files,
       ...(await props.agent.getFiles({
         dbms: "postgres",
-        phase: "database",
       })),
     },
   });
 
-  return schemas;
+  return refined;
 };
