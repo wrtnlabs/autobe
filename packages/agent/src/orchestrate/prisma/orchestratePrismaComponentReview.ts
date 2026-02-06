@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentReviewHistory } from "./histories/transformPrismaComponentReviewHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
@@ -35,19 +36,27 @@ export async function orchestratePrismaComponentReview(
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
-      const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
-        .filter((c) => c.filename !== component.filename)
-        .flatMap((c) => c.tables);
-      const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
-        component,
-        otherTables,
-        instruction: props.instruction,
-        prefix,
-        progress,
-        promptCacheKey,
-      });
-      ctx.dispatch(event);
-      return event.modification;
+      try {
+        const otherTables: AutoBeDatabaseComponentTableDesign[] =
+          props.components
+            .filter((c) => c.filename !== component.filename)
+            .flatMap((c) => c.tables);
+        const event: AutoBeDatabaseComponentReviewEvent = await forceRetry(() =>
+          process(ctx, {
+            component,
+            otherTables,
+            instruction: props.instruction,
+            prefix,
+            progress,
+            promptCacheKey,
+          }),
+        );
+        ctx.dispatch(event);
+        return event.modification;
+      } catch {
+        --progress.total;
+        return component;
+      }
     }),
   );
   return AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
