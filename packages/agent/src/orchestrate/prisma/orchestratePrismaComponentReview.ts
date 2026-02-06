@@ -13,12 +13,12 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentReviewHistory } from "./histories/transformPrismaComponentReviewHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseComponentReviewApplication } from "./structures/IAutoBeDatabaseComponentReviewApplication";
-import { forceRetry } from "../../utils/forceRetry";
 
 export async function orchestratePrismaComponentReview(
   ctx: AutoBeContext,
@@ -37,9 +37,10 @@ export async function orchestratePrismaComponentReview(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
       try {
-        const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
-          .filter((c) => c.filename !== component.filename)
-          .flatMap((c) => c.tables);
+        const otherTables: AutoBeDatabaseComponentTableDesign[] =
+          props.components
+            .filter((c) => c.filename !== component.filename)
+            .flatMap((c) => c.tables);
         const event: AutoBeDatabaseComponentReviewEvent = await forceRetry(() =>
           process(ctx, {
             component,
@@ -48,7 +49,7 @@ export async function orchestratePrismaComponentReview(
             prefix,
             progress,
             promptCacheKey,
-          })
+          }),
         );
         ctx.dispatch(event);
         return event.modification;
@@ -72,7 +73,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponentReviewEvent> {
-  const preliminary: AutoBePreliminaryController
+  const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
@@ -143,7 +144,7 @@ async function process(
 }
 
 function createController(props: {
-  preliminary: AutoBePreliminaryController
+  preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
