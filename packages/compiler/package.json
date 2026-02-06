@@ -17,7 +17,6 @@
     "build": "pnpm run prebuild && rimraf lib && tsc",
     "prebuild": "ts-node build/template.ts && ts-node build/external.ts",
     "postbuild": "node ../../internals/config/assertBuild.js",
-    "test": "vitest",
     "dev": "pnpm run build --watch",
     "prepack": "pnpm run build"
   },
@@ -50,8 +49,7 @@
     "sync-request": "^6.1.0",
     "ts-node": "catalog:typescript",
     "ts-patch": "catalog:typescript",
-    "typescript": "catalog:typescript",
-    "vitest": "catalog:testing"
+    "typescript": "catalog:typescript"
   },
   "keywords": [
     "ai",
