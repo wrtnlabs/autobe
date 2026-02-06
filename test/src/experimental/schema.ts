@@ -11,12 +11,16 @@ import { TestGlobal } from "../TestGlobal";
 import { prepare_interface_agent } from "../agent/internal/prepare_interface_agent";
 
 const main = async (): Promise<void> => {
-  const load = async <T>(file: string) =>
-    (await AutoBeExampleStorage.load<T>({
+  const load = async <T>(file: string) => {
+    const data = await AutoBeExampleStorage.load<T>({
       vendor: "qwen/qwen3-next-80b-a3b-instruct",
       project: "todo",
       file,
-    }))!;
+    });
+    if (data == null)
+      throw new Error(`Failed to load example data for file: ${file}`);
+    return data;
+  };
 
   const operations: AutoBeOpenApi.IOperation[] = await load(
     "interface.operation.json",
