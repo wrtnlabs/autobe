@@ -128,6 +128,10 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       "interfaceSchemas",
       "previousInterfaceSchemas",
     ],
+    config: {
+      database: "text",
+      databaseProperty: true,
+    },
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,

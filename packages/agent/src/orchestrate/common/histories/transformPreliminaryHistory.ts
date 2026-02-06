@@ -201,7 +201,7 @@ namespace PreliminaryTransformer {
             }
           : null,
       });
-    if (props.config.databaseProperty === true) {
+    if (props.config.databaseProperty === true)
       assistant.text +=
         "\n\n" +
         StringUtil.trim`
@@ -221,7 +221,6 @@ namespace PreliminaryTransformer {
         )}
         \`\`\`
       `;
-    }
 
     const db: AutoBeDatabase.IApplication | undefined = props.previous
       ? props.state.previousDatabase?.result.data
