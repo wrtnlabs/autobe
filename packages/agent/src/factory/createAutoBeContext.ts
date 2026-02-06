@@ -341,6 +341,8 @@ export const createAutoBeContext = (props: {
           error instanceof AgenticaValidationError ||
           (error instanceof TypeError && error.message === "terminated") ||
           (error instanceof Error &&
+            error.message.startsWith("Failed to function calling")) ||
+          (error instanceof Error &&
             OPENAI_API_ERROR_KEYS.get().every((key) =>
               error.hasOwnProperty(key),
             )),
