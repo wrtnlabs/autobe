@@ -40,15 +40,16 @@ export async function orchestratePrismaComponentReview(
         const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
           .filter((c) => c.filename !== component.filename)
           .flatMap((c) => c.tables);
-        const event: AutoBeDatabaseComponentReviewEvent = await forceRetry(() => 
+        const event: AutoBeDatabaseComponentReviewEvent = await forceRetry(() =>
           process(ctx, {
-          component,
-          otherTables,
-          instruction: props.instruction,
-          prefix,
-          progress,
-          promptCacheKey,
-        });
+            component,
+            otherTables,
+            instruction: props.instruction,
+            prefix,
+            progress,
+            promptCacheKey,
+          })
+        );
         ctx.dispatch(event);
         return event.modification;
       } catch {
@@ -71,7 +72,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponentReviewEvent> {
-  const preliminary: AutoBePreliminaryController<
+  const preliminary: AutoBePreliminaryController
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
@@ -142,7 +143,7 @@ async function process(
 }
 
 function createController(props: {
-  preliminary: AutoBePreliminaryController<
+  preliminary: AutoBePreliminaryController
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
