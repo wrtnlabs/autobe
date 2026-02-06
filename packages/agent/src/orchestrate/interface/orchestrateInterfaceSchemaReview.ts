@@ -14,7 +14,10 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import {
+  RagModePreset,
+  getContextModeSettings,
+} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
@@ -116,9 +119,13 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     .map((op) => `${op.method} ${op.path}: ${op.name}`)
     .join("\n");
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
-  
+
   // RAG NONE_TOPK
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfaceSchemaReview");
+  const ragSettings = getContextModeSettings(
+    ctx.config,
+    RAG_PRESET,
+    "interfaceSchemaReview",
+  );
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,

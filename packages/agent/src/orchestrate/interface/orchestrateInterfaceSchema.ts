@@ -202,13 +202,10 @@ export const orchestrateInterfaceSchema = async (
       }),
     );
 
-  // AutoBeJsonSchemaFactory.removeUnused({
-  //   operations: document.operations,
-  //   collection: new AutoBeJsonSchemaCollection(
-  //     document.components.schemas,
-  //     document.components.schemas,
-  //   ),
-  // });
+  AutoBeJsonSchemaFactory.removeUnused({
+    operations: document.operations,
+    schemas: document.components.schemas,
+  });
   return document.components.schemas;
 };
 

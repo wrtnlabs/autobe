@@ -43,6 +43,10 @@ export async function orchestrateInterfaceSchemaRename(
     entireTypeNames.add(key);
   };
 
+  for (const op of props.operations) {
+    if (op.requestBody) insert(op.requestBody.typeName);
+    if (op.responseBody) insert(op.responseBody.typeName);
+  }
   for (const key of Object.keys(props.collection.schemas)) insert(key);
 
   const matrix: string[][] = divideArray({

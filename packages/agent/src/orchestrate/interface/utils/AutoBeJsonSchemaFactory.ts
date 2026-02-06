@@ -107,13 +107,13 @@ export namespace AutoBeJsonSchemaFactory {
 
   export const removeUnused = (props: {
     operations: AutoBeOpenApi.IOperation[];
-    collection: AutoBeJsonSchemaCollection;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
   }): void => {
     while (true) {
       const used: Set<string> = new Set();
       const visit = (schema: AutoBeOpenApi.IJsonSchema): void =>
         OpenApiTypeChecker.visit({
-          components: { schemas: props.collection.schemas },
+          components: { schemas: props.schemas },
           schema,
           closure: (next) => {
             if (OpenApiTypeChecker.isReference(next)) {
@@ -134,13 +134,11 @@ export namespace AutoBeJsonSchemaFactory {
       }
 
       const complete: boolean =
-        Object.keys(props.collection.schemas).length === 0 ||
-        Object.keys(props.collection.schemas).every(
-          (key) => used.has(key) === true,
-        );
+        Object.keys(props.schemas).length === 0 ||
+        Object.keys(props.schemas).every((key) => used.has(key) === true);
       if (complete === true) break;
-      for (const key of Object.keys(props.collection.schemas))
-        if (used.has(key) === false) props.collection.delete(key);
+      for (const key of Object.keys(props.schemas))
+        if (used.has(key) === false) delete props.schemas[key];
     }
   };
 
