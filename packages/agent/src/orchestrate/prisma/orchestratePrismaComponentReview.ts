@@ -18,6 +18,7 @@ import { transformPrismaComponentReviewHistory } from "./histories/transformPris
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
 import { AutoBeDatabaseComponentReviewProgrammer } from "./programmers/AutoBeDatabaseComponentReviewProgrammer";
 import { IAutoBeDatabaseComponentReviewApplication } from "./structures/IAutoBeDatabaseComponentReviewApplication";
+import { forceRetry } from "../../utils/forceRetry";
 
 export async function orchestratePrismaComponentReview(
   ctx: AutoBeContext,
@@ -39,7 +40,8 @@ export async function orchestratePrismaComponentReview(
         const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
           .filter((c) => c.filename !== component.filename)
           .flatMap((c) => c.tables);
-        const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
+        const event: AutoBeDatabaseComponentReviewEvent = await forceRetry(() => 
+          process(ctx, {
           component,
           otherTables,
           instruction: props.instruction,
@@ -50,7 +52,7 @@ export async function orchestratePrismaComponentReview(
         ctx.dispatch(event);
         return event.modification;
       } catch {
-        ++progress.completed;
+        --progress.total;
         return component;
       }
     }),
