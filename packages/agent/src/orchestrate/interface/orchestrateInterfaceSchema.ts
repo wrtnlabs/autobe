@@ -122,7 +122,6 @@ export const orchestrateInterfaceSchema = async (
 
     // initialize schemas
     await overwrite(await initialize());
-    console.log("types", Object.keys(schemas));
 
     // type casting
     await overwrite(
@@ -139,7 +138,6 @@ export const orchestrateInterfaceSchema = async (
         progress: castingProgress,
       }),
     );
-    console.log("types", Object.keys(schemas));
 
     // refine schemas
     await overwrite(
@@ -150,7 +148,6 @@ export const orchestrateInterfaceSchema = async (
         progress: refineProgress,
       }),
     );
-    console.log("types", Object.keys(schemas));
 
     // review schemas
     reviewProgress.total +=
@@ -196,27 +193,19 @@ export const orchestrateInterfaceSchema = async (
   };
   const failures: Map<string, number> = new Map();
   while (missedOpenApiSchemas(document).length !== 0)
-    console.log(
-      "missed schemas",
-      missedOpenApiSchemas(document),
-      Object.keys(document.components.schemas),
+    await iterate(() =>
+      orchestrateInterfaceSchemaComplement(ctx, {
+        instruction: props.instruction,
+        progress: complementProgress,
+        failures,
+        document,
+      }),
     );
-  await iterate(() =>
-    orchestrateInterfaceSchemaComplement(ctx, {
-      instruction: props.instruction,
-      progress: complementProgress,
-      failures,
-      document,
-    }),
-  );
 
-  // AutoBeJsonSchemaFactory.removeUnused({
-  //   operations: document.operations,
-  //   collection: new AutoBeJsonSchemaCollection(
-  //     document.components.schemas,
-  //     document.components.schemas,
-  //   ),
-  // });
+  AutoBeJsonSchemaFactory.removeUnused({
+    operations: document.operations,
+    schemas: document.components.schemas,
+  });
   return document.components.schemas;
 };
 

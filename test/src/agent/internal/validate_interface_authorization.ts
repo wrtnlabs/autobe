@@ -15,6 +15,20 @@ export const validate_interface_authorization = async (props: {
     await orchestrateInterfaceAuthorization(props.agent.getContext(), {
       instruction: "",
     });
+  console.log(
+    "authorizations",
+    JSON.stringify(
+      authorizations
+        .map((auth) => auth.operations)
+        .flat()
+        .map((op) => ({
+          method: op.method,
+          path: op.path,
+        })),
+      null,
+      2,
+    ),
+  );
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,

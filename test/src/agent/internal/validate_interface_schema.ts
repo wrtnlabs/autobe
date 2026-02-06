@@ -70,11 +70,11 @@ export const validate_interface_schema = async (props: {
       instruction: "",
       operations,
     });
-  console.log("completed types", Object.keys(schemas));
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {
+      ["interface.operation.json"]: JSON.stringify(operations),
       ["interface.schema.json"]: JSON.stringify(schemas),
     },
   });
