@@ -33,6 +33,8 @@ A DTO is **transformable** if ALL conditions met:
 - ✅ **DB-backed**: Data comes directly from database queries
 - ✅ **Direct mapping**: The DTO structure maps to one primary database table
 
+**Key Hint**: Check `x-autobe-database-schema` in the DTO schema - it contains the mapped table name when present.
+
 | Transformable Patterns | Non-Transformable Patterns |
 |----------------------|--------------------------|
 | `IShoppingSale` (entity) | `IPage.IRequest` (request param) |

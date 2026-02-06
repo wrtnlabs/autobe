@@ -178,6 +178,11 @@ export async function patchShoppingSales(props: {
 3. VERIFY relation names (NOT foreign key columns)
 4. NEVER fabricate, imagine, or guess
 
+**Key Hints from DTO Schema**:
+- `x-autobe-database-schema`: The DB table this DTO maps to
+- `x-autobe-database-schema-property`: The DB column name for each DTO field
+- `x-autobe-specification`: Implementation guidance for specific fields
+
 ### 7.2. Prisma Select (READ Operations)
 
 ```typescript

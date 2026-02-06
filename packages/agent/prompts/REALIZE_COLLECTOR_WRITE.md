@@ -204,6 +204,8 @@ export namespace ShoppingSaleCollector {
 
 **MANDATORY**: Create one mapping entry for EVERY database schema member.
 
+Use `x-autobe-database-schema-property` to find the DB column name for each DTO field, and `x-autobe-specification` for implementation hints (e.g., password hashing, data transformations).
+
 ```typescript
 interface Mapping {
   member: string;     // Exact DB field/relation name
@@ -217,7 +219,7 @@ interface Mapping {
 ```typescript
 mappings: [
   { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" },
-  { member: "content", kind: "scalar", nullable: false, how: "From props.body.content" },
+  { member: "content", kind: "scalar", nullable: false, how: "From props.body.content" },  // x-autobe-database-schema-property: "content"
   { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
   { member: "deleted_at", kind: "scalar", nullable: true, how: "Default to null" },
 

@@ -72,10 +72,12 @@ selectMappings: [
 
 **transformMappings** - One entry for EVERY DTO property:
 
+Use `x-autobe-database-schema-property` to find the DB column name, and `x-autobe-specification` for implementation hints.
+
 ```typescript
 transformMappings: [
   { property: "id", how: "From input.id" },
-  { property: "createdAt", how: "From input.created_at.toISOString()" },
+  { property: "createdAt", how: "From input.created_at.toISOString()" },  // x-autobe-database-schema-property: "created_at"
   { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },
   { property: "files", how: "Array map with BbsArticleCommentFileTransformer" },
   { property: "hit", how: "From input._count.bbs_article_comment_hits" },

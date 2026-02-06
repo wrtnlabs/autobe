@@ -39,6 +39,8 @@ thinking: "IShoppingSale.ICreate maps to shopping_sales. Collectable."
 - DB-backed (data inserted into tables)
 - Direct mapping to one primary database table
 
+**Key Hint**: Check `x-autobe-database-schema` in the DTO schema - it contains the mapped table name when present.
+
 ## 4. Output Format
 
 ```typescript
