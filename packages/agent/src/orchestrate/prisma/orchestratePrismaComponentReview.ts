@@ -35,19 +35,24 @@ export async function orchestratePrismaComponentReview(
   const components: AutoBeDatabaseComponent[] = await executeCachedBatch(
     ctx,
     props.components.map((component) => async (promptCacheKey) => {
-      const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
-        .filter((c) => c.filename !== component.filename)
-        .flatMap((c) => c.tables);
-      const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
-        component,
-        otherTables,
-        instruction: props.instruction,
-        prefix,
-        progress,
-        promptCacheKey,
-      });
-      ctx.dispatch(event);
-      return event.modification;
+      try {
+        const otherTables: AutoBeDatabaseComponentTableDesign[] = props.components
+          .filter((c) => c.filename !== component.filename)
+          .flatMap((c) => c.tables);
+        const event: AutoBeDatabaseComponentReviewEvent = await process(ctx, {
+          component,
+          otherTables,
+          instruction: props.instruction,
+          prefix,
+          progress,
+          promptCacheKey,
+        });
+        ctx.dispatch(event);
+        return event.modification;
+      } catch {
+        ++progress.completed;
+        return component;
+      }
     }),
   );
   return AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(components);
