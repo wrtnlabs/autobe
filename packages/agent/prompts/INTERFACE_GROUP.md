@@ -248,11 +248,7 @@ The `request` property is a **discriminated union** that can be one of five type
 
 **3. IAutoBePreliminaryGetDatabaseSchemas** - Retrieve database schemas:
 - **type**: `"getDatabaseSchemas"`
-<<<<<<< HEAD
-- **schemaNames**: Array of database schema names to retrieve
-=======
 - **schemaNames**: Array of database table names to retrieve
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 - **Purpose**: Request specific schemas for understanding domain organization
 - **When to use**: When you need detailed schema structure for grouping decisions
 

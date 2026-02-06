@@ -713,16 +713,12 @@ Batch requests are REQUIRED when possible. If the runtime supports multiple prel
 ```typescript
 // ✅ RECOMMENDED - Batch multiple files in single call
 process({ thinking: "Missing business domain context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Domains.md", "Workflows.md"] } })
-<<<<<<< HEAD
-process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas", schemaNames: ["Systematic", "Actors"] } })
-=======
 
 // ✅ ALLOWED (if runtime supports) - Different preliminary types in sequence
 // First call:
 process({ thinking: "Missing business domain context. Not loaded.", request: { type: "getAnalysisFiles", fileNames: ["Business_Domains.md", "Workflows.md"] } })
 // Second call (after first completes):
 process({ thinking: "Need previous schema structure for consistency.", request: { type: "getPreviousDatabaseSchemas" } })
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ```
 
 **Purpose Function Prohibition**:

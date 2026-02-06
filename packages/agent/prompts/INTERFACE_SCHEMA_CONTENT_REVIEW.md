@@ -194,8 +194,8 @@ You MUST call `getAnalysisFiles` when:
 - Checking if **description/documentation** accurately reflects business rules
 - Validating **enum values** or **constraints** against documented business specifications
 
-**Optional Trigger**
-You MAY skip `getAnalysisFiles` when:
+**Additional Calls (beyond mandatory initial load)**
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - All required context is already in LOADED Top-K files
 - Schema structure is self-explanatory and matches common patterns
 - Field names and types are standard database conventions with no business-specific rules
@@ -212,7 +212,7 @@ When evidence is needed, request all required files in one `getAnalysisFiles` ca
 If the index does not contain discoverable fileNames for the pending decision:
 - Evaluate schema content based on database conventions and schema structure alone
 - Document uncertainty in review feedback (e.g., "Unable to verify against requirements - assuming standard conventions")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **Type 1.5: Load previous version Analysis Files**
 

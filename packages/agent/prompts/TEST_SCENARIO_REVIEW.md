@@ -147,6 +147,30 @@ Step 4: Check execution order
 
 **NEVER re-request already loaded materials.** Max 8 preliminary calls.
 
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Verifying **business rule compliance** for test scenarios
+- Checking **authorization/permission rules** referenced in test scenarios
+- Validating that test logic matches **specified business workflows**
+
+**Additional Calls (beyond mandatory initial load)**
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
+- Review is purely technical cleanup (duplicate removal, naming convention fixes)
+- The loaded context already contains sufficient evidence for the decision
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**Evidence-Gating Rule**
+For any correction or approval decision related to business rules or authorization, you MUST cite concrete evidence (section-level reference) from loaded analysis files in the review. Example: "Per User_Management.md §3.2, admin deletion requires..."
+If evidence cannot be loaded, mark `evidenceUnavailable` and flag "manual verification required".
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Document as `evidenceUnavailable` in reasoning
+- Apply conservative review: flag as "requires manual verification"
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
+
 ## 6. Examples
 
 ### Example: Validation Error → "erase"

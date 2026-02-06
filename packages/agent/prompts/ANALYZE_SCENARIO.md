@@ -90,15 +90,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
-<<<<<<< HEAD
-**For preliminary requests** (getPreviousAnalysisFiles):
-=======
 **For clarification questions (no function call)**:
 - Ask questions directly in the assistant response
 - Do NOT call `process()` until closure is reached
 
 **For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles):
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ```typescript
 {
   thinking: "Missing related scenario context for comprehensive composition. Don't have them.",

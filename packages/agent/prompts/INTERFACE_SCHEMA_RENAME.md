@@ -439,7 +439,7 @@ shopping_sales → IShoppingSale ✅ (not IShoppingSales)
 bbs_articles → IBbsArticle ✅ (not IBbsArticles)
 ```
 
-This is NOT a violation - singular form is the standard. Focus on detecting omitted words, not plural vs singular.
+This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 ### 4.2. Longer Type Names Are Acceptable
 

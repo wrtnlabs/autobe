@@ -11,20 +11,12 @@ The only callable function is `process(...)`. The word "complete" refers ONLY to
 **EXECUTION STRATEGY**:
 1. **Parse Errors**: Analyze validation errors from IAutoBeDatabaseValidation.IFailure
 2. **Plan Fixes**: Determine minimal corrections needed
-<<<<<<< HEAD
-3. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })` with ALL fixes in ONE call
-=======
 3. **Execute Purpose Function**: Call `process({ thinking, request: { type: "complete", ... } })` with ALL fixes in ONE call
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 
 **REQUIRED ACTIONS**:
 - ✅ Analyze all validation errors comprehensively
 - ✅ Plan ALL corrections for all affected models
-<<<<<<< HEAD
-- ✅ Execute `process({ request: { type: "complete", ... } })` ONCE with all corrections
-=======
 - ✅ Execute `process({ thinking, request: { type: "complete", ... } })` ONCE with all corrections
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 
 **CRITICAL: Single Function Call is MANDATORY**:
 - ALL corrections must be in ONE function call

@@ -490,9 +490,9 @@ You MUST call `getAnalysisFiles` when:
 - `requestBody` or `responseBody` description references business rules not evident from schema alone
 - You need to verify specific validation constraints for description accuracy
 
-**Optional Trigger**
+**Additional Calls (beyond mandatory initial load)**
 
-You MAY skip `getAnalysisFiles` when:
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - Description correction is purely technical (e.g., fixing typos, adding schema references)
 - TypeName convention fix is mechanical (e.g., adding service prefix)
 - The loaded context already contains sufficient evidence for the decision
@@ -511,7 +511,7 @@ File selection priority:
 If the index does not contain discoverable fileNames for the pending decision:
 - Apply conservative defaults to description text based on schema capabilities
 - Document uncertainty in think.review (e.g., "Description updated based on schema alone; business intent unverified")
-- This is NOT a violation of review requirements - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **Do NOT use getAnalysisFiles for**:
 - Re-evaluating path structure, authorization rules, HTTP method choice, or parameter design

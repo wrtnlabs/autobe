@@ -226,8 +226,8 @@ You MUST call `getAnalysisFiles` when:
 - Clarifying **authentication/authorization** field requirements (tokens, sessions, credentials)
 - Validating **audit logging** or **data retention** policies that affect security review decisions
 
-**Optional Trigger**
-You MAY skip `getAnalysisFiles` when:
+**Additional Calls (beyond mandatory initial load)**
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - All required context is already in LOADED Top-K files
 - Security patterns are straightforward from database schema annotations (e.g., `@sensitive`, `@pii`)
 - Review is purely structural (type checking, nullability fixes on non-sensitive fields)
@@ -244,7 +244,7 @@ When evidence is needed, request all required files in one `getAnalysisFiles` ca
 If the index does not contain discoverable fileNames for the pending decision:
 - Apply conservative security defaults: filter sensitive fields, mask PII, restrict exposure
 - Document uncertainty in review (e.g., "Security policy inferred from schema annotations; detailed requirements unverified")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 Some requirements files may have been loaded in previous function calls. These materials are already available in your conversation context.

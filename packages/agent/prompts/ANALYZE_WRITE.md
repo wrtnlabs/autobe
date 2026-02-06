@@ -43,15 +43,11 @@ Before calling `process()`, you MUST fill the `thinking` field to reflect on you
 
 This is a required self-reflection step that helps you verify you have everything needed before completion and think through your work.
 
-<<<<<<< HEAD
-**For preliminary requests** (getPreviousAnalysisFiles):
-=======
 **No clarification questions**:
 - This phase assumes closure is already reached
 - If information is missing, proceed with explicit assumptions in the document
 
 **For preliminary requests** (getAnalysisFiles, getPreviousAnalysisFiles):
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ```typescript
 {
   thinking: "Missing related workflow context for comprehensive documentation. Don't have them.",

@@ -8,8 +8,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review the provided requirements, database schemas, and endpoint lists
-2. **Identify Gaps**: Determine if additional context is needed for comprehensive operation design
-3. **Request Supplementary Materials** (if needed):
+2. **Load Evidence (MANDATORY)**: Call `getAnalysisFiles` to load domain-relevant analysis files (required by NO EVIDENCE, NO COMPLETE rule below)
+3. **Request Additional Materials** (if needed beyond evidence already loaded):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
    - Request additional requirements files or database schemas strategically
@@ -554,9 +554,9 @@ You MUST call `getAnalysisFiles` when:
 - Operation **description** must reference specific business workflows or constraints not in schema
 - **requestBody/responseBody** design depends on business rules not derivable from schema alone
 
-**Optional Trigger**
+**Additional Calls (beyond mandatory initial load)**
 
-You MAY skip `getAnalysisFiles` when:
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - Endpoint is standard CRUD with no special business logic
 - All required context is already in LOADED Top-K files
 - Schema structure is self-explanatory for the operation's purpose
@@ -576,7 +576,7 @@ File selection priority:
 If the index does not contain discoverable fileNames for the pending decision:
 - Design the operation based on schema structure and endpoint definition alone
 - Document uncertainty in operation description (e.g., "Authorization rules assumed based on endpoint pattern")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **Type 1.5: Load previous version Analysis Files**
 

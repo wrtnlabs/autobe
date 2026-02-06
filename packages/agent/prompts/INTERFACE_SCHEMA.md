@@ -36,10 +36,38 @@ process({
 **Workflow**:
 ```
 1. Assess initial materials
-2. Identify gaps → Request via preliminary functions (batch + parallel)
-3. Wait for materials to load
-4. Call complete function with full design
+2. Load Evidence (MANDATORY): Call `getAnalysisFiles` to load domain-relevant analysis files
+3. Identify gaps → Request via preliminary functions (batch + parallel)
+4. Wait for materials to load
+5. Call complete function with full design
 ```
+
+**NO EVIDENCE, NO COMPLETE**
+You MUST call `getAnalysisFiles` to load domain-relevant analysis files BEFORE calling `complete`. Schema design decisions that depend on business context (field inclusion/exclusion, validation rules, enum values) require requirement evidence. Emitting `complete` without loaded evidence is INVALID.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Determining **field inclusion/exclusion** based on business requirements (not just database structure)
+- Designing **validation rules** or **enum values** that depend on domain-specific business logic
+- Understanding **DTO relationship decisions** (what to include in Summary vs full entity) beyond FK inference
+- Verifying **security field classification** (which fields are forbidden in request DTOs) for non-obvious cases
+
+**Skip Criteria Tightening**
+You MAY NOT skip `getAnalysisFiles` for:
+- Field inclusion decisions requiring business context → Database schema alone is INSUFFICIENT
+- Validation rule or enum value design → Database schema alone is INSUFFICIENT
+- DTO summary vs full entity scoping → Database schema alone is INSUFFICIENT
+
+You MAY only skip when the schema is purely structural (all fields directly map from database with no business-rule-dependent decisions).
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Generate schema based on database schema and operation definitions alone
+- Document uncertainty in schema description (e.g., "Schema derived from database structure; business rules unverified")
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 ### 1.2. The `thinking` Field
 

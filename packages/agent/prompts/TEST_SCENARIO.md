@@ -27,7 +27,8 @@ interface IComplete {
 
 **Typical flow**:
 1. Request operation details via `getInterfaceOperations` to get authorizationActor
-2. Generate scenarios via `complete`
+2. Load evidence via `getAnalysisFiles` (MANDATORY — see NO EVIDENCE, NO COMPLETE below)
+3. Generate scenarios via `complete`
 
 ## 2. ABSOLUTE PROHIBITION: No Validation Error Testing
 
@@ -175,6 +176,32 @@ interface AutoBeTestScenario {
 - `getInterfaceSchemas`: DTO structures
 
 **NEVER re-request already loaded materials.** Max 8 preliminary calls.
+
+**NO EVIDENCE, NO COMPLETE**
+You MUST call `getAnalysisFiles` to load domain-relevant analysis files BEFORE calling `complete`. Test scenario design requires understanding business workflows, authorization rules, and domain context to generate meaningful E2E tests. Emitting `complete` without loaded evidence is INVALID.
+
+**Mandatory Trigger**
+You MUST call `getAnalysisFiles` when:
+- Testing **authorization/permission rules** that require business context verification
+- Testing **state transitions** or **workflow boundaries** not evident from operation definitions alone
+- Testing **domain-specific edge cases** mentioned in requirements
+
+**Skip Criteria Tightening**
+You MAY NOT skip `getAnalysisFiles` for:
+- Authorization/permission rule testing → Operation definitions alone are INSUFFICIENT
+- State transition or workflow boundary testing → Operation definitions alone are INSUFFICIENT
+- Domain-specific edge case testing → Operation definitions alone are INSUFFICIENT
+
+You MAY only skip when the test is purely structural (basic CRUD success path with straightforward authentication and no business rules involved).
+
+**Batching Rule**
+When evidence is needed, request all required files in one `getAnalysisFiles` call. Do not make iterative single-file requests.
+
+**EVIDENCE UNAVAILABLE FALLBACK (DEADLOCK PREVENTION)**
+If the index does not contain discoverable fileNames for the pending decision:
+- Generate scenarios based on operation definitions and schema structure alone
+- Document uncertainty in scenario draft (e.g., "Scenario based on API structure only - business rules unverified")
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 ## 9. Quick Reference
 
