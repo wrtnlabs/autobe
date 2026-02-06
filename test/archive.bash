@@ -4,11 +4,11 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
-# qwen/qwen3-coder:exacto (0.22) -> not working
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-qwen3-coder.todo.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
+# qwen/qwen3-coder-next (0.07)
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-qwen3-coder-next.bbs.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
 # qwen/qwen3-next-80b-a3b-instruct (0.09) -> working
 pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > archive.qwen-qwen3-next-80b-a3b-instruct.todo.log
@@ -21,6 +21,12 @@ pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > a
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > archive.qwen-qwen3-30b-a3b-thinking-2507.bbs.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
+
+# qwen/qwen3-coder:exacto (0.22) -> not working
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-qwen3-coder.todo.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
+pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
 
 ######################################################
 # KIMI
