@@ -65,6 +65,8 @@ export function transformOpenApiDocument(
           }
         : undefined,
       ...{
+        "x-autobe-authorization-type": op.authorizationType,
+        "x-autobe-authorization-actor": op.authorizationActor,
         "x-autobe-prerequisites": op.prerequisites,
         "x-samchon-accessor": op.accessor,
         "x-autobe-specification": op.specification,

@@ -234,7 +234,8 @@ export namespace ArchiveLogger {
         `  - group: ${event.group}`,
         `  - endpoints: ${event.designs.length}`,
         ...event.designs.map(
-          (d) => `    - ${d.endpoint.method} ${d.endpoint.path}`,
+          (d) =>
+            `    - ${d.endpoint.method} ${d.endpoint.path} (${d.authorizationType})`,
         ),
       );
     else if (event.type === "interfaceEndpointReview")
@@ -248,14 +249,14 @@ export namespace ArchiveLogger {
           .filter((r) => r.type === "create")
           .map(
             (r) =>
-              `      - ${r.design.endpoint.method.toUpperCase()} ${r.design.endpoint.path}`,
+              `      - ${r.design.endpoint.method.toUpperCase()} ${r.design.endpoint.path} (${r.design.authorizationType})`,
           ),
         `    - update: ${event.revises.filter((r) => r.type === "update").length}`,
         ...event.revises
           .filter((r) => r.type === "update")
           .map(
             (r) =>
-              `      - ${r.endpoint.method.toUpperCase()} ${r.endpoint.path} -> ${r.newDesign.endpoint.method.toUpperCase()} ${r.newDesign.endpoint.path}`,
+              `      - ${r.endpoint.method.toUpperCase()} ${r.endpoint.path} -> ${r.newDesign.endpoint.method.toUpperCase()} ${r.newDesign.endpoint.path} (${r.newDesign.authorizationType})`,
           ),
         `    - erase: ${event.revises.filter((r) => r.type === "erase").length}`,
         ...event.revises

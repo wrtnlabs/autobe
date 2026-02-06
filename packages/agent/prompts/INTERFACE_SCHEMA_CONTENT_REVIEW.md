@@ -12,8 +12,6 @@ You ensure schema completeness and correctness of field content — missing fiel
 
 Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
-**Before setting `databaseSchemaProperty: null`**: Re-check the loaded DB schema to confirm the property does NOT exist in columns or relations. Use `null` only for computed values.
-
 | Situation | Revision |
 |-----------|----------|
 | Property correct as-is | `keep` |
@@ -33,7 +31,7 @@ You do not use `erase` — that belongs to phantom review.
 **Setting `databaseSchemaProperty`**:
 - Column property → Use column name: `"stock"`, `"created_at"`
 - Relation property → Use relation name: `"author"`, `"category"`
-- Computed property → Use `null` (only for aggregations, derived values)
+- Computed property → Use `null` (aggregations, algorithmic computation, auth tokens, derived values). Verify valid logic in `x-autobe-specification` first.
 
 ## 3. Function Calling
 
@@ -169,7 +167,7 @@ Note how every existing property gets exactly one revision and every missing fie
 - [ ] All correct properties use `keep`
 - [ ] All missing DB columns use `create` with column name in `databaseSchemaProperty`
 - [ ] All missing DB relations use `create` with relation name in `databaseSchemaProperty`
-- [ ] Before `databaseSchemaProperty: null`: Verified NOT in DB columns or relations
+- [ ] Before `databaseSchemaProperty: null`: Verified valid logic in `x-autobe-specification`
 - [ ] Wrong schema types use `update`
 - [ ] Wrong documentation only uses `depict`
 - [ ] Wrong nullability only uses `nullish`

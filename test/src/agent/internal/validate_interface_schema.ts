@@ -74,6 +74,7 @@ export const validate_interface_schema = async (props: {
     vendor: props.vendor,
     project: props.project,
     files: {
+      ["interface.operation.json"]: JSON.stringify(operations),
       ["interface.schema.json"]: JSON.stringify(schemas),
     },
   });

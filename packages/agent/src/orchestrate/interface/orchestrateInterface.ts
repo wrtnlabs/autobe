@@ -72,11 +72,13 @@ export const orchestrateInterface =
       });
 
     // OPERATIONS
-    const operations: AutoBeOpenApi.IOperation[] =
-      await orchestrateInterfaceOperation(ctx, {
+    const operations: AutoBeOpenApi.IOperation[] = [
+      ...authorizations.map((auth) => auth.operations).flat(),
+      ...(await orchestrateInterfaceOperation(ctx, {
         designs: endpoints,
         instruction: props.instruction,
-      });
+      })),
+    ];
 
     // THE DOCUMENT WITH SCHEMAS
     const document: AutoBeOpenApi.IDocument = {

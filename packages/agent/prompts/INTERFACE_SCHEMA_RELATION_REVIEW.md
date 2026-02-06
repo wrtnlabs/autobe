@@ -25,7 +25,7 @@ You CANNOT:
 
 Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
-**Before setting `databaseSchemaProperty: null`**: Re-check the loaded DB schema. Relation properties use the relation name, not null.
+**Setting `databaseSchemaProperty`**: Use relation name for DB relations. Use `null` only for requirement-derived computed properties (verify valid logic in `x-autobe-specification`).
 
 | Situation | Revision | Example |
 |-----------|----------|---------|
@@ -233,7 +233,7 @@ Note how every property appears exactly once, and non-relation fields use `keep`
 
 - [ ] Every property in the schema has exactly one revision (no missing, no duplicates)
 - [ ] Non-relation fields all use `keep`
-- [ ] Before `databaseSchemaProperty: null`: Verified NOT in DB columns or relations
+- [ ] `databaseSchemaProperty`: relation name for DB relations, `null` only for valid computed properties
 - [ ] Relation properties use relation name in `databaseSchemaProperty`
 - [ ] FK column properties use column name in `databaseSchemaProperty`
 - [ ] `erase` used only for circular refs or aggregation arrays

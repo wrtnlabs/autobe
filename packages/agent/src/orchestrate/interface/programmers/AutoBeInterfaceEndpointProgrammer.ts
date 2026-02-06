@@ -28,9 +28,12 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     actors: AutoBeAnalyzeActor[];
   }): boolean => {
     // Action endpoints: only allow authorizationType: null
-    if (props.kind === "action") {
-      return props.design.authorizationType === null;
-    }
+    if (props.kind === "action") return props.design.authorizationType === null;
+    else if (
+      props.design.endpoint.path === "/auth" ||
+      props.design.endpoint.path.startsWith("/auth/")
+    )
+      return false;
 
     // remove specific auth types
     if (
