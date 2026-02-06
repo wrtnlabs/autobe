@@ -115,6 +115,10 @@ async function process(
       "interfaceSchemas",
       "previousInterfaceSchemas",
     ],
+    config: {
+      database: "text",
+      databaseProperty: true,
+    },
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,

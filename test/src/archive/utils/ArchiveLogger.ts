@@ -287,7 +287,7 @@ export namespace ArchiveLogger {
         `  - refines:`,
         ...event.refines.map(
           (r) =>
-            `    - ${r.key}: ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+            `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
       );
     else if (event.type === "interfaceSchemaReview")

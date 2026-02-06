@@ -63,7 +63,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.kinds = props.kinds;
     this.config = {
       database: props.config?.database ?? "text",
-    } as AutoBePreliminaryController.IConfig<any>;
+      databaseProperty: props.config?.databaseProperty ?? false,
+    } satisfies AutoBePreliminaryController.IConfig<any> as AutoBePreliminaryController.IConfig<any>;
 
     this.argumentTypeNames = (() => {
       const func = props.application.functions.find(
@@ -215,12 +216,12 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * Extracts acquisition metadata from the currently loaded preliminary data.
    *
    * Transforms the local preliminary collection into a normalized acquisition
-   * structure that is suitable for event tracking, including only metadata
-   * such as filenames, schema names, and operation identifiers rather than
-   * full objects.
+   * structure that is suitable for event tracking, including only metadata such
+   * as filenames, schema names, and operation identifiers rather than full
+   * objects.
    *
    * @returns Acquisition metadata derived from currently loaded data,
-   *          normalized for event tracking.
+   *   normalized for event tracking.
    */
   public getAcquisition(): Pick<AutoBePreliminaryAcquisition, Kind> {
     const acquisition: Partial<AutoBePreliminaryAcquisition> = {};
@@ -388,5 +389,6 @@ export namespace AutoBePreliminaryController {
     database: Kind extends "databaseSchemas" | "previousDatabaseSchemas"
       ? "ast" | "text"
       : never;
+    databaseProperty: boolean;
   }
 }
