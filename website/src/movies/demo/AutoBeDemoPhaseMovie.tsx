@@ -37,13 +37,17 @@ export default function AutoBeDemoPhaseMovie(
   // Determine status color
   const getStatusColor = () => {
     if (phase.success === true) return "bg-green-500";
-    if (phase.success === false) return "bg-yellow-500";
+    if (phase.success === false)
+      if (Object.keys(phase.commodity).length !== 0) return "bg-yellow-500";
+      else return "bg-red-500";
     return "bg-gray-600";
   };
 
   const getTextColor = () => {
     if (phase.success === true) return "text-white";
-    if (phase.success === false) return "text-yellow-400";
+    if (phase.success === false)
+      if (Object.keys(phase.commodity).length !== 0) return "text-yellow-400";
+      else return "text-red-400";
     return "text-gray-500";
   };
 

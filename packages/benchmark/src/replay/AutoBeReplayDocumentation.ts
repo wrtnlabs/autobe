@@ -103,7 +103,7 @@ export namespace AutoBeReplayDocumentation {
         props.replay[key];
       if (state === null) return [`⚪ ${title}`, "", "", "", ""].join(" | ");
       return [
-        `${state.success === true ? "🟢" : "🟡"} ${title}`,
+        `${state.success === true ? "🟢" : Object.keys(state.commodity).length ? "🟡" : "🔴"} ${title}`,
         Object.entries(state.commodity)
           .map(([key, value]) => `\`${key}\`: ${value}`)
           .join(", "),
