@@ -31,7 +31,7 @@ pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project shopping > archiv
 ######################################################
 # KIMI
 ######################################################
-# moonshotai/kimi-k2.5 (0.5) -> not working
+# moonshotai/kimi-k2.5 (0.45) -> not working
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project todo > archive.moonshotai-kimi-k2.5.todo.log
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project bbs > archive.moonshotai-kimi-k2.5.bbs.log
 pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project reddit > archive.moonshotai-kimi-k2.5.reddit.log

@@ -15,6 +15,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeAuthorizationWriteHistory } from "./histories/transformRealizeAuthorizationWriteHistory";
 import { orchestrateRealizeAuthorizationCorrect } from "./orchestrateRealizeAuthorizationCorrect";
@@ -53,14 +54,16 @@ export async function orchestrateRealizeAuthorizationWrite(
     ctx,
     actors.map(
       (a) => (promptCacheKey) =>
-        process(ctx, {
-          actor: a,
-          templates: InternalFileSystem.DEFAULT.map((el) => ({
-            [el]: templates[el],
-          })).reduce((acc, cur) => Object.assign(acc, cur), {}),
-          progress,
-          promptCacheKey,
-        }),
+        forceRetry(() =>
+          process(ctx, {
+            actor: a,
+            templates: InternalFileSystem.DEFAULT.map((el) => ({
+              [el]: templates[el],
+            })).reduce((acc, cur) => Object.assign(acc, cur), {}),
+            progress,
+            promptCacheKey,
+          }),
+        ),
     ),
   );
   ctx.dispatch({

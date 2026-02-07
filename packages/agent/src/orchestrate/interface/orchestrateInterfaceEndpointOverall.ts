@@ -10,6 +10,7 @@ import { HashMap, Pair } from "tstl";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { orchestrateInterfaceEndpointWrite } from "./orchestrateInterfaceEndpointWrite";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
@@ -44,12 +45,13 @@ export const orchestrateInterfaceEndpointOverall = async (
   const matrix: AutoBeInterfaceEndpointDesign[][] = await executeCachedBatch(
     ctx,
     props.groups.map((group) => async (promptCacheKey) => {
-      let designs: AutoBeInterfaceEndpointDesign[] =
-        await orchestrateInterfaceEndpointWrite(ctx, {
+      let designs: AutoBeInterfaceEndpointDesign[] = await forceRetry(() =>
+        orchestrateInterfaceEndpointWrite(ctx, {
           ...props,
           group,
           promptCacheKey,
-        });
+        }),
+      );
       for (let i: number = 0; i < 2; ++i)
         try {
           designs = await props.programmer.review({

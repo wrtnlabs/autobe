@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerWriteHistory } from "./histories/transformRealizeTransformerWriteHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
@@ -57,12 +58,14 @@ export async function orchestrateRealizeTransformerWrite(
     ctx,
     props.plans.map(
       (x) => (promptCacheKey) =>
-        process(ctx, {
-          progress: props.progress,
-          neighbors: getNeighbors(x),
-          plan: x,
-          promptCacheKey,
-        }),
+        forceRetry(() =>
+          process(ctx, {
+            progress: props.progress,
+            neighbors: getNeighbors(x),
+            plan: x,
+            promptCacheKey,
+          }),
+        ),
     ),
   );
 }

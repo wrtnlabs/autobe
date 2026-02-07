@@ -15,6 +15,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
@@ -43,16 +44,18 @@ export async function orchestrateRealizeOperationWrite(
     ctx,
     scenarios.map(
       (s) => (promptCacheKey) =>
-        process(ctx, {
-          document,
-          totalAuthorizations: props.authorizations,
-          collectors: props.collectors,
-          transformers: props.transformers,
-          authorization: s.decoratorEvent ?? null,
-          scenario: s,
-          progress: props.progress,
-          promptCacheKey,
-        }),
+        forceRetry(() =>
+          process(ctx, {
+            document,
+            totalAuthorizations: props.authorizations,
+            collectors: props.collectors,
+            transformers: props.transformers,
+            authorization: s.decoratorEvent ?? null,
+            scenario: s,
+            progress: props.progress,
+            promptCacheKey,
+          }),
+        ),
     ),
   );
 }

@@ -14,6 +14,7 @@ import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { forceRetry } from "../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerPlanHistory } from "./histories/transformRealizeTransformerPlanHistory";
 import { AutoBeRealizeTransformerProgrammer } from "./programmers/AutoBeRealizeTransformerProgrammer";
@@ -50,13 +51,15 @@ export async function orchestrateRealizeTransformerPlan(
     ctx,
     Array.from(dtoTypeNames).map(
       (it) => (promptCacheKey) =>
-        process(ctx, {
-          document,
-          dtoTypeName: it,
-          prismaSchemaNames,
-          promptCacheKey,
-          progress: props.progress,
-        }),
+        forceRetry(() =>
+          process(ctx, {
+            document,
+            dtoTypeName: it,
+            prismaSchemaNames,
+            promptCacheKey,
+            progress: props.progress,
+          }),
+        ),
     ),
   );
   return result.flat();
