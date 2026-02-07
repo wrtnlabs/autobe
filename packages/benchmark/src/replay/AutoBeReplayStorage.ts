@@ -6,6 +6,7 @@ import {
   AutoBePhase,
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
+import { AutoBeProcessAggregateFactory } from "@autobe/utils";
 import fs from "fs";
 import typia from "typia";
 
@@ -84,9 +85,22 @@ export namespace AutoBeReplayStorage {
   }): Promise<IAutoBePlaygroundReplay.ISummary | null> => {
     const location: string = `${AutoBeExampleStorage.getDirectory(props)}/summary.json.gz`;
     if (fs.existsSync(location) === false) return null;
-    return JSON.parse(
+    const replay: IAutoBePlaygroundReplay.ISummary = JSON.parse(
       await CompressUtil.gunzip(await fs.promises.readFile(location)),
     );
+    // there had been elapsed time calculation issue
+    replay.elapsed = typia.misc
+      .literals<AutoBePhase>()
+      .map((phase) => replay[phase]?.elapsed ?? 0)
+      .reduce((a, b) => a + b, 0);
+    replay.aggregates = AutoBeProcessAggregateFactory.reduce(
+      typia.misc
+        .literals<AutoBePhase>()
+        .map((phase) => replay[phase])
+        .filter((x) => x !== null)
+        .map((x) => x.aggregates),
+    );
+    return replay;
   };
 
   const getHistories = async (props: {

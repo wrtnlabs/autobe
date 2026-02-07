@@ -160,30 +160,16 @@ export namespace AutoBeReplayComputer {
     return {
       vendor: replay.vendor,
       project: replay.project,
-      aggregates: AutoBeProcessAggregateFactory.reduce(
-        replay.histories
-          .filter(
-            (h) =>
-              h.type === "analyze" ||
-              h.type === "database" ||
-              h.type === "interface" ||
-              h.type === "test" ||
-              h.type === "realize",
-          )
-          .map((h) => h.aggregates),
-      ),
-      elapsed: replay.histories
-        .filter(
-          (h) => h.type !== "userMessage" && h.type !== "assistantMessage",
-        )
-        .map(
-          (h) =>
-            new Date(h.completed_at).getTime() -
-            new Date(h.created_at).getTime(),
-        )
-        .reduce((a, b) => a + b, 0),
       ...phaseStates,
+      aggregates: AutoBeProcessAggregateFactory.reduce(
+        Object.values(phaseStates)
+          .filter((p) => p !== null)
+          .map((p) => p.aggregates),
+      ),
       phase,
+      elapsed: Object.values(phaseStates)
+        .map((p) => p?.elapsed ?? 0)
+        .reduce((a, b) => a + (b ?? 0), 0),
     };
   };
 }
