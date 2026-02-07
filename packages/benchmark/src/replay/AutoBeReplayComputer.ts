@@ -47,12 +47,16 @@ export namespace AutoBeReplayComputer {
             ? success
             : success * failure(phase.commodity)
           : 0;
-      return (
+      return round(
         add(summary.analyze, 10, () => 0) +
-        add(summary.database, 20, () => 0.5) +
-        add(summary.interface, 30, () => 0.5) +
-        add(summary.test, 20, (c) => Math.max(0.5, 1 - c.errors * 3 / c.functions)) +
-        add(summary.realize, 20, (c) => Math.max(0.5, 1 - c.errors * 3 / c.functions))
+          add(summary.database, 20, () => 0.5) +
+          add(summary.interface, 30, () => 0.5) +
+          add(summary.test, 20, (c) =>
+            Math.max(0.5, 1 - (c.errors * 3) / c.functions),
+          ) +
+          add(summary.realize, 20, (c) =>
+            Math.max(0.5, 1 - (c.errors * 3) / c.functions),
+          ),
       );
     };
     const individual = (project: AutoBeExampleProject): number => {
@@ -61,7 +65,7 @@ export namespace AutoBeReplayComputer {
       return compute(found);
     };
     return {
-      aggregate: summaries.map(compute).reduce((a, b) => a + b, 0) / 4,
+      aggregate: round(summaries.map(compute).reduce((a, b) => a + b, 0) / 4),
       todo: individual("todo"),
       bbs: individual("bbs"),
       reddit: individual("reddit"),
@@ -173,3 +177,5 @@ export namespace AutoBeReplayComputer {
     };
   };
 }
+
+const round = (value: number) => Math.round(value * 100) / 100;
