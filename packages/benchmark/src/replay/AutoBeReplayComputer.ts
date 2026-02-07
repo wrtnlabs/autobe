@@ -40,19 +40,19 @@ export namespace AutoBeReplayComputer {
       const add = (
         phase: IAutoBePlaygroundReplay.IPhaseState | null,
         success: number,
-        failure?: number,
+        failure: (commodity: Record<string, number>) => number,
       ): number =>
         phase !== null
           ? phase.success === true
             ? success
-            : (failure ?? success / 2)
+            : success * failure(phase.commodity)
           : 0;
       return (
-        add(summary.analyze, 10) +
-        add(summary.database, 20) +
-        add(summary.interface, 30) +
-        add(summary.test, 20) +
-        add(summary.realize, 20)
+        add(summary.analyze, 10, () => 0) +
+        add(summary.database, 20, () => 0.5) +
+        add(summary.interface, 30, () => 0.5) +
+        add(summary.test, 20, (c) => Math.max(0.5, 1 - c.errors * 3 / c.functions)) +
+        add(summary.realize, 20, (c) => Math.max(0.5, 1 - c.errors * 3 / c.functions))
       );
     };
     const individual = (project: AutoBeExampleProject): number => {
