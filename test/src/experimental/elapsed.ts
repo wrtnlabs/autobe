@@ -1,16 +1,25 @@
-import { AutoBeReplayComputer, AutoBeReplayStorage } from "@autobe/benchmark";
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
-
-const HOUR = 60 * 60 * 1000;
+import { AutoBeExampleStorage, AutoBeReplayStorage } from "@autobe/benchmark";
+import {
+  AutoBeExampleProject,
+  IAutoBePlaygroundReplay,
+} from "@autobe/interface";
 
 const main = async (): Promise<void> => {
-  const replay: IAutoBePlaygroundReplay | null = await AutoBeReplayStorage.get({
-    vendor: "qwen/qwen3-coder-next",
-    project: "bbs",
-  });
-  if (replay === null) return;
-
-  const summary = AutoBeReplayComputer.summarize(replay);
-  console.log(summary.elapsed / HOUR);
+  for (const vendor of [
+    "qwen/qwen3-coder-next",
+    "qwen/qwen3-next-80b-a3b-instruct",
+    "qwen/qwen3-30b-a3b-thinking-2507",
+  ]) {
+    const summaries: IAutoBePlaygroundReplay.ISummary[] =
+      await AutoBeReplayStorage.getAllSummaries(vendor);
+    for (const summary of summaries)
+      await AutoBeExampleStorage.save({
+        vendor,
+        project: summary.project as AutoBeExampleProject,
+        files: {
+          ["summary.json"]: JSON.stringify(summary),
+        },
+      });
+  }
 };
 main().catch(console.error);

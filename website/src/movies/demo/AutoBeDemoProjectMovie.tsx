@@ -3,6 +3,7 @@
 import { AutoBeDemoStorage } from "@/src/data/AutoBeDemoStorage";
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import { useEffect, useRef, useState } from "react";
+
 import AutoBeDemoPhaseMovie from "./AutoBeDemoPhaseMovie";
 
 export default function AutoBeDemoProjectMovie(
@@ -25,7 +26,7 @@ export default function AutoBeDemoProjectMovie(
     replay.project.charAt(0).toUpperCase() + replay.project.slice(1);
 
   // Generate URL based on vendor and project
-  const url = `https://github.com/wrtnlabs/autobe-examples/tree/main/${replay.vendor}/${replay.project}`;
+  const url = `https://github.com/wrtnlabs/autobe-examples/tree/main/${replay.vendor.replaceAll(":", "-")}/${replay.project}`;
 
   const tokenUsage = replay.aggregates.total.tokenUsage;
   const totalTokens = formatTokens(tokenUsage.total);
