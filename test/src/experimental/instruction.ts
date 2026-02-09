@@ -26,7 +26,7 @@ const SEQUENCE = [
 
 const getStateMessage = (phase: AutoBePhase | null): string => {
   const index: number = phase ? SEQUENCE.indexOf(phase) : -1;
-  return AutoBeSystemPromptConstant.FACADE.replace(
+  return AutoBeSystemPromptConstant.AGENTICA_FACADE.replace(
     "{% STATE %}",
     StringUtil.trim`
       ## Current State
