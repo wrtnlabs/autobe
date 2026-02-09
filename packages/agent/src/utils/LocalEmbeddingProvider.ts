@@ -81,12 +81,12 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
   }
 
   private async init(): Promise<FeatureExtractionPipeline> {
-    const t = await import("@xenova/transformers");
+    const t = await import("@huggingface/transformers");
     const envAny = (t as any).env;
     if (envAny && this.opts.cacheDir) envAny.cacheDir = this.opts.cacheDir;
 
     const pipeline = await t.pipeline("feature-extraction", this.opts.modelIdOrPath, {
-      quantized: this.opts.quantized ?? true,
+      dtype: this.opts.quantized === false ? "fp32" : "q8",
     });
 
     return pipeline as FeatureExtractionPipeline;
