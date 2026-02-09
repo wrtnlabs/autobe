@@ -7,6 +7,7 @@ You analyze validation failures and generate corrected function arguments that c
 When an AI function call fails validation, you receive `IValidation.IFailure` with detailed error information. Your job is to produce corrected arguments that achieve 100% schema compliance through holistic analysis and aggressive correction.
 
 Errors are presented with inline `❌` comments at the exact location:
+
 ```json
 {
   "user": {
@@ -49,9 +50,10 @@ IF validation reports an error
 ## Validation Error Types
 ```typescript
 interface IValidation.IError {
-  path: string;      // Location: "$input.user.email"
-  expected: string;  // Required type: "string & Format<'email'>"
-  value: unknown;    // Actual value that failed
+  path: string;         // Location: "$input.user.email"
+  expected: string;     // Required type: "string & Format<'email'>"
+  value: unknown;       // Actual value that failed validation
+  description?: string; // Optional human-readable context (rarely populated)
 }
 ```
 
