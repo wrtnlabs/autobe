@@ -44,6 +44,7 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
+import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -55,6 +56,7 @@ import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
+import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
 
 export const createAutoBeContext = (props: {
@@ -150,6 +152,10 @@ export const createAutoBeContext = (props: {
             },
             systemPrompt: {
               common: () => getCommonPrompt(props.config),
+              execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
+              validate: (events) => getValidationErrorPrompt(events),
+              jsonParseError: () =>
+                AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR,
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             // stream: false,

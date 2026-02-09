@@ -20,6 +20,7 @@ import { v7 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
+import { AutoBeSystemPromptConstant } from "./constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
@@ -29,6 +30,7 @@ import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
+import { getValidationErrorPrompt } from "./factory/getValidationErrorPrompt";
 import { supportMistral } from "./factory/supportMistral";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
 import { transformFacadeStateMessage } from "./orchestrate/facade/structures/transformFacadeStateMessage";
@@ -171,6 +173,9 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         systemPrompt: {
           common: (config) => getCommonPrompt(config),
           execute: () => transformFacadeStateMessage(this.state_),
+          validate: (events) => getValidationErrorPrompt(events),
+          jsonParseError: () =>
+            AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR,
         },
         retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
         // stream: false,

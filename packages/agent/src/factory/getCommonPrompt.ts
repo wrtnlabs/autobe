@@ -6,7 +6,7 @@ import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 export const getCommonPrompt = (
   config?: Pick<IAutoBeConfig, "locale" | "timezone"> | undefined,
 ) =>
-  AutoBeSystemPromptConstant.COMMON.replace(
+  AutoBeSystemPromptConstant.AGENTICA_COMMON.replace(
     "${locale}",
     config?.locale ?? locale.get(),
   )
