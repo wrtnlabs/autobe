@@ -158,8 +158,6 @@ process({
 })
 ```
 
-<<<<<<< HEAD
-=======
 ### 3.5. HTTP Method Appropriateness
 
 Action endpoints should use appropriate HTTP methods.
@@ -318,7 +316,7 @@ If evidence cannot be loaded, mark `evidenceUnavailable` and flag "manual verifi
 If the index does not contain discoverable fileNames for the pending decision:
 - Apply conservative rule: erase endpoints that cannot be justified from available context
 - Document uncertainty in reason field (e.g., "Erased - unable to verify requirement justification")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
@@ -593,8 +591,6 @@ process({
 - [ ] Review analysis documented (summary of issues found)
 - [ ] Revises array contains all modifications
 - [ ] Ready to call `process()` with `type: "complete"`
-
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ---
 
 **YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Refer to INTERFACE_ACTION_ENDPOINT_WRITE.md for all design rules.

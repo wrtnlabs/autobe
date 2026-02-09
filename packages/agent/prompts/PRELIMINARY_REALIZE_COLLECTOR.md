@@ -131,6 +131,12 @@ process({
 
 **ZERO TOLERANCE**: If you think "this DTO probably has a collector" → STOP and request the actual function.
 
+## Cross-Reference: Analysis Files for Business Context
+
+Collector function implementation may require understanding business rules that affect data transformation logic (e.g., default values, conditional field mapping, validation constraints).
+
+**RULE**: When collector implementation involves business-logic-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents for evidence-based implementation.
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

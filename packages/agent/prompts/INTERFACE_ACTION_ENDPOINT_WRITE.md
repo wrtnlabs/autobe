@@ -19,9 +19,10 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review provided requirements, database schemas, group information
-2. **Identify Action Endpoints**: Look for analytics, dashboards, search, reports, integrations
-3. **Request Supplementary Materials** (ONLY when truly necessary)
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })`
+2. **Load Evidence (MANDATORY)**: Call `getAnalysisFiles` to load domain-relevant analysis files (required by NO EVIDENCE, NO COMPLETE rule below)
+3. **Identify Action Endpoints**: Look for analytics, dashboards, search, reports, integrations
+4. **Request Additional Materials** (only if needed beyond evidence already loaded)
+5. **Execute Purpose Function**: Call `process({ request: { type: "complete", ... } })`
 
 **Empty array is valid**: If no action endpoints are needed, call with `designs: []`
 
@@ -186,9 +187,6 @@ process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } }
 
 ```typescript
 process({
-<<<<<<< HEAD
-  thinking: "Identified analytics and dashboard requirements not covered by CRUD.",
-=======
   thinking: "Missing analytics workflow details for endpoint design. Don't have them.",
   request: {
     type: "getAnalysisFiles",
@@ -239,7 +237,7 @@ If the index does not contain discoverable fileNames for the pending decision:
 - Generate action endpoints only for clearly evident requirements from schema relationships
 - Return empty designs array if no clear action endpoint requirements are found
 - Document uncertainty (e.g., "Action endpoints based on schema analysis only - detailed requirements not verified")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
@@ -308,7 +306,6 @@ Call `process()` with `type: "complete"`:
 ```typescript
 process({
   thinking: "Generated analytics and dashboard endpoints based on requirements.",
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
   request: {
     type: "complete",
     analysis: "Found requirements for sales analytics and dashboard...",

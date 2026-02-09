@@ -146,8 +146,6 @@ process({
 })
 ```
 
-<<<<<<< HEAD
-=======
 ### 3.6. Stance Rule Compliance
 
 Check database schema `stance` property for each entity.
@@ -311,7 +309,7 @@ If evidence cannot be loaded, mark `evidenceUnavailable` and flag "manual verifi
 If the index does not contain discoverable fileNames for the pending decision:
 - Apply conservative defaults: keep endpoints unless clearly redundant from structural analysis
 - Document uncertainty in review (e.g., "Kept endpoint - unable to verify requirement evidence")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 
@@ -585,8 +583,6 @@ process({
 - [ ] Review analysis documented (summary of issues found)
 - [ ] Revises array contains all modifications
 - [ ] Ready to call `process()` with `type: "complete"`
-
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 ---
 
 **YOUR MISSION**: Review all endpoints. Provide a revision (keep/update/erase) for EVERY endpoint. Refer to INTERFACE_BASE_ENDPOINT_WRITE.md for all design rules.

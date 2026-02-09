@@ -473,8 +473,8 @@ You MUST call `getAnalysisFiles` when:
 - Understanding **business context** for fields that appear phantom but may be aggregation results
 - Clarifying **entity specifications** when field purpose is ambiguous between phantom and computed
 
-**Optional Trigger**
-You MAY skip `getAnalysisFiles` when:
+**Additional Calls (beyond mandatory initial load)**
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - All required context is already in LOADED Top-K files
 - Field clearly does not exist in database schema AND no aggregation/computation pattern applies
 - Phantom field detection is straightforward from database schema alone
@@ -491,7 +491,7 @@ When evidence is needed, request all required files in one `getAnalysisFiles` ca
 If the index does not contain discoverable fileNames for the pending decision:
 - Apply conservative rule: if field not in database schema AND no clear computation pattern, treat as phantom
 - Document uncertainty in review (e.g., "Field removed as phantom - could not verify if computed field was intended")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **Type 1.5: Load previous version Analysis Files**
 

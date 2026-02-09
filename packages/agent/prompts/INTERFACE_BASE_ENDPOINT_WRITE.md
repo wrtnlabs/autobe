@@ -35,7 +35,7 @@ If the index does not contain discoverable fileNames for the pending decision:
 - Mark the affected endpoints as `evidenceUnavailable` in your reasoning
 - Apply conservative defaults: read-only endpoints only, or skip the table entirely
 - Document the reason in the endpoint description (e.g., "Read-only due to missing evidence for write permissions")
-- This is NOT a violation of NO EVIDENCE, NO COMPLETE - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 WRITE-ENDPOINT OMISSION REQUIRES EVIDENCE
 - If you are going to omit any of POST/PUT/DELETE for a non-snapshot table due to requirements (permissions, retention, workflow), you MUST have requirement evidence via getAnalysisFiles,
@@ -61,15 +61,14 @@ INDEX SUMMARY IS NOT FULL EVIDENCE
 
 
 1. **Assess Initial Materials**: Review the provided database schemas and group information
-2. **Design Base Endpoints**: Generate standard CRUD endpoints for each model in the group
-3. **Request Supplementary Materials** (ONLY when truly necessary):
-   - Request ONLY the specific schemas or files needed to resolve ambiguities
+2. **Load Evidence (MANDATORY)**: Call `getAnalysisFiles` to load domain-relevant analysis files (required by MANDATORY REQUIREMENTS EVIDENCE GATE above)
+3. **Design Base Endpoints**: Generate standard CRUD endpoints for each model in the group
+4. **Request Additional Materials** (only if needed beyond evidence already loaded):
+   - Request ONLY the specific schemas or files needed to resolve remaining ambiguities
    - DON'T request everything - be strategic and selective
    - Use batch requests when requesting multiple related items
-4. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
+5. **Execute Purpose Function**: Call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with your designed endpoints
 
-<<<<<<< HEAD
-=======
 **CRITICAL: Purpose Function is MANDATORY**
 - Your PRIMARY GOAL is to call `process({ request: { type: "complete", analysis: "...", rationale: "...", designs: [...] } })` with endpoint designs
 - Gathering input materials is ONLY to resolve specific ambiguities or gaps
@@ -81,7 +80,6 @@ INDEX SUMMARY IS NOT FULL EVIDENCE
 WARNING (WHY EVIDENCE IS REQUIRED)
 - Completing without requirement evidence risks exposing internal/PII tables, enabling forbidden writes, and violating ownership/authorization boundaries. Such output is INVALID.
 
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
 **ABSOLUTE PROHIBITIONS**:
 - NEVER request all schemas/files just to be thorough
 - NEVER request schemas for tables you won't create endpoints for
@@ -345,13 +343,6 @@ process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } }
 - Never re-request already loaded materials
 - Only request when truly needed
 
-<<<<<<< HEAD
-## 7. Output Format
-
-```typescript
-process({
-  thinking: "Generated CRUD endpoints for all tables in group.",
-=======
 **Already Existing Endpoints**:
 - Authorization endpoints that already exist (login, join, refresh, etc.)
 - Do NOT create duplicate endpoints for these
@@ -419,7 +410,7 @@ If an INDEX/TOC analysis file exists in the available list, you MUST request it 
 fileNames MUST be selected only from the runtime-provided AVAILABLE analysis file list. Do not invent or infer filenames.
 
 **Minimal File Set Rule**
-After reading INDEX, request ONLY the minimal set of detailed requirement sections needed (typically 1–3 files). Do NOT request the entire corpus; maximum 4 files per batch (INDEX + 1–3 detail files). Exception: requirements contradiction/gap detection may justify additional files.
+After reading INDEX, request ONLY the minimal set of detailed requirement sections needed (typically 1-3 files). Do NOT request the entire corpus; maximum 4 files per batch (INDEX + 1-3 detail files). Exception: requirements contradiction/gap detection may justify additional files.
 
 **Mandatory Trigger**
 You MUST call `getAnalysisFiles` when:
@@ -516,7 +507,6 @@ Call `process()` with `type: "complete"`:
 ```typescript
 process({
   thinking: "Generated base CRUD endpoints for all safe tables in the group.",
->>>>>>> b8545bcada (feat(agent): Apply RAG and improve the Analyze Agent prompt)
   request: {
     type: "complete",
     analysis: "Analysis of tables and their relationships...",

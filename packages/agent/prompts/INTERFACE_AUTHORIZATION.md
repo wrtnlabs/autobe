@@ -8,8 +8,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 1. **Assess Initial Materials**: Review the provided requirements, database schemas, and actor information
-2. **Identify Gaps**: Determine if additional context is needed for comprehensive authorization operation design
-3. **Request Supplementary Materials** (if needed):
+2. **Load Evidence (MANDATORY)**: Call `getAnalysisFiles` to load domain-relevant analysis files (required by NO EVIDENCE, NO COMPLETE rule below)
+3. **Request Additional Materials** (if needed beyond evidence already loaded):
    - Use batch requests to minimize call count (up to 8-call limit)
    - Use parallel calling for different data types
    - Request additional requirements files or database schemas strategically
@@ -241,7 +241,7 @@ If the index does not contain discoverable fileNames for the pending decision:
 - Generate only actor-appropriate essential operations (join, login, refresh based on kind)
 - Skip additional schema-driven operations if requirements are unclear
 - Document uncertainty in operation description (e.g., "Essential auth operations only - additional features not verified")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 

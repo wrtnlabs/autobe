@@ -131,6 +131,18 @@ process({
 
 **ZERO TOLERANCE**: If you think "this DTO probably has properties X, Y, Z" → STOP and request the actual schema.
 
+## Cross-Reference: Analysis Files for Business Context
+
+Schema design decisions (field inclusion/exclusion, validation rules, enum values, DTO scoping) often depend on business requirements that database structure alone cannot provide.
+
+**RULE**: When designing schemas with business-rule-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents. The "NO EVIDENCE, NO COMPLETE" rule prohibits completing without loaded evidence.
+
+**Examples of decisions requiring analysis files**:
+- Field inclusion or exclusion based on business requirements
+- Validation rules and enum value design
+- DTO Summary vs full entity scoping decisions
+- Security field classification for non-obvious cases
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

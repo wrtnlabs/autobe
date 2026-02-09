@@ -131,6 +131,18 @@ process({
 
 **ZERO TOLERANCE**: If you think "this table probably has fields X, Y, Z" → STOP and request the actual schema.
 
+## Cross-Reference: Analysis Files for Business Context
+
+Database schema decisions often depend on business requirements (field nullability, status fields, lifecycle behavior, actor relationships). Database structure alone is INSUFFICIENT for these decisions.
+
+**RULE**: When designing schemas that involve business logic, also call `getAnalysisFiles` to load relevant requirement documents. The "NO EVIDENCE, NO COMPLETE" rule requires evidence before completion.
+
+**Examples of decisions requiring analysis files**:
+- Whether a field should be nullable or required
+- Whether to include status/workflow fields
+- Soft delete policy and retention rules
+- Actor ownership and permission constraints
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

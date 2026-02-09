@@ -113,9 +113,9 @@ You MUST call `getAnalysisFiles` when:
 - Required IDs have **conditional dependencies** based on business rules
 - Operation description references **business processes** that affect prerequisite ordering
 
-**Optional Trigger**
+**Additional Calls (beyond mandatory initial load)**
 
-You MAY skip `getAnalysisFiles` when:
+After the required initial `getAnalysisFiles` call, further calls MAY be skipped when:
 - Prerequisite analysis is straightforward from schema foreign keys
 - All required IDs map directly to obvious POST operations
 - Loaded Top-K context already contains sufficient workflow information
@@ -134,7 +134,7 @@ File selection priority:
 If the index does not contain discoverable fileNames for the pending decision:
 - Determine prerequisites based on schema foreign key relationships alone
 - Document uncertainty in prerequisite description (e.g., "Prerequisite determined from schema FK; workflow not verified")
-- This is NOT a violation - it is a controlled fallback when evidence is structurally unavailable
+- This fallback ONLY applies when evidence is structurally unavailable (no relevant files exist in the index). It does NOT apply when you simply have not attempted to load evidence yet.
 
 **⚠️ CRITICAL: NEVER Re-Request Already Loaded Materials**
 Some requirement files may have been loaded in previous function calls. These materials are already available in your conversation context.
