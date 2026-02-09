@@ -168,7 +168,9 @@ For composition:
 
 ### `erase` - Remove Incorrect Relation
 
-Only for circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations. A property that is simply not a relation (e.g. `title`, `start_date`, `page`) is never a valid erase target — use `keep` for those.
+For relations that exist in DB but shouldn't appear in DTO: circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations.
+
+Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid erase targets — use `keep` for those.
 
 ```typescript
 {

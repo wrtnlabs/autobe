@@ -176,13 +176,16 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     else
       props.errors.push({
         path: props.path,
-        expected: "AutoBeInterfaceSchemaPropertyUpdate",
+        expected:
+          "AutoBeInterfaceSchemaPropertyNullish | AutoBeInterfaceSchemaPropertyUpdate",
         value: props.revise,
         description: StringUtil.trim`
           The database column "${props.property.key}" is nullable, but the
-          current schema does not allow null. Change this revision to an
-          "update" type and provide a schema wrapped with oneOf including
-          { type: "null" }.
+          current schema does not allow null.
+
+          Use "nullish" type with nullable: true to fix nullability only,
+          or use "update" type with a schema wrapped in oneOf including
+          { type: "null" } if you also need to change the schema.
         `,
       });
   };

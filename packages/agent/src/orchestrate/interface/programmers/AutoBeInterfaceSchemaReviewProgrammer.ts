@@ -104,10 +104,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             Missing revise for property ${JSON.stringify(key)}.
 
             You MUST provide a revise for EVERY property in the object schema.
-
-            Use \`{ type: "keep", key: ${JSON.stringify(key)}, reason: "..." }\` 
-            if no changes are needed. Otherwise, choose an appropriate revise type 
-            to modify or erase the property.
+            Use "keep" type if no changes are needed.
           `,
         });
 

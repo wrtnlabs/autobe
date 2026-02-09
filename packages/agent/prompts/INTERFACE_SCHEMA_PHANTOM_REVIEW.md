@@ -89,10 +89,10 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
   databaseSchemaProperty: "bio",
   reason: "DB field 'bio' is nullable but DTO is non-null",
   type: "nullish",
-  specification: null,
-  description: "User's bio. Can be null if not provided.",
   nullable: true,
-  required: true
+  required: true,
+  specification: null,
+  description: "User's bio. Can be null if not provided."
 }
 ```
 
@@ -117,8 +117,8 @@ process({
       { key: "title", databaseSchemaProperty: "title", reason: "Has valid DB mapping", type: "keep" },
       { key: "body", databaseSchemaProperty: null, reason: "Phantom: null DB mapping, specification is just logical reasoning", type: "erase" },
       { key: "bio", databaseSchemaProperty: "bio", reason: "DB nullable but DTO non-null", type: "nullish",
-        specification: null, description: "User's bio. Can be null.",
-        nullable: true, required: true },
+        nullable: true, required: true,
+        specification: null, description: "User's bio. Can be null." },
       { key: "created_at", databaseSchemaProperty: "created_at", reason: "Has valid DB mapping", type: "keep" }
     ]
   }
