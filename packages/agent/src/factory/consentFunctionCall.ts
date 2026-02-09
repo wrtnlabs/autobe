@@ -74,8 +74,11 @@ export const consentFunctionCall = async (props: {
         common: () => getCommonPrompt(props.config),
         execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
         validate: (events) => getValidationErrorPrompt(events),
-        jsonParseError: () =>
-          AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR,
+        jsonParseError: (event) =>
+          AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR.replace(
+            "${{ERROR_MESSAGE}}",
+            event.errorMessage,
+          ),
       },
       retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
       // stream: false,
