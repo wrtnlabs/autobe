@@ -128,6 +128,23 @@ process({
 
 **ZERO TOLERANCE**: If you think "this probably has X, Y, Z" → STOP and request the actual file.
 
+## Evidence-First Strategy
+
+**PROACTIVE LOADING RULE**: Do NOT wait until you are stuck to load analysis files. Load them EARLY in your workflow.
+
+**WHEN TO LOAD**:
+- BEFORE making any business logic decision (field design, validation rules, status fields, workflows)
+- BEFORE calling `complete` — the "NO EVIDENCE, NO COMPLETE" rule requires loaded evidence
+- When any domain-specific question arises (permissions, lifecycles, actor relationships)
+
+**HOW TO LOAD**:
+1. Review the "NOT YET LOADED" list above
+2. Identify files relevant to your current task's domain
+3. Request them in a SINGLE batched `getAnalysisFiles` call
+4. Use the loaded evidence to ground your decisions
+
+**CRITICAL**: Having analysis files available but NOT loaded is almost as bad as imagining requirements. If relevant files exist in the "NOT YET LOADED" list, load them BEFORE proceeding.
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

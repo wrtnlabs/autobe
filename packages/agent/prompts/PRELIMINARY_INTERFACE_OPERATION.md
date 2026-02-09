@@ -136,6 +136,18 @@ process({
 
 **ZERO TOLERANCE**: If you think "this endpoint probably has parameters X, Y, Z" → STOP and request the actual operation.
 
+## Cross-Reference: Analysis Files for Business Context
+
+API operation design requires understanding business workflows, authorization rules, and domain context beyond endpoint specifications.
+
+**RULE**: When making decisions about operation behavior, authorization patterns, or business workflows, also call `getAnalysisFiles` to load relevant requirement documents. Evidence from analysis files grounds your decisions in actual requirements.
+
+**Examples of decisions requiring analysis files**:
+- Authorization and permission rule design
+- State transition workflows across operations
+- Domain-specific validation or business logic
+- Endpoint behavior that depends on business rules
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

@@ -131,6 +131,12 @@ process({
 
 **ZERO TOLERANCE**: If you think "this DTO probably has a transformer" → STOP and request the actual function.
 
+## Cross-Reference: Analysis Files for Business Context
+
+Transformer function implementation may require understanding business rules that affect response data construction (e.g., computed fields, conditional inclusion, display logic).
+
+**RULE**: When transformer implementation involves business-logic-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents for evidence-based implementation.
+
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY - treating it as optional will cause:

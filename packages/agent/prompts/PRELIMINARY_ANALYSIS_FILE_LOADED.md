@@ -8,6 +8,8 @@ These materials are now available for you to reference. Use them to understand u
 
 > **Note**: These documents are already in your conversation history. Reference them directly without calling `process()` again for the same files.
 
+> **Evidence Rule**: These loaded documents are your PRIMARY EVIDENCE for business logic decisions. Reference specific sections when making design choices. Do not proceed to `complete` without consulting relevant loaded documents.
+
 ## Project Prefix
 
 The project prefix is a short identifier used consistently across all generated artifacts including database table names, API function names, and DTO type names. For example, if the prefix is "shopping", tables might be named `shopping_customers` and DTOs might be named `IShoppingCartCommodity`.
