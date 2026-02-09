@@ -6,6 +6,7 @@ import {
   IAutoBePlaygroundReplay,
 } from "@autobe/interface";
 import { AutoBeProcessAggregateFactory } from "@autobe/utils";
+import typia from "typia";
 
 export namespace AutoBeReplayComputer {
   export const SIGNIFICANT_PROJECTS: AutoBeExampleProject[] = [
@@ -37,6 +38,18 @@ export namespace AutoBeReplayComputer {
 
     // the formula to compute the benchmark score
     const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
+      // for type check
+      const calculateFormula = {
+        analyze: [10, () => 0],
+        database: [20, () => 0.5],
+        interface: [30, () => 0.5],
+        test: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
+        realize: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
+      } as const satisfies Record<
+        AutoBePhase,
+        [number, (commodity: Record<string, number>) => number]
+      >;
+
       const add = (
         phase: IAutoBePlaygroundReplay.IPhaseState | null,
         success: number,
@@ -47,18 +60,15 @@ export namespace AutoBeReplayComputer {
             ? success
             : success * failure(phase.commodity)
           : 0;
+
       return round(
-        add(summary.analyze, 10, () => 0) +
-          add(summary.database, 20, () => 0.5) +
-          add(summary.interface, 30, () => 0.5) +
-          add(summary.test, 20, (c) =>
-            Math.max(0.5, 1 - (c.errors * 3) / c.functions),
-          ) +
-          add(summary.realize, 20, (c) =>
-            Math.max(0.5, 1 - (c.errors * 3) / c.functions),
-          ),
+        typia.misc.literals<AutoBePhase>().reduce((acc, cur) => {
+          const [success, failure] = calculateFormula[cur];
+          return acc + add(summary[cur], success, failure);
+        }, 0),
       );
     };
+
     const individual = (project: AutoBeExampleProject): number => {
       const found = summaries.find((s) => s.project === project);
       if (found === undefined) return 0;
