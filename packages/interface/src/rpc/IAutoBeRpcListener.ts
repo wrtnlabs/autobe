@@ -4,6 +4,12 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
+  AutoBeAnalyzeWriteMajorEvent,
+  AutoBeAnalyzeWriteMajorReviewEvent,
+  AutoBeAnalyzeWriteMiddleEvent,
+  AutoBeAnalyzeWriteMiddleReviewEvent,
+  AutoBeAnalyzeWriteMinorEvent,
+  AutoBeAnalyzeWriteMinorReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -173,6 +179,60 @@ export interface IAutoBeRpcListener {
    * visibility into the document generation process.
    */
   analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
+
+  /**
+   * Optional handler for major section generation events (V2 hierarchical writing).
+   *
+   * Called when the hierarchical writing agent generates major section structure
+   * including document title, summary, and major section outlines.
+   */
+  analyzeWriteMajor?(event: AutoBeAnalyzeWriteMajorEvent): Promise<void>;
+
+  /**
+   * Optional handler for major section review events (V2 hierarchical writing).
+   *
+   * Called when the major section structure is reviewed and validated
+   * before proceeding to middle section generation.
+   */
+  analyzeWriteMajorReview?(
+    event: AutoBeAnalyzeWriteMajorReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for middle section generation events (V2 hierarchical writing).
+   *
+   * Called when the hierarchical writing agent generates middle section content
+   * for a specific major section.
+   */
+  analyzeWriteMiddle?(event: AutoBeAnalyzeWriteMiddleEvent): Promise<void>;
+
+  /**
+   * Optional handler for middle section review events (V2 hierarchical writing).
+   *
+   * Called when the middle section content is reviewed and validated
+   * before proceeding to minor section generation.
+   */
+  analyzeWriteMiddleReview?(
+    event: AutoBeAnalyzeWriteMiddleReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for minor section generation events (V2 hierarchical writing).
+   *
+   * Called when the hierarchical writing agent generates detailed minor section
+   * content with EARS-formatted requirements.
+   */
+  analyzeWriteMinor?(event: AutoBeAnalyzeWriteMinorEvent): Promise<void>;
+
+  /**
+   * Optional handler for minor section review events (V2 hierarchical writing).
+   *
+   * Called when the minor section content is reviewed for quality assurance
+   * before final document assembly.
+   */
+  analyzeWriteMinorReview?(
+    event: AutoBeAnalyzeWriteMinorReviewEvent,
+  ): Promise<void>;
 
   /**
    * Optional handler for requirements analysis review events.

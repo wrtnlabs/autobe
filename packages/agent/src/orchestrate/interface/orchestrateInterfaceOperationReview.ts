@@ -55,7 +55,6 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IOperation | false> {
-  // RAG TOPK_NONE
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const op = props.operation;
   const pathSegments = op.path

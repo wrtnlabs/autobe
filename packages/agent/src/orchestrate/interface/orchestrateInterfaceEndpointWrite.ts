@@ -52,7 +52,6 @@ export const orchestrateInterfaceEndpointWrite = async (
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
   const start: Date = new Date();
 
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const queryText = [
     "interface",

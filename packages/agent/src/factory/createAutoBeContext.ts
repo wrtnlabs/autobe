@@ -184,8 +184,9 @@ export const createAutoBeContext = (props: {
             ...event,
             type: "vendorRequest",
             source: next.source,
+            stream: event.body.stream ?? true,
             retry: progress.request++,
-          });
+          } as unknown as AutoBeEvent);
         });
         agent.on("response", (event) => {
           void props
@@ -193,8 +194,9 @@ export const createAutoBeContext = (props: {
               ...event,
               type: "vendorResponse",
               source: next.source,
+              stream: event.body.stream ?? true,
               retry: progress.response++,
-            })
+            } as unknown as AutoBeEvent)
             .catch(() => {});
         });
         agent.on("call", () => {
@@ -234,12 +236,12 @@ export const createAutoBeContext = (props: {
 
                 > You have to call function(s) of below to accomplish my request.
                 >
-                > Never hesitate the function calling. Never ask for me permission 
+                > Never hesitate the function calling. Never ask for me permission
                 > to execute the function. Never explain me your plan with waiting
                 > for my approval.
                 >
-                > I gave you every information for the function calling, so just 
-                > call it. I repeat that, never hesitate the function calling. 
+                > I gave you every information for the function calling, so just
+                > call it. I repeat that, never hesitate the function calling.
                 > Just do it without any explanation.
                 >
                 ${next.controller.application.functions
@@ -340,21 +342,19 @@ export const createAutoBeContext = (props: {
         }
         return success(result.histories);
       };
-      if (next.enforceFunctionCall === true)
-        return await forceRetry(
-          execute,
-          AutoBeConfigConstant.FUNCTION_CALLING_RETRY,
-          (error) =>
-            error instanceof APIError ||
-            error instanceof AgenticaJsonParseError ||
-            error instanceof AgenticaValidationError ||
-            (error instanceof TypeError && error.message === "terminated") ||
-            (error instanceof Error &&
-              OPENAI_API_ERROR_KEYS.get().every((key) =>
-                error.hasOwnProperty(key),
-              )),
-        );
-      else return await execute();
+      return await forceRetry(
+        execute,
+        AutoBeConfigConstant.FUNCTION_CALLING_RETRY,
+        (error) =>
+          error instanceof APIError ||
+          error instanceof AgenticaJsonParseError ||
+          error instanceof AgenticaValidationError ||
+          (error instanceof TypeError && error.message === "terminated") ||
+          (error instanceof Error &&
+            OPENAI_API_ERROR_KEYS.get().every((key) =>
+              error.hasOwnProperty(key),
+            )),
+      );
     },
     getCurrentAggregates: (phase) => {
       const previous: AutoBeProcessAggregateCollection =
@@ -493,6 +493,7 @@ const createDispatch = (props: {
           completed_at: new Date().toISOString(),
         } satisfies AutoBeRealizeHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
+
     void props.dispatch(event).catch(() => {});
     return null as AutoBeContext.DispatchHistory<Event>;
   };

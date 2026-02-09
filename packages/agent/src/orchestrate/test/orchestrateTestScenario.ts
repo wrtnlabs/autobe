@@ -111,7 +111,6 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const pathSegments = props.operation.path
     .split("/")

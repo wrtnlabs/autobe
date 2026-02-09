@@ -79,7 +79,6 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const relatedOp = props.document.operations.find(
     (o) =>

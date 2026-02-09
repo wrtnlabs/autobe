@@ -1,6 +1,12 @@
 import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeAnalyzeWriteMajorEvent } from "./AutoBeAnalyzeWriteMajorEvent";
+import { AutoBeAnalyzeWriteMajorReviewEvent } from "./AutoBeAnalyzeWriteMajorReviewEvent";
+import { AutoBeAnalyzeWriteMiddleEvent } from "./AutoBeAnalyzeWriteMiddleEvent";
+import { AutoBeAnalyzeWriteMiddleReviewEvent } from "./AutoBeAnalyzeWriteMiddleReviewEvent";
+import { AutoBeAnalyzeWriteMinorEvent } from "./AutoBeAnalyzeWriteMinorEvent";
+import { AutoBeAnalyzeWriteMinorReviewEvent } from "./AutoBeAnalyzeWriteMinorReviewEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
 import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
@@ -76,6 +82,13 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeScenarioEvent["type"]
   | AutoBeAnalyzeWriteEvent["type"]
   | AutoBeAnalyzeReviewEvent["type"]
+  // analyze (hierarchical write V2)
+  | AutoBeAnalyzeWriteMajorEvent["type"]
+  | AutoBeAnalyzeWriteMajorReviewEvent["type"]
+  | AutoBeAnalyzeWriteMiddleEvent["type"]
+  | AutoBeAnalyzeWriteMiddleReviewEvent["type"]
+  | AutoBeAnalyzeWriteMinorEvent["type"]
+  | AutoBeAnalyzeWriteMinorReviewEvent["type"]
   // database
   | AutoBeDatabaseGroupEvent["type"]
   | AutoBeDatabaseGroupReviewEvent["type"]

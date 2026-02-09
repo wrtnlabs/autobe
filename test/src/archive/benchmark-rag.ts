@@ -47,14 +47,16 @@ const createMetrics = (ragEnabled: boolean): BenchmarkMetrics => ({
   ragEnabled,
 });
 
-const getMetricsKey = (vendor: string, project: string) => `${vendor}::${project}`;
+const getMetricsKey = (vendor: string, project: string) =>
+  `${vendor}::${project}`;
 const runId = new Date().toISOString().replace(/[:.]/g, "-");
 
 const extractTokenUsage = (
   tokenUsage: any,
 ): { input: number; output: number; cached: number; total: number } | null => {
   if (!tokenUsage) return null;
-  const component = "aggregate" in tokenUsage ? tokenUsage.aggregate : tokenUsage;
+  const component =
+    "aggregate" in tokenUsage ? tokenUsage.aggregate : tokenUsage;
   if (!component || typeof component !== "object") return null;
   const inputTotal = component.input?.total;
   const cached = component.input?.cached ?? 0;
@@ -75,7 +77,8 @@ const trackEvent = (metrics: BenchmarkMetrics, event: AutoBeEvent) => {
     const prelimEvent = event as { function?: string };
     metrics.toolCalling.total++;
     const funcName = prelimEvent.function ?? "unknown";
-    metrics.toolCalling.byType[funcName] = (metrics.toolCalling.byType[funcName] ?? 0) + 1;
+    metrics.toolCalling.byType[funcName] =
+      (metrics.toolCalling.byType[funcName] ?? 0) + 1;
   }
 
   // Track token usage from events that have it
@@ -156,10 +159,14 @@ const printMetricsSummary = () => {
 
   for (const [key, metrics] of metricsMap.entries()) {
     const [vendor, project] = key.split("::");
-    console.log(`\n[${vendor} / ${project}] RAG: ${metrics.ragEnabled ? "ON" : "OFF"}`);
+    console.log(
+      `\n[${vendor} / ${project}] RAG: ${metrics.ragEnabled ? "ON" : "OFF"}`,
+    );
     console.log("-".repeat(60));
 
-    console.log(`  Total Time: ${(metrics.timing.elapsedMs / 1000).toFixed(1)} sec`);
+    console.log(
+      `  Total Time: ${(metrics.timing.elapsedMs / 1000).toFixed(1)} sec`,
+    );
 
     console.log(`\n  Tool Calling:`);
     console.log(`    Total: ${metrics.toolCalling.total}`);
@@ -186,12 +193,12 @@ const printMetricsSummary = () => {
 
   // Save metrics to file
   const metricsResult = Object.fromEntries(
-    Array.from(metricsMap.entries()).map(([key, metrics]) => [key, metrics])
+    Array.from(metricsMap.entries()).map(([key, metrics]) => [key, metrics]),
   );
   fs.writeFileSync(
     `${TestGlobal.ROOT}/benchmark.metrics.json`,
     JSON.stringify(metricsResult, null, 2),
-    "utf8"
+    "utf8",
   );
   console.log(`\nMetrics saved to: ${TestGlobal.ROOT}/benchmark.metrics.json`);
 };
@@ -255,7 +262,7 @@ const main = async (): Promise<void> => {
 
   // Add RAG suffix to vendors for directory separation
   const ragSuffix = ragEnabled ? "-rag-on" : "-rag-off";
-  const vendors = baseVendors.map(v => `${v}${ragSuffix}`);
+  const vendors = baseVendors.map((v) => `${v}${ragSuffix}`);
 
   // Initialize metrics for each vendor/project combination
   for (const vendor of vendors) {
@@ -279,7 +286,7 @@ const main = async (): Promise<void> => {
         }
 
         // Remove RAG suffix to get actual vendor name for config
-        const actualVendor = next.vendor.replace(/-rag-(on|off)$/, '');
+        const actualVendor = next.vendor.replace(/-rag-(on|off)$/, "");
         return new AutoBeAgent({
           vendor: TestGlobal.getVendorConfig(actualVendor),
           config: {
@@ -288,10 +295,6 @@ const main = async (): Promise<void> => {
               TestGlobal.env.TIMEOUT && TestGlobal.env.TIMEOUT !== "NULL"
                 ? Number(TestGlobal.env.TIMEOUT)
                 : null,
-            rag: {
-              enabled: ragEnabled,
-              log: false,
-            },
           },
           compiler: (listener) => compiler.get(listener),
           histories: next.histories,

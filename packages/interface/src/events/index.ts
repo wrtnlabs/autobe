@@ -30,6 +30,13 @@ export * from "./AutoBeAnalyzeReviewEvent";
 export * from "./AutoBeAnalyzeScenarioEvent";
 export * from "./AutoBeAnalyzeStartEvent";
 export * from "./AutoBeAnalyzeWriteEvent";
+// ANALYZE (Hierarchical Write V2)
+export * from "./AutoBeAnalyzeWriteMajorEvent";
+export * from "./AutoBeAnalyzeWriteMajorReviewEvent";
+export * from "./AutoBeAnalyzeWriteMiddleEvent";
+export * from "./AutoBeAnalyzeWriteMiddleReviewEvent";
+export * from "./AutoBeAnalyzeWriteMinorEvent";
+export * from "./AutoBeAnalyzeWriteMinorReviewEvent";
 
 // PRISMA
 export * from "./AutoBeDatabaseAuthorizationEvent";

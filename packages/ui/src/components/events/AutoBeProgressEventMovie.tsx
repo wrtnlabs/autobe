@@ -175,6 +175,36 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Describe Image Draft",
           description: "Describing the image draft",
         };
+      case "analyzeWriteMajor":
+        return {
+          title: "Analyze Write Major",
+          description: "Generating major section structure",
+        };
+      case "analyzeWriteMajorReview":
+        return {
+          title: "Analyze Write Major Review",
+          description: "Reviewing major section structure",
+        };
+      case "analyzeWriteMiddle":
+        return {
+          title: "Analyze Write Middle",
+          description: "Generating middle section content",
+        };
+      case "analyzeWriteMiddleReview":
+        return {
+          title: "Analyze Write Middle Review",
+          description: "Reviewing middle section content",
+        };
+      case "analyzeWriteMinor":
+        return {
+          title: "Analyze Write Minor",
+          description: "Generating minor section details",
+        };
+      case "analyzeWriteMinorReview":
+        return {
+          title: "Analyze Write Minor Review",
+          description: "Reviewing minor section details",
+        };
       default:
         event satisfies never;
         return {

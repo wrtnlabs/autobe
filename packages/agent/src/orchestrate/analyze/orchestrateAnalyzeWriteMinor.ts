@@ -2,7 +2,9 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteEvent,
+  AutoBeAnalyzeWriteMajorEvent,
+  AutoBeAnalyzeWriteMiddleEvent,
+  AutoBeAnalyzeWriteMinorEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -13,29 +15,36 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteHistories } from "./histories/transformAnalyzeWriteHistories";
-import { IAutoBeAnalyzeWriteApplication } from "./structures/IAutoBeAnalyzeWriteApplication";
+import { transformAnalyzeWriteMinorHistories } from "./histories/transformAnalyzeWriteMinorHistories";
+import { IAutoBeAnalyzeWriteMinorApplication } from "./structures/IAutoBeAnalyzeWriteMinorApplication";
 
-export const orchestrateAnalyzeWrite = async (
+export const orchestrateAnalyzeWriteMinor = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
+    majorEvent: AutoBeAnalyzeWriteMajorEvent;
+    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
+    majorIndex: number;
+    middleIndex: number;
     progress: AutoBeProgressEventBase;
+    feedback?: string;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteEvent> => {
+): Promise<AutoBeAnalyzeWriteMinorEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeAnalyzeWriteApplication>(),
+      application:
+        typia.json.application<IAutoBeAnalyzeWriteMinorApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null> = {
-      value: null,
-    };
+    const pointer: IPointer<IAutoBeAnalyzeWriteMinorApplication.IComplete | null> =
+      {
+        value: null,
+      };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
       controller: createController({
@@ -44,27 +53,30 @@ export const orchestrateAnalyzeWrite = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteHistories(ctx, {
+      ...transformAnalyzeWriteMinorHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
+        majorEvent: props.majorEvent,
+        middleEvent: props.middleEvent,
+        majorIndex: props.majorIndex,
+        middleIndex: props.middleIndex,
+        feedback: props.feedback,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteEvent = {
+    const event: AutoBeAnalyzeWriteMinorEvent = {
       type: SOURCE,
       id: v7(),
-      file: {
-        ...props.file,
-        content: pointer.value.content,
-      },
-      acquisition: preliminary.getAcquisition(),
+      majorIndex: pointer.value.majorIndex,
+      middleIndex: pointer.value.middleIndex,
+      minorSections: pointer.value.minorSections,
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
       total: props.progress.total,
-      completed: ++props.progress.completed,
+      completed: props.progress.completed,
       created_at: new Date().toISOString(),
     };
     ctx.dispatch(event);
@@ -73,14 +85,14 @@ export const orchestrateAnalyzeWrite = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteMinorApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeWriteMinorApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteMinorApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteMinorApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -89,7 +101,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteMinorApplication>({
       validate: {
         process: validate,
       },
@@ -104,8 +116,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteApplication,
+    } satisfies IAutoBeAnalyzeWriteMinorApplication,
   };
 }
 
-const SOURCE = "analyzeWrite" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteMinor" satisfies AutoBeEventSource;

@@ -1,5 +1,13 @@
 import { createHash } from "node:crypto";
+import typia from "typia";
 import type { EmbeddingProvider } from "./EmbeddingProvider";
+
+interface TensorLike {
+  tolist?: () => unknown;
+  data?: ArrayLike<number>;
+  dims?: number[];
+  shape?: number[];
+}
 
 type FeatureExtractionPipeline = (
   inputs: string[] | string,
@@ -16,7 +24,7 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
   private cache = new Map<string, number[]>();
 
   constructor(
-    private readonly opts: {
+    private readonly options: {
 
       modelIdOrPath: string;
 
@@ -36,8 +44,8 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
     if (texts.length === 0) return [];
 
     const extractor = await this.extractorPromise;
-    const batchSize = this.opts.batchSize ?? 32;
-    const useCache = this.opts.enableCache ?? true;
+    const batchSize = this.options.batchSize ?? 32;
+    const useCache = this.options.enableCache ?? true;
 
     const out: number[][] = new Array(texts.length);
     const misses: { idx: number; text: string; key: string }[] = [];
@@ -81,12 +89,12 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
   }
 
   private async init(): Promise<FeatureExtractionPipeline> {
-    const t = await import("@xenova/transformers");
+    const t = await import("@huggingface/transformers");
     const envAny = (t as any).env;
-    if (envAny && this.opts.cacheDir) envAny.cacheDir = this.opts.cacheDir;
+    if (envAny && this.options.cacheDir) envAny.cacheDir = this.options.cacheDir;
 
-    const pipeline = await t.pipeline("feature-extraction", this.opts.modelIdOrPath, {
-      quantized: this.opts.quantized ?? true,
+    const pipeline = await t.pipeline("feature-extraction", this.options.modelIdOrPath, {
+      dtype: this.options.quantized === false ? "fp32" : "q8",
     });
 
     return pipeline as FeatureExtractionPipeline;
@@ -98,23 +106,22 @@ function hashText(text: string): string {
 }
 
 function toVectors(result: unknown): number[][] {
-  if (Array.isArray(result) && Array.isArray(result[0]) && typeof (result as any)[0][0] === "number") {
-    return result as number[][];
+  if (typia.is<number[][]>(result)) {
+    return result;
   }
-  if (Array.isArray(result) && typeof (result as any)[0] === "number") {
-    return [result as number[]];
+  if (typia.is<number[]>(result)) {
+    return [result];
   }
 
-  const r: any = result;
-  if (r && (r.tolist || r.data) && (r.dims || r.shape)) {
-    if (typeof r.tolist === "function") {
-      const arr = r.tolist();
-      if (Array.isArray(arr) && Array.isArray(arr[0])) return arr as number[][];
-      if (Array.isArray(arr) && typeof arr[0] === "number") return [arr as number[]];
+  if (typia.is<TensorLike>(result)) {
+    if (typeof result.tolist === "function") {
+      const arr = result.tolist();
+      if (typia.is<number[][]>(arr)) return arr;
+      if (typia.is<number[]>(arr)) return [arr];
     }
 
-    const data: number[] = Array.from(r.data ?? []);
-    const dims: number[] = Array.from(r.dims ?? r.shape ?? []);
+    const data: number[] = Array.from(result.data ?? []);
+    const dims: number[] = Array.from(result.dims ?? result.shape ?? []);
 
     if (dims.length === 2) {
       const [B, D] = dims;

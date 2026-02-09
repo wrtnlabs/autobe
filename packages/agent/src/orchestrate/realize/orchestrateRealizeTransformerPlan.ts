@@ -81,7 +81,6 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerPlan[]> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
 
   const queryText = [

@@ -8,6 +8,16 @@ export * from "./AutoBeImageDescribeDraft";
 
 export * from "./AutoBeAnalyzeActor";
 export * from "./AutoBeAnalyzeFile";
+export * from "./AutoBeAnalyzeDocument";
+export * from "./AutoBeAnalyzeDocumentSection";
+export * from "./AutoBeAnalyzeDocumentSrs";
+export * from "./AutoBeAnalyzeDocumentIntroduction";
+export * from "./AutoBeAnalyzeDocumentSystemOverview";
+export * from "./AutoBeAnalyzeDocumentExternalInterface";
+export * from "./AutoBeAnalyzeDocumentCapability";
+export * from "./AutoBeAnalyzeDocumentPhysicalPerformance";
+export * from "./AutoBeAnalyzeDocumentSecurityQuality";
+export * from "./AutoBeAnalyzeDocumentValidation";
 
 export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";

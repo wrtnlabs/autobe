@@ -64,7 +64,6 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfacePrerequisiteEvent | null> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
 
   const domains = Array.from(

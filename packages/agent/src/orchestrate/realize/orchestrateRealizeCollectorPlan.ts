@@ -76,7 +76,6 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
 
   const queryText = [

@@ -3,13 +3,13 @@ import typia from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { prepare_analyze_agent } from "./internal/prepare_analyze_agent";
-import { validate_analyze_write } from "./internal/validate_analyze_write";
+import { validate_analyze_write_middle } from "./internal/validate_analyze_write_middle";
 
 const main = async () => {
   const project: AutoBeExampleProject = typia.assert<AutoBeExampleProject>(
     TestGlobal.getArguments("project")?.[0] ?? "todo",
   );
-  await validate_analyze_write({
+  await validate_analyze_write_middle({
     agent: await prepare_analyze_agent({
       vendor: TestGlobal.vendorModel,
       project,

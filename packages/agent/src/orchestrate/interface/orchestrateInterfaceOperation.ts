@@ -144,7 +144,6 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  // RAG TOPK_NONE
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const pathSegments = props.design.endpoint.path
     .split("/")

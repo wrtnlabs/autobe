@@ -49,7 +49,6 @@ export const orchestrateInterfaceEndpointReview = async (
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
-  // RAG TOPK_FULL
   const analyzeFiles = ctx.state().analyze?.files ?? [];
   const queryText = [
     "interface",

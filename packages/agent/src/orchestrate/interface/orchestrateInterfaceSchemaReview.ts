@@ -126,7 +126,6 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     .join("\n");
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
-  // RAG NONE_TOPK
   const ragSettings = getContextModeSettings(
     ctx.config,
     RAG_PRESET,

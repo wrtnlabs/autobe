@@ -79,7 +79,6 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
-  // RAG NONE_TOPK
   const analyzeFiles = ctx.state().analyze?.files ?? [];
 
   const pathSegments = props.scenario.operation.path

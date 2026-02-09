@@ -1,26 +1,22 @@
 // RAG ON/OFF
-import { AnalysisContextMode } from "./vectorDB";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
+import { AnalysisContextMode } from "./vectorDB";
 
 /**
- * Predefined RAG mode presets.
- * Each preset defines behavior for RAG enabled (on) vs disabled (off).
+ * Predefined RAG mode presets. Each preset defines behavior for RAG enabled
+ * (on) vs disabled (off).
  */
 export type RagModePreset =
-  | "TOPK_FULL"   // RAG ON: TOPK retrieval, RAG OFF: use all files
-  | "TOPK_NONE"   // RAG ON: TOPK retrieval, RAG OFF: use no files
+  | "TOPK_FULL" // RAG ON: TOPK retrieval, RAG OFF: use all files
+  | "TOPK_NONE"; // RAG ON: TOPK retrieval, RAG OFF: use no files
 
-/** 
- * Mode mapping for on/off states.
- */
+/** Mode mapping for on/off states. */
 interface ModeMapping {
   on: AnalysisContextMode;
   off: AnalysisContextMode;
 }
 
-/**
- * Preset to mode mapping.
- */
+/** Preset to mode mapping. */
 const PRESET_MAPPINGS: Record<RagModePreset, ModeMapping> = {
   TOPK_FULL: { on: "TOPK", off: "FULL" },
   TOPK_NONE: { on: "TOPK", off: "NONE" },
@@ -29,65 +25,66 @@ const PRESET_MAPPINGS: Record<RagModePreset, ModeMapping> = {
 /**
  * Resolves the analysis context mode based on RAG configuration and preset.
  *
- * Each orchestrator specifies its own preset, and this function resolves
- * the actual mode based on the global RAG enabled/disabled setting.
- *
- * @param config - The AutoBE configuration containing RAG settings
- * @param preset - The RAG mode preset for this orchestrator
- * @returns The resolved AnalysisContextMode (TOPK, FULL, or NONE)
+ * Each orchestrator specifies its own preset, and this function resolves the
+ * actual mode. RAG is enabled by default (uses "on" mode from preset).
  *
  * @example
- * ```ts
- * // In orchestrateTestScenario.ts
- * const RAG_PRESET: RagModePreset = "TOPK_FULL";
- * const mode = resolveContextMode(ctx.config, RAG_PRESET);
- * // If config.rag.enabled is true -> "TOPK"
- * // If config.rag.enabled is false -> "FULL"
- * ```
+ *   ```ts
+ *   // In orchestrateTestScenario.ts
+ *   const RAG_PRESET: RagModePreset = "TOPK_FULL";
+ *   const mode = resolveContextMode(ctx.config, RAG_PRESET);
+ *   // Returns "TOPK" (RAG enabled by default)
+ *   ```;
+ *
+ * @param _config - The AutoBE configuration (reserved for future per-agent RAG
+ *   settings)
+ * @param preset - The RAG mode preset for this orchestrator
+ * @returns The resolved AnalysisContextMode (TOPK, FULL, or NONE)
  */
 export function resolveContextMode(
-  config: IAutoBeConfig | undefined,
-  preset: RagModePreset
+  _config: IAutoBeConfig | undefined,
+  preset: RagModePreset,
 ): AnalysisContextMode {
-  const ragEnabled = config?.rag?.enabled ?? true;
+  // RAG is enabled by default; per-agent configuration may be added later
+  const ragEnabled = true;
   const mapping = PRESET_MAPPINGS[preset];
   return ragEnabled ? mapping.on : mapping.off;
 }
 
 /**
- * Gets the RAG log setting from configuration.
+ * Gets the RAG log setting.
  *
- * @param config - The AutoBE configuration
- * @returns Whether RAG logging is enabled
+ * @param _config - The AutoBE configuration (reserved for future use)
+ * @returns Whether RAG logging is enabled (false by default)
  */
-export function getRagLogEnabled(config: IAutoBeConfig | undefined): boolean {
-  return config?.rag?.log ?? false;
+export function getRagLogEnabled(_config: IAutoBeConfig | undefined): boolean {
+  return false;
 }
 
 /**
  * Gets both mode and log settings for convenient use in orchestrators.
  *
+ * @example
+ *   ```ts
+ *   const settings = getContextModeSettings(ctx.config, "TOPK_FULL", "testScenario");
+ *   const files = await buildAnalysisContextFiles(
+ *     getEmbedder(),
+ *     analyzeFiles,
+ *     queryText,
+ *     settings.mode,
+ *     { log: settings.log, logPrefix: settings.logPrefix }
+ *   );
+ *   ```;
+ *
  * @param config - The AutoBE configuration
  * @param preset - The RAG mode preset for this orchestrator
  * @param logPrefix - Prefix for log messages (typically the orchestrator name)
  * @returns Object containing mode and log settings
- *
- * @example
- * ```ts
- * const settings = getContextModeSettings(ctx.config, "TOPK_FULL", "testScenario");
- * const files = await buildAnalysisContextFiles(
- *   getEmbedder(),
- *   analyzeFiles,
- *   queryText,
- *   settings.mode,
- *   { log: settings.log, logPrefix: settings.logPrefix }
- * );
- * ```
  */
 export function getContextModeSettings(
   config: IAutoBeConfig | undefined,
   preset: RagModePreset,
-  logPrefix: string
+  logPrefix: string,
 ): { mode: AnalysisContextMode; log: boolean; logPrefix: string } {
   return {
     mode: resolveContextMode(config, preset),

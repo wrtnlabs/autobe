@@ -3,6 +3,12 @@ import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
 import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeAnalyzeWriteMajorEvent } from "./AutoBeAnalyzeWriteMajorEvent";
+import { AutoBeAnalyzeWriteMajorReviewEvent } from "./AutoBeAnalyzeWriteMajorReviewEvent";
+import { AutoBeAnalyzeWriteMiddleEvent } from "./AutoBeAnalyzeWriteMiddleEvent";
+import { AutoBeAnalyzeWriteMiddleReviewEvent } from "./AutoBeAnalyzeWriteMiddleReviewEvent";
+import { AutoBeAnalyzeWriteMinorEvent } from "./AutoBeAnalyzeWriteMinorEvent";
+import { AutoBeAnalyzeWriteMinorReviewEvent } from "./AutoBeAnalyzeWriteMinorReviewEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
@@ -108,6 +114,13 @@ export type AutoBeEvent =
   | AutoBeAnalyzeWriteEvent
   | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
+  // ANALYZE (Hierarchical Write V2)
+  | AutoBeAnalyzeWriteMajorEvent
+  | AutoBeAnalyzeWriteMajorReviewEvent
+  | AutoBeAnalyzeWriteMiddleEvent
+  | AutoBeAnalyzeWriteMiddleReviewEvent
+  | AutoBeAnalyzeWriteMinorEvent
+  | AutoBeAnalyzeWriteMinorReviewEvent
   // DATABASE
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent

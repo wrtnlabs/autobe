@@ -1,3 +1,8 @@
+/**
+ * @author juntak
+ */
+import { AutoBeAnalyzeFile } from "@autobe/interface";
+
 import { EmbeddingProvider } from "./EmbeddingProvider";
 import { createHash } from "node:crypto";
 
@@ -7,23 +12,6 @@ export interface RequirementSection {
   content: string;
   index: number;
   level: 2 | 3;
-}
-
-/**
- * Minimal interface for analysis files used in RAG operations.
- * This is compatible with AutoBeAnalyzeFile from @autobe/interface.
- */
-export interface IAnalyzeFileInput {
-  filename: `${string}.md`;
-  content: string;
-}
-
-/**
- * @deprecated Use IAnalyzeFileInput instead. Kept for backward compatibility.
- */
-export interface AutoBeAnalyzeFile {
-  filename: `${string}.md`;
-  content: string;
 }
 
 export interface RetrievalHit {
@@ -64,7 +52,7 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 // Parse
-function parseByLevel(file: AutoBeAnalyzeFile, level: 2 | 3): RequirementSection[] {
+function parseByLevel(file: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>, level: 2 | 3): RequirementSection[] {
   const lines = file.content.split("\n");
   const re = level === 3 ? /^###\s+/ : /^##\s+/;
   const sections: RequirementSection[] = [];
@@ -100,7 +88,7 @@ function parseByH3(
 ): RequirementSection[] {
   if (section.content.length <= maxLength) return [section];
 
-  const fileLike: AutoBeAnalyzeFile = {
+  const fileLike: Pick<AutoBeAnalyzeFile, 'filename' | 'content'> = {
     filename: section.filename,
     content: section.content,
   };
@@ -233,7 +221,7 @@ export async function buildVectorIndexHybrid(
 }
 
 export function preprocessFiles(
-  files: AutoBeAnalyzeFile[],
+  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
   h3MaxLength: number = 1000
 ): RequirementSection[] {
   const h2Sections = files.flatMap((f) => parseByLevel(f, 2));
@@ -426,7 +414,7 @@ type BuildResult = { index: VectorIndexItem[]; bm25: Bm25Stats };
 const _indexCache = new Map<string, CachedRetrievalIndex>();
 const _buildingPromises = new Map<string, Promise<BuildResult>>();
 
-function computeFilesHash(files: AutoBeAnalyzeFile[]): string {
+function computeFilesHash(files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[]): string {
   const combinedPayload = files
     .map((f) => `file:${f.filename}\ncontent:${f.content}`)
     .sort()
@@ -437,7 +425,7 @@ function computeFilesHash(files: AutoBeAnalyzeFile[]): string {
 
 export async function getOrBuildIndex(
   embedder: EmbeddingProvider,
-  files: AutoBeAnalyzeFile[],
+  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
   h3MaxLength: number = 1000
 ): Promise<BuildResult> {
   const hash = computeFilesHash(files);
@@ -518,7 +506,7 @@ export interface RetrieveAnalysisFilesOptions {
 
 export async function retrieveRelevantAnalysisFiles(
   embedder: EmbeddingProvider,
-  files: AutoBeAnalyzeFile[],
+  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
   query: string,
   options?: RetrieveAnalysisFilesOptions
 ): Promise<RagAnalysisFile[]> {
@@ -641,7 +629,7 @@ export interface BuildAnalysisContextOptions {
  * @returns Filtered or full analysis files based on mode
  */
 export async function buildAnalysisContextFiles<
-  T extends IAnalyzeFileInput
+  T extends Pick<AutoBeAnalyzeFile, 'filename' | 'content'>
 >(
   embedder: EmbeddingProvider,
   files: T[],
