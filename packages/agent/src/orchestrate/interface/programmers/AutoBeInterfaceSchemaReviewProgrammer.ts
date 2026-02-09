@@ -242,6 +242,8 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             "x-autobe-specification": cloned["x-autobe-specification"],
+            "x-autobe-database-schema-property":
+              cloned["x-autobe-database-schema-property"],
             description: cloned.description,
           };
       }
