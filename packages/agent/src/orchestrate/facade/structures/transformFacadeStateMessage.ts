@@ -5,7 +5,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 
 export function transformFacadeStateMessage(state: AutoBeState): string {
   const currentState: ICurrentState = getCurrentState(state);
-  return AutoBeSystemPromptConstant.FACADE.replace(
+  return AutoBeSystemPromptConstant.AGENTICA_FACADE.replace(
     "{% STATE %}",
     StringUtil.trim`
       ## Current State
