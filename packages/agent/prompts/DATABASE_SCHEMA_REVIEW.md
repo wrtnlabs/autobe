@@ -36,7 +36,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 
 | Error | Detection | Resolution |
 |-------|-----------|------------|
-| JSON/array in string field | Field stores serialized JSON/array | Create child table with key-value columns |
+| JSON/array in string field | Field stores serialized JSON/array (unless user explicitly requested) | Create child table with key-value columns |
 | Transitive dependency | Non-key field depends on another non-key field | Remove field, reference via FK |
 | Nullable fields for 1:1 entity | Optional entity stored as nullable columns | Create separate table with unique constraint |
 | Multiple nullable actor FKs | `customer_id?`, `seller_id?` pattern | Use main entity + subtype tables |
@@ -64,6 +64,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |-------|-----------|------------|
 | Duplicate plain + gin index | Same field in both | Keep gin only |
 | Duplicate unique + plain index | Same field in both | Keep unique only |
+| Duplicate unique + gin index | Same field in both | Keep unique only |
 | Subset index | Index (A) when (A, B) exists | Remove subset index |
 | Duplicate composite index | Same field combination | Keep only one |
 
@@ -80,7 +81,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 | Entity Type | Required Fields | Resolution |
 |-------------|-----------------|------------|
 | Business entity | `created_at`, `updated_at`, `deleted_at?` | Add missing temporal fields |
-| Actor entity | `email`, `password_hash` | Add authentication fields |
+| Actor entity (with login) | `email`, `password_hash` | Add authentication fields |
 | Session entity | `ip`, `href`, `referrer`, `created_at`, `expired_at` | Add session tracking fields |
 
 ---
@@ -91,7 +92,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |----------|----------|--------|
 | **Critical** | Data integrity, normalization, security | Must fix in `content` |
 | **Major** | Performance, naming, stance | Must fix in `content` |
-| **Minor** | Documentation only | Must fix in `content` |
+| **Minor** | Documentation only | Set `content: null` |
 
 ---
 
