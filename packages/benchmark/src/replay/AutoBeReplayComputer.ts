@@ -16,7 +16,6 @@ export namespace AutoBeReplayComputer {
     "shopping",
   ];
 
-  const sum = (targets: number[]): number => targets.reduce((a, b) => a + b, 0);
   export const emoji = (
     summaries: IAutoBePlaygroundReplay.ISummary[],
   ): string => {
@@ -36,20 +35,6 @@ export namespace AutoBeReplayComputer {
     summaries = summaries.filter((s) =>
       ["todo", "bbs", "reddit", "shopping"].includes(s.project),
     );
-
-    // the formula to compute the benchmark score
-    const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
-      const getScore = (phase: AutoBePhase): number => {
-        const state = summary[phase];
-        if (state === null) return 0;
-
-        const [success, failure] = FORMULA[phase];
-        return state.success === true
-          ? success
-          : success * failure(state.commodity);
-      };
-      return round(sum(typia.misc.literals<AutoBePhase>().map(getScore)));
-    };
 
     const individual = (project: AutoBeExampleProject): number => {
       const found = summaries.find((s) => s.project === project);
@@ -170,7 +155,20 @@ export namespace AutoBeReplayComputer {
   };
 }
 
+const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
+  const getScore = (phase: AutoBePhase): number => {
+    const state = summary[phase];
+    if (state === null) return 0;
+
+    const [success, failure] = FORMULA[phase];
+    return state.success === true
+      ? success
+      : success * failure(state.commodity);
+  };
+  return round(sum(typia.misc.literals<AutoBePhase>().map(getScore)));
+};
 const round = (value: number) => Math.round(value * 100) / 100;
+const sum = (targets: number[]): number => targets.reduce((a, b) => a + b, 0);
 
 // for type safety
 const FORMULA: Record<
