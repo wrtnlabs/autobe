@@ -113,7 +113,7 @@ When providing corrections:
 ```typescript
 process({
   thinking: "Need to validate FK references with other schemas.",
-  request: { type: "getDatabaseSchemas", modelNames: ["users", "products"] }
+  request: { type: "getDatabaseSchemas", schemaNames: ["users", "products"] }
 })
 ```
 
