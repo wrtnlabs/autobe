@@ -141,6 +141,7 @@ shopping_order_issue_of_sellers: {
 ### 2.5. Foreign Key Direction (CRITICAL)
 
 **Actor/parent tables must NEVER have foreign keys pointing to child tables. FK direction is ALWAYS child → parent.**
+
 ```typescript
 // ❌ WRONG: Parent has FK to children (creates circular reference)
 todo_app_users: {
@@ -160,6 +161,7 @@ todo_app_user_password_resets: {
 ### 2.6. Relation Naming (CRITICAL)
 
 **All relation names and oppositeNames MUST be camelCase. Never use snake_case.**
+
 ```typescript
 // ❌ WRONG: snake_case oppositeName
 relation: {
