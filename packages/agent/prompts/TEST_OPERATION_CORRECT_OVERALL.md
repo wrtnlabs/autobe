@@ -170,16 +170,80 @@ const x = typia.random();
 const x = typia.random<string & tags.Format<"uuid">>();
 ```
 
-### 4.8. Type System Errors
+### 4.8. Typia Tag Type Incompatibility
 
-**See COMMON_CORRECT_CASTING.md** for detailed patterns:
-- Typia tag incompatibility → `satisfies BaseType as BaseType`
-- Date to string → `.toISOString()`
-- typia.assert vs assertGuard distinction
-- Nullable/undefined handling
-- Object index access fallback
+**Error:** `Types of property '"typia.tag"' are incompatible`
 
-### 4.9. Variable Declaration - const Only
+```typescript
+// ❌ ERROR
+const page: number & tags.Type<"int32"> = getValue();
+const y: number & tags.Type<"int32"> & tags.Minimum<0> = page;
+
+// ✅ CORRECT: satisfies pattern
+const y = page satisfies number as number;
+```
+
+### 4.9. Missing `tags.` Prefix
+
+**Error:** `Property 'X' does not exist on type 'typeof import("node_modules/typia/lib/tags/index")'.`
+
+```typescript
+// ❌ WRONG
+const url: string & Format<"uri"> = getValue();
+
+// ✅ CORRECT
+const url: string & tags.Format<"uri"> = getValue();
+```
+
+### 4.10. Date to String Conversion
+
+```typescript
+// ❌ ERROR
+const timestamp: string & tags.Format<"date-time"> = new Date();
+
+// ✅ CORRECT
+const timestamp: string & tags.Format<"date-time"> = new Date().toISOString();
+```
+
+### 4.11. typia.assert vs typia.assertGuard
+
+| Function | Returns | Use Case |
+|----------|---------|----------|
+| `typia.assert(value!)` | Validated value | Assignment |
+| `typia.assertGuard(value!)` | void | Type narrowing |
+
+```typescript
+// ✅ assert WITH assignment
+const safeItem = typia.assert(item!);
+
+// ✅ assertGuard for narrowing
+typia.assertGuard(item!);
+console.log(item.name); // item is now narrowed
+```
+
+### 4.12. Nullable/Undefined Handling
+
+```typescript
+// ❌ WRONG: partial check
+if (value !== null) { processString(value); } // could be undefined
+
+// ✅ CORRECT: exhaustive check
+if (value !== null && value !== undefined) { processString(value); }
+```
+
+### 4.13. Object Index Access Fallback
+
+```typescript
+// ❌ WRONG
+const mimeType = input?.ext ? MIMETYPE_MAP[input.ext] : "application/octet-stream";
+
+// ✅ CORRECT: inner ?? catches undefined
+const mimeType = input?.ext
+  ? (MIMETYPE_MAP[input.ext] ?? "application/octet-stream")
+  : "application/octet-stream";
+```
+
+### 4.14. Variable Declaration - const Only
 
 ```typescript
 // ❌ WRONG: let violates immutability

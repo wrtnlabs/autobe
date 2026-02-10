@@ -92,16 +92,16 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ### `erase`
 ```typescript
-{ type: "erase", reason: "Password hash must never be exposed", key: "password_hashed" }
+{ key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Password hash must never be exposed", type: "erase" }
 ```
 
 ### `create`
 ```typescript
 {
-  type: "create",
-  reason: "Login requires password field",
   key: "password",
   databaseSchemaProperty: "password_hashed",
+  reason: "Login requires password field",
+  type: "create",
   specification: "Plaintext password for auth. Server hashes and compares against DB.",
   description: "User's password for authentication.",
   schema: { type: "string" },
@@ -113,17 +113,15 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 Same structure as `create`. Use when a security field exists but its `schema` is wrong (e.g., token field typed as `integer` instead of `string`).
 
 ### `depict` - Fix Documentation Only
-Use when schema type is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong. Fields: `key`, `reason`, `specification`, `description`, `databaseSchemaProperty`.
+Use when schema type is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong.
 
 ### `nullish` - Fix Nullability Only
-Use when schema type is correct but nullable/required is wrong. Fields: `key`, `reason`, `specification`, `description`, `nullable`, `required`.
+Use when schema type is correct but nullable/required is wrong.
 
 ### `keep`
 ```typescript
-{ type: "keep", reason: "Required session context field", key: "href" }
+{ key: "href", databaseSchemaProperty: null, reason: "Required session context field", type: "keep" }
 ```
-
-Property construction order for `create`/`update`: `databaseSchemaProperty` → `specification` → `description` → `schema`.
 
 ## 7. Complete Example
 
@@ -136,20 +134,17 @@ process({
     type: "complete",
     review: "password_hashed: wrong field. Missing: password, href, referrer.",
     revises: [
-      { type: "keep",   reason: "Required identifier",          key: "email" },
-      { type: "erase",  reason: "Clients must not send hashes", key: "password_hashed" },
-      { type: "create", reason: "Login requires password",      key: "password",
-        databaseSchemaProperty: "password_hashed",
+      { key: "email", databaseSchemaProperty: "email", reason: "Required identifier", type: "keep" },
+      { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Clients must not send hashes", type: "erase" },
+      { key: "password", databaseSchemaProperty: "password_hashed", reason: "Login requires password", type: "create",
         specification: "Plaintext password. Server hashes and verifies.",
         description: "User's password for authentication.",
         schema: { type: "string" }, required: true },
-      { type: "create", reason: "Session context required",     key: "href",
-        databaseSchemaProperty: null,
+      { key: "href", databaseSchemaProperty: null, reason: "Session context required", type: "create",
         specification: "Current page URL when login was initiated.",
         description: "Page URL at login time.",
         schema: { type: "string", format: "uri" }, required: true },
-      { type: "create", reason: "Session context required",     key: "referrer",
-        databaseSchemaProperty: null,
+      { key: "referrer", databaseSchemaProperty: null, reason: "Session context required", type: "create",
         specification: "Referrer URL when login was initiated.",
         description: "Referrer URL at login time.",
         schema: { type: "string", format: "uri" }, required: true }

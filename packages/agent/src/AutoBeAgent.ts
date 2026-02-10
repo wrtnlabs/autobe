@@ -174,8 +174,11 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
           common: (config) => getCommonPrompt(config),
           execute: () => transformFacadeStateMessage(this.state_),
           validate: (events) => getValidationErrorPrompt(events),
-          jsonParseError: () =>
-            AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR,
+          jsonParseError: (event) =>
+            AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR.replace(
+              "${{ERROR_MESSAGE}}",
+              event.errorMessage,
+            ),
         },
         retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
         // stream: false,

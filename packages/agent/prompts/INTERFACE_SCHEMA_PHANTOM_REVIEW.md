@@ -75,37 +75,31 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 ### `erase` - Remove Phantom Field
 ```typescript
 {
-  type: "erase",
+  key: "body",
+  databaseSchemaProperty: null,
   reason: "Phantom: x-autobe-database-schema-property is null and specification has no valid logic",
-  key: "body"
+  type: "erase"
 }
 ```
 
 ### `nullish` - Fix Nullability
 ```typescript
 {
-  type: "nullish",
-  reason: "DB field 'bio' is nullable but DTO is non-null",
   key: "bio",
-  specification: null,
-  description: "User's bio. Can be null if not provided.",
+  databaseSchemaProperty: "bio",
+  reason: "DB field 'bio' is nullable but DTO is non-null",
+  type: "nullish",
   nullable: true,
-  required: true
+  required: true,
+  specification: null,
+  description: "User's bio. Can be null if not provided."
 }
 ```
 
 ### `keep` - Acknowledge Correct Field
 ```typescript
-{
-  type: "keep",
-  reason: "Field exists in database and nullability correct",
-  key: "email"
-}
-{
-  type: "keep",
-  reason: "Computed field with valid specification: COUNT of related comments",
-  key: "comment_count"
-}
+{ key: "email", databaseSchemaProperty: "email", reason: "Field exists in database and nullability correct", type: "keep" }
+{ key: "comment_count", databaseSchemaProperty: null, reason: "Computed field with valid specification: COUNT of related comments", type: "keep" }
 ```
 
 ## 6. Complete Example
@@ -119,13 +113,13 @@ process({
     type: "complete",
     review: "Phantom: body (no DB mapping, invalid specification). Nullability: bio.",
     revises: [
-      { type: "keep",   reason: "Has valid DB mapping",          key: "id" },
-      { type: "keep",   reason: "Has valid DB mapping",          key: "title" },
-      { type: "erase",  reason: "Phantom: null DB mapping, specification is just logical reasoning", key: "body" },
-      { type: "nullish", reason: "DB nullable but DTO non-null", key: "bio",
-        specification: null, description: "User's bio. Can be null.",
-        nullable: true, required: true },
-      { type: "keep",   reason: "Has valid DB mapping",          key: "created_at" }
+      { key: "id", databaseSchemaProperty: "id", reason: "Has valid DB mapping", type: "keep" },
+      { key: "title", databaseSchemaProperty: "title", reason: "Has valid DB mapping", type: "keep" },
+      { key: "body", databaseSchemaProperty: null, reason: "Phantom: null DB mapping, specification is just logical reasoning", type: "erase" },
+      { key: "bio", databaseSchemaProperty: "bio", reason: "DB nullable but DTO non-null", type: "nullish",
+        nullable: true, required: true,
+        specification: null, description: "User's bio. Can be null." },
+      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Has valid DB mapping", type: "keep" }
     ]
   }
 })
