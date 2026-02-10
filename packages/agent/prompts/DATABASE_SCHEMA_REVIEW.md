@@ -91,7 +91,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |----------|----------|--------|
 | **Critical** | Data integrity, normalization, security | Must fix in `content` |
 | **Major** | Performance, naming, stance | Must fix in `content` |
-| **Minor** | Documentation only | Set `content: null` |
+| **Minor** | Documentation only | Must fix in `content` |
 
 ---
 
