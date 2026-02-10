@@ -16,6 +16,7 @@ export namespace AutoBeReplayComputer {
     "shopping",
   ];
 
+  const sum = (targets: number[]): number => targets.reduce((a, b) => a + b, 0);
   export const emoji = (
     summaries: IAutoBePlaygroundReplay.ISummary[],
   ): string => {
@@ -50,23 +51,19 @@ export namespace AutoBeReplayComputer {
         [number, (commodity: Record<string, number>) => number]
       >;
 
-      const add = (
-        phase: IAutoBePlaygroundReplay.IPhaseState | null,
-        success: number,
-        failure: (commodity: Record<string, number>) => number,
-      ): number =>
-        phase !== null
-          ? phase.success === true
-            ? success
-            : success * failure(phase.commodity)
-          : 0;
+      const getScore = (phase: AutoBePhase): number => {
+        const state = summary[phase];
 
-      return round(
-        typia.misc.literals<AutoBePhase>().reduce((acc, cur) => {
-          const [success, failure] = calculateFormula[cur];
-          return acc + add(summary[cur], success, failure);
-        }, 0),
-      );
+        if (state === null) return 0;
+
+        const [success, failure] = calculateFormula[phase];
+
+        return state.success === true
+          ? success
+          : success * failure(state.commodity);
+      };
+
+      return round(sum(typia.misc.literals<AutoBePhase>().map(getScore)));
     };
 
     const individual = (project: AutoBeExampleProject): number => {
