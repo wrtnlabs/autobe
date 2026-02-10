@@ -77,8 +77,8 @@ bbs_article_comments: {
 ```typescript
 // ❌ WRONG: JSON disguised as string
 products: {
-  metadata: string       // "{"color":"red","size":"L"}"
-  tags: string           // "["sale","new","featured"]"
+  metadata: string       // '{"color":"red","size":"L"}'
+  tags: string           // '["sale","new","featured"]'
 }
 
 // ✅ CORRECT: Normalized child table with key-value
