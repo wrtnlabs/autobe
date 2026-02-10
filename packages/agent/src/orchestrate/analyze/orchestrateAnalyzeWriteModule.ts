@@ -2,8 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
+  AutoBeAnalyzeWriteModuleEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -13,32 +12,30 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { validateModuleSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteMiddleHistories } from "./histories/transformAnalyzeWriteMiddleHistories";
-import { IAutoBeAnalyzeWriteMiddleApplication } from "./structures/IAutoBeAnalyzeWriteMiddleApplication";
+import { transformAnalyzeWriteModuleHistories } from "./histories/transformAnalyzeWriteModuleHistories";
+import { IAutoBeAnalyzeWriteModuleApplication } from "./structures/IAutoBeAnalyzeWriteModuleApplication";
 
-export const orchestrateAnalyzeWriteMiddle = async (
+export const orchestrateAnalyzeWriteModule = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    majorIndex: number;
     progress: AutoBeProgressEventBase;
     feedback?: string;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMiddleEvent> => {
+): Promise<AutoBeAnalyzeWriteModuleEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
-      application:
-        typia.json.application<IAutoBeAnalyzeWriteMiddleApplication>(),
+      application: typia.json.application<IAutoBeAnalyzeWriteModuleApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteMiddleApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteModuleApplication.IComplete | null> =
       {
         value: null,
       };
@@ -50,22 +47,21 @@ export const orchestrateAnalyzeWriteMiddle = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteMiddleHistories(ctx, {
+      ...transformAnalyzeWriteModuleHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent: props.majorEvent,
-        majorIndex: props.majorIndex,
         feedback: props.feedback,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteMiddleEvent = {
+    const event: AutoBeAnalyzeWriteModuleEvent = {
       type: SOURCE,
       id: v7(),
-      majorIndex: pointer.value.majorIndex,
-      middleSections: pointer.value.middleSections,
+      title: pointer.value.title,
+      summary: pointer.value.summary,
+      moduleSections: pointer.value.moduleSections,
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
@@ -73,29 +69,48 @@ export const orchestrateAnalyzeWriteMiddle = async (
       completed: props.progress.completed,
       created_at: new Date().toISOString(),
     };
-    ctx.dispatch(event);
+    await ctx.dispatch(event);
     return out(result)(event);
   });
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteMiddleApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteModuleApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteMiddleApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteMiddleApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteMiddleApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
+  ): IValidation<IAutoBeAnalyzeWriteModuleApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteModuleApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteModuleApplication.IProps>(input);
+    if (result.success === false) return result;
+
+    // Validate English-only content for complete requests
+    if (result.data.request.type === "complete") {
+      const englishValidation = validateModuleSectionContent(
+        result.data.request.moduleSections,
+      );
+      if (!englishValidation.valid) {
+        return {
+          success: false,
+          errors: englishValidation.errors.map((error) => ({
+            path: "$input.request.moduleSections",
+            expected: "English-only content (no Chinese, Korean, Japanese)",
+            value: error,
+          })),
+          data: result.data,
+        };
+      }
       return result;
+    }
+
     return props.preliminary.validate({
       thinking: result.data.thinking,
       request: result.data.request,
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteMiddleApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteModuleApplication>({
       validate: {
         process: validate,
       },
@@ -110,8 +125,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteMiddleApplication,
+    } satisfies IAutoBeAnalyzeWriteModuleApplication,
   };
 }
 
-const SOURCE = "analyzeWriteMiddle" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteModule" satisfies AutoBeEventSource;

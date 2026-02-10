@@ -2,12 +2,12 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMajorReviewEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
-  AutoBeAnalyzeWriteMiddleReviewEvent,
-  AutoBeAnalyzeWriteMinorEvent,
-  AutoBeAnalyzeWriteMinorReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteModuleReviewEvent,
+  AutoBeAnalyzeWriteUnitEvent,
+  AutoBeAnalyzeWriteUnitReviewEvent,
+  AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAssistantMessageHistory,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -16,12 +16,12 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
-import { orchestrateAnalyzeWriteMajor } from "./orchestrateAnalyzeWriteMajor";
-import { orchestrateAnalyzeWriteMajorReview } from "./orchestrateAnalyzeWriteMajorReview";
-import { orchestrateAnalyzeWriteMiddle } from "./orchestrateAnalyzeWriteMiddle";
-import { orchestrateAnalyzeWriteMiddleReview } from "./orchestrateAnalyzeWriteMiddleReview";
-import { orchestrateAnalyzeWriteMinor } from "./orchestrateAnalyzeWriteMinor";
-import { orchestrateAnalyzeWriteMinorReview } from "./orchestrateAnalyzeWriteMinorReview";
+import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
+import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteModuleReview";
+import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
+import { orchestrateAnalyzeWriteUnitReview } from "./orchestrateAnalyzeWriteUnitReview";
+import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
+import { orchestrateAnalyzeWriteSectionReview } from "./orchestrateAnalyzeWriteSectionReview";
 
 const MAX_RETRIES = 3;
 
@@ -84,7 +84,7 @@ export const orchestrateAnalyze = async (
 };
 
 /**
- * Process a single file through the hierarchical Major → Middle → Minor flow
+ * Process a single file through the hierarchical Module → Unit → Section flow
  */
 async function processFileHierarchical(
   ctx: AutoBeContext,
@@ -95,47 +95,47 @@ async function processFileHierarchical(
     promptCacheKey: string;
   },
 ): Promise<string> {
-  // Step 1: Major Write → Review
-  const majorResult = await writeAndReviewMajor(ctx, props);
+  // Step 1: Module Write → Review
+  const moduleResult = await writeAndReviewModule(ctx, props);
 
-  // Step 2: For each major section, do Middle Write → Review
-  const middleResults: AutoBeAnalyzeWriteMiddleEvent[] = [];
-  for (let majorIndex = 0; majorIndex < majorResult.majorSections.length; majorIndex++) {
-    const middleResult = await writeAndReviewMiddle(ctx, {
+  // Step 2: For each module section, do Unit Write → Review
+  const unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
+  for (let moduleIndex = 0; moduleIndex < moduleResult.moduleSections.length; moduleIndex++) {
+    const unitResult = await writeAndReviewUnit(ctx, {
       ...props,
-      majorEvent: majorResult,
-      majorIndex,
+      moduleEvent: moduleResult,
+      moduleIndex,
     });
-    middleResults.push(middleResult);
+    unitResults.push(unitResult);
   }
 
-  // Step 3: For each middle section, do Minor Write → Review
-  const minorResults: AutoBeAnalyzeWriteMinorEvent[][] = [];
-  for (let majorIndex = 0; majorIndex < middleResults.length; majorIndex++) {
-    const middleEvent = middleResults[majorIndex]!;
-    const minorForMajor: AutoBeAnalyzeWriteMinorEvent[] = [];
+  // Step 3: For each unit section, do Section Write → Review
+  const sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
+  for (let moduleIndex = 0; moduleIndex < unitResults.length; moduleIndex++) {
+    const unitEvent = unitResults[moduleIndex]!;
+    const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
 
-    for (let middleIndex = 0; middleIndex < middleEvent.middleSections.length; middleIndex++) {
-      const minorResult = await writeAndReviewMinor(ctx, {
+    for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
+      const sectionResult = await writeAndReviewSection(ctx, {
         ...props,
-        majorEvent: majorResult,
-        middleEvent,
-        majorIndex,
-        middleIndex,
+        moduleEvent: moduleResult,
+        unitEvent,
+        moduleIndex,
+        unitIndex,
       });
-      minorForMajor.push(minorResult);
+      sectionsForModule.push(sectionResult);
     }
-    minorResults.push(minorForMajor);
+    sectionResults.push(sectionsForModule);
   }
 
   // Step 4: Assemble final content
-  return assembleContent(majorResult, middleResults, minorResults);
+  return assembleContent(moduleResult, unitResults, sectionResults);
 }
 
 /**
- * Write Major sections with review and retry on failure
+ * Write Module sections with review and retry on failure
  */
-async function writeAndReviewMajor(
+async function writeAndReviewModule(
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
@@ -143,11 +143,11 @@ async function writeAndReviewMajor(
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMajorEvent> {
+): Promise<AutoBeAnalyzeWriteModuleEvent> {
   let feedback: string | undefined;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const majorEvent = await orchestrateAnalyzeWriteMajor(ctx, {
+    const moduleEvent = await orchestrateAnalyzeWriteModule(ctx, {
       scenario: props.scenario,
       file: props.file,
       progress: props.progress,
@@ -155,165 +155,165 @@ async function writeAndReviewMajor(
       promptCacheKey: props.promptCacheKey,
     });
 
-    const reviewEvent: AutoBeAnalyzeWriteMajorReviewEvent =
-      await orchestrateAnalyzeWriteMajorReview(ctx, {
+    const reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent =
+      await orchestrateAnalyzeWriteModuleReview(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent,
+        moduleEvent,
         progress: props.progress,
         promptCacheKey: props.promptCacheKey,
       });
 
     if (reviewEvent.approved) {
       // Apply revisions if provided
-      return applyMajorRevisions(majorEvent, reviewEvent);
+      return applyModuleRevisions(moduleEvent, reviewEvent);
     }
 
     feedback = reviewEvent.feedback;
   }
 
-  throw new Error("[orchestrateAnalyze] Major write failed after max retries");
+  throw new Error("[orchestrateAnalyze] Module write failed after max retries");
 }
 
 /**
- * Write Middle sections with review and retry on failure
+ * Write Unit sections with review and retry on failure
  */
-async function writeAndReviewMiddle(
+async function writeAndReviewUnit(
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    majorIndex: number;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    moduleIndex: number;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMiddleEvent> {
+): Promise<AutoBeAnalyzeWriteUnitEvent> {
   let feedback: string | undefined;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const middleEvent = await orchestrateAnalyzeWriteMiddle(ctx, {
+    const unitEvent = await orchestrateAnalyzeWriteUnit(ctx, {
       scenario: props.scenario,
       file: props.file,
-      majorEvent: props.majorEvent,
-      majorIndex: props.majorIndex,
+      moduleEvent: props.moduleEvent,
+      moduleIndex: props.moduleIndex,
       progress: props.progress,
       feedback,
       promptCacheKey: props.promptCacheKey,
     });
 
-    const reviewEvent: AutoBeAnalyzeWriteMiddleReviewEvent =
-      await orchestrateAnalyzeWriteMiddleReview(ctx, {
+    const reviewEvent: AutoBeAnalyzeWriteUnitReviewEvent =
+      await orchestrateAnalyzeWriteUnitReview(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent: props.majorEvent,
-        middleEvent,
+        moduleEvent: props.moduleEvent,
+        unitEvent,
         progress: props.progress,
         promptCacheKey: props.promptCacheKey,
       });
 
     if (reviewEvent.approved) {
       // Apply revisions if provided
-      return applyMiddleRevisions(middleEvent, reviewEvent);
+      return applyUnitRevisions(unitEvent, reviewEvent);
     }
 
     feedback = reviewEvent.feedback;
   }
 
-  throw new Error("[orchestrateAnalyze] Middle write failed after max retries");
+  throw new Error("[orchestrateAnalyze] Unit write failed after max retries");
 }
 
 /**
- * Write Minor sections with review and retry on failure
+ * Write Section sections with review and retry on failure
  */
-async function writeAndReviewMinor(
+async function writeAndReviewSection(
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
-    majorIndex: number;
-    middleIndex: number;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    moduleIndex: number;
+    unitIndex: number;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMinorEvent> {
+): Promise<AutoBeAnalyzeWriteSectionEvent> {
   let feedback: string | undefined;
 
   for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const minorEvent = await orchestrateAnalyzeWriteMinor(ctx, {
+    const sectionEvent = await orchestrateAnalyzeWriteSection(ctx, {
       scenario: props.scenario,
       file: props.file,
-      majorEvent: props.majorEvent,
-      middleEvent: props.middleEvent,
-      majorIndex: props.majorIndex,
-      middleIndex: props.middleIndex,
+      moduleEvent: props.moduleEvent,
+      unitEvent: props.unitEvent,
+      moduleIndex: props.moduleIndex,
+      unitIndex: props.unitIndex,
       progress: props.progress,
       feedback,
       promptCacheKey: props.promptCacheKey,
     });
 
-    const reviewEvent: AutoBeAnalyzeWriteMinorReviewEvent =
-      await orchestrateAnalyzeWriteMinorReview(ctx, {
+    const reviewEvent: AutoBeAnalyzeWriteSectionReviewEvent =
+      await orchestrateAnalyzeWriteSectionReview(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent: props.majorEvent,
-        middleEvent: props.middleEvent,
-        minorEvent,
+        moduleEvent: props.moduleEvent,
+        unitEvent: props.unitEvent,
+        sectionEvent,
         progress: props.progress,
         promptCacheKey: props.promptCacheKey,
       });
 
     if (reviewEvent.approved) {
       // Apply revisions if provided
-      return applyMinorRevisions(minorEvent, reviewEvent);
+      return applySectionRevisions(sectionEvent, reviewEvent);
     }
 
     feedback = reviewEvent.feedback;
   }
 
-  throw new Error("[orchestrateAnalyze] Minor write failed after max retries");
+  throw new Error("[orchestrateAnalyze] Section write failed after max retries");
 }
 
 /**
- * Apply major review revisions to the major event
+ * Apply module review revisions to the module event
  */
-function applyMajorRevisions(
-  majorEvent: AutoBeAnalyzeWriteMajorEvent,
-  reviewEvent: AutoBeAnalyzeWriteMajorReviewEvent,
-): AutoBeAnalyzeWriteMajorEvent {
+function applyModuleRevisions(
+  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
+  reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent,
+): AutoBeAnalyzeWriteModuleEvent {
   return {
-    ...majorEvent,
-    title: reviewEvent.revisedTitle ?? majorEvent.title,
-    summary: reviewEvent.revisedSummary ?? majorEvent.summary,
-    majorSections: reviewEvent.revisedSections ?? majorEvent.majorSections,
+    ...moduleEvent,
+    title: reviewEvent.revisedTitle ?? moduleEvent.title,
+    summary: reviewEvent.revisedSummary ?? moduleEvent.summary,
+    moduleSections: reviewEvent.revisedSections ?? moduleEvent.moduleSections,
   };
 }
 
 /**
- * Apply middle review revisions to the middle event
+ * Apply unit review revisions to the unit event
  */
-function applyMiddleRevisions(
-  middleEvent: AutoBeAnalyzeWriteMiddleEvent,
-  reviewEvent: AutoBeAnalyzeWriteMiddleReviewEvent,
-): AutoBeAnalyzeWriteMiddleEvent {
+function applyUnitRevisions(
+  unitEvent: AutoBeAnalyzeWriteUnitEvent,
+  reviewEvent: AutoBeAnalyzeWriteUnitReviewEvent,
+): AutoBeAnalyzeWriteUnitEvent {
   return {
-    ...middleEvent,
-    middleSections: reviewEvent.revisedSections ?? middleEvent.middleSections,
+    ...unitEvent,
+    unitSections: reviewEvent.revisedSections ?? unitEvent.unitSections,
   };
 }
 
 /**
- * Apply minor review revisions to the minor event
+ * Apply section review revisions to the section event
  */
-function applyMinorRevisions(
-  minorEvent: AutoBeAnalyzeWriteMinorEvent,
-  reviewEvent: AutoBeAnalyzeWriteMinorReviewEvent,
-): AutoBeAnalyzeWriteMinorEvent {
+function applySectionRevisions(
+  sectionEvent: AutoBeAnalyzeWriteSectionEvent,
+  reviewEvent: AutoBeAnalyzeWriteSectionReviewEvent,
+): AutoBeAnalyzeWriteSectionEvent {
   return {
-    ...minorEvent,
-    minorSections: reviewEvent.revisedSections ?? minorEvent.minorSections,
+    ...sectionEvent,
+    sectionSections: reviewEvent.revisedSections ?? sectionEvent.sectionSections,
   };
 }
 
@@ -321,52 +321,52 @@ function applyMinorRevisions(
  * Assemble all sections into final markdown content
  */
 function assembleContent(
-  majorEvent: AutoBeAnalyzeWriteMajorEvent,
-  middleEvents: AutoBeAnalyzeWriteMiddleEvent[],
-  minorResults: AutoBeAnalyzeWriteMinorEvent[][],
+  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
+  unitEvents: AutoBeAnalyzeWriteUnitEvent[],
+  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
 ): string {
   const lines: string[] = [];
 
   // Document title and summary
-  lines.push(`# ${majorEvent.title}`);
+  lines.push(`# ${moduleEvent.title}`);
   lines.push("");
-  lines.push(majorEvent.summary);
+  lines.push(moduleEvent.summary);
   lines.push("");
 
-  // For each major section
-  for (let majorIndex = 0; majorIndex < majorEvent.majorSections.length; majorIndex++) {
-    const majorSection = majorEvent.majorSections[majorIndex]!;
-    const middleEvent = middleEvents[majorIndex];
-    const minorEventsForMajor = minorResults[majorIndex];
+  // For each module section
+  for (let moduleIndex = 0; moduleIndex < moduleEvent.moduleSections.length; moduleIndex++) {
+    const moduleSection = moduleEvent.moduleSections[moduleIndex]!;
+    const unitEvent = unitEvents[moduleIndex];
+    const sectionEventsForModule = sectionResults[moduleIndex];
 
-    // Major section header
-    lines.push(`## ${majorSection.title}`);
+    // Module section header
+    lines.push(`## ${moduleSection.title}`);
     lines.push("");
-    if (majorSection.content) {
-      lines.push(majorSection.content);
+    if (moduleSection.content) {
+      lines.push(moduleSection.content);
       lines.push("");
     }
 
-    // For each middle section
-    if (middleEvent) {
-      for (let middleIndex = 0; middleIndex < middleEvent.middleSections.length; middleIndex++) {
-        const middleSection = middleEvent.middleSections[middleIndex]!;
-        const minorEvent = minorEventsForMajor?.[middleIndex];
+    // For each unit section
+    if (unitEvent) {
+      for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
+        const unitSection = unitEvent.unitSections[unitIndex]!;
+        const sectionEvent = sectionEventsForModule?.[unitIndex];
 
-        // Middle section header
-        lines.push(`### ${middleSection.title}`);
+        // Unit section header
+        lines.push(`### ${unitSection.title}`);
         lines.push("");
-        if (middleSection.content) {
-          lines.push(middleSection.content);
+        if (unitSection.content) {
+          lines.push(unitSection.content);
           lines.push("");
         }
 
-        // For each minor section
-        if (minorEvent) {
-          for (const minorSection of minorEvent.minorSections) {
-            lines.push(`#### ${minorSection.title}`);
+        // For each section section
+        if (sectionEvent) {
+          for (const sectionSection of sectionEvent.sectionSections) {
+            lines.push(`#### ${sectionSection.title}`);
             lines.push("");
-            lines.push(minorSection.content);
+            lines.push(sectionSection.content);
             lines.push("");
           }
         }

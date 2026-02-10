@@ -1,26 +1,26 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Middle Section (##) generation agent.
+ * Application interface for the Unit Section (##) generation agent.
  *
- * This agent is responsible for creating middle-level sections within
- * an approved major section structure, defining functional requirement
+ * This agent is responsible for creating unit-level sections within
+ * an approved module section structure, defining functional requirement
  * groupings and their content.
  */
-export interface IAutoBeAnalyzeWriteMiddleApplication {
+export interface IAutoBeAnalyzeWriteUnitApplication {
   /**
-   * Process middle section generation task or preliminary data requests.
+   * Process unit section generation task or preliminary data requests.
    *
-   * Creates middle-level sections for a specific major section, including
-   * section titles, purposes, content, and keywords for guiding minor
-   * section generation.
+   * Creates unit-level sections for a specific module section, including
+   * section titles, purposes, content, and keywords for guiding section
+   * generation.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMiddleApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteUnitApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMiddleApplication {
+export namespace IAutoBeAnalyzeWriteUnitApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -29,13 +29,13 @@ export namespace IAutoBeAnalyzeWriteMiddleApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
-     * - What additional context do you need for this major section?
+     * - What additional context do you need for this module section?
      * - Why is this information necessary?
      *
      * For completion:
-     * - How do the middle sections align with the parent major section?
+     * - How do the unit sections align with the parent module section?
      * - What functional areas are covered?
-     * - Are the keywords appropriate for guiding minor section generation?
+     * - Are the keywords appropriate for guiding section generation?
      */
     thinking: string;
 
@@ -46,11 +46,11 @@ export namespace IAutoBeAnalyzeWriteMiddleApplication {
   }
 
   /**
-   * Request to generate middle section structure.
+   * Request to generate unit section structure.
    *
-   * Creates the middle-level hierarchy within a major section, including
+   * Creates the unit-level hierarchy within a module section, including
    * section definitions with purposes, content, and keywords that will
-   * guide minor section generation.
+   * guide section generation.
    */
   export interface IComplete {
     /**
@@ -59,31 +59,31 @@ export namespace IAutoBeAnalyzeWriteMiddleApplication {
     type: "complete";
 
     /**
-     * Index of the parent major section.
+     * Index of the parent module section.
      *
-     * References which major section (0-based) these middle sections belong to.
-     * This ensures proper alignment with the approved major structure.
+     * References which module section (0-based) these unit sections belong to.
+     * This ensures proper alignment with the approved module structure.
      */
-    majorIndex: number;
+    moduleIndex: number;
 
     /**
-     * Array of middle sections for this major section.
+     * Array of unit sections for this module section.
      *
-     * Each middle section represents a subsection (### level) that groups
+     * Each unit section represents a subsection (### level) that groups
      * related functionality or requirements. The sections should:
-     * - Align with the parent major section's purpose
+     * - Align with the parent module section's purpose
      * - Have clear functional boundaries
-     * - Provide meaningful keywords for minor section guidance
+     * - Provide meaningful keywords for section guidance
      */
-    middleSections: IMiddleSection[];
+    unitSections: IUnitSection[];
   }
 
   /**
-   * Structure representing a single middle section.
+   * Structure representing a single unit section.
    */
-  export interface IMiddleSection {
+  export interface IUnitSection {
     /**
-     * Title of the middle section (### level heading).
+     * Title of the unit section (### level heading).
      *
      * Should clearly indicate the functional area or requirement group
      * covered by this section.
@@ -94,15 +94,15 @@ export namespace IAutoBeAnalyzeWriteMiddleApplication {
      * Purpose statement explaining what this section covers.
      *
      * A brief description of the section's role within the parent
-     * major section and what requirements it addresses.
+     * module section and what requirements it addresses.
      */
     purpose: string;
 
     /**
-     * Content for the middle section.
+     * Content for the unit section.
      *
      * The main body content that appears after the section heading,
-     * before any minor sections. Should provide:
+     * before any sections. Should provide:
      * - Overview of the functional area
      * - Context for the detailed requirements
      * - Relationships to other sections
@@ -110,13 +110,13 @@ export namespace IAutoBeAnalyzeWriteMiddleApplication {
     content: string;
 
     /**
-     * Keywords that hint at minor section topics.
+     * Keywords that hint at section topics.
      *
      * A list of key concepts, features, or requirements that should be
-     * detailed in the minor sections. These keywords guide the Minor
+     * detailed in the sections. These keywords guide the Section
      * Agent in generating appropriate detailed content.
      *
-     * Example for "User Authentication" middle section:
+     * Example for "User Authentication" unit section:
      * ["login", "registration", "password recovery", "session management"]
      */
     keywords: string[];

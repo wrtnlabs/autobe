@@ -1,26 +1,26 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Minor Section (###) generation agent.
+ * Application interface for the Section (###) generation agent.
  *
- * This agent is responsible for creating detailed minor sections within
- * an approved middle section structure, producing implementation-ready
+ * This agent is responsible for creating detailed sections within
+ * an approved unit section structure, producing implementation-ready
  * requirement specifications.
  */
-export interface IAutoBeAnalyzeWriteMinorApplication {
+export interface IAutoBeAnalyzeWriteSectionApplication {
   /**
-   * Process minor section generation task or preliminary data requests.
+   * Process section generation task or preliminary data requests.
    *
-   * Creates detailed minor sections for a specific middle section,
+   * Creates detailed sections for a specific unit section,
    * including complete content with EARS format requirements and
    * Mermaid diagrams where appropriate.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMinorApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteSectionApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMinorApplication {
+export namespace IAutoBeAnalyzeWriteSectionApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -32,7 +32,7 @@ export namespace IAutoBeAnalyzeWriteMinorApplication {
      * - What additional context do you need for detailed content?
      *
      * For completion:
-     * - How do the minor sections address the keywords from the middle section?
+     * - How do the sections address the keywords from the unit section?
      * - Are requirements specific and in EARS format where appropriate?
      * - Are Mermaid diagrams properly formatted?
      */
@@ -45,9 +45,9 @@ export namespace IAutoBeAnalyzeWriteMinorApplication {
   }
 
   /**
-   * Request to generate minor section content.
+   * Request to generate section content.
    *
-   * Creates the detailed content within a middle section, including
+   * Creates the detailed content within a unit section, including
    * implementation-ready requirements specifications with proper
    * formatting and diagrams.
    */
@@ -58,19 +58,19 @@ export namespace IAutoBeAnalyzeWriteMinorApplication {
     type: "complete";
 
     /**
-     * Index of the grandparent major section.
+     * Index of the grandparent module section.
      */
-    majorIndex: number;
+    moduleIndex: number;
 
     /**
-     * Index of the parent middle section.
+     * Index of the parent unit section.
      */
-    middleIndex: number;
+    unitIndex: number;
 
     /**
-     * Array of minor sections for this middle section.
+     * Array of sections for this unit section.
      *
-     * Each minor section represents a detailed subsection (#### level)
+     * Each section represents a detailed subsection (#### level)
      * containing specific requirements, specifications, or process
      * descriptions. The content should:
      * - Use EARS format for requirements where appropriate
@@ -78,15 +78,15 @@ export namespace IAutoBeAnalyzeWriteMinorApplication {
      * - Be specific and implementation-ready
      * - Avoid prohibited content (DB schemas, API specs)
      */
-    minorSections: IMinorSection[];
+    sectionSections: ISectionSection[];
   }
 
   /**
-   * Structure representing a single minor section.
+   * Structure representing a single section.
    */
-  export interface IMinorSection {
+  export interface ISectionSection {
     /**
-     * Title of the minor section (#### level heading).
+     * Title of the section (#### level heading).
      *
      * Should clearly indicate the specific requirement, process,
      * or feature being detailed.
@@ -94,7 +94,7 @@ export namespace IAutoBeAnalyzeWriteMinorApplication {
     title: string;
 
     /**
-     * Complete content for the minor section.
+     * Complete content for the section.
      *
      * Contains detailed requirements, specifications, and diagrams.
      * Content guidelines:

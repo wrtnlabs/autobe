@@ -13,7 +13,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 /**
  * ISO/IEC/IEEE 29148:2018 SRS Structure
  *
- * This structure defines the 6 mandatory major sections for
+ * This structure defines the 6 mandatory module sections for
  * a compliant Software Requirements Specification document.
  */
 const SRS_STRUCTURE = [
@@ -94,7 +94,7 @@ const SRS_STRUCTURE = [
   },
 ];
 
-export const transformAnalyzeWriteMajorHistories = (
+export const transformAnalyzeWriteModuleHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
@@ -121,7 +121,7 @@ export const transformAnalyzeWriteMajorHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MAJOR,
+      text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MODULE,
     },
     ...(props.preliminary?.getHistories() ?? []),
     {
@@ -144,18 +144,18 @@ export const transformAnalyzeWriteMajorHistories = (
 
         ## SRS Structure (ISO/IEC/IEEE 29148:2018)
 
-        Your major sections MUST follow this standardized structure:
+        Your module sections MUST follow this standardized structure:
 
         \`\`\`json
         ${JSON.stringify(SRS_STRUCTURE, null, 2)}
         \`\`\`
 
-        **IMPORTANT**: Create exactly these 6 major sections in this order.
+        **IMPORTANT**: Create exactly these 6 module sections in this order.
         Each section's content should follow the purpose described above.
 
         ## Document to Create
 
-        You need to create the **major section structure** for this document:
+        You need to create the **module section structure** for this document:
 
         \`\`\`json
         ${JSON.stringify(props.file)}
@@ -187,5 +187,5 @@ export const transformAnalyzeWriteMajorHistories = (
     },
   ],
   userMessage:
-    "Create the document's major section structure (title, summary, and ## sections).",
+    "Create the document's module section structure (title, summary, and ## sections).",
 });

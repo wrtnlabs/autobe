@@ -1,17 +1,17 @@
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
-import { AutoBeAnalyzeWriteMinorEvent } from "./AutoBeAnalyzeWriteMinorEvent";
+import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
 
 /**
- * Event fired during the review phase of minor section (###) generation.
+ * Event fired during the review phase of section (###) generation.
  *
  * This event represents the final quality assurance step in the hierarchical
- * document generation pipeline. The Minor Review Agent validates the detailed
+ * document generation pipeline. The Section Review Agent validates the detailed
  * content before final document assembly.
  *
  * Review criteria include:
- * - Alignment with parent middle section's keywords and purpose
+ * - Alignment with parent unit section's keywords and purpose
  * - EARS format compliance for requirements
  * - Mermaid diagram syntax correctness
  * - Implementation-ready specification quality
@@ -24,25 +24,25 @@ import { AutoBeAnalyzeWriteMinorEvent } from "./AutoBeAnalyzeWriteMinorEvent";
  *
  * @author AutoBE
  */
-export interface AutoBeAnalyzeWriteMinorReviewEvent
-  extends AutoBeEventBase<"analyzeWriteMinorReview">,
+export interface AutoBeAnalyzeWriteSectionReviewEvent
+  extends AutoBeEventBase<"analyzeWriteSectionReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Index of the grandparent major section being reviewed.
+   * Index of the grandparent module section being reviewed.
    */
-  majorIndex: number;
+  moduleIndex: number;
 
   /**
-   * Index of the parent middle section being reviewed.
+   * Index of the parent unit section being reviewed.
    */
-  middleIndex: number;
+  unitIndex: number;
 
   /**
-   * Whether the minor section content passed review.
+   * Whether the section content passed review.
    *
    * If true, the content is ready for final document assembly.
-   * If false, the minor generation must be retried with feedback.
+   * If false, the section generation must be retried with feedback.
    */
   approved: boolean;
 
@@ -50,24 +50,24 @@ export interface AutoBeAnalyzeWriteMinorReviewEvent
    * Detailed review feedback.
    *
    * Contains specific validation results and recommendations.
-   * If approved, may contain minor suggestions for future reference.
+   * If approved, may contain suggestions for future reference.
    * If rejected, contains actionable feedback for revision.
    */
   feedback: string;
 
   /**
-   * Revised minor sections if modifications were made during review.
+   * Revised sections if modifications were made during review.
    *
    * If the reviewer made direct corrections to the content,
    * this field contains the updated sections. Otherwise undefined.
    */
-  revisedSections?: AutoBeAnalyzeWriteMinorEvent.IMinorSection[];
+  revisedSections?: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
 
   /**
    * Current iteration number of the review process.
    *
    * Tracks how many review cycles have been completed for this
-   * middle section's minor content.
+   * unit section's content.
    */
   step: number;
 }

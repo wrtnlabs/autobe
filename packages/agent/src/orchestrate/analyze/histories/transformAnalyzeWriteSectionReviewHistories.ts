@@ -1,9 +1,9 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
-  AutoBeAnalyzeWriteMinorEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteUnitEvent,
+  AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -13,21 +13,21 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteMinorReviewHistories = (
+export const transformAnalyzeWriteSectionReviewHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
-    minorEvent: AutoBeAnalyzeWriteMinorEvent;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    sectionEvent: AutoBeAnalyzeWriteSectionEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const majorSection =
-    props.majorEvent.majorSections[props.minorEvent.majorIndex];
-  const middleSection =
-    props.middleEvent.middleSections[props.minorEvent.middleIndex];
+  const moduleSection =
+    props.moduleEvent.moduleSections[props.sectionEvent.moduleIndex];
+  const unitSection =
+    props.unitEvent.unitSections[props.sectionEvent.unitIndex];
 
   return {
     histories: [
@@ -50,7 +50,7 @@ export const transformAnalyzeWriteMinorReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MINOR_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_SECTION_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -62,24 +62,35 @@ export const transformAnalyzeWriteMinorReviewHistories = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Context
+        ## Parent Section Context (Reference for Consistency)
 
-        **Major Section**: ${majorSection?.title ?? "Unknown"}
-        **Middle Section**: ${middleSection?.title ?? "Unknown"}
+        ### Module Section: ${moduleSection?.title ?? "Unknown"}
+        ${moduleSection?.content ?? "No content available"}
+
+        ### Unit Section: ${unitSection?.title ?? "Unknown"}
+        ${unitSection?.content ?? "No content available"}
+
+        **IMPORTANT**: Any numeric values, limits, or constraints defined in the parent sections above
+        MUST be consistent with the section sections below. Check for contradictions in:
+        - File size limits (e.g., 10MB, 25MB)
+        - Quantity limits (e.g., max attachments)
+        - Time limits (e.g., session timeout)
+        - Character limits (e.g., title length)
+        If there are any contradictions, REJECT with specific details.
 
         ## Keywords That Should Be Addressed
 
-        ${middleSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+        ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
 
-        ## Minor Sections to Review
+        ## Sections to Review
 
-        **Major Index**: ${props.minorEvent.majorIndex}
-        **Middle Index**: ${props.minorEvent.middleIndex}
+        **Module Index**: ${props.sectionEvent.moduleIndex}
+        **Unit Index**: ${props.sectionEvent.unitIndex}
 
-        ${props.minorEvent.minorSections
+        ${props.sectionEvent.sectionSections
           .map(
             (section, index) => `
-        ### Minor Section ${index + 1}: ${section.title}
+        ### Section ${index + 1}: ${section.title}
 
         ${section.content}
         `,
@@ -97,6 +108,6 @@ export const transformAnalyzeWriteMinorReviewHistories = (
       `,
       },
     ],
-    userMessage: "Review the minor sections and approve or reject.",
+    userMessage: "Review the sections and approve or reject.",
   };
 };

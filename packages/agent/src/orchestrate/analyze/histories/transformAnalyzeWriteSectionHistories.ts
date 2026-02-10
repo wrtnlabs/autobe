@@ -1,8 +1,8 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -12,21 +12,21 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteMinorHistories = (
+export const transformAnalyzeWriteSectionHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
-    majorIndex: number;
-    middleIndex: number;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    moduleIndex: number;
+    unitIndex: number;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const majorSection = props.majorEvent.majorSections[props.majorIndex];
-  const middleSection = props.middleEvent.middleSections[props.middleIndex];
+  const moduleSection = props.moduleEvent.moduleSections[props.moduleIndex];
+  const unitSection = props.unitEvent.unitSections[props.unitIndex];
 
   return {
     histories: [
@@ -49,7 +49,7 @@ export const transformAnalyzeWriteMinorHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MINOR,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_SECTION,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -63,31 +63,39 @@ export const transformAnalyzeWriteMinorHistories = (
 
         ## Document Context
 
-        **Document Title**: ${props.majorEvent.title}
-        **Document Summary**: ${props.majorEvent.summary}
+        **Document Title**: ${props.moduleEvent.title}
+        **Document Summary**: ${props.moduleEvent.summary}
 
-        ## Parent Major Section
+        ## Parent Module Section
 
-        **Major Index**: ${props.majorIndex}
-        **Title**: ${majorSection?.title ?? "Unknown"}
-        **Purpose**: ${majorSection?.purpose ?? "Unknown"}
+        **Module Index**: ${props.moduleIndex}
+        **Title**: ${moduleSection?.title ?? "Unknown"}
+        **Purpose**: ${moduleSection?.purpose ?? "Unknown"}
+        **Content**: ${moduleSection?.content ?? "No content"}
 
-        ## Parent Middle Section
+        ## Parent Unit Section
 
-        **Middle Index**: ${props.middleIndex}
-        **Title**: ${middleSection?.title ?? "Unknown"}
-        **Purpose**: ${middleSection?.purpose ?? "Unknown"}
-        **Content**: ${middleSection?.content ?? "Unknown"}
+        **Unit Index**: ${props.unitIndex}
+        **Title**: ${unitSection?.title ?? "Unknown"}
+        **Purpose**: ${unitSection?.purpose ?? "Unknown"}
+        **Content**: ${unitSection?.content ?? "Unknown"}
+
+        ## CRITICAL: Value Consistency
+
+        **You MUST use the EXACT same values defined in parent sections above.**
+        If the parent section says "10MB file limit", you MUST use 10MB, not 25MB or 5MB.
+        If the parent section says "5 attachments maximum", you MUST use 5, not 10.
+        Any deviation will cause the review to REJECT your output.
 
         ## Keywords to Address
 
-        You MUST create minor sections that address these keywords:
+        You MUST create sections that address these keywords:
 
-        ${middleSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+        ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
 
         ## Your Task
 
-        Create detailed minor sections (#### level) with EARS-formatted requirements
+        Create detailed sections (#### level) with EARS-formatted requirements
         that address ALL the keywords above.
         ${
           props.feedback
@@ -103,6 +111,6 @@ export const transformAnalyzeWriteMinorHistories = (
       `,
       },
     ],
-    userMessage: `Create detailed minor sections with EARS requirements for "${middleSection?.title ?? "Unknown"}".`,
+    userMessage: `Create detailed sections with EARS requirements for "${unitSection?.title ?? "Unknown"}".`,
   };
 };

@@ -1,26 +1,26 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Middle Section Review agent.
+ * Application interface for the Unit Section Review agent.
  *
- * This agent is responsible for validating the middle section structure
- * produced by the Middle Generation agent before allowing progression
- * to minor section generation.
+ * This agent is responsible for validating the unit section structure
+ * produced by the Unit Generation agent before allowing progression
+ * to section generation.
  */
-export interface IAutoBeAnalyzeWriteMiddleReviewApplication {
+export interface IAutoBeAnalyzeWriteUnitReviewApplication {
   /**
-   * Process middle section review task or preliminary data requests.
+   * Process unit section review task or preliminary data requests.
    *
-   * Reviews and validates the middle-level structure within a major section,
+   * Reviews and validates the unit-level structure within a module section,
    * ensuring alignment with the parent section and proper coverage of
    * functional requirements.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMiddleReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteUnitReviewApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
+export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -32,8 +32,8 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
      * - What additional context do you need for validation?
      *
      * For completion:
-     * - How well do the middle sections align with the major section?
-     * - Are the keywords adequate for guiding minor generation?
+     * - How well do the unit sections align with the module section?
+     * - Are the keywords adequate for guiding section generation?
      * - What specific issues need to be addressed?
      */
     thinking: string;
@@ -45,7 +45,7 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
   }
 
   /**
-   * Request to complete the middle section review.
+   * Request to complete the unit section review.
    *
    * Provides the review verdict along with feedback and optional revisions.
    */
@@ -56,15 +56,15 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
     type: "complete";
 
     /**
-     * Index of the parent major section being reviewed.
+     * Index of the parent module section being reviewed.
      */
-    majorIndex: number;
+    moduleIndex: number;
 
     /**
-     * Whether the middle section structure passed review.
+     * Whether the unit section structure passed review.
      *
-     * If true: Minor section generation can proceed.
-     * If false: Middle generation must be retried with feedback.
+     * If true: Section generation can proceed.
+     * If false: Unit generation must be retried with feedback.
      */
     approved: boolean;
 
@@ -72,11 +72,11 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
      * Detailed review feedback.
      *
      * Review criteria evaluated:
-     * - Alignment with parent major section's purpose
+     * - Alignment with parent module section's purpose
      * - Completeness of functional requirement coverage
      * - Non-overlapping section boundaries
      * - Appropriate granularity for the document's scope
-     * - Keywords adequately represent minor section topics
+     * - Keywords adequately represent section topics
      *
      * For rejected submissions:
      * - Specific issues identified
@@ -87,19 +87,19 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
     feedback: string;
 
     /**
-     * Revised middle sections if modifications were made.
+     * Revised unit sections if modifications were made.
      *
      * Only provided if the reviewer made direct corrections.
      */
-    revisedSections?: IRevisedMiddleSection[];
+    revisedSections?: IRevisedUnitSection[];
   }
 
   /**
-   * Structure for revised middle sections.
+   * Structure for revised unit sections.
    */
-  export interface IRevisedMiddleSection {
+  export interface IRevisedUnitSection {
     /**
-     * Title of the middle section.
+     * Title of the unit section.
      */
     title: string;
 
@@ -114,7 +114,7 @@ export namespace IAutoBeAnalyzeWriteMiddleReviewApplication {
     content: string;
 
     /**
-     * Keywords for minor section guidance.
+     * Keywords for section guidance.
      */
     keywords: string[];
   }

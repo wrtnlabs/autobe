@@ -1,26 +1,26 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Major Section (#) generation agent.
+ * Application interface for the Module Section (#) generation agent.
  *
  * This agent is responsible for creating the top-level document structure
- * including title, summary, and major section outlines in the hierarchical
+ * including title, summary, and module section outlines in the hierarchical
  * requirements documentation process.
  */
-export interface IAutoBeAnalyzeWriteMajorApplication {
+export interface IAutoBeAnalyzeWriteModuleApplication {
   /**
-   * Process major section generation task or preliminary data requests.
+   * Process module section generation task or preliminary data requests.
    *
    * Creates the document's top-level structure including title, summary,
-   * and major section definitions that will guide subsequent middle and
-   * minor section generation.
+   * and module section definitions that will guide subsequent unit and
+   * section generation.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMajorApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteModuleApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMajorApplication {
+export namespace IAutoBeAnalyzeWriteModuleApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -36,7 +36,7 @@ export namespace IAutoBeAnalyzeWriteMajorApplication {
      * For completion (complete):
      * - What document structure have you designed?
      * - Why is this structure appropriate for the requirements?
-     * - Summarize the major sections and their purposes.
+     * - Summarize the module sections and their purposes.
      *
      * This reflection helps you avoid duplicate requests and premature completion.
      */
@@ -46,7 +46,7 @@ export namespace IAutoBeAnalyzeWriteMajorApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles) or major section generation
+     * (getAnalysisFiles, getPreviousAnalysisFiles) or module section generation
      * (complete). When preliminary returns empty array, that type is removed
      * from the union, physically preventing repeated calls.
      */
@@ -54,11 +54,11 @@ export namespace IAutoBeAnalyzeWriteMajorApplication {
   }
 
   /**
-   * Request to generate major section structure.
+   * Request to generate module section structure.
    *
    * Creates the document's top-level hierarchy including title, executive summary,
-   * and major section definitions. This structure must be approved by the review
-   * agent before middle section generation begins.
+   * and module section definitions. This structure must be approved by the review
+   * agent before unit section generation begins.
    */
   export interface IComplete {
     /**
@@ -92,30 +92,30 @@ export namespace IAutoBeAnalyzeWriteMajorApplication {
     summary: string;
 
     /**
-     * Array of major sections defined for this document.
+     * Array of module sections defined for this document.
      *
-     * Each major section represents a top-level heading (## level) that
+     * Each module section represents a top-level heading (## level) that
      * organizes related requirements and functionality. The sections should:
      * - Cover all aspects of the system requirements
      * - Have clear, non-overlapping boundaries
      * - Be ordered logically (overview → features → constraints)
      *
-     * Typical major sections include:
+     * Typical module sections include:
      * - Business Model & User Actors
      * - Functional Requirements
      * - Non-Functional Requirements
      * - Security Requirements
      * - Business Rules & Policies
      */
-    majorSections: IMajorSection[];
+    moduleSections: IModuleSection[];
   }
 
   /**
-   * Structure representing a single major section.
+   * Structure representing a single module section.
    */
-  export interface IMajorSection {
+  export interface IModuleSection {
     /**
-     * Title of the major section (## level heading).
+     * Title of the module section (## level heading).
      *
      * Should be descriptive and indicate the section's focus area.
      */
@@ -131,11 +131,11 @@ export namespace IAutoBeAnalyzeWriteMajorApplication {
     purpose: string;
 
     /**
-     * Initial content for the major section.
+     * Initial content for the module section.
      *
      * Introductory content that appears after the section heading,
-     * before any middle sections. Should provide context and overview
-     * for the topics covered in this major section.
+     * before any unit sections. Should provide context and overview
+     * for the topics covered in this module section.
      */
     content: string;
   }

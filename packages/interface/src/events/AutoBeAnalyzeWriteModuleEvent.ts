@@ -3,28 +3,28 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired during the major section (#) generation phase of the hierarchical
+ * Event fired during the module section (#) generation phase of the hierarchical
  * requirements analysis process.
  *
  * This event represents the first step in the hierarchical document generation
  * pipeline where the Analyze Writer Agent creates the document's top-level
- * structure including title, summary, and major section outlines.
+ * structure including title, summary, and module section outlines.
  *
- * The Major Agent operates as part of the "generate → review" pattern where:
- * 1. Major sections are generated with title, summary, and section purposes
- * 2. Major Review Agent validates the structure before proceeding
- * 3. Only after approval do Middle sections get generated
+ * The Module Agent operates as part of the "generate → review" pattern where:
+ * 1. Module sections are generated with title, summary, and section purposes
+ * 2. Module Review Agent validates the structure before proceeding
+ * 3. Only after approval do Unit sections get generated
  *
- * Key characteristics of the major generation process:
+ * Key characteristics of the module generation process:
  * - Establishes document title and executive summary
- * - Defines major section boundaries and purposes
- * - Creates the foundational structure for subsequent middle/minor sections
+ * - Defines module section boundaries and purposes
+ * - Creates the foundational structure for subsequent unit/section sections
  * - Must be approved by review before lower-level generation begins
  *
  * @author AutoBE
  */
-export interface AutoBeAnalyzeWriteMajorEvent
-  extends AutoBeEventBase<"analyzeWriteMajor">,
+export interface AutoBeAnalyzeWriteModuleEvent
+  extends AutoBeEventBase<"analyzeWriteModule">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -44,30 +44,30 @@ export interface AutoBeAnalyzeWriteMajorEvent
   summary: string;
 
   /**
-   * Array of major sections defined for this document.
+   * Array of module sections defined for this document.
    *
-   * Each major section represents a top-level heading (## level) with its
+   * Each module section represents a top-level heading (## level) with its
    * title, purpose, and initial content. These sections establish the
    * document's primary structure.
    */
-  majorSections: AutoBeAnalyzeWriteMajorEvent.IMajorSection[];
+  moduleSections: AutoBeAnalyzeWriteModuleEvent.IModuleSection[];
 
   /**
-   * Current iteration number of the major section generation.
+   * Current iteration number of the module section generation.
    *
-   * Indicates which version of the major structure is being generated.
+   * Indicates which version of the module structure is being generated.
    * Increments with each retry after review feedback.
    */
   step: number;
 }
 
-export namespace AutoBeAnalyzeWriteMajorEvent {
+export namespace AutoBeAnalyzeWriteModuleEvent {
   /**
-   * Structure representing a single major section in the document.
+   * Structure representing a single module section in the document.
    */
-  export interface IMajorSection {
+  export interface IModuleSection {
     /**
-     * Title of the major section (## level heading).
+     * Title of the module section (## level heading).
      */
     title: string;
 
@@ -80,10 +80,10 @@ export namespace AutoBeAnalyzeWriteMajorEvent {
     purpose: string;
 
     /**
-     * Initial content for the major section.
+     * Initial content for the module section.
      *
      * Introductory content that appears after the section heading,
-     * before any middle sections.
+     * before any unit sections.
      */
     content: string;
   }

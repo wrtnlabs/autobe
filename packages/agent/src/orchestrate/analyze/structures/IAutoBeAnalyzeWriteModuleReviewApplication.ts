@@ -1,25 +1,25 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Major Section Review agent.
+ * Application interface for the Module Section Review agent.
  *
- * This agent is responsible for validating the major section structure
- * produced by the Major Generation agent before allowing progression
- * to middle section generation.
+ * This agent is responsible for validating the module section structure
+ * produced by the Module Generation agent before allowing progression
+ * to unit section generation.
  */
-export interface IAutoBeAnalyzeWriteMajorReviewApplication {
+export interface IAutoBeAnalyzeWriteModuleReviewApplication {
   /**
-   * Process major section review task or preliminary data requests.
+   * Process module section review task or preliminary data requests.
    *
    * Reviews and validates the document's top-level structure, ensuring
    * it meets quality standards and properly covers all required topics.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMajorReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteModuleReviewApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
+export namespace IAutoBeAnalyzeWriteModuleReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -45,7 +45,7 @@ export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
   }
 
   /**
-   * Request to complete the major section review.
+   * Request to complete the module section review.
    *
    * Provides the review verdict (approved/rejected) along with feedback
    * and optional revisions to the structure.
@@ -57,10 +57,10 @@ export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
     type: "complete";
 
     /**
-     * Whether the major section structure passed review.
+     * Whether the module section structure passed review.
      *
-     * If true: Middle section generation can proceed.
-     * If false: Major generation must be retried with the provided feedback.
+     * If true: Unit section generation can proceed.
+     * If false: Module generation must be retried with the provided feedback.
      */
     approved: boolean;
 
@@ -69,7 +69,7 @@ export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
      *
      * For approved submissions:
      * - Confirmation of met criteria
-     * - Minor suggestions for future reference (optional)
+     * - Suggestions for future reference (optional)
      *
      * For rejected submissions:
      * - Specific issues identified
@@ -80,7 +80,7 @@ export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
      * Review criteria evaluated:
      * - Title appropriateness and clarity
      * - Summary completeness and accuracy
-     * - Major section coverage (all required topics)
+     * - Module section coverage (all required topics)
      * - Non-overlapping section boundaries
      * - Logical organization
      */
@@ -99,20 +99,20 @@ export namespace IAutoBeAnalyzeWriteMajorReviewApplication {
     revisedSummary?: string;
 
     /**
-     * Revised major sections if modifications were made.
+     * Revised module sections if modifications were made.
      *
      * Only provided if the reviewer made direct corrections to fix
-     * minor issues while still approving the overall structure.
+     * issues while still approving the overall structure.
      */
-    revisedSections?: IRevisedMajorSection[];
+    revisedSections?: IRevisedModuleSection[];
   }
 
   /**
-   * Structure for revised major sections.
+   * Structure for revised module sections.
    */
-  export interface IRevisedMajorSection {
+  export interface IRevisedModuleSection {
     /**
-     * Title of the major section.
+     * Title of the module section.
      */
     title: string;
 

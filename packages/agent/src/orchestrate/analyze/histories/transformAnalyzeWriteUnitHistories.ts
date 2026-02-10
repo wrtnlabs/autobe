@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
+  AutoBeAnalyzeWriteModuleEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -11,18 +11,18 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteMiddleHistories = (
+export const transformAnalyzeWriteUnitHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    majorIndex: number;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    moduleIndex: number;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const majorSection = props.majorEvent.majorSections[props.majorIndex];
+  const moduleSection = props.moduleEvent.moduleSections[props.moduleIndex];
 
   return {
     histories: [
@@ -45,7 +45,7 @@ export const transformAnalyzeWriteMiddleHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MIDDLE,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -59,14 +59,14 @@ export const transformAnalyzeWriteMiddleHistories = (
 
         ## Document Context
 
-        **Document Title**: ${props.majorEvent.title}
-        **Document Summary**: ${props.majorEvent.summary}
+        **Document Title**: ${props.moduleEvent.title}
+        **Document Summary**: ${props.moduleEvent.summary}
 
-        ## Approved Major Section Structure
+        ## Approved Module Section Structure
 
-        Here are all the major sections for context:
+        Here are all the module sections for context:
 
-        ${props.majorEvent.majorSections
+        ${props.moduleEvent.moduleSections
           .map(
             (section, index) => `
         ### ${index + 1}. ${section.title}
@@ -75,16 +75,23 @@ export const transformAnalyzeWriteMiddleHistories = (
           )
           .join("\n")}
 
-        ## Your Task: Create Middle Sections for Major Section ${props.majorIndex + 1}
+        ## Your Task: Create Unit Sections for Module Section ${props.moduleIndex + 1}
 
-        You need to create middle sections (### level) for this major section:
+        You need to create unit sections (### level) for this module section:
 
-        **Major Section**: ${majorSection?.title ?? "Unknown"}
-        **Major Index**: ${props.majorIndex}
-        **Purpose**: ${majorSection?.purpose ?? "Unknown"}
-        **Content**: ${majorSection?.content ?? "Unknown"}
+        **Module Section**: ${moduleSection?.title ?? "Unknown"}
+        **Module Index**: ${props.moduleIndex}
+        **Purpose**: ${moduleSection?.purpose ?? "Unknown"}
+        **Content**: ${moduleSection?.content ?? "Unknown"}
 
-        Create middle sections that break down this major section into functional groupings.
+        ## CRITICAL: Value Consistency
+
+        **You MUST use the EXACT same values defined in the module section content above.**
+        If the module section says "10MB file limit", you MUST use 10MB, not 25MB or 5MB.
+        If the module section says "5 attachments maximum", you MUST use 5, not 10.
+        Any deviation will cause the review to REJECT your output.
+
+        Create unit sections that break down this module section into functional groupings.
         ${
           props.feedback
             ? `
@@ -99,6 +106,6 @@ export const transformAnalyzeWriteMiddleHistories = (
       `,
       },
     ],
-    userMessage: `Create middle sections (### level) for major section "${majorSection?.title ?? "Unknown"}".`,
+    userMessage: `Create unit sections (### level) for module section "${moduleSection?.title ?? "Unknown"}".`,
   };
 };

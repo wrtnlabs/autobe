@@ -1,8 +1,8 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -12,18 +12,18 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteMiddleReviewHistories = (
+export const transformAnalyzeWriteUnitReviewHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const majorSection =
-    props.majorEvent.majorSections[props.middleEvent.majorIndex];
+  const moduleSection =
+    props.moduleEvent.moduleSections[props.unitEvent.moduleIndex];
 
   return {
     histories: [
@@ -46,7 +46,7 @@ export const transformAnalyzeWriteMiddleReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MIDDLE_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -58,20 +58,26 @@ export const transformAnalyzeWriteMiddleReviewHistories = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Parent Major Section Context
+        ## Parent Module Section Context
 
-        **Major Index**: ${props.middleEvent.majorIndex}
-        **Major Section Title**: ${majorSection?.title ?? "Unknown"}
-        **Major Section Purpose**: ${majorSection?.purpose ?? "Unknown"}
+        **Module Index**: ${props.unitEvent.moduleIndex}
+        **Module Section Title**: ${moduleSection?.title ?? "Unknown"}
+        **Module Section Purpose**: ${moduleSection?.purpose ?? "Unknown"}
 
-        ## Middle Sections to Review
+        ### Module Section Content (Reference for Consistency)
+        ${moduleSection?.content ?? "No content available"}
 
-        Please review the following middle sections:
+        **IMPORTANT**: Any numeric values, limits, or constraints defined in the module section above
+        MUST be consistent with the unit sections below. If there are contradictions, REJECT.
 
-        ${props.middleEvent.middleSections
+        ## Unit Sections to Review
+
+        Please review the following unit sections:
+
+        ${props.unitEvent.unitSections
           .map(
             (section, index) => `
-        ### Middle Section ${index + 1}: ${section.title}
+        ### Unit Section ${index + 1}: ${section.title}
         **Purpose**: ${section.purpose}
         **Content**: ${section.content}
         **Keywords**: ${section.keywords.join(", ")}
@@ -82,14 +88,14 @@ export const transformAnalyzeWriteMiddleReviewHistories = (
         ## Review Criteria
 
         Please evaluate:
-        1. Do middle sections align with the major section's purpose?
+        1. Do unit sections align with the module section's purpose?
         2. Are all functional areas adequately covered?
         3. Are section boundaries clear (no overlap)?
-        4. Are keywords specific and actionable for minor section generation?
+        4. Are keywords specific and actionable for section generation?
         5. Is content at appropriate abstraction level?
       `,
       },
     ],
-    userMessage: "Review the middle sections and approve or reject.",
+    userMessage: "Review the unit sections and approve or reject.",
   };
 };

@@ -2,8 +2,8 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMajorReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -13,30 +13,33 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteMajorReviewHistories } from "./histories/transformAnalyzeWriteMajorReviewHistories";
-import { IAutoBeAnalyzeWriteMajorReviewApplication } from "./structures/IAutoBeAnalyzeWriteMajorReviewApplication";
+import { transformAnalyzeWriteUnitHistories } from "./histories/transformAnalyzeWriteUnitHistories";
+import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 
-export const orchestrateAnalyzeWriteMajorReview = async (
+export const orchestrateAnalyzeWriteUnit = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    moduleIndex: number;
     progress: AutoBeProgressEventBase;
+    feedback?: string;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMajorReviewEvent> => {
+): Promise<AutoBeAnalyzeWriteUnitEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteMajorReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteMajorReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IComplete | null> =
       {
         value: null,
       };
@@ -48,23 +51,22 @@ export const orchestrateAnalyzeWriteMajorReview = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteMajorReviewHistories(ctx, {
+      ...transformAnalyzeWriteUnitHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent: props.majorEvent,
+        moduleEvent: props.moduleEvent,
+        moduleIndex: props.moduleIndex,
+        feedback: props.feedback,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteMajorReviewEvent = {
+    const event: AutoBeAnalyzeWriteUnitEvent = {
       type: SOURCE,
       id: v7(),
-      approved: pointer.value.approved,
-      feedback: pointer.value.feedback,
-      revisedTitle: pointer.value.revisedTitle,
-      revisedSummary: pointer.value.revisedSummary,
-      revisedSections: pointer.value.revisedSections,
+      moduleIndex: pointer.value.moduleIndex,
+      unitSections: pointer.value.unitSections,
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
@@ -72,29 +74,48 @@ export const orchestrateAnalyzeWriteMajorReview = async (
       completed: props.progress.completed,
       created_at: new Date().toISOString(),
     };
-    ctx.dispatch(event);
+    await ctx.dispatch(event);
     return out(result)(event);
   });
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteMajorReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteMajorReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteMajorReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteMajorReviewApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
+  ): IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteUnitApplication.IProps>(input);
+    if (result.success === false) return result;
+
+    // Validate English-only content for complete requests
+    if (result.data.request.type === "complete") {
+      const englishValidation = validateUnitSectionContent(
+        result.data.request.unitSections,
+      );
+      if (!englishValidation.valid) {
+        return {
+          success: false,
+          errors: englishValidation.errors.map((error) => ({
+            path: "$input.request.unitSections",
+            expected: "English-only content (no Chinese, Korean, Japanese)",
+            value: error,
+          })),
+          data: result.data,
+        };
+      }
       return result;
+    }
+
     return props.preliminary.validate({
       thinking: result.data.thinking,
       request: result.data.request,
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteMajorReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteUnitApplication>({
       validate: {
         process: validate,
       },
@@ -109,8 +130,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteMajorReviewApplication,
+    } satisfies IAutoBeAnalyzeWriteUnitApplication,
   };
 }
 
-const SOURCE = "analyzeWriteMajorReview" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteUnit" satisfies AutoBeEventSource;

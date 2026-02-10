@@ -1,38 +1,38 @@
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
-import { AutoBeAnalyzeWriteMajorEvent } from "./AutoBeAnalyzeWriteMajorEvent";
+import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
 
 /**
- * Event fired during the review phase of major section (#) generation.
+ * Event fired during the review phase of module section (#) generation.
  *
  * This event represents the quality assurance step in the hierarchical document
- * generation pipeline. The Major Review Agent validates the document structure
- * produced by the Major Agent before allowing progression to middle section
+ * generation pipeline. The Module Review Agent validates the document structure
+ * produced by the Module Agent before allowing progression to unit section
  * generation.
  *
  * Review criteria include:
  * - Document title appropriateness and clarity
  * - Summary completeness and accuracy
- * - Major section coverage (all required topics included)
+ * - Module section coverage (all required topics included)
  * - Section purposes are clear and non-overlapping
  * - Logical organization of sections
  *
  * Review outcomes:
- * - **Approved**: Structure is valid, proceed to middle section generation
+ * - **Approved**: Structure is valid, proceed to unit section generation
  * - **Rejected**: Structure needs revision, provide specific feedback
  *
  * @author AutoBE
  */
-export interface AutoBeAnalyzeWriteMajorReviewEvent
-  extends AutoBeEventBase<"analyzeWriteMajorReview">,
+export interface AutoBeAnalyzeWriteModuleReviewEvent
+  extends AutoBeEventBase<"analyzeWriteModuleReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
-   * Whether the major section structure passed review.
+   * Whether the module section structure passed review.
    *
-   * If true, the middle section generation can proceed.
-   * If false, the major generation must be retried with feedback.
+   * If true, the unit section generation can proceed.
+   * If false, the module generation must be retried with feedback.
    */
   approved: boolean;
 
@@ -40,18 +40,18 @@ export interface AutoBeAnalyzeWriteMajorReviewEvent
    * Detailed review feedback.
    *
    * Contains specific validation results and recommendations.
-   * If approved, may contain minor suggestions for future reference.
+   * If approved, may contain suggestions for future reference.
    * If rejected, contains actionable feedback for revision.
    */
   feedback: string;
 
   /**
-   * Revised major sections if modifications were made during review.
+   * Revised module sections if modifications were made during review.
    *
    * If the reviewer made direct corrections to the structure,
    * this field contains the updated sections. Otherwise undefined.
    */
-  revisedSections?: AutoBeAnalyzeWriteMajorEvent.IMajorSection[];
+  revisedSections?: AutoBeAnalyzeWriteModuleEvent.IModuleSection[];
 
   /**
    * Revised title if modified during review.

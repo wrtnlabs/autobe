@@ -2,10 +2,8 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
-  AutoBeAnalyzeWriteMinorEvent,
-  AutoBeAnalyzeWriteMinorReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -16,31 +14,29 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteMinorReviewHistories } from "./histories/transformAnalyzeWriteMinorReviewHistories";
-import { IAutoBeAnalyzeWriteMinorReviewApplication } from "./structures/IAutoBeAnalyzeWriteMinorReviewApplication";
+import { transformAnalyzeWriteModuleReviewHistories } from "./histories/transformAnalyzeWriteModuleReviewHistories";
+import { IAutoBeAnalyzeWriteModuleReviewApplication } from "./structures/IAutoBeAnalyzeWriteModuleReviewApplication";
 
-export const orchestrateAnalyzeWriteMinorReview = async (
+export const orchestrateAnalyzeWriteModuleReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
-    middleEvent: AutoBeAnalyzeWriteMiddleEvent;
-    minorEvent: AutoBeAnalyzeWriteMinorEvent;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<AutoBeAnalyzeWriteMinorReviewEvent> => {
+): Promise<AutoBeAnalyzeWriteModuleReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteMinorReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeWriteModuleReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteMinorReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteModuleReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -52,24 +48,22 @@ export const orchestrateAnalyzeWriteMinorReview = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteMinorReviewHistories(ctx, {
+      ...transformAnalyzeWriteModuleReviewHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
-        majorEvent: props.majorEvent,
-        middleEvent: props.middleEvent,
-        minorEvent: props.minorEvent,
+        moduleEvent: props.moduleEvent,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteMinorReviewEvent = {
+    const event: AutoBeAnalyzeWriteModuleReviewEvent = {
       type: SOURCE,
       id: v7(),
-      majorIndex: pointer.value.majorIndex,
-      middleIndex: pointer.value.middleIndex,
       approved: pointer.value.approved,
       feedback: pointer.value.feedback,
+      revisedTitle: pointer.value.revisedTitle,
+      revisedSummary: pointer.value.revisedSummary,
       revisedSections: pointer.value.revisedSections,
       tokenUsage: result.tokenUsage,
       metric: result.metric,
@@ -78,20 +72,20 @@ export const orchestrateAnalyzeWriteMinorReview = async (
       completed: props.progress.completed,
       created_at: new Date().toISOString(),
     };
-    ctx.dispatch(event);
+    await ctx.dispatch(event);
     return out(result)(event);
   });
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteMinorReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteModuleReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteMinorReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteMinorReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteMinorReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeWriteModuleReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteModuleReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteModuleReviewApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -100,7 +94,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteMinorReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteModuleReviewApplication>({
       validate: {
         process: validate,
       },
@@ -115,8 +109,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteMinorReviewApplication,
+    } satisfies IAutoBeAnalyzeWriteModuleReviewApplication,
   };
 }
 
-const SOURCE = "analyzeWriteMinorReview" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteModuleReview" satisfies AutoBeEventSource;

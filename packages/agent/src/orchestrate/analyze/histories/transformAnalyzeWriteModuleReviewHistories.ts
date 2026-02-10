@@ -1,7 +1,7 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteMajorEvent,
+  AutoBeAnalyzeWriteModuleEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -11,12 +11,12 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteMajorReviewHistories = (
+export const transformAnalyzeWriteModuleReviewHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    majorEvent: AutoBeAnalyzeWriteMajorEvent;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => ({
@@ -38,7 +38,7 @@ export const transformAnalyzeWriteMajorReviewHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MAJOR_REVIEW,
+      text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MODULE_REVIEW,
     },
     ...(props.preliminary?.getHistories() ?? []),
     {
@@ -56,18 +56,18 @@ export const transformAnalyzeWriteMajorReviewHistories = (
         ${JSON.stringify(props.file)}
         \`\`\`
 
-        ## Major Section Structure to Review
+        ## Module Section Structure to Review
 
-        Please review the following major section structure:
+        Please review the following module section structure:
 
         ### Title
-        ${props.majorEvent.title}
+        ${props.moduleEvent.title}
 
         ### Summary
-        ${props.majorEvent.summary}
+        ${props.moduleEvent.summary}
 
-        ### Major Sections
-        ${props.majorEvent.majorSections
+        ### Module Sections
+        ${props.moduleEvent.moduleSections
           .map(
             (section, index) => `
         #### Section ${index + 1}: ${section.title}
@@ -89,5 +89,5 @@ export const transformAnalyzeWriteMajorReviewHistories = (
       `,
     },
   ],
-  userMessage: "Review the major section structure and approve or reject.",
+  userMessage: "Review the module section structure and approve or reject.",
 });

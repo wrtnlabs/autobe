@@ -1,26 +1,26 @@
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 
 /**
- * Application interface for the Minor Section Review agent.
+ * Application interface for the Section Review agent.
  *
- * This agent is responsible for validating the minor section content
- * produced by the Minor Generation agent, ensuring implementation-ready
+ * This agent is responsible for validating the section content
+ * produced by the Section Generation agent, ensuring implementation-ready
  * quality before final document assembly.
  */
-export interface IAutoBeAnalyzeWriteMinorReviewApplication {
+export interface IAutoBeAnalyzeWriteSectionReviewApplication {
   /**
-   * Process minor section review task or preliminary data requests.
+   * Process section review task or preliminary data requests.
    *
-   * Reviews and validates the detailed content within a middle section,
+   * Reviews and validates the detailed content within a unit section,
    * ensuring quality standards for EARS format, Mermaid syntax, and
    * overall specification completeness.
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteMinorReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteSectionReviewApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteMinorReviewApplication {
+export namespace IAutoBeAnalyzeWriteSectionReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -46,7 +46,7 @@ export namespace IAutoBeAnalyzeWriteMinorReviewApplication {
   }
 
   /**
-   * Request to complete the minor section review.
+   * Request to complete the section review.
    *
    * Provides the review verdict along with feedback and optional revisions.
    * This is the final quality gate before document assembly.
@@ -58,20 +58,20 @@ export namespace IAutoBeAnalyzeWriteMinorReviewApplication {
     type: "complete";
 
     /**
-     * Index of the grandparent major section.
+     * Index of the grandparent module section.
      */
-    majorIndex: number;
+    moduleIndex: number;
 
     /**
-     * Index of the parent middle section.
+     * Index of the parent unit section.
      */
-    middleIndex: number;
+    unitIndex: number;
 
     /**
-     * Whether the minor section content passed review.
+     * Whether the section content passed review.
      *
      * If true: Content is ready for final document assembly.
-     * If false: Minor generation must be retried with feedback.
+     * If false: Section generation must be retried with feedback.
      */
     approved: boolean;
 
@@ -79,7 +79,7 @@ export namespace IAutoBeAnalyzeWriteMinorReviewApplication {
      * Detailed review feedback.
      *
      * Review criteria evaluated:
-     * - Alignment with parent middle section's keywords and purpose
+     * - Alignment with parent unit section's keywords and purpose
      * - EARS format compliance for requirements
      * - Mermaid diagram syntax correctness
      * - Implementation-ready specification quality
@@ -95,19 +95,19 @@ export namespace IAutoBeAnalyzeWriteMinorReviewApplication {
     feedback: string;
 
     /**
-     * Revised minor sections if modifications were made.
+     * Revised sections if modifications were made.
      *
      * Only provided if the reviewer made direct corrections.
      */
-    revisedSections?: IRevisedMinorSection[];
+    revisedSections?: IRevisedSectionSection[];
   }
 
   /**
-   * Structure for revised minor sections.
+   * Structure for revised sections.
    */
-  export interface IRevisedMinorSection {
+  export interface IRevisedSectionSection {
     /**
-     * Title of the minor section.
+     * Title of the section.
      */
     title: string;
 
