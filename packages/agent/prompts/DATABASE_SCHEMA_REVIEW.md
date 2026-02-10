@@ -64,6 +64,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |-------|-----------|------------|
 | Duplicate plain + gin index | Same field in both | Keep gin only |
 | Duplicate unique + plain index | Same field in both | Keep unique only |
+| Duplicate unique + gin index | Same field in both | Keep unique only |
 | Subset index | Index (A) when (A, B) exists | Remove subset index |
 | Duplicate composite index | Same field combination | Keep only one |
 

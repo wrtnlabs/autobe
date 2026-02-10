@@ -137,6 +137,7 @@ shopping_order_issue_of_sellers: {
   @@unique([shopping_order_issue_id])
 }
 ```
+
 ### 2.5. Foreign Key Direction (CRITICAL)
 
 **Actor/parent tables must NEVER have foreign keys pointing to child tables. FK direction is ALWAYS child → parent.**
@@ -172,6 +173,8 @@ relation: {
   oppositeName: "passwordResets"    // camelCase
 }
 ```
+
+---
 
 ## 3. Required Design Patterns
 
@@ -382,6 +385,7 @@ FINAL DESIGN:
 
 **Normalization:**
 - [ ] 3NF compliant
+- [ ] No JSON/array in string fields (unless user requested)
 - [ ] No nullable fields for 1:1 entities
 - [ ] No multiple nullable actor FKs
 
