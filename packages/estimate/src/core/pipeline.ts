@@ -26,9 +26,6 @@ export class EvaluationPipeline {
     this.verbose = verbose;
   }
 
-  /**
-   * Get the evaluation context (available after evaluate() is called)
-   */
   getContext(): EvaluationContext | null {
     return this.context;
   }
@@ -260,7 +257,6 @@ export class EvaluationPipeline {
     reference: ReferenceInfo,
     startTime: number
   ): EvaluationResult {
-    // Collect all scoring phase issues
     const scoringIssues = [
       ...phases.gate.issues,
       ...phases.documentQuality.issues,
@@ -270,14 +266,13 @@ export class EvaluationPipeline {
       ...phases.apiCompleteness.issues,
     ];
 
-    // Remove duplicates
-    const uniqueIssues = this.removeDuplicateIssues(scoringIssues);
+    // Deduplicate issues by key
+    const uniqueIssues = this.deduplicateIssues(scoringIssues);
 
     const criticalIssues = uniqueIssues.filter(i => i.severity === 'critical');
     const warnings = uniqueIssues.filter(i => i.severity === 'warning');
     const suggestions = uniqueIssues.filter(i => i.severity === 'suggestion');
 
-    // Calculate total score from new phases only
     let totalScore: number;
     if (!phases.gate.passed) {
       totalScore = 0;
@@ -315,19 +310,15 @@ export class EvaluationPipeline {
     };
   }
 
-  private removeDuplicateIssues(issues: Issue[]): Issue[] {
-    const seen = new Set<string>();
-    const unique: Issue[] = [];
-
+  private deduplicateIssues(issues: Issue[]): Issue[] {
+    const seen = new Map<string, Issue>();
     for (const issue of issues) {
       const key = `${issue.code}:${issue.location?.file || ''}:${issue.location?.line || ''}`;
       if (!seen.has(key)) {
-        seen.add(key);
-        unique.push(issue);
+        seen.set(key, issue);
       }
     }
-
-    return unique;
+    return Array.from(seen.values());
   }
 
   private log(msg: string): void {

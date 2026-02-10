@@ -2,5 +2,6 @@ export * from './types';
 export { buildContext, EvaluationPipeline } from './core';
 export * from './evaluators';
 export { generateJsonReport, generateMarkdownReport } from './reporters';
-export { runCLI, createCLI, parseOptions } from './cli';
-export const VERSION = '0.1.0';
+export { runCLI, createProgram } from './cli';
+export type { CLIOptions } from './cli';
+export const VERSION = '0.2.0';

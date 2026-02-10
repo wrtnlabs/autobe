@@ -14,7 +14,8 @@ import type {
 export async function buildContext(rootPath: string): Promise<EvaluationContext> {
   const project = await scanProjectStructure(rootPath);
   const dependencies = await loadDependencies(rootPath);
-  const files = await discoverSourceFiles(rootPath, project);
+  const ignorePatterns = loadIgnorePatterns(rootPath);
+  const files = await discoverSourceFiles(rootPath, project, ignorePatterns);
   const requirements = await loadRequirements(project.analysisDir);
 
   const tsconfigPath = fs.existsSync(path.join(rootPath, 'tsconfig.json'))
@@ -28,6 +29,61 @@ export async function buildContext(rootPath: string): Promise<EvaluationContext>
     requirements,
     tsconfigPath,
   };
+}
+
+/**
+ * Load ignore patterns from .gitignore and tsconfig.json
+ */
+function loadIgnorePatterns(rootPath: string): string[] {
+  const patterns: string[] = [
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/build/**',
+    '**/.git/**',
+    '**/coverage/**',
+    '**/*.d.ts',
+  ];
+
+  // Read .gitignore
+  const gitignorePath = path.join(rootPath, '.gitignore');
+  if (fs.existsSync(gitignorePath)) {
+    try {
+      const content = fs.readFileSync(gitignorePath, 'utf-8');
+      const gitignorePatterns = content
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line && !line.startsWith('#'))
+        .map(pattern => {
+          if (pattern.startsWith('/')) {
+            return pattern.slice(1);
+          }
+          if (!pattern.includes('/')) {
+            return `**/${pattern}`;
+          }
+          return pattern;
+        });
+      patterns.push(...gitignorePatterns);
+    } catch {
+      // Ignore read errors
+    }
+  }
+
+  // Read tsconfig.json exclude
+  const tsconfigPath = path.join(rootPath, 'tsconfig.json');
+  if (fs.existsSync(tsconfigPath)) {
+    try {
+      const content = fs.readFileSync(tsconfigPath, 'utf-8');
+      const tsconfig = JSON.parse(content);
+      if (tsconfig.exclude && Array.isArray(tsconfig.exclude)) {
+        patterns.push(...tsconfig.exclude);
+      }
+    } catch {
+      // Ignore parse errors
+    }
+  }
+
+  // Remove duplicates
+  return [...new Set(patterns)];
 }
 
 /**
@@ -107,23 +163,12 @@ async function loadDependencies(rootPath: string): Promise<ProjectDependencies> 
 }
 
 /**
- * Ignore patterns for file discovery
- */
-const IGNORE_PATTERNS = [
-  '**/node_modules/**',
-  '**/dist/**',
-  '**/build/**',
-  '**/.git/**',
-  '**/coverage/**',
-  '**/*.d.ts',
-];
-
-/**
  * Discover source files - ONLY AutoBE generated folders
  */
 async function discoverSourceFiles(
   rootPath: string,
-  project: AutoBEProjectStructure
+  project: AutoBEProjectStructure,
+  ignorePatterns: string[]
 ): Promise<SourceFiles> {
   const files: SourceFiles = {
     typescript: [],
@@ -138,7 +183,7 @@ async function discoverSourceFiles(
   if (project.controllersDir) {
     files.controllers = await glob('**/*.ts', {
       cwd: project.controllersDir,
-      ignore: IGNORE_PATTERNS,
+      ignore: ignorePatterns,
       absolute: true,
       nodir: true,
     });
@@ -148,7 +193,7 @@ async function discoverSourceFiles(
   if (project.providersDir) {
     files.providers = await glob('**/*.ts', {
       cwd: project.providersDir,
-      ignore: IGNORE_PATTERNS,
+      ignore: ignorePatterns,
       absolute: true,
       nodir: true,
     });
@@ -158,7 +203,7 @@ async function discoverSourceFiles(
   if (project.structuresDir) {
     files.structures = await glob('**/*.ts', {
       cwd: project.structuresDir,
-      ignore: IGNORE_PATTERNS,
+      ignore: ignorePatterns,
       absolute: true,
       nodir: true,
     });
@@ -168,7 +213,7 @@ async function discoverSourceFiles(
   if (project.testDir) {
     files.tests = await glob('**/*.ts', {
       cwd: project.testDir,
-      ignore: IGNORE_PATTERNS,
+      ignore: ignorePatterns,
       absolute: true,
       nodir: true,
     });

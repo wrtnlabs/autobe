@@ -5,9 +5,9 @@ import type { EvaluationContext, Issue } from '../../types';
 import { createIssue } from '../../types';
 
 /**
- * Syntax Evaluator
- * Checks TypeScript syntax errors using the compiler API
- */
+* Syntax Evaluator
+* Checks TypeScript syntax errors using the compiler API
+*/
 export class SyntaxEvaluator extends GateEvaluator {
   readonly name = 'SyntaxEvaluator';
   readonly description = 'Checks TypeScript syntax errors';
@@ -100,9 +100,6 @@ export class SyntaxEvaluator extends GateEvaluator {
   }
 
   private getSyntaxDiagnostics(sourceFile: ts.SourceFile): ts.Diagnostic[] {
-    // Parse-time syntax errors
-    const diagnostics: ts.Diagnostic[] = [];
-
     // Use a minimal compiler host to get syntax diagnostics
     const compilerHost: ts.CompilerHost = {
       getSourceFile: (fileName) =>
