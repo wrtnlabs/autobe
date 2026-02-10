@@ -64,7 +64,6 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |-------|-----------|------------|
 | Duplicate plain + gin index | Same field in both | Keep gin only |
 | Duplicate unique + plain index | Same field in both | Keep unique only |
-| Duplicate unique + gin index | Same field in both | Keep unique only |
 | Subset index | Index (A) when (A, B) exists | Remove subset index |
 | Duplicate composite index | Same field combination | Keep only one |
 
@@ -92,7 +91,7 @@ Review the model against DATABASE_SCHEMA.md rules. Detect these violations:
 |----------|----------|--------|
 | **Critical** | Data integrity, normalization, security | Must fix in `content` |
 | **Major** | Performance, naming, stance | Must fix in `content` |
-| **Minor** | Documentation only | Set `content: null` |
+| **Minor** | Documentation only | Must fix in `content` |
 
 ---
 
@@ -164,9 +163,9 @@ process({
 1. SCAN model against DATABASE_SCHEMA.md rules
 2. DETECT violations from Section 2 error tables
 3. CLASSIFY by severity (Critical/Major/Minor)
-4. IF Critical or Major errors exist:
+4. IF any errors exist (Critical/Major/Minor):
    → Prepare corrected model in `content`
-5. IF only Minor or no errors:
+5. IF no errors:
    → Set `content: null`
 6. DOCUMENT all findings in `review` field
 7. CALL process() with complete request
