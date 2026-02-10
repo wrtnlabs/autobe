@@ -68,9 +68,34 @@ bbs_article_comments: {
 }
 ```
 
-### 2.2. 1:1 Relationship Pattern (CRITICAL)
+### 2.2. No JSON/Array in String Fields (1NF)
+
+**Do not store JSON, arrays, or composite data as string fields. Use normalized child tables.**
+
+**Only exception**: User explicitly requests a JSON field in requirements.
+
+```typescript
+// ❌ WRONG: JSON disguised as string
+products: {
+  metadata: string       // "{"color":"red","size":"L"}"
+  tags: string           // "["sale","new","featured"]"
+}
+
+// ✅ CORRECT: Normalized child table with key-value
+products: { id, name, ... }
+product_attributes: {
+  id: uuid
+  product_id: uuid (FK)
+  key: string            // "color", "size"
+  value: string          // "red", "L"
+  @@unique([product_id, key])
+}
+```
+
+### 2.3. 1:1 Relationship Pattern (CRITICAL)
 
 **NEVER use nullable fields for 1:1 dependent entities. Use separate tables.**
+
 ```typescript
 // ❌ WRONG: Nullable fields for optional entity
 shopping_sale_questions: {
@@ -87,9 +112,10 @@ shopping_sale_question_answers: {
 }
 ```
 
-### 2.3. Polymorphic Ownership Pattern (CRITICAL)
+### 2.4. Polymorphic Ownership Pattern (CRITICAL)
 
 **NEVER use multiple nullable FKs for different actor types. Use main entity + subtype pattern.**
+
 ```typescript
 // ❌ WRONG: Multiple nullable actor FKs
 shopping_order_issues: {
@@ -111,7 +137,7 @@ shopping_order_issue_of_sellers: {
   @@unique([shopping_order_issue_id])
 }
 ```
-### 2.4. Foreign Key Direction (CRITICAL)
+### 2.5. Foreign Key Direction (CRITICAL)
 
 **Actor/parent tables must NEVER have foreign keys pointing to child tables. FK direction is ALWAYS child → parent.**
 ```typescript
@@ -130,7 +156,7 @@ todo_app_user_password_resets: {
 }
 ```
 
-### 2.5. Relation Naming (CRITICAL)
+### 2.6. Relation Naming (CRITICAL)
 
 **All relation names and oppositeNames MUST be camelCase. Never use snake_case.**
 ```typescript
@@ -146,8 +172,6 @@ relation: {
   oppositeName: "passwordResets"    // camelCase
 }
 ```
-```
----
 
 ## 3. Required Design Patterns
 
@@ -219,6 +243,7 @@ mv_bbs_article_last_snapshots: {
 | snake_case oppositeName | oppositeName MUST be camelCase (e.g., `sessions` not `user_sessions`, `editHistories` not `edit_histories`) |
 | Duplicate oppositeName | Each oppositeName targeting the same model must be unique (e.g., use `customerOrders` and `sellerOrders`, not both `orders`) |
 | Non-uuid foreignField type | foreignField type MUST always be `uuid`. Never use `string`, `datetime`, `uri`, or other types for FK fields |
+| JSON/array as string field | 1NF violation - use key-value child table (unless user explicitly requests JSON) |
 ```
 
 ---
@@ -229,10 +254,12 @@ mv_bbs_article_last_snapshots: {
 ```typescript
 {
   name: "target_table_name",
-  description: `Summary sentence.
+  description: `
+    Summary sentence.
 
-Detailed explanation with proper line breaks.
-Additional context and relationships.`,
+    Detailed explanation with proper line breaks.
+    Additional context and relationships.
+  `,
   material: false,
   stance: "primary" | "subsidiary" | "snapshot" | "actor" | "session",
   
