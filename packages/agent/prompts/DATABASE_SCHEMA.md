@@ -244,7 +244,6 @@ mv_bbs_article_last_snapshots: {
 | Duplicate oppositeName | Each oppositeName targeting the same model must be unique (e.g., use `customerOrders` and `sellerOrders`, not both `orders`) |
 | Non-uuid foreignField type | foreignField type MUST always be `uuid`. Never use `string`, `datetime`, `uri`, or other types for FK fields |
 | JSON/array as string field | 1NF violation - use key-value child table (unless user explicitly requests JSON) |
-```
 
 ---
 
