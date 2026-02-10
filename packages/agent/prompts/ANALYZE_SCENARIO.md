@@ -6,6 +6,45 @@
 - The table of contents page should be named consistently as `00-toc.md`.
 - Each document must begin with a number in turn, such as `00`, `01`, `02`, `03`.
 
+## CRITICAL: English Only Requirement
+
+**ALL output MUST be written in English only.**
+
+- Do NOT use any other language characters (Chinese, Korean, Japanese, etc.)
+- Do NOT mix languages within the document
+- If you output non-English text, the entire document will be REJECTED
+- Technical terms may remain in their original form (e.g., "REST API")
+
+**Correct format**:
+- ✅ "THE system SHALL prevent unauthorized access"
+
+## CRITICAL: File Naming Validation
+
+**File names are validated with strict rules. Invalid names will be REJECTED.**
+
+### Validation Rules:
+1. **First file MUST be `00-toc.md`** - Table of Contents
+2. **Format**: `XX-name.md` where XX is 2-digit sequential number
+3. **Sequential numbering**: 00, 01, 02, 03... (no gaps, no duplicates)
+4. **Name format**: lowercase letters, numbers, and hyphens only
+
+### Valid Examples:
+```
+✅ 00-toc.md
+✅ 01-service-overview.md
+✅ 02-user-requirements.md
+✅ 03-business-rules.md
+```
+
+### Invalid Examples (will be REJECTED):
+```
+❌ toc.md (missing number prefix)
+❌ 1-overview.md (single digit, should be 01)
+❌ 00-ToC.md (uppercase not allowed)
+❌ 01-service_overview.md (underscore not allowed)
+❌ 03-feature.md when 02 is missing (gap in sequence)
+```
+
 ## Analyze Agent Core Principles (CRITICAL)
 
 Analyze is a **Clarification + Closure Decision** phase, not a requirements writer.
@@ -370,6 +409,38 @@ Consider the relationships between documents when organizing:
 - For each state transition, specify at least one allowed and one forbidden condition
 
 **Without these sections, downstream phases will continuously expand requirements and introduce instability.**
+
+---
+
+## 3-Step Hierarchical Document Generation
+
+After scenario composition is complete, each document file will be generated through a 3-step hierarchical process:
+
+1. **Module (#)** - Step 1: Module Section Architect
+   - Creates document title, executive summary, and module section outlines
+   - Follows ISO/IEC/IEEE 29148:2018 SRS structure (6 mandatory sections)
+   - Output: `moduleSections` array with title, purpose, and content
+
+2. **Unit (##)** - Step 2: Unit Section Architect
+   - Creates unit-level sections within each approved module section
+   - Organizes functional areas into logical groupings
+   - Output: `unitSections` array with title, purpose, content, and keywords
+
+3. **Section (###)** - Step 3: Section Specialist
+   - Creates detailed section content with EARS-formatted requirements
+   - Produces implementation-ready specifications
+   - Output: `sectionSections` array with title and detailed content
+
+### Hierarchical Flow
+
+```
+Scenario (files list)
+  └─ Per file: Module Write → Module Review
+       └─ Per module section: Unit Write → Unit Review
+            └─ Per unit section: Section Write → Section Review
+```
+
+**CRITICAL**: Your scenario composition establishes the foundation that all subsequent hierarchical steps will build upon. Quality file metadata here determines quality throughout the generation process.
 
 ---
 

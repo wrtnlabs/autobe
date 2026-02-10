@@ -59,22 +59,22 @@ export class AutoBeListener {
       analyzeWrite: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMajor: async (event) => {
+      analyzeWriteModule: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMajorReview: async (event) => {
+      analyzeWriteModuleReview: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMiddle: async (event) => {
+      analyzeWriteUnit: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMiddleReview: async (event) => {
+      analyzeWriteUnitReview: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMinor: async (event) => {
+      analyzeWriteSection: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteMinorReview: async (event) => {
+      analyzeWriteSectionReview: async (event) => {
         this.accumulate(event);
       },
       analyzeReview: async (event) => {

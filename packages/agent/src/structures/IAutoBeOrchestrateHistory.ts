@@ -15,7 +15,7 @@ import { IMicroAgenticaHistoryJson } from "@agentica/core";
  *
  * @example
  *   ```typescript
- *   const history = transformAnalyzeWriteHistories(ctx, { scenario, file });
+ *   const history = transformAnalyzeWriteModuleHistories(ctx, { scenario, file, preliminary });
  *   const result = await ctx.conversate({
  *     histories: history.histories,
  *     userMessage: history.userMessage,

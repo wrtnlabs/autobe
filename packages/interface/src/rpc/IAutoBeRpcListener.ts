@@ -4,12 +4,12 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeWriteEvent,
-  AutoBeAnalyzeWriteMajorEvent,
-  AutoBeAnalyzeWriteMajorReviewEvent,
-  AutoBeAnalyzeWriteMiddleEvent,
-  AutoBeAnalyzeWriteMiddleReviewEvent,
-  AutoBeAnalyzeWriteMinorEvent,
-  AutoBeAnalyzeWriteMinorReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteModuleReviewEvent,
+  AutoBeAnalyzeWriteUnitEvent,
+  AutoBeAnalyzeWriteUnitReviewEvent,
+  AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -181,57 +181,57 @@ export interface IAutoBeRpcListener {
   analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
 
   /**
-   * Optional handler for major section generation events (V2 hierarchical writing).
+   * Optional handler for module section generation events (V2 hierarchical writing).
    *
-   * Called when the hierarchical writing agent generates major section structure
-   * including document title, summary, and major section outlines.
+   * Called when the hierarchical writing agent generates module section structure
+   * including document title, summary, and module section outlines.
    */
-  analyzeWriteMajor?(event: AutoBeAnalyzeWriteMajorEvent): Promise<void>;
+  analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for major section review events (V2 hierarchical writing).
+   * Optional handler for module section review events (V2 hierarchical writing).
    *
-   * Called when the major section structure is reviewed and validated
-   * before proceeding to middle section generation.
+   * Called when the module section structure is reviewed and validated
+   * before proceeding to unit section generation.
    */
-  analyzeWriteMajorReview?(
-    event: AutoBeAnalyzeWriteMajorReviewEvent,
+  analyzeWriteModuleReview?(
+    event: AutoBeAnalyzeWriteModuleReviewEvent,
   ): Promise<void>;
 
   /**
-   * Optional handler for middle section generation events (V2 hierarchical writing).
+   * Optional handler for unit section generation events (V2 hierarchical writing).
    *
-   * Called when the hierarchical writing agent generates middle section content
-   * for a specific major section.
+   * Called when the hierarchical writing agent generates unit section content
+   * for a specific module section.
    */
-  analyzeWriteMiddle?(event: AutoBeAnalyzeWriteMiddleEvent): Promise<void>;
+  analyzeWriteUnit?(event: AutoBeAnalyzeWriteUnitEvent): Promise<void>;
 
   /**
-   * Optional handler for middle section review events (V2 hierarchical writing).
+   * Optional handler for unit section review events (V2 hierarchical writing).
    *
-   * Called when the middle section content is reviewed and validated
-   * before proceeding to minor section generation.
+   * Called when the unit section content is reviewed and validated
+   * before proceeding to section section generation.
    */
-  analyzeWriteMiddleReview?(
-    event: AutoBeAnalyzeWriteMiddleReviewEvent,
+  analyzeWriteUnitReview?(
+    event: AutoBeAnalyzeWriteUnitReviewEvent,
   ): Promise<void>;
 
   /**
-   * Optional handler for minor section generation events (V2 hierarchical writing).
+   * Optional handler for section section generation events (V2 hierarchical writing).
    *
-   * Called when the hierarchical writing agent generates detailed minor section
+   * Called when the hierarchical writing agent generates detailed section
    * content with EARS-formatted requirements.
    */
-  analyzeWriteMinor?(event: AutoBeAnalyzeWriteMinorEvent): Promise<void>;
+  analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
 
   /**
-   * Optional handler for minor section review events (V2 hierarchical writing).
+   * Optional handler for section review events (V2 hierarchical writing).
    *
-   * Called when the minor section content is reviewed for quality assurance
+   * Called when the section content is reviewed for quality assurance
    * before final document assembly.
    */
-  analyzeWriteMinorReview?(
-    event: AutoBeAnalyzeWriteMinorReviewEvent,
+  analyzeWriteSectionReview?(
+    event: AutoBeAnalyzeWriteSectionReviewEvent,
   ): Promise<void>;
 
   /**

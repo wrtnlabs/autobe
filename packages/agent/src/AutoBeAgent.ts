@@ -5,6 +5,7 @@ import {
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
+  AutoBeEvent,
   AutoBeHistory,
   AutoBePhase,
   AutoBeProcessAggregateCollection,
@@ -255,16 +256,18 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         ...e,
         type: "vendorRequest",
         source: "facade",
+        stream: e.body.stream ?? true,
         retry: 0,
-      }).catch(() => {});
+      } as unknown as AutoBeEvent).catch(() => {});
     });
     this.agentica_.on("response", (e) => {
       void this.dispatch({
         ...e,
         type: "vendorResponse",
         source: "facade",
+        stream: e.body.stream ?? true,
         retry: 0,
-      }).catch(() => {});
+      } as unknown as AutoBeEvent).catch(() => {});
     });
   }
 

@@ -160,9 +160,8 @@ export const createAutoBeContext = (props: {
                 AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR,
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
-            // stream: false,
             stream: next.enforceFunctionCall === false,
-          } satisfies IMicroAgenticaConfig,
+          } as IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
         });

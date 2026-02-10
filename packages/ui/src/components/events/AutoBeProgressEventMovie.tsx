@@ -175,35 +175,35 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Describe Image Draft",
           description: "Describing the image draft",
         };
-      case "analyzeWriteMajor":
+      case "analyzeWriteModule":
         return {
-          title: "Analyze Write Major",
-          description: "Generating major section structure",
+          title: "Analyze Write Module",
+          description: "Generating module section structure",
         };
-      case "analyzeWriteMajorReview":
+      case "analyzeWriteModuleReview":
         return {
-          title: "Analyze Write Major Review",
-          description: "Reviewing major section structure",
+          title: "Analyze Write Module Review",
+          description: "Reviewing module section structure",
         };
-      case "analyzeWriteMiddle":
+      case "analyzeWriteUnit":
         return {
-          title: "Analyze Write Middle",
-          description: "Generating middle section content",
+          title: "Analyze Write Unit",
+          description: "Generating unit section content",
         };
-      case "analyzeWriteMiddleReview":
+      case "analyzeWriteUnitReview":
         return {
-          title: "Analyze Write Middle Review",
-          description: "Reviewing middle section content",
+          title: "Analyze Write Unit Review",
+          description: "Reviewing unit section content",
         };
-      case "analyzeWriteMinor":
+      case "analyzeWriteSection":
         return {
-          title: "Analyze Write Minor",
-          description: "Generating minor section details",
+          title: "Analyze Write Section",
+          description: "Generating section details",
         };
-      case "analyzeWriteMinorReview":
+      case "analyzeWriteSectionReview":
         return {
-          title: "Analyze Write Minor Review",
-          description: "Reviewing minor section details",
+          title: "Analyze Write Section Review",
+          description: "Reviewing section details",
         };
       default:
         event satisfies never;

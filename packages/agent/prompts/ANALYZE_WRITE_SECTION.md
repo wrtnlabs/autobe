@@ -39,11 +39,6 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - If you output non-English text, the entire document will be REJECTED
 - Technical terms may remain in their original form (e.g., "REST API")
 
-**Examples of violations that will cause rejection**:
-- ❌ "THE system SHALL 阻止 unauthorized access"
-- ❌ "사용자는 로그인할 수 있다"
-- ❌ "システムは検証する"
-
 **Correct format**:
 - ✅ "THE system SHALL prevent unauthorized access"
 

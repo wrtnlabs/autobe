@@ -139,12 +139,12 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "jsonValidateError":
     case "consentFunctionCall":
     case "preliminary":
-    case "analyzeWriteMajor":
-    case "analyzeWriteMajorReview":
-    case "analyzeWriteMiddle":
-    case "analyzeWriteMiddleReview":
-    case "analyzeWriteMinor":
-    case "analyzeWriteMinorReview":
+    case "analyzeWriteModule":
+    case "analyzeWriteModuleReview":
+    case "analyzeWriteUnit":
+    case "analyzeWriteUnitReview":
+    case "analyzeWriteSection":
+    case "analyzeWriteSectionReview":
       return null;
     default:
       back satisfies never;
