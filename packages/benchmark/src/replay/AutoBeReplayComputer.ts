@@ -39,30 +39,15 @@ export namespace AutoBeReplayComputer {
 
     // the formula to compute the benchmark score
     const compute = (summary: IAutoBePlaygroundReplay.ISummary): number => {
-      // for type check
-      const calculateFormula = {
-        analyze: [10, () => 0],
-        database: [20, () => 0.5],
-        interface: [30, () => 0.5],
-        test: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
-        realize: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
-      } as const satisfies Record<
-        AutoBePhase,
-        [number, (commodity: Record<string, number>) => number]
-      >;
-
       const getScore = (phase: AutoBePhase): number => {
         const state = summary[phase];
-
         if (state === null) return 0;
 
-        const [success, failure] = calculateFormula[phase];
-
+        const [success, failure] = FORMULA[phase];
         return state.success === true
           ? success
           : success * failure(state.commodity);
       };
-
       return round(sum(typia.misc.literals<AutoBePhase>().map(getScore)));
     };
 
@@ -186,3 +171,15 @@ export namespace AutoBeReplayComputer {
 }
 
 const round = (value: number) => Math.round(value * 100) / 100;
+
+// for type safety
+const FORMULA: Record<
+  AutoBePhase,
+  [number, (commodity: Record<string, number>) => number]
+> = {
+  analyze: [10, () => 0],
+  database: [20, () => 0.5],
+  interface: [30, () => 0.5],
+  test: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
+  realize: [20, (c) => Math.max(0.5, 1 - (c.errors * 3) / c.functions)],
+};
