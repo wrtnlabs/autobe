@@ -11,7 +11,7 @@
     "build": "tsc",
     "start": "ts-node src/bin/estimate.ts",
     "dev": "ts-node-dev src/bin/estimate.ts",
-    "test": "vitest",
+    "test": "vitest --passWithNoTests",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
