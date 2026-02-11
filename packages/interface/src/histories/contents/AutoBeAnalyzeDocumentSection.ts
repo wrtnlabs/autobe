@@ -26,7 +26,7 @@ export interface AutoBeAnalyzeDocumentSection {
    * Stable, globally-unique section identifier.
    *
    * This ID is referenced by every `sourceSectionIds` field in the SRS
-   * layer. It must remain constant across serialisation round-trips.
+   * layer. It must remain constant across serialization round-trips.
    *
    * Recommended format: `${documentId}:${orderKey}:${normalizedTitle}`
    */
@@ -109,7 +109,7 @@ export namespace AutoBeAnalyzeDocumentSection {
     /**
      * Starting line number in the source file (0-based, inclusive).
      *
-     * Omitted when the section was synthesised during review or amendment.
+     * Omitted when the section was synthesized during review or amendment.
      */
     startLine?: number;
 

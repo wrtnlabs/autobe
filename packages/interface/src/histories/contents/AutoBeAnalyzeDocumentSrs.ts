@@ -9,7 +9,7 @@ import { AutoBeAnalyzeDocumentSystemOverview } from "./AutoBeAnalyzeDocumentSyst
  * Semantically typed SRS (Software Requirements Specification).
  *
  * Structured according to the **ISO/IEC/IEEE 29148:2018 Analyst View**,
- * consisting of exactly 6 top-level sections. This structure is optimised
+ * consisting of exactly 6 top-level sections. This structure is optimized
  * for downstream code generation (Database / Interface / Test / Realize).
  *
  * API-level detail (endpoints, request/response DTOs) is explicitly

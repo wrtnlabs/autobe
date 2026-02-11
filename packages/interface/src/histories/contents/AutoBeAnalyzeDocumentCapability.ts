@@ -3,7 +3,7 @@ import { tags } from "typia";
 /**
  * SRS Section 4 — System Capabilities and Functional Requirements.
  *
- * Organises requirements into a three-tier hierarchy:
+ * Organizes requirements into a three-tier hierarchy:
  * **Capability → Use Case → Functional Requirement**, with cross-cutting
  * Business Rules. This section corresponds to the "System Capabilities
  * and Functional Requirements" clause of ISO/IEC/IEEE 29148:2018.
@@ -45,7 +45,7 @@ export interface AutoBeAnalyzeDocumentCapability {
     & tags.MinItems<1>;
 
   /**
-   * Domain-level business rules that constrain behaviour.
+   * Domain-level business rules that constrain behavior.
    *
    * Business rules are invariants independent of any specific feature.
    * They often map to database constraints or cross-cutting validation.
@@ -116,7 +116,7 @@ export namespace AutoBeAnalyzeDocumentCapability {
      * Free-form actor labels involved in this use case.
      *
      * Each entry is a plain descriptive string (e.g. "guest", "member",
-     * "shopOwner"). There is no centralised actor registry in the Analyze
+     * "shopOwner"). There is no centralized actor registry in the Analyze
      * Phase; downstream phases that need a formal actor mapping are
      * responsible for resolving these labels.
      */

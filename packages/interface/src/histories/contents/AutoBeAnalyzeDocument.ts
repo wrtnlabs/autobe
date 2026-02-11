@@ -37,7 +37,7 @@ export interface AutoBeAnalyzeDocument {
   /**
    * Unique identifier for this document snapshot.
    *
-   * Must be stable across serialisation round-trips.
+   * Must be stable across serialization round-trips.
    * Recommended: UUID v7 for time-sortability.
    */
   documentId: string & tags.MinLength<1>;
