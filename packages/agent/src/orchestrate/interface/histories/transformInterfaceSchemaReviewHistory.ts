@@ -6,6 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { transformInterfaceOperationParameterHistory } from "./transformInterfaceOperationParameterHistory";
 
 export const transformInterfaceSchemaReviewHistory = (props: {
   state: AutoBeState;
@@ -73,6 +74,11 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         \`\`\`json
         ${JSON.stringify(props.reviewOperations)}
         \`\`\`
+
+        ${transformInterfaceOperationParameterHistory({
+          typeName: props.typeName,
+          operations: props.reviewOperations,
+        })}
 
         ## DTO type to review
 

@@ -34,7 +34,7 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Circular back-reference in DTO | `erase` | Remove `articles[]` from User (if in DTO) |
 | Aggregation relation should not appear | `exclude` | `comments[]` excluded from Read DTO |
 | Actor relation in Create/Update DTO | `exclude` | `member` excluded (FK from JWT) |
-| Relation whose FK is a path parameter | `exclude` | `article` excluded (FK from URL path) |
+| Relation whose FK is a path parameter (Create/Update) | `exclude` | `article` excluded (FK from URL path) |
 | Relation field with wrong documentation only | `depict` | Fix specification/description on relation |
 | Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
 | Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
@@ -44,7 +44,7 @@ Enumerate every property in the schema, then assign exactly one revision to each
 - `exclude`: DB relation should never appear in this DTO → declare exclusion
   - Aggregation relations (use counts instead)
   - Actor relations in Create/Update DTO (FK resolved from JWT)
-  - Relations whose FK comes from path parameters
+  - Relations whose FK comes from path parameters (Create/Update DTO)
 
 In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `exclude`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
 

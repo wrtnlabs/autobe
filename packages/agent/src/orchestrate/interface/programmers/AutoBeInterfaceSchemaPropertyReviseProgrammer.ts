@@ -133,7 +133,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     if (props.revise.type === "create" || props.revise.type === "update")
       AutoBeJsonSchemaValidator.validateSchema({
         typeName: props.typeName,
-        schema: props.schema,
+        schema: props.revise.schema,
         operations: [],
         path: `${props.path}.schema`,
         errors: props.errors,

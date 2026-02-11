@@ -157,8 +157,8 @@ Unlike other operations, `exclude` uses `databaseSchemaProperty` instead of `key
 Use when a database property should NOT appear in this DTO:
 - Auto-generated fields: `id`, `created_at` excluded from Create DTO
 - Actor identity FK: `member_id`, `author_id` excluded from Create/Update DTO (resolved from JWT)
-- Path parameter FK: parent FK excluded from Create DTO when already in URL path
-- Session FK: `session_id` excluded from all DTOs (server-managed)
+- Path parameter FK: parent FK excluded from Create/Update DTO when already in URL path
+- Session FK: `session_id` excluded from Create/Update DTO (server-managed, not user-provided)
 - Summary DTO: only essential display fields included
 - Immutability: `id`, `created_at` excluded from Update DTO
 - Security: `password`, `salt`, `refresh_token` excluded from Read DTO
@@ -269,11 +269,12 @@ interface IArticle {
   category: ICategory.ISummary; // category_id → category
 }
 
-// Request DTO: FK → FK (keep _id, keep scalar)
+// Request DTO: user-specified FK → keep as scalar
 interface IArticle.ICreate {
-  author_id: string;   // ✅ Keep as scalar
-  category_id: string; // ✅ Keep as scalar
-  // ❌ NEVER: author: IUser.ISummary
+  category_id: string; // ✅ Keep as scalar (user chooses category)
+  // ❌ NEVER: category: ICategory.ISummary
+  // ❌ author_id excluded: actor identity resolved from JWT
+  // ❌ author_session_id excluded: session identity resolved from JWT
 }
 ```
 

@@ -28,8 +28,8 @@ You do not use `erase` — that belongs to phantom review.
 **When to use `exclude`**:
 - Auto-generated fields: `id`, `created_at` in Create DTO
 - Actor identity FK: `member_id`, `author_id` in Create/Update DTO (resolved from JWT)
-- Path parameter FK: `article_id` in Create DTO when already in URL path
-- Session FK: `session_id` (server-managed, never in body)
+- Path parameter FK: `article_id` in Create/Update DTO when already in URL path
+- Session FK: `session_id` in Create/Update DTO (server-managed, not user-provided)
 - Summary DTO: only essential display fields included
 - Immutability: `id`, `created_at` in Update DTO
 - Aggregation relations: use computed counts instead

@@ -6,6 +6,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { transformInterfaceOperationParameterHistory } from "./transformInterfaceOperationParameterHistory";
 
 export const transformInterfaceSchemaRefineHistory = (props: {
   state: AutoBeState;
@@ -74,6 +75,11 @@ export const transformInterfaceSchemaRefineHistory = (props: {
           \`\`\`json
           ${JSON.stringify(props.operations)}
           \`\`\`
+
+          ${transformInterfaceOperationParameterHistory({
+            typeName: props.typeName,
+            operations: props.operations,
+          })}
 
           ## DTO type to refine
 
