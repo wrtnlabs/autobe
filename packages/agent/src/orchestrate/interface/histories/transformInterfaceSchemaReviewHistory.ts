@@ -1,4 +1,4 @@
-import { AutoBeOpenApi } from "@autobe/interface";
+import { AutoBeDatabase, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
@@ -25,7 +25,18 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   typeName: string;
   reviewOperations: AutoBeOpenApi.IOperation[];
   reviewSchema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
-}): IAutoBeOrchestrateHistory => ({
+}): IAutoBeOrchestrateHistory => {
+  const everyModels: AutoBeDatabase.IModel[] =
+    props.state.database?.result.data.files.flatMap((f) => f.models) ?? [];
+  const model: AutoBeDatabase.IModel | undefined = props.reviewSchema[
+    "x-autobe-database-schema"
+  ]
+    ? everyModels.find(
+        (m) => m.name === props.reviewSchema["x-autobe-database-schema"],
+      )
+    : undefined;
+
+  return {
   histories: [
     {
       type: "systemMessage",
@@ -95,8 +106,10 @@ export const transformInterfaceSchemaReviewHistory = (props: {
           .map((k) => `- ${k}`)
           .join("\n")}
 
+        ${transformDatabaseSchemaProperties({ everyModels, model })}
+
         IMPORTANT: Only this schema needs review and potential modification.
-        Other schemas in the complete schema set are provided for reference 
+        Other schemas in the complete schema set are provided for reference
         only.
       `,
     },
@@ -108,5 +121,52 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     ${Object.keys(props.reviewSchema.properties)
       .map((k) => `- ${k}`)
       .join("\n")}
+
+    ${transformDatabaseSchemaProperties({ everyModels, model })}
   `,
-});
+};
+};
+
+function transformDatabaseSchemaProperties(props: {
+  everyModels: AutoBeDatabase.IModel[];
+  model: AutoBeDatabase.IModel | undefined;
+}): string {
+  if (props.model === undefined) return "";
+
+  // Columns: primary key, plain fields, FK columns
+  const columns: string[] = [
+    props.model.primaryField.name,
+    ...props.model.plainFields.map((f) => f.name),
+    ...props.model.foreignFields.map((f) => f.name),
+  ];
+
+  // Belongs-to relations (from FK)
+  const belongsTo: string[] = props.model.foreignFields.map(
+    (f) => f.relation.name,
+  );
+
+  // Has-many/has-one relations (opposite side)
+  const hasRelations: string[] = props.everyModels
+    .flatMap((m) =>
+      m.foreignFields
+        .filter((f) => f.relation.targetModel === props.model!.name)
+        .map((f) => f.relation.oppositeName),
+    )
+    .filter((name): name is string => name !== undefined);
+
+  return StringUtil.trim`
+    ## Database Schema Properties for \`${props.model.name}\`
+
+    Every DB property must be explicitly handled: either mapped to a DTO property
+    or \`exclude\`d with a reason. Use these as \`databaseSchemaProperty\` values.
+
+    **Columns** (scalar fields):
+    ${columns.map((c) => `- \`${c}\``).join("\n")}
+
+    **Belongs-to Relations** (FK → object):
+    ${belongsTo.length > 0 ? belongsTo.map((r) => `- \`${r}\``).join("\n") : "- (none)"}
+
+    **Has-many/Has-one Relations** (reverse side):
+    ${hasRelations.length > 0 ? hasRelations.map((r) => `- \`${r}\``).join("\n") : "- (none)"}
+  `;
+}
