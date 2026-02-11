@@ -1,7 +1,9 @@
 import {
   AutoBeDatabase,
+  AutoBeInterfaceSchemaPropertyCreate,
   AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyExclude,
   AutoBeInterfaceSchemaPropertyKeep,
   AutoBeInterfaceSchemaPropertyNullish,
   AutoBeInterfaceSchemaPropertyRevise,
@@ -42,20 +44,46 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       everyModels: props.everyModels,
     });
 
+    const model: AutoBeDatabase.IModel | undefined =
+      props.schema["x-autobe-database-schema"] !== undefined
+        ? props.everyModels.find(
+            (m) => m.name === props.schema["x-autobe-database-schema"],
+          )
+        : undefined;
+
     const $defs = props.application.functions[0].parameters.$defs;
-    const fix = (next: ILlmSchema | undefined): void => {
+    const fix = (
+      next: ILlmSchema | undefined,
+      fixKey: boolean = true,
+    ): void => {
       if (next === undefined) return;
       else if (LlmTypeChecker.isObject(next) === false) return;
 
-      const key: ILlmSchema | undefined = next.properties.key;
-      if (key === undefined || LlmTypeChecker.isString(key) === false) return;
-      key.enum = Object.keys(props.schema.properties);
+      if (fixKey === true) {
+        const key: ILlmSchema | undefined = next.properties.key;
+        if (key === undefined || LlmTypeChecker.isString(key) === false) return;
+        key.enum = Object.keys(props.schema.properties);
+      }
+      if (model !== undefined) {
+        const key: ILlmSchema | undefined =
+          next.properties.databaseSchemaProperty;
+        if (key === undefined || LlmTypeChecker.isString(key) === false) return;
+        key.enum = AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaProperties({
+          everyModels: props.everyModels,
+          model,
+        }).map((p) => p.key);
+      }
     };
+    fix(
+      $defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyCreate>()],
+      false,
+    );
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyDepict>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyExclude>()]);
   };
 
   export const validate = (props: {
