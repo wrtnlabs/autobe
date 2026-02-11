@@ -140,13 +140,13 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
       });
 
     // check database schema property
-    const dbSchemaPropp:
+    const dbSchemaProp:
       | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
       | undefined = validateDatabaseSchemaProperty(props);
-    if (dbSchemaPropp !== undefined)
+    if (dbSchemaProp !== undefined)
       validateNullable({
         ...props,
-        property: dbSchemaPropp,
+        property: dbSchemaProp,
       });
   };
 
