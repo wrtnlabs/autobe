@@ -9,16 +9,12 @@ export class DuplicationEvaluator extends BaseEvaluator {
   readonly phase = 'quality' as const;
   readonly description = 'Detects duplicate code blocks';
 
-  // Relaxed: 10 lines minimum (was 6)
   private readonly MIN_LINES = 10;
-  // Minimum characters for a block to be considered
   private readonly MIN_CHARS = 100;
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
-    const issues: Issue[] = [];
     const startTime = performance.now();
 
-    // Only check non-test files
     const filesToCheck = [
       ...context.files.controllers,
       ...context.files.providers,
@@ -26,29 +22,38 @@ export class DuplicationEvaluator extends BaseEvaluator {
 
     const codeBlocks: Map<string, { file: string; line: number }[]> = new Map();
 
-    for (const filePath of filesToCheck) {
-      try {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        this.collectBlocks(filePath, content, codeBlocks);
-      } catch {
-        // Skip
+    // Read all files in parallel
+    const fileContents = await Promise.all(
+      filesToCheck.map(async (filePath) => {
+        try {
+          const content = await fs.promises.readFile(filePath, 'utf-8');
+          return { filePath, content };
+        } catch {
+          return null;
+        }
+      })
+    );
+
+    // Collect blocks from all files
+    for (const result of fileContents) {
+      if (result) {
+        this.collectBlocks(result.filePath, result.content, codeBlocks);
       }
     }
 
-    // Find duplicates (only report once per duplicate group)
+    // Find duplicates
+    const issues: Issue[] = [];
     const reportedHashes = new Set<string>();
     for (const [hash, locations] of codeBlocks) {
       if (locations.length > 1 && !reportedHashes.has(hash)) {
         reportedHashes.add(hash);
-        issues.push(
-          createIssue({
-            severity: 'warning',
-            category: 'duplication',
-            code: 'D001',
-            message: `Duplicate code block found in ${locations.length} locations`,
-            location: locations[0],
-          })
-        );
+        issues.push(createIssue({
+          severity: 'warning',
+          category: 'duplication',
+          code: 'D001',
+          message: `Duplicate code block found in ${locations.length} locations`,
+          location: locations[0],
+        }));
       }
     }
 
@@ -81,7 +86,6 @@ export class DuplicationEvaluator extends BaseEvaluator {
         .slice(i, i + this.MIN_LINES)
         .map(line => line.trim())
         .filter(line => {
-          // Skip empty lines, comments, imports
           return (
             line.length > 0 &&
             !line.startsWith('//') &&
@@ -93,10 +97,8 @@ export class DuplicationEvaluator extends BaseEvaluator {
         })
         .join('\n');
 
-      // Skip if block is too short or trivial
       if (block.length < this.MIN_CHARS) continue;
       
-      // Skip if block is mostly brackets/punctuation
       const codeChars = block.replace(/[{}\[\]();,\s]/g, '');
       if (codeChars.length < 30) continue;
 

@@ -1,6 +1,7 @@
 import type { EvaluationInput, EvaluationResult, EvaluationContext, PhaseResult, Issue, ReferenceInfo } from '../types';
 import { scoreToGrade, createEmptyPhaseResult, generateExplanation, PHASE_WEIGHTS } from '../types';
 import { buildContext } from './context-builder';
+import { ArrayUtil } from '@autobe/utils';
 
 // Gate evaluators
 import { SyntaxEvaluator, TypeEvaluator, PrismaEvaluator } from '../evaluators/gate';
@@ -17,6 +18,17 @@ import {
 // Reference evaluators (no score impact)
 import { ComplexityEvaluator, NamingEvaluator, JsDocEvaluator, DuplicationEvaluator } from '../evaluators/quality';
 import { SecurityEvaluator } from '../evaluators/safety';
+
+// Phase strategy definitions
+const phaseStrategies = [
+  { key: 'documentQuality', label: 'documentation', Evaluator: DocumentQualityEvaluator },
+  { key: 'requirementsCoverage', label: 'requirements coverage', Evaluator: RequirementsCoverageEvaluator },
+  { key: 'testCoverage', label: 'test coverage', Evaluator: TestCoverageEvaluator },
+  { key: 'logicCompleteness', label: 'incomplete implementations', Evaluator: LogicCompletenessEvaluator },
+  { key: 'apiCompleteness', label: 'API completeness', Evaluator: ApiCompletenessEvaluator },
+] as const;
+
+type PhaseKey = (typeof phaseStrategies)[number]['key'];
 
 export class EvaluationPipeline {
   private verbose: boolean;
@@ -48,44 +60,34 @@ export class EvaluationPipeline {
 
     if (!gateResult.passed && !input.options?.continueOnGateFailure) {
       this.log('Gate failed, stopping evaluation');
+      const emptyPhases = Object.fromEntries(
+        phaseStrategies.map(s => [s.key, createEmptyPhaseResult(s.key)])
+      ) as Record<PhaseKey, PhaseResult>;
+      
       return this.buildResult(input, this.context, {
         gate: gateResult,
-        documentQuality: createEmptyPhaseResult('documentQuality'),
-        requirementsCoverage: createEmptyPhaseResult('requirementsCoverage'),
-        testCoverage: createEmptyPhaseResult('testCoverage'),
-        logicCompleteness: createEmptyPhaseResult('logicCompleteness'),
-        apiCompleteness: createEmptyPhaseResult('apiCompleteness'),
+        ...emptyPhases,
       }, this.createEmptyReference(), startTime);
     }
 
-    // New scoring phases
-    this.log('\n[Document Quality] Evaluating documentation...');
-    const docQualityResult = await this.runDocumentQuality(this.context);
+    // Run all scoring phases in parallel using strategy pattern
+    this.log('\n[Scoring] Running evaluation phases...');
+    const phaseResults = await Promise.all(
+      phaseStrategies.map(strategy => this.runPhase(this.context!, strategy))
+    );
 
-    this.log('\n[Requirements Coverage] Evaluating requirements...');
-    const reqCoverageResult = await this.runRequirementsCoverage(this.context);
+    const phases = {
+      gate: gateResult,
+      ...Object.fromEntries(
+        phaseStrategies.map((s, i) => [s.key, phaseResults[i]])
+      ),
+    } as { gate: PhaseResult } & Record<PhaseKey, PhaseResult>;
 
-    this.log('\n[Test Coverage] Evaluating test coverage...');
-    const testCoverageResult = await this.runTestCoverage(this.context);
-
-    this.log('\n[Logic Completeness] Checking for incomplete code...');
-    const logicResult = await this.runLogicCompleteness(this.context);
-
-    this.log('\n[API Completeness] Evaluating API implementation...');
-    const apiResult = await this.runApiCompleteness(this.context);
-
-    // Reference info (no score impact)
+    // Reference info (no score impact) - run in parallel
     this.log('\n[Reference] Collecting code quality metrics...');
     const reference = await this.collectReferenceInfo(this.context);
 
-    return this.buildResult(input, this.context, {
-      gate: gateResult,
-      documentQuality: docQualityResult,
-      requirementsCoverage: reqCoverageResult,
-      testCoverage: testCoverageResult,
-      logicCompleteness: logicResult,
-      apiCompleteness: apiResult,
-    }, reference, startTime);
+    return this.buildResult(input, this.context, phases, reference, startTime);
   }
 
   private async runGate(context: EvaluationContext): Promise<PhaseResult> {
@@ -135,14 +137,6 @@ export class EvaluationPipeline {
     };
   }
 
-  const phaseStrategies = [
-    { key: 'documentQuality', label: 'documentation', Evaluator: DocumentQualityEvaluator },
-    { key: 'requirementsCoverage', label: 'requirements coverage', Evaluator: RequirementsCoverageEvaluator },
-    { key: 'testCoverage', label: 'test coverage', Evaluator: TestCoverageEvaluator },
-    { key: 'logicCompleteness', label: 'incomplete implementations', Evaluator: LogicCompletenessEvaluator },
-    { key: 'apiCompleteness', label: 'API completeness', Evaluator: ApiCompletenessEvaluator },
-  ] as const;
-  
   private async runPhase(
     context: EvaluationContext,
     strategy: (typeof phaseStrategies)[number]
@@ -155,22 +149,29 @@ export class EvaluationPipeline {
   }
 
   private async collectReferenceInfo(context: EvaluationContext): Promise<ReferenceInfo> {
-    this.log('  - Analyzing complexity...');
-    const complexityResult = await new ComplexityEvaluator().evaluate(context);
+    const referenceEvaluators = [
+      { key: 'complexity', Evaluator: ComplexityEvaluator, label: 'complexity' },
+      { key: 'duplication', Evaluator: DuplicationEvaluator, label: 'duplication' },
+      { key: 'naming', Evaluator: NamingEvaluator, label: 'naming' },
+      { key: 'jsdoc', Evaluator: JsDocEvaluator, label: 'JSDoc' },
+      { key: 'security', Evaluator: SecurityEvaluator, label: 'security' },
+    ] as const;
 
-    this.log('  - Analyzing duplication...');
-    const duplicationResult = await new DuplicationEvaluator().evaluate(context);
+    // Run all reference evaluators in parallel
+    const results = await Promise.all(
+      referenceEvaluators.map(async ({ key, Evaluator, label }) => {
+        this.log(`  - Analyzing ${label}...`);
+        const result = await new Evaluator().evaluate(context);
+        return { key, result };
+      })
+    );
 
-    this.log('  - Analyzing naming...');
-    const namingResult = await new NamingEvaluator().evaluate(context);
+    const resultMap = Object.fromEntries(
+      results.map(({ key, result }) => [key, result])
+    );
 
-    this.log('  - Analyzing JSDoc...');
-    const jsdocResult = await new JsDocEvaluator().evaluate(context);
-
-    this.log('  - Analyzing security...');
-    const securityResult = await new SecurityEvaluator().evaluate(context);
-
-    const complexFunctions = complexityResult.issues.filter(i => i.severity === 'critical').length;
+    const complexityResult = resultMap.complexity;
+    const complexFunctions = complexityResult.issues.filter((i: Issue) => i.severity === 'critical').length;
     const maxComplexity = complexityResult.metrics?.maxComplexity as number || 0;
 
     return {
@@ -181,20 +182,20 @@ export class EvaluationPipeline {
         issues: complexityResult.issues,
       },
       duplication: {
-        totalBlocks: duplicationResult.issues.length,
-        issues: duplicationResult.issues,
+        totalBlocks: resultMap.duplication.issues.length,
+        issues: resultMap.duplication.issues,
       },
       naming: {
-        totalIssues: namingResult.issues.length,
-        issues: namingResult.issues,
+        totalIssues: resultMap.naming.issues.length,
+        issues: resultMap.naming.issues,
       },
       jsdoc: {
-        totalMissing: jsdocResult.issues.length,
-        issues: jsdocResult.issues,
+        totalMissing: resultMap.jsdoc.issues.length,
+        issues: resultMap.jsdoc.issues,
       },
       security: {
-        totalIssues: securityResult.issues.length,
-        issues: securityResult.issues,
+        totalIssues: resultMap.security.issues.length,
+        issues: resultMap.security.issues,
       },
     };
   }
@@ -225,43 +226,36 @@ export class EvaluationPipeline {
   private buildResult(
     input: EvaluationInput,
     context: EvaluationContext,
-    phases: {
-      gate: PhaseResult;
-      documentQuality: PhaseResult;
-      requirementsCoverage: PhaseResult;
-      testCoverage: PhaseResult;
-      logicCompleteness: PhaseResult;
-      apiCompleteness: PhaseResult;
-    },
+    phases: { gate: PhaseResult } & Record<PhaseKey, PhaseResult>,
     reference: ReferenceInfo,
     startTime: number
   ): EvaluationResult {
     const scoringIssues = [
-      ...phases.gate.issues,
-      ...phases.documentQuality.issues,
-      ...phases.requirementsCoverage.issues,
-      ...phases.testCoverage.issues,
-      ...phases.logicCompleteness.issues,
-      ...phases.apiCompleteness.issues,
-    ];
+      phases.gate.issues,
+      ...phaseStrategies.map(s => phases[s.key].issues),
+    ].flat();
 
-    // Deduplicate issues by key
-    const uniqueIssues = this.deduplicateIssues(scoringIssues);
+    // Deduplicate issues using ArrayUtil
+    const uniqueIssues = ArrayUtil.deduplicate(
+      scoringIssues,
+      (issue) => `${issue.code}:${issue.location?.file || ''}:${issue.location?.line || ''}`
+    );
 
-    const criticalIssues = uniqueIssues.filter(i => i.severity === 'critical');
-    const warnings = uniqueIssues.filter(i => i.severity === 'warning');
-    const suggestions = uniqueIssues.filter(i => i.severity === 'suggestion');
+    // Group by severity using ArrayUtil
+    const groupedIssues = ArrayUtil.groupBy(uniqueIssues, (i) => i.severity);
+
+    const criticalIssues = groupedIssues.critical || [];
+    const warnings = groupedIssues.warning || [];
+    const suggestions = groupedIssues.suggestion || [];
 
     let totalScore: number;
     if (!phases.gate.passed) {
       totalScore = 0;
     } else {
       totalScore = Math.round(
-        phases.documentQuality.score * PHASE_WEIGHTS.documentQuality +
-        phases.requirementsCoverage.score * PHASE_WEIGHTS.requirementsCoverage +
-        phases.testCoverage.score * PHASE_WEIGHTS.testCoverage +
-        phases.logicCompleteness.score * PHASE_WEIGHTS.logicCompleteness +
-        phases.apiCompleteness.score * PHASE_WEIGHTS.apiCompleteness
+        phaseStrategies.reduce((sum, s) => 
+          sum + phases[s.key].score * PHASE_WEIGHTS[s.key], 0
+        )
       );
     }
 
@@ -287,17 +281,6 @@ export class EvaluationPipeline {
         evaluatedFiles: context.files.typescript.length,
       },
     };
-  }
-
-  private deduplicateIssues(issues: Issue[]): Issue[] {
-    const seen = new Map<string, Issue>();
-    for (const issue of issues) {
-      const key = `${issue.code}:${issue.location?.file || ''}:${issue.location?.line || ''}`;
-      if (!seen.has(key)) {
-        seen.set(key, issue);
-      }
-    }
-    return Array.from(seen.values());
   }
 
   private log(msg: string): void {

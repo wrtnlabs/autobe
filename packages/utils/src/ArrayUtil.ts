@@ -18,4 +18,33 @@ export namespace ArrayUtil {
     });
     return output;
   }
+
+  export function deduplicate<T>(
+    array: T[],
+    keyFn: (item: T) => string,
+  ): T[] {
+    const seen = new Map<string, T>();
+    for (const item of array) {
+      const key = keyFn(item);
+      if (!seen.has(key)) {
+        seen.set(key, item);
+      }
+    }
+    return Array.from(seen.values());
+  }
+
+  export function groupBy<T, K extends string>(
+    array: T[],
+    keyFn: (item: T) => K,
+  ): Record<K, T[]> {
+    const result = {} as Record<K, T[]>;
+    for (const item of array) {
+      const key = keyFn(item);
+      if (!result[key]) {
+        result[key] = [];
+      }
+      result[key].push(item);
+    }
+    return result;
+  }
 }

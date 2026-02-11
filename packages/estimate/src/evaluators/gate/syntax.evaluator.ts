@@ -5,9 +5,9 @@ import type { EvaluationContext, Issue } from '../../types';
 import { createIssue } from '../../types';
 
 /**
-* Syntax Evaluator
-* Checks TypeScript syntax errors using the compiler API
-*/
+ * Syntax Evaluator
+ * Checks TypeScript syntax errors using the compiler API
+ */
 export class SyntaxEvaluator extends GateEvaluator {
   readonly name = 'SyntaxEvaluator';
   readonly description = 'Checks TypeScript syntax errors';
@@ -17,23 +17,33 @@ export class SyntaxEvaluator extends GateEvaluator {
     issues: Issue[];
     metrics?: Record<string, number | string | boolean>;
   }> {
-    const issues: Issue[] = [];
-    let totalFiles = 0;
-    let filesWithErrors = 0;
+    // Process all files in parallel
+    const results = await Promise.all(
+      context.files.typescript.map(filePath => this.checkFile(filePath))
+    );
 
-    for (const filePath of context.files.typescript) {
-      totalFiles++;
+    const issues = results.flatMap(r => r.issues);
+    const filesWithErrors = results.filter(r => r.hasError).length;
 
-      try {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const fileIssues = this.checkSyntax(filePath, content);
+    return {
+      passed: issues.filter(i => i.severity === 'critical').length === 0,
+      issues,
+      metrics: {
+        totalFiles: context.files.typescript.length,
+        filesWithErrors,
+        syntaxErrorCount: issues.length,
+      },
+    };
+  }
 
-        if (fileIssues.length > 0) {
-          filesWithErrors++;
-          issues.push(...fileIssues);
-        }
-      } catch (error) {
-        issues.push(
+  private async checkFile(filePath: string): Promise<{ issues: Issue[]; hasError: boolean }> {
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf-8');
+      const issues = this.checkSyntax(filePath, content);
+      return { issues, hasError: issues.length > 0 };
+    } catch (error) {
+      return {
+        issues: [
           createIssue({
             severity: 'critical',
             category: 'syntax-error',
@@ -41,21 +51,11 @@ export class SyntaxEvaluator extends GateEvaluator {
             message: `Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`,
             location: { file: filePath, line: 1 },
             autoFixable: false,
-          })
-        );
-        filesWithErrors++;
-      }
+          }),
+        ],
+        hasError: true,
+      };
     }
-
-    return {
-      passed: issues.filter((i) => i.severity === 'critical').length === 0,
-      issues,
-      metrics: {
-        totalFiles,
-        filesWithErrors,
-        syntaxErrorCount: issues.length,
-      },
-    };
   }
 
   private checkSyntax(filePath: string, content: string): Issue[] {
@@ -100,7 +100,6 @@ export class SyntaxEvaluator extends GateEvaluator {
   }
 
   private getSyntaxDiagnostics(sourceFile: ts.SourceFile): ts.Diagnostic[] {
-    // Use a minimal compiler host to get syntax diagnostics
     const compilerHost: ts.CompilerHost = {
       getSourceFile: (fileName) =>
         fileName === sourceFile.fileName ? sourceFile : undefined,

@@ -9,65 +9,34 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
   readonly description = 'Checks for incomplete implementations';
 
   private readonly INCOMPLETE_PATTERNS = [
-    { pattern: /throw\s+new\s+Error\s*\(\s*['"`]not\s*implemented['"`]\s*\)/gi, code: 'LOGIC001', message: 'Unimplemented code: throw new Error("not implemented")' },
+    { pattern: /throw\s+new\s+Error\s*\(\s*['`]not\s*implemented['"`]\s*\)/gi, code: 'LOGIC001', message: 'Unimplemented code: throw new Error("not implemented")' },
     { pattern: /\/\/\s*TODO\s*:/gi, code: 'LOGIC002', message: 'TODO comment found' },
     { pattern: /\/\/\s*FIXME\s*:/gi, code: 'LOGIC003', message: 'FIXME comment found (indicates known bug)' },
     { pattern: /\/\/\s*HACK\s*:/gi, code: 'LOGIC004', message: 'HACK comment found' },
     { pattern: /\/\/\s*implement\s*this/gi, code: 'LOGIC005', message: 'Unimplemented placeholder found' },
-    { pattern: /throw\s+new\s+Error\s*\(\s*['"`]TODO['"`]\s*\)/gi, code: 'LOGIC006', message: 'TODO error placeholder' },
+    { pattern: /throw\s+new\s+Error\s*\(\s*['`]TODO['"`]\s*\)/gi, code: 'LOGIC006', message: 'TODO error placeholder' },
     { pattern: /notImplemented\s*\(\s*\)/gi, code: 'LOGIC007', message: 'notImplemented() call found' },
   ];
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
-    const issues: Issue[] = [];
     const startTime = performance.now();
 
-    // Check controllers and providers (not tests)
     const filesToCheck = [
       ...context.files.controllers,
       ...context.files.providers,
     ];
 
-    let totalIncomplete = 0;
+    const results = await Promise.all(
+      filesToCheck.map(filePath => this.analyzeFile(filePath))
+    );
 
-    for (const filePath of filesToCheck) {
-      try {
-        const content = fs.readFileSync(filePath, 'utf-8');
-        const lines = content.split('\n');
-
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i];
-          
-          for (const { pattern, code, message } of this.INCOMPLETE_PATTERNS) {
-            pattern.lastIndex = 0; // Reset regex
-            if (pattern.test(line)) {
-              totalIncomplete++;
-              
-              const severity = (code === 'LOGIC002') ? 'warning' : 'critical';
-              
-              issues.push(createIssue({
-                severity,
-                category: 'completeness',
-                code,
-                message,
-                location: { file: filePath, line: i + 1 },
-              }));
-            }
-          }
-        }
-      } catch {
-        // Skip
-      }
-    }
-
-    // Calculate score
-    let score: number;
+    const issues = results.flatMap(r => r);
     const criticalCount = issues.filter(i => i.severity === 'critical').length;
 
+    let score: number;
     if (criticalCount === 0 && issues.length === 0) {
       score = 100;
     } else if (criticalCount === 0) {
-      // Only TODOs (warnings)
       score = Math.max(70, 100 - issues.length * 2);
     } else if (criticalCount <= 3) {
       score = Math.max(50, 80 - criticalCount * 10);
@@ -86,11 +55,41 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: {
-        totalIncomplete,
+        totalIncomplete: issues.length,
         criticalCount,
         todoCount: issues.filter(i => i.code === 'LOGIC002').length,
         fixmeCount: issues.filter(i => i.code === 'LOGIC003').length,
       },
     };
+  }
+
+  private async analyzeFile(filePath: string): Promise<Issue[]> {
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf-8');
+      const lines = content.split('\n');
+      const issues: Issue[] = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        for (const { pattern, code, message } of this.INCOMPLETE_PATTERNS) {
+          pattern.lastIndex = 0;
+          if (pattern.test(line)) {
+            const severity = (code === 'LOGIC002') ? 'warning' : 'critical';
+            issues.push(createIssue({
+              severity,
+              category: 'completeness',
+              code,
+              message,
+              location: { file: filePath, line: i + 1 },
+            }));
+          }
+        }
+      }
+
+      return issues;
+    } catch {
+      return [];
+    }
   }
 }
