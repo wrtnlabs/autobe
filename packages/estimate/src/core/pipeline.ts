@@ -135,41 +135,20 @@ export class EvaluationPipeline {
     };
   }
 
-  private async runDocumentQuality(context: EvaluationContext): Promise<PhaseResult> {
-    this.log('  - Checking documentation...');
-    const evaluator = new DocumentQualityEvaluator();
-    const result = await evaluator.evaluate(context);
-    result.explanation = generateExplanation(result.issues, result.score);
-    return result;
-  }
-
-  private async runRequirementsCoverage(context: EvaluationContext): Promise<PhaseResult> {
-    this.log('  - Checking requirements coverage...');
-    const evaluator = new RequirementsCoverageEvaluator();
-    const result = await evaluator.evaluate(context);
-    result.explanation = generateExplanation(result.issues, result.score);
-    return result;
-  }
-
-  private async runTestCoverage(context: EvaluationContext): Promise<PhaseResult> {
-    this.log('  - Checking test coverage...');
-    const evaluator = new TestCoverageEvaluator();
-    const result = await evaluator.evaluate(context);
-    result.explanation = generateExplanation(result.issues, result.score);
-    return result;
-  }
-
-  private async runLogicCompleteness(context: EvaluationContext): Promise<PhaseResult> {
-    this.log('  - Checking for incomplete implementations...');
-    const evaluator = new LogicCompletenessEvaluator();
-    const result = await evaluator.evaluate(context);
-    result.explanation = generateExplanation(result.issues, result.score);
-    return result;
-  }
-
-  private async runApiCompleteness(context: EvaluationContext): Promise<PhaseResult> {
-    this.log('  - Checking API completeness...');
-    const evaluator = new ApiCompletenessEvaluator();
+  const phaseStrategies = [
+    { key: 'documentQuality', label: 'documentation', Evaluator: DocumentQualityEvaluator },
+    { key: 'requirementsCoverage', label: 'requirements coverage', Evaluator: RequirementsCoverageEvaluator },
+    { key: 'testCoverage', label: 'test coverage', Evaluator: TestCoverageEvaluator },
+    { key: 'logicCompleteness', label: 'incomplete implementations', Evaluator: LogicCompletenessEvaluator },
+    { key: 'apiCompleteness', label: 'API completeness', Evaluator: ApiCompletenessEvaluator },
+  ] as const;
+  
+  private async runPhase(
+    context: EvaluationContext,
+    strategy: (typeof phaseStrategies)[number]
+  ): Promise<PhaseResult> {
+    this.log(`  - Checking ${strategy.label}...`);
+    const evaluator = new strategy.Evaluator();
     const result = await evaluator.evaluate(context);
     result.explanation = generateExplanation(result.issues, result.score);
     return result;
