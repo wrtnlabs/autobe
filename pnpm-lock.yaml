@@ -957,6 +957,9 @@ importers:
       '@autobe/filesystem':
         specifier: workspace:*
         version: link:../filesystem
+      '@autobe/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@clack/prompts':
         specifier: ^0.7.0
         version: 0.7.0
