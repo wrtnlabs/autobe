@@ -1,5 +1,6 @@
 import {
   AutoBeDatabase,
+  AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
   AutoBeInterfaceSchemaPropertyKeep,
   AutoBeInterfaceSchemaPropertyNullish,
@@ -50,11 +51,11 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       if (key === undefined || LlmTypeChecker.isString(key) === false) return;
       key.enum = Object.keys(props.schema.properties);
     };
-    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
-    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
-    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyRevise>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyDepict>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
   };
 
   export const validate = (props: {
