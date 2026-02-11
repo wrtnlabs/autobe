@@ -21,7 +21,9 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     revise: AutoBeInterfaceSchemaPropertyRevise;
     noModelDescription: string;
   }): void => {
-    const property = validateDatabaseSchemaProperty(props);
+    const property:
+      | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
+      | undefined = validateDatabaseSchemaProperty(props);
     if (property !== undefined)
       validateNullable({
         ...props,
@@ -41,24 +43,6 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
       | undefined;
     noModelDescription: string;
   }): AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember | undefined => {
-    if (!("databaseSchemaProperty" in props.revise)) {
-      if (props.model === null) return;
-      else if (
-        props.originalDtoSchema === undefined ||
-        !("x-autobe-database-schema-property" in props.originalDtoSchema) ||
-        props.originalDtoSchema["x-autobe-database-schema-property"] == null
-      )
-        return;
-      const key: string =
-        props.originalDtoSchema["x-autobe-database-schema-property"];
-      const databaseProperties: AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember[] =
-        AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaProperties({
-          everyModels: [props.model],
-          model: props.model,
-        });
-      return databaseProperties.find((dp) => dp.key === key);
-    }
-
     const value: string | null = props.revise.databaseSchemaProperty;
     if (value === null) return undefined;
 
@@ -124,7 +108,8 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
         ? AutoBeOpenApiTypeChecker.isNullable(props.revise.schema)
         : props.revise.type === "nullish"
           ? props.revise.nullable
-          : props.originalDtoSchema === undefined
+          : props.revise.type === "erase" ||
+              props.originalDtoSchema === undefined
             ? null
             : AutoBeOpenApiTypeChecker.isNullable(props.originalDtoSchema);
     if (nullable === null) return;
@@ -191,13 +176,16 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     else
       props.errors.push({
         path: props.path,
-        expected: "AutoBeInterfaceSchemaPropertyUpdate",
+        expected:
+          "AutoBeInterfaceSchemaPropertyNullish | AutoBeInterfaceSchemaPropertyUpdate",
         value: props.revise,
         description: StringUtil.trim`
           The database column "${props.property.key}" is nullable, but the
-          current schema does not allow null. Change this revision to an
-          "update" type and provide a schema wrapped with oneOf including
-          { type: "null" }.
+          current schema does not allow null.
+
+          Use "nullish" type with nullable: true to fix nullability only,
+          or use "update" type with a schema wrapped in oneOf including
+          { type: "null" } if you also need to change the schema.
         `,
       });
   };

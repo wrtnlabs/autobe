@@ -138,11 +138,11 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ```typescript
 {
-  type: "update",
-  reason: "Transform FK author_id to author with $ref",
   key: "author_id",
-  newKey: "author",
   databaseSchemaProperty: "author",  // Relation name from DB schema
+  reason: "Transform FK author_id to author with $ref",
+  type: "update",
+  newKey: "author",
   specification: "Join via bbs_members using bbs_articles.bbs_member_id. Returns ISummary.",
   description: "Author who wrote this article.",
   schema: { $ref: "#/components/schemas/IBbsMember.ISummary" },
@@ -155,10 +155,10 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 For composition:
 ```typescript
 {
-  type: "create",
-  reason: "Missing composition for units",
   key: "units",
   databaseSchemaProperty: "units",  // Relation name from DB schema
+  reason: "Missing composition for units",
+  type: "create",
   specification: "One-to-many composition from sale_units. Created with sale.",
   description: "Sale units defining what's being sold.",
   schema: { type: "array", items: { $ref: "#/components/schemas/ISaleUnit" } },
@@ -168,36 +168,35 @@ For composition:
 
 ### `erase` - Remove Incorrect Relation
 
-Only for circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations. A property that is simply not a relation (e.g. `title`, `start_date`, `page`) is never a valid erase target — use `keep` for those.
+For relations that exist in DB but shouldn't appear in DTO: circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations.
+
+Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid erase targets — use `keep` for those.
 
 ```typescript
 {
-  type: "erase",
+  key: "articles",
+  databaseSchemaProperty: "articles",
   reason: "Circular reference - removing back-reference",
-  key: "articles"
+  type: "erase"
 }
 ```
 
 ### `depict` - Fix Relation Documentation
-Use when a relation's schema is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong. Fields: `key`, `reason`, `specification`, `description`, `databaseSchemaProperty`.
+Use when a relation's schema is correct but `description`, `specification`, or `databaseSchemaProperty` is wrong.
 
 ### `nullish` - Fix Relation Nullability
-Use when a relation's schema is correct but nullable/required is wrong. Fields: `key`, `reason`, `specification`, `description`, `nullable`, `required`.
+Use when a relation's schema is correct but nullable/required is wrong.
 
 ### `keep` - Acknowledge Correct Field
 
 All non-relation fields and correctly-implemented relations:
 
 ```typescript
-{ type: "keep", reason: "Business field", key: "id" }
-{ type: "keep", reason: "Business field", key: "title" }
-{ type: "keep", reason: "Business field", key: "created_at" }
-{ type: "keep", reason: "Relation correctly implemented", key: "category" }
+{ key: "id", databaseSchemaProperty: "id", reason: "Business field", type: "keep" }
+{ key: "title", databaseSchemaProperty: "title", reason: "Business field", type: "keep" }
+{ key: "created_at", databaseSchemaProperty: "created_at", reason: "Business field", type: "keep" }
+{ key: "category", databaseSchemaProperty: "category", reason: "Relation correctly implemented", type: "keep" }
 ```
-
-### Property Construction Order
-
-For `update` and `create`: `databaseSchemaProperty` → `specification` → `description` → `schema`.
 
 ## 9. Complete Example
 
@@ -210,18 +209,18 @@ process({
     type: "complete",
     review: "author_id: FK not transformed. comments: unbounded aggregation.",
     revises: [
-      { type: "keep",   reason: "Business field",              key: "id" },
-      { type: "keep",   reason: "Business field",              key: "title" },
-      { type: "keep",   reason: "Business field",              key: "content" },
-      { type: "update", reason: "Transform FK to $ref",        key: "author_id", newKey: "author",
-        databaseSchemaProperty: "author",  // Relation name
+      { key: "id", databaseSchemaProperty: "id", reason: "Business field", type: "keep" },
+      { key: "title", databaseSchemaProperty: "title", reason: "Business field", type: "keep" },
+      { key: "content", databaseSchemaProperty: "content", reason: "Business field", type: "keep" },
+      { key: "author_id", databaseSchemaProperty: "author", reason: "Transform FK to $ref", type: "update",
+        newKey: "author",
         specification: "Join via bbs_members. Returns ISummary.",
         description: "Author who wrote this article.",
         schema: { $ref: "#/components/schemas/IBbsMember.ISummary" }, required: true },
-      { type: "keep",   reason: "Relation correctly structured", key: "category" },
-      { type: "keep",   reason: "Composition correctly nested",  key: "attachments" },
-      { type: "erase",  reason: "Aggregation - use separate endpoint", key: "comments" },
-      { type: "keep",   reason: "Business field",              key: "created_at" }
+      { key: "category", databaseSchemaProperty: "category", reason: "Relation correctly structured", type: "keep" },
+      { key: "attachments", databaseSchemaProperty: "attachments", reason: "Composition correctly nested", type: "keep" },
+      { key: "comments", databaseSchemaProperty: "comments", reason: "Aggregation - use separate endpoint", type: "erase" },
+      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Business field", type: "keep" }
     ]
   }
 })

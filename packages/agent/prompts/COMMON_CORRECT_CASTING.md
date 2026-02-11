@@ -91,7 +91,21 @@ const value = date?.toISOString() ?? null;  // Preserves null
 const value = (date ?? new Date()).toISOString();  // Provides default
 ```
 
-### 3.3. Nullable/Undefined Type Assignment
+### 3.3. Missing `tags.` Prefix on Typia Tag Types
+
+**Error:** `Property 'X' does not exist on type 'typeof import("node_modules/typia/lib/tags/index")'.`
+
+**Solution:** Add `tags.` prefix to all Typia tag types (`Format`, `MaxLength`, `Minimum`, etc.)
+
+```typescript
+// ❌ WRONG
+const url: string & Format<"uri"> = getValue();
+
+// ✅ CORRECT
+const url: string & tags.Format<"uri"> = getValue();
+```
+
+### 3.4. Nullable/Undefined Type Assignment
 
 **Core Rule:** Check ALL union members explicitly.
 
@@ -117,7 +131,7 @@ if (value !== null && value !== undefined) {
 const memberId: string | undefined = post?.community_platform_member_id ?? undefined;
 ```
 
-### 3.4. typia.assert vs typia.assertGuard
+### 3.5. typia.assert vs typia.assertGuard
 
 **Critical Distinction:**
 
@@ -148,7 +162,7 @@ if (item) {
 }
 ```
 
-### 3.5. String to Literal Type Assignment
+### 3.6. String to Literal Type Assignment
 
 **Error:** `Type 'string' is not assignable to type '"admin" | "user"'`
 
@@ -160,7 +174,7 @@ const role: "admin" | "user" = getValue(); // ERROR
 const role = typia.assert<"admin" | "user">(getValue());
 ```
 
-### 3.6. Literal Type to Literal Type (Different Values)
+### 3.7. Literal Type to Literal Type (Different Values)
 
 **Error:** `Type '"laptop"' is not assignable to type '"laptops"'`
 
@@ -173,7 +187,7 @@ const categoryMap: Record<"laptop" | "smartphone", "laptops" | "smartphones"> = 
 const plural = categoryMap[singular];
 ```
 
-### 3.7. Optional Chaining with Array Methods
+### 3.8. Optional Chaining with Array Methods
 
 **Problem:** `article.tags?.includes("blog")` returns `boolean | undefined`
 
@@ -185,7 +199,7 @@ TestValidator.predicate("has tag", article.tags?.includes("blog") === true);
 TestValidator.predicate("has tag", article.tags?.includes("blog") ?? false);
 ```
 
-### 3.8. Object Index Access Returns undefined
+### 3.9. Object Index Access Returns undefined
 
 **Problem:** `MAPPING[key]` returns `T | undefined` when key doesn't exist
 
@@ -201,7 +215,7 @@ const mimeType = input?.ext
 
 **Rule:** `OBJECT[dynamicKey]` always needs `?? fallback` immediately after.
 
-### 3.9. Type Narrowing "No Overlap" Errors
+### 3.10. Type Narrowing "No Overlap" Errors
 
 **Error:** `Types 'X' and 'Y' have no overlap`
 
@@ -223,7 +237,7 @@ if (value === false) {
 }
 ```
 
-### 3.10. Escape Sequences in Function Calling
+### 3.11. Escape Sequences in Function Calling
 
 When code goes through JSON, escape characters get consumed:
 
@@ -235,7 +249,7 @@ When code goes through JSON, escape characters get consumed:
 { draft: `const x = "Hello.\\nWorld";` }
 ```
 
-### 3.11. Severe Syntax Structure Errors
+### 3.12. Severe Syntax Structure Errors
 
 **Pattern:** Variable declarations nested inside object literals
 

@@ -100,24 +100,24 @@ Each property receives exactly one refinement operation. Decide the single most 
 ### 3.1. `depict` - Add Documentation (No Type Change)
 ```typescript
 {
-  reason: "Adding documentation",
   key: "email",
   databaseSchemaProperty: "email",
+  reason: "Adding documentation",
+  type: "depict",
   specification: "Direct mapping from users.email. Unique constraint.",
-  description: "User's primary email address.",
-  type: "depict"
+  description: "User's primary email address."
 }
 ```
 
 ### 3.2. `create` - Add Missing Property
 ```typescript
 {
-  reason: "Missing DB field 'verified'",
   key: "verified",
   databaseSchemaProperty: "verified",
+  reason: "Missing DB field 'verified'",
+  type: "create",
   specification: "Direct mapping from users.verified.",
   description: "Email verification status.",
-  type: "create",
   schema: { type: "boolean" },
   required: true
 }
@@ -126,13 +126,13 @@ Each property receives exactly one refinement operation. Decide the single most 
 ### 3.3. `update` - Fix Incorrect Type
 ```typescript
 {
-  reason: "Type should be number not string",
   key: "price",
   databaseSchemaProperty: "price",
-  specification: "Direct mapping from products.price. Decimal.",
-  description: "Product price.",
+  reason: "Type should be number not string",
   type: "update",
   newKey: null,
+  specification: "Direct mapping from products.price. Decimal.",
+  description: "Product price.",
   schema: { type: "number" },
   required: true
 }
@@ -141,8 +141,9 @@ Each property receives exactly one refinement operation. Decide the single most 
 ### 3.4. `erase` - Remove Invalid Property
 ```typescript
 {
-  reason: "Phantom field - not in DB, not in requirements",
   key: "internal_notes",
+  databaseSchemaProperty: null,
+  reason: "Phantom field - not in DB, not in requirements",
   type: "erase"
 }
 ```
@@ -223,12 +224,12 @@ interface IArticle.ICreate {
 #### Adding Missing Relation (Read DTO)
 ```typescript
 {
-  reason: "Missing relation for author_id FK",
   key: "author",
   databaseSchemaProperty: "author",  // Relation name from DB schema
+  reason: "Missing relation for author_id FK",
+  type: "create",
   specification: "Join from articles.author_id to users.id. Returns ISummary.",
   description: "The article's author.",
-  type: "create",
   schema: { $ref: "#/components/schemas/IUser.ISummary" },
   required: true
 }
@@ -309,26 +310,27 @@ process({
     description: "Complete user entity with profile and account info.",
     refines: [
       {
-        reason: "Adding documentation",
         key: "id",
         databaseSchemaProperty: "id",
+        reason: "Adding documentation",
+        type: "depict",
         specification: "Direct mapping from users.id. UUID PK.",
-        description: "Unique user identifier.",
-        type: "depict"
+        description: "Unique user identifier."
       },
       {
-        reason: "Requirements specify post count display",
         key: "postsCount",
         databaseSchemaProperty: null,
+        reason: "Requirements specify post count display",
+        type: "create",
         specification: "Computed: SELECT COUNT(*) FROM posts WHERE author_id = users.id",
         description: "Total posts by this user.",
-        type: "create",
         schema: { type: "number" },
         required: true
       },
       {
-        reason: "Phantom - not in DB, not in requirements",
         key: "loyalty_tier",
+        databaseSchemaProperty: null,
+        reason: "Phantom - not in DB, not in requirements",
         type: "erase"
       }
     ]

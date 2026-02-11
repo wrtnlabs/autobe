@@ -104,10 +104,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             Missing revise for property ${JSON.stringify(key)}.
 
             You MUST provide a revise for EVERY property in the object schema.
-
-            Use \`{ type: "keep", key: ${JSON.stringify(key)}, reason: "..." }\` 
-            if no changes are needed. Otherwise, choose an appropriate revise type 
-            to modify or erase the property.
+            Use "keep" type if no changes are needed.
           `,
         });
 
@@ -174,10 +171,11 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         };
         if (revise.required === true) setRequired(newKey);
       } else if (revise.type === "keep") {
-        // keep original property (deep clone to avoid shared references)
-        result.properties[revise.key] = JSON.parse(
-          JSON.stringify(props.schema.properties[revise.key]),
-        );
+        // keep original property with updated databaseSchemaProperty
+        result.properties[revise.key] = {
+          ...JSON.parse(JSON.stringify(props.schema.properties[revise.key])),
+          "x-autobe-database-schema-property": revise.databaseSchemaProperty,
+        };
         if (props.schema.required.includes(revise.key)) setRequired(revise.key);
       } else if (revise.type === "nullish") {
         // change nullable or required status only
@@ -241,10 +239,15 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           cloned = {
             ...cloned.oneOf[0],
             "x-autobe-specification": cloned["x-autobe-specification"],
+            "x-autobe-database-schema-property":
+              cloned["x-autobe-database-schema-property"],
             description: cloned.description,
           };
       }
     }
+    // Update databaseSchemaProperty
+    cloned["x-autobe-database-schema-property"] =
+      props.revise.databaseSchemaProperty;
     // Update description: null preserves existing, string replaces it
     if (props.revise.description !== null)
       cloned.description = props.revise.description;
