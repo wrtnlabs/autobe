@@ -12,6 +12,8 @@ You ensure schema completeness and correctness of field content — missing fiel
 
 Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
 
+**Every database property must be explicitly handled** — either mapped to a DTO property or intentionally excluded. No database property can be accidentally forgotten.
+
 | Situation | Revision |
 |-----------|----------|
 | Property correct as-is | `keep` |
@@ -19,8 +21,15 @@ Enumerate every property in the schema plus every field in the database table, t
 | Schema type/structure wrong | `update` |
 | Only documentation wrong (description, specification, databaseSchemaProperty) | `depict` |
 | Only nullability wrong | `nullish` |
+| DB property intentionally not in this DTO | `exclude` |
 
 You do not use `erase` — that belongs to phantom review.
+
+**When to use `exclude`**:
+- DTO purpose mismatch: `id`, `created_at` in Create DTO
+- Summary DTO: only essential display fields included
+- Immutability: `id`, `created_at` in Update DTO
+- Aggregation relations: use computed counts instead
 
 ## 2. Understanding Database Properties
 
@@ -120,18 +129,26 @@ Use when schema type is correct but nullable/required is wrong.
 { key: "id", databaseSchemaProperty: "id", reason: "Correctly mapped", type: "keep" }
 ```
 
+### `exclude` - DB Property Not in This DTO
+
+Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
+
+```typescript
+{ databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated field not user-provided in Create DTO", type: "exclude" }
+{ databaseSchemaProperty: "comments", reason: "Summary DTO: only essential display fields included", type: "exclude" }
+```
+
 ## 7. Complete Example
 
-Schema has `[id, name, price, stock, created_at]`. DB table has columns `[id, name, price, stock, featured, created_at]` and relation `author`. Schema missing `featured` column and `author` relation. `stock` has wrong type (string instead of integer). `name` has wrong description.
+Schema `IProduct.ICreate` has `[name, price, stock]`. DB table has columns `[id, name, price, stock, featured, author_id, created_at, deleted_at]` and relation `author`. Schema missing `featured` column and `author_id` FK. `stock` has wrong type (string instead of integer). `name` has wrong description. DB columns `id`, `created_at`, `deleted_at` should be excluded from Create DTO.
 
 ```typescript
 process({
-  thinking: "Checked DB columns and relations. Missing: featured (column), author (relation). Wrong type: stock. Bad description: name.",
+  thinking: "Checked DB columns and relations. Missing: featured. Wrong type: stock. Bad description: name. Exclude: id, created_at, deleted_at (auto-generated). author relation should be author_id in Create DTO.",
   request: {
     type: "complete",
-    review: "Missing: featured column, author relation. Wrong type: stock. Bad description: name.",
+    review: "Missing: featured. Wrong type: stock. Bad description: name. Excluded auto-generated fields.",
     revises: [
-      { key: "id", databaseSchemaProperty: "id", reason: "Correctly mapped", type: "keep" },
       { key: "name", databaseSchemaProperty: "name", reason: "Description is inaccurate", type: "depict",
         specification: "Direct mapping from products.name.", description: "Product display name." },
       { key: "price", databaseSchemaProperty: "price", reason: "Correctly mapped", type: "keep" },
@@ -140,29 +157,34 @@ process({
         specification: "Direct mapping from products.stock.",
         description: "Current inventory quantity.",
         schema: { type: "integer" }, required: true },
-      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Correctly mapped", type: "keep" },
       { key: "featured", databaseSchemaProperty: "featured", reason: "DB column 'featured' missing", type: "create",
         specification: "Direct mapping from products.featured.",
         description: "Whether product is featured.",
         schema: { type: "boolean" }, required: true },
-      { key: "author", databaseSchemaProperty: "author", reason: "DB relation 'author' missing", type: "create",
-        specification: "Join from products.author_id. Returns ISummary.",
-        description: "Product author.",
-        schema: { $ref: "#/components/schemas/IUser.ISummary" }, required: true }
+      { key: "author_id", databaseSchemaProperty: "author_id", reason: "FK for author relation in Create DTO", type: "create",
+        specification: "Foreign key to users table.",
+        description: "Author's user ID.",
+        schema: { type: "string", format: "uuid" }, required: true },
+      { databaseSchemaProperty: "id", reason: "DTO purpose: auto-generated, not user-provided in Create DTO", type: "exclude" },
+      { databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated, not user-provided in Create DTO", type: "exclude" },
+      { databaseSchemaProperty: "deleted_at", reason: "DTO purpose: auto-generated soft-delete field, not user-provided", type: "exclude" },
+      { databaseSchemaProperty: "author", reason: "Create DTO uses FK (author_id), not relation object", type: "exclude" }
     ]
   }
 })
 ```
 
-Note how every existing property gets exactly one revision and every missing field gets `create`. Even when nothing is wrong, all existing properties still need `keep`.
+Note how every DTO property gets exactly one revision, missing fields get `create`, and DB properties not belonging in this DTO get `exclude`. Every DB property is explicitly handled.
 
 ## 8. Checklist
 
-- [ ] Every property has exactly one revision (no missing, no duplicates)
+- [ ] Every DTO property has exactly one revision (no missing, no duplicates)
+- [ ] Every DB property either mapped to DTO or `exclude`d with reason
 - [ ] All correct properties use `keep`
 - [ ] All missing DB columns use `create` with column name in `databaseSchemaProperty`
 - [ ] All missing DB relations use `create` with relation name in `databaseSchemaProperty`
 - [ ] Before `databaseSchemaProperty: null`: Verified valid logic in `x-autobe-specification`
+- [ ] DB properties not in DTO use `exclude` (auto-generated fields, summary filters, etc.)
 - [ ] Wrong schema types use `update`
 - [ ] Wrong documentation only uses `depict`
 - [ ] Wrong nullability only uses `nullish`

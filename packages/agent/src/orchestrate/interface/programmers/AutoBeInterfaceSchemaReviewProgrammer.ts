@@ -55,6 +55,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyRevise>()]);
   };
 
   export const validate = (props: {
@@ -71,6 +72,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     props.revises.forEach((revise, i) => {
       if (
         revise.type !== "create" &&
+        revise.type !== "exclude" &&
         props.schema.properties[revise.key] === undefined
       )
         props.errors.push({
@@ -95,7 +97,11 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
         });
     });
     for (const key of Object.keys(props.schema.properties))
-      if (props.revises.some((revise) => revise.key === key) === false)
+      if (
+        props.revises.some(
+          (revise) => revise.type !== "exclude" && revise.key === key,
+        ) === false
+      )
         props.errors.push({
           path: `${props.path}.revises[]`,
           value: undefined,
@@ -120,7 +126,11 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
             ) ?? null)
           : null,
         revise,
-        originalDtoSchema: props.schema.properties[revise.key],
+        originalDtoSchema:
+          revise.type !== "exclude"
+            ? props.schema.properties[revise.key]
+            : undefined,
+        unionTypeName: "AutoBeInterfaceSchemaPropertyRevise",
         noModelDescription: StringUtil.trim`
           You have defined "databaseSchemaProperty" property referencing
           a database schema property, but its parent schema (object type)
@@ -192,7 +202,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           "x-autobe-specification": revise.specification,
         };
         if (props.schema.required.includes(revise.key)) setRequired(revise.key);
-      } else if (revise.type === "erase") continue;
+      } else if (revise.type === "erase" || revise.type === "exclude") continue;
       else revise satisfies never;
     return result;
   };

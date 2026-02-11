@@ -95,6 +95,8 @@ model bbs_articles {
 
 Each property receives exactly one refinement operation. Decide the single most appropriate action for a property and commit to it — never apply multiple operations to the same key.
 
+**Every database property must be explicitly handled** — either mapped to a DTO property or intentionally excluded. No database property can be accidentally forgotten.
+
 **Before setting `databaseSchemaProperty: null`**: Verify `specification` explains valid logic. **Before using `erase`**: Confirm no DB mapping AND no valid business logic. Phantom detection mistakes are common — verify twice.
 
 ### 3.1. `depict` - Add Documentation (No Type Change)
@@ -148,6 +150,41 @@ Each property receives exactly one refinement operation. Decide the single most 
 }
 ```
 
+### 3.5. `exclude` - Exclude Database Property from DTO
+
+Unlike other operations, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
+
+Use when a database property should NOT appear in this DTO:
+- DTO purpose mismatch: `id`, `created_at` excluded from Create DTO
+- Summary DTO: only essential display fields included
+- Immutability: `id`, `created_at` excluded from Update DTO
+- Security: `password`, `salt`, `refresh_token` excluded from Read DTO
+- Aggregation relations: use computed counts instead of nested arrays
+
+```typescript
+{
+  databaseSchemaProperty: "password_hashed",
+  reason: "Security: password hash must never be exposed in Read DTO",
+  type: "exclude"
+}
+```
+
+```typescript
+{
+  databaseSchemaProperty: "id",
+  reason: "DTO purpose: id is auto-generated, not user-provided in Create DTO",
+  type: "exclude"
+}
+```
+
+```typescript
+{
+  databaseSchemaProperty: "deleted_at",
+  reason: "Summary DTO: only essential display fields included",
+  type: "exclude"
+}
+```
+
 **Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key.
 
 ## 4. Pre-Review Hardening
@@ -159,13 +196,13 @@ While enriching, also inspect and fix:
 - Add missing DB-mapped fields AND requirements-driven computed fields
 - Use `create` for missing fields
 
-**DTO Type Rules**:
-| DTO Type | Include | Exclude |
-|----------|---------|---------|
-| Read (IEntity) | All DB columns + computed fields | Security-filtered |
-| Create (ICreate) | User-provided fields | Auto-generated, computed |
-| Update (IUpdate) | Mutable fields | Immutable, computed |
-| Summary (ISummary) | Display essentials | - |
+**DTO Type Rules** (use `exclude` for DB properties not included):
+| DTO Type | Include | Exclude (use `exclude` type) |
+|----------|---------|------------------------------|
+| Read (IEntity) | All DB columns + computed fields | `password`, `salt`, `refresh_token` |
+| Create (ICreate) | User-provided fields | `id`, `created_at`, computed fields |
+| Update (IUpdate) | Mutable fields | `id`, `created_at`, immutable fields |
+| Summary (ISummary) | Display essentials | Heavy fields, internal fields |
 
 **Nullable Rule**: DB nullable → DTO MUST handle null (use `oneOf` with null for Read DTOs).
 
@@ -298,13 +335,14 @@ interface ITeam.ICreate {
 
 ```typescript
 process({
-  thinking: "Enriched all properties, found phantom and missing computed field.",
+  thinking: "Enriched all properties, found phantom, missing computed field, and DB property to exclude.",
   request: {
     type: "complete",
     review: `## IUser Refinement
 - Enriched 5 properties
 - Added missing 'postsCount' computed field
-- Removed phantom 'loyalty_tier'`,
+- Removed phantom 'loyalty_tier'
+- Excluded 'password_hashed' from Read DTO`,
     databaseSchema: "users",
     specification: "Direct mapping from users table with computed aggregations.",
     description: "Complete user entity with profile and account info.",
@@ -332,6 +370,11 @@ process({
         databaseSchemaProperty: null,
         reason: "Phantom - not in DB, not in requirements",
         type: "erase"
+      },
+      {
+        databaseSchemaProperty: "password_hashed",
+        reason: "Security: password hash must never be exposed in Read DTO",
+        type: "exclude"
       }
     ]
   }
@@ -348,7 +391,8 @@ Before calling `complete`:
 - [ ] `description` refined (MANDATORY)
 
 **Property-Level**:
-- [ ] ALL properties have refinement operations
+- [ ] ALL DTO properties have refinement operations
+- [ ] ALL DB properties either mapped to DTO or `exclude`d with reason
 - [ ] Each property appears exactly once in `refines` (no duplicates — one action per key)
 - [ ] WHICH → HOW → WHAT order followed
 - [ ] `specification` and `schema` type are consistent
@@ -359,6 +403,7 @@ Before calling `complete`:
 - [ ] Phantom: No fields without valid source (re-checked against loaded schema)
 - [ ] Relation: FK fields have `$ref` in Read DTOs
 - [ ] Security (Actor DTOs): No exposed passwords/secrets
+- [ ] Excluded: DB properties not in DTO use `exclude` with clear reason
 
 **Function Calling**:
 - [ ] All needed materials loaded

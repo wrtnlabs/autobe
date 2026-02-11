@@ -22,6 +22,8 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Not in DB and no valid rationale | `erase` |
 | DB nullable but DTO says non-null | `nullish` |
 
+You do not use `exclude` — that belongs to content review (for DB properties intentionally not in DTO).
+
 ## 2. What is a Phantom Field?
 
 A property without DB mapping (`x-autobe-database-schema-property: null`) AND without valid business logic in `x-autobe-specification`.

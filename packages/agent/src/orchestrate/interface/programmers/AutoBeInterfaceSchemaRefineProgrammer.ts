@@ -56,6 +56,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     props.refines.forEach((refine, i) => {
       if (
         refine.type !== "create" &&
+        refine.type !== "exclude" &&
         props.schema.properties[refine.key] === undefined
       )
         props.errors.push({
@@ -80,7 +81,11 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
         });
     });
     for (const key of Object.keys(props.schema.properties))
-      if (props.refines.some((refine) => refine.key === key) === false)
+      if (
+        props.refines.some(
+          (refine) => refine.type !== "exclude" && refine.key === key,
+        ) === false
+      )
         props.errors.push({
           path: `${props.path}.refines[]`,
           value: undefined,
@@ -137,7 +142,11 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
               null)
             : null,
           revise: refine,
-          originalDtoSchema: props.schema.properties[refine.key],
+          originalDtoSchema:
+            refine.type !== "exclude"
+              ? props.schema.properties[refine.key]
+              : undefined,
+          unionTypeName: "AutoBeInterfaceSchemaPropertyRefine",
           noModelDescription: StringUtil.trim`
             You have defined "databaseSchemaProperty" property referencing 
             a database schema property, but its parent schema (object type) 
@@ -208,7 +217,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
         };
         if (refine.required) setRequired(newKey);
-      } else if (refine.type === "erase") continue;
+      } else if (refine.type === "erase" || refine.type === "exclude") continue;
       else refine satisfies never;
     return result;
   };

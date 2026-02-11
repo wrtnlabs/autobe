@@ -19,6 +19,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
       | AutoBeOpenApi.IJsonSchemaProperty
       | undefined;
     revise: AutoBeInterfaceSchemaPropertyRevise;
+    unionTypeName: string;
     noModelDescription: string;
   }): void => {
     const property:
@@ -45,8 +46,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
   }): AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember | undefined => {
     const value: string | null = props.revise.databaseSchemaProperty;
     if (value === null) return undefined;
-
-    if (props.model === null) {
+    else if (props.model === null) {
       props.errors.push({
         path: `${props.path}.databaseSchemaProperty`,
         expected: "null",

@@ -21,11 +21,16 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Situation | Revision |
 |-----------|----------|
 | Secure, correctly placed field | `keep` |
-| Security violation (exposed secret, misplaced session field) | `erase` |
+| Security violation in DTO (exposed secret, misplaced session field) | `erase` |
+| DB property that must never appear in this DTO | `exclude` |
 | Missing required security field | `create` |
 | Security field with wrong schema/type | `update` |
 | Security field with wrong documentation only | `depict` |
 | Security field with wrong nullability only | `nullish` |
+
+**`erase` vs `exclude`**:
+- `erase`: Property exists in DTO but shouldn't → remove it
+- `exclude`: DB property should never appear in this DTO → declare exclusion
 
 ## 2. Password Fields
 
@@ -90,9 +95,18 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ## 6. Revision Reference
 
-### `erase`
+### `erase` - Remove Security Violation from DTO
 ```typescript
 { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Password hash must never be exposed", type: "erase" }
+```
+
+### `exclude` - DB Property Must Not Appear in DTO
+
+Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
+
+```typescript
+{ databaseSchemaProperty: "salt", reason: "Security: salt must never be exposed in Response DTO", type: "exclude" }
+{ databaseSchemaProperty: "refresh_token", reason: "Security: refresh token must never be in IActor.ISummary", type: "exclude" }
 ```
 
 ### `create`
@@ -125,14 +139,14 @@ Use when schema type is correct but nullable/required is wrong.
 
 ## 7. Complete Example
 
-ILogin schema has `[email, password_hashed]`. Needs password fix and session fields.
+ILogin schema has `[email, password_hashed]`. DB has `[id, email, password_hashed, salt, refresh_token, created_at]`. Needs password fix, session fields, and security exclusions.
 
 ```typescript
 process({
-  thinking: "Enumerated 2 properties. password_hashed must be replaced, session fields missing.",
+  thinking: "Enumerated 2 DTO properties. password_hashed must be replaced, session fields missing. DB properties salt, refresh_token must be excluded from request DTO.",
   request: {
     type: "complete",
-    review: "password_hashed: wrong field. Missing: password, href, referrer.",
+    review: "password_hashed: wrong field. Missing: password, href, referrer. Excluded: salt, refresh_token.",
     revises: [
       { key: "email", databaseSchemaProperty: "email", reason: "Required identifier", type: "keep" },
       { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Clients must not send hashes", type: "erase" },
@@ -147,13 +161,15 @@ process({
       { key: "referrer", databaseSchemaProperty: null, reason: "Session context required", type: "create",
         specification: "Referrer URL when login was initiated.",
         description: "Referrer URL at login time.",
-        schema: { type: "string", format: "uri" }, required: true }
+        schema: { type: "string", format: "uri" }, required: true },
+      { databaseSchemaProperty: "salt", reason: "Security: internal cryptographic field, never in request DTO", type: "exclude" },
+      { databaseSchemaProperty: "refresh_token", reason: "Security: token field, never in request DTO", type: "exclude" }
     ]
   }
 })
 ```
 
-Note how every existing property appears exactly once. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
+Note how every existing DTO property appears exactly once, and DB properties that must never appear use `exclude`. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
 
 ## 8. Checklist
 
@@ -169,7 +185,9 @@ Note how every existing property appears exactly once. Use `update`, `depict`, o
 - [ ] IActor, ISummary, IAuthorized, IRefresh do NOT have `ip`, `href`, `referrer`
 
 **Coverage**:
-- [ ] Every property has exactly one revision (no missing, no duplicates)
+- [ ] Every DTO property has exactly one revision (no missing, no duplicates)
+- [ ] Every security-sensitive DB property either in DTO or `exclude`d
+- [ ] `exclude` used for DB properties that must never appear (salt, refresh_token, etc.)
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields

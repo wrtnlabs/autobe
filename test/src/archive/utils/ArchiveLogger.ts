@@ -286,9 +286,10 @@ export namespace ArchiveLogger {
         })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
         `  - refines:`,
-        ...event.refines.map(
-          (r) =>
-            `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+        ...event.refines.map((r) =>
+          r.type === "exclude"
+            ? `    - EXCLUDE ${r.databaseSchemaProperty}: ${r.reason}`
+            : `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
       );
     else if (event.type === "interfaceSchemaReview")
@@ -296,9 +297,10 @@ export namespace ArchiveLogger {
         `  - kind: ${event.kind}`,
         `  - typeName: ${event.typeName}`,
         `  - revises: ${event.revises.length}`,
-        ...event.revises.map(
-          (r) =>
-            `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
+        ...event.revises.map((r) =>
+          r.type === "exclude"
+            ? `    - EXCLUDE ${r.databaseSchemaProperty}: ${r.reason}`
+            : `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
         ),
       );
     else if (event.type === "interfaceSchemaComplement")
