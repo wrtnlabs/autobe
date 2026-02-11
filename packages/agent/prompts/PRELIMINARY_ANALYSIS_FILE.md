@@ -83,6 +83,13 @@ ABSOLUTELY FORBIDDEN:
 - Inventing or imagining file names not explicitly listed
 - Doubting the accuracy of the loaded/available lists
 
+### CRITICAL: File Name Accuracy
+
+- **ALWAYS CHECK THE AVAILABLE LIST** before every getAnalysisFiles call
+- **USE EXACT FILE NAMES** from the "NOT YET LOADED" list - copy them exactly
+- **VERIFY BEFORE REQUESTING**: Confirm each file name exists in the available list
+- **MATCH CHARACTER-BY-CHARACTER**: Use the exact spelling and format shown
+
 ### Request Strategy
 
 WHEN YOU NEED ADDITIONAL CONTEXT:

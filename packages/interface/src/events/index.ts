@@ -39,7 +39,7 @@ export * from "./AutoBeAnalyzeWriteSectionEvent";
 export * from "./AutoBeAnalyzeWriteSectionReviewEvent";
 // ANALYZE (Batch Review - All Units/Sections at once)
 export * from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
-export * from "./AutoBeAnalyzeWriteAllSectionsReviewEvent";
+export * from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
 
 // PRISMA
 export * from "./AutoBeDatabaseAuthorizationEvent";

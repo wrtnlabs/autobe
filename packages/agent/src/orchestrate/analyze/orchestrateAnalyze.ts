@@ -18,7 +18,7 @@ import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteMo
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { orchestrateAnalyzeWriteAllUnitReview } from "./orchestrateAnalyzeWriteAllUnitReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
-import { orchestrateAnalyzeWriteAllSectionsReview } from "./orchestrateAnalyzeWriteAllSectionsReview";
+import { orchestrateAnalyzeWriteAllSectionReview } from "./orchestrateAnalyzeWriteAllSectionReview";
 
 const MAX_RETRIES = 3;
 
@@ -203,7 +203,7 @@ async function reviewAllSections(
   },
 ): Promise<{ allApproved: boolean; reviewedSections: AutoBeAnalyzeWriteSectionEvent[][] }> {
   // Single LLM call to review ALL sections at once
-  const reviewEvent = await orchestrateAnalyzeWriteAllSectionsReview(ctx, {
+  const reviewEvent = await orchestrateAnalyzeWriteAllSectionReview(ctx, {
     scenario: props.scenario,
     file: props.file,
     moduleEvent: props.moduleEvent,

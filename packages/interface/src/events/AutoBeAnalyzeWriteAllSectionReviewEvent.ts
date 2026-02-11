@@ -25,8 +25,8 @@ import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent
  *
  * @author AutoBE
  */
-export interface AutoBeAnalyzeWriteAllSectionsReviewEvent
-  extends AutoBeEventBase<"analyzeWriteAllSectionsReview">,
+export interface AutoBeAnalyzeWriteAllSectionReviewEvent
+  extends AutoBeEventBase<"analyzeWriteAllSectionReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**

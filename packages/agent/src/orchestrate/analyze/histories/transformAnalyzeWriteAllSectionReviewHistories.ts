@@ -18,7 +18,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
  * This transformer provides context for reviewing all sections at once,
  * enabling holistic validation of the entire file's detailed content.
  */
-export const transformAnalyzeWriteAllSectionsReviewHistories = (
+export const transformAnalyzeWriteAllSectionReviewHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;

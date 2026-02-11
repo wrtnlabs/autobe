@@ -7,7 +7,7 @@ import {
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
-  AutoBeAnalyzeWriteAllSectionsReviewEvent,
+  AutoBeAnalyzeWriteAllSectionReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -16,8 +16,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteAllSectionsReviewHistories } from "./histories/transformAnalyzeWriteAllSectionsReviewHistories";
-import { IAutoBeAnalyzeWriteAllSectionsReviewApplication } from "./structures/IAutoBeAnalyzeWriteAllSectionsReviewApplication";
+import { transformAnalyzeWriteAllSectionReviewHistories } from "./histories/transformAnalyzeWriteAllSectionReviewHistories";
+import { IAutoBeAnalyzeWriteAllSectionReviewApplication } from "./structures/IAutoBeAnalyzeWriteAllSectionReviewApplication";
 
 /**
  * Orchestrate batch review of ALL section sections for a file.
@@ -25,7 +25,7 @@ import { IAutoBeAnalyzeWriteAllSectionsReviewApplication } from "./structures/IA
  * This function reviews all section sections at once in a single LLM call,
  * providing holistic validation of the entire file's detailed content.
  */
-export const orchestrateAnalyzeWriteAllSectionsReview = async (
+export const orchestrateAnalyzeWriteAllSectionReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
@@ -35,17 +35,17 @@ export const orchestrateAnalyzeWriteAllSectionsReview = async (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeAnalyzeWriteAllSectionsReviewEvent> => {
+): Promise<AutoBeAnalyzeWriteAllSectionReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteAllSectionsReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeWriteAllSectionReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteAllSectionsReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteAllSectionReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -56,7 +56,7 @@ export const orchestrateAnalyzeWriteAllSectionsReview = async (
         preliminary,
       }),
       enforceFunctionCall: true,
-      ...transformAnalyzeWriteAllSectionsReviewHistories(ctx, {
+      ...transformAnalyzeWriteAllSectionReviewHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
         moduleEvent: props.moduleEvent,
@@ -67,7 +67,7 @@ export const orchestrateAnalyzeWriteAllSectionsReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteAllSectionsReviewEvent = {
+    const event: AutoBeAnalyzeWriteAllSectionReviewEvent = {
       type: SOURCE,
       id: v7(),
       approved: pointer.value.approved,
@@ -86,14 +86,14 @@ export const orchestrateAnalyzeWriteAllSectionsReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteAllSectionsReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteAllSectionReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteAllSectionsReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteAllSectionsReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteAllSectionsReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -102,7 +102,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteAllSectionsReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteAllSectionReviewApplication>({
       validate: {
         process: validate,
       },
@@ -117,8 +117,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteAllSectionsReviewApplication,
+    } satisfies IAutoBeAnalyzeWriteAllSectionReviewApplication,
   };
 }
 
-const SOURCE = "analyzeWriteAllSectionsReview" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteAllSectionReview" satisfies AutoBeEventSource;

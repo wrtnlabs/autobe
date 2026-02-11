@@ -6,7 +6,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structu
  * This agent reviews ALL section sections for a file in a single LLM call,
  * providing holistic review of the entire file's detailed content.
  */
-export interface IAutoBeAnalyzeWriteAllSectionsReviewApplication {
+export interface IAutoBeAnalyzeWriteAllSectionReviewApplication {
   /**
    * Process batch section review task or preliminary data requests.
    *
@@ -15,10 +15,10 @@ export interface IAutoBeAnalyzeWriteAllSectionsReviewApplication {
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteAllSectionsReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteAllSectionsReviewApplication {
+export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
   export interface IProps {
     /**
      * Think before you act.

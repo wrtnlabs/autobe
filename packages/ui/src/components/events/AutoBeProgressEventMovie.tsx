@@ -210,9 +210,9 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Write All Units Review",
           description: "Batch reviewing all unit sections",
         };
-      case "analyzeWriteAllSectionsReview":
+      case "analyzeWriteAllSectionReview":
         return {
-          title: "Analyze Write All Sections Review",
+          title: "Analyze Write All Section Review",
           description: "Batch reviewing all section details",
         };
       default:

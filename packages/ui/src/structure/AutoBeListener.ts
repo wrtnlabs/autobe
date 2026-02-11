@@ -80,7 +80,7 @@ export class AutoBeListener {
       analyzeWriteAllUnitReview: async (event) => {
         this.accumulate(event);
       },
-      analyzeWriteAllSectionsReview: async (event) => {
+      analyzeWriteAllSectionReview: async (event) => {
         this.accumulate(event);
       },
       analyzeReview: async (event) => {

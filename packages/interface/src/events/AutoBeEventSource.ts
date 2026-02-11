@@ -8,7 +8,7 @@ import { AutoBeAnalyzeWriteUnitReviewEvent } from "./AutoBeAnalyzeWriteUnitRevie
 import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
 import { AutoBeAnalyzeWriteSectionReviewEvent } from "./AutoBeAnalyzeWriteSectionReviewEvent";
 import { AutoBeAnalyzeWriteAllUnitReviewEvent } from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
-import { AutoBeAnalyzeWriteAllSectionsReviewEvent } from "./AutoBeAnalyzeWriteAllSectionsReviewEvent";
+import { AutoBeAnalyzeWriteAllSectionReviewEvent } from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
 import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
@@ -93,7 +93,7 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeWriteSectionReviewEvent["type"]
   // analyze (batch review - All Units/Sections at once)
   | AutoBeAnalyzeWriteAllUnitReviewEvent["type"]
-  | AutoBeAnalyzeWriteAllSectionsReviewEvent["type"]
+  | AutoBeAnalyzeWriteAllSectionReviewEvent["type"]
   // database
   | AutoBeDatabaseGroupEvent["type"]
   | AutoBeDatabaseGroupReviewEvent["type"]
