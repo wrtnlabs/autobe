@@ -24,7 +24,6 @@ export const orchestrateAnalyzeWriteModule = async (
     file: AutoBeAnalyzeFile.Scenario;
     progress: AutoBeProgressEventBase;
     feedback?: string;
-    promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteModuleEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -46,7 +45,6 @@ export const orchestrateAnalyzeWriteModule = async (
         preliminary,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
       ...transformAnalyzeWriteModuleHistories(ctx, {
         scenario: props.scenario,
         file: props.file,

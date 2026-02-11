@@ -4,9 +4,9 @@ import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteSectionEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
+  AutoBeAnalyzeWriteAllUnitsReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -14,34 +14,36 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteSectionHistories } from "./histories/transformAnalyzeWriteSectionHistories";
-import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
+import { transformAnalyzeWriteAllUnitsReviewHistories } from "./histories/transformAnalyzeWriteAllUnitsReviewHistories";
+import { IAutoBeAnalyzeWriteAllUnitsReviewApplication } from "./structures/IAutoBeAnalyzeWriteAllUnitsReviewApplication";
 
-export const orchestrateAnalyzeWriteSection = async (
+/**
+ * Orchestrate batch review of ALL unit sections for a file.
+ *
+ * This function reviews all unit sections at once in a single LLM call,
+ * providing holistic validation of the entire file's unit structure.
+ */
+export const orchestrateAnalyzeWriteAllUnitsReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvent: AutoBeAnalyzeWriteUnitEvent;
-    moduleIndex: number;
-    unitIndex: number;
+    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     progress: AutoBeProgressEventBase;
-    feedback?: string;
   },
-): Promise<AutoBeAnalyzeWriteSectionEvent> => {
+): Promise<AutoBeAnalyzeWriteAllUnitsReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteSectionApplication>(),
+        typia.json.application<IAutoBeAnalyzeWriteAllUnitsReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteSectionApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -52,25 +54,22 @@ export const orchestrateAnalyzeWriteSection = async (
         preliminary,
       }),
       enforceFunctionCall: true,
-      ...transformAnalyzeWriteSectionHistories(ctx, {
+      ...transformAnalyzeWriteAllUnitsReviewHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
         moduleEvent: props.moduleEvent,
-        unitEvent: props.unitEvent,
-        moduleIndex: props.moduleIndex,
-        unitIndex: props.unitIndex,
-        feedback: props.feedback,
+        unitEvents: props.unitEvents,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteSectionEvent = {
+    const event: AutoBeAnalyzeWriteAllUnitsReviewEvent = {
       type: SOURCE,
       id: v7(),
-      moduleIndex: pointer.value.moduleIndex,
-      unitIndex: pointer.value.unitIndex,
-      sectionSections: pointer.value.sectionSections,
+      approved: pointer.value.approved,
+      feedback: pointer.value.feedback,
+      revisedUnits: pointer.value.revisedUnits,
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
@@ -84,42 +83,23 @@ export const orchestrateAnalyzeWriteSection = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteSectionApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteSectionApplication.IProps>(input);
-    if (result.success === false) return result;
-
-    // Validate English-only content for complete requests
-    if (result.data.request.type === "complete") {
-      const englishValidation = validateSectionSectionContent(
-        result.data.request.sectionSections,
-      );
-      if (!englishValidation.valid) {
-        return {
-          success: false,
-          errors: englishValidation.errors.map((error) => ({
-            path: "$input.request.sectionSections",
-            expected: "English-only content (no Chinese, Korean, Japanese)",
-            value: error,
-          })),
-          data: result.data,
-        };
-      }
+  ): IValidation<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps>(input);
+    if (result.success === false || result.data.request.type === "complete")
       return result;
-    }
-
     return props.preliminary.validate({
       thinking: result.data.thinking,
       request: result.data.request,
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteSectionApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteAllUnitsReviewApplication>({
       validate: {
         process: validate,
       },
@@ -134,8 +114,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteSectionApplication,
+    } satisfies IAutoBeAnalyzeWriteAllUnitsReviewApplication,
   };
 }
 
-const SOURCE = "analyzeWriteSection" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteAllUnitsReview" satisfies AutoBeEventSource;

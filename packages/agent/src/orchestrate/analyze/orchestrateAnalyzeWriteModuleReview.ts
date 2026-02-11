@@ -24,7 +24,6 @@ export const orchestrateAnalyzeWriteModuleReview = async (
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteModuleReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -47,7 +46,6 @@ export const orchestrateAnalyzeWriteModuleReview = async (
         preliminary,
       }),
       enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
       ...transformAnalyzeWriteModuleReviewHistories(ctx, {
         scenario: props.scenario,
         file: props.file,

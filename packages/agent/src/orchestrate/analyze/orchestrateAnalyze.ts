@@ -5,23 +5,20 @@ import {
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
-  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAssistantMessageHistory,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteModuleReview";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
-import { orchestrateAnalyzeWriteUnitReview } from "./orchestrateAnalyzeWriteUnitReview";
+import { orchestrateAnalyzeWriteAllUnitsReview } from "./orchestrateAnalyzeWriteAllUnitsReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
-import { orchestrateAnalyzeWriteSectionReview } from "./orchestrateAnalyzeWriteSectionReview";
+import { orchestrateAnalyzeWriteAllSectionsReview } from "./orchestrateAnalyzeWriteAllSectionsReview";
 
 const MAX_RETRIES = 3;
 
@@ -52,22 +49,20 @@ export const orchestrateAnalyze = async (
     completed: 0,
   };
 
-  const files: AutoBeAnalyzeFile[] = await executeCachedBatch(
-    ctx,
-    scenario.files.map((file) => async (promptCacheKey) => {
+  const files: AutoBeAnalyzeFile[] = await Promise.all(
+    scenario.files.map(async (file) => {
       const content = await processFileHierarchical(ctx, {
         scenario,
         file,
         progress,
-        promptCacheKey,
       });
-      progress.completed++;
       return {
         ...file,
         content,
       };
     }),
   );
+  progress.completed = files.length;
 
   // Complete the analysis
   return ctx.dispatch({
@@ -92,44 +87,138 @@ async function processFileHierarchical(
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
     progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
 ): Promise<string> {
-  // Step 1: Module Write → Review
   const moduleResult = await writeAndReviewModule(ctx, props);
 
-  // Step 2: For each module section, do Unit Write → Review
-  const unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
-  for (let moduleIndex = 0; moduleIndex < moduleResult.moduleSections.length; moduleIndex++) {
-    const unitResult = await writeAndReviewUnit(ctx, {
+  let unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    unitResults = [];
+    for (let moduleIndex = 0; moduleIndex < moduleResult.moduleSections.length; moduleIndex++) {
+      const unitEvent = await orchestrateAnalyzeWriteUnit(ctx, {
+        scenario: props.scenario,
+        file: props.file,
+        moduleEvent: moduleResult,
+        moduleIndex,
+        progress: props.progress,
+      });
+      unitResults.push(unitEvent);
+    }
+
+    const unitReviewResult = await reviewAllUnits(ctx, {
       ...props,
       moduleEvent: moduleResult,
-      moduleIndex,
+      unitEvents: unitResults,
     });
-    unitResults.push(unitResult);
+
+    if (unitReviewResult.allApproved) {
+      unitResults = unitReviewResult.reviewedUnits;
+      break;
+    }
   }
 
-  // Step 3: For each unit section, do Section Write → Review
-  const sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
-  for (let moduleIndex = 0; moduleIndex < unitResults.length; moduleIndex++) {
-    const unitEvent = unitResults[moduleIndex]!;
-    const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
-
-    for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
-      const sectionResult = await writeAndReviewSection(ctx, {
-        ...props,
-        moduleEvent: moduleResult,
-        unitEvent,
-        moduleIndex,
-        unitIndex,
-      });
-      sectionsForModule.push(sectionResult);
+  let sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    sectionResults = [];
+    for (let moduleIndex = 0; moduleIndex < unitResults.length; moduleIndex++) {
+      const unitEvent = unitResults[moduleIndex]!;
+      const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
+      for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
+        const sectionEvent = await orchestrateAnalyzeWriteSection(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent: moduleResult,
+          unitEvent,
+          moduleIndex,
+          unitIndex,
+          progress: props.progress,
+        });
+        sectionsForModule.push(sectionEvent);
+      }
+      sectionResults.push(sectionsForModule);
     }
-    sectionResults.push(sectionsForModule);
+
+    const sectionReviewResult = await reviewAllSections(ctx, {
+      ...props,
+      moduleEvent: moduleResult,
+      unitEvents: unitResults,
+      sectionEvents: sectionResults,
+    });
+
+    if (sectionReviewResult.allApproved) {
+      sectionResults = sectionReviewResult.reviewedSections;
+      break;
+    }
   }
 
   // Step 4: Assemble final content
   return assembleContent(moduleResult, unitResults, sectionResults);
+}
+
+/**
+ * Review all Units at once in a SINGLE LLM call.
+ * Returns allApproved=false if the batch review rejects.
+ */
+async function reviewAllUnits(
+  ctx: AutoBeContext,
+  props: {
+    scenario: AutoBeAnalyzeScenarioEvent;
+    file: AutoBeAnalyzeFile.Scenario;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<{ allApproved: boolean; reviewedUnits: AutoBeAnalyzeWriteUnitEvent[] }> {
+  // Single LLM call to review ALL units at once
+  const reviewEvent = await orchestrateAnalyzeWriteAllUnitsReview(ctx, {
+    scenario: props.scenario,
+    file: props.file,
+    moduleEvent: props.moduleEvent,
+    unitEvents: props.unitEvents,
+    progress: props.progress,
+  });
+
+  if (!reviewEvent.approved) {
+    return { allApproved: false, reviewedUnits: [] };
+  }
+
+  // Apply revisions if provided
+  const reviewedUnits = applyAllUnitRevisions(props.unitEvents, reviewEvent);
+  return { allApproved: true, reviewedUnits };
+}
+
+/**
+ * Review all Sections at once in a SINGLE LLM call.
+ * Returns allApproved=false if the batch review rejects.
+ */
+async function reviewAllSections(
+  ctx: AutoBeContext,
+  props: {
+    scenario: AutoBeAnalyzeScenarioEvent;
+    file: AutoBeAnalyzeFile.Scenario;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+    progress: AutoBeProgressEventBase;
+  },
+): Promise<{ allApproved: boolean; reviewedSections: AutoBeAnalyzeWriteSectionEvent[][] }> {
+  // Single LLM call to review ALL sections at once
+  const reviewEvent = await orchestrateAnalyzeWriteAllSectionsReview(ctx, {
+    scenario: props.scenario,
+    file: props.file,
+    moduleEvent: props.moduleEvent,
+    unitEvents: props.unitEvents,
+    sectionEvents: props.sectionEvents,
+    progress: props.progress,
+  });
+
+  if (!reviewEvent.approved) {
+    return { allApproved: false, reviewedSections: [] };
+  }
+
+  // Apply revisions if provided
+  const reviewedSections = applyAllSectionRevisions(props.sectionEvents, reviewEvent);
+  return { allApproved: true, reviewedSections };
 }
 
 /**
@@ -141,7 +230,6 @@ async function writeAndReviewModule(
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
     progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteModuleEvent> {
   let feedback: string | undefined;
@@ -152,7 +240,6 @@ async function writeAndReviewModule(
       file: props.file,
       progress: props.progress,
       feedback,
-      promptCacheKey: props.promptCacheKey,
     });
 
     const reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent =
@@ -161,7 +248,6 @@ async function writeAndReviewModule(
         file: props.file,
         moduleEvent,
         progress: props.progress,
-        promptCacheKey: props.promptCacheKey,
       });
 
     if (reviewEvent.approved) {
@@ -173,107 +259,6 @@ async function writeAndReviewModule(
   }
 
   throw new Error("[orchestrateAnalyze] Module write failed after max retries");
-}
-
-/**
- * Write Unit sections with review and retry on failure
- */
-async function writeAndReviewUnit(
-  ctx: AutoBeContext,
-  props: {
-    scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    moduleIndex: number;
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-  },
-): Promise<AutoBeAnalyzeWriteUnitEvent> {
-  let feedback: string | undefined;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const unitEvent = await orchestrateAnalyzeWriteUnit(ctx, {
-      scenario: props.scenario,
-      file: props.file,
-      moduleEvent: props.moduleEvent,
-      moduleIndex: props.moduleIndex,
-      progress: props.progress,
-      feedback,
-      promptCacheKey: props.promptCacheKey,
-    });
-
-    const reviewEvent: AutoBeAnalyzeWriteUnitReviewEvent =
-      await orchestrateAnalyzeWriteUnitReview(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvent,
-        progress: props.progress,
-        promptCacheKey: props.promptCacheKey,
-      });
-
-    if (reviewEvent.approved) {
-      // Apply revisions if provided
-      return applyUnitRevisions(unitEvent, reviewEvent);
-    }
-
-    feedback = reviewEvent.feedback;
-  }
-
-  throw new Error("[orchestrateAnalyze] Unit write failed after max retries");
-}
-
-/**
- * Write Section sections with review and retry on failure
- */
-async function writeAndReviewSection(
-  ctx: AutoBeContext,
-  props: {
-    scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvent: AutoBeAnalyzeWriteUnitEvent;
-    moduleIndex: number;
-    unitIndex: number;
-    progress: AutoBeProgressEventBase;
-    promptCacheKey: string;
-  },
-): Promise<AutoBeAnalyzeWriteSectionEvent> {
-  let feedback: string | undefined;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const sectionEvent = await orchestrateAnalyzeWriteSection(ctx, {
-      scenario: props.scenario,
-      file: props.file,
-      moduleEvent: props.moduleEvent,
-      unitEvent: props.unitEvent,
-      moduleIndex: props.moduleIndex,
-      unitIndex: props.unitIndex,
-      progress: props.progress,
-      feedback,
-      promptCacheKey: props.promptCacheKey,
-    });
-
-    const reviewEvent: AutoBeAnalyzeWriteSectionReviewEvent =
-      await orchestrateAnalyzeWriteSectionReview(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvent: props.unitEvent,
-        sectionEvent,
-        progress: props.progress,
-        promptCacheKey: props.promptCacheKey,
-      });
-
-    if (reviewEvent.approved) {
-      // Apply revisions if provided
-      return applySectionRevisions(sectionEvent, reviewEvent);
-    }
-
-    feedback = reviewEvent.feedback;
-  }
-
-  throw new Error("[orchestrateAnalyze] Section write failed after max retries");
 }
 
 /**
@@ -292,29 +277,76 @@ function applyModuleRevisions(
 }
 
 /**
- * Apply unit review revisions to the unit event
+ * Apply batch unit review revisions to all unit events
  */
-function applyUnitRevisions(
-  unitEvent: AutoBeAnalyzeWriteUnitEvent,
-  reviewEvent: AutoBeAnalyzeWriteUnitReviewEvent,
-): AutoBeAnalyzeWriteUnitEvent {
-  return {
-    ...unitEvent,
-    unitSections: reviewEvent.revisedSections ?? unitEvent.unitSections,
-  };
+function applyAllUnitRevisions(
+  unitEvents: AutoBeAnalyzeWriteUnitEvent[],
+  reviewEvent: { revisedUnits?: Array<{ moduleIndex: number; unitSections: AutoBeAnalyzeWriteUnitEvent.IUnitSection[] }> },
+): AutoBeAnalyzeWriteUnitEvent[] {
+  if (!reviewEvent.revisedUnits) {
+    return unitEvents;
+  }
+
+  // Create a map of revisions by moduleIndex
+  const revisionsMap = new Map<number, AutoBeAnalyzeWriteUnitEvent.IUnitSection[]>();
+  for (const revision of reviewEvent.revisedUnits) {
+    revisionsMap.set(revision.moduleIndex, revision.unitSections);
+  }
+
+  // Apply revisions where available
+  return unitEvents.map((unitEvent, moduleIndex) => {
+    const revisedSections = revisionsMap.get(moduleIndex);
+    if (revisedSections) {
+      return { ...unitEvent, unitSections: revisedSections };
+    }
+    return unitEvent;
+  });
 }
 
 /**
- * Apply section review revisions to the section event
+ * Apply batch section review revisions to all section events
  */
-function applySectionRevisions(
-  sectionEvent: AutoBeAnalyzeWriteSectionEvent,
-  reviewEvent: AutoBeAnalyzeWriteSectionReviewEvent,
-): AutoBeAnalyzeWriteSectionEvent {
-  return {
-    ...sectionEvent,
-    sectionSections: reviewEvent.revisedSections ?? sectionEvent.sectionSections,
-  };
+function applyAllSectionRevisions(
+  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
+  reviewEvent: {
+    revisedSections?: Array<{
+      moduleIndex: number;
+      units: Array<{
+        unitIndex: number;
+        sectionSections: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
+      }>;
+    }>;
+  },
+): AutoBeAnalyzeWriteSectionEvent[][] {
+  if (!reviewEvent.revisedSections) {
+    return sectionEvents;
+  }
+
+  // Create a nested map of revisions by moduleIndex and unitIndex
+  const revisionsMap = new Map<number, Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>>();
+  for (const moduleRevision of reviewEvent.revisedSections) {
+    const unitMap = new Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>();
+    for (const unitRevision of moduleRevision.units) {
+      unitMap.set(unitRevision.unitIndex, unitRevision.sectionSections);
+    }
+    revisionsMap.set(moduleRevision.moduleIndex, unitMap);
+  }
+
+  // Apply revisions where available
+  return sectionEvents.map((sectionsForModule, moduleIndex) => {
+    const unitMap = revisionsMap.get(moduleIndex);
+    if (!unitMap) {
+      return sectionsForModule;
+    }
+
+    return sectionsForModule.map((sectionEvent, unitIndex) => {
+      const revisedSections = unitMap.get(unitIndex);
+      if (revisedSections) {
+        return { ...sectionEvent, sectionSections: revisedSections };
+      }
+      return sectionEvent;
+    });
+  });
 }
 
 /**

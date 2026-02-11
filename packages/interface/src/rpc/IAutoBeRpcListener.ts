@@ -10,6 +10,8 @@ import {
   AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteSectionReviewEvent,
+  AutoBeAnalyzeWriteAllUnitsReviewEvent,
+  AutoBeAnalyzeWriteAllSectionsReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -232,6 +234,26 @@ export interface IAutoBeRpcListener {
    */
   analyzeWriteSectionReview?(
     event: AutoBeAnalyzeWriteSectionReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for batch unit review events (V2 hierarchical writing).
+   *
+   * Called when ALL unit sections for a file are reviewed in a single LLM call,
+   * providing holistic validation of the entire file's unit structure.
+   */
+  analyzeWriteAllUnitsReview?(
+    event: AutoBeAnalyzeWriteAllUnitsReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for batch section review events (V2 hierarchical writing).
+   *
+   * Called when ALL section sections for a file are reviewed in a single LLM call,
+   * providing holistic validation of the entire file's detailed content.
+   */
+  analyzeWriteAllSectionsReview?(
+    event: AutoBeAnalyzeWriteAllSectionsReviewEvent,
   ): Promise<void>;
 
   /**

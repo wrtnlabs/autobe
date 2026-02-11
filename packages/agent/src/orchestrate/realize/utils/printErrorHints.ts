@@ -30,7 +30,6 @@ export function printErrorHints(
         const errorMessage = String(diag.messageText).replace(/\n/g, "\\n");
         const targetLine = line + " // error: " + errorMessage;
 
-        // targetLine만 덮어써서 새로운 배열을 만들어야 한다.
         const hint: string = arr
           .slice(0, index)
           .concat(targetLine)

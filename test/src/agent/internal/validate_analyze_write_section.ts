@@ -58,7 +58,6 @@ export const validate_analyze_write_section = async (props: {
       moduleIndex: 0,
       unitIndex: 0,
       progress,
-      promptCacheKey: "validate_analyze_write_section",
     });
 
   await AutoBeExampleStorage.save({

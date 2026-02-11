@@ -37,7 +37,6 @@ export const validate_analyze_write_module = async (props: {
       scenario,
       file,
       progress,
-      promptCacheKey: "validate_analyze_write_module",
     },
   );
 

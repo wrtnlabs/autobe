@@ -197,6 +197,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   analyzeWriteUnitReview: 300,
   analyzeWriteSection: 500,
   analyzeWriteSectionReview: 300,
+  analyzeWriteAllUnitsReview: 300,
+  analyzeWriteAllSectionsReview: 300,
   analyzeReview: 300,
   analyzeComplete: 1_000,
   // PRISMA

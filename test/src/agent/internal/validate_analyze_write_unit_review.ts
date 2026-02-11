@@ -56,7 +56,6 @@ export const validate_analyze_write_unit_review = async (props: {
       moduleEvent,
       unitEvent,
       progress,
-      promptCacheKey: "validate_analyze_write_unit_review",
     });
 
   await AutoBeExampleStorage.save({
