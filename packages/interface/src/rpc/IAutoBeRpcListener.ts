@@ -10,7 +10,7 @@ import {
   AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteSectionReviewEvent,
-  AutoBeAnalyzeWriteAllUnitsReviewEvent,
+  AutoBeAnalyzeWriteAllUnitReviewEvent,
   AutoBeAnalyzeWriteAllSectionsReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
@@ -242,8 +242,8 @@ export interface IAutoBeRpcListener {
    * Called when ALL unit sections for a file are reviewed in a single LLM call,
    * providing holistic validation of the entire file's unit structure.
    */
-  analyzeWriteAllUnitsReview?(
-    event: AutoBeAnalyzeWriteAllUnitsReviewEvent,
+  analyzeWriteAllUnitReview?(
+    event: AutoBeAnalyzeWriteAllUnitReviewEvent,
   ): Promise<void>;
 
   /**

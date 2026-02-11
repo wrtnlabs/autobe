@@ -16,7 +16,7 @@ import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteModuleReview";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
-import { orchestrateAnalyzeWriteAllUnitsReview } from "./orchestrateAnalyzeWriteAllUnitsReview";
+import { orchestrateAnalyzeWriteAllUnitReview } from "./orchestrateAnalyzeWriteAllUnitReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteAllSectionsReview } from "./orchestrateAnalyzeWriteAllSectionsReview";
 
@@ -56,13 +56,13 @@ export const orchestrateAnalyze = async (
         file,
         progress,
       });
+      progress.completed++;
       return {
         ...file,
         content,
       };
     }),
   );
-  progress.completed = files.length;
 
   // Complete the analysis
   return ctx.dispatch({
@@ -170,7 +170,7 @@ async function reviewAllUnits(
   },
 ): Promise<{ allApproved: boolean; reviewedUnits: AutoBeAnalyzeWriteUnitEvent[] }> {
   // Single LLM call to review ALL units at once
-  const reviewEvent = await orchestrateAnalyzeWriteAllUnitsReview(ctx, {
+  const reviewEvent = await orchestrateAnalyzeWriteAllUnitReview(ctx, {
     scenario: props.scenario,
     file: props.file,
     moduleEvent: props.moduleEvent,

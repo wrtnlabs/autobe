@@ -24,8 +24,8 @@ import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
  *
  * @author AutoBE
  */
-export interface AutoBeAnalyzeWriteAllUnitsReviewEvent
-  extends AutoBeEventBase<"analyzeWriteAllUnitsReview">,
+export interface AutoBeAnalyzeWriteAllUnitReviewEvent
+  extends AutoBeEventBase<"analyzeWriteAllUnitReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**
@@ -52,7 +52,7 @@ export interface AutoBeAnalyzeWriteAllUnitsReviewEvent
    * this field contains the updated sections organized by module index.
    * Otherwise undefined.
    */
-  revisedUnits?: IRevisedModuleUnits[];
+  revisedUnits?: IRevisedModuleUnit[];
 
   /**
    * Current iteration number of the review process.
@@ -65,7 +65,7 @@ export interface AutoBeAnalyzeWriteAllUnitsReviewEvent
 /**
  * Structure for revised units of a single module section.
  */
-export interface IRevisedModuleUnits {
+export interface IRevisedModuleUnit {
   /**
    * Index of the module section these units belong to.
    */

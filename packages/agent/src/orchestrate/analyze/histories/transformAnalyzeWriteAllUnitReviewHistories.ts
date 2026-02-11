@@ -17,7 +17,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
  * This transformer provides context for reviewing all units at once,
  * enabling holistic validation of the entire file's unit structure.
  */
-export const transformAnalyzeWriteAllUnitsReviewHistories = (
+export const transformAnalyzeWriteAllUnitReviewHistories = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;

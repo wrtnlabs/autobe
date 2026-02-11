@@ -6,7 +6,7 @@ import {
   AutoBeAnalyzeWriteUnitEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
-  AutoBeAnalyzeWriteAllUnitsReviewEvent,
+  AutoBeAnalyzeWriteAllUnitReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -15,8 +15,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteAllUnitsReviewHistories } from "./histories/transformAnalyzeWriteAllUnitsReviewHistories";
-import { IAutoBeAnalyzeWriteAllUnitsReviewApplication } from "./structures/IAutoBeAnalyzeWriteAllUnitsReviewApplication";
+import { transformAnalyzeWriteAllUnitReviewHistories } from "./histories/transformAnalyzeWriteAllUnitReviewHistories";
+import { IAutoBeAnalyzeWriteAllUnitReviewApplication } from "./structures/IAutoBeAnalyzeWriteAllUnitReviewApplication";
 
 /**
  * Orchestrate batch review of ALL unit sections for a file.
@@ -24,7 +24,7 @@ import { IAutoBeAnalyzeWriteAllUnitsReviewApplication } from "./structures/IAuto
  * This function reviews all unit sections at once in a single LLM call,
  * providing holistic validation of the entire file's unit structure.
  */
-export const orchestrateAnalyzeWriteAllUnitsReview = async (
+export const orchestrateAnalyzeWriteAllUnitReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
@@ -33,17 +33,17 @@ export const orchestrateAnalyzeWriteAllUnitsReview = async (
     unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     progress: AutoBeProgressEventBase;
   },
-): Promise<AutoBeAnalyzeWriteAllUnitsReviewEvent> => {
+): Promise<AutoBeAnalyzeWriteAllUnitReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteAllUnitsReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeWriteAllUnitReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteAllUnitReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -54,7 +54,7 @@ export const orchestrateAnalyzeWriteAllUnitsReview = async (
         preliminary,
       }),
       enforceFunctionCall: true,
-      ...transformAnalyzeWriteAllUnitsReviewHistories(ctx, {
+      ...transformAnalyzeWriteAllUnitReviewHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
         moduleEvent: props.moduleEvent,
@@ -64,7 +64,7 @@ export const orchestrateAnalyzeWriteAllUnitsReview = async (
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteAllUnitsReviewEvent = {
+    const event: AutoBeAnalyzeWriteAllUnitReviewEvent = {
       type: SOURCE,
       id: v7(),
       approved: pointer.value.approved,
@@ -83,14 +83,14 @@ export const orchestrateAnalyzeWriteAllUnitsReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteAllUnitReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeWriteAllUnitReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeWriteAllUnitReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeWriteAllUnitReviewApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -99,7 +99,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteAllUnitsReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeWriteAllUnitReviewApplication>({
       validate: {
         process: validate,
       },
@@ -114,8 +114,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteAllUnitsReviewApplication,
+    } satisfies IAutoBeAnalyzeWriteAllUnitReviewApplication,
   };
 }
 
-const SOURCE = "analyzeWriteAllUnitsReview" satisfies AutoBeEventSource;
+const SOURCE = "analyzeWriteAllUnitReview" satisfies AutoBeEventSource;

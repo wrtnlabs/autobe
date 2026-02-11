@@ -145,7 +145,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "analyzeWriteUnitReview":
     case "analyzeWriteSection":
     case "analyzeWriteSectionReview":
-    case "analyzeWriteAllUnitsReview":
+    case "analyzeWriteAllUnitReview":
     case "analyzeWriteAllSectionsReview":
       return null;
     default:

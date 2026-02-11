@@ -6,7 +6,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structu
  * This agent reviews ALL unit sections for a file in a single LLM call,
  * providing holistic review of the entire file's unit structure.
  */
-export interface IAutoBeAnalyzeWriteAllUnitsReviewApplication {
+export interface IAutoBeAnalyzeWriteAllUnitReviewApplication {
   /**
    * Process batch unit section review task or preliminary data requests.
    *
@@ -15,10 +15,10 @@ export interface IAutoBeAnalyzeWriteAllUnitsReviewApplication {
    *
    * @param props Request containing either preliminary data request or complete task
    */
-  process(props: IAutoBeAnalyzeWriteAllUnitsReviewApplication.IProps): void;
+  process(props: IAutoBeAnalyzeWriteAllUnitReviewApplication.IProps): void;
 }
 
-export namespace IAutoBeAnalyzeWriteAllUnitsReviewApplication {
+export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
   export interface IProps {
     /**
      * Think before you act.
@@ -85,13 +85,13 @@ export namespace IAutoBeAnalyzeWriteAllUnitsReviewApplication {
      * Only provided if the reviewer made direct corrections.
      * Array index corresponds to moduleIndex.
      */
-    revisedUnits?: IRevisedModuleUnits[];
+    revisedUnits?: IRevisedModuleUnit[];
   }
 
   /**
    * Structure for revised units of a single module section.
    */
-  export interface IRevisedModuleUnits {
+  export interface IRevisedModuleUnit {
     /**
      * Index of the module section these units belong to.
      */
