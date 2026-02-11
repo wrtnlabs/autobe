@@ -24,7 +24,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     schema: AutoBeOpenApi.IJsonSchema.IObject;
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): void => {
-    // check invidual revises
+    // check individual revises
     props.revises.forEach((revise, i) => {
       validateProperty({
         // config
@@ -198,7 +198,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           ${databaseProperties.map((dp) => `- ${dp.key}`).join("\n")}
 
           Choose one of the following actions:
-          
+
           1. If you made a typo and a similar property exists above, correct it
           2. If this property is computed/aggregated or composed purely by
              business logic (not from DB), set the value to null
