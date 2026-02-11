@@ -82,11 +82,22 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
             value: undefined,
             expected: `${props.unionTypeName} (databaseSchemaProperty: ${JSON.stringify(key)})`,
             description: StringUtil.trim`
-              Database schema property ${JSON.stringify(key)} is defined in the 
-              database schema, but not revised.
+              Database property ${JSON.stringify(key)} exists in "${props.model.name}"
+              but is not handled in your revisions.
 
-              You MUST provide a revise with "databaseSchemaProperty" referencing 
-              every property in the database schema if a database schema is defined.
+              Every database property must be explicitly addressed. You have two options:
+
+              1. If mapped to a DTO property: ensure one of your revisions (keep, update,
+                 create, depict, ...) has databaseSchemaProperty: ${JSON.stringify(key)}
+
+              2. If NOT in this DTO: add an "exclude" revision:
+                 { type: "exclude", databaseSchemaProperty: ${JSON.stringify(key)}, reason: "..." }
+
+              The "exclude" type declares that this database property is intentionally
+              not included in the DTO. Provide a clear reason (e.g., "aggregation relation",
+              "internal field", "handled by separate endpoint").
+
+              Do NOT omit database properties. Either map them or exclude them.
             `,
           });
     }

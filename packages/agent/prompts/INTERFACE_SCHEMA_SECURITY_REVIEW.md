@@ -14,7 +14,10 @@ You do not review general entity DTOs (`IEntity.ICreate`, etc.).
 
 ## 1. How Revisions Work
 
-Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Enumerate every DTO property and every security-sensitive DB property, then assign exactly one revision to each:
+
+1. **Every DTO property** → `keep`, `erase`, `create`, `update`, `depict`, or `nullish`
+2. **Every security-sensitive DB property** → either mapped via `databaseSchemaProperty` or declared with `exclude`
 
 **Setting `databaseSchemaProperty`**: Use column name for DB-mapped fields (e.g., `password` → `"password_hashed"`). Use `null` for runtime-captured fields like session context (verify valid logic in `x-autobe-specification`).
 

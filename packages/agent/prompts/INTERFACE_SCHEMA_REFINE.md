@@ -93,11 +93,12 @@ model bbs_articles {
 
 ## 3. Refinement Operations
 
-Each property receives exactly one refinement operation. Decide the single most appropriate action for a property and commit to it — never apply multiple operations to the same key.
+Each property receives exactly one refinement operation. You must cover two lists completely:
 
-**Every database property must be explicitly handled** — either mapped to a DTO property or intentionally excluded. No database property can be accidentally forgotten.
+1. **Every DTO property** → `depict`, `create`, `update`, or `erase`
+2. **Every DB property** → either mapped via `databaseSchemaProperty` in a DTO refinement, or declared with `exclude`
 
-**Before setting `databaseSchemaProperty: null`**: Verify `specification` explains valid logic. **Before using `erase`**: Confirm no DB mapping AND no valid business logic. Phantom detection mistakes are common — verify twice.
+**Before `databaseSchemaProperty: null`**: Verify `specification` explains valid logic. **Before `erase`**: Confirm no DB mapping AND no valid business logic.
 
 ### 3.1. `depict` - Add Documentation (No Type Change)
 ```typescript
@@ -411,19 +412,17 @@ Before calling `complete`:
 - [ ] `description` refined (MANDATORY)
 
 **Property-Level**:
-- [ ] ALL DTO properties have refinement operations
-- [ ] ALL DB properties either mapped to DTO or `exclude`d with reason
-- [ ] Each property appears exactly once in `refines` (no duplicates — one action per key)
+- [ ] Every DTO property refined (`depict`, `create`, `update`, or `erase`)
+- [ ] Every DB property either mapped via `databaseSchemaProperty` or `exclude`d
+- [ ] No duplicates (one action per key)
 - [ ] WHICH → HOW → WHAT order followed
-- [ ] `specification` and `schema` type are consistent
-- [ ] Every `databaseSchemaProperty: null` is for a computed value — verified that the property does NOT exist in DB columns or relations
+- [ ] `databaseSchemaProperty: null` only for computed values (not in DB)
 
 **Pre-Review Hardening**:
-- [ ] Content: All appropriate fields present (DB + computed)
-- [ ] Phantom: No fields without valid source (re-checked against loaded schema)
-- [ ] Relation: FK fields have `$ref` in Read DTOs
+- [ ] Content: All fields present (DB + computed)
+- [ ] Phantom: No fields without valid source
+- [ ] Relation: FK → `$ref` in Read DTOs
 - [ ] Security (Actor DTOs): No exposed passwords/secrets
-- [ ] Excluded: DB properties not in DTO use `exclude` with clear reason
 
 **Function Calling**:
 - [ ] All needed materials loaded

@@ -23,7 +23,10 @@ You CANNOT:
 
 ## 2. How Revisions Work
 
-Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Enumerate every DTO property and every DB relation, then assign exactly one revision to each:
+
+1. **Every DTO property** → `keep`, `update`, `create`, `erase`, `depict`, or `nullish`
+2. **Every DB relation** → either mapped via `databaseSchemaProperty` or declared with `exclude`
 
 **Setting `databaseSchemaProperty`**: Use relation name for DB relations. Use `null` only for requirement-derived computed properties (verify valid logic in `x-autobe-specification`).
 
