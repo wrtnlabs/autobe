@@ -1,7 +1,7 @@
 import type { IValidation } from "@samchon/openapi";
 import { Escaper } from "typia/lib/utils/Escaper";
 
-export function stringifyValidateFailure(
+export function stringifyValidationFailure(
   failure: IValidation.IFailure,
 ): string {
   const usedErrors = new Set<IValidation.IError>();

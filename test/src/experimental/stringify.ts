@@ -1,4 +1,4 @@
-import { stringifyValidateFailure } from "@autobe/agent/src/utils/stringifyValidateFailure";
+import { stringifyValidationFailure } from "@autobe/agent/src/utils/stringifyValidationFailure";
 import { IValidation } from "typia";
 
 const failure: IValidation.IFailure = {
@@ -42,4 +42,4 @@ const failure: IValidation.IFailure = {
     },
   ],
 };
-console.log(stringifyValidateFailure(failure));
+console.log(stringifyValidationFailure(failure));
