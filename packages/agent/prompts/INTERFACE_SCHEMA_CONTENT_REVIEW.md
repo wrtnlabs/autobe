@@ -26,7 +26,10 @@ Enumerate every property in the schema plus every field in the database table, t
 You do not use `erase` — that belongs to phantom review.
 
 **When to use `exclude`**:
-- DTO purpose mismatch: `id`, `created_at` in Create DTO
+- Auto-generated fields: `id`, `created_at` in Create DTO
+- Actor identity FK: `member_id`, `author_id` in Create/Update DTO (resolved from JWT)
+- Path parameter FK: `article_id` in Create DTO when already in URL path
+- Session FK: `session_id` (server-managed, never in body)
 - Summary DTO: only essential display fields included
 - Immutability: `id`, `created_at` in Update DTO
 - Aggregation relations: use computed counts instead
@@ -135,46 +138,42 @@ Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key`
 
 ```typescript
 { databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated field not user-provided in Create DTO", type: "exclude" }
+{ databaseSchemaProperty: "member_id", reason: "Actor identity: resolved from JWT, not user-provided", type: "exclude" }
+{ databaseSchemaProperty: "article_id", reason: "Path parameter: already provided in URL path", type: "exclude" }
 { databaseSchemaProperty: "comments", reason: "Summary DTO: only essential display fields included", type: "exclude" }
 ```
 
 ## 7. Complete Example
 
-Schema `IProduct.ICreate` has `[name, price, stock]`. DB table has columns `[id, name, price, stock, featured, author_id, created_at, deleted_at]` and relation `author`. Schema missing `featured` column and `author_id` FK. `stock` has wrong type (string instead of integer). `name` has wrong description. DB columns `id`, `created_at`, `deleted_at` should be excluded from Create DTO.
+Endpoint `POST /articles/{articleId}/comments`. Schema `IBbsArticleComment.ICreate` has `[content, score]`. DB table `bbs_article_comments` has columns `[id, bbs_article_id, bbs_member_id, content, score, created_at, deleted_at]` and relations `[article, member]`. `score` has wrong type (string instead of integer). `content` has wrong description. DB columns `id`, `created_at`, `deleted_at` are auto-generated. `bbs_member_id` comes from JWT. `bbs_article_id` comes from path parameter `{articleId}`.
 
 ```typescript
 process({
-  thinking: "Checked DB columns and relations. Missing: featured. Wrong type: stock. Bad description: name. Exclude: id, created_at, deleted_at (auto-generated). author relation should be author_id in Create DTO.",
+  thinking: "Checked DB columns and relations. Wrong type: score. Bad description: content. Exclude: id, created_at, deleted_at (auto-generated), bbs_member_id (actor from JWT), bbs_article_id (path param), article/member relations (Create DTO uses FK, not objects).",
   request: {
     type: "complete",
-    review: "Missing: featured. Wrong type: stock. Bad description: name. Excluded auto-generated fields.",
+    review: "Wrong type: score. Bad description: content. Excluded auto-generated, actor FK, and path param FK.",
     revises: [
-      { key: "name", databaseSchemaProperty: "name", reason: "Description is inaccurate", type: "depict",
-        specification: "Direct mapping from products.name.", description: "Product display name." },
-      { key: "price", databaseSchemaProperty: "price", reason: "Correctly mapped", type: "keep" },
-      { key: "stock", databaseSchemaProperty: "stock", reason: "Type should be integer, not string", type: "update",
+      { key: "content", databaseSchemaProperty: "content", reason: "Description is inaccurate", type: "depict",
+        specification: "Direct mapping from bbs_article_comments.content.", description: "Comment text body." },
+      { key: "score", databaseSchemaProperty: "score", reason: "Type should be integer, not string", type: "update",
         newKey: null,
-        specification: "Direct mapping from products.stock.",
-        description: "Current inventory quantity.",
+        specification: "Direct mapping from bbs_article_comments.score.",
+        description: "Rating score for the article.",
         schema: { type: "integer" }, required: true },
-      { key: "featured", databaseSchemaProperty: "featured", reason: "DB column 'featured' missing", type: "create",
-        specification: "Direct mapping from products.featured.",
-        description: "Whether product is featured.",
-        schema: { type: "boolean" }, required: true },
-      { key: "author_id", databaseSchemaProperty: "author_id", reason: "FK for author relation in Create DTO", type: "create",
-        specification: "Foreign key to users table.",
-        description: "Author's user ID.",
-        schema: { type: "string", format: "uuid" }, required: true },
-      { databaseSchemaProperty: "id", reason: "DTO purpose: auto-generated, not user-provided in Create DTO", type: "exclude" },
-      { databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated, not user-provided in Create DTO", type: "exclude" },
-      { databaseSchemaProperty: "deleted_at", reason: "DTO purpose: auto-generated soft-delete field, not user-provided", type: "exclude" },
-      { databaseSchemaProperty: "author", reason: "Create DTO uses FK (author_id), not relation object", type: "exclude" }
+      { databaseSchemaProperty: "id", reason: "Auto-generated primary key, not user-provided in Create DTO", type: "exclude" },
+      { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity: resolved from JWT, not user-provided", type: "exclude" },
+      { databaseSchemaProperty: "bbs_article_id", reason: "Path parameter: provided via URL path /articles/{articleId}", type: "exclude" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp, not user-provided in Create DTO", type: "exclude" },
+      { databaseSchemaProperty: "deleted_at", reason: "Auto-generated soft-delete field, not user-provided", type: "exclude" },
+      { databaseSchemaProperty: "article", reason: "Create DTO excludes relation objects; FK from path param", type: "exclude" },
+      { databaseSchemaProperty: "member", reason: "Create DTO excludes relation objects; FK from JWT", type: "exclude" }
     ]
   }
 })
 ```
 
-Note how every DTO property gets exactly one revision, missing fields get `create`, and DB properties not belonging in this DTO get `exclude`. Every DB property is explicitly handled.
+Note how every DTO property gets exactly one revision, missing fields get `create`, and DB properties not belonging in this DTO get `exclude`. Every DB property is explicitly handled — actor FK, path parameter FK, auto-generated fields, and relation objects all use `exclude` with clear reasons.
 
 ## 8. Checklist
 
@@ -184,7 +183,7 @@ Note how every DTO property gets exactly one revision, missing fields get `creat
 - [ ] All missing DB columns use `create` with column name in `databaseSchemaProperty`
 - [ ] All missing DB relations use `create` with relation name in `databaseSchemaProperty`
 - [ ] Before `databaseSchemaProperty: null`: Verified valid logic in `x-autobe-specification`
-- [ ] DB properties not in DTO use `exclude` (auto-generated fields, summary filters, etc.)
+- [ ] DB properties not in DTO use `exclude` (auto-generated, actor FK, path param FK, session FK, etc.)
 - [ ] Wrong schema types use `update`
 - [ ] Wrong documentation only uses `depict`
 - [ ] Wrong nullability only uses `nullish`

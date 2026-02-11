@@ -54,7 +54,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
         ) === undefined
       )
         props.errors.push({
-          path: `${props.path("[]")}`,
+          path: props.path(""),
           value: undefined,
           expected: `${props.unionTypeName} (key: ${JSON.stringify(key)})`,
           description: StringUtil.trim`
@@ -78,7 +78,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           ) === undefined
         )
           props.errors.push({
-            path: `${props.path("[]")}`,
+            path: props.path(""),
             value: undefined,
             expected: `${props.unionTypeName} (databaseSchemaProperty: ${JSON.stringify(key)})`,
             description: StringUtil.trim`

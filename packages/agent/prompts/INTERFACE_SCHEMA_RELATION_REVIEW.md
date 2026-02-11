@@ -33,13 +33,18 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
 | Circular back-reference in DTO | `erase` | Remove `articles[]` from User (if in DTO) |
 | Aggregation relation should not appear | `exclude` | `comments[]` excluded from Read DTO |
+| Actor relation in Create/Update DTO | `exclude` | `member` excluded (FK from JWT) |
+| Relation whose FK is a path parameter | `exclude` | `article` excluded (FK from URL path) |
 | Relation field with wrong documentation only | `depict` | Fix specification/description on relation |
 | Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
 | Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
 
 **`erase` vs `exclude`**:
 - `erase`: Relation exists in DTO but shouldn't (circular back-reference) → remove it
-- `exclude`: DB relation should never appear in this DTO (aggregation) → declare exclusion
+- `exclude`: DB relation should never appear in this DTO → declare exclusion
+  - Aggregation relations (use counts instead)
+  - Actor relations in Create/Update DTO (FK resolved from JWT)
+  - Relations whose FK comes from path parameters
 
 In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `exclude`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
 
@@ -186,15 +191,17 @@ Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid era
 }
 ```
 
-### `exclude` - Aggregation Relation Not in DTO
+### `exclude` - DB Relation Not in This DTO
 
 Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
 
-For DB relations that should never appear in this DTO type: aggregation relations (use counts instead).
+For DB relations that should never appear in this DTO type: aggregation (use counts), actor relations in Create/Update (FK from JWT), and relations whose FK comes from path parameters.
 
 ```typescript
 { databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead of nested array", type: "exclude" }
 { databaseSchemaProperty: "likes", reason: "Aggregation: event-driven data, use separate endpoint", type: "exclude" }
+{ databaseSchemaProperty: "member", reason: "Actor relation: member_id resolved from JWT, not in Create DTO body", type: "exclude" }
+{ databaseSchemaProperty: "article", reason: "Path param relation: article_id provided via URL path", type: "exclude" }
 ```
 
 ### `depict` - Fix Relation Documentation
@@ -254,7 +261,7 @@ Note how every DTO property appears exactly once, non-relation fields use `keep`
 - [ ] Relation properties use relation name in `databaseSchemaProperty`
 - [ ] FK column properties use column name in `databaseSchemaProperty`
 - [ ] `erase` used only for circular back-references in DTO
-- [ ] `exclude` used for aggregation relations (use counts instead)
+- [ ] `exclude` used for aggregation, actor, and path-param relations
 - [ ] `depict` used only for wrong documentation on relation fields
 - [ ] `nullish` used only for wrong nullability on relation fields
 - [ ] FK fields in Read DTOs transformed to `$ref` objects with relation name

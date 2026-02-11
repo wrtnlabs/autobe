@@ -107,6 +107,7 @@ Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key`
 ```typescript
 { databaseSchemaProperty: "salt", reason: "Security: salt must never be exposed in Response DTO", type: "exclude" }
 { databaseSchemaProperty: "refresh_token", reason: "Security: refresh token must never be in IActor.ISummary", type: "exclude" }
+{ databaseSchemaProperty: "session_id", reason: "Security: server-managed FK, never in request DTO body", type: "exclude" }
 ```
 
 ### `create`
@@ -139,14 +140,14 @@ Use when schema type is correct but nullable/required is wrong.
 
 ## 7. Complete Example
 
-ILogin schema has `[email, password_hashed]`. DB has `[id, email, password_hashed, salt, refresh_token, created_at]`. Needs password fix, session fields, and security exclusions.
+ILogin schema has `[email, password_hashed]`. DB has `[id, email, password_hashed, salt, refresh_token, created_at]`. Needs password fix, session fields, and security exclusions. All DB properties must be explicitly handled.
 
 ```typescript
 process({
-  thinking: "Enumerated 2 DTO properties. password_hashed must be replaced, session fields missing. DB properties salt, refresh_token must be excluded from request DTO.",
+  thinking: "Enumerated 2 DTO properties + 6 DB columns. password_hashed must be replaced, session fields missing. DB properties id, created_at, salt, refresh_token must be excluded from request DTO.",
   request: {
     type: "complete",
-    review: "password_hashed: wrong field. Missing: password, href, referrer. Excluded: salt, refresh_token.",
+    review: "password_hashed: wrong field. Missing: password, href, referrer. Excluded: id, salt, refresh_token, created_at.",
     revises: [
       { key: "email", databaseSchemaProperty: "email", reason: "Required identifier", type: "keep" },
       { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Clients must not send hashes", type: "erase" },
@@ -162,14 +163,16 @@ process({
         specification: "Referrer URL when login was initiated.",
         description: "Referrer URL at login time.",
         schema: { type: "string", format: "uri" }, required: true },
+      { databaseSchemaProperty: "id", reason: "Auto-generated primary key, not in request DTO", type: "exclude" },
       { databaseSchemaProperty: "salt", reason: "Security: internal cryptographic field, never in request DTO", type: "exclude" },
-      { databaseSchemaProperty: "refresh_token", reason: "Security: token field, never in request DTO", type: "exclude" }
+      { databaseSchemaProperty: "refresh_token", reason: "Security: token field, never in request DTO", type: "exclude" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp, not in request DTO", type: "exclude" }
     ]
   }
 })
 ```
 
-Note how every existing DTO property appears exactly once, and DB properties that must never appear use `exclude`. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
+Note how every existing DTO property appears exactly once, and **every DB property** is explicitly handled — either mapped to a DTO revision or `exclude`d. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
 
 ## 8. Checklist
 
@@ -187,7 +190,7 @@ Note how every existing DTO property appears exactly once, and DB properties tha
 **Coverage**:
 - [ ] Every DTO property has exactly one revision (no missing, no duplicates)
 - [ ] Every security-sensitive DB property either in DTO or `exclude`d
-- [ ] `exclude` used for DB properties that must never appear (salt, refresh_token, etc.)
+- [ ] `exclude` used for DB properties that must never appear (salt, refresh_token, session_id, etc.)
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields

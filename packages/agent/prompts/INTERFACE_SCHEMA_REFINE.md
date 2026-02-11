@@ -155,7 +155,10 @@ Each property receives exactly one refinement operation. Decide the single most 
 Unlike other operations, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
 
 Use when a database property should NOT appear in this DTO:
-- DTO purpose mismatch: `id`, `created_at` excluded from Create DTO
+- Auto-generated fields: `id`, `created_at` excluded from Create DTO
+- Actor identity FK: `member_id`, `author_id` excluded from Create/Update DTO (resolved from JWT)
+- Path parameter FK: parent FK excluded from Create DTO when already in URL path
+- Session FK: `session_id` excluded from all DTOs (server-managed)
 - Summary DTO: only essential display fields included
 - Immutability: `id`, `created_at` excluded from Update DTO
 - Security: `password`, `salt`, `refresh_token` excluded from Read DTO
@@ -185,6 +188,22 @@ Use when a database property should NOT appear in this DTO:
 }
 ```
 
+```typescript
+{
+  databaseSchemaProperty: "bbs_member_id",
+  reason: "Actor identity: resolved from JWT, not user-provided in Create DTO",
+  type: "exclude"
+}
+```
+
+```typescript
+{
+  databaseSchemaProperty: "bbs_article_id",
+  reason: "Path parameter: provided via URL path, not in request body",
+  type: "exclude"
+}
+```
+
 **Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key.
 
 ## 4. Pre-Review Hardening
@@ -200,8 +219,8 @@ While enriching, also inspect and fix:
 | DTO Type | Include | Exclude (use `exclude` type) |
 |----------|---------|------------------------------|
 | Read (IEntity) | All DB columns + computed fields | `password`, `salt`, `refresh_token` |
-| Create (ICreate) | User-provided fields | `id`, `created_at`, computed fields |
-| Update (IUpdate) | Mutable fields | `id`, `created_at`, immutable fields |
+| Create (ICreate) | User-provided fields | `id`, `created_at`, actor FK, path param FK, session FK |
+| Update (IUpdate) | Mutable fields | `id`, `created_at`, actor FK, path param FK, session FK |
 | Summary (ISummary) | Display essentials | Heavy fields, internal fields |
 
 **Nullable Rule**: DB nullable → DTO MUST handle null (use `oneOf` with null for Read DTOs).
