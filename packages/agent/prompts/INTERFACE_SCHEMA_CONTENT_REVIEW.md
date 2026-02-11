@@ -145,35 +145,55 @@ Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key`
 
 ## 7. Complete Example
 
-Endpoint `POST /articles/{articleId}/comments`. Schema `IBbsArticleComment.ICreate` has `[content, score]`. DB table `bbs_article_comments` has columns `[id, bbs_article_id, bbs_member_id, content, score, created_at, deleted_at]` and relations `[article, member]`. `score` has wrong type (string instead of integer). `content` has wrong description. DB columns `id`, `created_at`, `deleted_at` are auto-generated. `bbs_member_id` comes from JWT. `bbs_article_id` comes from path parameter `{articleId}`.
+**Scenario**: Reviewing `IBbsArticleComment.ICreate` for `POST /articles/{articleId}/comments`
+
+| Category | Properties |
+|----------|------------|
+| DB Columns | `id`, `bbs_article_id`, `bbs_member_id`, `content`, `score`, `created_at`, `deleted_at` |
+| DB Relations | `article`, `member` |
+| DTO Properties | `content`, `score` |
+
+**Issues Found**: `score` has wrong type (string → integer), `content` has inaccurate description.
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `content` | `content` | depict | Fix description |
+| `score` | `score` | update | Wrong type (string → integer) |
+| `id` | — | exclude | Auto-generated PK |
+| `bbs_article_id` | — | exclude | Path parameter `{articleId}` |
+| `bbs_member_id` | — | exclude | Actor identity from JWT |
+| `created_at` | — | exclude | Auto-generated timestamp |
+| `deleted_at` | — | exclude | Auto-generated soft-delete |
+| `article` | — | exclude | Relation object (FK from path) |
+| `member` | — | exclude | Relation object (FK from JWT) |
 
 ```typescript
 process({
-  thinking: "Checked DB columns and relations. Wrong type: score. Bad description: content. Exclude: id, created_at, deleted_at (auto-generated), bbs_member_id (actor from JWT), bbs_article_id (path param), article/member relations (Create DTO uses FK, not objects).",
+  thinking: "All 2 DTO properties checked. All 9 DB properties handled: 2 revised, 7 excluded.",
   request: {
     type: "complete",
-    review: "Wrong type: score. Bad description: content. Excluded auto-generated, actor FK, and path param FK.",
+    review: "Fixed score type, content description. Excluded auto-generated, actor FK, path param FK.",
     revises: [
-      { key: "content", databaseSchemaProperty: "content", reason: "Description is inaccurate", type: "depict",
+      { key: "content", databaseSchemaProperty: "content", type: "depict", reason: "Description inaccurate",
         specification: "Direct mapping from bbs_article_comments.content.", description: "Comment text body." },
-      { key: "score", databaseSchemaProperty: "score", reason: "Type should be integer, not string", type: "update",
-        newKey: null,
-        specification: "Direct mapping from bbs_article_comments.score.",
-        description: "Rating score for the article.",
-        schema: { type: "integer" }, required: true },
-      { databaseSchemaProperty: "id", reason: "Auto-generated primary key, not user-provided in Create DTO", type: "exclude" },
-      { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity: resolved from JWT, not user-provided", type: "exclude" },
-      { databaseSchemaProperty: "bbs_article_id", reason: "Path parameter: provided via URL path /articles/{articleId}", type: "exclude" },
-      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp, not user-provided in Create DTO", type: "exclude" },
-      { databaseSchemaProperty: "deleted_at", reason: "Auto-generated soft-delete field, not user-provided", type: "exclude" },
-      { databaseSchemaProperty: "article", reason: "Create DTO excludes relation objects; FK from path param", type: "exclude" },
-      { databaseSchemaProperty: "member", reason: "Create DTO excludes relation objects; FK from JWT", type: "exclude" }
+      { key: "score", databaseSchemaProperty: "score", type: "update", reason: "Type should be integer",
+        newKey: null, specification: "Direct mapping from bbs_article_comments.score.",
+        description: "Rating score.", schema: { type: "integer" }, required: true },
+      { databaseSchemaProperty: "id", type: "exclude", reason: "Auto-generated PK" },
+      { databaseSchemaProperty: "bbs_article_id", type: "exclude", reason: "Path parameter" },
+      { databaseSchemaProperty: "bbs_member_id", type: "exclude", reason: "Actor identity from JWT" },
+      { databaseSchemaProperty: "created_at", type: "exclude", reason: "Auto-generated timestamp" },
+      { databaseSchemaProperty: "deleted_at", type: "exclude", reason: "Auto-generated soft-delete" },
+      { databaseSchemaProperty: "article", type: "exclude", reason: "Relation object (FK from path)" },
+      { databaseSchemaProperty: "member", type: "exclude", reason: "Relation object (FK from JWT)" }
     ]
   }
 })
 ```
 
-Note how every DTO property gets exactly one revision, missing fields get `create`, and DB properties not belonging in this DTO get `exclude`. Every DB property is explicitly handled — actor FK, path parameter FK, auto-generated fields, and relation objects all use `exclude` with clear reasons.
+**Result**: 9 DB properties → 2 revised + 7 excluded = complete coverage.
 
 ## 8. Checklist
 

@@ -354,53 +354,58 @@ interface ITeam.ICreate {
 
 ## 7. Output Example
 
+**Scenario**: Refining `IBbsArticle` (Read DTO)
+
+| Category | Properties |
+|----------|------------|
+| DB Columns | `id`, `bbs_member_id`, `title`, `body`, `created_at`, `deleted_at` |
+| DB Relations | `member`, `comments`, `snapshots` |
+| DTO Properties | `id`, `title`, `body`, `author`, `created_at` |
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `id` | `id` | depict | Direct mapping |
+| `title` | `title` | depict | Direct mapping |
+| `body` | `body` | depict | Direct mapping |
+| `member` | `author` | depict | Relation exposed as author |
+| `created_at` | `created_at` | depict | Direct mapping |
+| `bbs_member_id` | — | exclude | FK column exposed as `author` object |
+| `deleted_at` | — | exclude | Internal soft-delete field |
+| `comments` | — | exclude | Aggregation relation |
+| `snapshots` | — | exclude | Separate endpoint |
+
 ```typescript
 process({
-  thinking: "Enriched all properties, found phantom, missing computed field, and DB property to exclude.",
+  thinking: "All 5 DTO properties enriched. All 9 DB properties handled: 5 mapped, 4 excluded.",
   request: {
     type: "complete",
-    review: `## IUser Refinement
-- Enriched 5 properties
-- Added missing 'postsCount' computed field
-- Removed phantom 'loyalty_tier'
-- Excluded 'password_hashed' from Read DTO`,
-    databaseSchema: "users",
-    specification: "Direct mapping from users table with computed aggregations.",
-    description: "Complete user entity with profile and account info.",
+    review: "Enriched 5 DTO properties. Excluded 4 DB properties.",
+    databaseSchema: "bbs_articles",
+    specification: "Direct mapping from bbs_articles with author join.",
+    description: "Complete article entity with author info.",
     refines: [
-      {
-        key: "id",
-        databaseSchemaProperty: "id",
-        reason: "Adding documentation",
-        type: "depict",
-        specification: "Direct mapping from users.id. UUID PK.",
-        description: "Unique user identifier."
-      },
-      {
-        key: "postsCount",
-        databaseSchemaProperty: null,
-        reason: "Requirements specify post count display",
-        type: "create",
-        specification: "Computed: SELECT COUNT(*) FROM posts WHERE author_id = users.id",
-        description: "Total posts by this user.",
-        schema: { type: "number" },
-        required: true
-      },
-      {
-        key: "loyalty_tier",
-        databaseSchemaProperty: null,
-        reason: "Phantom - not in DB, not in requirements",
-        type: "erase"
-      },
-      {
-        databaseSchemaProperty: "password_hashed",
-        reason: "Security: password hash must never be exposed in Read DTO",
-        type: "exclude"
-      }
+      { key: "id", databaseSchemaProperty: "id", type: "depict", reason: "Adding documentation",
+        specification: "Direct mapping from bbs_articles.id.", description: "Unique article identifier." },
+      { key: "title", databaseSchemaProperty: "title", type: "depict", reason: "Adding documentation",
+        specification: "Direct mapping from bbs_articles.title.", description: "Article title." },
+      { key: "body", databaseSchemaProperty: "body", type: "depict", reason: "Adding documentation",
+        specification: "Direct mapping from bbs_articles.body.", description: "Article content body." },
+      { key: "author", databaseSchemaProperty: "member", type: "depict", reason: "Adding documentation",
+        specification: "Join via bbs_member_id.", description: "Author of this article." },
+      { key: "created_at", databaseSchemaProperty: "created_at", type: "depict", reason: "Adding documentation",
+        specification: "Direct mapping from bbs_articles.created_at.", description: "Creation timestamp." },
+      { databaseSchemaProperty: "bbs_member_id", type: "exclude", reason: "FK exposed as author object" },
+      { databaseSchemaProperty: "deleted_at", type: "exclude", reason: "Internal soft-delete field" },
+      { databaseSchemaProperty: "comments", type: "exclude", reason: "Aggregation: use separate endpoint" },
+      { databaseSchemaProperty: "snapshots", type: "exclude", reason: "Composition: separate endpoint" }
     ]
   }
 })
 ```
+
+**Result**: 9 DB properties → 5 mapped + 4 excluded = complete coverage.
 
 ## 8. Checklist
 

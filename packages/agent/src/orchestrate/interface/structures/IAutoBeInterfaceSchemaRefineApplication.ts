@@ -150,16 +150,26 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     /**
      * Property-level refinement operations.
      *
-     * Each operation enriches or corrects a property in the schema:
+     * You must cover two lists completely:
+     *
+     * 1. **Every DTO property** → `depict`, `create`, `update`, or `erase`
+     * 2. **Every DB property** → either mapped via `databaseSchemaProperty`
+     *    in a DTO refinement, or declared with `exclude`
+     *
+     * Available operations:
      *
      * - `depict`: Add documentation to existing property
      * - `create`: Add missing property with documentation
      * - `update`: Fix incorrect type and add documentation
      * - `erase`: Remove invalid property
+     * - `exclude`: Declare DB property intentionally not in this DTO
      *
      * Each operation includes the property key, reason for the action, and
      * complete metadata including `databaseSchemaProperty`, `specification`,
      * and `description`.
+     *
+     * No property can be omitted. Every DTO property and every DB property
+     * must appear exactly once in this array.
      */
     refines: AutoBeInterfaceSchemaPropertyRefine[];
   }

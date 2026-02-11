@@ -88,8 +88,18 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     /**
      * Property-level revisions to apply.
      *
-     * You MUST provide a revise for EVERY property in the object schema. Use
-     * `keep` for properties that need no changes.
+     * You must cover two lists completely:
+     *
+     * 1. **Every DTO property** → `keep`, `update`, `depict`, `nullish`,
+     *    `create`, or `erase` (depending on review type)
+     * 2. **Every DB property** → either mapped via `databaseSchemaProperty`
+     *    in a DTO revision, or declared with `exclude`
+     *
+     * Use `keep` for properties that need no changes. Use `exclude` for DB
+     * properties intentionally not included in this DTO.
+     *
+     * No property can be omitted. Every DTO property and every DB property
+     * must appear exactly once in this array.
      */
     revises: Revise[];
   }

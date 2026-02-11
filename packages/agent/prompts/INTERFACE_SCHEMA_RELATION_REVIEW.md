@@ -226,34 +226,53 @@ All non-relation fields and correctly-implemented relations:
 
 ## 9. Complete Example
 
-Schema has properties: `[id, title, content, author_id, category, attachments, created_at]`. DB has relations: `[author, category, attachments, comments, likes]`. `comments` and `likes` are aggregation relations that shouldn't be in Read DTO.
+**Scenario**: Reviewing `IBbsArticle` (Read DTO)
+
+| Category | Properties |
+|----------|------------|
+| DB Relations | `author`, `category`, `attachments`, `comments`, `likes` |
+| DTO Properties | `id`, `title`, `content`, `author_id`, `category`, `attachments`, `created_at` |
+
+**Issue Found**: `author_id` FK not transformed to `$ref` object.
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `id` | `id` | keep | Non-relation field |
+| `title` | `title` | keep | Non-relation field |
+| `content` | `content` | keep | Non-relation field |
+| `author` | `author_id` → `author` | update | Transform FK to `$ref` |
+| `category` | `category` | keep | Relation correct |
+| `attachments` | `attachments` | keep | Composition correct |
+| `created_at` | `created_at` | keep | Non-relation field |
+| `comments` | — | exclude | Aggregation relation |
+| `likes` | — | exclude | Aggregation relation |
 
 ```typescript
 process({
-  thinking: "Enumerated 7 DTO properties + 5 DB relations. author_id needs FK transform. comments and likes are aggregation - exclude them.",
+  thinking: "All 7 DTO properties checked. All 5 DB relations handled: 3 mapped, 2 excluded.",
   request: {
     type: "complete",
-    review: "author_id: FK not transformed. Excluded aggregation relations: comments, likes.",
+    review: "author_id: FK not transformed. Excluded aggregation: comments, likes.",
     revises: [
-      { key: "id", databaseSchemaProperty: "id", reason: "Business field", type: "keep" },
-      { key: "title", databaseSchemaProperty: "title", reason: "Business field", type: "keep" },
-      { key: "content", databaseSchemaProperty: "content", reason: "Business field", type: "keep" },
-      { key: "author_id", databaseSchemaProperty: "author", reason: "Transform FK to $ref", type: "update",
-        newKey: "author",
-        specification: "Join via bbs_members. Returns ISummary.",
-        description: "Author who wrote this article.",
+      { key: "id", databaseSchemaProperty: "id", type: "keep", reason: "Non-relation field" },
+      { key: "title", databaseSchemaProperty: "title", type: "keep", reason: "Non-relation field" },
+      { key: "content", databaseSchemaProperty: "content", type: "keep", reason: "Non-relation field" },
+      { key: "author_id", databaseSchemaProperty: "author", type: "update", reason: "Transform FK to $ref",
+        newKey: "author", specification: "Join via bbs_members.", description: "Article author.",
         schema: { $ref: "#/components/schemas/IBbsMember.ISummary" }, required: true },
-      { key: "category", databaseSchemaProperty: "category", reason: "Relation correctly structured", type: "keep" },
-      { key: "attachments", databaseSchemaProperty: "attachments", reason: "Composition correctly nested", type: "keep" },
-      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Business field", type: "keep" },
-      { databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead of nested array", type: "exclude" },
-      { databaseSchemaProperty: "likes", reason: "Aggregation: event-driven data, use separate endpoint", type: "exclude" }
+      { key: "category", databaseSchemaProperty: "category", type: "keep", reason: "Relation correct" },
+      { key: "attachments", databaseSchemaProperty: "attachments", type: "keep", reason: "Composition correct" },
+      { key: "created_at", databaseSchemaProperty: "created_at", type: "keep", reason: "Non-relation field" },
+      { databaseSchemaProperty: "comments", type: "exclude", reason: "Aggregation: use separate endpoint" },
+      { databaseSchemaProperty: "likes", type: "exclude", reason: "Aggregation: use separate endpoint" }
     ]
   }
 })
 ```
 
-Note how every DTO property appears exactly once, non-relation fields use `keep`, and aggregation relations use `exclude`. Use `depict` or `nullish` when a relation's documentation or nullability is wrong but its schema structure is correct.
+**Result**: 7 DTO properties + 5 DB relations → 7 revised + 2 excluded = complete coverage.
 
 ## 10. Checklist
 
