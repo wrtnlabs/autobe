@@ -1,3 +1,4 @@
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -27,7 +28,8 @@ import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
 export interface AutoBeAnalyzeWriteAllUnitReviewEvent
   extends AutoBeEventBase<"analyzeWriteAllUnitReview">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
   /**
    * Whether ALL unit sections passed review.
    *

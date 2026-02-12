@@ -1,3 +1,4 @@
+import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
@@ -26,7 +27,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 export interface AutoBeAnalyzeWriteSectionEvent
   extends AutoBeEventBase<"analyzeWriteSection">,
     AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+    AutoBeAggregateEventBase,
+    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
   /**
    * Index of the grandparent module section.
    *
