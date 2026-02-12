@@ -1,4 +1,4 @@
-name: build
+name: prettier
 on:
   pull_request:
     paths:
