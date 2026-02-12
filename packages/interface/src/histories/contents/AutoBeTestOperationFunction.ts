@@ -17,8 +17,7 @@ import { AutoBeTestScenario } from "./AutoBeTestScenario";
  *
  * @author Michael
  */
-export interface AutoBeTestOperationFunction
-  extends AutoBeTestFunctionBase<"operation"> {
+export interface AutoBeTestOperationFunction extends AutoBeTestFunctionBase<"operation"> {
   /**
    * Detailed metadata describing the test scenario and its characteristics.
    *

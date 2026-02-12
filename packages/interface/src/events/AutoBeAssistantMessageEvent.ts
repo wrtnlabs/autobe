@@ -17,8 +17,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeAssistantMessageEvent
-  extends AutoBeEventBase<"assistantMessage"> {
+export interface AutoBeAssistantMessageEvent extends AutoBeEventBase<"assistantMessage"> {
   /**
    * The text content of the assistant's message to the user.
    *

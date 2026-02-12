@@ -53,8 +53,8 @@ export namespace IAutoBeDatabaseGroupApplication {
      * Determines which action to perform: preliminary data retrieval
      * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
      * or final group generation (complete). When preliminary returns empty
-     * array, that type is removed from the union, physically preventing repeated
-     * calls.
+     * array, that type is removed from the union, physically preventing
+     * repeated calls.
      */
     request:
       | IComplete
@@ -83,6 +83,7 @@ export namespace IAutoBeDatabaseGroupApplication {
      * Analysis of the requirements structure and domain organization.
      *
      * Documents the agent's understanding of the business requirements:
+     *
      * - What major business domains were identified from the requirements?
      * - How are these domains related to each other?
      * - What organizational patterns exist in the requirements?
@@ -94,6 +95,7 @@ export namespace IAutoBeDatabaseGroupApplication {
      * Rationale for the component grouping decisions.
      *
      * Explains why the groups were organized this way:
+     *
      * - Why was each component group created?
      * - Why were certain domains combined or kept separate?
      * - How does the grouping reflect the business domain structure?
@@ -105,10 +107,10 @@ export namespace IAutoBeDatabaseGroupApplication {
      * Array of database component groups for organizing development.
      *
      * DO: Derive groups from business domains in requirements rather than
-     * arbitrary technical divisions. DO: Create foundational groups (Systematic,
-     * Actors) separately from domain-specific groups. DO: Organize groups around
-     * business workflows and entity relationships. DO: Provide complete coverage
-     * of all components without overlap.
+     * arbitrary technical divisions. DO: Create foundational groups
+     * (Systematic, Actors) separately from domain-specific groups. DO: Organize
+     * groups around business workflows and entity relationships. DO: Provide
+     * complete coverage of all components without overlap.
      */
     groups: AutoBeDatabaseGroup[] & tags.MinItems<1>;
   }

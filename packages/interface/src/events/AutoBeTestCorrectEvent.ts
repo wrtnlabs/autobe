@@ -20,8 +20,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Samchon
  */
 export interface AutoBeTestCorrectEvent
-  extends AutoBeEventBase<"testCorrect">,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"testCorrect">, AutoBeAggregateEventBase {
   kind: "casting" | "overall" | "request";
 
   /**

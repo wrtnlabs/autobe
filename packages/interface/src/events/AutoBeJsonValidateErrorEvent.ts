@@ -26,8 +26,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeJsonValidateErrorEvent
-  extends AutoBeEventBase<"jsonValidateError"> {
+export interface AutoBeJsonValidateErrorEvent extends AutoBeEventBase<"jsonValidateError"> {
   /**
    * Source agent or operation where the validation error occurred.
    *
@@ -43,8 +42,8 @@ export interface AutoBeJsonValidateErrorEvent
    *
    * Specifies which function the AI agent was attempting to call when it
    * generated the schema-violating response. This information is crucial for
-   * diagnosing systematic issues with specific function calls and refining
-   * the corresponding tool definitions, type constraints, or system prompts to
+   * diagnosing systematic issues with specific function calls and refining the
+   * corresponding tool definitions, type constraints, or system prompts to
    * better guide the agent's response generation.
    */
   function: string;

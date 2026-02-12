@@ -101,8 +101,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Property-level revisions to apply to DTO properties.
      *
      * Every DTO property must appear exactly once with one of: `keep`,
-     * `update`, `depict`, `nullish`, `create`, or `erase` (depending on
-     * review type). Use `keep` for properties that need no changes.
+     * `update`, `depict`, `nullish`, `create`, or `erase` (depending on review
+     * type). Use `keep` for properties that need no changes.
      *
      * Database properties are addressed either here (via
      * `databaseSchemaProperty`) or in `excludes`. No property can be omitted.

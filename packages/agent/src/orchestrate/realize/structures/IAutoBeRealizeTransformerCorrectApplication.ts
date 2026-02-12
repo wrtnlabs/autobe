@@ -102,8 +102,8 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      *
      * For each database field needed by transform(), document:
      *
-     * - `member`: Exact database field/relation name (snake_case) - verify against
-     *   schema
+     * - `member`: Exact database field/relation name (snake_case) - verify
+     *   against schema
      * - `kind`: Whether it's a scalar field, belongsTo, hasOne, or hasMany
      *   relation
      * - `nullable`: Whether the field/relation is nullable (true/false for

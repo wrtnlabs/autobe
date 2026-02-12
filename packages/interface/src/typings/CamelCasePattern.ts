@@ -3,8 +3,8 @@ import { tags } from "typia";
 /**
  * Type pattern enforcing camelCase naming convention.
  *
- * Must start with lowercase letter, followed by letters and digits.
- * Used for TypeScript variable, function, and property names.
+ * Must start with lowercase letter, followed by letters and digits. Used for
+ * TypeScript variable, function, and property names.
  *
  * Examples: `"userProfile"`, `"createdAt"`, `"httpResponse"`
  *

@@ -10,8 +10,7 @@ import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestPrepareFunction
-  extends AutoBeTestFunctionBase<"prepare"> {
+export interface AutoBeTestPrepareFunction extends AutoBeTestFunctionBase<"prepare"> {
   /**
    * DTO (Data Transfer Object) type name that this prepare function generates.
    *

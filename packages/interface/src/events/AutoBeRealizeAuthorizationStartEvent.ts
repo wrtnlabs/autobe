@@ -11,8 +11,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Michael
  */
-export interface AutoBeRealizeAuthorizationStartEvent
-  extends AutoBeEventBase<"realizeAuthorizationStart"> {
+export interface AutoBeRealizeAuthorizationStartEvent extends AutoBeEventBase<"realizeAuthorizationStart"> {
   /**
    * Iteration number of the requirements analysis being implemented.
    *

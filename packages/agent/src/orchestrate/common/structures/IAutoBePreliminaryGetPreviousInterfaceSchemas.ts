@@ -14,32 +14,30 @@ import { tags } from "typia";
  *
  * **Key Difference from `getInterfaceSchemas`:**
  *
- * - `getInterfaceSchemas`: Fetches schemas from the **current version**
- *   (the version being generated right now)
+ * - `getInterfaceSchemas`: Fetches schemas from the **current version** (the
+ *   version being generated right now)
  * - `getPreviousInterfaceSchemas`: Fetches schemas from the **previous version**
  *   (the last successfully generated version)
  *
  * **Example Scenario:**
  *
- * ```
- * Initial generation:
- * - INTERFACE phase creates: IUser, IUser.ICreate, IUser.IUpdate, IPost
- * - Generation completes successfully
+ *     Initial generation:
+ *     - INTERFACE phase creates: IUser, IUser.ICreate, IUser.IUpdate, IPost
+ *     - Generation completes successfully
  *
- * User: "Add phone number to user profile"
+ *     User: "Add phone number to user profile"
  *
- * Regeneration:
- * - INTERFACE phase starts regeneration
- * - Calls getPreviousInterfaceSchemas(["IUser", "IUser.IUpdate"])
- *   → Loads the previous versions of these schemas
- * - Creates new versions with phoneNumber property added
- * ```
+ *     Regeneration:
+ *     - INTERFACE phase starts regeneration
+ *     - Calls getPreviousInterfaceSchemas(["IUser", "IUser.IUpdate"])
+ *       → Loads the previous versions of these schemas
+ *     - Creates new versions with phoneNumber property added
  *
  * **Automatic Dependency Loading:**
  *
- * When schemas are loaded from the previous version, their referenced
- * schemas (via `$ref`) are also available, providing complete type dependency
- * context for understanding the schema structure.
+ * When schemas are loaded from the previous version, their referenced schemas
+ * (via `$ref`) are also available, providing complete type dependency context
+ * for understanding the schema structure.
  *
  * **Schema Type Naming Convention:**
  *
@@ -52,6 +50,7 @@ import { tags } from "typia";
  * **Waterfall + Spiral Pattern:**
  *
  * This aligns with AutoBE's regeneration cycles where:
+ *
  * - Compilation failures trigger regeneration with corrections
  * - User modifications trigger new versions
  * - Previous schemas serve as reference for incremental DTO changes
@@ -72,15 +71,16 @@ export interface IAutoBePreliminaryGetPreviousInterfaceSchemas {
    * List of schema type names to retrieve from the previous version.
    *
    * These are type names from the OpenAPI components.schemas section that were
-   * generated in a previous version and are needed as reference context for
-   * the current regeneration.
+   * generated in a previous version and are needed as reference context for the
+   * current regeneration.
    *
    * **Important Notes:**
    *
    * - These type names MUST exist in the previous version
    * - This function is only available when a previous version exists
    * - Used for reference/comparison, not for re-requesting within same execution
-   * - Type names follow TypeScript interface naming (e.g., "IUser", "IUser.ICreate")
+   * - Type names follow TypeScript interface naming (e.g., "IUser",
+   *   "IUser.ICreate")
    *
    * **When This Function is Available:**
    *

@@ -19,7 +19,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeCorrectEvent
-  extends AutoBeEventBase<"realizeCorrect">,
+  extends
+    AutoBeEventBase<"realizeCorrect">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   kind: "casting" | "overall";

@@ -51,9 +51,9 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPreviousAnalysisFiles) or final scenario composition (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * (getPreviousAnalysisFiles) or final scenario composition (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }

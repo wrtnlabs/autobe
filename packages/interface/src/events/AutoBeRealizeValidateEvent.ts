@@ -19,8 +19,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeValidateEvent
-  extends AutoBeEventBase<"realizeValidate"> {
+export interface AutoBeRealizeValidateEvent extends AutoBeEventBase<"realizeValidate"> {
   /**
    * Implementation files that failed compilation validation as key-value pairs.
    *

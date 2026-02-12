@@ -88,11 +88,10 @@ export namespace IAutoBeTestScenarioApplication {
      *
      * Each scenario includes:
      *
-     * - endpoint: The target API operation being tested
-     * - functionName: snake_case test function name
-     * - draft: Detailed test description and validation points
-     * - dependencies: Ordered list of prerequisite operations (auth,
-     *   setup, etc.)
+     * - Endpoint: The target API operation being tested
+     * - FunctionName: snake_case test function name
+     * - Draft: Detailed test description and validation points
+     * - Dependencies: Ordered list of prerequisite operations (auth, setup, etc.)
      *
      * Guidelines:
      *

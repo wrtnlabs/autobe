@@ -28,9 +28,10 @@ export const validateEmptyCode = (props: {
   };
 }): IValidation.IError[] => {
   const errors: IValidation.IError[] = [];
-  const declaration: string = props.asynchronous === true
-    ? `export async function ${props.name}(`
-    : `export function ${props.name}(`;
+  const declaration: string =
+    props.asynchronous === true
+      ? `export async function ${props.name}(`
+      : `export function ${props.name}(`;
 
   if (props.draft.includes(declaration) === false)
     errors.push({

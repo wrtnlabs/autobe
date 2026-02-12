@@ -18,14 +18,15 @@ export interface AutoBeInterfaceAuthorization {
   /**
    * The user name for which authentication operations are generated.
    *
-   * This identifies the specific actor (e.g. user, admin, seller) that will have
-   * these JWT-based authentication operations. Used to create actor-specific
-   * authentication endpoints and flows.
+   * This identifies the specific actor (e.g. user, admin, seller) that will
+   * have these JWT-based authentication operations. Used to create
+   * actor-specific authentication endpoints and flows.
    */
   name: string;
 
   /**
-   * Array of JWT authentication and authorization API operations for this actor.
+   * Array of JWT authentication and authorization API operations for this
+   * actor.
    *
    * Contains essential authentication operations plus schema-driven additional
    * operations like email verification and password reset. Each operation

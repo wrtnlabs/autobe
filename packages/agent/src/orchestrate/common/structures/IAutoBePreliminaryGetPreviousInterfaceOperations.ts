@@ -22,19 +22,17 @@ import { tags } from "typia";
  *
  * **Example Scenario:**
  *
- * ```
- * Initial generation:
- * - INTERFACE phase creates: GET /users, POST /users, GET /users/{id}
- * - Generation completes successfully
+ *     Initial generation:
+ *     - INTERFACE phase creates: GET /users, POST /users, GET /users/{id}
+ *     - Generation completes successfully
  *
- * User: "Change user creation to require email verification"
+ *     User: "Change user creation to require email verification"
  *
- * Regeneration:
- * - INTERFACE phase starts regeneration
- * - Calls getPreviousInterfaceOperations([{method: "POST", path: "/users"}])
- *   → Loads the previous version of POST /users operation
- * - Creates new version with emailVerification requirement in request body
- * ```
+ *     Regeneration:
+ *     - INTERFACE phase starts regeneration
+ *     - Calls getPreviousInterfaceOperations([{method: "POST", path: "/users"}])
+ *       → Loads the previous version of POST /users operation
+ *     - Creates new version with emailVerification requirement in request body
  *
  * **Automatic Schema Loading:**
  *
@@ -45,6 +43,7 @@ import { tags } from "typia";
  * **Waterfall + Spiral Pattern:**
  *
  * This aligns with AutoBE's regeneration cycles where:
+ *
  * - Compilation failures trigger regeneration with corrections
  * - User modifications trigger new versions
  * - Previous operations serve as reference for incremental API changes
@@ -89,7 +88,8 @@ export interface IAutoBePreliminaryGetPreviousInterfaceOperations {
    *
    * **Endpoint Format:**
    *
-   * - Method: HTTP verb in uppercase (e.g., "GET", "POST", "PUT", "DELETE", "PATCH")
+   * - Method: HTTP verb in uppercase (e.g., "GET", "POST", "PUT", "DELETE",
+   *   "PATCH")
    * - Path: OpenAPI path with parameters (e.g., "/users/{id}", "/posts")
    *
    * **Example Endpoints:**

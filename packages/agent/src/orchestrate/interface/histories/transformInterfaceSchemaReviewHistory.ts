@@ -37,25 +37,25 @@ export const transformInterfaceSchemaReviewHistory = (props: {
     : undefined;
 
   return {
-  histories: [
-    {
-      type: "systemMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
-    },
-    {
-      type: "systemMessage",
-      id: v7(),
-      created_at: new Date().toISOString(),
-      text: props.systemPrompt,
-    },
-    ...props.preliminary.getHistories(),
-    {
-      id: v7(),
-      type: "assistantMessage",
-      created_at: new Date().toISOString(),
-      text: StringUtil.trim`
+    histories: [
+      {
+        type: "systemMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA,
+      },
+      {
+        type: "systemMessage",
+        id: v7(),
+        created_at: new Date().toISOString(),
+        text: props.systemPrompt,
+      },
+      ...props.preliminary.getHistories(),
+      {
+        id: v7(),
+        type: "assistantMessage",
+        created_at: new Date().toISOString(),
+        text: StringUtil.trim`
         ## API Design Instructions
 
         The following API-specific instructions were extracted from
@@ -112,9 +112,9 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         Other schemas in the complete schema set are provided for reference
         only.
       `,
-    },
-  ],
-  userMessage: StringUtil.trim`
+      },
+    ],
+    userMessage: StringUtil.trim`
     Review the JSON schema for ${JSON.stringify(props.typeName)} type.
 
     You MUST provide a revision for every single property in \`revises\`,
@@ -125,7 +125,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
 
     ${transformDatabaseSchemaProperties({ everyModels, model })}
   `,
-};
+  };
 };
 
 function transformDatabaseSchemaProperties(props: {
