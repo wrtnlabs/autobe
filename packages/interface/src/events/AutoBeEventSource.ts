@@ -1,6 +1,4 @@
-import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
-import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
 import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
 import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
@@ -82,8 +80,6 @@ export type AutoBeEventSource =
   | AutoBeImageDescribeCompleteEvent["type"]
   // analyze
   | AutoBeAnalyzeScenarioEvent["type"]
-  | AutoBeAnalyzeWriteEvent["type"]
-  | AutoBeAnalyzeReviewEvent["type"]
   // analyze (hierarchical write V2 - Module/Unit/Section)
   | AutoBeAnalyzeWriteModuleEvent["type"]
   | AutoBeAnalyzeWriteModuleReviewEvent["type"]

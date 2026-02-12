@@ -1,8 +1,6 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
-import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
-import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
 import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
 import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
 import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
@@ -113,8 +111,6 @@ export type AutoBeEvent =
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
-  | AutoBeAnalyzeWriteEvent
-  | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
   // ANALYZE (Hierarchical Write V2 - Module/Unit/Section)
   | AutoBeAnalyzeWriteModuleEvent
