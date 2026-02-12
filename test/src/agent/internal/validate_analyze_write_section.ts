@@ -4,8 +4,8 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -51,6 +51,7 @@ export const validate_analyze_write_section = async (props: {
 
   const event: AutoBeAnalyzeWriteSectionEvent =
     await orchestrateAnalyzeWriteSection(props.agent.getContext(), {
+      promptCacheKey: "",
       scenario,
       file,
       moduleEvent,

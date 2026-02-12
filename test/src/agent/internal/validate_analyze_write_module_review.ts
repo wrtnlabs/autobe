@@ -42,6 +42,7 @@ export const validate_analyze_write_module_review = async (props: {
 
   const event: AutoBeAnalyzeWriteModuleReviewEvent =
     await orchestrateAnalyzeWriteModuleReview(props.agent.getContext(), {
+      promptCacheKey: "",
       scenario,
       file,
       moduleEvent,

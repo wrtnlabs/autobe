@@ -4,17 +4,17 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteSectionReviewEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 
 import { validate_analyze_scenario } from "./validate_analyze_scenario";
 import { validate_analyze_write_module } from "./validate_analyze_write_module";
-import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 import { validate_analyze_write_section } from "./validate_analyze_write_section";
+import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 
 export const validate_analyze_write_section_review = async (props: {
   agent: AutoBeAgent;
@@ -60,6 +60,7 @@ export const validate_analyze_write_section_review = async (props: {
 
   const event: AutoBeAnalyzeWriteSectionReviewEvent =
     await orchestrateAnalyzeWriteSectionReview(props.agent.getContext(), {
+      promptCacheKey: "",
       scenario,
       file,
       moduleEvent,

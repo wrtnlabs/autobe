@@ -1,11 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeWriteUnitReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteUnitReview";
+import { orchestrateAnalyzeWriteAllUnitReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteAllUnitReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
+  AutoBeAnalyzeWriteAllUnitReviewEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -14,11 +14,11 @@ import { validate_analyze_scenario } from "./validate_analyze_scenario";
 import { validate_analyze_write_module } from "./validate_analyze_write_module";
 import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 
-export const validate_analyze_write_unit_review = async (props: {
+export const validate_analyze_write_all_unit_review = async (props: {
   agent: AutoBeAgent;
   vendor: string;
   project: AutoBeExampleProject;
-}): Promise<AutoBeAnalyzeWriteUnitReviewEvent> => {
+}): Promise<AutoBeAnalyzeWriteAllUnitReviewEvent> => {
   const scenario: AutoBeAnalyzeScenarioEvent =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
@@ -33,12 +33,17 @@ export const validate_analyze_write_unit_review = async (props: {
       file: "analyze.write_module.json",
     })) ?? (await validate_analyze_write_module(props));
 
-  const unitEvent: AutoBeAnalyzeWriteUnitEvent =
-    (await AutoBeExampleStorage.load({
-      vendor: props.vendor,
-      project: props.project,
-      file: "analyze.write_unit.json",
-    })) ?? (await validate_analyze_write_unit(props));
+  // Load or generate unit events for all module sections
+  const unitEvents: AutoBeAnalyzeWriteUnitEvent[] = [];
+  for (let i = 0; i < moduleEvent.moduleSections.length; i++) {
+    const unitEvent: AutoBeAnalyzeWriteUnitEvent =
+      (await AutoBeExampleStorage.load({
+        vendor: props.vendor,
+        project: props.project,
+        file: `analyze.write_unit.${i}.json`,
+      })) ?? (await validate_analyze_write_unit(props));
+    unitEvents.push(unitEvent);
+  }
 
   // Use first file from scenario for testing
   const file = scenario.files[0];
@@ -49,21 +54,21 @@ export const validate_analyze_write_unit_review = async (props: {
     completed: 0,
   };
 
-  const event: AutoBeAnalyzeWriteUnitReviewEvent =
-    await orchestrateAnalyzeWriteUnitReview(props.agent.getContext(), {
-      promptCacheKey: "",
+  const event: AutoBeAnalyzeWriteAllUnitReviewEvent =
+    await orchestrateAnalyzeWriteAllUnitReview(props.agent.getContext(), {
       scenario,
       file,
       moduleEvent,
-      unitEvent,
+      unitEvents,
       progress,
+      promptCacheKey: "",
     });
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
     project: props.project,
     files: {
-      ["analyze.write_unit_review.json"]: JSON.stringify(event),
+      ["analyze.write_all_unit_review.json"]: JSON.stringify(event),
     },
   });
   return event;

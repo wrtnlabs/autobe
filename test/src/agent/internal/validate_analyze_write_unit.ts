@@ -40,14 +40,17 @@ export const validate_analyze_write_unit = async (props: {
     completed: 0,
   };
 
-  const event: AutoBeAnalyzeWriteUnitEvent =
-    await orchestrateAnalyzeWriteUnit(props.agent.getContext(), {
+  const event: AutoBeAnalyzeWriteUnitEvent = await orchestrateAnalyzeWriteUnit(
+    props.agent.getContext(),
+    {
+      promptCacheKey: "",
       scenario,
       file,
       moduleEvent,
       moduleIndex: 0,
       progress,
-    });
+    },
+  );
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

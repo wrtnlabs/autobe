@@ -31,14 +31,13 @@ export const validate_analyze_write_module = async (props: {
     completed: 0,
   };
 
-  const event: AutoBeAnalyzeWriteModuleEvent = await orchestrateAnalyzeWriteModule(
-    props.agent.getContext(),
-    {
+  const event: AutoBeAnalyzeWriteModuleEvent =
+    await orchestrateAnalyzeWriteModule(props.agent.getContext(), {
+      promptCacheKey: "",
       scenario,
       file,
       progress,
-    },
-  );
+    });
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
