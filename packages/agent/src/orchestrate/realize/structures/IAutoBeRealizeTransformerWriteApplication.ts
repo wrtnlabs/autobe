@@ -155,7 +155,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *
      * - Prevents missing field selections through systematic coverage
      * - Forces explicit decision-making for each database field (kind + nullable
-     *   + how)
+     *
+     *   - How)
      * - Ensures select() and transform() are perfectly aligned
      * - Documents what data to load from database
      * - Prevents confusion between scalar fields and relations
