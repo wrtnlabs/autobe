@@ -26,6 +26,7 @@ export const orchestrateAnalyzeWriteUnit = async (
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     moduleIndex: number;
     progress: AutoBeProgressEventBase;
+    promptCacheKey: string;
     feedback?: string;
   },
 ): Promise<AutoBeAnalyzeWriteUnitEvent> => {
@@ -49,6 +50,7 @@ export const orchestrateAnalyzeWriteUnit = async (
         preliminary,
       }),
       enforceFunctionCall: true,
+      promptCacheKey: props.promptCacheKey,
       ...transformAnalyzeWriteUnitHistories(ctx, {
         scenario: props.scenario,
         file: props.file,
@@ -65,6 +67,7 @@ export const orchestrateAnalyzeWriteUnit = async (
       id: v7(),
       moduleIndex: pointer.value.moduleIndex,
       unitSections: pointer.value.unitSections,
+      acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
@@ -72,7 +75,7 @@ export const orchestrateAnalyzeWriteUnit = async (
       completed: props.progress.completed,
       created_at: new Date().toISOString(),
     };
-    await ctx.dispatch(event);
+    ctx.dispatch(event);
     return out(result)(event);
   });
 };
