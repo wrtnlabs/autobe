@@ -90,9 +90,8 @@ export namespace IAutoBeTestGenerationWriteApplication {
      * - Correct import statements and module references
      * - Proper function signatures and parameter types
      * - Import path format for types (must be
-     *   @ORGANIZATION/PROJECT-api/lib/structures/{Namespace})
      *
-     * **Functional Correctness:**
+     * @ORGANIZATION/PROJECT-api/lib/structures/{Namespace}) **Functional Correctness:**
      *
      * - Correct use of prepare function with proper parameters
      * - Input type matches prepare function's input type (same DeepPartial type)

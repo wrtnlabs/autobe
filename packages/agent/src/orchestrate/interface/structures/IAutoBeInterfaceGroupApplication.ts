@@ -2,10 +2,10 @@ import { AutoBeInterfaceGroup } from "@autobe/interface";
 import { tags } from "typia";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
-import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
 export interface IAutoBeInterfaceGroupApplication {
   /**
@@ -69,8 +69,8 @@ export namespace IAutoBeInterfaceGroupApplication {
   /**
    * Request to generate API endpoint groups.
    *
-   * Executes group generation to organize API endpoints based on database schema
-   * structure.
+   * Executes group generation to organize API endpoints based on database
+   * schema structure.
    */
   export interface IComplete {
     /**
@@ -112,9 +112,9 @@ export namespace IAutoBeInterfaceGroupApplication {
      * DO: Derive groups from database schema organization (namespaces, file
      * structure, table prefixes) rather than arbitrary business domains. DO:
      * Create new groups only when existing schema structure cannot adequately
-     * cover all requirements. DO: Organize groups around existing database schema
-     * structure. DO: Provide complete coverage of all entities and requirements
-     * without overlap.
+     * cover all requirements. DO: Organize groups around existing database
+     * schema structure. DO: Provide complete coverage of all entities and
+     * requirements without overlap.
      */
     groups: AutoBeInterfaceGroup[] & tags.MinItems<1>;
   }

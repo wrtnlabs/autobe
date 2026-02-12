@@ -14,8 +14,8 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * specifications for efficient data loading.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (database schemas only) → implementation planning → code generation →
- * review and refinement. All necessary DTO type information is obtained
+ * gathering (database schemas only) → implementation planning → code generation
+ * → review and refinement. All necessary DTO type information is obtained
  * transitively from the DTO type names provided in the plan
  * (AutoBeRealizeTransformerPlan).
  *
@@ -59,7 +59,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - Summarize - don't enumerate every field mapping.
      *
      * Note: All necessary DTO type information is available transitively from
-     * the DTO type names in the plan. You only need to request database schemas.
+     * the DTO type names in the plan. You only need to request database
+     * schemas.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -97,8 +98,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
    * Follows plan → draft → revise pattern to ensure type safety and correct
    * field mappings.
    *
-   * Note: The database schema name is provided as input from the planning phase,
-   * so it doesn't need to be returned in the response.
+   * Note: The database schema name is provided as input from the planning
+   * phase, so it doesn't need to be returned in the response.
    */
   export interface IComplete {
     /** Type discriminator for completion request. */
@@ -153,8 +154,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * This structured approach:
      *
      * - Prevents missing field selections through systematic coverage
-     * - Forces explicit decision-making for each database field (kind + nullable +
-     *   how)
+     * - Forces explicit decision-making for each database field (kind + nullable
+     *   + how)
      * - Ensures select() and transform() are perfectly aligned
      * - Documents what data to load from database
      * - Prevents confusion between scalar fields and relations

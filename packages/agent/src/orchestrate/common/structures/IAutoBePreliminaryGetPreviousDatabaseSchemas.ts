@@ -3,10 +3,10 @@ import { tags } from "typia";
 /**
  * Request to retrieve database schemas from a previous version.
  *
- * This type is used to load database schema definitions that were
- * generated in a **previous version** of the AutoBE generation pipeline. This
- * is NOT about re-requesting schemas within the same execution, but rather
- * accessing artifacts from an earlier version.
+ * This type is used to load database schema definitions that were generated in
+ * a **previous version** of the AutoBE generation pipeline. This is NOT about
+ * re-requesting schemas within the same execution, but rather accessing
+ * artifacts from an earlier version.
  *
  * **Use Case:** When regenerating or modifying the database schema based on
  * user change requests, agents need to reference the previously generated
