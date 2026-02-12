@@ -180,7 +180,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
               event.errorMessage,
             ),
         },
-        retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+        retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
         // stream: false,
       },
       controllers: [

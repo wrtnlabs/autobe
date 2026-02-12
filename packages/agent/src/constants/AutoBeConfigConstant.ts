@@ -29,7 +29,7 @@ export const enum AutoBeConfigConstant {
    * (fundamentally misunderstood requirements) fail fast rather than wasting
    * resources.
    */
-  RETRY = 5,
+  VALIDATION_RETRY = 8,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.
@@ -65,7 +65,7 @@ export const enum AutoBeConfigConstant {
    * beyond 3 rarely improve success rates but notably increase latency and
    * resource usage.
    */
-  FUNCTION_CALLING_RETRY = 3,
+  API_ERROR_RETRY = 3,
 
   /**
    * Batch count for parallel operation processing.
