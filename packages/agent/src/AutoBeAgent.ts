@@ -5,7 +5,6 @@ import {
 } from "@agentica/core";
 import {
   AutoBeAssistantMessageHistory,
-  AutoBeEvent,
   AutoBeHistory,
   AutoBePhase,
   AutoBeProcessAggregateCollection,

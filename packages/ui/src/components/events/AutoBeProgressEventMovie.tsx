@@ -39,16 +39,6 @@ interface IState {
 function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
   const content: Pick<IState, "title" | "description"> = (() => {
     switch (event.type) {
-      case "analyzeWrite":
-        return {
-          title: "Analyze Write",
-          description: "Analyzing requirements, and writing a report paper",
-        };
-      case "analyzeReview":
-        return {
-          title: "Analyze Review",
-          description: "Reviewing the analysis results",
-        };
       case "databaseComponent":
         return {
           title: "Database Components",
