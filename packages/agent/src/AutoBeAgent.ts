@@ -259,18 +259,16 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         ...e,
         type: "vendorRequest",
         source: "facade",
-        stream: e.body.stream ?? true,
         retry: 0,
-      } as unknown as AutoBeEvent).catch(() => {});
+      }).catch(() => {});
     });
     this.agentica_.on("response", (e) => {
       void this.dispatch({
         ...e,
         type: "vendorResponse",
         source: "facade",
-        stream: e.body.stream ?? true,
         retry: 0,
-      } as unknown as AutoBeEvent).catch(() => {});
+      }).catch(() => {});
     });
   }
 
