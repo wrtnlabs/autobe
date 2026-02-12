@@ -73,7 +73,7 @@ async function process(
     props.group.namespace,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "prismaComponent");
+  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "prismaComponent");
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,

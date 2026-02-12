@@ -89,7 +89,7 @@ async function process(
 
   const queryText = queryParts.join(" ");
 
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfaceOperationReview");
+  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "interfaceOperationReview");
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,

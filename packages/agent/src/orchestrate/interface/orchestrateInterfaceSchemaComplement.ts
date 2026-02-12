@@ -97,7 +97,7 @@ Task: ${task}
 `.trim();
 
   const ragSettings = getContextModeSettings(
-    ctx.config,
+    undefined,
     RAG_PRESET,
     "interfaceComplement",
   );

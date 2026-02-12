@@ -79,7 +79,7 @@ async function process(
     Task: ${paths}
   `.trim();
 
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfacePrerequisite");
+  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "interfacePrerequisite");
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,

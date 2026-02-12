@@ -127,7 +127,7 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
   const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
   const ragSettings = getContextModeSettings(
-    ctx.config,
+    undefined,
     RAG_PRESET,
     "interfaceSchemaReview",
   );

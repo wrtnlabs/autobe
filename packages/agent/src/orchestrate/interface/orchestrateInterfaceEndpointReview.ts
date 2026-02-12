@@ -60,7 +60,7 @@ export const orchestrateInterfaceEndpointReview = async (
   ].join(" ");
 
   const ragSettings = getContextModeSettings(
-    ctx.config,
+    undefined,
     RAG_PRESET,
     "interfaceEndpointReview",
   );

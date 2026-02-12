@@ -16,7 +16,10 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
+import {
+  RagModePreset,
+  getContextModeSettings,
+} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
@@ -60,7 +63,11 @@ export const orchestrateInterfaceEndpointWrite = async (
     ...props.group.databaseSchemas,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "interfaceEndpointWrite");
+  const ragSettings = getContextModeSettings(
+    undefined,
+    RAG_PRESET,
+    "interfaceEndpointWrite",
+  );
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,

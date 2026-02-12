@@ -155,7 +155,7 @@ async function process(
   ].join(" ");
 
   const ragSettings = getContextModeSettings(
-    ctx.config,
+    undefined,
     RAG_PRESET,
     "interfaceOperation",
   );

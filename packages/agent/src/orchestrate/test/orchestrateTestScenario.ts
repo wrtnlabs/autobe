@@ -122,7 +122,7 @@ async function process(
     ...pathSegments,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(ctx.config, RAG_PRESET, "testScenario");
+  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "testScenario");
   const ragAnalysisFiles = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
