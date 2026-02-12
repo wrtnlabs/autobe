@@ -1,4 +1,4 @@
-import type { OutputChannel } from "vscode";
+import type { OutputChannel as OutputChannelType } from "vscode";
 
 const getTimestamp = () => {
   const now = new Date();
@@ -11,7 +11,7 @@ const getTimestamp = () => {
   return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
 };
 
-let OutputChannel: OutputChannel;
+let OutputChannel: OutputChannelType;
 const log = (level: string, message: string, error?: Error) => {
   let fullMessage = message;
   if (error?.message) {
@@ -22,10 +22,10 @@ const log = (level: string, message: string, error?: Error) => {
   if (error?.stack) {
     console.log(`Stack trace:\n${error.stack}`);
   }
-}; 
+};
 
 export class Logger {
-  static initialize(_outputChannel: OutputChannel) {
+  static initialize(_outputChannel: OutputChannelType) {
     OutputChannel = _outputChannel;
   }
 
