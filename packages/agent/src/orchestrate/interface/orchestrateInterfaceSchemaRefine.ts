@@ -57,7 +57,7 @@ export async function orchestrateInterfaceSchemaRefine(
       try {
         const schema: AutoBeOpenApi.IJsonSchema = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(schema) === false) {
-          ++props.progress.completed;
+          --props.progress.total;
           return;
         }
         const refined: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
@@ -73,7 +73,7 @@ export async function orchestrateInterfaceSchemaRefine(
         x[it] = refined;
       } catch (error) {
         console.log("interfaceSchemaRefine failure", it, error);
-        --props.progress.completed;
+        --props.progress.total;
       }
     }),
   );
