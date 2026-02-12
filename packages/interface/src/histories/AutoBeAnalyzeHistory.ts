@@ -23,8 +23,7 @@ import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggreg
  *
  * @author Samchon
  */
-export interface AutoBeAnalyzeHistory
-  extends AutoBeAgentHistoryBase<"analyze"> {
+export interface AutoBeAnalyzeHistory extends AutoBeAgentHistoryBase<"analyze"> {
   /**
    * Iteration number of this requirements analysis report.
    *

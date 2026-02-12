@@ -19,8 +19,7 @@ import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
  *
  * @author Samchon
  */
-export interface AutoBeAssistantMessageHistory
-  extends AutoBeAgentHistoryBase<"assistantMessage"> {
+export interface AutoBeAssistantMessageHistory extends AutoBeAgentHistoryBase<"assistantMessage"> {
   /**
    * The text content of the assistant's message.
    *

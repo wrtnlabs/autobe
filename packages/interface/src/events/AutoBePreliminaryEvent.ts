@@ -45,9 +45,9 @@ export interface AutoBePreliminaryEvent<
    * Unique identifier of the source event that triggered validation.
    *
    * Provides traceability by linking this preliminary validation event back to
-   * the specific source event (e.g., a particular database schema generation
-   * or interface operation design) that needed validation. This enables
-   * precise tracking of which generation attempt encountered inconsistencies.
+   * the specific source event (e.g., a particular database schema generation or
+   * interface operation design) that needed validation. This enables precise
+   * tracking of which generation attempt encountered inconsistencies.
    */
   source_id: string;
 
@@ -55,8 +55,8 @@ export interface AutoBePreliminaryEvent<
    * Type of preliminary validation being performed.
    *
    * Specifies what kind of items are being validated (e.g., "databaseSchemas",
-   * "interfaceOperations", "analysisFiles"). The validation type determines
-   * how existing and requested items are compared and what reconciliation
+   * "interfaceOperations", "analysisFiles"). The validation type determines how
+   * existing and requested items are compared and what reconciliation
    * strategies are appropriate for resolving inconsistencies.
    */
   function: Function;
@@ -85,8 +85,8 @@ export interface AutoBePreliminaryEvent<
    * wants to create. For other types, this is an array of string identifiers
    * for items the agent intends to work with.
    *
-   * The preliminary validator compares these requests against existing items
-   * to identify discrepancies such as duplicates, missing dependencies, or
+   * The preliminary validator compares these requests against existing items to
+   * identify discrepancies such as duplicates, missing dependencies, or
    * inconsistent references that need to be resolved before proceeding.
    */
   requested: Function extends "interfaceOperations"
@@ -99,8 +99,8 @@ export interface AutoBePreliminaryEvent<
    * Tracks how many times the agent has attempted to resolve the
    * inconsistencies detected by preliminary validation. This counter enables
    * intelligent retry logic and prevents infinite loops when the agent
-   * struggles to align its requests with existing state, allowing the system
-   * to escalate or fail gracefully after reasonable attempts.
+   * struggles to align its requests with existing state, allowing the system to
+   * escalate or fail gracefully after reasonable attempts.
    */
   trial: number;
 }

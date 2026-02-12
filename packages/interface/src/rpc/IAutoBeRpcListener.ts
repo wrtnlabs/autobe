@@ -217,13 +217,11 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for database group review events.
    *
-   * Called when the Database agent reviews and validates the component
-   * group organization, ensuring all business domains are properly
-   * represented and group boundaries are appropriate.
+   * Called when the Database agent reviews and validates the component group
+   * organization, ensuring all business domains are properly represented and
+   * group boundaries are appropriate.
    */
-  databaseGroupReview?(
-    event: AutoBeDatabaseGroupReviewEvent,
-  ): Promise<void>;
+  databaseGroupReview?(event: AutoBeDatabaseGroupReviewEvent): Promise<void>;
 
   /**
    * Optional handler for database authorization events.
@@ -240,8 +238,8 @@ export interface IAutoBeRpcListener {
    * Optional handler for database authorization review events.
    *
    * Called when the Database agent reviews and validates the authorization
-   * component's table organization, ensuring all actor and session tables
-   * are properly defined.
+   * component's table organization, ensuring all actor and session tables are
+   * properly defined.
    */
   databaseAuthorizationReview?(
     event: AutoBeDatabaseAuthorizationReviewEvent,

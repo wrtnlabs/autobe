@@ -16,8 +16,8 @@ export interface AutoBeTestPrepareMapping {
    * Data generation strategy for this property.
    *
    * Explains how the value will be generated (e.g., "typia.random with uuid
-   * format", "RandomGenerator.paragraph with 2-5 sentences", "input override
-   * or default generation").
+   * format", "RandomGenerator.paragraph with 2-5 sentences", "input override or
+   * default generation").
    */
   how: string;
 }

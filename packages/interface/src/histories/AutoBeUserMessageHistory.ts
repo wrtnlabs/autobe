@@ -18,8 +18,7 @@ import { AutoBeUserMessageContent } from "./contents/AutoBeUserMessageContent";
  *
  * @author Samchon
  */
-export interface AutoBeUserMessageHistory
-  extends AutoBeAgentHistoryBase<"userMessage"> {
+export interface AutoBeUserMessageHistory extends AutoBeAgentHistoryBase<"userMessage"> {
   /**
    * Array of content items that comprise the user's message.
    *

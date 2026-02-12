@@ -10,8 +10,7 @@ import { AutoBeUserConversateContentBase } from "./AutoBeUserConversateContentBa
  * content supports both base64-encoded image data and URL references, providing
  * flexibility for different use cases and integration scenarios.
  */
-export interface AutoBeUserImageConversateContent
-  extends AutoBeUserConversateContentBase<"image"> {
+export interface AutoBeUserImageConversateContent extends AutoBeUserConversateContentBase<"image"> {
   /**
    * Image content data.
    *

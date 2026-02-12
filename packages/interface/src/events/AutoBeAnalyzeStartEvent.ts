@@ -16,8 +16,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeAnalyzeStartEvent
-  extends AutoBeEventBase<"analyzeStart"> {
+export interface AutoBeAnalyzeStartEvent extends AutoBeEventBase<"analyzeStart"> {
   /**
    * Iteration number of the requirements analysis being started.
    *

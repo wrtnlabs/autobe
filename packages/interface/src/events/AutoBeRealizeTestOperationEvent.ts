@@ -22,8 +22,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeTestOperationEvent
-  extends AutoBeEventBase<"realizeTestOperation">,
-    AutoBeProgressEventBase {
+  extends AutoBeEventBase<"realizeTestOperation">, AutoBeProgressEventBase {
   /**
    * Name of the E2E test function that was executed.
    *

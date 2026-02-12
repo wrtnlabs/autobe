@@ -19,8 +19,7 @@ import { AutoBeUserMessageContentBase } from "./AutoBeUserMessageContentBase";
  *
  * @author Samchon
  */
-export interface AutoBeUserMessageTextContent
-  extends AutoBeUserMessageContentBase<"text"> {
+export interface AutoBeUserMessageTextContent extends AutoBeUserMessageContentBase<"text"> {
   /**
    * The textual content of the user's message.
    *

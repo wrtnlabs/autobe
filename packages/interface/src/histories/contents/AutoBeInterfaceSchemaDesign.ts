@@ -7,9 +7,8 @@ import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
  * clear organization of implementation details (`specification`), API
  * documentation (`description`), and the type structure (`schema`).
  *
- * The `specification` and `description` fields are documented at the
- * design level, separate from the `schema` field which holds the pure
- * type structure.
+ * The `specification` and `description` fields are documented at the design
+ * level, separate from the `schema` field which holds the pure type structure.
  *
  * @author Samchon
  */
@@ -27,8 +26,7 @@ export interface AutoBeInterfaceSchemaDesign {
    *
    *   - Computed/aggregated types (e.g., statistics, summaries from multiple
    *       tables)
-   *   - Types composed purely by business logic (e.g., search filters,
-   *       pagination)
+   *   - Types composed purely by business logic (e.g., search filters, pagination)
    *   - Embedded JSON structures without dedicated tables
    *
    * When `null`, the `specification` field becomes critical for downstream

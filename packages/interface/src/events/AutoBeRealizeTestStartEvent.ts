@@ -19,8 +19,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeTestStartEvent
-  extends AutoBeEventBase<"realizeTestStart"> {
+export interface AutoBeRealizeTestStartEvent extends AutoBeEventBase<"realizeTestStart"> {
   /**
    * Whether the test execution will begin with a clean database reset.
    *

@@ -8,8 +8,8 @@ import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaProp
  *
  * Initial JSON Schema generation produces only type structure (`type`,
  * `properties`, `$ref`, etc.) without any descriptive information. This type
- * represents the operations to add `databaseSchemaProperty`, `specification`, and
- * `description` to each property.
+ * represents the operations to add `databaseSchemaProperty`, `specification`,
+ * and `description` to each property.
  *
  * - `depict`: Add documentation to existing property
  * - `create`: Add missing property with documentation
