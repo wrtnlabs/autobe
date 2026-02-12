@@ -1,9 +1,7 @@
 import {
   AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -174,15 +172,6 @@ export interface IAutoBeRpcListener {
   analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
-   * Optional handler for requirements analysis writing progress events.
-   *
-   * Called during the writing phase as analysis documents are being created,
-   * allowing client applications to display real-time progress and provide
-   * visibility into the document generation process.
-   */
-  analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
-
-  /**
    * Optional handler for module section generation events (V2 hierarchical writing).
    *
    * Called when the hierarchical writing agent generates module section structure
@@ -255,15 +244,6 @@ export interface IAutoBeRpcListener {
   analyzeWriteAllSectionReview?(
     event: AutoBeAnalyzeWriteAllSectionReviewEvent,
   ): Promise<void>;
-
-  /**
-   * Optional handler for requirements analysis review events.
-   *
-   * Called during the review and amendment phase, enabling client applications
-   * to show that requirements are being refined and improved based on feedback
-   * and additional analysis.
-   */
-  analyzeReview?(event: AutoBeAnalyzeReviewEvent): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.
