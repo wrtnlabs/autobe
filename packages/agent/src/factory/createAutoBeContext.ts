@@ -112,9 +112,9 @@ export const createAutoBeContext = (props: {
       const metric = (key: keyof AutoBeFunctionCallingMetric): void => {
         const accumulate = (collection: AutoBeProcessAggregateCollection) => {
           ++collection.total.metric[key];
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
-          ++collection[next.source as "analyzeWrite"]!.metric[key];
+          ++collection[next.source as "analyzeWriteModule"]!.metric[key];
         };
         ++aggregate.metric[key];
         accumulate(props.aggregates);
@@ -125,10 +125,10 @@ export const createAutoBeContext = (props: {
           collection: AutoBeProcessAggregateCollection,
         ): void => {
           TokenUsageComputer.increment(collection.total.tokenUsage, tokenUsage);
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
           TokenUsageComputer.increment(
-            collection[next.source as "analyzeWrite"]!.tokenUsage,
+            collection[next.source as "analyzeWriteModule"]!.tokenUsage,
             tokenUsage,
           );
         };
