@@ -45,4 +45,4 @@ export interface AgentResult {
 /**
  * Default model
  */
-export const DEFAULT_MODEL = 'anthropic/claude-3.5-sonnet';
+export const DEFAULT_MODEL = 'qwen/qwen3-next-80b-a3b-instruct';
