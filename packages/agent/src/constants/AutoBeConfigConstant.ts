@@ -29,7 +29,7 @@ export const enum AutoBeConfigConstant {
    * (fundamentally misunderstood requirements) fail fast rather than wasting
    * resources.
    */
-  VALIDATION_RETRY = 5,
+  VALIDATION_RETRY = 8,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.
@@ -49,6 +49,8 @@ export const enum AutoBeConfigConstant {
    */
   COMPILER_RETRY = 5,
 
+  DATABASE_CORRECT_RETRY = 20,
+
   /**
    * Retry attempts for LLM function-calling execution flows.
    *
@@ -66,17 +68,6 @@ export const enum AutoBeConfigConstant {
    * resource usage.
    */
   API_ERROR_RETRY = 3,
-
-  /**
-   * Batch count for parallel operation processing.
-   *
-   * Controls how many batches `divideArray` creates when splitting large
-   * operation lists for concurrent processing. Value of 2 provides optimal
-   * balance: parallelizes work to reduce latency while keeping batch sizes
-   * large enough for effective prompt caching. Higher values increase
-   * parallelism but reduce cache hit rates.
-   */
-  INTERFACE_CAPACITY = 1,
 
   /**
    * Maximum iterations for RAG (Retrieval-Augmented Generation) loops.

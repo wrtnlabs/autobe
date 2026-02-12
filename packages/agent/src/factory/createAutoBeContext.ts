@@ -1,6 +1,6 @@
 import {
-  AgenticaJsonParseError,
-  AgenticaValidationError,
+  // AgenticaJsonParseError,
+  // AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -38,7 +38,7 @@ import {
   StringUtil,
   TokenUsageComputer,
 } from "@autobe/utils";
-import { APIError } from "openai";
+import { APIError, BadRequestError } from "openai";
 import { Semaphore, Singleton } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -344,15 +344,19 @@ export const createAutoBeContext = (props: {
       return await forceRetry(
         execute,
         AutoBeConfigConstant.API_ERROR_RETRY,
-        (error) =>
-          error instanceof APIError ||
-          error instanceof AgenticaJsonParseError ||
-          error instanceof AgenticaValidationError ||
-          (error instanceof TypeError && error.message === "terminated") ||
-          (error instanceof Error &&
-            OPENAI_API_ERROR_KEYS.get().every((key) =>
-              error.hasOwnProperty(key),
-            )),
+        (error) => {
+          return (
+            error instanceof APIError ||
+            error instanceof BadRequestError ||
+            // error instanceof AgenticaJsonParseError ||
+            // error instanceof AgenticaValidationError ||
+            (error instanceof TypeError && error.message === "terminated") ||
+            (error instanceof Error &&
+              OPENAI_API_ERROR_KEYS.get().every((key) =>
+                error.hasOwnProperty(key),
+              ))
+          );
+        },
       );
     },
     getCurrentAggregates: (phase) => {
