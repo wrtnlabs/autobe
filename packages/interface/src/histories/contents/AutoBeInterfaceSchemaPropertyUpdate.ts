@@ -39,8 +39,9 @@ export interface AutoBeInterfaceSchemaPropertyUpdate {
   /**
    * Implementation guidance for downstream agents.
    *
-   * Internal documentation for Realize/Test agents. When `databaseSchemaProperty`
-   * is `null`, this must fully explain the computation logic.
+   * Internal documentation for Realize/Test agents. When
+   * `databaseSchemaProperty` is `null`, this must fully explain the computation
+   * logic.
    */
   specification: string;
 
@@ -54,8 +55,8 @@ export interface AutoBeInterfaceSchemaPropertyUpdate {
   /**
    * New schema definition replacing the existing one.
    *
-   * Must be consistent with `specification`. Inline objects forbidden;
-   * use `$ref` for nested structures.
+   * Must be consistent with `specification`. Inline objects forbidden; use
+   * `$ref` for nested structures.
    */
   schema: Exclude<AutoBeOpenApi.IJsonSchema, AutoBeOpenApi.IJsonSchema.IObject>;
 

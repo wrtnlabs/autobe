@@ -122,7 +122,8 @@ export const transformInterfaceSchemaRefineHistory = (props: {
       **Object-level**: \`databaseSchema\` (nullable), \`specification\` (MANDATORY),
       \`description\` (MANDATORY).
 
-      **Property-level**: Use \`depict\`, \`create\`, \`update\`, or \`erase\` for each.
+      **Property-level**: Use \`depict\`, \`create\`, \`update\`, or \`erase\` for each
+      property in \`revises\`. DB properties not in this DTO go in \`excludes\`.
 
       When \`databaseSchemaProperty\` or \`databaseSchema\` is \`null\`, the
       \`specification\` becomes the ONLY source of truth for downstream agents.
@@ -174,7 +175,7 @@ function transformDatabaseSchemaProperties(props: {
 
     If you keep \`databaseSchema\` as \`${JSON.stringify(props.model.name)}\`,
     every DB property below must be explicitly handled: either mapped to a DTO
-    property or \`exclude\`d with a reason.
+    property in \`revises\`, or declared in \`excludes\` with a reason.
 
     **Columns** (scalar fields):
     ${columns.map((c) => `- \`${c}\``).join("\n")}

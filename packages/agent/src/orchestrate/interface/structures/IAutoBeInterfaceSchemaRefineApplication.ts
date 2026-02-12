@@ -1,4 +1,7 @@
-import { AutoBeInterfaceSchemaPropertyRefine } from "@autobe/interface";
+import {
+  AutoBeInterfaceSchemaPropertyExclude,
+  AutoBeInterfaceSchemaPropertyRefine,
+} from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -148,29 +151,31 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     description: string;
 
     /**
-     * Property-level refinement operations.
+     * Database properties explicitly excluded from this DTO.
      *
-     * You must cover two lists completely:
+     * Declare every database property that intentionally does not appear in
+     * this DTO. Together with `revises`, this must cover every database
+     * property — each one must appear in exactly one of the two arrays.
+     */
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+
+    /**
+     * Property-level refinement operations for DTO properties.
      *
-     * 1. **Every DTO property** → `depict`, `create`, `update`, or `erase`
-     * 2. **Every DB property** → either mapped via `databaseSchemaProperty`
-     *    in a DTO refinement, or declared with `exclude`
-     *
-     * Available operations:
+     * Every DTO property must appear exactly once with one of:
      *
      * - `depict`: Add documentation to existing property
      * - `create`: Add missing property with documentation
      * - `update`: Fix incorrect type and add documentation
      * - `erase`: Remove invalid property
-     * - `exclude`: Declare DB property intentionally not in this DTO
      *
      * Each operation includes the property key, reason for the action, and
      * complete metadata including `databaseSchemaProperty`, `specification`,
      * and `description`.
      *
-     * No property can be omitted. Every DTO property and every DB property
-     * must appear exactly once in this array.
+     * Database properties are addressed either here (via
+     * `databaseSchemaProperty`) or in `excludes`. No property can be omitted.
      */
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }
 }

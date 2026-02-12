@@ -17,7 +17,4 @@ export interface AutoBeInterfaceSchemaPropertyExclude {
 
   /** Explanation of why this database property is excluded. */
   reason: string;
-
-  /** Discriminator for property revision type. */
-  type: "exclude";
 }

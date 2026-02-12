@@ -117,7 +117,8 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   userMessage: StringUtil.trim`
     Review the JSON schema for ${JSON.stringify(props.typeName)} type.
 
-    You MUST provide a revision for every single property without exception:
+    You MUST provide a revision for every single property in \`revises\`,
+    and declare DB properties not in this DTO in \`excludes\`:
     ${Object.keys(props.reviewSchema.properties)
       .map((k) => `- ${k}`)
       .join("\n")}
@@ -158,7 +159,8 @@ function transformDatabaseSchemaProperties(props: {
     ## Database Schema Properties for \`${props.model.name}\`
 
     Every DB property must be explicitly handled: either mapped to a DTO property
-    or \`exclude\`d with a reason. Use these as \`databaseSchemaProperty\` values.
+    in \`revises\`, or declared in \`excludes\` with a reason. Use these as
+    \`databaseSchemaProperty\` values.
 
     **Columns** (scalar fields):
     ${columns.map((c) => `- \`${c}\``).join("\n")}

@@ -21,35 +21,34 @@ You CANNOT:
 - Erase non-relation fields — `title`, `description`, `content`, `status`, `id`, `created_at`, `page`, `limit`, `search`, `completed`, and all other business or query fields are outside your jurisdiction; always `keep` them
 - Modify security or business logic fields
 
-## 2. How Revisions Work
+## 2. Two Output Arrays
 
-Enumerate every DTO property and every DB relation, then assign exactly one revision to each:
+Your output has two separate arrays:
 
-1. **Every DTO property** → `keep`, `update`, `create`, `erase`, `depict`, or `nullish`
-2. **Every DB relation** → either mapped via `databaseSchemaProperty` or declared with `exclude`
+- **`excludes`**: DB relations that should not appear in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `update`, `create`, `erase`, `depict`, `nullish`)
+
+Each DTO property appears exactly once in `revises`. Each DB relation appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
 **Setting `databaseSchemaProperty`**: Use relation name for DB relations. Use `null` only for requirement-derived computed properties (verify valid logic in `x-autobe-specification`).
 
-| Situation | Revision | Example |
-|-----------|----------|---------|
-| FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
-| Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
-| Circular back-reference in DTO | `erase` | Remove `articles[]` from User (if in DTO) |
-| Aggregation relation should not appear | `exclude` | `comments[]` excluded from Read DTO |
-| Actor relation in Create/Update DTO | `exclude` | `member` excluded (FK from JWT) |
-| Relation whose FK is a path parameter (Create/Update) | `exclude` | `article` excluded (FK from URL path) |
-| Relation field with wrong documentation only | `depict` | Fix specification/description on relation |
-| Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
-| Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
+| Array | Situation | Operation | Example |
+|-------|-----------|-----------|---------|
+| `revises` | FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
+| `revises` | Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
+| `revises` | Circular back-reference in DTO | `erase` | Remove `articles[]` from User |
+| `revises` | Relation with wrong documentation only | `depict` | Fix specification/description |
+| `revises` | Relation with wrong nullability only | `nullish` | Fix nullable on optional relation |
+| `revises` | Everything else | `keep` | `id`, `title`, `created_at`, `category` |
+| `excludes` | Aggregation relation | (exclusion entry) | `comments[]` excluded from Read DTO |
+| `excludes` | Actor relation in Create/Update DTO | (exclusion entry) | `member` excluded (FK from JWT) |
+| `excludes` | Relation whose FK is a path parameter | (exclusion entry) | `article` excluded (FK from URL path) |
 
-**`erase` vs `exclude`**:
-- `erase`: Relation exists in DTO but shouldn't (circular back-reference) → remove it
-- `exclude`: DB relation should never appear in this DTO → declare exclusion
-  - Aggregation relations (use counts instead)
-  - Actor relations in Create/Update DTO (FK resolved from JWT)
-  - Relations whose FK comes from path parameters (Create/Update DTO)
+**`erase` vs `excludes`**:
+- `erase` (in `revises`): Relation exists in DTO but shouldn't (circular back-reference) → remove it
+- `excludes`: DB relation should never appear in this DTO → declare exclusion
 
-In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `exclude`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
+In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
 
 ## 3. Three Relation Types
 
@@ -139,7 +138,8 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB relations not in this DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
@@ -194,17 +194,15 @@ Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid era
 }
 ```
 
-### `exclude` - DB Relation Not in This DTO
+### `excludes` entries - DB Relation Not in This DTO
 
-Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
-
-For DB relations that should never appear in this DTO type: aggregation (use counts), actor relations in Create/Update (FK from JWT), and relations whose FK comes from path parameters.
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed. Use for DB relations that should never appear in this DTO: aggregation (use counts), actor relations in Create/Update (FK from JWT), and relations whose FK comes from path parameters.
 
 ```typescript
-{ databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead of nested array", type: "exclude" }
-{ databaseSchemaProperty: "likes", reason: "Aggregation: event-driven data, use separate endpoint", type: "exclude" }
-{ databaseSchemaProperty: "member", reason: "Actor relation: member_id resolved from JWT, not in Create DTO body", type: "exclude" }
-{ databaseSchemaProperty: "article", reason: "Path param relation: article_id provided via URL path", type: "exclude" }
+{ databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead of nested array" }
+{ databaseSchemaProperty: "likes", reason: "Aggregation: event-driven data, use separate endpoint" }
+{ databaseSchemaProperty: "member", reason: "Actor relation: member_id resolved from JWT, not in Create DTO body" }
+{ databaseSchemaProperty: "article", reason: "Path param relation: article_id provided via URL path" }
 ```
 
 ### `depict` - Fix Relation Documentation
@@ -255,6 +253,10 @@ process({
   request: {
     type: "complete",
     review: "author_id: FK not transformed. Excluded aggregation: comments, likes.",
+    excludes: [
+      { databaseSchemaProperty: "comments", reason: "Aggregation: use separate endpoint" },
+      { databaseSchemaProperty: "likes", reason: "Aggregation: use separate endpoint" }
+    ],
     revises: [
       { key: "id", databaseSchemaProperty: "id", type: "keep", reason: "Non-relation field" },
       { key: "title", databaseSchemaProperty: "title", type: "keep", reason: "Non-relation field" },
@@ -264,26 +266,25 @@ process({
         schema: { $ref: "#/components/schemas/IBbsMember.ISummary" }, required: true },
       { key: "category", databaseSchemaProperty: "category", type: "keep", reason: "Relation correct" },
       { key: "attachments", databaseSchemaProperty: "attachments", type: "keep", reason: "Composition correct" },
-      { key: "created_at", databaseSchemaProperty: "created_at", type: "keep", reason: "Non-relation field" },
-      { databaseSchemaProperty: "comments", type: "exclude", reason: "Aggregation: use separate endpoint" },
-      { databaseSchemaProperty: "likes", type: "exclude", reason: "Aggregation: use separate endpoint" }
+      { key: "created_at", databaseSchemaProperty: "created_at", type: "keep", reason: "Non-relation field" }
     ]
   }
 })
 ```
 
-**Result**: 7 DTO properties + 5 DB relations → 7 revised + 2 excluded = complete coverage.
+**Result**: 7 DTO properties in `revises` + 2 DB relations in `excludes` = complete coverage.
 
 ## 10. Checklist
 
-- [ ] Every DTO property has exactly one revision (no missing, no duplicates)
-- [ ] Every DB relation either mapped to DTO or `exclude`d
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every DB relation either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB relation appears in both `excludes` and `revises`
 - [ ] Non-relation fields all use `keep`
 - [ ] `databaseSchemaProperty`: relation name for DB relations, `null` only for valid computed properties
 - [ ] Relation properties use relation name in `databaseSchemaProperty`
 - [ ] FK column properties use column name in `databaseSchemaProperty`
 - [ ] `erase` used only for circular back-references in DTO
-- [ ] `exclude` used for aggregation, actor, and path-param relations
+- [ ] `excludes` used for aggregation, actor, and path-param relations
 - [ ] `depict` used only for wrong documentation on relation fields
 - [ ] `nullish` used only for wrong nullability on relation fields
 - [ ] FK fields in Read DTOs transformed to `$ref` objects with relation name

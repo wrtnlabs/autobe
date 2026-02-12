@@ -2,6 +2,7 @@ import {
   AutoBeDatabase,
   AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyExclude,
   AutoBeInterfaceSchemaPropertyRefine,
   AutoBeInterfaceSchemaPropertyUpdate,
   AutoBeOpenApi,
@@ -45,11 +46,13 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     path: string;
     errors: IValidation.IError[];
     everyModels: AutoBeDatabase.IModel[];
-    // special
+    // schema
     typeName: string;
     databaseSchema: string | null;
     schema: AutoBeOpenApi.IJsonSchema.IObject;
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    // refines
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }): void => {
     // validate database schema existence
     if (
@@ -89,7 +92,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     // validate refines detaily
     AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
       // config
-      path: (i) => `${props.path}.refines[${i}]`,
+      path: props.path,
       errors: props.errors,
       unionTypeName: typia.reflect.name<AutoBeInterfaceSchemaPropertyRefine>(),
       noModelDescription: StringUtil.trim`
@@ -118,7 +121,8 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
       // interface
       typeName: props.typeName,
       schema: props.schema,
-      revises: props.refines,
+      revises: props.revises,
+      excludes: props.excludes,
     });
   };
 
@@ -127,7 +131,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     databaseSchema: string | null;
     specification: string;
     description: string;
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
     const result: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
       ...props.schema,
@@ -141,7 +145,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
       if (result.required.includes(key) === false) result.required.push(key);
     };
 
-    for (const refine of props.refines)
+    for (const refine of props.revises)
       if (refine.type === "depict") {
         // Add documentation to existing property
         result.properties[refine.key] = {
@@ -172,7 +176,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           "x-autobe-database-schema-property": refine.databaseSchemaProperty,
         };
         if (refine.required) setRequired(newKey);
-      } else if (refine.type === "erase" || refine.type === "exclude") continue;
+      } else if (refine.type === "erase") continue;
       else refine satisfies never;
     return result;
   };

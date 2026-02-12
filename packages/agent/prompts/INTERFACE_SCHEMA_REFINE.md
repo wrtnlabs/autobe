@@ -41,7 +41,8 @@ interface IComplete {
   databaseSchema: string | null;           // DB table name or null
   specification: string;                   // Object-level implementation (MANDATORY)
   description: string;                     // Object-level API doc (MANDATORY)
-  refines: AutoBeInterfaceSchemaPropertyRefine[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB properties not in this DTO
+  revises: AutoBeInterfaceSchemaPropertyRefine[];    // DTO property operations
 }
 ```
 
@@ -91,16 +92,44 @@ model bbs_articles {
 
 **Why separated**: Schema Agent focuses on structure correctness; you focus on documentation completeness. This separation ensures both are done well.
 
-## 3. Refinement Operations
+## 3. Two Output Arrays
 
-Each property receives exactly one refinement operation. You must cover two lists completely:
+Your output has two separate arrays that together must cover every database property:
 
-1. **Every DTO property** → `depict`, `create`, `update`, or `erase`
-2. **Every DB property** → either mapped via `databaseSchemaProperty` in a DTO refinement, or declared with `exclude`
+- **`excludes`**: Database properties intentionally not in this DTO
+- **`revises`**: Operations on DTO properties (`depict`, `create`, `update`, `erase`)
+
+Every DTO property must appear exactly once in `revises`. Every database property must appear either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
 **Before `databaseSchemaProperty: null`**: Verify `specification` explains valid logic. **Before `erase`**: Confirm no DB mapping AND no valid business logic.
 
-### 3.1. `depict` - Add Documentation (No Type Change)
+### 3.1. `excludes` - Database Properties Not in This DTO
+
+Each entry declares a database property that intentionally does not appear in this DTO.
+
+Use when a database property should NOT appear in this DTO:
+- Auto-generated fields: `id`, `created_at` excluded from Create DTO
+- Actor identity FK: `member_id`, `author_id` excluded from Create/Update DTO (resolved from JWT)
+- Path parameter FK: parent FK excluded from Create/Update DTO when already in URL path
+- Session FK: `session_id` excluded from Create/Update DTO (server-managed, not user-provided)
+- Summary DTO: only essential display fields included
+- Immutability: `id`, `created_at` excluded from Update DTO
+- Security: `password`, `salt`, `refresh_token` excluded from Read DTO
+- Aggregation relations: use computed counts instead of nested arrays
+
+```typescript
+{ databaseSchemaProperty: "password_hashed", reason: "Security: password hash must never be exposed in Read DTO" }
+{ databaseSchemaProperty: "id", reason: "DTO purpose: id is auto-generated, not user-provided in Create DTO" }
+{ databaseSchemaProperty: "deleted_at", reason: "Summary DTO: only essential display fields included" }
+{ databaseSchemaProperty: "bbs_member_id", reason: "Actor identity: resolved from JWT, not user-provided in Create DTO" }
+{ databaseSchemaProperty: "bbs_article_id", reason: "Path parameter: provided via URL path, not in request body" }
+```
+
+### 3.2. `revises` - DTO Property Operations
+
+Each DTO property receives exactly one refinement operation.
+
+#### `depict` - Add Documentation (No Type Change)
 ```typescript
 {
   key: "email",
@@ -112,7 +141,7 @@ Each property receives exactly one refinement operation. You must cover two list
 }
 ```
 
-### 3.2. `create` - Add Missing Property
+#### `create` - Add Missing Property
 ```typescript
 {
   key: "verified",
@@ -126,7 +155,7 @@ Each property receives exactly one refinement operation. You must cover two list
 }
 ```
 
-### 3.3. `update` - Fix Incorrect Type
+#### `update` - Fix Incorrect Type
 ```typescript
 {
   key: "price",
@@ -141,67 +170,13 @@ Each property receives exactly one refinement operation. You must cover two list
 }
 ```
 
-### 3.4. `erase` - Remove Invalid Property
+#### `erase` - Remove Invalid Property
 ```typescript
 {
   key: "internal_notes",
   databaseSchemaProperty: null,
   reason: "Phantom field - not in DB, not in requirements",
   type: "erase"
-}
-```
-
-### 3.5. `exclude` - Exclude Database Property from DTO
-
-Unlike other operations, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
-
-Use when a database property should NOT appear in this DTO:
-- Auto-generated fields: `id`, `created_at` excluded from Create DTO
-- Actor identity FK: `member_id`, `author_id` excluded from Create/Update DTO (resolved from JWT)
-- Path parameter FK: parent FK excluded from Create/Update DTO when already in URL path
-- Session FK: `session_id` excluded from Create/Update DTO (server-managed, not user-provided)
-- Summary DTO: only essential display fields included
-- Immutability: `id`, `created_at` excluded from Update DTO
-- Security: `password`, `salt`, `refresh_token` excluded from Read DTO
-- Aggregation relations: use computed counts instead of nested arrays
-
-```typescript
-{
-  databaseSchemaProperty: "password_hashed",
-  reason: "Security: password hash must never be exposed in Read DTO",
-  type: "exclude"
-}
-```
-
-```typescript
-{
-  databaseSchemaProperty: "id",
-  reason: "DTO purpose: id is auto-generated, not user-provided in Create DTO",
-  type: "exclude"
-}
-```
-
-```typescript
-{
-  databaseSchemaProperty: "deleted_at",
-  reason: "Summary DTO: only essential display fields included",
-  type: "exclude"
-}
-```
-
-```typescript
-{
-  databaseSchemaProperty: "bbs_member_id",
-  reason: "Actor identity: resolved from JWT, not user-provided in Create DTO",
-  type: "exclude"
-}
-```
-
-```typescript
-{
-  databaseSchemaProperty: "bbs_article_id",
-  reason: "Path parameter: provided via URL path, not in request body",
-  type: "exclude"
 }
 ```
 
@@ -216,8 +191,8 @@ While enriching, also inspect and fix:
 - Add missing DB-mapped fields AND requirements-driven computed fields
 - Use `create` for missing fields
 
-**DTO Type Rules** (use `exclude` for DB properties not included):
-| DTO Type | Include | Exclude (use `exclude` type) |
+**DTO Type Rules** (use `excludes` for DB properties not included):
+| DTO Type | Include | Exclude (add to `excludes`) |
 |----------|---------|------------------------------|
 | Read (IEntity) | All DB columns + computed fields | `password`, `salt`, `refresh_token` |
 | Create (ICreate) | User-provided fields | `id`, `created_at`, actor FK, path param FK, session FK |
@@ -385,7 +360,13 @@ process({
     databaseSchema: "bbs_articles",
     specification: "Direct mapping from bbs_articles with author join.",
     description: "Complete article entity with author info.",
-    refines: [
+    excludes: [
+      { databaseSchemaProperty: "bbs_member_id", reason: "FK exposed as author object" },
+      { databaseSchemaProperty: "deleted_at", reason: "Internal soft-delete field" },
+      { databaseSchemaProperty: "comments", reason: "Aggregation: use separate endpoint" },
+      { databaseSchemaProperty: "snapshots", reason: "Composition: separate endpoint" }
+    ],
+    revises: [
       { key: "id", databaseSchemaProperty: "id", type: "depict", reason: "Adding documentation",
         specification: "Direct mapping from bbs_articles.id.", description: "Unique article identifier." },
       { key: "title", databaseSchemaProperty: "title", type: "depict", reason: "Adding documentation",
@@ -395,17 +376,13 @@ process({
       { key: "author", databaseSchemaProperty: "member", type: "depict", reason: "Adding documentation",
         specification: "Join via bbs_member_id.", description: "Author of this article." },
       { key: "created_at", databaseSchemaProperty: "created_at", type: "depict", reason: "Adding documentation",
-        specification: "Direct mapping from bbs_articles.created_at.", description: "Creation timestamp." },
-      { databaseSchemaProperty: "bbs_member_id", type: "exclude", reason: "FK exposed as author object" },
-      { databaseSchemaProperty: "deleted_at", type: "exclude", reason: "Internal soft-delete field" },
-      { databaseSchemaProperty: "comments", type: "exclude", reason: "Aggregation: use separate endpoint" },
-      { databaseSchemaProperty: "snapshots", type: "exclude", reason: "Composition: separate endpoint" }
+        specification: "Direct mapping from bbs_articles.created_at.", description: "Creation timestamp." }
     ]
   }
 })
 ```
 
-**Result**: 9 DB properties → 5 mapped + 4 excluded = complete coverage.
+**Result**: 9 DB properties → 5 mapped in `revises` + 4 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
@@ -417,8 +394,9 @@ Before calling `complete`:
 - [ ] `description` refined (MANDATORY)
 
 **Property-Level**:
-- [ ] Every DTO property refined (`depict`, `create`, `update`, or `erase`)
-- [ ] Every DB property either mapped via `databaseSchemaProperty` or `exclude`d
+- [ ] Every DTO property in `revises` (`depict`, `create`, `update`, or `erase`)
+- [ ] Every DB property either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB property appears in both `excludes` and `revises`
 - [ ] No duplicates (one action per key)
 - [ ] WHICH → HOW → WHAT order followed
 - [ ] `databaseSchemaProperty: null` only for computed values (not in DB)

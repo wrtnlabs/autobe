@@ -285,22 +285,30 @@ export namespace ArchiveLogger {
           (event.schema as any)["x-autobe-database-schema"] ?? "-"
         })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
-        `  - refines:`,
-        ...event.refines.map((r) =>
-          r.type === "exclude"
-            ? `    - EXCLUDE ${r.databaseSchemaProperty}: ${r.reason}`
-            : `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
+        `  - revises:`,
+        ...event.revises.map(
+          (r) =>
+            `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
       );
     else if (event.type === "interfaceSchemaReview")
       content.push(
         `  - kind: ${event.kind}`,
         `  - typeName: ${event.typeName}`,
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
         `  - revises: ${event.revises.length}`,
-        ...event.revises.map((r) =>
-          r.type === "exclude"
-            ? `    - EXCLUDE ${r.databaseSchemaProperty}: ${r.reason}`
-            : `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
+        ...event.revises.map(
+          (r) =>
+            `    - ${r.type}: ${r.key}${r.type === "update" && r.newKey !== null ? ` -> (${r.newKey})` : r.type === "nullish" ? ` -> (${r.nullable})` : ""}`,
         ),
       );
     else if (event.type === "interfaceSchemaComplement")

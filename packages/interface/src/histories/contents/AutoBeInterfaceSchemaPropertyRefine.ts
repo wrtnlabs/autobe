@@ -1,7 +1,6 @@
 import { AutoBeInterfaceSchemaPropertyCreate } from "./AutoBeInterfaceSchemaPropertyCreate";
 import { AutoBeInterfaceSchemaPropertyDepict } from "./AutoBeInterfaceSchemaPropertyDepict";
 import { AutoBeInterfaceSchemaPropertyErase } from "./AutoBeInterfaceSchemaPropertyErase";
-import { AutoBeInterfaceSchemaPropertyExclude } from "./AutoBeInterfaceSchemaPropertyExclude";
 import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaPropertyUpdate";
 
 /**
@@ -12,20 +11,16 @@ import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaProp
  * represents the operations to add `databaseSchemaProperty`, `specification`,
  * and `description` to each property.
  *
- * **Every property must be explicitly handled** - both DTO properties and
- * database properties. This ensures complete coverage with no accidental
- * omissions that could cause runtime errors during API implementation.
+ * **Every DTO property must be explicitly handled.** Database properties that
+ * are intentionally not included in the DTO are declared separately via
+ * {@link AutoBeInterfaceSchemaPropertyExclude} in the `excludes` array.
  *
- * Operations for DTO properties:
+ * Available operations:
  *
  * - `depict`: Add documentation to existing property (no type change)
  * - `create`: Add missing property with full documentation
  * - `update`: Fix incorrect type and add documentation
  * - `erase`: Remove invalid/phantom property from DTO
- *
- * Operation for database properties not mapped to DTO:
- *
- * - `exclude`: Explicitly exclude a database property from DTO (with reason)
  *
  * @author Samchon
  */
@@ -33,5 +28,4 @@ export type AutoBeInterfaceSchemaPropertyRefine =
   | AutoBeInterfaceSchemaPropertyDepict
   | AutoBeInterfaceSchemaPropertyCreate
   | AutoBeInterfaceSchemaPropertyUpdate
-  | AutoBeInterfaceSchemaPropertyErase
-  | AutoBeInterfaceSchemaPropertyExclude;
+  | AutoBeInterfaceSchemaPropertyErase;

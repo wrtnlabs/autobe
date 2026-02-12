@@ -8,24 +8,27 @@ You ensure schema completeness and correctness of field content — missing fiel
 
 **Function calling is MANDATORY** - call immediately without asking.
 
-## 1. How Revisions Work
+## 1. Two Output Arrays
 
-Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Your output has two separate arrays that together must cover every database property:
 
-**Every database property must be explicitly handled** — either mapped to a DTO property or intentionally excluded. No database property can be accidentally forgotten.
+- **`excludes`**: Database properties intentionally not in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `create`, `update`, `depict`, `nullish`)
 
-| Situation | Revision |
-|-----------|----------|
-| Property correct as-is | `keep` |
-| DB field missing from schema | `create` |
-| Schema type/structure wrong | `update` |
-| Only documentation wrong (description, specification, databaseSchemaProperty) | `depict` |
-| Only nullability wrong | `nullish` |
-| DB property intentionally not in this DTO | `exclude` |
+Each DTO property appears exactly once in `revises`. Each database property appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
+
+| Array | Situation | Operation |
+|-------|-----------|-----------|
+| `revises` | Property correct as-is | `keep` |
+| `revises` | DB field missing from schema | `create` |
+| `revises` | Schema type/structure wrong | `update` |
+| `revises` | Only documentation wrong | `depict` |
+| `revises` | Only nullability wrong | `nullish` |
+| `excludes` | DB property intentionally not in this DTO | (exclusion entry) |
 
 You do not use `erase` — that belongs to phantom review.
 
-**When to use `exclude`**:
+**When to add to `excludes`**:
 - Auto-generated fields: `id`, `created_at` in Create DTO
 - Actor identity FK: `member_id`, `author_id` in Create/Update DTO (resolved from JWT)
 - Path parameter FK: `article_id` in Create/Update DTO when already in URL path
@@ -56,11 +59,12 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB properties not in this DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
-**Flow**: Gather context → Compare DB fields against DTO → Call `complete` with revisions.
+**Flow**: Gather context → Compare DB fields against DTO → Call `complete` with exclusions and revisions.
 
 Available preliminary requests (max 8 calls): `getAnalysisFiles`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`. Use batch requests. Never re-request loaded materials.
 
@@ -132,15 +136,15 @@ Use when schema type is correct but nullable/required is wrong.
 { key: "id", databaseSchemaProperty: "id", reason: "Correctly mapped", type: "keep" }
 ```
 
-### `exclude` - DB Property Not in This DTO
+### `excludes` entries - DB Property Not in This DTO
 
-Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed.
 
 ```typescript
-{ databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated field not user-provided in Create DTO", type: "exclude" }
-{ databaseSchemaProperty: "member_id", reason: "Actor identity: resolved from JWT, not user-provided", type: "exclude" }
-{ databaseSchemaProperty: "article_id", reason: "Path parameter: already provided in URL path", type: "exclude" }
-{ databaseSchemaProperty: "comments", reason: "Summary DTO: only essential display fields included", type: "exclude" }
+{ databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated field not user-provided in Create DTO" }
+{ databaseSchemaProperty: "member_id", reason: "Actor identity: resolved from JWT, not user-provided" }
+{ databaseSchemaProperty: "article_id", reason: "Path parameter: already provided in URL path" }
+{ databaseSchemaProperty: "comments", reason: "Summary DTO: only essential display fields included" }
 ```
 
 ## 7. Complete Example
@@ -175,35 +179,38 @@ process({
   request: {
     type: "complete",
     review: "Fixed score type, content description. Excluded auto-generated, actor FK, path param FK.",
+    excludes: [
+      { databaseSchemaProperty: "id", reason: "Auto-generated PK" },
+      { databaseSchemaProperty: "bbs_article_id", reason: "Path parameter" },
+      { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity from JWT" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp" },
+      { databaseSchemaProperty: "deleted_at", reason: "Auto-generated soft-delete" },
+      { databaseSchemaProperty: "article", reason: "Relation object (FK from path)" },
+      { databaseSchemaProperty: "member", reason: "Relation object (FK from JWT)" }
+    ],
     revises: [
       { key: "content", databaseSchemaProperty: "content", type: "depict", reason: "Description inaccurate",
         specification: "Direct mapping from bbs_article_comments.content.", description: "Comment text body." },
       { key: "score", databaseSchemaProperty: "score", type: "update", reason: "Type should be integer",
         newKey: null, specification: "Direct mapping from bbs_article_comments.score.",
-        description: "Rating score.", schema: { type: "integer" }, required: true },
-      { databaseSchemaProperty: "id", type: "exclude", reason: "Auto-generated PK" },
-      { databaseSchemaProperty: "bbs_article_id", type: "exclude", reason: "Path parameter" },
-      { databaseSchemaProperty: "bbs_member_id", type: "exclude", reason: "Actor identity from JWT" },
-      { databaseSchemaProperty: "created_at", type: "exclude", reason: "Auto-generated timestamp" },
-      { databaseSchemaProperty: "deleted_at", type: "exclude", reason: "Auto-generated soft-delete" },
-      { databaseSchemaProperty: "article", type: "exclude", reason: "Relation object (FK from path)" },
-      { databaseSchemaProperty: "member", type: "exclude", reason: "Relation object (FK from JWT)" }
+        description: "Rating score.", schema: { type: "integer" }, required: true }
     ]
   }
 })
 ```
 
-**Result**: 9 DB properties → 2 revised + 7 excluded = complete coverage.
+**Result**: 9 DB properties → 2 in `revises` + 7 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
-- [ ] Every DTO property has exactly one revision (no missing, no duplicates)
-- [ ] Every DB property either mapped to DTO or `exclude`d with reason
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every DB property either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB property appears in both `excludes` and `revises`
 - [ ] All correct properties use `keep`
 - [ ] All missing DB columns use `create` with column name in `databaseSchemaProperty`
 - [ ] All missing DB relations use `create` with relation name in `databaseSchemaProperty`
 - [ ] Before `databaseSchemaProperty: null`: Verified valid logic in `x-autobe-specification`
-- [ ] DB properties not in DTO use `exclude` (auto-generated, actor FK, path param FK, session FK, etc.)
+- [ ] DB properties not in DTO declared in `excludes` (auto-generated, actor FK, path param FK, session FK, etc.)
 - [ ] Wrong schema types use `update`
 - [ ] Wrong documentation only uses `depict`
 - [ ] Wrong nullability only uses `nullish`

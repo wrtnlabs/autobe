@@ -1,3 +1,4 @@
+import { AutoBeInterfaceSchemaPropertyExclude } from "../histories/contents/AutoBeInterfaceSchemaPropertyExclude";
 import { AutoBeInterfaceSchemaPropertyRefine } from "../histories/contents/AutoBeInterfaceSchemaPropertyRefine";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
@@ -99,7 +100,16 @@ export interface AutoBeInterfaceSchemaRefineEvent
   description: string;
 
   /**
-   * Refinement operations performed on the schema properties.
+   * Database properties explicitly excluded from this DTO.
+   *
+   * Each entry declares a database property that intentionally does not appear
+   * in this DTO, along with the reason for exclusion (e.g., "aggregation
+   * relation", "internal field", "handled by separate endpoint").
+   */
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];
+
+  /**
+   * Refinement operations performed on the DTO schema properties.
    *
    * Contains the list of operations executed to enrich schema properties:
    *
@@ -108,11 +118,10 @@ export interface AutoBeInterfaceSchemaRefineEvent
    * - **update**: Property type corrected and documented
    * - **erase**: Invalid property removed
    *
-   * Each operation includes the property key, reason for the change, and the
-   * complete metadata including `databaseSchemaProperty`, `specification`, and
-   * `description`.
+   * Every DTO property must appear exactly once. Every database property must
+   * be addressed either here (via `databaseSchemaProperty`) or in `excludes`.
    */
-  refines: AutoBeInterfaceSchemaPropertyRefine[];
+  revises: AutoBeInterfaceSchemaPropertyRefine[];
 
   /**
    * Current iteration number of the schema refinement.

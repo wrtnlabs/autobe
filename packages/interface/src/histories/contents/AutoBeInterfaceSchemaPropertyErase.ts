@@ -13,8 +13,8 @@ export interface AutoBeInterfaceSchemaPropertyErase {
   /**
    * Database schema property this maps to, or `null` if none.
    *
-   * For erase, this should typically be `null` (phantom) or identify the
-   * DB property that shouldn't be exposed.
+   * For erase, this should typically be `null` (phantom) or identify the DB
+   * property that shouldn't be exposed.
    */
   databaseSchemaProperty: string | null;
 

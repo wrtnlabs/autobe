@@ -22,7 +22,7 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Not in DB and no valid rationale | `erase` |
 | DB nullable but DTO says non-null | `nullish` |
 
-You do not use `exclude` — that belongs to content review (for DB properties intentionally not in DTO).
+You do not add entries to `excludes` — that belongs to content review (for DB properties intentionally not in DTO). Always pass `excludes: []`.
 
 ## 2. What is a Phantom Field?
 
@@ -66,6 +66,7 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
+  excludes: [];                                    // always empty (not your authority)
   revises: AutoBeInterfaceSchemaPropertyRevise[];  // erase, nullish, or keep
 }
 ```
@@ -132,6 +133,7 @@ process({
   request: {
     type: "complete",
     review: "Phantom: body. Nullability: bio.",
+    excludes: [],
     revises: [
       { key: "id", databaseSchemaProperty: "id", type: "keep", reason: "Valid DB mapping" },
       { key: "title", databaseSchemaProperty: "title", type: "keep", reason: "Valid DB mapping" },

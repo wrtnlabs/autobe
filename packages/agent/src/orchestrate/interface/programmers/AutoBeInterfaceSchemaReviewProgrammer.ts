@@ -94,12 +94,13 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     // special
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): void => {
     // validate revises detaily
     AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
       // config
-      path: (i) => `${props.path}.revises[${i}]`,
+      path: props.path,
       errors: props.errors,
       unionTypeName: typia.reflect.name<AutoBeInterfaceSchemaPropertyRevise>(),
       noModelDescription: StringUtil.trim`
@@ -124,6 +125,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       // interface
       typeName: props.typeName,
       schema: props.schema,
+      excludes: props.excludes,
       revises: props.revises,
     });
   };
@@ -183,7 +185,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
           "x-autobe-specification": revise.specification,
         };
         if (props.schema.required.includes(revise.key)) setRequired(revise.key);
-      } else if (revise.type === "erase" || revise.type === "exclude") continue;
+      } else if (revise.type === "erase") continue;
       else revise satisfies never;
     return result;
   };

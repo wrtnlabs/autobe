@@ -12,28 +12,30 @@ You do not review general entity DTOs (`IEntity.ICreate`, etc.).
 
 **Function calling is MANDATORY** - call immediately without asking.
 
-## 1. How Revisions Work
+## 1. Two Output Arrays
 
-Enumerate every DTO property and every security-sensitive DB property, then assign exactly one revision to each:
+Your output has two separate arrays:
 
-1. **Every DTO property** → `keep`, `erase`, `create`, `update`, `depict`, or `nullish`
-2. **Every security-sensitive DB property** → either mapped via `databaseSchemaProperty` or declared with `exclude`
+- **`excludes`**: Security-sensitive DB properties that must never appear in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `erase`, `create`, `update`, `depict`, `nullish`)
+
+Each DTO property appears exactly once in `revises`. Each security-sensitive DB property appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
 **Setting `databaseSchemaProperty`**: Use column name for DB-mapped fields (e.g., `password` → `"password_hashed"`). Use `null` for runtime-captured fields like session context (verify valid logic in `x-autobe-specification`).
 
-| Situation | Revision |
-|-----------|----------|
-| Secure, correctly placed field | `keep` |
-| Security violation in DTO (exposed secret, misplaced session field) | `erase` |
-| DB property that must never appear in this DTO | `exclude` |
-| Missing required security field | `create` |
-| Security field with wrong schema/type | `update` |
-| Security field with wrong documentation only | `depict` |
-| Security field with wrong nullability only | `nullish` |
+| Array | Situation | Operation |
+|-------|-----------|-----------|
+| `revises` | Secure, correctly placed field | `keep` |
+| `revises` | Security violation in DTO (exposed secret, misplaced session field) | `erase` |
+| `revises` | Missing required security field | `create` |
+| `revises` | Security field with wrong schema/type | `update` |
+| `revises` | Security field with wrong documentation only | `depict` |
+| `revises` | Security field with wrong nullability only | `nullish` |
+| `excludes` | DB property that must never appear in this DTO | (exclusion entry) |
 
-**`erase` vs `exclude`**:
-- `erase`: Property exists in DTO but shouldn't → remove it
-- `exclude`: DB property should never appear in this DTO → declare exclusion
+**`erase` vs `excludes`**:
+- `erase` (in `revises`): Property exists in DTO but shouldn't → remove it
+- `excludes`: DB property should never appear in this DTO → declare exclusion
 
 ## 2. Password Fields
 
@@ -90,7 +92,8 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // Security-sensitive DB properties not in DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
@@ -103,14 +106,14 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Password hash must never be exposed", type: "erase" }
 ```
 
-### `exclude` - DB Property Must Not Appear in DTO
+### `excludes` entries - DB Property Must Not Appear in DTO
 
-Unlike other revisions, `exclude` uses `databaseSchemaProperty` instead of `key` because the property doesn't exist in the DTO — only in the database.
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed.
 
 ```typescript
-{ databaseSchemaProperty: "salt", reason: "Security: salt must never be exposed in Response DTO", type: "exclude" }
-{ databaseSchemaProperty: "refresh_token", reason: "Security: refresh token must never be in IActor.ISummary", type: "exclude" }
-{ databaseSchemaProperty: "session_id", reason: "Security: server-managed FK, never in request DTO body", type: "exclude" }
+{ databaseSchemaProperty: "salt", reason: "Security: salt must never be exposed in Response DTO" }
+{ databaseSchemaProperty: "refresh_token", reason: "Security: refresh token must never be in IActor.ISummary" }
+{ databaseSchemaProperty: "session_id", reason: "Security: server-managed FK, never in request DTO body" }
 ```
 
 ### `create`
@@ -170,6 +173,12 @@ process({
   request: {
     type: "complete",
     review: "password_hashed replaced with password. Excluded security fields. Added session context.",
+    excludes: [
+      { databaseSchemaProperty: "id", reason: "Auto-generated PK" },
+      { databaseSchemaProperty: "salt", reason: "Internal cryptographic field" },
+      { databaseSchemaProperty: "refresh_token", reason: "Token field, never in request" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp" }
+    ],
     revises: [
       { key: "email", databaseSchemaProperty: "email", type: "keep", reason: "Required identifier" },
       { key: "password_hashed", databaseSchemaProperty: "password_hashed", type: "erase", reason: "Clients must not send hashes" },
@@ -181,17 +190,13 @@ process({
         schema: { type: "string", format: "uri" }, required: true },
       { key: "referrer", databaseSchemaProperty: null, type: "create", reason: "Session context required",
         specification: "Referrer URL at login.", description: "Referrer URL at login time.",
-        schema: { type: "string", format: "uri" }, required: true },
-      { databaseSchemaProperty: "id", type: "exclude", reason: "Auto-generated PK" },
-      { databaseSchemaProperty: "salt", type: "exclude", reason: "Internal cryptographic field" },
-      { databaseSchemaProperty: "refresh_token", type: "exclude", reason: "Token field, never in request" },
-      { databaseSchemaProperty: "created_at", type: "exclude", reason: "Auto-generated timestamp" }
+        schema: { type: "string", format: "uri" }, required: true }
     ]
   }
 })
 ```
 
-**Result**: 6 DB properties → 2 mapped + 4 excluded = complete coverage.
+**Result**: 6 DB properties → 2 in `revises` + 4 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
@@ -207,9 +212,10 @@ process({
 - [ ] IActor, ISummary, IAuthorized, IRefresh do NOT have `ip`, `href`, `referrer`
 
 **Coverage**:
-- [ ] Every DTO property has exactly one revision (no missing, no duplicates)
-- [ ] Every security-sensitive DB property either in DTO or `exclude`d
-- [ ] `exclude` used for DB properties that must never appear (salt, refresh_token, session_id, etc.)
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every security-sensitive DB property either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB property appears in both `excludes` and `revises`
+- [ ] `excludes` used for DB properties that must never appear (salt, refresh_token, session_id, etc.)
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields
