@@ -1,6 +1,6 @@
 import {
-  // AgenticaJsonParseError,
-  // AgenticaValidationError,
+  AgenticaJsonParseError,
+  AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -346,8 +346,8 @@ export const createAutoBeContext = (props: {
         AutoBeConfigConstant.API_ERROR_RETRY,
         (error) =>
           error instanceof APIError ||
-          // error instanceof AgenticaJsonParseError ||
-          // error instanceof AgenticaValidationError ||
+          error instanceof AgenticaJsonParseError ||
+          error instanceof AgenticaValidationError ||
           (error instanceof TypeError && error.message === "terminated") ||
           (error instanceof Error &&
             OPENAI_API_ERROR_KEYS.get().every((key) =>
