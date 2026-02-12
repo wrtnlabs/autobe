@@ -162,7 +162,7 @@ export const createAutoBeContext = (props: {
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
             stream: next.enforceFunctionCall === false,
-          } as IMicroAgenticaConfig,
+          } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
         });
@@ -184,9 +184,8 @@ export const createAutoBeContext = (props: {
             ...event,
             type: "vendorRequest",
             source: next.source,
-            stream: event.body.stream ?? true,
             retry: progress.request++,
-          } as unknown as AutoBeEvent);
+          });
         });
         agent.on("response", (event) => {
           void props
@@ -194,9 +193,8 @@ export const createAutoBeContext = (props: {
               ...event,
               type: "vendorResponse",
               source: next.source,
-              stream: event.body.stream ?? true,
               retry: progress.response++,
-            } as unknown as AutoBeEvent)
+            })
             .catch(() => {});
         });
         agent.on("call", () => {
@@ -498,7 +496,6 @@ const createDispatch = (props: {
     return null as AutoBeContext.DispatchHistory<Event>;
   };
 };
-
 const transformAndDispatch = <
   Event extends
     | AutoBeAnalyzeCompleteEvent
