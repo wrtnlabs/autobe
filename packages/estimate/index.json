@@ -1,0 +1,187 @@
+{
+  "name": "@autobe/estimate",
+  "version": "0.2.0",
+  "description": "Code quality evaluation tool for AutoBE-generated code",
+
+  "designPhilosophy": {
+    "description": "Score reflects only what AutoBE can improve. Code quality metrics are reference only.",
+    "affectsScore": ["documentQuality", "requirementsCoverage", "testCoverage", "logicCompleteness", "apiCompleteness"],
+    "referenceOnly": ["complexity", "duplication", "naming", "jsdoc", "security"]
+  },
+
+  "grading": {
+    "A": { "min": 90, "max": 100, "description": "Excellent - Production ready" },
+    "B": { "min": 80, "max": 89, "description": "Good - Minor improvements needed" },
+    "C": { "min": 70, "max": 79, "description": "Average - Several issues to address" },
+    "D": { "min": 60, "max": 69, "description": "Below Average - Significant issues" },
+    "F": { "min": 0, "max": 59, "description": "Fail - Major issues or Gate failure" }
+  },
+
+  "phases": {
+    "gate": {
+      "name": "Gate",
+      "weight": null,
+      "description": "Basic validation - must pass to continue",
+      "passRequired": true,
+      "evaluators": [
+        { "name": "SyntaxEvaluator", "description": "TypeScript syntax validation" },
+        { "name": "TypeEvaluator", "description": "Type checking (tsc --noEmit)" },
+        { "name": "PrismaEvaluator", "description": "Prisma schema validation" }
+      ]
+    },
+
+    "documentQuality": {
+      "name": "Document Quality",
+      "weight": 0.2,
+      "description": "Documentation completeness and detail",
+      "target": ["docs/analysis/", "README.md"],
+      "scoring": {
+        "docsAnalysisExists": 40,
+        "readmeExists": 20,
+        "docCount5plus": 20,
+        "docCount3plus": 15,
+        "docCount1plus": 10,
+        "totalLength50kPlus": 20,
+        "totalLength20kPlus": 15,
+        "totalLength5kPlus": 10
+      },
+      "issues": [
+        { "code": "DOC001", "severity": "critical", "message": "No documentation found" },
+        { "code": "DOC002", "severity": "warning", "message": "Missing docs/analysis/ folder" },
+        { "code": "DOC003", "severity": "warning", "message": "Missing README.md" },
+        { "code": "DOC004", "severity": "suggestion", "message": "Documentation is sparse" }
+      ]
+    },
+
+    "requirementsCoverage": {
+      "name": "Requirements Coverage",
+      "weight": 0.25,
+      "description": "Requirements to implementation coverage",
+      "scoring": {
+        "controllersExist": 30,
+        "providersExist": 30,
+        "providerControllerRatio2plus": 10,
+        "structuresExist": 20,
+        "requirementsDocsExist": 10
+      },
+      "issues": [
+        { "code": "REQ001", "severity": "critical", "message": "No controllers found" },
+        { "code": "REQ002", "severity": "critical", "message": "No providers found" },
+        { "code": "REQ003", "severity": "warning", "message": "No structures/DTOs found" },
+        { "code": "REQ004", "severity": "warning", "message": "No requirements documents" }
+      ]
+    },
+
+    "testCoverage": {
+      "name": "Test Coverage",
+      "weight": 0.2,
+      "description": "Test file coverage relative to controllers",
+      "target": "test/features/api/",
+      "scoring": {
+        "coverageRatio": "ratio × 70",
+        "tests3xControllers": 30,
+        "tests2xControllers": 20,
+        "tests1xControllers": 10
+      },
+      "issues": [
+        { "code": "TEST001", "severity": "critical", "message": "No test files found" },
+        { "code": "TEST002", "severity": "warning", "message": "Insufficient test coverage" }
+      ]
+    },
+
+    "logicCompleteness": {
+      "name": "Logic Completeness",
+      "weight": 0.2,
+      "description": "Checks for incomplete implementations",
+      "target": ["src/controllers/", "src/providers/"],
+      "patterns": [
+        { "pattern": "throw new Error('not implemented')", "code": "LOGIC001", "severity": "critical" },
+        { "pattern": "// TODO:", "code": "LOGIC002", "severity": "warning" },
+        { "pattern": "// FIXME:", "code": "LOGIC003", "severity": "critical" },
+        { "pattern": "// HACK:", "code": "LOGIC004", "severity": "critical" },
+        { "pattern": "// implement this", "code": "LOGIC005", "severity": "critical" },
+        { "pattern": "throw new Error('TODO')", "code": "LOGIC006", "severity": "critical" },
+        { "pattern": "notImplemented()", "code": "LOGIC007", "severity": "critical" }
+      ],
+      "scoring": {
+        "0criticals": 100,
+        "1to3criticals": "50-80",
+        "4to10criticals": "20-50",
+        "11plusCriticals": 0
+      }
+    },
+
+    "apiCompleteness": {
+      "name": "API Completeness",
+      "weight": 0.15,
+      "description": "API endpoint implementation completeness",
+      "target": "src/controllers/",
+      "scoring": {
+        "nonEmptyEndpointRatio": "ratio × 70",
+        "implementedEndpointRatio": "ratio × 30"
+      },
+      "issues": [
+        { "code": "API001", "severity": "critical", "message": "Empty endpoint found" },
+        { "code": "API002", "severity": "critical", "message": "No API endpoints found" },
+        { "code": "API003", "severity": "warning", "message": "Some endpoints are empty" },
+        { "code": "API004", "severity": "suggestion", "message": "Incomplete implementation" }
+      ]
+    }
+  },
+
+  "reference": {
+    "description": "These metrics are collected for reference only and do not affect the score",
+    "metrics": {
+      "complexity": {
+        "evaluator": "ComplexityEvaluator",
+        "criticalThreshold": 20,
+        "warningThreshold": 15,
+        "issues": [
+          { "code": "C001", "severity": "critical", "message": "Complexity > 20" },
+          { "code": "C002", "severity": "warning", "message": "Complexity > 15" }
+        ]
+      },
+      "duplication": {
+        "evaluator": "DuplicationEvaluator",
+        "config": { "minLines": 10, "minChars": 100 },
+        "issues": [
+          { "code": "D001", "severity": "warning", "message": "Duplicate code block" }
+        ]
+      },
+      "naming": {
+        "evaluator": "NamingEvaluator",
+        "issues": [
+          { "code": "N001", "severity": "warning", "message": "Class not PascalCase" },
+          { "code": "N002", "severity": "warning", "message": "Interface not PascalCase" }
+        ]
+      },
+      "jsdoc": {
+        "evaluator": "JsDocEvaluator",
+        "issues": [
+          { "code": "J001", "severity": "suggestion", "message": "Class missing JSDoc" },
+          { "code": "J002", "severity": "suggestion", "message": "Interface missing JSDoc" }
+        ]
+      },
+      "security": {
+        "evaluator": "SecurityEvaluator",
+        "issues": [
+          { "code": "S001", "severity": "critical", "message": "Hardcoded password" },
+          { "code": "S002", "severity": "critical", "message": "Hardcoded API key" },
+          { "code": "S003", "severity": "critical", "message": "Hardcoded secret" },
+          { "code": "S004", "severity": "critical", "message": "eval() usage" },
+          { "code": "S005", "severity": "warning", "message": "innerHTML (XSS risk)" }
+        ]
+      }
+    }
+  },
+
+  "scoring": {
+    "totalScoreFormula": "documentQuality × 0.20 + requirementsCoverage × 0.25 + testCoverage × 0.20 + logicCompleteness × 0.20 + apiCompleteness × 0.15",
+    "gateFailure": "If Gate fails, total score = 0"
+  },
+
+  "outputs": {
+    "markdown": "estimate-report.md",
+    "json": "estimate-report.json"
+  }
+}
