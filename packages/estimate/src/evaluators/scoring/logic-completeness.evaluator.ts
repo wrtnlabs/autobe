@@ -73,6 +73,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
         const line = lines[i];
         
         for (const { pattern, code, message } of this.INCOMPLETE_PATTERNS) {
+          // init regex instance state (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
           pattern.lastIndex = 0;
           if (pattern.test(line)) {
             const severity = (code === 'LOGIC002') ? 'warning' : 'critical';
@@ -88,7 +89,8 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
       }
 
       return issues;
-    } catch {
+    } catch (error) {
+      console.error(`Failed to analyze file ${filePath}:`, error);
       return [];
     }
   }

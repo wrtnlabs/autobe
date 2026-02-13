@@ -24,41 +24,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       ? Math.min(testCount / expectedMinTests, 1) 
       : (testCount > 0 ? 1 : 0);
 
-    let score = 0;
-
-    if (testCount === 0) {
-      score = 0;
-      issues.push(createIssue({
-        severity: 'critical',
-        category: 'test',
-        code: 'TEST001',
-        message: 'No test files found',
-      }));
-    } else {
-      // Base score from coverage ratio
-      score = Math.round(coverageRatio * 70);
-
-      // Bonus for test count
-      if (testCount >= controllerCount * 3) {
-        score += 30; // Excellent: 3+ tests per controller
-      } else if (testCount >= controllerCount * 2) {
-        score += 20; // Good: 2+ tests per controller
-      } else if (testCount >= controllerCount) {
-        score += 10; // OK: 1+ test per controller
-      }
-
-      // Check for missing coverage
-      if (testCount < controllerCount) {
-        issues.push(createIssue({
-          severity: 'warning',
-          category: 'test',
-          code: 'TEST002',
-          message: `Only ${testCount} tests for ${controllerCount} controllers`,
-        }));
-      }
-    }
-
-    score = Math.min(100, score);
+    const score = this.computeCoverageScore(testCount, controllerCount, coverageRatio, issues);
 
     // Extract controller names and check which have tests
     const controllerNames = context.files.controllers.map(f => {
@@ -96,5 +62,46 @@ export class TestCoverageEvaluator extends BaseEvaluator {
         actualCoverage,
       },
     };
+  }
+
+  private computeCoverageScore(
+    testCount: number,
+    controllerCount: number,
+    coverageRatio: number,
+    issues: Issue[],
+  ): number {
+    if (testCount === 0) {
+      issues.push(createIssue({
+        severity: 'critical',
+        category: 'test',
+        code: 'TEST001',
+        message: 'No test files found',
+      }));
+      return 0;
+    }
+
+    // Base score from coverage ratio
+    let score = Math.round(coverageRatio * 70);
+
+    // Bonus for test count
+    if (testCount >= controllerCount * 3) {
+      score += 30; // Excellent: 3+ tests per controller
+    } else if (testCount >= controllerCount * 2) {
+      score += 20; // Good: 2+ tests per controller
+    } else if (testCount >= controllerCount) {
+      score += 10; // OK: 1+ test per controller
+    }
+
+    // Check for missing coverage
+    if (testCount < controllerCount) {
+      issues.push(createIssue({
+        severity: 'warning',
+        category: 'test',
+        code: 'TEST002',
+        message: `Only ${testCount} tests for ${controllerCount} controllers`,
+      }));
+    }
+
+    return Math.min(100, score);
   }
 }

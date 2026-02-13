@@ -42,54 +42,61 @@ export class ComplexityEvaluator extends BaseEvaluator {
   }
 
   private async analyzeFile(filePath: string): Promise<{ issues: Issue[]; maxComplexity: number; functionCount: number }> {
+    let content: string;
     try {
-      const content = await fs.promises.readFile(filePath, 'utf-8');
-      const issues: Issue[] = [];
-      let maxComplexity = 0;
-      
-      const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
-
-      const visit = (node: ts.Node) => {
-        if (
-          ts.isFunctionDeclaration(node) ||
-          ts.isMethodDeclaration(node) ||
-          ts.isArrowFunction(node) ||
-          ts.isFunctionExpression(node)
-        ) {
-          const complexity = this.calculateComplexity(node);
-          const name = this.getFunctionName(node);
-          const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
-
-          if (complexity > maxComplexity) maxComplexity = complexity;
-
-          if (complexity > this.MAX_COMPLEXITY) {
-            issues.push(createIssue({
-              severity: 'critical',
-              category: 'complexity',
-              code: 'C001',
-              message: `Function "${name}" has complexity ${complexity} (max: ${this.MAX_COMPLEXITY})`,
-              location: { file: filePath, line: line + 1 },
-              suggestion: 'Consider breaking this function into smaller functions',
-            }));
-          } else if (complexity > this.WARNING_COMPLEXITY) {
-            issues.push(createIssue({
-              severity: 'warning',
-              category: 'complexity',
-              code: 'C002',
-              message: `Function "${name}" has complexity ${complexity} (recommended: ${this.WARNING_COMPLEXITY})`,
-              location: { file: filePath, line: line + 1 },
-              suggestion: 'Consider simplifying this function',
-            }));
-          }
-        }
-        ts.forEachChild(node, visit);
-      };
-
-      visit(sourceFile);
-      return { issues, maxComplexity, functionCount: this.countFunctions(content) };
+      content = await fs.promises.readFile(filePath, 'utf-8');
     } catch {
       return { issues: [], maxComplexity: 0, functionCount: 0 };
     }
+
+    const issues: Issue[] = [];
+    let maxComplexity = 0;
+
+    const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
+
+    const visit = (node: ts.Node) => {
+      const isFunction =
+        ts.isFunctionDeclaration(node) ||
+        ts.isMethodDeclaration(node) ||
+        ts.isArrowFunction(node) ||
+        ts.isFunctionExpression(node);
+
+      if (!isFunction) {
+        ts.forEachChild(node, visit);
+        return;
+      }
+
+      const complexity = this.calculateComplexity(node);
+      const name = this.getFunctionName(node);
+      const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+
+      if (complexity > maxComplexity) maxComplexity = complexity;
+
+      if (complexity > this.MAX_COMPLEXITY) {
+        issues.push(createIssue({
+          severity: 'critical',
+          category: 'complexity',
+          code: 'C001',
+          message: `Function "${name}" has complexity ${complexity} (max: ${this.MAX_COMPLEXITY})`,
+          location: { file: filePath, line: line + 1 },
+          suggestion: 'Consider breaking this function into smaller functions',
+        }));
+      } else if (complexity > this.WARNING_COMPLEXITY) {
+        issues.push(createIssue({
+          severity: 'warning',
+          category: 'complexity',
+          code: 'C002',
+          message: `Function "${name}" has complexity ${complexity} (recommended: ${this.WARNING_COMPLEXITY})`,
+          location: { file: filePath, line: line + 1 },
+          suggestion: 'Consider simplifying this function',
+        }));
+      }
+
+      ts.forEachChild(node, visit);
+    };
+
+    visit(sourceFile);
+    return { issues, maxComplexity, functionCount: this.countFunctions(content) };
   }
 
   private calculateComplexity(node: ts.Node): number {

@@ -49,6 +49,10 @@ export abstract class BaseEvaluator {
         case 'suggestion':
           score -= 1;
           break;
+        default: {
+          const _exhaustiveCheck: never = issue.severity;
+          throw new Error(`Unknown severity: ${_exhaustiveCheck}`);
+        }
       }
     }
 

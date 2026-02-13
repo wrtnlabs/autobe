@@ -55,7 +55,7 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
 /**
  * Phase display names
  */
-export const PHASE_NAMES: Record<string, string> = {
+export const PHASE_NAMES: Record<Phase, string> = {
   gate: 'Gate',
   // New scoring phases
   documentQuality: 'Document Quality',
@@ -217,15 +217,14 @@ export function generateExplanation(issues: Issue[], score: number): ScoreExplan
     issuesByCode.set(issue.code, existing);
   }
 
-  const issueSummaries: IssueSummary[] = [];
-  for (const [code, codeIssues] of issuesByCode) {
-    issueSummaries.push({
+  const issueSummaries: IssueSummary[] = Array.from(issuesByCode).map(
+    ([code, codeIssues]) => ({
       code,
       count: codeIssues.length,
       message: codeIssues[0].message,
       severity: codeIssues[0].severity,
-    });
-  }
+    }),
+  );
 
   issueSummaries.sort((a, b) => {
     const severityOrder = { critical: 0, warning: 1, suggestion: 2 };

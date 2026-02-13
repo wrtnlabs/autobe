@@ -1,5 +1,5 @@
 import type { EvaluationInput, EvaluationResult, EvaluationContext, PhaseResult, Issue, ReferenceInfo } from '../types';
-const { version } = require("../package.json");
+const { version } = require("../../package.json");
 import { scoreToGrade, createEmptyPhaseResult, generateExplanation, PHASE_WEIGHTS } from '../types';
 import { buildContext } from './context-builder';
 
@@ -117,6 +117,9 @@ export class EvaluationPipeline {
     this.log('  - Checking types...');
     const typeResult = await new TypeEvaluator().evaluate(context);
     issues.push(...typeResult.issues);
+    if (!typeResult.passed) {
+      return this.createGateFailure(issues, 'type', startTime);
+    }
 
     this.log('  - Validating Prisma schema...');
     const prismaResult = await new PrismaEvaluator().evaluate(context);

@@ -954,9 +954,15 @@ importers:
 
   packages/estimate:
     dependencies:
+      '@autobe/compiler':
+        specifier: workspace:*
+        version: link:../compiler
       '@autobe/filesystem':
         specifier: workspace:*
         version: link:../filesystem
+      '@autobe/interface':
+        specifier: workspace:*
+        version: link:../interface
       '@autobe/utils':
         specifier: workspace:*
         version: link:../utils

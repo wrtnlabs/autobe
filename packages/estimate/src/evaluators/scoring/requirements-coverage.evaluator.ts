@@ -38,63 +38,12 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     }
 
     // Calculate coverage score
-    let score = 0;
-
-    // Controllers exist (API endpoints defined)
-    if (controllerCount > 0) {
-      score += 30;
-    } else {
-      issues.push(createIssue({
-        severity: 'critical',
-        category: 'requirements',
-        code: 'REQ001',
-        message: 'No controllers found - API endpoints not implemented',
-      }));
-    }
-
-    // Providers exist (business logic implemented)
-    if (providerCount > 0) {
-      score += 30;
-      
-      // Check controller to provider ratio
-      const ratio = providerCount / Math.max(controllerCount, 1);
-      if (ratio >= 2) {
-        score += 10; // Good: multiple providers per controller
-      }
-    } else {
-      issues.push(createIssue({
-        severity: 'critical',
-        category: 'requirements',
-        code: 'REQ002',
-        message: 'No providers found - business logic not implemented',
-      }));
-    }
-
-    // Structures exist (data models defined)
-    if (structureCount > 0) {
-      score += 20;
-    } else {
-      issues.push(createIssue({
-        severity: 'warning',
-        category: 'requirements',
-        code: 'REQ003',
-        message: 'No structures/DTOs found',
-      }));
-    }
-
-    // Requirements docs exist
-    if (hasRequirementsDocs) {
-      score += 10;
-    } else {
-      issues.push(createIssue({
-        severity: 'warning',
-        category: 'requirements',
-        code: 'REQ004',
-        message: 'No requirements documents found in docs/analysis/',
-      }));
-    }
-
-    score = Math.min(100, score);
+    const score = this.computeRequirementsScore({
+      controllerCount,
+      providerCount,
+      structureCount,
+      hasRequirementsDocs,
+    }, issues);
 
     return {
       phase: 'requirementsCoverage',
@@ -112,5 +61,73 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
         hasRequirementsDocs,
       },
     };
+  }
+
+  private computeRequirementsScore(
+    counts: {
+      controllerCount: number;
+      providerCount: number;
+      structureCount: number;
+      hasRequirementsDocs: boolean;
+    },
+    issues: Issue[],
+  ): number {
+    let score = 0;
+
+    // Controllers exist (API endpoints defined)
+    if (counts.controllerCount > 0) {
+      score += 30;
+    } else {
+      issues.push(createIssue({
+        severity: 'critical',
+        category: 'requirements',
+        code: 'REQ001',
+        message: 'No controllers found - API endpoints not implemented',
+      }));
+    }
+
+    // Providers exist (business logic implemented)
+    if (counts.providerCount > 0) {
+      score += 30;
+
+      // Check controller to provider ratio
+      const ratio = counts.providerCount / Math.max(counts.controllerCount, 1);
+      if (ratio >= 2) {
+        score += 10; // Good: multiple providers per controller
+      }
+    } else {
+      issues.push(createIssue({
+        severity: 'critical',
+        category: 'requirements',
+        code: 'REQ002',
+        message: 'No providers found - business logic not implemented',
+      }));
+    }
+
+    // Structures exist (data models defined)
+    if (counts.structureCount > 0) {
+      score += 20;
+    } else {
+      issues.push(createIssue({
+        severity: 'warning',
+        category: 'requirements',
+        code: 'REQ003',
+        message: 'No structures/DTOs found',
+      }));
+    }
+
+    // Requirements docs exist
+    if (counts.hasRequirementsDocs) {
+      score += 10;
+    } else {
+      issues.push(createIssue({
+        severity: 'warning',
+        category: 'requirements',
+        code: 'REQ004',
+        message: 'No requirements documents found in docs/analysis/',
+      }));
+    }
+
+    return Math.min(100, score);
   }
 }

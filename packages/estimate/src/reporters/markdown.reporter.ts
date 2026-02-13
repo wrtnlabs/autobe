@@ -15,6 +15,9 @@ const WEIGHTS: Record<string, string> = {
   apiCompleteness: '15%',
 };
 
+/** Maximum number of issues to display in a table before truncating */
+const MAX_DISPLAY_ISSUES = 20;
+
 const SCORING_PHASES = [
   'documentQuality',
   'requirementsCoverage',
@@ -198,7 +201,7 @@ ${securityIssues}
 }
 
 function renderComplexityTable(issues: Issue[]): string {
-  const displayIssues = issues.slice(0, 20);
+  const displayIssues = issues.slice(0, MAX_DISPLAY_ISSUES);
   const rows = displayIssues.map(issue => {
     const severity = getSeverityEmoji(issue.severity);
     const location = issue.location
@@ -207,8 +210,8 @@ function renderComplexityTable(issues: Issue[]): string {
     return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
   }).join('\n');
 
-  const moreRow = issues.length > 20
-    ? `\n| ... | ... | *${issues.length - 20} more* | ... |`
+  const moreRow = issues.length > MAX_DISPLAY_ISSUES
+    ? `\n| ... | ... | *${issues.length - MAX_DISPLAY_ISSUES} more* | ... |`
     : '';
 
   return `

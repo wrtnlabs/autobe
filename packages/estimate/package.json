@@ -17,7 +17,9 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
+    "@autobe/compiler": "workspace:*",
     "@autobe/filesystem": "workspace:*",
+    "@autobe/interface": "workspace:*",
     "@autobe/utils": "workspace:*",
     "@clack/prompts": "^0.7.0",
     "commander": "^12.0.0",

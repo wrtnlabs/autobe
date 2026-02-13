@@ -77,6 +77,16 @@ export abstract class BaseAgent {
   }
 
   /**
+   * Load prompt from file in prompts/ directory
+   */
+  protected async loadPrompt(filename: string): Promise<string> {
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const promptPath = path.resolve(__dirname, '../../prompts', filename);
+    return fs.readFile(promptPath, 'utf-8');
+  }
+
+  /**
    * Truncate content if too long
    */
   protected truncateContent(content: string, maxChars: number = 50000): string {

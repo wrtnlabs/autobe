@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { EvaluationPipeline } from './core/pipeline';
 import { generateJsonReport, generateMarkdownReport } from './reporters';
-import type { EvaluationInput, EvaluationResult, PhaseResult } from './types';
+import type { EvaluationContext, EvaluationInput, EvaluationResult, PhaseResult } from './types';
 import { PHASE_NAMES } from './types';
 import { SecurityAgent, LLMQualityAgent, AgentResult, LLMProvider } from './agents';
 
@@ -139,7 +139,7 @@ export async function runCLI(options: CLIOptions): Promise<void> {
 }
 
 async function runAgentEvaluations(
-  context: any,
+  context: EvaluationContext,
   config: { provider: LLMProvider; apiKey: string },
   verbose?: boolean
 ): Promise<AgentResult[]> {
