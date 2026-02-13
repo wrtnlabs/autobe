@@ -6,3 +6,4 @@ test/results/
 apps/hackathon-server/src/prisma/
 packages/compiler/src/raw/
 packages/agent/src/constants/AutoBeSystemPromptConstant.ts
+packages/agent/src/constants/AutoBeTemplateFileConstant.ts
