@@ -52,7 +52,7 @@ export namespace AutoBeInterfaceOperationProgrammer {
           value: props.operation.method,
           description: StringUtil.trim`
             Operation name "index" is reserved for getting list of resources,
-            of pagination of the resources.
+            or pagination of the resources.
             
             Fix: Change method to "patch" when using "index" as operation name.
             Otherwise, change operation name to something else.
