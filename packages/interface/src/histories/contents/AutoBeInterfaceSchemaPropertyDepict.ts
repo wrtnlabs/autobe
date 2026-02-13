@@ -4,8 +4,8 @@
  * Use when the JSON Schema type is correct but documentation fields
  * (`databaseSchemaProperty`, `specification`, `description`) need fixing.
  *
- * If you discover the schema type is wrong while writing specification,
- * use `update` instead.
+ * If you discover the schema type is wrong while writing specification, use
+ * `update` instead.
  *
  * @author Samchon
  */
@@ -33,8 +33,9 @@ export interface AutoBeInterfaceSchemaPropertyDepict {
   /**
    * Implementation guidance for downstream agents.
    *
-   * Internal documentation for Realize/Test agents. When `databaseSchemaProperty`
-   * is `null`, this must fully explain the computation logic.
+   * Internal documentation for Realize/Test agents. When
+   * `databaseSchemaProperty` is `null`, this must fully explain the computation
+   * logic.
    */
   specification: string;
 

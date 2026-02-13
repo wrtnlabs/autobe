@@ -9,9 +9,9 @@ export interface IAutoBeDatabaseComponentReviewApplication {
    * Analyze requirements and review the component's table list.
    *
    * Your PRIMARY task is to deeply analyze user requirements and ensure
-   * complete table coverage for all features in this component's domain.
-   * Review existing tables and identify necessary modifications using
-   * create, update, or erase operations.
+   * complete table coverage for all features in this component's domain. Review
+   * existing tables and identify necessary modifications using create, update,
+   * or erase operations.
    *
    * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
    * what features this component's domain needs to support, then systematically
@@ -60,14 +60,13 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
    * Submit table revisions after requirements analysis.
    *
    * Call this after you have:
+   *
    * 1. Fetched and analyzed requirements documents
    * 2. Identified missing tables, naming issues, or misplaced tables
    * 3. Prepared create/update/erase operations with clear reasons
    */
   export interface IComplete {
-    /**
-     * Type discriminator. Value "complete" indicates final submission.
-     */
+    /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";
 
     /**
@@ -90,41 +89,47 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      * Array of table revision operations.
      *
      * Include all create, update, and erase operations identified during
-     * review. Each operation must include a reason explaining why the
-     * change is necessary.
+     * review. Each operation must include a reason explaining why the change is
+     * necessary.
      *
      * ## Operation Types:
      *
      * ### Create - Add missing tables
+     *
      * Use when a table is needed to fulfill requirements but doesn't exist.
+     *
      * ```typescript
      * {
-     *   type: "create",
-     *   reason: "Requirement 3.2 specifies order cancellation tracking",
-     *   table: "order_cancellations",
-     *   description: "Stores cancellation records with reasons and timestamps"
+     *   "type": "create",
+     *   "reason": "Requirement 3.2 specifies order cancellation tracking",
+     *   "table": "order_cancellations",
+     *   "description": "Stores cancellation records with reasons and timestamps"
      * }
      * ```
      *
      * ### Update - Rename tables
+     *
      * Use when a table has naming convention issues.
+     *
      * ```typescript
      * {
-     *   type: "update",
-     *   reason: "Table name violates snake_case convention",
-     *   original: "orderCancel",
-     *   updated: "order_cancellations",
-     *   description: "Stores cancellation records with reasons and timestamps"
+     *   "type": "update",
+     *   "reason": "Table name violates snake_case convention",
+     *   "original": "orderCancel",
+     *   "updated": "order_cancellations",
+     *   "description": "Stores cancellation records with reasons and timestamps"
      * }
      * ```
      *
      * ### Erase - Remove tables
+     *
      * Use when a table belongs to another domain or is unnecessary.
+     *
      * ```typescript
      * {
-     *   type: "erase",
-     *   reason: "Table belongs to Actors component, not Orders",
-     *   table: "shopping_customers"
+     *   "type": "erase",
+     *   "reason": "Table belongs to Actors component, not Orders",
+     *   "table": "shopping_customers"
      * }
      * ```
      *
@@ -137,7 +142,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      *
      * ## Validation Rules:
      *
-     * - CREATE/UPDATE table names are checked against "Tables in Other Components"
+     * - CREATE/UPDATE table names are checked against "Tables in Other
+     *   Components"
      * - If the table name already exists in another component → validation FAILS
      * - Always check "Tables in Other Components" before CREATE/UPDATE operations
      * - Your revises only affect Target Component, never other components' tables

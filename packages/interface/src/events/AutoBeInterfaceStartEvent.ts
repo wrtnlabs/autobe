@@ -17,8 +17,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeInterfaceStartEvent
-  extends AutoBeEventBase<"interfaceStart"> {
+export interface AutoBeInterfaceStartEvent extends AutoBeEventBase<"interfaceStart"> {
   /**
    * Reason why the Interface agent was activated through function calling.
    *

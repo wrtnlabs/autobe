@@ -91,7 +91,7 @@ export const orchestrateTest =
         instruction: props.instruction,
         document,
         writeProgress,
-        correctProgress,
+        validateProgress: correctProgress,
       });
 
     // DATA COMPOSER
@@ -101,7 +101,7 @@ export const orchestrateTest =
         instruction: props.instruction,
         document,
         writeProgress,
-        correctProgress,
+        validateProgress: correctProgress,
       },
     );
 
@@ -112,7 +112,7 @@ export const orchestrateTest =
         document,
         prepares,
         writeProgress,
-        correctProgress,
+        validateProgress: correctProgress,
       });
 
     // ACTUAL TEST FUNCTION
@@ -125,7 +125,7 @@ export const orchestrateTest =
         prepares,
         generates,
         writeProgress,
-        correctProgress,
+        validateProgress: correctProgress,
       });
 
     // FINALIZE WITH COMPILATION

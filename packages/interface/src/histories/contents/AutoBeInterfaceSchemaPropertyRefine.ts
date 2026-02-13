@@ -4,20 +4,23 @@ import { AutoBeInterfaceSchemaPropertyErase } from "./AutoBeInterfaceSchemaPrope
 import { AutoBeInterfaceSchemaPropertyUpdate } from "./AutoBeInterfaceSchemaPropertyUpdate";
 
 /**
- * Enrich a pure JSON Schema with documentation and metadata.
+ * Enrich a pure JSON Schema with documentation and database mapping.
  *
  * Initial JSON Schema generation produces only type structure (`type`,
  * `properties`, `$ref`, etc.) without any descriptive information. This type
- * represents the operations to add `databaseSchemaProperty`, `specification`, and
- * `description` to each property.
+ * represents the operations to add `databaseSchemaProperty`, `specification`,
+ * and `description` to each property.
  *
- * - `depict`: Add documentation to existing property
- * - `create`: Add missing property with documentation
+ * **Every DTO property must be explicitly handled.** Database properties that
+ * are intentionally not included in the DTO are declared separately via
+ * {@link AutoBeInterfaceSchemaPropertyExclude} in the `excludes` array.
+ *
+ * Available operations:
+ *
+ * - `depict`: Add documentation to existing property (no type change)
+ * - `create`: Add missing property with full documentation
  * - `update`: Fix incorrect type and add documentation
- * - `erase`: Remove invalid property
- *
- * Unlike {@link AutoBeInterfaceSchemaPropertyRevise}, this excludes `keep` and
- * `nullish` which are for reviewing already-documented schemas.
+ * - `erase`: Remove invalid/phantom property from DTO
  *
  * @author Samchon
  */

@@ -18,9 +18,10 @@ ${{ERROR_MESSAGE}}
 - Function execution cannot proceed
 
 ### Required Action:
-- **Retry the function call** with **valid JSON format**
-- Fix the JSON syntax error indicated above
-- Ensure proper JSON structure in the `arguments` field
+- Review the error message above and determine whether the JSON is recoverable
+- If the syntax error is minor (e.g. trailing comma, missing quote), fix it and retry
+- If the JSON is severely malformed or structurally broken, **discard the previous output entirely** and reconstruct the `arguments` from scratch based on the function's parameter schema
+- Do not attempt to patch heavily corrupted JSON — rebuilding from zero is faster and more reliable
 
 ### Common JSON Syntax Requirements:
 - Use double quotes for all keys and string values
@@ -29,4 +30,4 @@ ${{ERROR_MESSAGE}}
 - Use lowercase `null` for null values
 - Properly escape special characters in strings
 
-**Please correct the JSON format and retry the function call immediately.**
+**Retry the function call immediately with valid JSON.**

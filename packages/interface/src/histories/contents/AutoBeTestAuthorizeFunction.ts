@@ -11,8 +11,7 @@ import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestAuthorizeFunction
-  extends AutoBeTestFunctionBase<"authorize"> {
+export interface AutoBeTestAuthorizeFunction extends AutoBeTestFunctionBase<"authorize"> {
   /**
    * OpenAPI endpoint specification that this authorization function corresponds
    * to.
@@ -37,7 +36,8 @@ export interface AutoBeTestAuthorizeFunction
    * - Login: Authenticate existing user
    * - Join: Register new user
    * - Refresh: Renew expired token
-   * - Management: Other auth operations (logout, password reset/change, verify, 2fa, oauth, sessions, me)
+   * - Management: Other auth operations (logout, password reset/change, verify,
+   *   2fa, oauth, sessions, me)
    */
   authType: string;
 }

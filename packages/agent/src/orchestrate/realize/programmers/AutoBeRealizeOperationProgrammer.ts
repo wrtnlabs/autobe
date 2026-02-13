@@ -16,7 +16,8 @@ import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerPr
 export namespace AutoBeRealizeOperationProgrammer {
   /**
    * Check if the operation is a public auth operation (login, join, refresh).
-   * These operations must be publicly accessible and should not have auth decorators.
+   * These operations must be publicly accessible and should not have auth
+   * decorators.
    */
   export function isPublicAuthOperation(
     operation: AutoBeOpenApi.IOperation,

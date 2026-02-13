@@ -108,8 +108,8 @@ export namespace IAutoBeTestScenarioReviewApplication {
      *
      * When returning "erase":
      *
-     * - Scenario tests framework-level validations (forbidden per Section 2.1
-     *   of TEST_SCENARIO.md)
+     * - Scenario tests framework-level validations (forbidden per Section 2.1 of
+     *   TEST_SCENARIO.md)
      * - Scenario tests type mismatches, missing fields, invalid formats, or any
      *   HTTP 400 validation errors
      * - These scenarios are fundamentally wrong and must be completely removed

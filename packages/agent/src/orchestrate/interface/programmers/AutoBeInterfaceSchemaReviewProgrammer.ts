@@ -1,6 +1,9 @@
 import {
   AutoBeDatabase,
+  AutoBeInterfaceSchemaPropertyCreate,
+  AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyExclude,
   AutoBeInterfaceSchemaPropertyKeep,
   AutoBeInterfaceSchemaPropertyNullish,
   AutoBeInterfaceSchemaPropertyRevise,
@@ -12,7 +15,6 @@ import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
-import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
@@ -23,7 +25,7 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
   }): boolean => {
     const symbols: string[] = ["IAuthorized", "IJoin", "ILogin"];
     return props.typeName.includes(".")
-      ? symbols.some((s) => `.${props.typeName.endsWith(s)}`)
+      ? symbols.some((s) => props.typeName.endsWith(`.${s}`))
       : symbols.some(
           (s) =>
             props.document.components.schemas[`${props.typeName}.${s}`] !==
@@ -42,19 +44,46 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
       everyModels: props.everyModels,
     });
 
+    const model: AutoBeDatabase.IModel | undefined =
+      props.schema["x-autobe-database-schema"] !== undefined
+        ? props.everyModels.find(
+            (m) => m.name === props.schema["x-autobe-database-schema"],
+          )
+        : undefined;
+
     const $defs = props.application.functions[0].parameters.$defs;
-    const fix = (next: ILlmSchema | undefined): void => {
+    const fix = (
+      next: ILlmSchema | undefined,
+      fixKey: boolean = true,
+    ): void => {
       if (next === undefined) return;
       else if (LlmTypeChecker.isObject(next) === false) return;
 
-      const key: ILlmSchema | undefined = next.properties.key;
-      if (key === undefined || LlmTypeChecker.isString(key) === false) return;
-      key.enum = Object.keys(props.schema.properties);
+      if (fixKey === true) {
+        const key: ILlmSchema | undefined = next.properties.key;
+        if (key === undefined || LlmTypeChecker.isString(key) === false) return;
+        key.enum = Object.keys(props.schema.properties);
+      }
+      if (model !== undefined) {
+        const key: ILlmSchema | undefined =
+          next.properties.databaseSchemaProperty;
+        if (key === undefined || LlmTypeChecker.isString(key) === false) return;
+        key.enum = AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaProperties({
+          everyModels: props.everyModels,
+          model,
+        }).map((p) => p.key);
+      }
     };
-    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
+    fix(
+      $defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyCreate>()],
+      false,
+    );
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyErase>()]);
-    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
     fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyNullish>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyDepict>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyUpdate>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyKeep>()]);
+    fix($defs[typia.reflect.name<AutoBeInterfaceSchemaPropertyExclude>()]);
   };
 
   export const validate = (props: {
@@ -65,76 +94,40 @@ export namespace AutoBeInterfaceSchemaReviewProgrammer {
     // special
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
     revises: AutoBeInterfaceSchemaPropertyRevise[];
   }): void => {
-    // validate property key existence and schema correctness
-    props.revises.forEach((revise, i) => {
-      if (
-        revise.type !== "create" &&
-        props.schema.properties[revise.key] === undefined
-      )
-        props.errors.push({
-          path: `${props.path}.revises[${i}].key`,
-          expected: Object.keys(props.schema.properties)
-            .map((s) => JSON.stringify(s))
-            .join(" | "),
-          value: revise.key,
-          description: StringUtil.trim`
-          Property ${JSON.stringify(revise.key)} does not exist in schema.
+    // validate revises detaily
+    AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
+      // config
+      path: props.path,
+      errors: props.errors,
+      unionTypeName: typia.reflect.name<AutoBeInterfaceSchemaPropertyRevise>(),
+      noModelDescription: StringUtil.trim`
+        You have defined "databaseSchemaProperty" property referencing
+        a database schema property, but its parent schema (object type)
+        does not reference any database schema.
 
-          To ${revise.type} a property, it must exist in the object type.
-        `,
-        });
-      if (revise.type === "create" || revise.type === "update")
-        AutoBeJsonSchemaValidator.validateSchema({
-          typeName: props.typeName,
-          schema: revise.schema,
-          operations: [],
-          path: `${props.path}.revises[${i}].schema`,
-          errors: props.errors,
-        });
+        To make it correct, you have to change the "databaseSchemaProperty"
+        to be \`null\` at the next time, and then depict what this property 
+        is for in the "specification" property.
+
+        Note that, this is not a recommendation, but an instruction 
+        you must obey. I repeat that, change the value to be \`null\`.
+      `,
+      // database
+      everyModels: props.everyModels,
+      model: props.schema["x-autobe-database-schema"]
+        ? (props.everyModels.find(
+            (m) => m.name === props.schema["x-autobe-database-schema"],
+          ) ?? null)
+        : null,
+      // interface
+      typeName: props.typeName,
+      schema: props.schema,
+      excludes: props.excludes,
+      revises: props.revises,
     });
-    for (const key of Object.keys(props.schema.properties))
-      if (props.revises.some((revise) => revise.key === key) === false)
-        props.errors.push({
-          path: `${props.path}.revises[]`,
-          value: undefined,
-          expected: `AutoBeInterfaceSchemaPropertyRevise (key: ${JSON.stringify(key)})`,
-          description: StringUtil.trim`
-            Missing revise for property ${JSON.stringify(key)}.
-
-            You MUST provide a revise for EVERY property in the object schema.
-            Use "keep" type if no changes are needed.
-          `,
-        });
-
-    // validate database schema existence
-    props.revises.forEach((revise, i) =>
-      AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
-        path: `${props.path}.revises[${i}]`,
-        errors: props.errors,
-        everyModels: props.everyModels,
-        model: props.schema["x-autobe-database-schema"]
-          ? (props.everyModels.find(
-              (m) => m.name === props.schema["x-autobe-database-schema"],
-            ) ?? null)
-          : null,
-        revise,
-        originalDtoSchema: props.schema.properties[revise.key],
-        noModelDescription: StringUtil.trim`
-          You have defined "databaseSchemaProperty" property referencing
-          a database schema property, but its parent schema (object type)
-          does not reference any database schema.
-
-          To make it correct, you have to change the "databaseSchemaProperty"
-          to be \`null\` at the next time, and then depict what this property 
-          is for in the "specification" property.
-
-          Note that, this is not a recommendation, but an instruction 
-          you must obey. I repeat that, change the value to be \`null\`.
-        `,
-      }),
-    );
   };
 
   export const execute = (props: {

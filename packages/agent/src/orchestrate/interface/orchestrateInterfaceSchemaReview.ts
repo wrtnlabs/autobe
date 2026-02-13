@@ -197,6 +197,7 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       typeName: props.typeName,
       schema: props.reviewSchema,
       review: pointer.value.review,
+      excludes: pointer.value.excludes,
       revises: pointer.value.revises,
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,
@@ -249,6 +250,7 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     AutoBeInterfaceSchemaReviewProgrammer.validate({
       typeName: props.typeName,
       schema: props.schema,
+      excludes: result.data.request.excludes,
       revises: result.data.request.revises,
       errors,
       path: `$input.request`,

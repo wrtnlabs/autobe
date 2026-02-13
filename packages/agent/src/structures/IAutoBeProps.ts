@@ -43,7 +43,8 @@ export interface IAutoBeProps {
   vendor: IAutoBeVendor;
 
   /**
-   * Compiler factory function for TypeScript, database schema, and OpenAPI operations.
+   * Compiler factory function for TypeScript, database schema, and OpenAPI
+   * operations.
    *
    * Factory function that creates compiler instances required for the
    * sophisticated AST-based development pipeline. The compiler handles

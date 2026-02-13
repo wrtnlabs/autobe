@@ -21,20 +21,32 @@ You CANNOT:
 - Erase non-relation fields — `title`, `description`, `content`, `status`, `id`, `created_at`, `page`, `limit`, `search`, `completed`, and all other business or query fields are outside your jurisdiction; always `keep` them
 - Modify security or business logic fields
 
-## 2. How Revisions Work
+## 2. Two Output Arrays
 
-Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Your output has two separate arrays:
+
+- **`excludes`**: DB relations that should not appear in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `update`, `create`, `erase`, `depict`, `nullish`)
+
+Each DTO property appears exactly once in `revises`. Each DB relation appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
 **Setting `databaseSchemaProperty`**: Use relation name for DB relations. Use `null` only for requirement-derived computed properties (verify valid logic in `x-autobe-specification`).
 
-| Situation | Revision | Example |
-|-----------|----------|---------|
-| FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
-| Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
-| Circular back-reference or aggregation array | `erase` | Remove `articles[]` from User |
-| Relation field with wrong documentation only | `depict` | Fix specification/description on relation |
-| Relation field with wrong nullability only | `nullish` | Fix nullable on optional relation |
-| Everything else (non-relation fields, correct relations) | `keep` | `id`, `title`, `created_at`, `category` |
+| Array | Situation | Operation | Example |
+|-------|-----------|-----------|---------|
+| `revises` | FK needs object transformation | `update` | `author_id` → `author: IUser.ISummary` |
+| `revises` | Missing composition or relation | `create` | Add `units: ISaleUnit[]` |
+| `revises` | Circular back-reference in DTO | `erase` | Remove `articles[]` from User |
+| `revises` | Relation with wrong documentation only | `depict` | Fix specification/description |
+| `revises` | Relation with wrong nullability only | `nullish` | Fix nullable on optional relation |
+| `revises` | Everything else | `keep` | `id`, `title`, `created_at`, `category` |
+| `excludes` | Aggregation relation | (exclusion entry) | `comments[]` excluded from Read DTO |
+| `excludes` | Actor relation in Create/Update DTO | (exclusion entry) | `member` excluded (FK from JWT) |
+| `excludes` | Relation whose FK is a path parameter | (exclusion entry) | `article` excluded (FK from URL path) |
+
+**`erase` vs `excludes`**:
+- `erase` (in `revises`): Relation exists in DTO but shouldn't (circular back-reference) → remove it
+- `excludes`: DB relation should never appear in this DTO → declare exclusion
 
 In practice, most properties are non-relation fields and get `keep`. Only relation-related fields get `update`, `create`, `erase`, `depict`, or `nullish`. If a schema contains no relation properties at all, every property receives `keep`.
 
@@ -126,7 +138,8 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB relations not in this DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
@@ -166,9 +179,9 @@ For composition:
 }
 ```
 
-### `erase` - Remove Incorrect Relation
+### `erase` - Remove Circular Reference from DTO
 
-For relations that exist in DB but shouldn't appear in DTO: circular back-references, unbounded aggregation arrays, or proven incorrect reverse relations.
+For relations that exist in DTO but shouldn't: circular back-references or proven incorrect reverse relations.
 
 Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid erase targets — use `keep` for those.
 
@@ -176,9 +189,20 @@ Non-relation properties (e.g. `title`, `start_date`, `page`) are never valid era
 {
   key: "articles",
   databaseSchemaProperty: "articles",
-  reason: "Circular reference - removing back-reference",
+  reason: "Circular reference - removing back-reference from DTO",
   type: "erase"
 }
+```
+
+### `excludes` entries - DB Relation Not in This DTO
+
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed. Use for DB relations that should never appear in this DTO: aggregation (use counts), actor relations in Create/Update (FK from JWT), and relations whose FK comes from path parameters.
+
+```typescript
+{ databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead of nested array" }
+{ databaseSchemaProperty: "likes", reason: "Aggregation: event-driven data, use separate endpoint" }
+{ databaseSchemaProperty: "member", reason: "Actor relation: member_id resolved from JWT, not in Create DTO body" }
+{ databaseSchemaProperty: "article", reason: "Path param relation: article_id provided via URL path" }
 ```
 
 ### `depict` - Fix Relation Documentation
@@ -200,42 +224,67 @@ All non-relation fields and correctly-implemented relations:
 
 ## 9. Complete Example
 
-Schema has properties: `[id, title, content, author_id, category, attachments, comments, created_at]`
+**Scenario**: Reviewing `IBbsArticle` (Read DTO)
+
+| Category | Properties |
+|----------|------------|
+| DB Relations | `author`, `category`, `attachments`, `comments`, `likes` |
+| DTO Properties | `id`, `title`, `content`, `author_id`, `category`, `attachments`, `created_at` |
+
+**Issue Found**: `author_id` FK not transformed to `$ref` object.
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `id` | `id` | keep | Non-relation field |
+| `title` | `title` | keep | Non-relation field |
+| `content` | `content` | keep | Non-relation field |
+| `author` | `author_id` → `author` | update | Transform FK to `$ref` |
+| `category` | `category` | keep | Relation correct |
+| `attachments` | `attachments` | keep | Composition correct |
+| `created_at` | `created_at` | keep | Non-relation field |
+| `comments` | — | exclude | Aggregation relation |
+| `likes` | — | exclude | Aggregation relation |
 
 ```typescript
 process({
-  thinking: "Enumerated 8 properties. Checked DB schema. author_id needs FK transform (relation name: author), comments is aggregation.",
+  thinking: "All 7 DTO properties checked. All 5 DB relations handled: 3 mapped, 2 excluded.",
   request: {
     type: "complete",
-    review: "author_id: FK not transformed. comments: unbounded aggregation.",
+    review: "author_id: FK not transformed. Excluded aggregation: comments, likes.",
+    excludes: [
+      { databaseSchemaProperty: "comments", reason: "Aggregation: use separate endpoint" },
+      { databaseSchemaProperty: "likes", reason: "Aggregation: use separate endpoint" }
+    ],
     revises: [
-      { key: "id", databaseSchemaProperty: "id", reason: "Business field", type: "keep" },
-      { key: "title", databaseSchemaProperty: "title", reason: "Business field", type: "keep" },
-      { key: "content", databaseSchemaProperty: "content", reason: "Business field", type: "keep" },
-      { key: "author_id", databaseSchemaProperty: "author", reason: "Transform FK to $ref", type: "update",
-        newKey: "author",
-        specification: "Join via bbs_members. Returns ISummary.",
-        description: "Author who wrote this article.",
+      { key: "id", databaseSchemaProperty: "id", type: "keep", reason: "Non-relation field" },
+      { key: "title", databaseSchemaProperty: "title", type: "keep", reason: "Non-relation field" },
+      { key: "content", databaseSchemaProperty: "content", type: "keep", reason: "Non-relation field" },
+      { key: "author_id", databaseSchemaProperty: "author", type: "update", reason: "Transform FK to $ref",
+        newKey: "author", specification: "Join via bbs_members.", description: "Article author.",
         schema: { $ref: "#/components/schemas/IBbsMember.ISummary" }, required: true },
-      { key: "category", databaseSchemaProperty: "category", reason: "Relation correctly structured", type: "keep" },
-      { key: "attachments", databaseSchemaProperty: "attachments", reason: "Composition correctly nested", type: "keep" },
-      { key: "comments", databaseSchemaProperty: "comments", reason: "Aggregation - use separate endpoint", type: "erase" },
-      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Business field", type: "keep" }
+      { key: "category", databaseSchemaProperty: "category", type: "keep", reason: "Relation correct" },
+      { key: "attachments", databaseSchemaProperty: "attachments", type: "keep", reason: "Composition correct" },
+      { key: "created_at", databaseSchemaProperty: "created_at", type: "keep", reason: "Non-relation field" }
     ]
   }
 })
 ```
 
-Note how every property appears exactly once, and non-relation fields use `keep`. Use `depict` or `nullish` when a relation's documentation or nullability is wrong but its schema structure is correct.
+**Result**: 7 DTO properties in `revises` + 2 DB relations in `excludes` = complete coverage.
 
 ## 10. Checklist
 
-- [ ] Every property in the schema has exactly one revision (no missing, no duplicates)
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every DB relation either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB relation appears in both `excludes` and `revises`
 - [ ] Non-relation fields all use `keep`
 - [ ] `databaseSchemaProperty`: relation name for DB relations, `null` only for valid computed properties
 - [ ] Relation properties use relation name in `databaseSchemaProperty`
 - [ ] FK column properties use column name in `databaseSchemaProperty`
-- [ ] `erase` used only for circular refs or aggregation arrays
+- [ ] `erase` used only for circular back-references in DTO
+- [ ] `excludes` used for aggregation, actor, and path-param relations
 - [ ] `depict` used only for wrong documentation on relation fields
 - [ ] `nullish` used only for wrong nullability on relation fields
 - [ ] FK fields in Read DTOs transformed to `$ref` objects with relation name

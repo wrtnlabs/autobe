@@ -4,9 +4,7 @@ import {
   IAutoBeAgentSessionStorageStrategy,
 } from "@autobe/ui";
 
-export class AutoBeAgentSessionStorageMockStrategy
-  implements IAutoBeAgentSessionStorageStrategy
-{
+export class AutoBeAgentSessionStorageMockStrategy implements IAutoBeAgentSessionStorageStrategy {
   editSessionTitle(): Promise<void> {
     return Promise.resolve();
   }

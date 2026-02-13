@@ -3,8 +3,8 @@ import { AutoBeDatabaseGroup } from "./AutoBeDatabaseGroup";
 /**
  * Request to create a new group in the component skeleton list.
  *
- * Use this when you identify a missing business domain group that should
- * exist based on requirements analysis. Common scenarios:
+ * Use this when you identify a missing business domain group that should exist
+ * based on requirements analysis. Common scenarios:
  *
  * - A business domain was not identified during initial group generation
  * - A domain was incorrectly merged into another group and needs separation
@@ -19,8 +19,8 @@ export interface AutoBeDatabaseGroupReviseCreate {
   /**
    * Brief, concise reason for creating this group.
    *
-   * Explain which business domain this group covers and why it was missing
-   * from the initial generation.
+   * Explain which business domain this group covers and why it was missing from
+   * the initial generation.
    *
    * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
    */

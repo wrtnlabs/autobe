@@ -18,8 +18,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author michael
  */
-export interface AutoBeImageDescribeStartEvent
-  extends AutoBeEventBase<"imageDescribeStart"> {
+export interface AutoBeImageDescribeStartEvent extends AutoBeEventBase<"imageDescribeStart"> {
   /**
    * Number of images to be analyzed.
    *

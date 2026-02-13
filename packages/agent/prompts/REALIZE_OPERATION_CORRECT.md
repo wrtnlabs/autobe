@@ -219,6 +219,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] Used inline parameters (no intermediate variables)
 - [ ] Relations use `connect` syntax
 - [ ] Select includes all transformed fields
+- [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ### Type Conversions
 - [ ] Dates: `toISOStringSafe()`

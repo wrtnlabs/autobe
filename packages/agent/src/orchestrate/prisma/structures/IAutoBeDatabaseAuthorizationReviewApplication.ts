@@ -11,12 +11,13 @@ export interface IAutoBeDatabaseAuthorizationReviewApplication {
    *
    * Your PRIMARY task is to deeply analyze authentication requirements and
    * ensure complete table coverage for EVERY actor type in the authorization
-   * component. The component contains tables for all actors (guest/member/admin),
-   * and you must verify that each actor has its required tables.
+   * component. The component contains tables for all actors
+   * (guest/member/admin), and you must verify that each actor has its required
+   * tables.
    *
    * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
-   * what authentication features are required, then systematically verify
-   * that EVERY actor has main actor table + session table, and apply corrections.
+   * what authentication features are required, then systematically verify that
+   * EVERY actor has main actor table + session table, and apply corrections.
    *
    * @param props Request containing either preliminary data request or complete
    *   task with table revisions for all actors
@@ -61,24 +62,23 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
    * Submit table revisions after authentication requirements analysis.
    *
    * Call this after you have:
+   *
    * 1. Fetched and analyzed authentication requirements documents
    * 2. Verified EVERY actor has main actor and session tables
    * 3. Prepared create/update/erase operations with clear reasons
    *
-   * The authorization component contains tables for ALL actors, so ensure
-   * no actor is missing its required tables.
+   * The authorization component contains tables for ALL actors, so ensure no
+   * actor is missing its required tables.
    */
   export interface IComplete {
-    /**
-     * Type discriminator. Value "complete" indicates final submission.
-     */
+    /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";
 
     /**
      * Authentication requirements coverage analysis.
      *
-     * Document how you analyzed authentication requirements and mapped them
-     * to table modifications:
+     * Document how you analyzed authentication requirements and mapped them to
+     * table modifications:
      *
      * - What actor types are defined?
      * - Does each actor have a main table and session table?
@@ -94,42 +94,48 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
      * Array of table revision operations.
      *
      * Include all create, update, and erase operations identified during
-     * review. Each operation must include a reason explaining why the
-     * change is necessary.
+     * review. Each operation must include a reason explaining why the change is
+     * necessary.
      *
      * ## Operation Types:
      *
      * ### Create - Add missing tables
-     * Use when a table is needed to fulfill authentication requirements
-     * but doesn't exist.
+     *
+     * Use when a table is needed to fulfill authentication requirements but
+     * doesn't exist.
+     *
      * ```typescript
      * {
-     *   type: "create",
-     *   reason: "Actor 'customer' requires password reset token storage",
-     *   table: "shopping_customer_password_resets",
-     *   description: "Stores password reset tokens with expiration for customers"
+     *   "type": "create",
+     *   "reason": "Actor 'customer' requires password reset token storage",
+     *   "table": "shopping_customer_password_resets",
+     *   "description": "Stores password reset tokens with expiration for customers"
      * }
      * ```
      *
      * ### Update - Rename tables
+     *
      * Use when a table has naming convention issues.
+     *
      * ```typescript
      * {
-     *   type: "update",
-     *   reason: "Table name violates actor naming convention",
-     *   original: "customerSessions",
-     *   updated: "shopping_customer_sessions",
-     *   description: "Authentication sessions for shopping customers"
+     *   "type": "update",
+     *   "reason": "Table name violates actor naming convention",
+     *   "original": "customerSessions",
+     *   "updated": "shopping_customer_sessions",
+     *   "description": "Authentication sessions for shopping customers"
      * }
      * ```
      *
      * ### Erase - Remove tables
+     *
      * Use when a table doesn't belong to authorization.
+     *
      * ```typescript
      * {
-     *   type: "erase",
-     *   reason: "Table is a business domain entity, not authentication",
-     *   table: "shopping_orders"
+     *   "type": "erase",
+     *   "reason": "Table is a business domain entity, not authentication",
+     *   "table": "shopping_orders"
      * }
      * ```
      *

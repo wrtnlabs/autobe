@@ -11,8 +11,8 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  * connect/create syntax.
  *
  * The generation follows a structured RAG workflow: preliminary context
- * gathering (database schemas only) → implementation planning → code generation →
- * review and refinement. All necessary DTO type information is obtained
+ * gathering (database schemas only) → implementation planning → code generation
+ * → review and refinement. All necessary DTO type information is obtained
  * transitively from the DTO type names provided in the plan
  * (AutoBeRealizeCollectorPlan).
  */
@@ -52,7 +52,8 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * - Summarize - don't enumerate every field mapping.
      *
      * Note: All necessary DTO type information is available transitively from
-     * the DTO type names in the plan. You only need to request database schemas.
+     * the DTO type names in the plan. You only need to request database
+     * schemas.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -146,8 +147,8 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * - Enables validation before code generation
      * - Creates clear documentation of field handling strategy
      *
-     * The validator will cross-check this list against the actual database schema
-     * and reject incomplete mappings.
+     * The validator will cross-check this list against the actual database
+     * schema and reject incomplete mappings.
      */
     mappings: AutoBeRealizeCollectorMapping[];
 

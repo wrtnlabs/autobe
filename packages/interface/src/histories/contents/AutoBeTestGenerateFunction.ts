@@ -18,8 +18,7 @@ import { AutoBeTestFunctionBase } from "./AutoBeTestFunctionBase";
  *
  * @author Michael
  */
-export interface AutoBeTestGenerateFunction
-  extends AutoBeTestFunctionBase<"generate"> {
+export interface AutoBeTestGenerateFunction extends AutoBeTestFunctionBase<"generate"> {
   /**
    * OpenAPI endpoint specification that this generation function corresponds
    * to.

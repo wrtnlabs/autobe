@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -96,6 +97,7 @@ ${Object.keys(props.schema.properties).map(
   export function compile(props: {
     compiler: IAutoBeCompiler;
     procedure: IAutoBeTestAuthorizeProcedure;
+    progress: AutoBeProgressEventBase;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestAuthorizeFunction>> {
     return AutoBeTestFunctionProgrammer.compile({
@@ -105,6 +107,7 @@ ${Object.keys(props.schema.properties).map(
       files: {
         [props.procedure.function.location]: props.procedure.function.content,
       },
+      progress: props.progress,
       step: props.step,
     });
   }

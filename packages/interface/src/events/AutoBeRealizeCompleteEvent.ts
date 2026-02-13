@@ -20,8 +20,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeCompleteEvent
-  extends AutoBeCompleteEventBase<"realizeComplete"> {
+export interface AutoBeRealizeCompleteEvent extends AutoBeCompleteEventBase<"realizeComplete"> {
   /**
    * Generated authentication and authorization decorators for role-based access
    * control.

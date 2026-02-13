@@ -11,8 +11,7 @@ import { AutoBeUserMessageContentBase } from "./AutoBeUserMessageContentBase";
  *
  * @author Samchon
  */
-export interface AutoBeUserMessageImageContent
-  extends AutoBeUserMessageContentBase<"image"> {
+export interface AutoBeUserMessageImageContent extends AutoBeUserMessageContentBase<"image"> {
   /**
    * Image content data.
    *

@@ -22,7 +22,9 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  */
 export interface AutoBeTestWriteEvent<
   Function extends AutoBeTestFunction = AutoBeTestFunction,
-> extends AutoBeEventBase<"testWrite">,
+>
+  extends
+    AutoBeEventBase<"testWrite">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase {
   /**

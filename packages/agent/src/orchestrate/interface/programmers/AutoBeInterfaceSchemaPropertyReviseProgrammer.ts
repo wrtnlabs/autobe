@@ -1,33 +1,188 @@
 import {
   AutoBeDatabase,
+  AutoBeInterfaceSchemaPropertyExclude,
   AutoBeInterfaceSchemaPropertyRevise,
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { IValidation } from "typia";
+import typia, { IValidation } from "typia";
 
+import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
 
 export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
   export const validate = (props: {
+    // config
     path: string;
     errors: IValidation.IError[];
+    unionTypeName: string;
+    noModelDescription: string;
+    // database
     everyModels: AutoBeDatabase.IModel[];
     model: AutoBeDatabase.IModel | null;
+    // dto
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
+  }): void => {
+    // check individual revises
+    props.revises.forEach((revise, i) => {
+      validateProperty({
+        // config
+        path: `${props.path}.revises[${i}]`,
+        errors: props.errors,
+        unionTypeName: props.unionTypeName,
+        noModelDescription: props.noModelDescription,
+        // database
+        everyModels: props.everyModels,
+        model: props.model,
+        // dto
+        typeName: props.typeName,
+        schema: props.schema,
+        revise,
+        originalDtoSchema: props.schema.properties[revise.key],
+      });
+    });
+
+    // check all properties are revised
+    for (const key of Object.keys(props.schema.properties))
+      if (props.revises.find((revise) => revise.key === key) === undefined)
+        props.errors.push({
+          path: `${props.path}.revises[]`,
+          value: undefined,
+          expected: `${props.unionTypeName} (key: ${JSON.stringify(key)})`,
+          description: StringUtil.trim`
+            Property ${JSON.stringify(key)} is defined in the schema, but not revised.
+
+            You MUST provide a revise for EVERY property in the object schema.
+          `,
+        });
+
+    if (props.model === null) return;
+
+    // check all DB schema properties are revised
+    const actual: Set<string> = new Set();
+    const expected: string[] =
+      AutoBeInterfaceSchemaProgrammer.getDatabaseSchemaProperties({
+        everyModels: props.everyModels,
+        model: props.model,
+      }).map((p) => p.key);
+    for (const e of props.excludes) actual.add(e.databaseSchemaProperty);
+    for (const r of props.revises)
+      if (r.databaseSchemaProperty !== null)
+        actual.add(r.databaseSchemaProperty);
+    for (const key of expected)
+      if (actual.has(key) === false)
+        props.errors.push({
+          path: `${props.path}.excludes[]`,
+          value: undefined,
+          expected: `${typia.reflect.name<AutoBeInterfaceSchemaPropertyExclude>()} (databaseSchemaProperty: ${JSON.stringify(key)}), or ${props.unionTypeName} (databaseSchemaProperty: ${JSON.stringify(key)})`,
+          description: StringUtil.trim`
+            Database property ${JSON.stringify(key)} exists in model
+            "${props.model.name}" but is not addressed in either "excludes"
+            or "revises".
+
+            Every database property must be explicitly accounted for. You have
+            two options:
+
+            1. If this property belongs in the DTO: add a revision in "revises"
+               with databaseSchemaProperty: ${JSON.stringify(key)}
+
+            2. If this property should NOT appear in the DTO: add an entry to
+               "excludes" with databaseSchemaProperty: ${JSON.stringify(key)}
+               and a reason explaining why (e.g., "internal field",
+               "aggregation relation", "handled by separate endpoint")
+
+            Do NOT omit database properties. Either map them or exclude them.
+          `,
+        });
+
+    // check whether excluded are contained in revises
+    props.revises.forEach((revise, i) => {
+      if (revise.databaseSchemaProperty === null) return;
+
+      const index: number = props.excludes.findIndex(
+        (e) => e.databaseSchemaProperty === revise.databaseSchemaProperty,
+      );
+      if (index === -1) return;
+
+      props.errors.push({
+        path: `${props.path}.revises[${i}].databaseSchemaProperty`,
+        expected: `not ${JSON.stringify(revise.databaseSchemaProperty)}, or remove ${props.path}.excludes[${index}]`,
+        value: revise.databaseSchemaProperty,
+        description: StringUtil.trim`
+          Database property ${JSON.stringify(revise.databaseSchemaProperty)}
+          appears in both "revises[${i}]" and "excludes[${index}]".
+
+          A database property must be either excluded OR revised, never both.
+          Choose one of the following actions:
+
+          1. If this property belongs in the DTO: remove it from "excludes"
+             and keep the revision in "revises"
+
+          2. If this property should NOT appear in the DTO: remove this
+             revision from "revises" (or set its databaseSchemaProperty
+             to null) and keep the "excludes" entry
+        `,
+      });
+    });
+  };
+
+  const validateProperty = (props: {
+    // config
+    path: string;
+    errors: IValidation.IError[];
+    unionTypeName: string;
+    noModelDescription: string;
+    // database
+    everyModels: AutoBeDatabase.IModel[];
+    model: AutoBeDatabase.IModel | null;
+    // dto
+    typeName: string;
+    schema: AutoBeOpenApi.IJsonSchema.IObject;
+    revise: AutoBeInterfaceSchemaPropertyRevise;
     originalDtoSchema:
       | AutoBeOpenApi.IJsonSchema
       | AutoBeOpenApi.IJsonSchemaProperty
       | undefined;
-    revise: AutoBeInterfaceSchemaPropertyRevise;
-    noModelDescription: string;
   }): void => {
-    const property:
+    // check property key existence
+    if (
+      props.revise.type !== "create" &&
+      props.schema.properties[props.revise.key] === undefined
+    )
+      props.errors.push({
+        path: `${props.path}.key`,
+        expected: Object.keys(props.schema.properties)
+          .map((s) => JSON.stringify(s))
+          .join(" | "),
+        value: props.revise.key,
+        description: StringUtil.trim`
+          Property ${JSON.stringify(props.revise.key)} does not exist in schema.
+
+          To ${props.revise.type} a property, it must exist in the object type.
+        `,
+      });
+
+    // check schema correctness
+    if (props.revise.type === "create" || props.revise.type === "update")
+      AutoBeJsonSchemaValidator.validateSchema({
+        typeName: props.typeName,
+        schema: props.revise.schema,
+        operations: [],
+        path: `${props.path}.schema`,
+        errors: props.errors,
+      });
+
+    // check database schema property
+    const dbSchemaProp:
       | AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember
       | undefined = validateDatabaseSchemaProperty(props);
-    if (property !== undefined)
+    if (dbSchemaProp !== undefined)
       validateNullable({
         ...props,
-        property,
+        property: dbSchemaProp,
       });
   };
 
@@ -45,8 +200,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
   }): AutoBeInterfaceSchemaProgrammer.IDatabaseSchemaMember | undefined => {
     const value: string | null = props.revise.databaseSchemaProperty;
     if (value === null) return undefined;
-
-    if (props.model === null) {
+    else if (props.model === null) {
       props.errors.push({
         path: `${props.path}.databaseSchemaProperty`,
         expected: "null",
@@ -80,6 +234,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           ${databaseProperties.map((dp) => `- ${dp.key}`).join("\n")}
 
           Choose one of the following actions:
+
           1. If you made a typo and a similar property exists above, correct it
           2. If this property is computed/aggregated or composed purely by
              business logic (not from DB), set the value to null

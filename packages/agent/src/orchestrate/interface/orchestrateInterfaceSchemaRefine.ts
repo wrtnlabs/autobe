@@ -57,7 +57,7 @@ export async function orchestrateInterfaceSchemaRefine(
       try {
         const schema: AutoBeOpenApi.IJsonSchema = props.schemas[it];
         if (AutoBeOpenApiTypeChecker.isObject(schema) === false) {
-          ++props.progress.completed;
+          --props.progress.total;
           return;
         }
         const refined: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
@@ -73,7 +73,7 @@ export async function orchestrateInterfaceSchemaRefine(
         x[it] = refined;
       } catch (error) {
         console.log("interfaceSchemaRefine failure", it, error);
-        --props.progress.completed;
+        --props.progress.total;
       }
     }),
   );
@@ -179,7 +179,7 @@ async function process(
         databaseSchema: pointer.value.databaseSchema,
         specification: pointer.value.specification,
         description: pointer.value.description,
-        refines: pointer.value.refines,
+        revises: pointer.value.revises,
       });
     ctx.dispatch({
       type: SOURCE,
@@ -190,7 +190,8 @@ async function process(
       databaseSchema: pointer.value.databaseSchema,
       specification: pointer.value.specification,
       description: pointer.value.description,
-      refines: pointer.value.refines,
+      excludes: pointer.value.excludes,
+      revises: pointer.value.revises,
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -243,7 +244,8 @@ function createController(
       everyModels:
         ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [],
       databaseSchema: result.data.request.databaseSchema,
-      refines: result.data.request.refines,
+      excludes: result.data.request.excludes,
+      revises: result.data.request.revises,
       errors,
       path: `$input.request`,
     });

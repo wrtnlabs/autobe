@@ -8,9 +8,9 @@ import { AutoBeRealizeAuthorizationProvider } from "./AutoBeRealizeAuthorization
  *
  * This interface represents a complete authorization configuration for a single
  * user actor within the application. It encapsulates all the necessary
- * components required to implement actor-based access control (ABAC) in a NestJS
- * application, including decorators for route protection, payload structures
- * for JWT tokens, and providers for authorization logic.
+ * components required to implement actor-based access control (ABAC) in a
+ * NestJS application, including decorators for route protection, payload
+ * structures for JWT tokens, and providers for authorization logic.
  *
  * Each actor defined in the requirements analysis will have its own
  * authorization implementation, ensuring proper separation of concerns and
@@ -22,11 +22,11 @@ export interface AutoBeRealizeAuthorization {
   /**
    * The user actor configuration from requirements analysis.
    *
-   * This object contains the complete actor definition including the actor name,
-   * permissions, and authentication requirements as analyzed from the project
-   * requirements. The actor configuration is used throughout the authorization
-   * infrastructure to determine access permissions, apply appropriate guards,
-   * and validate user actions.
+   * This object contains the complete actor definition including the actor
+   * name, permissions, and authentication requirements as analyzed from the
+   * project requirements. The actor configuration is used throughout the
+   * authorization infrastructure to determine access permissions, apply
+   * appropriate guards, and validate user actions.
    */
   actor: AutoBeAnalyzeActor;
 
@@ -35,8 +35,8 @@ export interface AutoBeRealizeAuthorization {
    *
    * Contains the custom decorator code that can be applied to controllers and
    * routes to enforce access control for this specific actor. This decorator
-   * integrates with NestJS guards to protect endpoints based on the user's actor
-   * and permissions.
+   * integrates with NestJS guards to protect endpoints based on the user's
+   * actor and permissions.
    */
   decorator: AutoBeRealizeAuthorizationDecorator;
 

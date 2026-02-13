@@ -25,13 +25,13 @@ export const validate_realize_modularization = async (props: {
     await orchestrateRealizeCollector(props.agent.getContext(), {
       planProgress: progress(),
       writeProgress: progress(),
-      correctProgress: progress(),
+      validateProgress: progress(),
     });
   const transformers: AutoBeRealizeTransformerFunction[] =
     await orchestrateRealizeTransformer(props.agent.getContext(), {
       planProgress: progress(),
       writeProgress: progress(),
-      correctProgress: progress(),
+      validateProgress: progress(),
     });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

@@ -4,6 +4,7 @@ import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
+import { AutoBeTemplateFileConstant } from "../../../constants/AutoBeTemplateFileConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
@@ -50,9 +51,14 @@ export const transformRealizeOperationWriteHistory = (props: {
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.REALIZE_OPERATION_WRITE_ARTIFACT.replaceAll(
-          `{input}`,
+          `{{TEMPLATE}}`,
           getRealizeWriteInputType(operation, props.authorization),
-        ).replaceAll(`{artifacts_dto}`, JSON.stringify(props.dto)),
+        )
+          .replaceAll(`{{DTO}}`, JSON.stringify(props.dto))
+          .replaceAll(
+            "{{MyGlobal}}",
+            AutoBeTemplateFileConstant["realize-of-postgres/src/MyGlobal.ts"],
+          ),
       },
       {
         id: v7(),

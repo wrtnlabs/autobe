@@ -8,19 +8,34 @@ You ensure schema completeness and correctness of field content — missing fiel
 
 **Function calling is MANDATORY** - call immediately without asking.
 
-## 1. How Revisions Work
+## 1. Two Output Arrays
 
-Enumerate every property in the schema plus every field in the database table, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Your output has two separate arrays that together must cover every database property:
 
-| Situation | Revision |
-|-----------|----------|
-| Property correct as-is | `keep` |
-| DB field missing from schema | `create` |
-| Schema type/structure wrong | `update` |
-| Only documentation wrong (description, specification, databaseSchemaProperty) | `depict` |
-| Only nullability wrong | `nullish` |
+- **`excludes`**: Database properties intentionally not in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `create`, `update`, `depict`, `nullish`)
+
+Each DTO property appears exactly once in `revises`. Each database property appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
+
+| Array | Situation | Operation |
+|-------|-----------|-----------|
+| `revises` | Property correct as-is | `keep` |
+| `revises` | DB field missing from schema | `create` |
+| `revises` | Schema type/structure wrong | `update` |
+| `revises` | Only documentation wrong | `depict` |
+| `revises` | Only nullability wrong | `nullish` |
+| `excludes` | DB property intentionally not in this DTO | (exclusion entry) |
 
 You do not use `erase` — that belongs to phantom review.
+
+**When to add to `excludes`**:
+- Auto-generated fields: `id`, `created_at` in Create DTO
+- Actor identity FK: `member_id`, `author_id` in Create/Update DTO (resolved from JWT)
+- Path parameter FK: `article_id` in Create/Update DTO when already in URL path
+- Session FK: `session_id` in Create/Update DTO (server-managed, not user-provided)
+- Summary DTO: only essential display fields included
+- Immutability: `id`, `created_at` in Update DTO
+- Aggregation relations: use computed counts instead
 
 ## 2. Understanding Database Properties
 
@@ -44,11 +59,12 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB properties not in this DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
-**Flow**: Gather context → Compare DB fields against DTO → Call `complete` with revisions.
+**Flow**: Gather context → Compare DB fields against DTO → Call `complete` with exclusions and revisions.
 
 Available preliminary requests (max 8 calls): `getAnalysisFiles`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`. Use batch requests. Never re-request loaded materials.
 
@@ -120,49 +136,81 @@ Use when schema type is correct but nullable/required is wrong.
 { key: "id", databaseSchemaProperty: "id", reason: "Correctly mapped", type: "keep" }
 ```
 
+### `excludes` entries - DB Property Not in This DTO
+
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed.
+
+```typescript
+{ databaseSchemaProperty: "created_at", reason: "DTO purpose: auto-generated field not user-provided in Create DTO" }
+{ databaseSchemaProperty: "member_id", reason: "Actor identity: resolved from JWT, not user-provided" }
+{ databaseSchemaProperty: "article_id", reason: "Path parameter: already provided in URL path" }
+{ databaseSchemaProperty: "comments", reason: "Summary DTO: only essential display fields included" }
+```
+
 ## 7. Complete Example
 
-Schema has `[id, name, price, stock, created_at]`. DB table has columns `[id, name, price, stock, featured, created_at]` and relation `author`. Schema missing `featured` column and `author` relation. `stock` has wrong type (string instead of integer). `name` has wrong description.
+**Scenario**: Reviewing `IBbsArticleComment.ICreate` for `POST /articles/{articleId}/comments`
+
+| Category | Properties |
+|----------|------------|
+| DB Columns | `id`, `bbs_article_id`, `bbs_member_id`, `content`, `score`, `created_at`, `deleted_at` |
+| DB Relations | `article`, `member` |
+| DTO Properties | `content`, `score` |
+
+**Issues Found**: `score` has wrong type (string → integer), `content` has inaccurate description.
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `content` | `content` | depict | Fix description |
+| `score` | `score` | update | Wrong type (string → integer) |
+| `id` | — | exclude | Auto-generated PK |
+| `bbs_article_id` | — | exclude | Path parameter `{articleId}` |
+| `bbs_member_id` | — | exclude | Actor identity from JWT |
+| `created_at` | — | exclude | Auto-generated timestamp |
+| `deleted_at` | — | exclude | Auto-generated soft-delete |
+| `article` | — | exclude | Relation object (FK from path) |
+| `member` | — | exclude | Relation object (FK from JWT) |
 
 ```typescript
 process({
-  thinking: "Checked DB columns and relations. Missing: featured (column), author (relation). Wrong type: stock. Bad description: name.",
+  thinking: "All 2 DTO properties checked. All 9 DB properties handled: 2 revised, 7 excluded.",
   request: {
     type: "complete",
-    review: "Missing: featured column, author relation. Wrong type: stock. Bad description: name.",
+    review: "Fixed score type, content description. Excluded auto-generated, actor FK, path param FK.",
+    excludes: [
+      { databaseSchemaProperty: "id", reason: "Auto-generated PK" },
+      { databaseSchemaProperty: "bbs_article_id", reason: "Path parameter" },
+      { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity from JWT" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp" },
+      { databaseSchemaProperty: "deleted_at", reason: "Auto-generated soft-delete" },
+      { databaseSchemaProperty: "article", reason: "Relation object (FK from path)" },
+      { databaseSchemaProperty: "member", reason: "Relation object (FK from JWT)" }
+    ],
     revises: [
-      { key: "id", databaseSchemaProperty: "id", reason: "Correctly mapped", type: "keep" },
-      { key: "name", databaseSchemaProperty: "name", reason: "Description is inaccurate", type: "depict",
-        specification: "Direct mapping from products.name.", description: "Product display name." },
-      { key: "price", databaseSchemaProperty: "price", reason: "Correctly mapped", type: "keep" },
-      { key: "stock", databaseSchemaProperty: "stock", reason: "Type should be integer, not string", type: "update",
-        newKey: null,
-        specification: "Direct mapping from products.stock.",
-        description: "Current inventory quantity.",
-        schema: { type: "integer" }, required: true },
-      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Correctly mapped", type: "keep" },
-      { key: "featured", databaseSchemaProperty: "featured", reason: "DB column 'featured' missing", type: "create",
-        specification: "Direct mapping from products.featured.",
-        description: "Whether product is featured.",
-        schema: { type: "boolean" }, required: true },
-      { key: "author", databaseSchemaProperty: "author", reason: "DB relation 'author' missing", type: "create",
-        specification: "Join from products.author_id. Returns ISummary.",
-        description: "Product author.",
-        schema: { $ref: "#/components/schemas/IUser.ISummary" }, required: true }
+      { key: "content", databaseSchemaProperty: "content", type: "depict", reason: "Description inaccurate",
+        specification: "Direct mapping from bbs_article_comments.content.", description: "Comment text body." },
+      { key: "score", databaseSchemaProperty: "score", type: "update", reason: "Type should be integer",
+        newKey: null, specification: "Direct mapping from bbs_article_comments.score.",
+        description: "Rating score.", schema: { type: "integer" }, required: true }
     ]
   }
 })
 ```
 
-Note how every existing property gets exactly one revision and every missing field gets `create`. Even when nothing is wrong, all existing properties still need `keep`.
+**Result**: 9 DB properties → 2 in `revises` + 7 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
-- [ ] Every property has exactly one revision (no missing, no duplicates)
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every DB property either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB property appears in both `excludes` and `revises`
 - [ ] All correct properties use `keep`
 - [ ] All missing DB columns use `create` with column name in `databaseSchemaProperty`
 - [ ] All missing DB relations use `create` with relation name in `databaseSchemaProperty`
 - [ ] Before `databaseSchemaProperty: null`: Verified valid logic in `x-autobe-specification`
+- [ ] DB properties not in DTO declared in `excludes` (auto-generated, actor FK, path param FK, session FK, etc.)
 - [ ] Wrong schema types use `update`
 - [ ] Wrong documentation only uses `depict`
 - [ ] Wrong nullability only uses `nullish`

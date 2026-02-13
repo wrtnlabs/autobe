@@ -8,9 +8,7 @@ import {
 import { HACKATHON_CODE } from "../constant";
 import { useAuthorizationToken } from "../hooks/useAuthorizationToken";
 
-export class AutoBeAgentSessionStorageStrategy
-  implements IAutoBeAgentSessionStorageStrategy
-{
+export class AutoBeAgentSessionStorageStrategy implements IAutoBeAgentSessionStorageStrategy {
   appendEvent(): Promise<void> {
     return Promise.resolve();
   }

@@ -1,6 +1,6 @@
 import {
-  AgenticaJsonParseError,
-  AgenticaValidationError,
+  // AgenticaJsonParseError,
+  // AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -38,7 +38,7 @@ import {
   StringUtil,
   TokenUsageComputer,
 } from "@autobe/utils";
-import { APIError } from "openai";
+import { APIError, BadRequestError } from "openai";
 import { Semaphore, Singleton } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -73,7 +73,7 @@ export const createAutoBeContext = (props: {
 }): AutoBeContext => {
   const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
     {
-      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
+      retry: props.config.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       locale: props.config.locale ?? "en-US",
       timeout: props.config.timeout ?? null,
     };
@@ -160,7 +160,7 @@ export const createAutoBeContext = (props: {
                   event.errorMessage,
                 ),
             },
-            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+            retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
             // stream: false,
             stream: next.enforceFunctionCall === false,
           } satisfies IMicroAgenticaConfig,
@@ -343,16 +343,20 @@ export const createAutoBeContext = (props: {
       };
       return await forceRetry(
         execute,
-        AutoBeConfigConstant.FUNCTION_CALLING_RETRY,
-        (error) =>
-          error instanceof APIError ||
-          error instanceof AgenticaJsonParseError ||
-          error instanceof AgenticaValidationError ||
-          (error instanceof TypeError && error.message === "terminated") ||
-          (error instanceof Error &&
-            OPENAI_API_ERROR_KEYS.get().every((key) =>
-              error.hasOwnProperty(key),
-            )),
+        AutoBeConfigConstant.API_ERROR_RETRY,
+        (error) => {
+          return (
+            error instanceof APIError ||
+            error instanceof BadRequestError ||
+            // error instanceof AgenticaJsonParseError ||
+            // error instanceof AgenticaValidationError ||
+            (error instanceof TypeError && error.message === "terminated") ||
+            (error instanceof Error &&
+              OPENAI_API_ERROR_KEYS.get().every((key) =>
+                error.hasOwnProperty(key),
+              ))
+          );
+        },
       );
     },
     getCurrentAggregates: (phase) => {

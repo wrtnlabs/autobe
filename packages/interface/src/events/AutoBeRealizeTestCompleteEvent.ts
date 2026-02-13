@@ -23,8 +23,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeTestCompleteEvent
-  extends AutoBeEventBase<"realizeTestComplete"> {
+export interface AutoBeRealizeTestCompleteEvent extends AutoBeEventBase<"realizeTestComplete"> {
   /**
    * Comprehensive results of all executed test operations with detailed outcome
    * information.

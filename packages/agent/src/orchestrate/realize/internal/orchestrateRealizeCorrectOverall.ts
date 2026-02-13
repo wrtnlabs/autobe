@@ -2,6 +2,7 @@ import {
   AutoBeEventSource,
   AutoBePreliminaryKind,
   AutoBeProgressEventBase,
+  AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
@@ -72,11 +73,24 @@ export const orchestrateRealizeCorrectOverall = async <
   },
   life: number = AutoBeConfigConstant.COMPILER_RETRY,
 ): Promise<RealizeFunction[]> => {
+  const preliminaries: Map<
+    string,
+    AutoBePreliminaryController<PreliminaryKind>
+  > = new Map(
+    props.functions.map((func) => [
+      func.location,
+      props.programmer.preliminary({
+        function: func,
+        source: SOURCE,
+      }),
+    ]),
+  );
   const validateEvent: AutoBeRealizeValidateEvent = await compileWithFiltering(
     ctx,
     {
       functions: props.functions,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
   return predicate(
@@ -84,6 +98,7 @@ export const orchestrateRealizeCorrectOverall = async <
     {
       programmer: props.programmer,
       functions: props.functions,
+      preliminaries,
       previousFailures: [],
       progress: props.progress,
       event: validateEvent,
@@ -101,6 +116,7 @@ const predicate = async <
   props: {
     programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     functions: RealizeFunction[];
+    preliminaries: Map<string, AutoBePreliminaryController<PreliminaryKind>>;
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
     event: AutoBeRealizeValidateEvent;
@@ -122,6 +138,7 @@ const correct = async <
   ctx: AutoBeContext,
   props: {
     programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
+    preliminaries: Map<string, AutoBePreliminaryController<PreliminaryKind>>;
     functions: RealizeFunction[];
     previousFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[][];
     progress: AutoBeProgressEventBase;
@@ -144,8 +161,6 @@ const correct = async <
   if (errorLocations.length === 0) {
     return props.functions;
   }
-
-  props.progress.total += errorLocations.length;
 
   const converted: ICorrectionResult<RealizeFunction>[] =
     await executeCachedBatch(
@@ -176,12 +191,12 @@ const correct = async <
             return await process(ctx, {
               programmer: props.programmer,
               progress: props.progress,
+              preliminary: props.preliminaries.get(location)!,
               function: localFunction,
               failures: localFailures,
             });
           } catch (error) {
             console.log("realizeCorrectOverall", localFunction.location, error);
-            ++props.progress.completed;
             return {
               type: "exception",
               function: localFunction,
@@ -206,6 +221,7 @@ const correct = async <
     {
       functions: allFunctionsForValidation,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
   const newResult: IAutoBeTypeScriptCompileResult = newValidate.result;
@@ -240,6 +256,7 @@ const correct = async <
     ctx,
     {
       programmer: props.programmer,
+      preliminaries: props.preliminaries,
       functions: failed,
       previousFailures: [
         ...props.previousFailures,
@@ -273,21 +290,17 @@ const process = async <
   props: {
     programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
     function: RealizeFunction;
+    preliminary: AutoBePreliminaryController<PreliminaryKind>;
     failures: IAutoBeRealizeFunctionFailure<RealizeFunction>[];
     progress: AutoBeProgressEventBase;
   },
 ): Promise<ICorrectionResult<RealizeFunction>> => {
-  const preliminary: AutoBePreliminaryController<PreliminaryKind> =
-    props.programmer.preliminary({
-      function: props.function,
-      source: SOURCE,
-    });
-  return await preliminary.orchestrate(ctx, async (out) => {
+  return await props.preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<Complete | null> = {
       value: null,
     };
     const controller: ILlmController = props.programmer.controller({
-      preliminary,
+      preliminary: props.preliminary,
       build(next: Complete) {
         pointer.value = next;
       },
@@ -299,14 +312,12 @@ const process = async <
       controller,
       enforceFunctionCall: true,
       ...(await props.programmer.histories({
-        preliminary,
+        preliminary: props.preliminary,
         function: props.function,
         failures: props.failures,
       })),
     });
     if (pointer.value === null) return out(result)(null);
-
-    ++props.progress.completed;
 
     const content: string = await props.programmer.replaceImportStatements({
       function: props.function,
@@ -324,9 +335,7 @@ const process = async <
       step: ctx.state().analyze?.step ?? 0,
       metric: result.metric,
       tokenUsage: result.tokenUsage,
-      completed: props.progress.completed,
-      total: props.progress.total,
-    });
+    } satisfies AutoBeRealizeCorrectEvent);
     return out(result)({
       type: "success" as const,
       function: {
@@ -346,15 +355,28 @@ const compileWithFiltering = async <
   props: {
     functions: RealizeFunction[];
     programmer: IProgrammer<RealizeFunction, PreliminaryKind, Complete>;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeValidateEvent> => {
   const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
     functions: props.functions,
     additional: props.programmer.additional(props.functions),
+    progress: (result) => {
+      if (result.type === "success")
+        props.progress.completed = props.functions.length;
+      else if (result.type === "failure")
+        props.progress.completed =
+          props.progress.completed -
+          new Set(
+            result.diagnostics
+              .map((d) => d.file)
+              .filter((f) => f !== null)
+              .filter((x) => !!props.functions.find((y) => y.location === x)),
+          ).size;
+      return props.progress;
+    },
   });
-  if (compiled.result.type !== "failure") {
-    return compiled;
-  }
+  if (compiled.result.type !== "failure") return compiled;
 
   const functionLocations: string[] = props.functions.map((f) => f.location);
 

@@ -21,7 +21,7 @@ import { IMicroAgenticaHistoryJson } from "@agentica/core";
  *     userMessage: history.userMessage,
  *     // ...
  *   });
- *   ```
+ *   ```;
  */
 export interface IAutoBeOrchestrateHistory {
   /**

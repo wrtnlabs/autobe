@@ -13,6 +13,7 @@ import { getPrerequisites } from "../utils/getPrerequisites";
  * Transform test scenario generation context into conversational history.
  *
  * Following the InterfacePrerequisite pattern:
+ *
  * - Provides system prompts
  * - Provides preliminary data histories
  * - Provides single target operation

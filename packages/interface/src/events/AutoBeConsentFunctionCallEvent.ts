@@ -1,8 +1,7 @@
 import { AutoBeEventSource } from "./AutoBeEventSource";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
-export interface AutoBeConsentFunctionCallEvent
-  extends AutoBeEventBase<"consentFunctionCall"> {
+export interface AutoBeConsentFunctionCallEvent extends AutoBeEventBase<"consentFunctionCall"> {
   source: AutoBeEventSource;
   assistantMessage: string;
   result: AutoBeConsentFunctionCallEvent.IResult | null;
