@@ -295,7 +295,7 @@ export async function postShoppingSaleReview(props: {
 
   return {
     id: review.id,
-    content: created.content,
+    content: review.content,
     rating: review.rating,
     sale_id: review.shopping_sale_id,
     customer_id: review.shopping_customer_id,
