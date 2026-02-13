@@ -266,7 +266,29 @@ return {
 };
 ```
 
-### 7.5. Manual CREATE Example
+### 7.5. DELETE Operation: Cascade Deletion
+
+All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
+
+```typescript
+// ✅ CORRECT - Delete only the target record
+await MyGlobal.prisma.shopping_sales.delete({
+  where: { id: props.saleId },
+});
+
+// ❌ WRONG - Manually deleting child records (unnecessary, cascade handles it)
+await MyGlobal.prisma.shopping_sale_reviews.deleteMany({
+  where: { shopping_sale_id: props.saleId },
+});
+await MyGlobal.prisma.shopping_sale_items.deleteMany({
+  where: { shopping_sale_id: props.saleId },
+});
+await MyGlobal.prisma.shopping_sales.delete({
+  where: { id: props.saleId },
+});
+```
+
+### 7.6. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -447,3 +469,4 @@ throw new HttpException("Not found", HttpStatus.NOT_FOUND);
 - [ ] Sequential await for findMany + count (NOT Promise.all)
 - [ ] `ArrayUtil.asyncMap` for Pattern A list transforms
 - [ ] Regular `.map()` for Pattern B list transforms
+- [ ] DELETE targets only the parent record (cascade handles children)
