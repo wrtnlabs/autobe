@@ -51,6 +51,7 @@ import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
+import { ParseTextFunctionCall } from "../utils/parseTextFunctionCall";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
@@ -71,12 +72,13 @@ export const createAutoBeContext = (props: {
   dispatch: (event: AutoBeEvent) => Promise<void>;
   aggregates: AutoBeProcessAggregateCollection;
 }): AutoBeContext => {
-  const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
-    {
-      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
-      locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
-    };
+  const config: Required<
+    Omit<IAutoBeConfig, "backoffStrategy" | "timezone">
+  > = {
+    retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
+    locale: props.config.locale ?? "en-US",
+    timeout: props.config.timeout ?? 5 * 60 * 1000,
+  };
   const critical: Semaphore = new Semaphore(2);
   return {
     vendor: props.vendor,
@@ -161,7 +163,6 @@ export const createAutoBeContext = (props: {
                 ),
             },
             retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
-            stream: next.enforceFunctionCall === false,
           } satisfies IMicroAgenticaConfig,
           histories: next.histories,
           controllers: [next.controller],
@@ -185,6 +186,7 @@ export const createAutoBeContext = (props: {
             type: "vendorRequest",
             source: next.source,
             retry: progress.request++,
+            stream: event.body.stream ?? false,
           });
         });
         agent.on("response", (event) => {
@@ -194,6 +196,8 @@ export const createAutoBeContext = (props: {
               type: "vendorResponse",
               source: next.source,
               retry: progress.response++,
+              stream: event.body.stream ?? false,
+              completion: (event as any).completion ?? null,
             })
             .catch(() => {});
         });
@@ -306,6 +310,26 @@ export const createAutoBeContext = (props: {
           };
           const last: MicroAgenticaHistory | undefined =
             result.histories.at(-1);
+
+          if (
+            last?.type === "assistantMessage" &&
+            next.controller.protocol === "class"
+          ) {
+            const parseResult = ParseTextFunctionCall.parse(last.text);
+            if (parseResult.success && parseResult.functionCalls.length > 0) {
+              const executeHistories =
+                await ParseTextFunctionCall.executeAndCreateHistories({
+                  parsedCalls: parseResult.functionCalls,
+                  controller: next.controller,
+                });
+              if (executeHistories.length > 0) {
+                metric("success");
+                result.histories.push(...executeHistories);
+                return success(result.histories);
+              }
+            }
+          }
+
           if (
             last?.type === "assistantMessage" ||
             (result.histories.length === 1 && last?.type === "userMessage")
