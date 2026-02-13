@@ -40,6 +40,19 @@ Keep (not phantom):
 - `x-autobe-database-schema-property` is non-null (has DB mapping)
 - `x-autobe-specification` explains valid logic (DB aggregation, algorithmic computation, auth tokens, derived values — not fabricated wishful thinking)
 
+**Concrete examples of valid null-mapped fields** (NEVER erase these):
+
+| Property | DTO Type | Why valid |
+|----------|----------|-----------|
+| `page`, `limit`, `search`, `sort` | `IRequest` | Pagination/search parameters — query logic, not DB columns |
+| `ip`, `href`, `referrer` | `IJoin`, `ILogin` | Session context — stored in session table, not actor table |
+| `password` | `IJoin`, `ILogin` | Plain-text input → backend hashes to `password_hashed` column |
+| `*_count` | Read DTOs | Aggregation — `COUNT()` of related records |
+| `token` / `access` / `refresh` / `expired_at` | `IAuthorized` | Auth response — computed by server, not stored as-is |
+| `pagination`, `data` | `IPage*` | Fixed pagination envelope structure |
+
+These fields have `databaseSchemaProperty: null` by design. Their specification describes a cross-table mapping, a transformation, or a query parameter role — that IS valid business logic.
+
 ## 3. Nullability Rules
 
 | Direction | Rule |
@@ -152,7 +165,7 @@ process({
 
 - [ ] Every property has exactly one revision (no missing, no duplicates)
 - [ ] All required database models loaded
-- [ ] Before `erase`: Verified `x-autobe-database-schema-property` is null AND `x-autobe-specification` has no valid business logic
+- [ ] Before `erase`: Verified `x-autobe-database-schema-property` is null AND read `x-autobe-specification` carefully — cross-table mapping, transformation, or query parameter role means valid (not phantom)
 - [ ] `erase` for phantom fields only (no DB mapping AND no valid specification)
 - [ ] `nullish` for DB nullable → DTO non-null only
 - [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional)
