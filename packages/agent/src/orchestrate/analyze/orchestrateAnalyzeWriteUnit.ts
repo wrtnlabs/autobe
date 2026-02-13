@@ -87,6 +87,10 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> => {
+    // Set default thinking field for qwen model compatibility
+    if (typeof input === "object" && input !== null && !("thinking" in input)) {
+      (input as any).thinking = "";
+    }
     const result: IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> =
       typia.validate<IAutoBeAnalyzeWriteUnitApplication.IProps>(input);
     if (result.success === false) return result;

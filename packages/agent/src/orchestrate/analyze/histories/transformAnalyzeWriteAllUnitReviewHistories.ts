@@ -49,7 +49,7 @@ export const transformAnalyzeWriteAllUnitReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_UNIT_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {

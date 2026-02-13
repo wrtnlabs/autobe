@@ -11,7 +11,6 @@ import {
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
@@ -22,6 +21,9 @@ import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteModuleReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
+
+const MAX_RETRIES = 3;
+const MAX_CONSECUTIVE_ERRORS = 5;
 
 export const orchestrateAnalyze = async (
   ctx: AutoBeContext,
@@ -92,62 +94,70 @@ async function processFileHierarchical(
     promptCacheKey: string;
   },
 ): Promise<string> {
-  const moduleResult = await writeAndReviewModule(ctx, props);
+  // Consecutive error tracking for fast-fail on repeated failures
+  let consecutiveErrors = 0;
+
+  async function withErrorTracking<T>(task: () => Promise<T>): Promise<T> {
+    try {
+      const result = await task();
+      consecutiveErrors = 0; // Reset on success
+      return result;
+    } catch (error) {
+      consecutiveErrors++;
+      if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+        throw new Error(
+          `[orchestrateAnalyze] Exceeded ${MAX_CONSECUTIVE_ERRORS} consecutive errors. ` +
+          `Last error: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+      throw error;
+    }
+  }
+
+  const moduleResult = await withErrorTracking(() => writeAndReviewModule(ctx, props));
 
   let unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
-  for (
-    let attempt = 0;
-    attempt < AutoBeConfigConstant.ANALYZE_RETRY;
-    attempt++
-  ) {
+  let unitApproved = false;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     unitResults = [];
-    for (
-      let moduleIndex = 0;
-      moduleIndex < moduleResult.moduleSections.length;
-      moduleIndex++
-    ) {
-      const unitEvent = await orchestrateAnalyzeWriteUnit(ctx, {
+    for (let moduleIndex = 0; moduleIndex < moduleResult.moduleSections.length; moduleIndex++) {
+      const unitEvent = await withErrorTracking(() => orchestrateAnalyzeWriteUnit(ctx, {
         scenario: props.scenario,
         file: props.file,
         moduleEvent: moduleResult,
         moduleIndex,
         progress: props.progress,
         promptCacheKey: props.promptCacheKey,
-      });
+      }));
       unitResults.push(unitEvent);
     }
 
-    const unitReviewResult = await reviewAllUnits(ctx, {
-      scenario: props.scenario,
-      file: props.file,
-      progress: props.progress,
-      promptCacheKey: props.promptCacheKey,
+    const unitReviewResult = await withErrorTracking(() => reviewAllUnits(ctx, {
+      ...props,
       moduleEvent: moduleResult,
       unitEvents: unitResults,
-    });
+    }));
 
     if (unitReviewResult.allApproved) {
       unitResults = unitReviewResult.reviewedUnits;
+      unitApproved = true;
       break;
     }
   }
 
+  if (!unitApproved) {
+    throw new Error("[orchestrateAnalyze] Unit generation failed after max retries");
+  }
+
   let sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
-  for (
-    let attempt = 0;
-    attempt < AutoBeConfigConstant.ANALYZE_RETRY;
-    attempt++
-  ) {
+  let sectionApproved = false;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     sectionResults = [];
     for (let moduleIndex = 0; moduleIndex < unitResults.length; moduleIndex++) {
       const unitEvent = unitResults[moduleIndex]!;
       const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
-      for (
-        let unitIndex = 0;
-        unitIndex < unitEvent.unitSections.length;
-        unitIndex++
-      ) {
-        const sectionEvent = await orchestrateAnalyzeWriteSection(ctx, {
+      for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
+        const sectionEvent = await withErrorTracking(() => orchestrateAnalyzeWriteSection(ctx, {
           scenario: props.scenario,
           file: props.file,
           moduleEvent: moduleResult,
@@ -156,26 +166,28 @@ async function processFileHierarchical(
           unitIndex,
           progress: props.progress,
           promptCacheKey: props.promptCacheKey,
-        });
+        }));
         sectionsForModule.push(sectionEvent);
       }
       sectionResults.push(sectionsForModule);
     }
 
-    const sectionReviewResult = await reviewAllSections(ctx, {
-      scenario: props.scenario,
-      file: props.file,
-      progress: props.progress,
-      promptCacheKey: props.promptCacheKey,
+    const sectionReviewResult = await withErrorTracking(() => reviewAllSections(ctx, {
+      ...props,
       moduleEvent: moduleResult,
       unitEvents: unitResults,
       sectionEvents: sectionResults,
-    });
+    }));
 
     if (sectionReviewResult.allApproved) {
       sectionResults = sectionReviewResult.reviewedSections;
+      sectionApproved = true;
       break;
     }
+  }
+
+  if (!sectionApproved) {
+    throw new Error("[orchestrateAnalyze] Section generation failed after max retries");
   }
 
   // Step 4: Assemble final content
@@ -272,38 +284,41 @@ async function writeAndReviewModule(
   },
 ): Promise<AutoBeAnalyzeWriteModuleEvent> {
   let feedback: string | undefined;
+  let lastError: Error | undefined;
 
-  for (
-    let attempt = 0;
-    attempt < AutoBeConfigConstant.ANALYZE_RETRY;
-    attempt++
-  ) {
-    const moduleEvent = await orchestrateAnalyzeWriteModule(ctx, {
-      scenario: props.scenario,
-      file: props.file,
-      progress: props.progress,
-      promptCacheKey: props.promptCacheKey,
-      feedback,
-    });
-
-    const reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent =
-      await orchestrateAnalyzeWriteModuleReview(ctx, {
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const moduleEvent = await orchestrateAnalyzeWriteModule(ctx, {
         scenario: props.scenario,
         file: props.file,
-        moduleEvent,
         progress: props.progress,
         promptCacheKey: props.promptCacheKey,
+        feedback,
       });
 
-    if (reviewEvent.approved) {
-      // Apply revisions if provided
-      return applyModuleRevisions(moduleEvent, reviewEvent);
-    }
+      const reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent =
+        await orchestrateAnalyzeWriteModuleReview(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent,
+          progress: props.progress,
+          promptCacheKey: props.promptCacheKey,
+        });
 
-    feedback = reviewEvent.feedback;
+      if (reviewEvent.approved) {
+        // Apply revisions if provided
+        return applyModuleRevisions(moduleEvent, reviewEvent);
+      }
+
+      feedback = reviewEvent.feedback;
+    } catch (error) {
+      // Retry on next attempt if error occurs (e.g., RAG_LIMIT exceeded)
+      lastError = error instanceof Error ? error : new Error(String(error));
+      feedback = `Previous attempt failed with error: ${lastError.message}. Please try again.`;
+    }
   }
 
-  throw new Error("[orchestrateAnalyze] Module write failed after max retries");
+  throw lastError ?? new Error("[orchestrateAnalyze] Module write failed after max retries");
 }
 
 /** Apply module review revisions to the module event */

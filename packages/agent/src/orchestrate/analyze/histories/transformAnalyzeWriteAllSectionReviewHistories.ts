@@ -51,7 +51,7 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_SECTION_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_SECTION_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
