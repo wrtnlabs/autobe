@@ -144,6 +144,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Test Write",
           description: "Writing E2E test functions",
         };
+      case "testValidate":
+        return {
+          title: "Test Validate",
+          description: "Validating E2E test results",
+        };
       case "realizePlan":
         return {
           title: "Realize Plan",
@@ -165,10 +170,10 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           description:
             "Running the E2E test operations to validate the API functions",
         };
-      case "realizeCorrect":
+      case "realizeValidate":
         return {
-          title: "Realize Correct",
-          description: "Correcting the API functions",
+          title: "Realize Validate",
+          description: "Correcting and Validating the API functions",
         };
       case "imageDescribeDraft":
         return {

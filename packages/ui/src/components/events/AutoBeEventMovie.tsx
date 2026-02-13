@@ -78,23 +78,22 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "interfaceSchemaComplement":
     case "interfaceSchemaRename":
     case "interfacePrerequisite":
-    case "testWrite":
     case "testScenario":
     case "testScenarioReview":
+    case "testValidate":
+    case "testWrite":
     case "realizePlan":
     case "realizeWrite":
     case "realizeAuthorizationWrite":
     case "realizeTestOperation":
+    case "realizeValidate":
       return <AutoBeProgressEventMovie event={back} />;
     // VALIDATE EVENTS
     case "databaseValidate":
-    case "testValidate":
-    case "realizeValidate":
     case "realizeAuthorizationValidate":
       if (props.events.length === 1) {
         return <AutoBeValidateEventMovie event={back} />;
       }
-
       return (
         <ValidateEventGroup
           events={props.events as IValidateEventGroupProps["events"]}
@@ -112,13 +111,10 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       );
     // CORRECT EVENTS
     case "databaseCorrect":
-    case "testCorrect":
-    case "realizeCorrect":
     case "realizeAuthorizationCorrect": {
       if (props.events.length === 1) {
         return <AutoBeCorrectEventMovie event={back} />;
       }
-
       return (
         <CorrectEventGroup
           events={props.events as ICorrectEventGroupProps["events"]}
@@ -139,6 +135,8 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "jsonValidateError":
     case "consentFunctionCall":
     case "preliminary":
+    case "testCorrect":
+    case "realizeCorrect":
       return null;
     default:
       back satisfies never;

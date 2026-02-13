@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestGenerateFunction,
   AutoBeTestPrepareFunction,
   AutoBeTestValidateEvent,
@@ -107,6 +108,7 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
   export function compile(props: {
     compiler: IAutoBeCompiler;
     procedure: IAutoBeTestGenerateProcedure;
+    progress: AutoBeProgressEventBase;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestGenerateFunction>> {
     return AutoBeTestFunctionProgrammer.compile({
@@ -117,6 +119,7 @@ ${operation.parameters.map((p) => `  ${p.name}: ${p.schema.type};`).join("\n")}
         [props.procedure.function.location]: props.procedure.function.content,
         [props.procedure.prepare.location]: props.procedure.prepare.content,
       },
+      progress: props.progress,
       step: props.step,
     });
   }

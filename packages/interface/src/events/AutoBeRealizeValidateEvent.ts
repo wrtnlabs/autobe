@@ -1,5 +1,6 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler/IAutoBeTypeScriptCompileResult";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Realize agent validates the generated implementation
@@ -19,7 +20,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeValidateEvent extends AutoBeEventBase<"realizeValidate"> {
+export interface AutoBeRealizeValidateEvent
+  extends AutoBeEventBase<"realizeValidate">, AutoBeProgressEventBase {
   /**
    * Implementation files that failed compilation validation as key-value pairs.
    *

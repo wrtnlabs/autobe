@@ -1,6 +1,7 @@
 import { IAutoBeTypeScriptCompileResult } from "../compiler";
 import { AutoBeTestFunction } from "../histories";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
+import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Test agent validates the generated test code using the
@@ -21,7 +22,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  */
 export interface AutoBeTestValidateEvent<
   Function extends AutoBeTestFunction = AutoBeTestFunction,
-> extends AutoBeEventBase<"testValidate"> {
+>
+  extends AutoBeEventBase<"testValidate">, AutoBeProgressEventBase {
   /**
    * Function type indicating the specific test writing operation performed.
    *

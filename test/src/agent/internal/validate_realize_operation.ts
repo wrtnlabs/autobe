@@ -18,7 +18,7 @@ export const validate_realize_operation = async (props: {
   project: AutoBeExampleProject;
   vendor: string;
 }): Promise<AutoBeRealizeOperationFunction[]> => {
-  const progress = (): AutoBeProgressEventBase => ({
+  const createProgress = (): AutoBeProgressEventBase => ({
     total: 0,
     completed: 0,
   });
@@ -40,13 +40,15 @@ export const validate_realize_operation = async (props: {
       project: props.project,
       file: "realize.transformer.json",
     })) ?? [];
+
+  const validateProgress: AutoBeProgressEventBase = createProgress();
   const operations: AutoBeRealizeOperationFunction[] =
     await orchestrateRealizeOperation(props.agent.getContext(), {
       authorizations,
       collectors,
       transformers,
-      writeProgress: progress(),
-      correctProgress: progress(),
+      writeProgress: createProgress(),
+      validateProgress,
     });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,
@@ -64,6 +66,7 @@ export const validate_realize_operation = async (props: {
         collectors,
         transformers,
       }),
+      progress: () => validateProgress,
     },
   );
   if (compiled.result.type === "failure") {

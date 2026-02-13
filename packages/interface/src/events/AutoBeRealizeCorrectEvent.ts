@@ -1,7 +1,6 @@
 import { AutoBeRealizeFunction } from "../histories";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
-import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
  * Event fired when the Realize agent corrects and finalizes a faulty
@@ -19,10 +18,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author Samchon
  */
 export interface AutoBeRealizeCorrectEvent
-  extends
-    AutoBeEventBase<"realizeCorrect">,
-    AutoBeProgressEventBase,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"realizeCorrect">, AutoBeAggregateEventBase {
   kind: "casting" | "overall";
 
   function: AutoBeRealizeFunction;
