@@ -2,3 +2,6 @@ bin/
 lib/
 node_modules/
 test/results/
+
+apps/hackathon-server/src/prisma/
+packages/compiler/src/raw/
