@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
@@ -16,7 +17,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
@@ -111,24 +111,23 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
   const pathSegments = props.operation.path
     .split("/")
     .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
-  const queryText = [
+  const queryText: string = [
     "test",
     "scenario",
     props.operation.method,
     ...pathSegments,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "testScenario");
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "testScenario" },
   );
 
   const authorizations: AutoBeInterfaceAuthorization[] =
@@ -286,4 +285,3 @@ function createController(props: {
 }
 
 const SOURCE = "testScenario" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

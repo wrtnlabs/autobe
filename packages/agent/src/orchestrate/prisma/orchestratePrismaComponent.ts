@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabaseComponent,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
@@ -13,7 +14,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
@@ -64,8 +64,8 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
-  const queryText = [
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const queryText: string = [
     "prisma",
     "schema",
     "component",
@@ -73,13 +73,12 @@ async function process(
     props.group.namespace,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "prismaComponent");
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "prismaComponent" },
   );
 
   const preliminary: AutoBePreliminaryController<
@@ -201,4 +200,3 @@ type Validator = (
 ) => IValidation<IAutoBeDatabaseComponentApplication.IProps>;
 
 const SOURCE = "databaseComponent" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

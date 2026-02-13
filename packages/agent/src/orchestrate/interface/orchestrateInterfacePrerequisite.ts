@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -13,7 +14,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { RagModePreset, getContextModeSettings } from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfacePrerequisiteHistory } from "./histories/transformInterfacePrerequisiteHistory";
@@ -64,7 +64,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfacePrerequisiteEvent | null> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
 
   const domains = Array.from(
     new Set(
@@ -74,18 +74,17 @@ async function process(
 
   const paths = props.operation.path;
 
-  const queryText = `
+  const queryText: string = `
     Domains: ${domains}
     Task: ${paths}
   `.trim();
 
-  const ragSettings = getContextModeSettings(undefined, RAG_PRESET, "interfacePrerequisite");
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "interfacePrerequisite" },
   );
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
@@ -235,4 +234,3 @@ function createController(props: {
 }
 
 const SOURCE = "interfacePrerequisite" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

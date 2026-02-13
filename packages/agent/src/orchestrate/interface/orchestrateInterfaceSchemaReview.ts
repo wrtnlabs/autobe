@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaPropertyRevise,
@@ -15,10 +16,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
@@ -118,25 +115,20 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
 
   const schemaNames = [props.typeName];
   const opSummaries = props.reviewOperations
     .map((op) => `${op.method} ${op.path}: ${op.name}`)
     .join("\n");
-  const queryText = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
+  const queryText: string = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "interfaceSchemaReview",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "interfaceSchemaReview" },
   );
 
   const preliminary: AutoBePreliminaryController<
@@ -327,4 +319,3 @@ type Validator<Revise extends AutoBeInterfaceSchemaPropertyRevise> = (
 ) => IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>>;
 
 const SOURCE = "interfaceSchemaReview" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaComplementEvent,
@@ -16,10 +17,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceSchemaComplementHistory } from "./histories/transformInterfaceSchemaComplementHistory";
@@ -79,7 +76,7 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
   const relatedOp = props.document.operations.find(
     (o) =>
       o.requestBody?.typeName === props.typeName ||
@@ -90,23 +87,18 @@ async function process(
 
   const task = props.instruction.replace(/\s+/g, " ").trim().slice(0, 200);
 
-  const queryText = `
+  const queryText: string = `
 Type: ${props.typeName}
 Ops: ${opHint || "N/A"}
 Task: ${task}
 `.trim();
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "interfaceComplement",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "interfaceComplement" },
   );
 
   const preliminary: AutoBePreliminaryController<
@@ -332,4 +324,3 @@ const isReferenced = (
   });
   return found;
 };
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

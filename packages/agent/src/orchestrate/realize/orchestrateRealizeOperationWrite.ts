@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -17,10 +18,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
@@ -79,12 +76,12 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
 
   const pathSegments = props.scenario.operation.path
     .split("/")
     .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
-  const queryText = [
+  const queryText: string = [
     "operation",
     "write",
     props.scenario.operation.method,
@@ -92,17 +89,12 @@ async function process(
     props.scenario.functionName,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "realizeOperationWrite",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "realizeOperationWrite" },
   );
 
   const preliminary: AutoBePreliminaryController<
@@ -265,4 +257,3 @@ type Validator = (
 ) => IValidation<IAutoBeRealizeOperationWriteApplication.IProps>;
 
 const SOURCE = "realizeWrite" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

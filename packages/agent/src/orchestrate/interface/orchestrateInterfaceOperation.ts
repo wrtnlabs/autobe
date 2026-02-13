@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
@@ -18,10 +19,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
@@ -144,27 +141,22 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeOpenApi.IOperation[]> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
   const pathSegments = props.design.endpoint.path
     .split("/")
     .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
-  const queryText = [
+  const queryText: string = [
     "operation",
     props.design.endpoint.method,
     ...pathSegments,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "interfaceOperation",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "interfaceOperation" },
   );
 
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
@@ -324,4 +316,3 @@ function createController(props: {
 }
 
 const SOURCE = "interfaceOperation" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

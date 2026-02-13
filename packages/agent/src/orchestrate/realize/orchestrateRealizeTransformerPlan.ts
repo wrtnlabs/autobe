@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
@@ -16,10 +17,6 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeTransformerPlanHistory } from "./histories/transformRealizeTransformerPlanHistory";
@@ -81,9 +78,9 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerPlan[]> {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
 
-  const queryText = [
+  const queryText: string = [
     "transformer",
     "plan",
     "dto",
@@ -91,17 +88,12 @@ async function process(
     props.dtoTypeName,
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "realizeTransformerPlan",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "realizeTransformerPlan" },
   );
 
   const preliminary: AutoBePreliminaryController<
@@ -257,4 +249,3 @@ type Validator = (
 ) => IValidation<IAutoBeRealizeTransformerPlanApplication.IProps>;
 
 const SOURCE = "realizePlan" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_NONE";

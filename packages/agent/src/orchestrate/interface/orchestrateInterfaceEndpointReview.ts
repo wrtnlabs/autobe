@@ -1,5 +1,6 @@
 import {
   AutoBeAnalyzeActor,
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -14,10 +15,6 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { getEmbedder } from "../../utils/getEmbedder";
-import {
-  RagModePreset,
-  getContextModeSettings,
-} from "../../utils/resolveContextMode";
 import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
@@ -49,8 +46,8 @@ export const orchestrateInterfaceEndpointReview = async (
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
-  const analyzeFiles = ctx.state().analyze?.files ?? [];
-  const queryText = [
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const queryText: string = [
     "interface",
     "endpoint",
     "review",
@@ -59,17 +56,12 @@ export const orchestrateInterfaceEndpointReview = async (
     ...props.designs.map((d) => `${d.endpoint.method} ${d.endpoint.path}`),
   ].join(" ");
 
-  const ragSettings = getContextModeSettings(
-    undefined,
-    RAG_PRESET,
-    "interfaceEndpointReview",
-  );
-  const ragAnalysisFiles = await buildAnalysisContextFiles(
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
     getEmbedder(),
     analyzeFiles,
     queryText,
-    ragSettings.mode,
-    { log: ragSettings.log, logPrefix: ragSettings.logPrefix },
+    "TOPK",
+    { log: false, logPrefix: "interfaceEndpointReview" },
   );
 
   const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
@@ -215,4 +207,3 @@ const createController = (props: {
 };
 
 const SOURCE = "interfaceEndpointReview" satisfies AutoBeEventSource;
-const RAG_PRESET: RagModePreset = "TOPK_FULL";
