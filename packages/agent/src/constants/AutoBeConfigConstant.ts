@@ -48,7 +48,7 @@ export const enum AutoBeConfigConstant {
    * `DATABASE_CORRECT_RETRY` which allows more iterations due to the cascading
    * nature of schema errors.
    */
-  COMPILER_RETRY = 5,
+  COMPILER_RETRY = 4,
 
   /**
    * Retry attempts specifically for Prisma schema correction loops.
