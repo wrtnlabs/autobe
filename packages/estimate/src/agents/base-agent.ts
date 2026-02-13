@@ -40,7 +40,7 @@ export abstract class BaseAgent {
         summary: parsed.summary || "No summary provided",
       };
     } catch (_error) {
-      console.error("Failed to parse agent response:", error);
+      console.error("Failed to parse agent response:", _error);
       console.error("Raw content:", content);
 
       return {
