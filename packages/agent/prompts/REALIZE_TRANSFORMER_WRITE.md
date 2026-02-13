@@ -257,6 +257,28 @@ totalQuantity: input.orders.reduce((sum, o) => sum + o.quantity, 0),
 | Non-transformable DTOs | Not DB-backed (pagination, computed) |
 | Simple scalar mapping | No complex logic |
 
+**When writing inline nested objects, ALWAYS append `satisfies IDtoType`**:
+
+```typescript
+// ✅ CORRECT - inline with satisfies
+export async function transform(input: Payload): Promise<IArticle> {
+  return {
+    id: input.id,
+    author: {
+      id: input.author.id,
+      name: input.author.name,
+    } satisfies IAuthor.ISummary,
+    created_at: input.created_at.toISOString(),
+  };
+}
+
+// ❌ WRONG - inline without satisfies
+author: {
+  id: input.author.id,
+  name: input.author.name,
+},  // Type error points to the entire return, not this object
+```
+
 ## 10. Final Checklist
 
 ### Database Schema

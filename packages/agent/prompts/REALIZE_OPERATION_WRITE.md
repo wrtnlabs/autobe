@@ -235,6 +235,36 @@ shopping_customer_id: props.customer.id // FORBIDDEN!
 | Optional field (null → undefined) | `record.field === null ? undefined : record.field` |
 | Nullable field (keep null) | `record.field ? toISOStringSafe(record.field) : null` |
 | Branded type | `record.id as string & tags.Format<"uuid">` |
+| Nested object | `{ id: record.author.id, ... } satisfies IAuthor.ISummary` |
+
+**Nested object `satisfies` rule**: When manually constructing a return object, EVERY nested object literal that maps to a known DTO type MUST have `satisfies IDtoType` appended. This catches field mismatches at compile time.
+
+```typescript
+// ✅ CORRECT - satisfies on every nested object
+return {
+  id: record.id,
+  title: record.title,
+  author: {
+    id: record.author.id,
+    name: record.author.name,
+    created_at: record.author.created_at.toISOString(),
+  } satisfies IAuthor.ISummary,
+  category: {
+    id: record.category.id,
+    name: record.category.name,
+  } satisfies ICategory.ISummary,
+  created_at: record.created_at.toISOString(),
+};
+
+// ❌ WRONG - nested object without satisfies
+return {
+  id: record.id,
+  author: {
+    id: record.author.id,
+    name: record.author.name,
+  },  // Missing satisfies — type error points to the entire return, not this object
+};
+```
 
 ### 7.5. Manual CREATE Example
 
@@ -249,7 +279,7 @@ export async function postShoppingSaleReview(props: {
   });
   if (!sale) throw new HttpException("Sale not found", 404);
 
-  const created = await MyGlobal.prisma.shopping_sale_reviews.create({
+  const review = await MyGlobal.prisma.shopping_sale_reviews.create({
     data: {
       id: v4(),
       content: props.body.content,
@@ -257,19 +287,21 @@ export async function postShoppingSaleReview(props: {
       sale: { connect: { id: props.saleId } },
       customer: { connect: { id: props.customer.id } },
       session: { connect: { id: props.customer.session_id } },
-      created_at: toISOStringSafe(new Date()),
-      updated_at: toISOStringSafe(new Date()),
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
     },
   });
 
   return {
-    id: created.id,
+    id: review.id,
     content: created.content,
-    rating: created.rating,
-    sale_id: created.shopping_sale_id,
-    customer_id: created.shopping_customer_id,
-    created_at: toISOStringSafe(created.created_at),
-    updated_at: toISOStringSafe(created.updated_at),
+    rating: review.rating,
+    sale_id: review.shopping_sale_id,
+    customer_id: review.shopping_customer_id,
+    created_at: review.created_at.toISOString(),
+    updated_at: review.updated_at.toISOString(),
+    deleted_at: review.deleted_at?.toISOString() ?? null,
   };
 }
 ```

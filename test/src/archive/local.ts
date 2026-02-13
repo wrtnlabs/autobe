@@ -35,7 +35,10 @@ const archive = async (props: {
   });
   await FileSystemIterator.save({
     root: `${TestGlobal.ROOT}/results/${props.vendor}/${props.project}/${props.phase}`,
-    files,
+    files: {
+      ...files,
+      "pnpm-workspace.yaml": "",
+    },
   });
 };
 
