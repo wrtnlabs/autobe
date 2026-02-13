@@ -4,8 +4,8 @@ import { tags } from "typia";
  * Request to retrieve analysis files from a previous version.
  *
  * This type is used to load analysis files (requirements documents) that were
- * generated in a **previous version** of the AutoBE generation pipeline.
- * This is NOT about re-requesting files within the same execution, but rather
+ * generated in a **previous version** of the AutoBE generation pipeline. This
+ * is NOT about re-requesting files within the same execution, but rather
  * accessing artifacts from an earlier version.
  *
  * **Use Case:** When regenerating or modifying the backend application based on
@@ -15,30 +15,29 @@ import { tags } from "typia";
  *
  * **Key Difference from `getAnalysisFiles`:**
  *
- * - `getAnalysisFiles`: Fetches analysis files from the **current version**
- *   (the version being generated right now)
+ * - `getAnalysisFiles`: Fetches analysis files from the **current version** (the
+ *   version being generated right now)
  * - `getPreviousAnalysisFiles`: Fetches analysis files from the **previous
  *   version** (the last successfully generated version)
  *
  * **Example Scenario:**
  *
- * ```
- * Initial generation:
- * - ANALYZE phase creates: UserManagement.md, OrderWorkflow.md
- * - Generation completes successfully
+ *     Initial generation:
+ *     - ANALYZE phase creates: UserManagement.md, OrderWorkflow.md
+ *     - Generation completes successfully
  *
- * User: "Add payment integration to orders"
+ *     User: "Add payment integration to orders"
  *
- * Regeneration:
- * - ANALYZE phase starts regeneration
- * - Calls getPreviousAnalysisFiles(["OrderWorkflow.md"])
- *   → Loads the previous version of OrderWorkflow.md as reference
- * - Creates new version of OrderWorkflow.md with payment integration
- * ```
+ *     Regeneration:
+ *     - ANALYZE phase starts regeneration
+ *     - Calls getPreviousAnalysisFiles(["OrderWorkflow.md"])
+ *       → Loads the previous version of OrderWorkflow.md as reference
+ *     - Creates new version of OrderWorkflow.md with payment integration
  *
  * **Waterfall + Spiral Pattern:**
  *
  * This aligns with AutoBE's regeneration cycles where:
+ *
  * - Compilation failures trigger regeneration
  * - User modifications trigger new versions
  * - Previous artifacts serve as reference context for improvements
@@ -66,7 +65,8 @@ export interface IAutoBePreliminaryGetPreviousAnalysisFiles {
    * - These files MUST exist in the previous version
    * - This function is only available when a previous version exists
    * - Used for reference/comparison, not for re-requesting within same execution
-   * - File names are the same as in the current version (e.g., "UserManagement.md")
+   * - File names are the same as in the current version (e.g.,
+   *   "UserManagement.md")
    *
    * **When This Function is Available:**
    *

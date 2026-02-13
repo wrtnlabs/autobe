@@ -8,7 +8,8 @@ import { PascalCasePattern } from "../../typings/PascalCasePattern";
  * The decorator integrates with NestJS's guard system and metadata reflection
  * to protect endpoints based on user actors and permissions.
  *
- * Generated decorators are actor-specific and include domain-specific names like
+ * Generated decorators are actor-specific and include domain-specific names
+ * like
  *
  * @author Michael
  * @ShoppingCustomerAuth(), @BbsModeratorAuth(), @AdminAuth(), or other custom

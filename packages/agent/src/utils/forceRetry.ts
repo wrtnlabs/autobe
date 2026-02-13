@@ -8,7 +8,7 @@ export const forceRetry = async <T>(
     try {
       return await task();
     } catch (e) {
-      if (predicate && predicate(e) === false) throw e;
+      if (predicate?.(e) === false) throw e;
       error = e;
     }
   throw error;

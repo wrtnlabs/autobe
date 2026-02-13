@@ -12,7 +12,9 @@
     "playground": "rimraf playground-result && node playground/index.js",
     "release": "pnpm run sync:readme && pnpm run sync:dependencies && bumpp -r",
     "sync:readme": "node deploy/sync_readme.js",
-    "sync:dependencies": "node deploy/sync_dependencies.js"
+    "sync:dependencies": "node deploy/sync_dependencies.js",
+    "format": "prettier --write \"**/*.ts\"",
+    "format:check": "prettier --check \"**/*.ts\""
   },
   "keywords": [],
   "author": "Wrtn Technologies",

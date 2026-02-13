@@ -18,7 +18,7 @@ export async function orchestrateRealizeOperation(
     collectors: AutoBeRealizeCollectorFunction[];
     transformers: AutoBeRealizeTransformerFunction[];
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
   let functions: AutoBeRealizeOperationFunction[] =
@@ -28,19 +28,21 @@ export async function orchestrateRealizeOperation(
       transformers: props.transformers,
       progress: props.writeProgress,
     });
+  props.validateProgress.total += functions.length;
+
   functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
     authorizations: props.authorizations,
     collectors: props.collectors,
     transformers: props.transformers,
     functions,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   functions = await orchestrateRealizeOperationCorrectOverall(ctx, {
     functions,
     authorizations: props.authorizations,
     collectors: props.collectors,
     transformers: props.transformers,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   return functions;
 }

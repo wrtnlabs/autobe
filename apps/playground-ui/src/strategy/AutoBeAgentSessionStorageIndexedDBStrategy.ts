@@ -6,9 +6,7 @@ import {
   IAutoBeEventGroup,
 } from "@autobe/ui";
 
-export class AutoBeAgentSessionStorageIndexedDBStrategy
-  implements IAutoBeAgentSessionStorageStrategy
-{
+export class AutoBeAgentSessionStorageIndexedDBStrategy implements IAutoBeAgentSessionStorageStrategy {
   static get supported(): boolean {
     /** @reference https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB */
     const idb: IDBFactory = window.indexedDB;

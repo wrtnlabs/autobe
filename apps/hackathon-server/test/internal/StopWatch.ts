@@ -4,13 +4,10 @@
  * @author Sachon
  */
 export namespace StopWatch {
-  /**
-   * Type of task.
-   */
+  /** Type of task. */
   export type Task<T> = () => Promise<T>;
 
   /**
-   *
    * @param task
    * @returns
    */
@@ -21,7 +18,6 @@ export namespace StopWatch {
   };
 
   /**
-   *
    * @param title
    * @param task
    * @returns

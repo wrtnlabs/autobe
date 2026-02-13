@@ -19,8 +19,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeInterfaceCompleteEvent
-  extends AutoBeCompleteEventBase<"interfaceComplete"> {
+export interface AutoBeInterfaceCompleteEvent extends AutoBeCompleteEventBase<"interfaceComplete"> {
   /**
    * The complete OpenAPI document containing the finalized API specification.
    *

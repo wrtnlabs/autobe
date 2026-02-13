@@ -11,13 +11,16 @@ import { getPrerequisites } from "../utils/getPrerequisites";
 /**
  * Transform test scenario review context into conversational history.
  *
- * Creates the complete conversation history for reviewing a single test scenario,
- * including system prompts, user instructions, and the scenario to be reviewed.
+ * Creates the complete conversation history for reviewing a single test
+ * scenario, including system prompts, user instructions, and the scenario to be
+ * reviewed.
  *
  * @param props - Configuration for history transformation
  * @param props.state - Current AutoBe state containing interface document
- * @param props.instruction - E2E-test-specific instructions from user requirements
- * @param props.scenario - Single test scenario to review and potentially improve
+ * @param props.instruction - E2E-test-specific instructions from user
+ *   requirements
+ * @param props.scenario - Single test scenario to review and potentially
+ *   improve
  * @param props.preliminary - Controller for RAG-based preliminary data requests
  * @returns Complete conversation history ready for LLM agent processing
  */

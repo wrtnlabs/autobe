@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestPrepareFunction,
   AutoBeTestPrepareMapping,
   AutoBeTestValidateEvent,
@@ -95,6 +96,7 @@ ${Object.keys(props.schema.properties).map(
     compiler: IAutoBeCompiler;
     document: AutoBeOpenApi.IDocument;
     procedure: IAutoBeTestPrepareProcedure;
+    progress: AutoBeProgressEventBase;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestPrepareFunction>> {
     const components: AutoBeOpenApi.IComponents = {
@@ -113,7 +115,6 @@ ${Object.keys(props.schema.properties).map(
     });
     return await AutoBeTestFunctionProgrammer.compile({
       compiler: props.compiler,
-      step: props.step,
       document: {
         operations: [],
         components,
@@ -124,6 +125,8 @@ ${Object.keys(props.schema.properties).map(
         ["src/api/functional/index.ts"]:
           "export const NO_SDK_FUNCTION_AT_ALL = 1",
       },
+      progress: props.progress,
+      step: props.step,
     });
   }
 

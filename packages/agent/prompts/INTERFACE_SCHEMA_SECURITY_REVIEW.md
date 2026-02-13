@@ -12,20 +12,30 @@ You do not review general entity DTOs (`IEntity.ICreate`, etc.).
 
 **Function calling is MANDATORY** - call immediately without asking.
 
-## 1. How Revisions Work
+## 1. Two Output Arrays
 
-Enumerate every property in the schema, then assign exactly one revision to each. Each key appears in `revises` at most once — choose the single best action and commit to it.
+Your output has two separate arrays:
+
+- **`excludes`**: Security-sensitive DB properties that must never appear in this DTO
+- **`revises`**: Operations on DTO properties (`keep`, `erase`, `create`, `update`, `depict`, `nullish`)
+
+Each DTO property appears exactly once in `revises`. Each security-sensitive DB property appears either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
 **Setting `databaseSchemaProperty`**: Use column name for DB-mapped fields (e.g., `password` → `"password_hashed"`). Use `null` for runtime-captured fields like session context (verify valid logic in `x-autobe-specification`).
 
-| Situation | Revision |
-|-----------|----------|
-| Secure, correctly placed field | `keep` |
-| Security violation (exposed secret, misplaced session field) | `erase` |
-| Missing required security field | `create` |
-| Security field with wrong schema/type | `update` |
-| Security field with wrong documentation only | `depict` |
-| Security field with wrong nullability only | `nullish` |
+| Array | Situation | Operation |
+|-------|-----------|-----------|
+| `revises` | Secure, correctly placed field | `keep` |
+| `revises` | Security violation in DTO (exposed secret, misplaced session field) | `erase` |
+| `revises` | Missing required security field | `create` |
+| `revises` | Security field with wrong schema/type | `update` |
+| `revises` | Security field with wrong documentation only | `depict` |
+| `revises` | Security field with wrong nullability only | `nullish` |
+| `excludes` | DB property that must never appear in this DTO | (exclusion entry) |
+
+**`erase` vs `excludes`**:
+- `erase` (in `revises`): Property exists in DTO but shouldn't → remove it
+- `excludes`: DB property should never appear in this DTO → declare exclusion
 
 ## 2. Password Fields
 
@@ -82,7 +92,8 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
-  revises: AutoBeInterfaceSchemaPropertyRevise[];
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // Security-sensitive DB properties not in DTO
+  revises: AutoBeInterfaceSchemaPropertyRevise[];    // DTO property operations
 }
 ```
 
@@ -90,9 +101,19 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ## 6. Revision Reference
 
-### `erase`
+### `erase` - Remove Security Violation from DTO
 ```typescript
 { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Password hash must never be exposed", type: "erase" }
+```
+
+### `excludes` entries - DB Property Must Not Appear in DTO
+
+Each entry has `databaseSchemaProperty` and `reason` — no `key` or `type` needed.
+
+```typescript
+{ databaseSchemaProperty: "salt", reason: "Security: salt must never be exposed in Response DTO" }
+{ databaseSchemaProperty: "refresh_token", reason: "Security: refresh token must never be in IActor.ISummary" }
+{ databaseSchemaProperty: "session_id", reason: "Security: server-managed FK, never in request DTO body" }
 ```
 
 ### `create`
@@ -125,35 +146,57 @@ Use when schema type is correct but nullable/required is wrong.
 
 ## 7. Complete Example
 
-ILogin schema has `[email, password_hashed]`. Needs password fix and session fields.
+**Scenario**: Reviewing `IMember.ILogin` (Request DTO)
+
+| Category | Properties |
+|----------|------------|
+| DB Columns | `id`, `email`, `password_hashed`, `salt`, `refresh_token`, `created_at` |
+| DTO Properties | `email`, `password_hashed` |
+
+**Issues Found**: `password_hashed` must be replaced with `password`. Missing session fields `href`, `referrer`.
+
+**Mapping Plan**:
+
+| DB Property | → | Action | Reason |
+|-------------|---|--------|--------|
+| `email` | `email` | keep | Required identifier |
+| `password_hashed` | `password_hashed` → erase, `password` → create | erase + create | Replace hash with plaintext input |
+| `id` | — | exclude | Auto-generated PK |
+| `salt` | — | exclude | Internal cryptographic field |
+| `refresh_token` | — | exclude | Token field, never in request |
+| `created_at` | — | exclude | Auto-generated timestamp |
+| (runtime) | `href`, `referrer` | create | Session context fields |
 
 ```typescript
 process({
-  thinking: "Enumerated 2 properties. password_hashed must be replaced, session fields missing.",
+  thinking: "All 2 DTO properties checked. All 6 DB properties handled: 2 mapped, 4 excluded. Added session fields.",
   request: {
     type: "complete",
-    review: "password_hashed: wrong field. Missing: password, href, referrer.",
+    review: "password_hashed replaced with password. Excluded security fields. Added session context.",
+    excludes: [
+      { databaseSchemaProperty: "id", reason: "Auto-generated PK" },
+      { databaseSchemaProperty: "salt", reason: "Internal cryptographic field" },
+      { databaseSchemaProperty: "refresh_token", reason: "Token field, never in request" },
+      { databaseSchemaProperty: "created_at", reason: "Auto-generated timestamp" }
+    ],
     revises: [
-      { key: "email", databaseSchemaProperty: "email", reason: "Required identifier", type: "keep" },
-      { key: "password_hashed", databaseSchemaProperty: "password_hashed", reason: "Clients must not send hashes", type: "erase" },
-      { key: "password", databaseSchemaProperty: "password_hashed", reason: "Login requires password", type: "create",
-        specification: "Plaintext password. Server hashes and verifies.",
-        description: "User's password for authentication.",
+      { key: "email", databaseSchemaProperty: "email", type: "keep", reason: "Required identifier" },
+      { key: "password_hashed", databaseSchemaProperty: "password_hashed", type: "erase", reason: "Clients must not send hashes" },
+      { key: "password", databaseSchemaProperty: "password_hashed", type: "create", reason: "Login requires password",
+        specification: "Plaintext password. Server hashes and verifies.", description: "User's password.",
         schema: { type: "string" }, required: true },
-      { key: "href", databaseSchemaProperty: null, reason: "Session context required", type: "create",
-        specification: "Current page URL when login was initiated.",
-        description: "Page URL at login time.",
+      { key: "href", databaseSchemaProperty: null, type: "create", reason: "Session context required",
+        specification: "Current page URL at login.", description: "Page URL at login time.",
         schema: { type: "string", format: "uri" }, required: true },
-      { key: "referrer", databaseSchemaProperty: null, reason: "Session context required", type: "create",
-        specification: "Referrer URL when login was initiated.",
-        description: "Referrer URL at login time.",
+      { key: "referrer", databaseSchemaProperty: null, type: "create", reason: "Session context required",
+        specification: "Referrer URL at login.", description: "Referrer URL at login time.",
         schema: { type: "string", format: "uri" }, required: true }
     ]
   }
 })
 ```
 
-Note how every existing property appears exactly once. Use `update`, `depict`, or `nullish` when a security field's type, documentation, or nullability is wrong but no erase/create is needed.
+**Result**: 6 DB properties → 2 in `revises` + 4 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
@@ -169,7 +212,10 @@ Note how every existing property appears exactly once. Use `update`, `depict`, o
 - [ ] IActor, ISummary, IAuthorized, IRefresh do NOT have `ip`, `href`, `referrer`
 
 **Coverage**:
-- [ ] Every property has exactly one revision (no missing, no duplicates)
+- [ ] Every DTO property has exactly one revision in `revises` (no missing, no duplicates)
+- [ ] Every security-sensitive DB property either mapped via `databaseSchemaProperty` in `revises`, or declared in `excludes`
+- [ ] No DB property appears in both `excludes` and `revises`
+- [ ] `excludes` used for DB properties that must never appear (salt, refresh_token, session_id, etc.)
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields

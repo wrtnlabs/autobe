@@ -1,4 +1,7 @@
-import { AutoBeInterfaceSchemaPropertyRefine } from "@autobe/interface";
+import {
+  AutoBeInterfaceSchemaPropertyExclude,
+  AutoBeInterfaceSchemaPropertyRefine,
+} from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -148,9 +151,18 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     description: string;
 
     /**
-     * Property-level refinement operations.
+     * Database properties explicitly excluded from this DTO.
      *
-     * Each operation enriches or corrects a property in the schema:
+     * Declare every database property that intentionally does not appear in
+     * this DTO. Together with `revises`, this must cover every database
+     * property — each one must appear in exactly one of the two arrays.
+     */
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+
+    /**
+     * Property-level refinement operations for DTO properties.
+     *
+     * Every DTO property must appear exactly once with one of:
      *
      * - `depict`: Add documentation to existing property
      * - `create`: Add missing property with documentation
@@ -160,7 +172,10 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Each operation includes the property key, reason for the action, and
      * complete metadata including `databaseSchemaProperty`, `specification`,
      * and `description`.
+     *
+     * Database properties are addressed either here (via
+     * `databaseSchemaProperty`) or in `excludes`. No property can be omitted.
      */
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }
 }

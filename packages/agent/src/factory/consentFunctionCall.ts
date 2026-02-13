@@ -80,7 +80,7 @@ export const consentFunctionCall = async (props: {
             event.errorMessage,
           ),
       },
-      retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+      retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       // stream: false,
     },
     histories: [

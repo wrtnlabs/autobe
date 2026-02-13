@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestAuthorizeFunction,
   AutoBeTestGenerateFunction,
   AutoBeTestOperationFunction,
@@ -43,6 +44,7 @@ export namespace AutoBeTestOperationProgrammer {
     compiler: IAutoBeCompiler;
     document: AutoBeOpenApi.IDocument;
     procedure: IAutoBeTestOperationProcedure;
+    progress: AutoBeProgressEventBase;
     step: number;
   }): Promise<AutoBeTestValidateEvent<AutoBeTestOperationFunction>> {
     const endpoints: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
@@ -110,6 +112,7 @@ export namespace AutoBeTestOperationProgrammer {
         ),
         [props.procedure.function.location]: props.procedure.function.content,
       } satisfies Record<string, string>,
+      progress: props.progress,
       step: props.step,
     });
   }

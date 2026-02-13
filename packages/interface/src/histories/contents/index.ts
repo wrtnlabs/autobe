@@ -32,13 +32,14 @@ export * from "./AutoBeInterfaceEndpointErase";
 export * from "./AutoBeInterfaceEndpointDesign";
 export * from "./AutoBeInterfaceSchemaDesign";
 export * from "./AutoBeInterfaceSchemaCasting";
+export * from "./AutoBeInterfaceSchemaPropertyRevise";
 export * from "./AutoBeInterfaceSchemaPropertyRefine";
 export * from "./AutoBeInterfaceSchemaPropertyDepict";
-export * from "./AutoBeInterfaceSchemaPropertyRevise";
 export * from "./AutoBeInterfaceSchemaPropertyCreate";
 export * from "./AutoBeInterfaceSchemaPropertyErase";
 export * from "./AutoBeInterfaceSchemaPropertyKeep";
 export * from "./AutoBeInterfaceSchemaPropertyNullish";
+export * from "./AutoBeInterfaceSchemaPropertyExclude";
 export * from "./AutoBeInterfaceSchemaPropertyUpdate";
 
 export * from "./AutoBeTestFile";

@@ -285,8 +285,13 @@ export namespace ArchiveLogger {
           (event.schema as any)["x-autobe-database-schema"] ?? "-"
         })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
-        `  - refines:`,
-        ...event.refines.map(
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
+        `  - revises:`,
+        ...event.revises.map(
           (r) =>
             `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
@@ -295,6 +300,11 @@ export namespace ArchiveLogger {
       content.push(
         `  - kind: ${event.kind}`,
         `  - typeName: ${event.typeName}`,
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
         `  - revises: ${event.revises.length}`,
         ...event.revises.map(
           (r) =>

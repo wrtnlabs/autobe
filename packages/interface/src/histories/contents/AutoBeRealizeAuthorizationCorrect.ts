@@ -1,8 +1,7 @@
 import { AutoBeRealizeAuthorization } from "./AutoBeRealizeAuthorization";
 
 /** @author Michael */
-export interface AutoBeRealizeAuthorizationCorrect
-  extends AutoBeRealizeAuthorization {
+export interface AutoBeRealizeAuthorizationCorrect extends AutoBeRealizeAuthorization {
   /**
    * Step 1: TypeScript compilation error analysis and diagnosis.
    *

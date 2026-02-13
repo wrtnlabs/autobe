@@ -73,7 +73,7 @@ export const orchestrateRealize =
       completed: 0,
       total: document.operations.length,
     };
-    const correctProgress: AutoBeProgressEventBase = {
+    const validateProgress: AutoBeProgressEventBase = {
       completed: 0,
       total: 0,
     };
@@ -85,24 +85,15 @@ export const orchestrateRealize =
       await orchestrateRealizeCollector(ctx, {
         planProgress,
         writeProgress,
-        correctProgress,
+        validateProgress,
       });
     const transformers: AutoBeRealizeTransformerFunction[] =
       await orchestrateRealizeTransformer(ctx, {
         planProgress,
         writeProgress,
-        correctProgress,
+        validateProgress: validateProgress,
       });
 
-    const compile = (operations: AutoBeRealizeOperationFunction[]) =>
-      compileRealizeFiles(ctx, {
-        functions: [...collectors, ...transformers, ...operations],
-        additional: AutoBeRealizeOperationProgrammer.getAdditional({
-          authorizations,
-          collectors,
-          transformers,
-        }),
-      });
     const out = (next: {
       event: AutoBeRealizeValidateEvent;
       operations: AutoBeRealizeOperationFunction[];
@@ -122,23 +113,31 @@ export const orchestrateRealize =
       });
 
     // FINAL STEP, THE OPERATIONS
-    const finalOperations: AutoBeRealizeOperationFunction[] =
+    const operations: AutoBeRealizeOperationFunction[] =
       await orchestrateRealizeOperation(ctx, {
         authorizations,
         collectors,
         transformers,
         writeProgress,
-        correctProgress,
+        validateProgress: validateProgress,
       });
     return out({
-      operations: finalOperations,
+      operations,
       controllers: await (
         await ctx.compiler()
       ).realize.controller({
         document: ctx.state().interface!.document,
-        functions: finalOperations,
+        functions: operations,
         authorizations,
       }),
-      event: await compile(finalOperations),
+      event: await compileRealizeFiles(ctx, {
+        functions: [...collectors, ...transformers, ...operations],
+        additional: AutoBeRealizeOperationProgrammer.getAdditional({
+          authorizations,
+          collectors,
+          transformers,
+        }),
+        progress: () => validateProgress,
+      }),
     });
   };

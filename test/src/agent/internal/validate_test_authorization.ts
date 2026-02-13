@@ -28,7 +28,7 @@ export const validate_test_authorization = async (props: {
         op.responseBody !== null,
     ).length,
   };
-  const correctProgress: AutoBeProgressEventBase = {
+  const validateProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
@@ -37,7 +37,7 @@ export const validate_test_authorization = async (props: {
       instruction: "",
       document,
       writeProgress,
-      correctProgress,
+      validateProgress,
     });
 
   await assert_test_compilation({

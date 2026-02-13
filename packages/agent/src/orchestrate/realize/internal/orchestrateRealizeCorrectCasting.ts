@@ -48,6 +48,7 @@ export const orchestrateRealizeCorrectCasting = async <
     {
       functions: props.functions,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
   return predicate(
@@ -167,6 +168,7 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
     {
       functions: allFunctionsForValidation,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
 
@@ -265,7 +267,6 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
       ],
     }),
   });
-  ++props.progress.completed;
 
   if (pointer.value === null)
     return {
@@ -370,11 +371,26 @@ const compileWithFiltering = async <
   props: {
     functions: RealizeFunction[];
     programmer: IProgrammer<RealizeFunction>;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeValidateEvent> => {
   const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
     functions: props.functions,
     additional: props.programmer.additional(props.functions),
+    progress: (result) => {
+      if (result.type === "success")
+        props.progress.completed = props.functions.length;
+      else if (result.type === "failure")
+        props.progress.completed =
+          props.progress.completed -
+          new Set(
+            result.diagnostics
+              .map((d) => d.file)
+              .filter((f) => f !== null)
+              .filter((x) => !!props.functions.find((y) => y.location === x)),
+          ).size;
+      return props.progress;
+    },
   });
   if (compiled.result.type !== "failure") {
     return compiled;

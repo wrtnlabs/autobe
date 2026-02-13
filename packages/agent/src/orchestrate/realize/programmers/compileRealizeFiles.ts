@@ -1,4 +1,5 @@
 import {
+  AutoBeProgressEventBase,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeCompiler,
@@ -14,6 +15,9 @@ export async function compileRealizeFiles(
   props: {
     functions: AutoBeRealizeFunction[];
     additional: Record<string, string>;
+    progress: (
+      compiled: IAutoBeTypeScriptCompileResult,
+    ) => AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeValidateEvent> {
   const prisma: IAutoBePrismaCompileResult | undefined =
@@ -56,5 +60,6 @@ export async function compileRealizeFiles(
     result: compiled,
     step: ctx.state().analyze?.step ?? 0,
     created_at: new Date().toISOString(),
+    ...props.progress(compiled),
   };
 }

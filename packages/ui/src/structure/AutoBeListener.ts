@@ -258,7 +258,6 @@ export class AutoBeListener {
         this.dict_.delete("realizePlan");
         this.dict_.delete("realizeWrite");
         this.dict_.delete("realizeValidate");
-        this.dict_.delete("realizeCorrect");
         this.insert(event);
       },
       realizePlan: async (event) => {
@@ -278,7 +277,6 @@ export class AutoBeListener {
         this.dict_.delete("realizePlan");
         this.dict_.delete("realizeWrite");
         this.dict_.delete("realizeValidate");
-        this.dict_.delete("realizeCorrect");
         this.state_.setRealize(event);
         this.insert(event);
       },

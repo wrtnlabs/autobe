@@ -3,67 +3,39 @@ import { StringUtil } from "@autobe/utils";
 import fs from "fs";
 import path from "path";
 
-const DIRECTORY = path.resolve(__dirname, "../prompts");
-
-// const prepareExample = async (
-//   title: string,
-// ): Promise<Record<string, string>> => {
-//   await RepositoryFileSystem.clone("samchon", `${title}-backend`);
-//   const directory: string = path.resolve(
-//     `${__dirname}/../../../internals/repositories/samchon/${title}-backend`,
-//   );
-//   const analysis: Record<string, string> = await FileSystemIterator.read({
-//     root: path.resolve(`${directory}`),
-//     extension: "md",
-//   });
-//   const prisma = await new AutoBeDatabaseCompiler().compile({
-//     files: await FileSystemIterator.read({
-//       root: path.resolve(`${directory}/prisma/schema`),
-//       extension: "prisma",
-//     }),
-//   });
-//   if (prisma.type !== "success") {
-//     console.log(prisma);
-//     throw new Error("Failed to compile prisma");
-//   }
-
-//   const swagger: OpenApi.IDocument = await RepositoryFileSystem.swagger(
-//     "samchon",
-//     `${title}-backend`,
-//   );
-//   const document: AutoBeOpenApi.IDocument = invertOpenApiDocument(swagger);
-
-//   return {
-//     [`EXAMPLE_${title.toUpperCase()}_ANALYSIS`]: JSON.stringify(analysis),
-//     [`EXAMPLE_${title.toUpperCase()}_PRISMA`]: JSON.stringify({
-//       schemas: prisma.schemas,
-//       diagrams: prisma.diagrams,
-//       document: prisma.document,
-//     }),
-//     [`EXAMPLE_${title.toUpperCase()}_DATABASE_SCHEMAS`]: JSON.stringify(
-//       prisma.schemas,
-//     ),
-//     [`EXAMPLE_${title.toUpperCase()}_INTERFACE_ENDPOINTS`]: JSON.stringify({
-//       endpoints: document.operations.map((o) => ({
-//         path: o.path,
-//         method: o.method,
-//       })),
-//     }),
-//     [`EXAMPLE_${title.toUpperCase()}_INTERFACE_OPERATIONS`]: JSON.stringify({
-//       operations: document.operations,
-//     }),
-//   };
-// };
-
-async function main(): Promise<void> {
-  const directory: string[] = await fs.promises.readdir(DIRECTORY);
+async function buildTemplate(): Promise<void> {
   const record: Record<string, string> = {};
-  const examples: Record<string, string> = {
-    // ...(await prepareExample("bbs")),
-    // ...(await prepareExample("shopping")),
+  const read = async (location: string): Promise<void> => {
+    const content: string = await fs.promises.readFile(
+      path.resolve(__dirname, "../../../internals/template", location),
+      "utf8",
+    );
+    record[location] = content.trim();
   };
+  await read("realize-of-postgres/src/MyGlobal.ts");
+  await FileSystemIterator.save({
+    files: {
+      "AutoBeTemplateFileConstant.ts": [
+        `/* eslint-disable no-template-curly-in-string */`,
+        `export const enum AutoBeTemplateFileConstant {`,
+        ...Object.entries(record).map(
+          ([key, value]) =>
+            `  ${JSON.stringify(key)} = ${JSON.stringify(value)},`,
+        ),
+        "}",
+      ].join("\n"),
+    },
+    root: path.resolve(__dirname, "../src/constants"),
+    overwrite: true,
+  });
+}
 
-  for (const file of directory) {
+async function buildPrompts(): Promise<void> {
+  const DIRECTORY = path.resolve(__dirname, "../prompts");
+
+  const fileList: string[] = await fs.promises.readdir(DIRECTORY);
+  const record: Record<string, string> = {};
+  for (const file of fileList) {
     if (file.endsWith(".md") === false) {
       continue;
     }
@@ -72,8 +44,6 @@ async function main(): Promise<void> {
       "utf8",
     );
     content = content.replaceAll("\r\n", "\n").trim();
-    for (const [key, value] of Object.entries(examples))
-      content = content.replace(`{% ${key} %}`, value);
     record[file.substring(0, file.length - 3)] = content;
   }
   await FileSystemIterator.save({
@@ -91,15 +61,17 @@ async function main(): Promise<void> {
                 ${value}
               `)},`,
         ),
-        // ...Object.entries(examples).map(
-        //   ([key, value]) =>
-        //     `  ${key.toUpperCase()} = ${JSON.stringify(value)},`,
-        // ),
-        `};`,
+        "};",
         "",
       ].join("\n"),
     },
     overwrite: true,
   });
 }
+
+const main = async (): Promise<void> => {
+  await buildPrompts();
+  await buildTemplate();
+};
+
 main().catch(console.error);

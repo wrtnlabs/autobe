@@ -49,7 +49,7 @@ export class TestGlobal {
 
   public static archive: boolean = process.argv.includes("--archive");
   public static vendorModel: string =
-    this.getArguments("vendor")?.[0] ?? "qwen/qwen3-next-80b-a3b-instruct";
+    this.getArguments("vendor")?.[0] ?? "qwen/qwen3-coder-next";
 }
 
 interface IEnvironments {

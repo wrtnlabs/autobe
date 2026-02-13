@@ -21,8 +21,8 @@ export interface IAutoBePreliminaryGetDatabaseSchemas {
   /**
    * List of database table names to retrieve.
    *
-   * Table names from the database schema representing database entities
-   * (e.g., "user", "post", "comment").
+   * Table names from the database schema representing database entities (e.g.,
+   * "user", "post", "comment").
    *
    * CRITICAL: DO NOT request the same schema names that you have already
    * requested in previous calls.

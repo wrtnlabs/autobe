@@ -22,13 +22,14 @@ export async function orchestrateTestAuthorize(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeTestAuthorizeFunction[]> {
   const compile = async (procedure: IAutoBeTestAuthorizeProcedure) =>
     AutoBeTestAuthorizeProgrammer.compile({
       compiler: await ctx.compiler(),
       procedure,
+      progress: props.validateProgress,
       step: ctx.state().analyze?.step ?? 0,
     });
   const replaceImportStatements = async (
@@ -53,7 +54,7 @@ export async function orchestrateTestAuthorize(
       asynchronous: true,
     },
     procedures,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   // procedures = await orchestrateTestCorrectRequest(ctx, {
   //   programmer: {
@@ -71,7 +72,7 @@ export async function orchestrateTestAuthorize(
       controller: (next) => createCorrectOverallController(next),
     },
     instruction: props.instruction,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
     procedures,
     discard: false,
   });

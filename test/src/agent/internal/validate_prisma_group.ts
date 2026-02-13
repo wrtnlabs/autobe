@@ -1,10 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { orchestratePrismaGroup } from "@autobe/agent/src/orchestrate/prisma/orchestratePrismaGroup";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import {
-  AutoBeDatabaseGroup,
-  AutoBeExampleProject,
-} from "@autobe/interface";
+import { AutoBeDatabaseGroup, AutoBeExampleProject } from "@autobe/interface";
 
 export const validate_prisma_group = async (props: {
   agent: AutoBeAgent;

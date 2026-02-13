@@ -1,7 +1,7 @@
 import { AgenticaValidateEvent } from "@agentica/core";
 
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
-import { stringifyValidateFailure } from "../utils/stringifyValidationError";
+import { stringifyValidationFailure } from "../utils/stringifyValidationFailure";
 
 export const getValidationErrorPrompt = (
   events: AgenticaValidateEvent[],
@@ -18,7 +18,7 @@ export const getValidationErrorPrompt = (
           [
             `### ${i + 1}. Previous Validation Error`,
             "",
-            stringifyValidateFailure(ve.result),
+            stringifyValidationFailure(ve.result),
           ].join("\n"),
         )
         .join("\n\n"),

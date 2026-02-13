@@ -25,8 +25,8 @@
  *
  * 1. **Generation Quality**: Different models have varying capabilities in code
  *    generation, reasoning, and following complex instructions
- * 2. **Cost Efficiency**: Token costs vary significantly between models,
- *    affecting overall resource consumption
+ * 2. **Cost Efficiency**: Token costs vary significantly between models, affecting
+ *    overall resource consumption
  * 3. **Performance**: Response times and throughput differ across models
  * 4. **Strategy**: Teams can optimize for quality, speed, or cost based on model
  *    selection

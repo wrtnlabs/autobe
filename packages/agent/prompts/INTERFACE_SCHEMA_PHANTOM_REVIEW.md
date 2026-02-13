@@ -22,6 +22,8 @@ Enumerate every property in the schema, then assign exactly one revision to each
 | Not in DB and no valid rationale | `erase` |
 | DB nullable but DTO says non-null | `nullish` |
 
+You do not add entries to `excludes` — that belongs to content review (for DB properties intentionally not in DTO). Always pass `excludes: []`.
+
 ## 2. What is a Phantom Field?
 
 A property without DB mapping (`x-autobe-database-schema-property: null`) AND without valid business logic in `x-autobe-specification`.
@@ -64,6 +66,7 @@ process({
 interface IComplete {
   type: "complete";
   review: string;
+  excludes: [];                                    // always empty (not your authority)
   revises: AutoBeInterfaceSchemaPropertyRevise[];  // erase, nullish, or keep
 }
 ```
@@ -104,28 +107,46 @@ Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysis
 
 ## 6. Complete Example
 
-Schema has `[id, title, body, bio, created_at]`. Properties `id`, `title`, `bio`, `created_at` have valid `x-autobe-database-schema-property`. Property `body` has `x-autobe-database-schema-property: null` and `x-autobe-specification: "Articles should have body content"` (just logical reasoning, not computable). `bio` is DB nullable but DTO non-null.
+**Scenario**: Reviewing `IBbsArticle` for phantom fields
+
+| DTO Property | `x-autobe-database-schema-property` | `x-autobe-specification` | Status |
+|--------------|-------------------------------------|--------------------------|--------|
+| `id` | `"id"` | — | Valid |
+| `title` | `"title"` | — | Valid |
+| `body` | `null` | "Articles should have body content" | Phantom (just reasoning) |
+| `bio` | `"bio"` | — | Nullability mismatch |
+| `created_at` | `"created_at"` | — | Valid |
+
+**Mapping Plan**:
+
+| DTO Property | Action | Reason |
+|--------------|--------|--------|
+| `id` | keep | Valid DB mapping |
+| `title` | keep | Valid DB mapping |
+| `body` | erase | Phantom: no DB, invalid specification |
+| `bio` | nullish | DB nullable but DTO non-null |
+| `created_at` | keep | Valid DB mapping |
 
 ```typescript
 process({
-  thinking: "Enumerated 5 properties. body has null DB mapping and specification is just logical reasoning. bio has nullability mismatch.",
+  thinking: "All 5 DTO properties checked. Phantom: body. Nullability fix: bio.",
   request: {
     type: "complete",
-    review: "Phantom: body (no DB mapping, invalid specification). Nullability: bio.",
+    review: "Phantom: body. Nullability: bio.",
+    excludes: [],
     revises: [
-      { key: "id", databaseSchemaProperty: "id", reason: "Has valid DB mapping", type: "keep" },
-      { key: "title", databaseSchemaProperty: "title", reason: "Has valid DB mapping", type: "keep" },
-      { key: "body", databaseSchemaProperty: null, reason: "Phantom: null DB mapping, specification is just logical reasoning", type: "erase" },
-      { key: "bio", databaseSchemaProperty: "bio", reason: "DB nullable but DTO non-null", type: "nullish",
-        nullable: true, required: true,
-        specification: null, description: "User's bio. Can be null." },
-      { key: "created_at", databaseSchemaProperty: "created_at", reason: "Has valid DB mapping", type: "keep" }
+      { key: "id", databaseSchemaProperty: "id", type: "keep", reason: "Valid DB mapping" },
+      { key: "title", databaseSchemaProperty: "title", type: "keep", reason: "Valid DB mapping" },
+      { key: "body", databaseSchemaProperty: null, type: "erase", reason: "Phantom: no DB, invalid specification" },
+      { key: "bio", databaseSchemaProperty: "bio", type: "nullish", reason: "DB nullable but DTO non-null",
+        nullable: true, required: true, specification: null, description: "User's bio. Can be null." },
+      { key: "created_at", databaseSchemaProperty: "created_at", type: "keep", reason: "Valid DB mapping" }
     ]
   }
 })
 ```
 
-Note how every property appears exactly once.
+**Result**: 5 DTO properties → all reviewed.
 
 ## 7. Checklist
 

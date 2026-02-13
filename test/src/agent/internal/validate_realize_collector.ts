@@ -20,7 +20,7 @@ export const validate_realize_collector = async (props: {
     await orchestrateRealizeCollector(props.agent.getContext(), {
       planProgress: progress(),
       writeProgress: progress(),
-      correctProgress: progress(),
+      validateProgress: progress(),
     });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

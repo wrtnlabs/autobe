@@ -21,7 +21,7 @@ export async function orchestrateTestPrepare(
     instruction: string;
     document: AutoBeOpenApi.IDocument;
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeTestPrepareFunction[]> {
   const compile = async (procedure: IAutoBeTestPrepareProcedure) =>
@@ -29,6 +29,7 @@ export async function orchestrateTestPrepare(
       compiler: await ctx.compiler(),
       document: props.document,
       procedure,
+      progress: props.validateProgress,
       step: ctx.state().analyze?.step ?? 0,
     });
   const replaceImportStatements = async (
@@ -47,6 +48,8 @@ export async function orchestrateTestPrepare(
       document: props.document,
       progress: props.writeProgress,
     });
+  props.validateProgress.total += procedures.length;
+
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {
       compile,
@@ -54,7 +57,7 @@ export async function orchestrateTestPrepare(
       asynchronous: false,
     },
     procedures,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   procedures = await orchestrateTestCorrectOverall(ctx, {
     programmer: {
@@ -64,7 +67,7 @@ export async function orchestrateTestPrepare(
     },
     procedures,
     instruction: props.instruction,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
     discard: false,
   });
   return procedures.map((p) => p.function);

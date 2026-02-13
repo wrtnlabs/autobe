@@ -21,8 +21,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeTestResetEvent
-  extends AutoBeEventBase<"realizeTestReset"> {
+export interface AutoBeRealizeTestResetEvent extends AutoBeEventBase<"realizeTestReset"> {
   /**
    * Timestamp when the database reset operation was completed.
    *

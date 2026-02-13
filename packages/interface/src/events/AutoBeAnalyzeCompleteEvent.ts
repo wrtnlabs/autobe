@@ -19,8 +19,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  *
  * @author Kakasoo
  */
-export interface AutoBeAnalyzeCompleteEvent
-  extends AutoBeCompleteEventBase<"analyzeComplete"> {
+export interface AutoBeAnalyzeCompleteEvent extends AutoBeCompleteEventBase<"analyzeComplete"> {
   /**
    * Project alias prefix that will be applied to all generated artifacts.
    *

@@ -20,7 +20,7 @@ export const validate_realize_transformer = async (props: {
     await orchestrateRealizeTransformer(props.agent.getContext(), {
       planProgress: progress(),
       writeProgress: progress(),
-      correctProgress: progress(),
+      validateProgress: progress(),
     });
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

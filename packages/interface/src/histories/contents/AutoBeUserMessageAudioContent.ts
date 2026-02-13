@@ -16,8 +16,7 @@ import { AutoBeUserMessageContentBase } from "./AutoBeUserMessageContentBase";
  *
  * @author Samchon
  */
-export interface AutoBeUserMessageAudioContent
-  extends AutoBeUserMessageContentBase<"audio"> {
+export interface AutoBeUserMessageAudioContent extends AutoBeUserMessageContentBase<"audio"> {
   /**
    * Base64 encoded audio data containing the user's voice input.
    *

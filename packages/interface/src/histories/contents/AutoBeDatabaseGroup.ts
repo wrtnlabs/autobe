@@ -12,6 +12,7 @@ import { tags } from "typia";
  *
  * The AI agent analyzes business requirements and creates component skeletons
  * by:
+ *
  * 1. **Reasoning first**: Determining why certain tables belong together
  * 2. **Technical decisions second**: Choosing appropriate namespace and filename
  *
@@ -97,17 +98,16 @@ export interface AutoBeDatabaseGroup {
    * authentication/authorization tables or business domain tables.
    *
    * - **"authorization"**: Contains authentication and authorization tables
-   *   (users, sessions, password resets, email verifications, etc.).
-   *   These groups are processed by the Authorization Agent to generate
-   *   core authentication tables for each actor type.
-   *
+   *   (users, sessions, password resets, email verifications, etc.). These
+   *   groups are processed by the Authorization Agent to generate core
+   *   authentication tables for each actor type.
    * - **"domain"**: Contains business domain tables (products, orders, etc.).
-   *   These groups are processed by the Component Agent to generate
-   *   business logic tables.
+   *   These groups are processed by the Component Agent to generate business
+   *   logic tables.
    *
    * The Authorization Agent only processes groups with `kind: "authorization"`,
-   * while the Component Agent processes all groups but avoids creating
-   * core authentication tables in authorization groups.
+   * while the Component Agent processes all groups but avoids creating core
+   * authentication tables in authorization groups.
    */
   kind: "authorization" | "domain";
 }

@@ -55,10 +55,10 @@ export interface AutoBeDatabaseCompleteEvent extends AutoBeCompleteEventBase<"da
    * Results of compiling the generated Prisma schema files.
    *
    * Contains the {@link IAutoBePrismaCompileResult} from processing the
-   * generated schemas through the Database compiler. This should always indicate
-   * successful compilation since the schemas are generated from pre-validated
-   * AST structures. The compilation results include documentation, diagrams,
-   * and dependency files ready for deployment.
+   * generated schemas through the Database compiler. This should always
+   * indicate successful compilation since the schemas are generated from
+   * pre-validated AST structures. The compilation results include
+   * documentation, diagrams, and dependency files ready for deployment.
    *
    * Successful compilation confirms that the generated schemas will work
    * correctly in the target database environment and integrate properly with

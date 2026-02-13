@@ -5,8 +5,9 @@ import { AutoBeTestScenarioDependency } from "./AutoBeTestScenarioDependency";
 /**
  * Test scenario specification for E2E testing of a single API endpoint.
  *
- * Defines comprehensive test strategy including endpoint details, test description,
- * function name, and prerequisite dependencies with proper execution ordering.
+ * Defines comprehensive test strategy including endpoint details, test
+ * description, function name, and prerequisite dependencies with proper
+ * execution ordering.
  */
 export interface AutoBeTestScenario {
   /**

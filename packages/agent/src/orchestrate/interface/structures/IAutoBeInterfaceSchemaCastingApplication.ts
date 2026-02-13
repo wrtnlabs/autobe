@@ -143,8 +143,8 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
      * Casting design for the corrected object schema, or `null` if intentional.
      *
      * When the type is degenerate: provide the casting design with corrected
-     * object schema containing `databaseSchema`, `specification`, `description`,
-     * and `schema` fields.
+     * object schema containing `databaseSchema`, `specification`,
+     * `description`, and `schema` fields.
      *
      * When the type is intentional (valid primitive alias): set to `null`.
      */
