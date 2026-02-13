@@ -105,6 +105,7 @@ async function process(
             responseBody: pointer.value.content.responseBody,
           }
         : null;
+    if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
     ctx.dispatch({
       type: SOURCE,
       id: v7(),

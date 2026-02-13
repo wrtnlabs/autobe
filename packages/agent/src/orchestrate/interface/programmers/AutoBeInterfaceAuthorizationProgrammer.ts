@@ -32,6 +32,8 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
     operations: AutoBeOpenApi.IOperation[];
     prefix: string;
   }): AutoBeOpenApi.IOperation[] => {
+    for (const op of props.operations)
+      AutoBeInterfaceOperationProgrammer.fix(op);
     return props.operations
       .filter((op) => op.authorizationType !== null)
       .map((op) => {

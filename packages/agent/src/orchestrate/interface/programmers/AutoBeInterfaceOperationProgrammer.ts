@@ -6,6 +6,13 @@ import { Escaper } from "typia/lib/utils/Escaper";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 
 export namespace AutoBeInterfaceOperationProgrammer {
+  export const fix = (
+    operation: Pick<AutoBeOpenApi.IOperation, "method" | "responseBody">,
+  ): void => {
+    if (operation.method === "delete" && operation.responseBody !== null)
+      operation.responseBody = null;
+  };
+
   export const validate = (props: {
     errors: IValidation.IError[];
     accessor: string;
