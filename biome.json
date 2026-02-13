@@ -23,12 +23,6 @@
 			"suspicious": {
 				"noExplicitAny": "error"
 			}
-
-		}
-	},
-	"javascript": {
-		"parser": {
-			"unsafeParameterDecoratorsEnabled": true
 		}
 	},
 	"assist": {
