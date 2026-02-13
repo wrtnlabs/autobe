@@ -516,6 +516,7 @@ const transformAndDispatch = <
   history: NonNullable<AutoBeContext.DispatchHistory<Event>>;
 }): NonNullable<AutoBeContext.DispatchHistory<Event>> => {
   props.histories().push(props.history);
+  // biome-ignore lint: intended
   props.state()[props.history.type] = props.history as any;
   void props.dispatch(props.event).catch(() => {});
   return props.history;

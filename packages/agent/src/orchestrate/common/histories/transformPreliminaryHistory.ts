@@ -47,6 +47,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         state: preliminary.getState(),
         all: preliminary.getAll() as IAutoBePreliminaryCollection,
         local: preliminary.getLocal() as IAutoBePreliminaryCollection,
+        // biome-ignore lint: intended
         config: preliminary.getConfig() as any,
         previous: key.startsWith("previous"),
       });
@@ -589,10 +590,12 @@ namespace PreliminaryTransformer {
 
 interface IPromptReplace {
   from: Exclude<
+    // biome-ignore lint: intended
     IAutoBePreliminaryRequest<any>["request"]["type"],
     `getPrevious${string}`
   >;
   to: Extract<
+    // biome-ignore lint: intended
     IAutoBePreliminaryRequest<any>["request"]["type"],
     `getPrevious${string}`
   >;
@@ -646,7 +649,7 @@ const createSystemMessage = (props: {
   };
 };
 
-const toJsonBlock = (obj: any): string =>
+const toJsonBlock = (obj: unknown): string =>
   StringUtil.trim`
       \`\`\`json
       ${JSON.stringify(obj)}
@@ -669,7 +672,8 @@ const createFunctionCallingMessage = <
     function: "process",
     name: "process",
   },
-  arguments: props.arguments as any,
+  // biome-ignore lint: intended
+  arguments: props.arguments as Record<string, any>,
   value: undefined,
   success: true,
   created_at: new Date().toISOString(),

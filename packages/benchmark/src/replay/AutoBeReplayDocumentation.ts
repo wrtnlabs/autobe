@@ -64,6 +64,7 @@ export namespace AutoBeReplayDocumentation {
       };
       return [
         `[\`${found.project}\`](./${exp.vendor}/${found.project}/)`,
+        // biome-ignore lint: intended
         (exp.score as any)[project],
         phase(found.analyze),
         phase(found.database),
@@ -86,6 +87,7 @@ export namespace AutoBeReplayDocumentation {
         .map((r) =>
           project({
             replay: r,
+            // biome-ignore lint: intended
             score: (exp.score as any)[r.project],
           }),
         )

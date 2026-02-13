@@ -9,7 +9,7 @@ export interface RetryOptions {
   /** Jitter factor for randomization (0-1, default: 0.8) */
   jitter: number;
   /** Function to determine if error should trigger retry (default: isRetryError) */
-  handleError: (error: any) => boolean;
+  handleError: (error: unknown) => boolean;
 }
 
 /**
@@ -111,7 +111,10 @@ export function randomBackoffStrategy(props: {
  * @param error Error object from LLM API or network layer
  * @returns `true` if error is retryable, `false` otherwise
  */
-function isRetryError(error: any): boolean {
+function isRetryError(
+  // biome-ignore lint: @todo SunRabbit
+  error: any,
+): boolean {
   // 1) Quota exceeded → No retry
   if (
     error?.code === "insufficient_quota" ||

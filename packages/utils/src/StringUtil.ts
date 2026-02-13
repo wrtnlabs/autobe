@@ -1,6 +1,7 @@
 export namespace StringUtil {
   export function trim(
     strings: TemplateStringsArray,
+    // biome-ignore lint: intended
     ...values: any[]
   ): string {
     // 먼저 모든 template string 부분들을 합쳐서 전체 구조를 파악
@@ -48,6 +49,7 @@ export namespace StringUtil {
 
   export function singleLine(
     strings: TemplateStringsArray,
+    // biome-ignore lint: intended
     ...values: any[]
   ): string {
     let result: string = strings[0];

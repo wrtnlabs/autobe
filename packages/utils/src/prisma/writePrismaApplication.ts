@@ -213,7 +213,7 @@ function writeRelations(props: {
   return ArrayUtil.paddle([
     print(
       StringUtil.trim`
-        BELONED RELATIONS,
+        BELONGED RELATIONS,
           - format: (propertyKey targetModel constraint)
       `,
       props.model.foreignFields.map((foreign) =>

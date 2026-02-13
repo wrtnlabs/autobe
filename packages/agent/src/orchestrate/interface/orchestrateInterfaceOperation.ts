@@ -181,6 +181,7 @@ async function process(
     });
     if (pointer.value === null) return out(result)(null);
 
+    AutoBeInterfaceOperationProgrammer.fix(pointer.value.operation);
     for (const p of pointer.value.operation.parameters)
       p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
 

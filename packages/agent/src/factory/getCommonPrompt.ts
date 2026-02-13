@@ -13,12 +13,11 @@ export const getCommonPrompt = (
     .replace("${timezone}", config?.timezone ?? timezone.get())
     .replace("${datetime}", new Date().toISOString());
 
+// biome-ignore-start lint: intended
 const locale = new Singleton(() =>
-  is_node()
-    ? // eslint-disable-next-line node/prefer-global/process
-      (process.env.LANG?.split(".")[0] ?? "en-US")
-    : navigator.language,
+  is_node() ? (process.env.LANG?.split(".")[0] ?? "en-US") : navigator.language,
 );
+// biome-ignore-end lint: intended
 
 const timezone = new Singleton(
   () => Intl.DateTimeFormat().resolvedOptions().timeZone,

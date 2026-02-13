@@ -66,7 +66,7 @@ export async function orchestrateTestCorrectOverall<
           ...procedure,
           function: event.function,
         };
-      } catch (error) {
+      } catch {
         if (props.discard) return null;
         else return procedure;
       }
