@@ -40,6 +40,51 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **Correct format**:
 - ✅ "THE system SHALL prevent unauthorized access"
 
+## CRITICAL: Content Location Rules
+
+**Global content MUST appear ONLY in designated files.** This prevents redundancy and reduces token usage.
+
+### Global Sections (ONLY in Module 00 - Introduction):
+
+| Content Type | Location | Other Files |
+|--------------|----------|-------------|
+| Introduction / Purpose | Introduction module ONLY | Reference only |
+| System Overview | System Overview module ONLY | Reference only |
+| Glossary / Definitions | Introduction module ONLY | Reference only |
+| Scope Definition | Introduction module ONLY | Reference only |
+| Stakeholder List | System Overview module ONLY | Reference only |
+
+### Rules for Other Modules (Module 02-06):
+
+1. **DO NOT restate** Introduction, System Overview, or Glossary content
+2. **Reference format**: "See Introduction for system scope definition"
+3. **Module-specific intro**: Maximum 2-3 sentences, specific to that module only
+4. **No redundant context**: Assume reader has read previous modules
+
+### Bad Example (REJECT - redundant):
+
+```markdown
+# External Interface Requirements
+
+## Introduction
+This document describes the external interface requirements for the Shopping Mall Platform.
+The Shopping Mall Platform is an e-commerce system that enables...
+[repeating system overview from Module 01]
+
+## Scope
+This section covers external interfaces including...
+[repeating scope from Introduction module]
+```
+
+### Good Example (ACCEPT - concise):
+
+```markdown
+# External Interface Requirements
+
+This module specifies external system integrations and third-party service dependencies.
+For system context and stakeholders, see System Overview (Module 02).
+```
+
 ## Business Specificity Requirements
 
 Technical implementation (DB, API, frameworks) is PROHIBITED.

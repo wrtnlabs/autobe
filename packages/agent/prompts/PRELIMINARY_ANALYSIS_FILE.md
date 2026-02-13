@@ -70,10 +70,14 @@ You may request these files if genuinely needed.
 
 ### CRITICAL: File Name Accuracy
 
-- **ALWAYS CHECK THE AVAILABLE LIST** before every getAnalysisFiles call
-- **USE EXACT FILE NAMES** from the "NOT YET LOADED" list - copy them exactly
-- **VERIFY BEFORE REQUESTING**: Confirm each file name exists in the available list
-- **MATCH CHARACTER-BY-CHARACTER**: Use the exact spelling and format shown
+Follow these steps before every `getAnalysisFiles` call:
+
+1. **Check the "NOT YET LOADED" list** in this prompt
+2. **Copy file names exactly** - use the exact spelling shown
+3. **Verify each file name exists** in the available list
+4. **Match character-by-character** - no typos, no variations
+
+Use only file names from the "NOT YET LOADED" list. Creating non-existent file names causes validation failures.
 
 ### Request Strategy
 
