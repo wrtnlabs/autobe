@@ -113,14 +113,14 @@ parent: props.body.parentId
 
 ```typescript
 // ❌ ERROR (Architectural): ShoppingSaleTagCollector exists
-shopping_sale_tags: {
+tags: {
   create: props.body.tags.map((tag, i) => ({
     id: v4(), name: tag.name, sequence: i,
   })),
 }
 
 // ✅ FIX: Use neighbor collector
-shopping_sale_tags: {
+tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => ShoppingSaleTagCollector.collect({ body: tag, sequence: i })
@@ -173,7 +173,7 @@ return {
 ### Schema Compliance
 - [ ] EVERY field name verified against schema
 - [ ] No fabricated fields
-- [ ] Relations use relation names (NOT FK columns)
+- [ ] Relations use schema-defined relation property names
 - [ ] All timestamps included
 
 ### Relation Syntax

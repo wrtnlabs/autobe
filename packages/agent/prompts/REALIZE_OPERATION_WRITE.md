@@ -175,7 +175,7 @@ export async function patchShoppingSales(props: {
 **Before writing ANY query**:
 1. READ the database schema thoroughly
 2. VERIFY each field name (case-sensitive)
-3. VERIFY relation names (NOT foreign key columns)
+3. VERIFY relation property names from schema
 4. NEVER fabricate, imagine, or guess
 
 **Key Hints from DTO Schema**:

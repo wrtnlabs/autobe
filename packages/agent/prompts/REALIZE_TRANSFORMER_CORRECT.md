@@ -86,7 +86,7 @@ selectMappings: [
   { member: "id", kind: "scalar", nullable: false, how: "Already correct" },
   { member: "created_at", kind: "scalar", nullable: false, how: "Fix: Missing - add to select()" },
   { member: "user", kind: "belongsTo", nullable: false, how: "Fix: Inline → BbsUserAtSummaryTransformer.select()" },
-  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Already correct" },
+  { member: "files", kind: "hasMany", nullable: null, how: "Already correct" },
   { member: "_count", kind: "scalar", nullable: false, how: "Fix: Missing - add for hit/like" },
 ]
 ```
@@ -99,7 +99,7 @@ transformMappings: [
   { property: "createdAt", how: "Fix: Missing .toISOString()" },
   { property: "writer", how: "Fix: Inline → BbsUserAtSummaryTransformer.transform()" },
   { property: "files", how: "Already correct" },
-  { property: "hit", how: "Fix: Missing - from input._count.bbs_article_comment_hits" },
+  { property: "hit", how: "Fix: Missing - from input._count.hits" },
 ]
 ```
 
@@ -220,10 +220,10 @@ export function select() {
 
 // ✅ FIX: Select source data, compute in transform()
 export function select() {
-  return { select: { _count: { select: { shopping_sale_reviews: true } } } };
+  return { select: { _count: { select: { reviews: true } } } };
 }
 export async function transform(input: Payload) {
-  return { reviewCount: input._count.shopping_sale_reviews };  // ✅ Computed
+  return { reviewCount: input._count.reviews };  // ✅ Computed
 }
 ```
 
