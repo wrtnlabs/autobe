@@ -28,14 +28,32 @@ export namespace AutoBeJsonSchemaFactory {
     for (const key of typeNames)
       if (AutoBeJsonSchemaValidator.isPage(key)) {
         const data: string = getPageName(key);
-        schemas[key] = page(data);
+        schemas[key] = writePageSchema(data);
         typeNames.delete(key);
         typeNames.add(data);
       }
     return schemas;
   };
 
-  export const authorize = (
+  export const fixPaginationSchemas = (
+    schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
+  ): void => {
+    const pageRequest: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
+      DEFAULT_SCHEMAS[
+        "IPage.IRequest"
+      ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    for (const [key, value] of Object.entries(schemas)) {
+      if (key.endsWith(".IPage") === false) continue;
+      else if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
+
+      if (value.properties.page === undefined)
+        value.properties.page = pageRequest.properties.page;
+      if (value.properties.limit === undefined)
+        value.properties.limit = pageRequest.properties.limit;
+    }
+  };
+
+  export const fixAuthorizationSchemas = (
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>,
   ): void => {
     for (const [key, value] of Object.entries(schemas)) {
@@ -248,7 +266,7 @@ export namespace AutoBeJsonSchemaFactory {
   /* -----------------------------------------------------------
     PAGINATION
   ----------------------------------------------------------- */
-  export const page = (
+  export const writePageSchema = (
     key: string,
   ): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => ({
     type: "object",
@@ -277,25 +295,25 @@ export namespace AutoBeJsonSchemaFactory {
     "x-autobe-database-schema": null, // filled by relation review agent
   });
 
-  export const fixPage = (path: string, input: unknown): void => {
-    if (isRecord(input) === false || isRecord(input[path]) === false) return;
-    if (input[path].description) delete input[path].description;
-    if (input[path].required) delete input[path].required;
+  // export const fixPage = (path: string, input: unknown): void => {
+  //   if (isRecord(input) === false || isRecord(input[path]) === false) return;
+  //   if (input[path].description) delete input[path].description;
+  //   if (input[path].required) delete input[path].required;
 
-    for (const key of Object.keys(input[path]))
-      if (DEFAULT_SCHEMAS[key] !== undefined)
-        input[path][key] = DEFAULT_SCHEMAS[key];
-      else if (AutoBeJsonSchemaValidator.isPage(key) === true) {
-        const data: string = key.substring("IPage".length);
-        input[path][key] = page(data);
-      }
-  };
+  //   for (const key of Object.keys(input[path]))
+  //     if (DEFAULT_SCHEMAS[key] !== undefined)
+  //       input[path][key] = DEFAULT_SCHEMAS[key];
+  //     else if (AutoBeJsonSchemaValidator.isPage(key) === true) {
+  //       const data: string = key.substring("IPage".length);
+  //       input[path][key] = writePageSchema(data);
+  //     }
+  // };
 
   export const getPageName = (key: string): string =>
     key.substring("IPage".length);
 
-  const isRecord = (input: unknown): input is Record<string, unknown> =>
-    typeof input === "object" && input !== null;
+  // const isRecord = (input: unknown): input is Record<string, unknown> =>
+  //   typeof input === "object" && input !== null;
 
   export const DEFAULT_SCHEMAS = (() => {
     const init: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =

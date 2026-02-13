@@ -112,7 +112,10 @@ export const orchestrateInterfaceSchema = async (
       });
 
       // special logics
-      AutoBeJsonSchemaFactory.authorize(document.components.schemas);
+      AutoBeJsonSchemaFactory.fixPaginationSchemas(document.components.schemas);
+      AutoBeJsonSchemaFactory.fixAuthorizationSchemas(
+        document.components.schemas,
+      );
       AutoBeJsonSchemaFactory.finalize({
         application: ctx.state().database!.result.data,
         operations: document.operations,
