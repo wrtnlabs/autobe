@@ -1,4 +1,4 @@
-name: prettier
+name: lint
 on:
   pull_request:
     paths:
@@ -18,5 +18,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Format Check
+      - name: Lint Check
         run: pnpm run lint
