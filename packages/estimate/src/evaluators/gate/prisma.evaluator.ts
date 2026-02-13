@@ -1,17 +1,18 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import { AutoBeDatabaseCompiler } from '@autobe/compiler';
-import { GateEvaluator } from '../base';
-import type { EvaluationContext, Issue } from '../../types';
-import { createIssue } from '../../types';
+import { AutoBeDatabaseCompiler } from "@autobe/compiler";
+import * as fs from "fs";
+import * as path from "path";
+
+import type { EvaluationContext, Issue } from "../../types";
+import { createIssue } from "../../types";
+import { GateEvaluator } from "../base";
 
 /**
- * Prisma Evaluator
- * Validates Prisma schema using AutoBeDatabaseCompiler (in-memory)
+ * Prisma Evaluator Validates Prisma schema using AutoBeDatabaseCompiler
+ * (in-memory)
  */
 export class PrismaEvaluator extends GateEvaluator {
-  readonly name = 'PrismaEvaluator';
-  readonly description = 'Validates Prisma schema using in-memory compiler';
+  readonly name = "PrismaEvaluator";
+  readonly description = "Validates Prisma schema using in-memory compiler";
 
   async checkGate(context: EvaluationContext): Promise<{
     passed: boolean;
@@ -22,7 +23,7 @@ export class PrismaEvaluator extends GateEvaluator {
       return {
         passed: true,
         issues: [],
-        metrics: { skipped: true, reason: 'No Prisma schemas found' },
+        metrics: { skipped: true, reason: "No Prisma schemas found" },
       };
     }
 
@@ -37,10 +38,10 @@ export class PrismaEvaluator extends GateEvaluator {
         passed: true,
         issues: [
           createIssue({
-            severity: 'warning',
-            category: 'prisma',
-            code: 'P000',
-            message: 'Failed to read Prisma schema files',
+            severity: "warning",
+            category: "prisma",
+            code: "P000",
+            message: "Failed to read Prisma schema files",
           }),
         ],
         metrics: { skipped: true },
@@ -49,9 +50,11 @@ export class PrismaEvaluator extends GateEvaluator {
 
     try {
       const compiler = new AutoBeDatabaseCompiler();
-      const result = await compiler.compilePrismaSchemas({ files: prismaFiles });
+      const result = await compiler.compilePrismaSchemas({
+        files: prismaFiles,
+      });
 
-      if (result.type === 'success') {
+      if (result.type === "success") {
         return {
           passed: true,
           issues: [],
@@ -60,23 +63,19 @@ export class PrismaEvaluator extends GateEvaluator {
       }
 
       // Compilation failed
-      const errorMessage = 'diagnostics' in result
-        ? (result as any).diagnostics
-            ?.map((d: any) => d.messageText ?? d.message ?? String(d))
-            .join('; ')
-            .substring(0, 500)
-        : 'message' in result
-          ? String((result as any).message).substring(0, 500)
-          : 'Prisma schema validation failed';
+      const errorMessage =
+        result.type === "failure"
+          ? result.reason.substring(0, 500)
+          : "Prisma compilation exception: ${String(result.error)}";
 
       return {
         passed: false,
         issues: [
           createIssue({
-            severity: 'critical',
-            category: 'prisma-error',
-            code: 'P001',
-            message: errorMessage || 'Prisma schema validation failed',
+            severity: "critical",
+            category: "prisma-error",
+            code: "P001",
+            message: errorMessage || "Prisma schema validation failed",
           }),
         ],
         metrics: { valid: false },
@@ -86,10 +85,10 @@ export class PrismaEvaluator extends GateEvaluator {
         passed: false,
         issues: [
           createIssue({
-            severity: 'critical',
-            category: 'prisma-error',
-            code: 'P001',
-            message: `Prisma compilation exception: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            severity: "critical",
+            category: "prisma-error",
+            code: "P001",
+            message: `Prisma compilation exception: ${error instanceof Error ? error.message : "Unknown error"}`,
           }),
         ],
         metrics: { valid: false },
@@ -104,7 +103,7 @@ export class PrismaEvaluator extends GateEvaluator {
     const entries = await Promise.all(
       filePaths.map(async (filePath) => {
         try {
-          const content = await fs.promises.readFile(filePath, 'utf-8');
+          const content = await fs.promises.readFile(filePath, "utf-8");
           const relativePath = path.relative(rootPath, filePath);
           return [relativePath, content] as const;
         } catch {
@@ -112,6 +111,8 @@ export class PrismaEvaluator extends GateEvaluator {
         }
       }),
     );
-    return Object.fromEntries(entries.filter((e): e is NonNullable<typeof e> => e !== null));
+    return Object.fromEntries(
+      entries.filter((e): e is NonNullable<typeof e> => e !== null),
+    );
   }
 }

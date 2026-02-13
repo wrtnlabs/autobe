@@ -1,6 +1,4 @@
-/**
- * Input types for comparison
- */
+/** Input types for comparison */
 export interface CompareInput {
   projects: ProjectInput[];
   outputPath: string;
@@ -15,9 +13,7 @@ export interface ProjectInput {
   name: string;
 }
 
-/**
- * Result types for comparison
- */
+/** Result types for comparison */
 export interface ProjectResult {
   name: string;
   path: string;
@@ -47,6 +43,36 @@ export interface ProjectResult {
     requirements: number;
     logic: number;
   };
+}
+
+export interface EstimateReport {
+  totalScore?: number;
+  grade?: string;
+  meta?: {
+    evaluatedFiles?: number;
+  };
+  phases?: {
+    gate?: { passed?: boolean; issues?: unknown[] };
+    documentQuality?: { score?: number };
+    requirementsCoverage?: {
+      score?: number;
+      issues?: unknown[];
+      metrics?: {
+        controllerCount?: number;
+        providerCount?: number;
+        structureCount?: number;
+      };
+    };
+    testCoverage?: { score?: number; metrics?: { testCount?: number } };
+    logicCompleteness?: { score?: number; issues?: unknown[] };
+    apiCompleteness?: { score?: number };
+  };
+  agentEvaluations?: AgentEvaluation[];
+}
+
+export interface AgentEvaluation {
+  agent: string;
+  score: number;
 }
 
 export interface CompareResult {
