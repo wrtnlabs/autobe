@@ -362,7 +362,32 @@ const orderByInput = (
 ) satisfies Prisma.shopping_salesOrderByWithRelationInput;
 ```
 
-### 8.3. Escape Sequences in JSON Context
+### 8.3. No Raw SQL Queries
+
+**NEVER use `$queryRaw`, `$queryRawUnsafe`, `$executeRaw`, or `$executeRawUnsafe`**. Raw queries bypass Prisma's type system entirely — when column names, types, or tables change, the compiler cannot detect the breakage. The generic type parameter is a lie; it is never validated.
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - no compile-time safety
+const result = await MyGlobal.prisma.$queryRaw<
+  Array<{ vote_type: string; count: number }>
+>`
+  SELECT vote_type, COUNT(*) as count
+  FROM comment_votes
+  WHERE comment_id = ${props.commentId}
+  GROUP BY vote_type
+`;
+
+// ✅ CORRECT - use Prisma client (compile-time validated)
+const votes = await MyGlobal.prisma.comment_votes.groupBy({
+  by: ["vote_type"],
+  where: { comment_id: props.commentId },
+  _count: { vote_type: true },
+});
+```
+
+**No exceptions.** Every query MUST go through the typed Prisma client API.
+
+### 8.4. Escape Sequences in JSON Context
 
 | Intent | Write This | After JSON Parse |
 |--------|------------|------------------|

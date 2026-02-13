@@ -3,7 +3,7 @@
 The following shows the expected props structure for this function:
 
 ```typescript
-{input}
+{{TEMPLATE}}
 ```
 
 **IMPORTANT**: The provider function you will implement must:
@@ -48,5 +48,18 @@ import { Something } from '../api/structures/Something';
 * **ALWAYS verify if fields are optional (`?`) or nullable (`| null`) in the DTO!**
 
 ```json
-{artifacts_dto}
+{{DTO}}
+```
+
+---
+
+# MyGlobal
+
+`MyGlobal` is a static utility class available in every provider file without importing. It provides two accessors:
+
+- `MyGlobal.prisma` — The singleton `PrismaClient` instance for all database operations.
+- `MyGlobal.env` — Typed environment variables (e.g., `MyGlobal.env.JWT_SECRET_KEY` for JWT signing).
+
+```typescript
+{{MyGlobal}}
 ```

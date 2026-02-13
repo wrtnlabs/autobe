@@ -161,6 +161,7 @@ export async function postAuthSellerRefresh(props: {
 | Issuer | `"autobe"` | Any other value |
 | Type annotations | None in payload | `const payload: IJwtSignIn = {...}` |
 | Session creation | NO - reuse existing | `prisma.create()` |
+| Database queries | Typed Prisma client API | `$queryRaw`/`$executeRaw` |
 
 **DO NOT**:
 - Generate new session ID (breaks session continuity)
