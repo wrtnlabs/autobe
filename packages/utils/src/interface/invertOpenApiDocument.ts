@@ -22,8 +22,8 @@ export function invertOpenApiDocument(
             description:
               writeDescription(r.operation()) ?? empty("description"),
             specification: r.operation()
-              ? (// biome-ignore lint: intended
-                (r.operation() as any)["x-autobe-specification"] ??
+              ? // biome-ignore lint: intended
+                ((r.operation() as any)["x-autobe-specification"] ??
                 empty("x-autobe-specification"))
               : empty("x-autobe-specification"),
             accessor: r.accessor,
