@@ -268,6 +268,7 @@ category: await ShoppingCategoryTransformer.transform(input.category),  // ✅
 - [ ] Payload type uses Prisma.{table}GetPayload pattern
 - [ ] No `as any` or type assertions
 - [ ] ArrayUtil.asyncMap for array transforms
+- [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ## 8. Compiler Authority
 

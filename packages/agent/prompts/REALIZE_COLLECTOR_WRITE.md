@@ -335,6 +335,7 @@ export async function collect(props: {
 - [ ] Using `{ connect: {...} }` for all relations
 - [ ] Using `undefined` (NOT `null`) for optional FK
 - [ ] Reusing neighbor collectors where they exist
+- [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ### Mappings
 - [ ] Every database member has a mapping entry

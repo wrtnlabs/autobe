@@ -191,6 +191,7 @@ return {
 - [ ] No `as any` or type assertions
 - [ ] Nullable vs non-nullable handled correctly
 - [ ] No import statements
+- [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ## 7. Compiler Authority
 
