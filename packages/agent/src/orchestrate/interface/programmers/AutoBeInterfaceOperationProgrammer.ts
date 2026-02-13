@@ -58,8 +58,20 @@ export namespace AutoBeInterfaceOperationProgrammer {
             Otherwise, change operation name to something else.
           `,
         });
-      if (
-        props.operation.responseBody !== null &&
+      if (props.operation.responseBody === null)
+        props.errors.push({
+          path: `${props.accessor}.responseBody`,
+          expected: `AutoBeOpenApi.IResponseBody (typeName: "IPageIResource") when operation name is "index"`,
+          value: props.operation.responseBody,
+          description: StringUtil.trim`
+            Operation name "index" is reserved for getting list of resources,
+            so response body must be a paginated type "IPageIResource".
+
+            Fix: Change response body type to paginated type "IPageIResource",
+            or change operation name to something else.
+          `,
+        });
+      else if (
         props.operation.responseBody.typeName.startsWith("IPage") === false
       )
         props.errors.push({

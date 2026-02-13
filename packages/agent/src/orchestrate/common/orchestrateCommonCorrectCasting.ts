@@ -174,6 +174,7 @@ const compileWithFiltering = async <
 };
 
 const createController = (props: {
+  // biome-ignore lint: intended
   factory: IFactoryProps<any, any>;
   then: (next: IAutoBeCommonCorrectCastingApplication.IProps) => void;
   reject: () => void;

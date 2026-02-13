@@ -31,7 +31,7 @@ export const test_compiler_interface_preset = (): void => {
       items: {
         $ref: "#/components/schemas/IShoppingSale.ISummary",
       },
-    } satisfies AutoBeOpenApi.IJsonSchema.IArray,
-    schema.properties.data as any,
+    } satisfies AutoBeOpenApi.IJsonSchema.IArray as AutoBeOpenApi.IJsonSchema.IArray,
+    schema.properties.data as AutoBeOpenApi.IJsonSchema.IArray,
   );
 };

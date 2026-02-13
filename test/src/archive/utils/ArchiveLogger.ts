@@ -29,6 +29,7 @@ export namespace ArchiveLogger {
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
         `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
       );
+    // biome-ignore lint: intended
     if (typia.is<AutoBeAcquisitionEventBase<any>>(event))
       content.push(
         `  - acquisition:`,
@@ -282,6 +283,7 @@ export namespace ArchiveLogger {
       content.push(
         `  - typeName: ${event.typeName}`,
         `  - databaseSchema: ${event.databaseSchema} (${
+          // biome-ignore lint: intended
           (event.schema as any)["x-autobe-database-schema"] ?? "-"
         })`,
         `  - specification: ${JSON.stringify(event.specification)}`,

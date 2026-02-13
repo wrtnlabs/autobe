@@ -107,7 +107,7 @@ const main = async (): Promise<void> => {
 };
 
 function setupExitHandlers() {
-  const logExit = (reason: string, details: any = {}) => {
+  const logExit = (reason: string, details: unknown = {}) => {
     const timestamp = new Date().toISOString();
     const stackTrace = new Error().stack;
 

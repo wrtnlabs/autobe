@@ -47,6 +47,8 @@ const collect = async (): Promise<ITestFunction[]> => {
         file.endsWith(".ts") === false
       )
         continue;
+
+      // biome-ignore lint: intended
       const modulo: any = await import(next);
       for (const [key, value] of Object.entries(modulo)) {
         if (key.startsWith("archive_") === false || typeof value !== "function")

@@ -12,7 +12,12 @@ import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 export const writeTestExpression = (
   ctx: IAutoBeTestProgrammerContext,
   expr: AutoBeTest.IExpression,
-): ts.Expression => factory[expr.type](ctx, expr as any);
+): ts.Expression =>
+  factory[expr.type](
+    ctx,
+    // biome-ignore lint: intended
+    expr as any,
+  );
 
 const factory = {
   ...AutoBeTestLiteralProgrammer,

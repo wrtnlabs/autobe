@@ -7,4 +7,10 @@ export const validateTestStatement = (
   ctx: IAutoBeTextValidateContext,
   item: AutoBeTest.IStatement,
   path: string,
-): void => AutoBeTestStatementValidator[item.type](ctx, item as any, path);
+): void =>
+  AutoBeTestStatementValidator[item.type](
+    ctx,
+    // biome-ignore lint: intended
+    item as any,
+    path,
+  );
