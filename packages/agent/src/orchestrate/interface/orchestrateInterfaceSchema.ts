@@ -212,6 +212,7 @@ export const orchestrateInterfaceSchema = async (
   return document.components.schemas;
 };
 
+// biome-ignore lint: intended
 const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
   {
     kind: "content",

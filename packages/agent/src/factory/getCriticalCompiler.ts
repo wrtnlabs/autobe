@@ -5,6 +5,7 @@ export const getCriticalCompiler = (
   critical: Semaphore,
   compiler: IAutoBeCompiler,
 ): IAutoBeCompiler => {
+  // biome-ignore lint: intended
   const lock = async (func: () => Promise<any>) => {
     await critical.acquire();
     try {

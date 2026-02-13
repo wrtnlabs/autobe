@@ -33,11 +33,13 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
     `getPrevious${string}`
   >;
   const func = PreliminaryApplicationValidator[type];
+  // biome-ignore-start lint: intended
   return func(
     controller as any,
     data as any,
     data.request.type.startsWith("getPrevious"),
   ) as any;
+  // biome-ignore-end lint: intended
 };
 
 namespace PreliminaryApplicationValidator {

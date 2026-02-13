@@ -44,6 +44,50 @@ export namespace AutoBeInterfaceOperationProgrammer {
             a valid identifier.
           `,
       });
+    else if (props.operation.name === "index") {
+      if (props.operation.method !== "patch")
+        props.errors.push({
+          path: `${props.accessor}.method`,
+          expected: `"patch" when operation name is "index", or change operation name to something else`,
+          value: props.operation.method,
+          description: StringUtil.trim`
+            Operation name "index" is reserved for getting list of resources,
+            or pagination of the resources.
+            
+            Fix: Change method to "patch" when using "index" as operation name.
+            Otherwise, change operation name to something else.
+          `,
+        });
+      if (props.operation.responseBody === null)
+        props.errors.push({
+          path: `${props.accessor}.responseBody`,
+          expected: `AutoBeOpenApi.IResponseBody (typeName: "IPageIResource") when operation name is "index"`,
+          value: props.operation.responseBody,
+          description: StringUtil.trim`
+            Operation name "index" is reserved for getting list of resources,
+            so response body must be a paginated type "IPageIResource".
+
+            Fix: Change response body type to paginated type "IPageIResource",
+            or change operation name to something else.
+          `,
+        });
+      else if (
+        props.operation.responseBody.typeName.startsWith("IPage") === false
+      )
+        props.errors.push({
+          path: `${props.accessor}.responseBody.typeName`,
+          expected: `"IPage${props.operation.responseBody.typeName}", or change operation name to something else`,
+          value: props.operation.responseBody.typeName,
+          description: StringUtil.trim`
+            Operation name "index" is reserved for getting list of resources,
+            so response body type must be paginated type "IPageIResource".
+
+            Fix: Change response body type to paginated type "IPage${props.operation.responseBody.typeName}",
+            or change operation name to something else.
+          `,
+        });
+    }
+
     // validate path parameters match with path
     validatePathParameters({
       errors: props.errors,

@@ -390,7 +390,10 @@ export namespace AutoBeJsonSchemaFactory {
       closure(next) {
         if (visited.has(next) === false)
           for (const k of Object.keys(next))
-            if (k.startsWith("x-")) delete (next as any)[k];
+            if (k.startsWith("x-")) {
+              // biome-ignore lint: intended
+              delete (next as any)[k];
+            }
         if (AutoBeOpenApiTypeChecker.isString(next)) fixStringSchema(next);
         else if (AutoBeOpenApiTypeChecker.isArray(next)) fixArraySchema(next);
         else if (AutoBeOpenApiTypeChecker.isInteger(next))
@@ -420,14 +423,18 @@ export namespace AutoBeJsonSchemaFactory {
       | AutoBeOpenApi.IJsonSchema.IInteger,
     value: number,
   ): void => {
+    // biome-ignore lint: @todo
     const description: string | undefined = (schema as any).description;
 
     for (const key of Object.keys(schema)) {
+      // biome-ignore lint: @todo
       delete (schema as any)[key];
     }
 
+    // biome-ignore lint: @todo
     (schema as any).const = value;
     if (description !== undefined) {
+      // biome-ignore lint: @todo
       (schema as any).description = description;
     }
   };

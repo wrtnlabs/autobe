@@ -42,6 +42,7 @@ const fulfillEnumInsteadOfConstError = (e: IValidation.IError): boolean => {
   if (
     // enum to const
     isInvalidJsonSchema(e) &&
+    // biome-ignore lint: intended
     typia.is<{ enum: any[] }>(e.value) === true
   ) {
     e.description = StringUtil.trim`

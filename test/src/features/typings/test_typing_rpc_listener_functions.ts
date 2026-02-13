@@ -1,7 +1,10 @@
 import { AutoBeEvent, IAutoBeRpcListener } from "@autobe/interface";
 
 export const test_typing_rpc_listener_functions = () => {
+  // biome-ignore lint: intended
   let x: keyof IAutoBeRpcListener = "analyzeComplete" as any;
+
+  // biome-ignore-start lint: intended
   let y: Exclude<
     AutoBeEvent.Type,
     | "vendorRequest"
@@ -12,6 +15,8 @@ export const test_typing_rpc_listener_functions = () => {
     | "consentFunctionCall"
     | "preliminary"
   > = "interfaceSchema" as any;
+  // biome-ignore-end lint: intended
+
   x = y;
   y = x;
 };

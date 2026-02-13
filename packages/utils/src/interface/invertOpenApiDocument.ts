@@ -22,7 +22,8 @@ export function invertOpenApiDocument(
             description:
               writeDescription(r.operation()) ?? empty("description"),
             specification: r.operation()
-              ? ((r.operation() as any)["x-autobe-specification"] ??
+              ? // biome-ignore lint: intended
+                ((r.operation() as any)["x-autobe-specification"] ??
                 empty("x-autobe-specification"))
               : empty("x-autobe-specification"),
             accessor: r.accessor,
@@ -32,6 +33,7 @@ export function invertOpenApiDocument(
                   name: p.name,
                   description:
                     p.parameter().description ?? empty("description"),
+                  // biome-ignore lint: intended
                   schema: p.schema as any,
                 }) satisfies AutoBeOpenApi.IParameter,
             ),
