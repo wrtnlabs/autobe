@@ -43,7 +43,7 @@ export namespace AutoBeJsonSchemaFactory {
         "IPage.IRequest"
       ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     for (const [key, value] of Object.entries(schemas)) {
-      if (key.endsWith(".IPage") === false) continue;
+      if (key.endsWith(".IRequest") === false) continue;
       else if (AutoBeOpenApiTypeChecker.isObject(value) === false) continue;
 
       if (value.properties.page === undefined)
