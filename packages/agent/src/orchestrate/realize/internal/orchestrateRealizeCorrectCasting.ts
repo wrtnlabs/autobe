@@ -384,7 +384,7 @@ const compileWithFiltering = async <
         props.progress.completed = props.functions.length;
       else if (result.type === "failure")
         props.progress.completed =
-          props.progress.completed -
+          props.progress.total -
           new Set(
             result.diagnostics
               .map((d) => d.file)
