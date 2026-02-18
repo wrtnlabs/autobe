@@ -65,7 +65,7 @@ selectMappings: [
   { member: "id", kind: "scalar", nullable: false, how: "For DTO.id" },
   { member: "created_at", kind: "scalar", nullable: false, how: "For DTO.createdAt (.toISOString())" },
   { member: "user", kind: "belongsTo", nullable: false, how: "For DTO.writer (BbsUserAtSummaryTransformer)" },
-  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "For DTO.files" },
+  { member: "files", kind: "hasMany", nullable: null, how: "For DTO.files" },
   { member: "_count", kind: "scalar", nullable: false, how: "For DTO.hit and DTO.like" },
 ]
 ```
@@ -80,7 +80,7 @@ transformMappings: [
   { property: "createdAt", how: "From input.created_at.toISOString()" },  // x-autobe-database-schema-property: "created_at"
   { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },
   { property: "files", how: "Array map with BbsArticleCommentFileTransformer" },
-  { property: "hit", how: "From input._count.bbs_article_comment_hits" },
+  { property: "hit", how: "From input._count.hits" },
 ]
 ```
 
@@ -166,22 +166,7 @@ category: await ShoppingCategoryTransformer.transform(input.category),
 
 Algorithm: Split by `.`, remove `I` prefix, join with `At`, append `Transformer`.
 
-### 6.4. 1:N Relation Field Names
-
-```typescript
-// Database schema typically uses full table names for 1:N relations:
-model shopping_sales {
-  shopping_sale_reviews  shopping_sale_reviews[]  // ← Relation field name
-}
-
-// ✅ CORRECT - Use EXACT relation name
-_count: { select: { shopping_sale_reviews: true } }
-
-// ❌ WRONG - Shortened name
-_count: { select: { reviews: true } }  // Does NOT exist!
-```
-
-### 6.5. NULL vs UNDEFINED Handling
+### 6.4. NULL vs UNDEFINED Handling
 
 | Pattern | DTO Signature | Handling |
 |---------|--------------|----------|
@@ -214,7 +199,7 @@ export namespace ShoppingSaleTransformer {
 | DateTime → ISO | `input.created_at.toISOString()` |
 | Decimal → Number | `Number(input.price)` |
 | Nullable DateTime | `input.deleted_at?.toISOString() ?? null` |
-| Aggregation | `input._count.shopping_sale_reviews` |
+| Aggregation | `input._count.reviews` |
 
 ## 8. Computed Fields (Not in DB)
 
@@ -225,13 +210,13 @@ When DTO field doesn't exist in database:
 // Solution: Select source data, compute in transform()
 
 // select()
-_count: { select: { shopping_sale_reviews: true } },
-shopping_sale_reviews: { select: { rating: true } },
+_count: { select: { reviews: true } },
+reviews: { select: { rating: true } },
 
 // transform()
-reviewCount: input._count.shopping_sale_reviews,
-averageRating: input.shopping_sale_reviews.length > 0
-  ? input.shopping_sale_reviews.reduce((sum, r) => sum + r.rating, 0) / input.shopping_sale_reviews.length
+reviewCount: input._count.reviews,
+averageRating: input.reviews.length > 0
+  ? input.reviews.reduce((sum, r) => sum + r.rating, 0) / input.reviews.length
   : 0,
 ```
 

@@ -53,9 +53,11 @@ export namespace AutoBeProcessAggregateFactory {
     collection: AutoBeProcessAggregateCollection,
     event: Event,
   ): void => {
+    // biome-ignore lint: intended
     (collection as any)[event.type] ??= createAggregate();
     collection.total ??= computeTotal(collection);
 
+    // biome-ignore lint: intended
     const local: AutoBeProcessAggregate = (collection as any)[
       event.type
     ] as AutoBeProcessAggregate;
@@ -76,6 +78,7 @@ export namespace AutoBeProcessAggregateFactory {
       if (key === "total") continue;
       else if (key.startsWith(phase) === false) continue;
 
+      // biome-ignore lint: intended
       (result as any)[key] = value;
       AutoBeFunctionCallingMetricFactory.increment(
         result.total.metric,
@@ -93,7 +96,9 @@ export namespace AutoBeProcessAggregateFactory {
     for (const collection of collections) {
       for (const [key, value] of Object.entries(collection)) {
         if (key === "total") continue;
+        // biome-ignore lint: intended
         (result as any)[key] ??= createAggregate();
+        // biome-ignore lint: intended
         const local: AutoBeProcessAggregate = (result as any)[
           key
         ] as AutoBeProcessAggregate;
@@ -120,7 +125,9 @@ export namespace AutoBeProcessAggregateFactory {
   ): void => {
     for (const [key, value] of Object.entries(y)) {
       if (key === "total") continue;
+      // biome-ignore lint: intended
       (x as any)[key] ??= createAggregate();
+      // biome-ignore lint: intended
       const local: AutoBeProcessAggregate = (x as any)[
         key
       ] as AutoBeProcessAggregate;
@@ -139,7 +146,9 @@ export namespace AutoBeProcessAggregateFactory {
     ) as AutoBeProcessAggregateCollection;
     for (const [key, value] of Object.entries(y)) {
       if (key === "total") continue;
+      // biome-ignore lint: intended
       (result as any)[key] ??= createAggregate();
+      // biome-ignore lint: intended
       const local: AutoBeProcessAggregate = (result as any)[
         key
       ] as AutoBeProcessAggregate;

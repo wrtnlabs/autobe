@@ -7,7 +7,7 @@ export const test_json_schema_authorized = (): void => {
   const schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> =
     typia.json.schemas<[IBbsMember, IBbsMember.IAuthorized]>().components
       .schemas as Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
-  AutoBeJsonSchemaFactory.authorize(schemas);
+  AutoBeJsonSchemaFactory.fixAuthorizationSchemas(schemas);
 
   const type: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = schemas[
     "IBbsMember.IAuthorized"

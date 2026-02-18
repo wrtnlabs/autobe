@@ -125,7 +125,9 @@ function stringify(props: {
   // Object
   if (typeof value === "object" && value !== null) {
     // Check for toJSON method
+    // biome-ignore lint: intended
     if (!inToJson && typeof (value as any).toJSON === "function") {
+      // biome-ignore lint: intended
       const jsonValue: unknown = (value as any).toJSON();
       return stringify({
         value: jsonValue,
@@ -185,7 +187,8 @@ function stringify(props: {
       const val: unknown =
         missingKeys.includes(key) || undefinedKeysWithErrors.includes(key)
           ? undefined
-          : (value as any)[key];
+          : // biome-ignore lint: intended
+            (value as any)[key];
 
       // Primitive property value (including undefined for missing properties)
       if (

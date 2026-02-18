@@ -1,0 +1,40 @@
+{
+  "name": "@autobe/estimate",
+  "version": "0.2.0",
+  "description": "Code quality evaluation system for AutoBE generated code",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "estimate": "./dist/bin/estimate.js",
+    "compare": "./dist/bin/compare.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/bin/estimate.ts",
+    "compare": "ts-node src/bin/compare.ts",
+    "dev": "ts-node-dev src/bin/estimate.ts",
+    "test": "vitest --passWithNoTests",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@autobe/compiler": "workspace:*",
+    "@autobe/filesystem": "workspace:*",
+    "@autobe/interface": "workspace:*",
+    "@autobe/utils": "workspace:*",
+    "@clack/prompts": "^0.7.0",
+    "commander": "^12.0.0",
+    "typescript": "^5.3.0",
+    "chalk": "^4.1.2",
+    "glob": "^11.0.0",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.0",
+    "ts-node-dev": "^2.0.0",
+    "vitest": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

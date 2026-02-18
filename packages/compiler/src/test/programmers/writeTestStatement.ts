@@ -10,6 +10,10 @@ export const writeTestStatement = (
 ): ts.Statement[] => {
   const next: ts.Statement | ts.Statement[] = AutoBeTestStatementProgrammer[
     stmt.type
-  ](ctx, stmt as any);
+  ](
+    ctx,
+    // biome-ignore lint: intended
+    stmt as any,
+  );
   return Array.isArray(next) ? next : [next];
 };

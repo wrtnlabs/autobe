@@ -61,10 +61,13 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.source = props.source;
     this.source_id = v7();
     this.kinds = props.kinds;
+
+    // biome-ignore-start lint: intended
     this.config = {
       database: props.config?.database ?? "text",
       databaseProperty: props.config?.databaseProperty ?? false,
     } satisfies AutoBePreliminaryController.IConfig<any> as AutoBePreliminaryController.IConfig<any>;
+    // biome-ignore-end lint: intended
 
     this.argumentTypeNames = (() => {
       const func = props.application.functions.find(
@@ -105,6 +108,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           "'process' function parameter.request oneOf does not contain any reference type.",
         );
       return request.oneOf.map((sch) => {
+        // biome-ignore lint: intended
         const ref = (sch as any).$ref;
         return ref.split("/").pop()!;
       });
@@ -114,6 +118,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
+    // biome-ignore-start lint: intended
     if (
       (
         this as any as AutoBePreliminaryController<AutoBePreliminaryKind>
@@ -126,6 +131,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
           ...controller.all.analysisFiles.slice(0, 1),
         );
     }
+    // biome-ignore-end lint: intended
 
     complementPreliminaryCollection({
       kinds: props.kinds,

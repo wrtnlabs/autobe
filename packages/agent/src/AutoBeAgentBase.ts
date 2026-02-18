@@ -81,6 +81,7 @@ export abstract class AutoBeAgentBase {
     listener: (event: AutoBeEvent.Mapper[Type]) => Promise<void> | void,
   ): this {
     emplaceMap(this.listeners_, type, () => new Set()).add(
+      // biome-ignore lint: intended
       listener as (event: AutoBeEvent) => any,
     );
     return this;
@@ -104,6 +105,7 @@ export abstract class AutoBeAgentBase {
     const set = this.listeners_.get(type);
     if (set === undefined) return this;
 
+    // biome-ignore lint: intended
     set.delete(listener as (event: AutoBeEvent) => any);
     if (set.size === 0) this.listeners_.delete(type);
     return this;

@@ -55,6 +55,7 @@ export class AutoBeRpcService implements IAutoBeRpcService {
     for (const key of typia.misc.literals<keyof IAutoBeRpcListener>()) {
       if (key === "enable") continue;
       agent.on(key, (event) => {
+        // biome-ignore lint: intended
         listener[key]!(event as any).catch(() => {});
       });
     }

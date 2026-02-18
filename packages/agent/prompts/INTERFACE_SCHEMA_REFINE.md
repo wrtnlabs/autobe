@@ -210,8 +210,21 @@ While enriching, also inspect and fix:
 
 **Decision**:
 - Found in columns OR relations → NOT phantom. Use the property name in `databaseSchemaProperty`.
-- Not in DB BUT has valid business logic (aggregation, algorithm, auth token, derived value) → Keep with `databaseSchemaProperty: null`
+- Not in DB BUT has valid business logic → Keep with `databaseSchemaProperty: null`
 - Not in DB AND no requirements rationale → Erase
+
+**Concrete examples of valid `databaseSchemaProperty: null`** (these are NOT phantom):
+
+| Property | DTO Type | Why valid |
+|----------|----------|-----------|
+| `page`, `limit`, `search`, `sort` | `IRequest` | Pagination/search parameters — query logic, not DB columns |
+| `ip`, `href`, `referrer` | `IJoin`, `ILogin` | Session context — stored in session table, not actor table |
+| `password` | `IJoin`, `ILogin` | Plain-text input → backend hashes to `password_hashed` column |
+| `*_count` | Read DTOs | Aggregation — `COUNT()` of related records |
+| `token` / `access` / `refresh` / `expired_at` | `IAuthorized` | Auth response — computed by server, not stored as-is |
+| `pagination`, `data` | `IPage*` | Fixed pagination envelope structure |
+
+These fields serve cross-table mappings, transformations, or query parameter roles. Verify against loaded DB schemas and requirements before erasing.
 
 **Common mistake**: Setting `databaseSchemaProperty: null` for properties that ARE in the database. Always verify against the loaded schema before using `null`.
 
@@ -400,6 +413,7 @@ Before calling `complete`:
 - [ ] No duplicates (one action per key)
 - [ ] WHICH → HOW → WHAT order followed
 - [ ] `databaseSchemaProperty: null` only for computed values (not in DB)
+- [ ] Before `erase`: verify against loaded DB schemas and requirements — cross-table mapping, transformation, or query parameter role means valid (not phantom)
 
 **Pre-Review Hardening**:
 - [ ] Content: All fields present (DB + computed)

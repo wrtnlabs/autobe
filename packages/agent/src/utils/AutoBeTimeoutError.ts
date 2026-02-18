@@ -22,7 +22,10 @@ export class AutoBeTimeoutError extends Error {
 
     const proto = new.target.prototype;
     if (Object.setPrototypeOf) Object.setPrototypeOf(this, proto);
-    else (this as any).__proto__ = proto;
+    else {
+      // biome-ignore lint: intended
+      (this as any).__proto__ = proto;
+    }
   }
 
   /** Returns error class name for identification. */

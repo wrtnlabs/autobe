@@ -235,6 +235,7 @@ export async function postAuthSellerLogin(props: {
 | Password field | Explicitly add to select | Assume it's included |
 | Type annotations | None in jwt.sign() payload | `const payload: IJwtSignIn = {...}` |
 | Issuer | `"autobe"` | Any other value |
+| Database queries | Typed Prisma client API | `$queryRaw`/`$executeRaw` |
 
 ## 11. Final Checklist
 

@@ -49,10 +49,16 @@ export const fixPreliminaryApplication = <
   if (request === undefined) return;
 
   const eraseKind = (kind: AutoBePreliminaryKind) => {
-    props.preliminary
-      .getKinds()
-      .splice(props.preliminary.getKinds().indexOf(kind as any), 1);
+    props.preliminary.getKinds().splice(
+      props.preliminary.getKinds().indexOf(
+        // biome-ignore lint: intended
+        kind as any,
+      ),
+      1,
+    );
+    // biome-ignore lint: intended
     delete (props.preliminary.getAll() as any)[kind];
+    // biome-ignore lint: intended
     delete (props.preliminary.getLocal() as any)[kind];
   };
   const eraseMetadata = getUnionErasure({
@@ -101,6 +107,7 @@ export const fixPreliminaryApplication = <
       continue;
     ApplicationFixer[accessor]({
       $defs: func.parameters.$defs,
+      // biome-ignore lint: intended
       controller: props.preliminary as any,
       previous: kind.startsWith("previous"),
     });

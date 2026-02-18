@@ -114,7 +114,7 @@ export namespace ShoppingSaleCollector {
         : undefined,
 
       // HasMany relations (reuse neighbor collectors)
-      shopping_sale_tags: props.body.tags.length
+      tags: props.body.tags.length
         ? {
             create: await ArrayUtil.asyncMap(
               props.body.tags,
@@ -165,7 +165,7 @@ parent: props.body.parentId
 // If ShoppingSaleTagCollector exists in neighbors:
 
 // ❌ FORBIDDEN - Ignoring existing collector
-shopping_sale_tags: {
+tags: {
   create: props.body.tags.map((tag, i) => ({
     id: v4(),
     name: tag.name,
@@ -174,7 +174,7 @@ shopping_sale_tags: {
 }
 
 // ✅ REQUIRED - Reuse neighbor collector
-shopping_sale_tags: {
+tags: {
   create: await ArrayUtil.asyncMap(
     props.body.tags,
     (tag, i) => ShoppingSaleTagCollector.collect({
@@ -227,7 +227,7 @@ mappings: [
   { member: "parent", kind: "belongsTo", nullable: true, how: "Connect if exists, else undefined" },
 
   { member: "children", kind: "hasMany", nullable: null, how: "Cannot create (reverse relation)" },
-  { member: "bbs_article_comment_files", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentFileCollector" },
+  { member: "files", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentFileCollector" },
 ]
 ```
 
@@ -335,6 +335,7 @@ export async function collect(props: {
 - [ ] Using `{ connect: {...} }` for all relations
 - [ ] Using `undefined` (NOT `null`) for optional FK
 - [ ] Reusing neighbor collectors where they exist
+- [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ### Mappings
 - [ ] Every database member has a mapping entry

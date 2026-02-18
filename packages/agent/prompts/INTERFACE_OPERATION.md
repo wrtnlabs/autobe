@@ -74,8 +74,8 @@ export namespace IAutoBeInterfaceOperationApplication {
   }
 
   interface IOperation {
-    path: string;              // Resource path (must match given endpoint)
-    method: string;            // HTTP method (must match given endpoint)
+    path: string;              // Resource path (may differ from given endpoint)
+    method: string;            // HTTP method (may differ from given endpoint)
     specification: string;     // Implementation guidance for Realize Agent (HOW)
     description: string;       // API documentation for consumers (WHAT)
     parameters: Array<{        // Path parameters (can be [])
@@ -127,6 +127,8 @@ export namespace IAutoBeInterfaceOperationApplication {
 | DELETE | `/entities/{id}` | null | null or `IEntity` | `erase` |
 
 **PATCH is for complex search/filtering** (not updates). Use request body for search criteria.
+
+The given endpoint's method or path may be changed when operation semantics require it (e.g., a list endpoint given as `GET` needs a request body → change to `PATCH`). Explain any such changes in `rationale`.
 
 ### 5.4. Description Requirements
 
@@ -276,6 +278,22 @@ Schema: @@unique([erp_enterprise_id, code]) on teams
 
 **Uniqueness**: Each operation must have a globally unique accessor (path segments + name joined by dots).
 
+### 8.1. `"index"` is Reserved (Compiler-Enforced)
+
+The compiler enforces two strict rules when operation name is `"index"`:
+
+1. **Method MUST be `"patch"`** — accepts `IEntity.IRequest` with search/filter/pagination.
+2. **Response body type MUST start with `"IPage"`** — e.g., `IPageIUser.ISummary`.
+
+If your operation doesn't fit these constraints, use a different name (`"at"`, `"search"`, etc.).
+
+```
+✅ name: "index",  method: "patch",  responseBody.typeName: "IPageIUser.ISummary"
+✅ name: "at",     method: "get",    responseBody.typeName: "IUser"
+❌ name: "index",  method: "get"     → Compiler error
+❌ name: "index",  responseBody.typeName: "IUser"  → Compiler error
+```
+
 ## 9. Example Operation
 
 ```typescript
@@ -315,8 +333,8 @@ Supports comprehensive pagination with configurable page sizes and sorting. Resp
 ## 10. Final Checklist
 
 ### Mandatory Fields
-- [ ] `path` matches given endpoint exactly
-- [ ] `method` matches given endpoint exactly
+- [ ] `path` based on given endpoint (adjusted if needed — explain in `rationale`)
+- [ ] `method` based on given endpoint (overridden if needed, e.g., `index` → PATCH — explain in `rationale`)
 - [ ] `specification` has implementation details for Realize Agent
 - [ ] `description` is multi-paragraph with business context
 - [ ] `parameters` array defined (can be empty)
@@ -340,6 +358,7 @@ Supports comprehensive pagination with configurable page sizes and sorting. Resp
 
 ### Method Alignment
 - [ ] PATCH → index/search, GET → at/invert, POST → create, PUT → update, DELETE → erase
+- [ ] `"index"` name → method is `"patch"` AND response body type starts with `"IPage"`
 - [ ] Request body: present for POST/PUT/PATCH, null for GET/DELETE
 - [ ] Response body matches operation pattern
 - [ ] Request DTOs do NOT duplicate path parameters (path provides context automatically)

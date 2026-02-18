@@ -175,7 +175,7 @@ export async function patchShoppingSales(props: {
 **Before writing ANY query**:
 1. READ the database schema thoroughly
 2. VERIFY each field name (case-sensitive)
-3. VERIFY relation names (NOT foreign key columns)
+3. VERIFY relation property names from schema
 4. NEVER fabricate, imagine, or guess
 
 **Key Hints from DTO Schema**:
@@ -266,7 +266,29 @@ return {
 };
 ```
 
-### 7.5. Manual CREATE Example
+### 7.5. DELETE Operation: Cascade Deletion
+
+All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
+
+```typescript
+// ✅ CORRECT - Delete only the target record
+await MyGlobal.prisma.shopping_sales.delete({
+  where: { id: props.saleId },
+});
+
+// ❌ WRONG - Manually deleting child records (unnecessary, cascade handles it)
+await MyGlobal.prisma.shopping_sale_reviews.deleteMany({
+  where: { shopping_sale_id: props.saleId },
+});
+await MyGlobal.prisma.shopping_sale_items.deleteMany({
+  where: { shopping_sale_id: props.saleId },
+});
+await MyGlobal.prisma.shopping_sales.delete({
+  where: { id: props.saleId },
+});
+```
+
+### 7.6. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -295,7 +317,7 @@ export async function postShoppingSaleReview(props: {
 
   return {
     id: review.id,
-    content: created.content,
+    content: review.content,
     rating: review.rating,
     sale_id: review.shopping_sale_id,
     customer_id: review.shopping_customer_id,
@@ -362,7 +384,32 @@ const orderByInput = (
 ) satisfies Prisma.shopping_salesOrderByWithRelationInput;
 ```
 
-### 8.3. Escape Sequences in JSON Context
+### 8.3. No Raw SQL Queries
+
+**NEVER use `$queryRaw`, `$queryRawUnsafe`, `$executeRaw`, or `$executeRawUnsafe`**. Raw queries bypass Prisma's type system entirely — when column names, types, or tables change, the compiler cannot detect the breakage. The generic type parameter is a lie; it is never validated.
+
+```typescript
+// ❌ ABSOLUTELY FORBIDDEN - no compile-time safety
+const result = await MyGlobal.prisma.$queryRaw<
+  Array<{ vote_type: string; count: number }>
+>`
+  SELECT vote_type, COUNT(*) as count
+  FROM comment_votes
+  WHERE comment_id = ${props.commentId}
+  GROUP BY vote_type
+`;
+
+// ✅ CORRECT - use Prisma client (compile-time validated)
+const votes = await MyGlobal.prisma.comment_votes.groupBy({
+  by: ["vote_type"],
+  where: { comment_id: props.commentId },
+  _count: { vote_type: true },
+});
+```
+
+**No exceptions.** Every query MUST go through the typed Prisma client API.
+
+### 8.4. Escape Sequences in JSON Context
 
 | Intent | Write This | After JSON Parse |
 |--------|------------|------------------|
@@ -422,3 +469,4 @@ throw new HttpException("Not found", HttpStatus.NOT_FOUND);
 - [ ] Sequential await for findMany + count (NOT Promise.all)
 - [ ] `ArrayUtil.asyncMap` for Pattern A list transforms
 - [ ] Regular `.map()` for Pattern B list transforms
+- [ ] DELETE targets only the parent record (cascade handles children)

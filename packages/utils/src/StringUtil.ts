@@ -1,6 +1,7 @@
 export namespace StringUtil {
   export function trim(
     strings: TemplateStringsArray,
+    // biome-ignore lint: intended
     ...values: any[]
   ): string {
     let combined = strings[0];
@@ -42,6 +43,7 @@ export namespace StringUtil {
 
   export function singleLine(
     strings: TemplateStringsArray,
+    // biome-ignore lint: intended
     ...values: any[]
   ): string {
     let result: string = strings[0];
