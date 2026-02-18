@@ -51,7 +51,7 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_SECTION_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_SECTION_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -75,8 +75,8 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
 
         ${props.sectionEvents
           .map((sectionsForModule, moduleIndex) => {
-            const moduleSection = props.moduleEvent.moduleSections[moduleIndex];
-            const unitEvent = props.unitEvents[moduleIndex];
+            const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined = props.moduleEvent.moduleSections[moduleIndex];
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined = props.unitEvents[moduleIndex];
 
             return `
         ---
@@ -85,7 +85,7 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
 
         ${sectionsForModule
           .map((sectionEvent, unitIndex) => {
-            const unitSection = unitEvent?.unitSections[unitIndex];
+            const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined = unitEvent?.unitSections[unitIndex];
             return `
         ## Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
         **Keywords**: ${unitSection?.keywords.join(", ") ?? "No keywords"}

@@ -49,7 +49,7 @@ export const transformAnalyzeWriteAllUnitReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_UNIT_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -85,7 +85,7 @@ export const transformAnalyzeWriteAllUnitReviewHistories = (
 
         ${props.unitEvents
           .map((unitEvent, moduleIndex) => {
-            const moduleSection = props.moduleEvent.moduleSections[moduleIndex];
+            const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined = props.moduleEvent.moduleSections[moduleIndex];
             return `
         ---
         ## Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}

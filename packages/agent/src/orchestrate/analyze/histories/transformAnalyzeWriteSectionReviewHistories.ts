@@ -24,9 +24,9 @@ export const transformAnalyzeWriteSectionReviewHistories = (
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection =
+  const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined =
     props.moduleEvent.moduleSections[props.sectionEvent.moduleIndex];
-  const unitSection =
+  const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
     props.unitEvent.unitSections[props.sectionEvent.unitIndex];
 
   return {

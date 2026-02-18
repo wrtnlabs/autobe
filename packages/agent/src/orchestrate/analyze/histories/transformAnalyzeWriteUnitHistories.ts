@@ -22,7 +22,8 @@ export const transformAnalyzeWriteUnitHistories = (
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection = props.moduleEvent.moduleSections[props.moduleIndex];
+  const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined =
+    props.moduleEvent.moduleSections[props.moduleIndex];
 
   return {
     histories: [
