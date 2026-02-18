@@ -259,7 +259,6 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         type: "vendorRequest",
         source: "facade",
         retry: 0,
-        stream: e.body.stream ?? false,
       }).catch(() => {});
     });
     this.agentica_.on("response", (e) => {
@@ -268,8 +267,6 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         type: "vendorResponse",
         source: "facade",
         retry: 0,
-        stream: e.body.stream ?? false,
-        completion: (e as any).completion ?? null,
       }).catch(() => {});
     });
   }

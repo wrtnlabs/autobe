@@ -51,7 +51,6 @@ import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
 import { AutoBeTokenUsageComponent } from "../context/AutoBeTokenUsageComponent";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
-import { ParseTextFunctionCall } from "../utils/parseTextFunctionCall";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
@@ -161,7 +160,7 @@ export const createAutoBeContext = (props: {
                   event.errorMessage,
                 ),
             },
-            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+            retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
             // stream: false,
             stream: next.enforceFunctionCall === false,
           } satisfies IMicroAgenticaConfig,
@@ -187,7 +186,6 @@ export const createAutoBeContext = (props: {
             type: "vendorRequest",
             source: next.source,
             retry: progress.request++,
-            stream: event.body.stream ?? false,
           });
         });
         agent.on("response", (event) => {
@@ -197,8 +195,6 @@ export const createAutoBeContext = (props: {
               type: "vendorResponse",
               source: next.source,
               retry: progress.response++,
-              stream: event.body.stream ?? false,
-              completion: (event as any).completion ?? null,
             })
             .catch(() => {});
         });
@@ -311,26 +307,6 @@ export const createAutoBeContext = (props: {
           };
           const last: MicroAgenticaHistory | undefined =
             result.histories.at(-1);
-
-          if (
-            last?.type === "assistantMessage" &&
-            next.controller.protocol === "class"
-          ) {
-            const parseResult = ParseTextFunctionCall.parse(last.text);
-            if (parseResult.success && parseResult.functionCalls.length > 0) {
-              const executeHistories =
-                await ParseTextFunctionCall.executeAndCreateHistories({
-                  parsedCalls: parseResult.functionCalls,
-                  controller: next.controller,
-                });
-              if (executeHistories.length > 0) {
-                metric("success");
-                result.histories.push(...executeHistories);
-                return success(result.histories);
-              }
-            }
-          }
-
           if (
             last?.type === "assistantMessage" ||
             (result.histories.length === 1 && last?.type === "userMessage")
