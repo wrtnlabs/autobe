@@ -100,6 +100,24 @@ export const enum AutoBeConfigConstant {
   ANALYZE_RETRY = 3,
 
   /**
+   * Maximum consecutive error threshold for fast-fail during the Analyze
+   * Phase's hierarchical file processing.
+   *
+   * Used by `processFileHierarchical` in `orchestrateAnalyze` to detect
+   * persistent failure patterns within a single file's Module → Unit → Section
+   * pipeline. When errors occur consecutively without any successful sub-task
+   * in between, the counter increments. If it reaches this threshold the entire
+   * file processing is aborted immediately, preventing further wasted LLM calls
+   * on a file that is unlikely to recover.
+   *
+   * Value of 5 allows transient failures (rate limits, occasional
+   * hallucinations) to be tolerated while catching truly broken scenarios
+   * (e.g., fundamentally invalid file structure, persistent API outages) before
+   * they consume excessive resources.
+   */
+  ANALYZE_CONSECUTIVE_ERROR = 5,
+
+  /**
    * Batch count for parallel operation processing.
    *
    * Controls how many batches `divideArray` creates when splitting large
