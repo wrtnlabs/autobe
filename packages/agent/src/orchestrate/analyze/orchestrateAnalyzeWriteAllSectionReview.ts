@@ -2,12 +2,12 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteAllSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
-  AutoBeAnalyzeWriteAllSectionReviewEvent,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
@@ -95,12 +95,10 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps> => {
-    // Set default thinking field for qwen model compatibility
-    if (typeof input === "object" && input !== null && !("thinking" in input)) {
-      (input as any).thinking = "";
-    }
     const result: IValidation<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps>(input);
+      typia.validate<IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps>(
+        input,
+      );
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
