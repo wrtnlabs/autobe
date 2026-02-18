@@ -1,5 +1,7 @@
+import { TransformersEnvironment } from "@huggingface/transformers/types/env";
 import { createHash } from "node:crypto";
 import typia from "typia";
+
 import type { EmbeddingProvider } from "./EmbeddingProvider";
 
 interface TensorLike {
@@ -14,7 +16,7 @@ type FeatureExtractionPipeline = (
   options?: {
     pooling?: "none" | "mean" | "max";
     normalize?: boolean;
-  }
+  },
 ) => Promise<unknown>;
 
 export class LocalEmbeddingProvider implements EmbeddingProvider {
@@ -25,7 +27,6 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
 
   constructor(
     private readonly options: {
-
       modelIdOrPath: string;
 
       cacheDir?: string;
@@ -35,7 +36,7 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
       batchSize?: number;
 
       enableCache?: boolean;
-    }
+    },
   ) {
     this.extractorPromise = this.init();
   }
@@ -62,12 +63,15 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
       const chunk = misses.slice(i, i + batchSize);
       const chunkTexts = chunk.map((c) => c.text);
 
-      const result = await extractor(chunkTexts, { pooling: "mean", normalize: true });
+      const result = await extractor(chunkTexts, {
+        pooling: "mean",
+        normalize: true,
+      });
       const vecs = toVectors(result);
 
       if (vecs.length !== chunk.length) {
         throw new Error(
-          `[LocalEmbeddingProvider] batch mismatch: in=${chunk.length}, out=${vecs.length}`
+          `[LocalEmbeddingProvider] batch mismatch: in=${chunk.length}, out=${vecs.length}`,
         );
       }
 
@@ -82,7 +86,8 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
     }
 
     for (let i = 0; i < out.length; i++) {
-      if (!out[i]) throw new Error(`[LocalEmbeddingProvider] missing vector at i=${i}`);
+      if (!out[i])
+        throw new Error(`[LocalEmbeddingProvider] missing vector at i=${i}`);
     }
 
     return out;
@@ -90,12 +95,16 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
 
   private async init(): Promise<FeatureExtractionPipeline> {
     const t = await import("@huggingface/transformers");
-    const envAny = (t as any).env;
-    if (envAny && this.options.cacheDir) envAny.cacheDir = this.options.cacheDir;
+    const env: TransformersEnvironment = t.env;
+    if (env && this.options.cacheDir) env.cacheDir = this.options.cacheDir;
 
-    const pipeline = await t.pipeline("feature-extraction", this.options.modelIdOrPath, {
-      dtype: this.options.quantized === false ? "fp32" : "q8",
-    });
+    const pipeline = await t.pipeline(
+      "feature-extraction",
+      this.options.modelIdOrPath,
+      {
+        dtype: this.options.quantized === false ? "fp32" : "q8",
+      },
+    );
 
     return pipeline as FeatureExtractionPipeline;
   }
