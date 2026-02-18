@@ -77,46 +77,72 @@ These events are essential for building interactive interfaces, logging conversa
 
 ## Development Events
 ### Analyze Events
-<Tabs items={["start", "write", "review", "complete"]}>
+<Tabs items={[
+  "Analyze Events",
+  "Write Events",
+  "Review Events",
+]}>
   <Tabs.Tab>
-    <LocalSource
-      path="packages/interface/src/events/AutoBeAnalyzeStartEvent.ts"
+    <LocalSourceGroup
       filename="@autobe/interface"
-      showLineNumbers />
+      showLineNumbers
+      paths={[
+        "packages/interface/src/events/AutoBeAnalyzeStartEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeScenarioEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeCompleteEvent.ts",
+      ]}
+    />
   </Tabs.Tab>
   <Tabs.Tab>
-    <LocalSource
-      path="packages/interface/src/events/AutoBeAnalyzeWriteEvent.ts"
+    <LocalSourceGroup
       filename="@autobe/interface"
-      showLineNumbers />
+      showLineNumbers
+      paths={[
+        "packages/interface/src/events/AutoBeAnalyzeWriteModuleEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteUnitEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteSectionEvent.ts",
+      ]}
+    />
   </Tabs.Tab>
   <Tabs.Tab>
-    <LocalSource
-      path="packages/interface/src/events/AutoBeAnalyzeReviewEvent.ts"
+    <LocalSourceGroup
       filename="@autobe/interface"
-      showLineNumbers />
-  </Tabs.Tab>
-  <Tabs.Tab>
-    <LocalSource
-      path="packages/interface/src/events/AutoBeAnalyzeCompleteEvent.ts"
-      filename="@autobe/interface"
-      showLineNumbers />
+      showLineNumbers
+      paths={[
+        "packages/interface/src/events/AutoBeAnalyzeWriteModuleReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteUnitReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteAllUnitReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteSectionReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeWriteAllSectionReviewEvent.ts",
+      ]}
+    />
   </Tabs.Tab>
 </Tabs>
 
 ```mermaid
 flowchart LR
-  start[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html" target="_blank"><u>Start</u></a>] --"draft"--> write[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html" target="_blank"><u>Write</u></a>]
-  write --"amends"--> review[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html" target="_blank"><u>Review</u></a>]
-  review --"finalize"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html" target="_blank"><u>Complete</u></a>]
-  complete --"publishes" --> report(Report)
+  start[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenario[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeScenarioEvent.html" target="_blank"><u>Scenario</u></a>]
+  scenario --"generates"--> module[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleEvent.html" target="_blank"><u>Module</u></a>]
+  module --"reviews"--> moduleReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleReviewEvent.html" target="_blank"><u>ModuleReview</u></a>]
+  moduleReview --"generates"--> unit[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitEvent.html" target="_blank"><u>Unit</u></a>]
+  unit --"reviews"--> unitReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllUnitReviewEvent.html" target="_blank"><u>UnitReview</u></a>]
+  unitReview --"generates"--> section[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionEvent.html" target="_blank"><u>Section</u></a>]
+  section --"reviews"--> sectionReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllSectionReviewEvent.html" target="_blank"><u>SectionReview</u></a>]
+  sectionReview --"finalize"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html" target="_blank"><u>Complete</u></a>]
+  complete --"publishes"--> report(Report)
 ```
 
-Analyze events track the requirements analysis process, which follows a structured workflow from initial drafting to final completion. 
+Analyze events track the requirements analysis process, which follows a hierarchical document generation workflow.
 
-The [`AutoBeAnalyzeStartEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html) event is fired when the agent begins drafting the requirements analysis. The [`AutoBeAnalyzeWriteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteEvent.html) event occurs during the writing phase, followed by [`AutoBeAnalyzeReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeReviewEvent.html) during the review and amendment process. Finally, [`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is fired when the requirements analysis report is finalized.
+The [`AutoBeAnalyzeStartEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html) event is fired when the agent begins the requirements analysis. Then [`AutoBeAnalyzeScenarioEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeScenarioEvent.html) plans the document structure including files to generate, user actors, and a project prefix.
 
-[`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is generated when the `@autobe` agent and user have completed all discussions regarding requirements, and a report has been issued. The report consists of multiple markdown documents, which are stored in the `files` property.
+The writing phase follows a hierarchical "generate → review" pattern at three levels:
+
+1. **Module (#)**: [`AutoBeAnalyzeWriteModuleEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleEvent.html) generates the document's top-level structure (title, summary, module sections), reviewed by [`AutoBeAnalyzeWriteModuleReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleReviewEvent.html).
+2. **Unit (##)**: [`AutoBeAnalyzeWriteUnitEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitEvent.html) generates unit sections within each module, reviewed by [`AutoBeAnalyzeWriteUnitReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitReviewEvent.html) individually and [`AutoBeAnalyzeWriteAllUnitReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllUnitReviewEvent.html) as a batch across the entire file.
+3. **Section (###)**: [`AutoBeAnalyzeWriteSectionEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionEvent.html) generates detailed content within each unit, reviewed by [`AutoBeAnalyzeWriteSectionReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionReviewEvent.html) individually and [`AutoBeAnalyzeWriteAllSectionReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllSectionReviewEvent.html) as a batch across the entire file.
+
+Each level must pass its review before the next level begins. If a review rejects the content, the generation is retried with feedback. Finally, [`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is fired when all documents are finalized. The report consists of multiple markdown documents, which are stored in the `files` property.
 
 The `step` property indicates which iteration of the requirements analysis report this represents. If this value is not 0, it means the requirements analysis report has been revised that many times. If the `step` value of other events is lower than [`AutoBeAnalyzeCompleteEvent.step`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html#step), it means those events have not been reflected in the latest requirements analysis report.
 
