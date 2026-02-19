@@ -1,0 +1,249 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CompareEvaluator = void 0;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const cli_1 = require("../cli");
+class CompareEvaluator {
+    verbose;
+    constructor(verbose = false) {
+        this.verbose = verbose;
+    }
+    /** Compare projects - either from existing reports or by running evaluations */
+    async compare(input) {
+        const results = [];
+        for (const project of input.projects) {
+            if (this.verbose) {
+                console.log(`\n📊 Processing: ${project.name}`);
+            }
+            // Check if path contains estimate-report.json (existing report)
+            const existingReport = path.join(project.path, "estimate-report.json");
+            if (fs.existsSync(existingReport)) {
+                // Load existing report
+                const result = this.loadResult(project.name, project.path, project.path);
+                results.push(result);
+            }
+            else {
+                // Run evaluation
+                const reportPath = path.join(input.outputPath, this.sanitizeName(project.name));
+                await this.runEstimate(project.path, reportPath, input);
+                const result = this.loadResult(project.name, project.path, reportPath);
+                results.push(result);
+            }
+        }
+        return this.generateComparison(results);
+    }
+    sanitizeName(name) {
+        return name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+    }
+    async runEstimate(inputPath, outputPath, options) {
+        const cliOptions = {
+            input: inputPath,
+            output: outputPath,
+            verbose: this.verbose,
+            continueOnGateFailure: true,
+            useAgent: options.useAgent,
+            provider: options.provider,
+            apiKey: options.apiKey,
+        };
+        try {
+            await (0, cli_1.runCLI)(cliOptions);
+        }
+        catch (_error) {
+            if (this.verbose) {
+                console.log(`⚠️ Evaluation completed with issues`);
+            }
+        }
+    }
+    loadResult(name, projectPath, reportPath) {
+        const jsonPath = path.join(reportPath, "estimate-report.json");
+        if (!fs.existsSync(jsonPath)) {
+            throw new Error(`Report not found: ${jsonPath}`);
+        }
+        const report = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+        return {
+            name,
+            path: projectPath,
+            totalScore: report.totalScore || 0,
+            grade: report.grade || "F",
+            gatePass: report.phases?.gate?.passed || false,
+            scores: {
+                documentQuality: report.phases?.documentQuality?.score || 0,
+                requirementsCoverage: report.phases?.requirementsCoverage?.score || 0,
+                testCoverage: report.phases?.testCoverage?.score || 0,
+                logicCompleteness: report.phases?.logicCompleteness?.score || 0,
+                apiCompleteness: report.phases?.apiCompleteness?.score || 0,
+            },
+            metrics: {
+                files: report.meta?.evaluatedFiles || 0,
+                controllers: report.phases?.requirementsCoverage?.metrics?.controllerCount || 0,
+                providers: report.phases?.requirementsCoverage?.metrics?.providerCount || 0,
+                structures: report.phases?.requirementsCoverage?.metrics?.structureCount || 0,
+                tests: report.phases?.testCoverage?.metrics?.testCount || 0,
+            },
+            agentScores: this.extractAgentScores(report),
+            issues: {
+                gate: report.phases?.gate?.issues?.length || 0,
+                requirements: report.phases?.requirementsCoverage?.issues?.length || 0,
+                logic: report.phases?.logicCompleteness?.issues?.length || 0,
+            },
+        };
+    }
+    extractAgentScores(report) {
+        if (!report.agentEvaluations || report.agentEvaluations.length === 0) {
+            return undefined;
+        }
+        const security = report.agentEvaluations.find((a) => a.agent === "SecurityAgent");
+        const llm = report.agentEvaluations.find((a) => a.agent === "LLMQualityAgent");
+        return {
+            security: security?.score || 0,
+            llmQuality: llm?.score || 0,
+        };
+    }
+    generateComparison(results) {
+        // Ranking
+        const ranking = results
+            .map((r) => ({
+            rank: 0,
+            name: r.name,
+            score: r.totalScore,
+            grade: r.grade,
+        }))
+            .sort((a, b) => b.score - a.score)
+            .map((r, i) => ({ ...r, rank: i + 1 }));
+        // Phase comparison
+        const phases = [
+            "documentQuality",
+            "requirementsCoverage",
+            "testCoverage",
+            "logicCompleteness",
+            "apiCompleteness",
+        ];
+        const phaseLabels = {
+            documentQuality: "Document Quality",
+            requirementsCoverage: "Requirements Coverage",
+            testCoverage: "Test Coverage",
+            logicCompleteness: "Logic Completeness",
+            apiCompleteness: "API Completeness",
+        };
+        const phaseComparison = phases.map((phase) => {
+            const scores = results.map((r) => ({
+                name: r.name,
+                score: r.scores[phase],
+            }));
+            const maxScore = Math.max(...scores.map((s) => s.score));
+            const winners = scores.filter((s) => s.score === maxScore);
+            return {
+                phase: phaseLabels[phase],
+                scores,
+                winner: winners.length === 1 ? winners[0].name : "TIE",
+            };
+        });
+        // Metric comparison
+        const metricDefs = [
+            { metric: "Total Files", key: "files", higherBetter: null },
+            {
+                metric: "Controllers",
+                key: "controllers",
+                higherBetter: true,
+            },
+            { metric: "Providers", key: "providers", higherBetter: true },
+            { metric: "Structures", key: "structures", higherBetter: null },
+            { metric: "Tests", key: "tests", higherBetter: true },
+        ];
+        const metricComparison = metricDefs.map((m) => {
+            const values = results.map((r) => ({
+                name: r.name,
+                value: r.metrics[m.key],
+            }));
+            let better = "N/A";
+            if (m.higherBetter !== null) {
+                const nums = values.map((v) => v.value);
+                const maxVal = Math.max(...nums);
+                const minVal = Math.min(...nums);
+                if (maxVal !== minVal) {
+                    const bestVal = m.higherBetter ? maxVal : minVal;
+                    const winners = values.filter((v) => v.value === bestVal);
+                    better = winners.length === 1 ? winners[0].name : "TIE";
+                }
+                else {
+                    better = "TIE";
+                }
+            }
+            return { metric: m.metric, values, better };
+        });
+        // Agent comparison
+        let agentComparison;
+        if (results.some((r) => r.agentScores)) {
+            agentComparison = [
+                { agent: "SecurityAgent", key: "security" },
+                { agent: "LLMQualityAgent", key: "llmQuality" },
+            ].map((a) => {
+                const scores = results.map((r) => ({
+                    name: r.name,
+                    score: r.agentScores?.[a.key] || 0,
+                }));
+                const maxScore = Math.max(...scores.map((s) => s.score));
+                const winners = scores.filter((s) => s.score === maxScore);
+                return {
+                    agent: a.agent,
+                    scores,
+                    winner: winners.length === 1 ? winners[0].name : "TIE",
+                };
+            });
+        }
+        // Summary
+        const overallWinner = ranking[0].name;
+        let recommendation = `${overallWinner} achieves the highest score (${ranking[0].score}/100).`;
+        const maxProviders = Math.max(...results.map((r) => r.metrics.providers));
+        const providerWinner = results.find((r) => r.metrics.providers === maxProviders && maxProviders > 0);
+        if (providerWinner && providerWinner.name !== overallWinner) {
+            recommendation += ` However, ${providerWinner.name} has actual business logic (${maxProviders} providers).`;
+        }
+        return {
+            timestamp: new Date().toISOString(),
+            projectCount: results.length,
+            projects: results,
+            ranking,
+            phaseComparison,
+            metricComparison,
+            agentComparison,
+            summary: { overallWinner, recommendation },
+        };
+    }
+}
+exports.CompareEvaluator = CompareEvaluator;
+//# sourceMappingURL=CompareEvaluator.js.map

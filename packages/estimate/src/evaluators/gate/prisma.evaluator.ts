@@ -66,7 +66,15 @@ export class PrismaEvaluator extends GateEvaluator {
       const errorMessage =
         result.type === "failure"
           ? result.reason.substring(0, 500)
-          : "Prisma compilation exception: ${String(result.error)}";
+          : `Prisma compilation exception: ${this.cleanErrorMessage(
+              result.error instanceof Error
+                ? result.error.message
+                : typeof result.error === "object" &&
+                    result.error !== null &&
+                    "message" in result.error
+                  ? (result.error as { message: string }).message
+                  : String(result.error),
+            )}`;
 
       return {
         passed: false,
@@ -88,12 +96,17 @@ export class PrismaEvaluator extends GateEvaluator {
             severity: "critical",
             category: "prisma-error",
             code: "P001",
-            message: `Prisma compilation exception: ${error instanceof Error ? error.message : "Unknown error"}`,
+            message: `Prisma compilation exception: ${this.cleanErrorMessage(error instanceof Error ? error.message : "Unknown error")}`,
           }),
         ],
         metrics: { valid: false },
       };
     }
+  }
+
+  /** Strip temp directory paths from error messages, keep only filenames */
+  private cleanErrorMessage(msg: string): string {
+    return msg.replace(/\/[^\s']*\/([^\/\s']+\.prisma)/g, "$1");
   }
 
   private async readFilesAsRecord(

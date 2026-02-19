@@ -1,29 +1,30 @@
-import * as path from 'path';
-import type { EvaluationResult, PhaseResult, Issue } from '../types';
-import type { AgentResult } from '../agents';
-import { PHASE_NAMES } from '../types';
+import * as path from "path";
+
+import type { AgentResult } from "../agents";
+import type { EvaluationResult, Issue, PhaseResult } from "../types";
+import { PHASE_NAMES } from "../types";
 
 interface ExtendedResult extends EvaluationResult {
   agentEvaluations?: AgentResult[];
 }
 
 const WEIGHTS: Record<string, string> = {
-  documentQuality: '20%',
-  requirementsCoverage: '25%',
-  testCoverage: '20%',
-  logicCompleteness: '20%',
-  apiCompleteness: '15%',
+  documentQuality: "20%",
+  requirementsCoverage: "25%",
+  testCoverage: "20%",
+  logicCompleteness: "20%",
+  apiCompleteness: "15%",
 };
 
 /** Maximum number of issues to display in a table before truncating */
 const MAX_DISPLAY_ISSUES = 20;
 
 const SCORING_PHASES = [
-  'documentQuality',
-  'requirementsCoverage',
-  'testCoverage',
-  'logicCompleteness',
-  'apiCompleteness',
+  "documentQuality",
+  "requirementsCoverage",
+  "testCoverage",
+  "logicCompleteness",
+  "apiCompleteness",
 ] as const;
 
 export function generateMarkdownReport(result: ExtendedResult): string {
@@ -53,25 +54,66 @@ ${renderSummary(result)}
 }
 
 function renderOverallScore(result: ExtendedResult): string {
+  const agents = result.agentEvaluations;
+  const hasAgents = agents && agents.length > 0;
+
+  let breakdown = "";
+  if (hasAgents) {
+    const phaseScore = Math.round(
+      [
+        "documentQuality",
+        "requirementsCoverage",
+        "testCoverage",
+        "logicCompleteness",
+        "apiCompleteness",
+      ].reduce(
+        (sum, key) =>
+          sum +
+          ((result.phases[key as keyof typeof result.phases] as PhaseResult)
+            .score *
+            parseFloat(WEIGHTS[key])) /
+            100,
+        0,
+      ) * 100,
+    );
+    const agentAvg =
+      agents.reduce((sum, a) => sum + a.score, 0) / agents.length;
+
+    breakdown = `
+### Score Breakdown
+
+| Component | Score | Weight | Contribution |
+|-----------|-------|--------|-------------|
+| Phase Score | ${phaseScore}/100 | 70% | ${(phaseScore * 0.7).toFixed(1)} |
+| Agent Score | ${agentAvg.toFixed(1)}/100 | 30% | ${(agentAvg * 0.3).toFixed(1)} |
+| **Total** | | | **${result.totalScore}/100** |
+`;
+  }
+
   return `
 ## Overall Score
 
 | Grade | Score |
 |-------|-------|
 | **${result.grade}** | **${result.totalScore}/100** |
+
+${breakdown}
 `.trim();
 }
 
 function renderScoringPhases(result: ExtendedResult): string {
-  const gateStatus = result.phases.gate.passed ? '✅ Pass' : '❌ Fail';
-  
-  const phaseRows = SCORING_PHASES.map(phase => {
+  const gateStatus = result.phases.gate.passed ? "✅ Pass" : "❌ Fail";
+
+  const phaseRows = SCORING_PHASES.map((phase) => {
     const phaseResult = result.phases[phase];
     const phaseName = PHASE_NAMES[phase];
     const weight = WEIGHTS[phase];
-    const status = getStatusEmoji(phaseResult.score, phaseResult.metrics?.skipped as boolean);
+    const status = getStatusEmoji(
+      phaseResult.score,
+      phaseResult.metrics?.skipped as boolean,
+    );
     return `| ${phaseName} | ${phaseResult.score}/100 | ${weight} | ${status} |`;
-  }).join('\n');
+  }).join("\n");
 
   return `
 ## Scoring Phases (affects total score)
@@ -85,12 +127,12 @@ ${phaseRows}
 
 function renderDetailedResults(result: ExtendedResult): string {
   const gateSection = result.phases.gate.passed
-    ? '✅ All basic validations passed.'
-    : `❌ Gate validation failed.\n\n**Issues:**\n${result.phases.gate.issues.map(i => `- [${i.code}] ${i.message}`).join('\n')}`;
+    ? "✅ All basic validations passed."
+    : `❌ Gate validation failed.\n\n**Issues:**\n${result.phases.gate.issues.map((i) => `- [${i.code}] ${i.message}`).join("\n")}`;
 
-  const phaseSections = SCORING_PHASES.map(phase => 
-    renderPhaseDetail(phase, result.phases[phase])
-  ).join('\n\n');
+  const phaseSections = SCORING_PHASES.map((phase) =>
+    renderPhaseDetail(phase, result.phases[phase]),
+  ).join("\n\n");
 
   return `
 ## Detailed Results
@@ -105,24 +147,29 @@ ${phaseSections}
 
 function renderPhaseDetail(phase: string, phaseResult: PhaseResult): string {
   const phaseName = PHASE_NAMES[phase as keyof typeof PHASE_NAMES];
-  
-  const metricsSection = phaseResult.metrics && Object.keys(phaseResult.metrics).length > 0
-    ? `**Metrics:**\n${Object.entries(phaseResult.metrics)
-        .filter(([key]) => key !== 'skipped' && key !== 'reason')
-        .map(([key, value]) => `- ${formatMetricName(key)}: ${value}`)
-        .join('\n')}\n`
-    : '';
 
-  const explanationSection = phaseResult.explanation && phaseResult.score < 80
-    ? `**Why this score:**\n${phaseResult.explanation.reasons.map(r => `- ${r}`).join('\n')}\n\n` +
-      (phaseResult.explanation.suggestions.length > 0
-        ? `**Suggestions:**\n${phaseResult.explanation.suggestions.map(s => `- ${s}`).join('\n')}\n`
-        : '')
-    : '';
+  const metricsSection =
+    phaseResult.metrics && Object.keys(phaseResult.metrics).length > 0
+      ? `**Metrics:**\n${Object.entries(phaseResult.metrics)
+          .filter(([key]) => key !== "skipped" && key !== "reason")
+          .map(([key, value]) => `- ${formatMetricName(key)}: ${value}`)
+          .join("\n")}\n`
+      : "";
 
-  const issuesSection = phaseResult.issues.length > 0
-    ? renderIssuesTable(phaseResult.issues)
-    : phaseResult.metrics?.skipped ? '' : '✅ No issues found.';
+  const explanationSection =
+    phaseResult.explanation && phaseResult.score < 80
+      ? `**Why this score:**\n${phaseResult.explanation.reasons.map((r) => `- ${r}`).join("\n")}\n\n` +
+        (phaseResult.explanation.suggestions.length > 0
+          ? `**Suggestions:**\n${phaseResult.explanation.suggestions.map((s) => `- ${s}`).join("\n")}\n`
+          : "")
+      : "";
+
+  const issuesSection =
+    phaseResult.issues.length > 0
+      ? renderIssuesTable(phaseResult.issues)
+      : phaseResult.metrics?.skipped
+        ? ""
+        : "✅ No issues found.";
 
   return `
 ### ${phaseName}
@@ -141,13 +188,15 @@ function renderIssuesTable(issues: Issue[]): string {
     return order[a.severity] - order[b.severity];
   });
 
-  const rows = sortedIssues.map(issue => {
-    const severity = getSeverityEmoji(issue.severity);
-    const location = issue.location
-      ? `${path.basename(issue.location.file)}:${issue.location.line || '?'}`
-      : '-';
-    return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
-  }).join('\n');
+  const rows = sortedIssues
+    .map((issue) => {
+      const severity = getSeverityEmoji(issue.severity);
+      const location = issue.location
+        ? `${path.basename(issue.location.file)}:${issue.location.line || "?"}`
+        : "-";
+      return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
+    })
+    .join("\n");
 
   return `
 **Issues:**
@@ -159,13 +208,15 @@ ${rows}
 }
 
 function renderReferenceInfo(result: ExtendedResult): string {
-  const complexityIssues = result.reference.complexity.issues.length > 0
-    ? renderComplexityTable(result.reference.complexity.issues)
-    : '';
+  const complexityIssues =
+    result.reference.complexity.issues.length > 0
+      ? renderComplexityTable(result.reference.complexity.issues)
+      : "";
 
-  const securityIssues = result.reference.security.issues.length > 0
-    ? renderSecurityTable(result.reference.security.issues)
-    : '';
+  const securityIssues =
+    result.reference.security.issues.length > 0
+      ? renderSecurityTable(result.reference.security.issues)
+      : "";
 
   return `
 ## Reference Info (no score impact)
@@ -202,17 +253,20 @@ ${securityIssues}
 
 function renderComplexityTable(issues: Issue[]): string {
   const displayIssues = issues.slice(0, MAX_DISPLAY_ISSUES);
-  const rows = displayIssues.map(issue => {
-    const severity = getSeverityEmoji(issue.severity);
-    const location = issue.location
-      ? `${path.basename(issue.location.file)}:${issue.location.line || '?'}`
-      : '-';
-    return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
-  }).join('\n');
+  const rows = displayIssues
+    .map((issue) => {
+      const severity = getSeverityEmoji(issue.severity);
+      const location = issue.location
+        ? `${path.basename(issue.location.file)}:${issue.location.line || "?"}`
+        : "-";
+      return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
+    })
+    .join("\n");
 
-  const moreRow = issues.length > MAX_DISPLAY_ISSUES
-    ? `\n| ... | ... | *${issues.length - MAX_DISPLAY_ISSUES} more* | ... |`
-    : '';
+  const moreRow =
+    issues.length > MAX_DISPLAY_ISSUES
+      ? `\n| ... | ... | *${issues.length - MAX_DISPLAY_ISSUES} more* | ... |`
+      : "";
 
   return `
 | Severity | Code | Message | Location |
@@ -222,13 +276,15 @@ ${rows}${moreRow}
 }
 
 function renderSecurityTable(issues: Issue[]): string {
-  const rows = issues.map(issue => {
-    const severity = getSeverityEmoji(issue.severity);
-    const location = issue.location
-      ? `${path.basename(issue.location.file)}:${issue.location.line || '?'}`
-      : '-';
-    return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
-  }).join('\n');
+  const rows = issues
+    .map((issue) => {
+      const severity = getSeverityEmoji(issue.severity);
+      const location = issue.location
+        ? `${path.basename(issue.location.file)}:${issue.location.line || "?"}`
+        : "-";
+      return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
+    })
+    .join("\n");
 
   return `
 | Severity | Code | Message | Location |
@@ -238,29 +294,30 @@ ${rows}
 }
 
 function renderAgentEvaluations(agents?: AgentResult[]): string {
-  if (!agents || agents.length === 0) return '';
+  if (!agents || agents.length === 0) return "";
 
-  const agentSections = agents.map(renderAgentSection).join('\n\n');
+  const agentSections = agents.map(renderAgentSection).join("\n\n");
 
   return `
-## AI Agent Evaluations (reference only)
+## AI Agent Evaluations (30% of total score)
 
-These evaluations are performed by AI and do not affect the score.
+These evaluations are performed by AI agents and contribute 30% to the total score.
 
 ${agentSections}
 `.trim();
 }
 
 function renderAgentSection(agent: AgentResult): string {
-  const scoreEmoji = agent.score >= 80 ? '✅' : agent.score >= 60 ? '⚠️' : '❌';
-  
+  const scoreEmoji = agent.score >= 80 ? "✅" : agent.score >= 60 ? "⚠️" : "❌";
+
   const tokensRow = agent.tokensUsed
     ? `| Tokens (in/out) | ${agent.tokensUsed.input} / ${agent.tokensUsed.output} |`
-    : '';
+    : "";
 
-  const issuesSection = agent.issues && agent.issues.length > 0
-    ? renderAgentIssuesTable(agent.issues)
-    : '✅ No issues found.';
+  const issuesSection =
+    agent.issues && agent.issues.length > 0
+      ? renderAgentIssuesTable(agent.issues)
+      : "✅ No issues found.";
 
   return `
 ### ${agent.agent}
@@ -280,20 +337,24 @@ ${issuesSection}
 `.trim();
 }
 
-function renderAgentIssuesTable(issues: AgentResult['issues']): string {
+function renderAgentIssuesTable(issues: AgentResult["issues"]): string {
   const displayIssues = issues.slice(0, 10);
-  const rows = displayIssues.map(issue => {
-    const severity = getSeverityEmoji(issue.severity);
-    const file = issue.file ? path.basename(issue.file) : '-';
-    const desc = issue.description.length > 60
-      ? issue.description.substring(0, 60) + '...'
-      : issue.description;
-    return `| ${severity} | ${issue.type} | ${desc} | ${file} |`;
-  }).join('\n');
+  const rows = displayIssues
+    .map((issue) => {
+      const severity = getSeverityEmoji(issue.severity);
+      const file = issue.file ? path.basename(issue.file) : "-";
+      const desc =
+        issue.description.length > 60
+          ? issue.description.substring(0, 60) + "..."
+          : issue.description;
+      return `| ${severity} | ${issue.type} | ${desc} | ${file} |`;
+    })
+    .join("\n");
 
-  const moreRow = issues.length > 10
-    ? `\n| ... | ... | *${issues.length - 10} more issues* | ... |`
-    : '';
+  const moreRow =
+    issues.length > 10
+      ? `\n| ... | ... | *${issues.length - 10} more issues* | ... |`
+      : "";
 
   return `
 **Issues Found:**
@@ -305,6 +366,19 @@ ${rows}${moreRow}
 }
 
 function renderSummary(result: ExtendedResult): string {
+  let penaltyRows = "";
+  if (result.penalties) {
+    if (result.penalties.warning) {
+      penaltyRows += `| Warning Penalty | -${result.penalties.warning.amount} (${result.penalties.warning.ratio}) |\n`;
+    }
+    if (result.penalties.duplication) {
+      penaltyRows += `| Duplication Penalty | -${result.penalties.duplication.amount} (${result.penalties.duplication.blocks} blocks) |\n`;
+    }
+    if (result.penalties.jsdoc) {
+      penaltyRows += `| JSDoc Penalty | -${result.penalties.jsdoc.amount} (${result.penalties.jsdoc.missing} missing, ${result.penalties.jsdoc.ratio}) |\n`;
+    }
+  }
+
   return `
 ## Summary
 
@@ -314,30 +388,35 @@ function renderSummary(result: ExtendedResult): string {
 | Critical | ${result.summary.criticalCount} |
 | Warnings | ${result.summary.warningCount} |
 | Suggestions | ${result.summary.suggestionCount} |
+${penaltyRows}
 `.trim();
 }
 
 function getStatusEmoji(score: number, skipped?: boolean): string {
-  if (skipped) return '⏭️ Skipped';
-  if (score >= 90) return '✅ Excellent';
-  if (score >= 80) return '👍 Good';
-  if (score >= 70) return '📊 Average';
-  if (score >= 50) return '⚠️ Below Average';
-  return '❌ Poor';
+  if (skipped) return "⏭️ Skipped";
+  if (score >= 90) return "✅ Excellent";
+  if (score >= 80) return "👍 Good";
+  if (score >= 70) return "📊 Average";
+  if (score >= 50) return "⚠️ Below Average";
+  return "❌ Poor";
 }
 
 function getSeverityEmoji(severity: string): string {
   switch (severity) {
-    case 'critical': return '🔴 Critical';
-    case 'warning': return '🟡 Warning';
-    case 'suggestion': return '🔵 Suggestion';
-    default: return severity;
+    case "critical":
+      return "🔴 Critical";
+    case "warning":
+      return "🟡 Warning";
+    case "suggestion":
+      return "🔵 Suggestion";
+    default:
+      return severity;
   }
 }
 
 function formatMetricName(key: string): string {
   return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, str => str.toUpperCase())
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
     .trim();
 }

@@ -1,9 +1,8 @@
-import OpenAI from 'openai';
-import { AgentConfig, DEFAULT_MODEL } from './types';
+import OpenAI from "openai";
 
-/**
- * LLM API response
- */
+import { AgentConfig, DEFAULT_MODEL } from "./types";
+
+/** LLM API response */
 interface LLMResponse {
   content: string;
   tokensUsed: {
@@ -12,9 +11,7 @@ interface LLMResponse {
   };
 }
 
-/**
- * LLM client using OpenAI SDK (OpenRouter compatible)
- */
+/** LLM client using OpenAI SDK (OpenRouter compatible) */
 export class LLMClient {
   private client: OpenAI;
   private model: string;
@@ -26,10 +23,10 @@ export class LLMClient {
 
     this.client = new OpenAI({
       apiKey: config.apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
+      baseURL: "https://openrouter.ai/api/v1",
       defaultHeaders: {
-        'HTTP-Referer': 'https://github.com/wrtnlabs/autobe',
-        'X-Title': 'AutoBE Estimate',
+        "HTTP-Referer": "https://github.com/wrtnlabs/autobe",
+        "X-Title": "AutoBE Estimate",
       },
     });
   }
@@ -38,14 +35,15 @@ export class LLMClient {
     const response = await this.client.chat.completions.create({
       model: this.model,
       max_tokens: this.maxTokens,
+      temperature: 0,
       messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
       ],
     });
 
     return {
-      content: response.choices[0]?.message?.content || '',
+      content: response.choices[0]?.message?.content || "",
       tokensUsed: {
         input: response.usage?.prompt_tokens || 0,
         output: response.usage?.completion_tokens || 0,
