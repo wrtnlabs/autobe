@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 
 import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
