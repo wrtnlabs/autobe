@@ -3,9 +3,9 @@ import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structu
 /**
  * Application interface for the Unit Section Review agent.
  *
- * This agent is responsible for validating the unit section structure
- * produced by the Unit Generation agent before allowing progression
- * to section generation.
+ * This agent is responsible for validating the unit section structure produced
+ * by the Unit Generation agent before allowing progression to section
+ * generation.
  */
 export interface IAutoBeAnalyzeWriteUnitReviewApplication {
   /**
@@ -15,7 +15,8 @@ export interface IAutoBeAnalyzeWriteUnitReviewApplication {
    * ensuring alignment with the parent section and proper coverage of
    * functional requirements.
    *
-   * @param props Request containing either preliminary data request or complete task
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
   process(props: IAutoBeAnalyzeWriteUnitReviewApplication.IProps): void;
 }
@@ -29,18 +30,18 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
+     *
      * - What additional context do you need for validation?
      *
      * For completion:
+     *
      * - How well do the unit sections align with the module section?
      * - Are the keywords adequate for guiding section generation?
      * - What specific issues need to be addressed?
      */
     thinking: string;
 
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
@@ -50,21 +51,17 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
    * Provides the review verdict along with feedback and optional revisions.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     type: "complete";
 
-    /**
-     * Index of the parent module section being reviewed.
-     */
+    /** Index of the parent module section being reviewed. */
     moduleIndex: number;
 
     /**
      * Whether the unit section structure passed review.
      *
-     * If true: Section generation can proceed.
-     * If false: Unit generation must be retried with feedback.
+     * If true: Section generation can proceed. If false: Unit generation must
+     * be retried with feedback.
      */
     approved: boolean;
 
@@ -72,6 +69,7 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
      * Detailed review feedback.
      *
      * Review criteria evaluated:
+     *
      * - Alignment with parent module section's purpose
      * - Completeness of functional requirement coverage
      * - Non-overlapping section boundaries
@@ -79,6 +77,7 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
      * - Keywords adequately represent section topics
      *
      * For rejected submissions:
+     *
      * - Specific issues identified
      * - Actionable recommendations for improvement
      * - Missing functional areas
@@ -94,28 +93,18 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
     revisedSections?: IRevisedUnitSection[];
   }
 
-  /**
-   * Structure for revised unit sections.
-   */
+  /** Structure for revised unit sections. */
   export interface IRevisedUnitSection {
-    /**
-     * Title of the unit section.
-     */
+    /** Title of the unit section. */
     title: string;
 
-    /**
-     * Purpose statement.
-     */
+    /** Purpose statement. */
     purpose: string;
 
-    /**
-     * Section content.
-     */
+    /** Section content. */
     content: string;
 
-    /**
-     * Keywords for section guidance.
-     */
+    /** Keywords for section guidance. */
     keywords: string[];
   }
 }

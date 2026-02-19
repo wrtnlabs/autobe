@@ -10,10 +10,11 @@ export interface IAutoBeAnalyzeWriteAllUnitReviewApplication {
   /**
    * Process batch unit section review task or preliminary data requests.
    *
-   * Reviews and validates ALL unit sections across all module sections
-   * in a single call, ensuring consistency and proper coverage.
+   * Reviews and validates ALL unit sections across all module sections in a
+   * single call, ensuring consistency and proper coverage.
    *
-   * @param props Request containing either preliminary data request or complete task
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
   process(props: IAutoBeAnalyzeWriteAllUnitReviewApplication.IProps): void;
 }
@@ -27,18 +28,18 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
+     *
      * - What additional context do you need for validation?
      *
      * For completion:
+     *
      * - How well do ALL unit sections align with their parent module sections?
      * - Is there consistency across the entire file's structure?
      * - Are all functional requirements covered without overlap?
      */
     thinking: string;
 
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
@@ -48,16 +49,14 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
    * Provides the overall review verdict for ALL units in the file.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     type: "complete";
 
     /**
      * Whether ALL unit sections passed review.
      *
-     * If true: Section generation can proceed for all units.
-     * If false: ALL unit generation must be retried with feedback.
+     * If true: Section generation can proceed for all units. If false: ALL unit
+     * generation must be retried with feedback.
      */
     approved: boolean;
 
@@ -65,6 +64,7 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
      * Detailed review feedback covering the entire file's unit structure.
      *
      * Review criteria evaluated:
+     *
      * - Alignment of each unit section with its parent module section
      * - Consistency across all units in the file
      * - Completeness of functional requirement coverage
@@ -73,6 +73,7 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
      * - Keywords adequately represent section topics
      *
      * For rejected submissions:
+     *
      * - Specific issues identified (with module indices)
      * - Actionable recommendations for improvement
      * - Missing functional areas
@@ -82,49 +83,33 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
     /**
      * Revised unit sections for ALL modules if modifications were made.
      *
-     * Only provided if the reviewer made direct corrections.
-     * Array index corresponds to moduleIndex.
+     * Only provided if the reviewer made direct corrections. Array index
+     * corresponds to moduleIndex.
      */
     revisedUnits?: IRevisedModuleUnit[];
   }
 
-  /**
-   * Structure for revised units of a single module section.
-   */
+  /** Structure for revised units of a single module section. */
   export interface IRevisedModuleUnit {
-    /**
-     * Index of the module section these units belong to.
-     */
+    /** Index of the module section these units belong to. */
     moduleIndex: number;
 
-    /**
-     * Revised unit sections for this module.
-     */
+    /** Revised unit sections for this module. */
     unitSections: IRevisedUnitSection[];
   }
 
-  /**
-   * Structure for a revised unit section.
-   */
+  /** Structure for a revised unit section. */
   export interface IRevisedUnitSection {
-    /**
-     * Title of the unit section.
-     */
+    /** Title of the unit section. */
     title: string;
 
-    /**
-     * Purpose statement.
-     */
+    /** Purpose statement. */
     purpose: string;
 
-    /**
-     * Section content.
-     */
+    /** Section content. */
     content: string;
 
-    /**
-     * Keywords for section guidance.
-     */
+    /** Keywords for section guidance. */
     keywords: string[];
   }
 }

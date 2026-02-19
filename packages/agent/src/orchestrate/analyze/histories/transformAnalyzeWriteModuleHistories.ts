@@ -13,8 +13,8 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 /**
  * ISO/IEC/IEEE 29148:2018 SRS Structure
  *
- * This structure defines the 6 mandatory module sections for
- * a compliant Software Requirements Specification document.
+ * This structure defines the 6 mandatory module sections for a compliant
+ * Software Requirements Specification document.
  */
 const SRS_STRUCTURE = [
   {
@@ -82,8 +82,7 @@ const SRS_STRUCTURE = [
   {
     section: 6,
     title: "Security and Quality Attributes",
-    purpose:
-      "Define security requirements and quality attribute scenarios.",
+    purpose: "Define security requirements and quality attribute scenarios.",
     includes: [
       "Authentication and authorization requirements",
       "Data protection requirements",

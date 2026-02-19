@@ -2,8 +2,8 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -24,7 +24,9 @@ export const transformAnalyzeWriteSectionReviewHistories = (
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined =
+  const moduleSection:
+    | AutoBeAnalyzeWriteModuleEvent.IModuleSection
+    | undefined =
     props.moduleEvent.moduleSections[props.sectionEvent.moduleIndex];
   const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
     props.unitEvent.unitSections[props.sectionEvent.unitIndex];

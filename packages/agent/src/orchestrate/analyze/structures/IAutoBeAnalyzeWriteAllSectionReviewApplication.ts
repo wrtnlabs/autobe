@@ -10,10 +10,11 @@ export interface IAutoBeAnalyzeWriteAllSectionReviewApplication {
   /**
    * Process batch section review task or preliminary data requests.
    *
-   * Reviews and validates ALL section sections across all units
-   * in a single call, ensuring consistency and proper coverage.
+   * Reviews and validates ALL section sections across all units in a single
+   * call, ensuring consistency and proper coverage.
    *
-   * @param props Request containing either preliminary data request or complete task
+   * @param props Request containing either preliminary data request or complete
+   *   task
    */
   process(props: IAutoBeAnalyzeWriteAllSectionReviewApplication.IProps): void;
 }
@@ -27,9 +28,11 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      * your current state and explain your reasoning:
      *
      * For preliminary requests:
+     *
      * - What additional context do you need for validation?
      *
      * For completion:
+     *
      * - Are ALL requirements properly formatted in EARS?
      * - Are Mermaid diagrams syntactically correct throughout?
      * - Is the content implementation-ready across all sections?
@@ -37,9 +40,7 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      */
     thinking: string;
 
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
 
@@ -49,16 +50,14 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
    * Provides the overall review verdict for ALL sections in the file.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     */
+    /** Type discriminator for the request. */
     type: "complete";
 
     /**
      * Whether ALL sections passed review.
      *
-     * If true: Content is ready for final document assembly.
-     * If false: ALL section generation must be retried with feedback.
+     * If true: Content is ready for final document assembly. If false: ALL
+     * section generation must be retried with feedback.
      */
     approved: boolean;
 
@@ -66,6 +65,7 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      * Detailed review feedback covering the entire file's section content.
      *
      * Review criteria evaluated:
+     *
      * - Alignment with parent unit section's keywords and purpose
      * - EARS format compliance for requirements
      * - Mermaid diagram syntax correctness
@@ -75,6 +75,7 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      * - Consistency across all sections
      *
      * For rejected submissions:
+     *
      * - Specific syntax errors (with location)
      * - Requirements not in proper EARS format
      * - Prohibited content detected
@@ -85,54 +86,36 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
     /**
      * Revised sections for ALL units if modifications were made.
      *
-     * Only provided if the reviewer made direct corrections.
-     * Organized by module index and unit index.
+     * Only provided if the reviewer made direct corrections. Organized by
+     * module index and unit index.
      */
     revisedSections?: IRevisedModuleSections[];
   }
 
-  /**
-   * Structure for revised sections of a single module.
-   */
+  /** Structure for revised sections of a single module. */
   export interface IRevisedModuleSections {
-    /**
-     * Index of the module section.
-     */
+    /** Index of the module section. */
     moduleIndex: number;
 
-    /**
-     * Revised sections for each unit in this module.
-     */
+    /** Revised sections for each unit in this module. */
     units: IRevisedUnitSections[];
   }
 
-  /**
-   * Structure for revised sections of a single unit.
-   */
+  /** Structure for revised sections of a single unit. */
   export interface IRevisedUnitSections {
-    /**
-     * Index of the unit section.
-     */
+    /** Index of the unit section. */
     unitIndex: number;
 
-    /**
-     * Revised section sections for this unit.
-     */
+    /** Revised section sections for this unit. */
     sectionSections: IRevisedSectionSection[];
   }
 
-  /**
-   * Structure for a revised section.
-   */
+  /** Structure for a revised section. */
   export interface IRevisedSectionSection {
-    /**
-     * Title of the section.
-     */
+    /** Title of the section. */
     title: string;
 
-    /**
-     * Revised content.
-     */
+    /** Revised content. */
     content: string;
   }
 }

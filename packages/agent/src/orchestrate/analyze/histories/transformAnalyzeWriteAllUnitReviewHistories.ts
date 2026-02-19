@@ -15,8 +15,8 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 /**
  * Transform histories for batch review of ALL unit sections in a file.
  *
- * This transformer provides context for reviewing all units at once,
- * enabling holistic validation of the entire file's unit structure.
+ * This transformer provides context for reviewing all units at once, enabling
+ * holistic validation of the entire file's unit structure.
  */
 export const transformAnalyzeWriteAllUnitReviewHistories = (
   ctx: AutoBeContext,
@@ -85,7 +85,9 @@ export const transformAnalyzeWriteAllUnitReviewHistories = (
 
         ${props.unitEvents
           .map((unitEvent, moduleIndex) => {
-            const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined = props.moduleEvent.moduleSections[moduleIndex];
+            const moduleSection:
+              | AutoBeAnalyzeWriteModuleEvent.IModuleSection
+              | undefined = props.moduleEvent.moduleSections[moduleIndex];
             return `
         ---
         ## Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}

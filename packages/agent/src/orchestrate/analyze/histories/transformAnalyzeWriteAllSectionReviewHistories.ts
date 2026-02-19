@@ -2,8 +2,8 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -75,8 +75,11 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
 
         ${props.sectionEvents
           .map((sectionsForModule, moduleIndex) => {
-            const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection | undefined = props.moduleEvent.moduleSections[moduleIndex];
-            const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined = props.unitEvents[moduleIndex];
+            const moduleSection:
+              | AutoBeAnalyzeWriteModuleEvent.IModuleSection
+              | undefined = props.moduleEvent.moduleSections[moduleIndex];
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
+              props.unitEvents[moduleIndex];
 
             return `
         ---
@@ -85,7 +88,9 @@ export const transformAnalyzeWriteAllSectionReviewHistories = (
 
         ${sectionsForModule
           .map((sectionEvent, unitIndex) => {
-            const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined = unitEvent?.unitSections[unitIndex];
+            const unitSection:
+              | AutoBeAnalyzeWriteUnitEvent.IUnitSection
+              | undefined = unitEvent?.unitSections[unitIndex];
             return `
         ## Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
         **Keywords**: ${unitSection?.keywords.join(", ") ?? "No keywords"}
