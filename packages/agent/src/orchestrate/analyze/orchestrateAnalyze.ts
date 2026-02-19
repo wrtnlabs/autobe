@@ -496,7 +496,7 @@ function assembleContent(
   const lines: string[] = [];
 
   // Document title and summary
-  lines.push(`# ${moduleEvent.title}`);
+  lines.push(`**${moduleEvent.title}**`);
   lines.push("");
   lines.push(moduleEvent.summary);
   lines.push("");
@@ -515,7 +515,7 @@ function assembleContent(
       sectionResults[moduleIndex];
 
     // Module section header
-    lines.push(`## ${moduleSection.title}`);
+    lines.push(`# ${moduleSection.title}`);
     lines.push("");
     if (moduleSection.content) {
       lines.push(moduleSection.content);
@@ -535,7 +535,7 @@ function assembleContent(
           sectionEventsForModule?.[unitIndex];
 
         // Unit section header
-        lines.push(`### ${unitSection.title}`);
+        lines.push(`## ${unitSection.title}`);
         lines.push("");
         if (unitSection.content) {
           lines.push(unitSection.content);
@@ -545,7 +545,7 @@ function assembleContent(
         // For each section section
         if (sectionEvent) {
           for (const sectionSection of sectionEvent.sectionSections) {
-            lines.push(`#### ${sectionSection.title}`);
+            lines.push(`### ${sectionSection.title}`);
             lines.push("");
             lines.push(sectionSection.content);
             lines.push("");
