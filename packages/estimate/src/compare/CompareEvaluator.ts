@@ -119,6 +119,7 @@ export class CompareEvaluator {
         tests: report.phases?.testCoverage?.metrics?.testCount || 0,
       },
       agentScores: this.extractAgentScores(report),
+      penalties: this.extractPenalties(report),
       issues: {
         gate: report.phases?.gate?.issues?.length || 0,
         requirements: report.phases?.requirementsCoverage?.issues?.length || 0,
@@ -144,6 +145,26 @@ export class CompareEvaluator {
     return {
       security: security?.score || 0,
       llmQuality: llm?.score || 0,
+    };
+  }
+
+  private extractPenalties(
+    report: EstimateReport,
+  ): ProjectResult["penalties"] | undefined {
+    if (!report.penalties) return undefined;
+
+    const warning = report.penalties.warning?.amount || 0;
+    const duplication = report.penalties.duplication?.amount || 0;
+    const jsdoc = report.penalties.jsdoc?.amount || 0;
+    const total = warning + duplication + jsdoc;
+
+    if (total === 0) return undefined;
+
+    return {
+      ...(warning > 0 && { warning }),
+      ...(duplication > 0 && { duplication }),
+      ...(jsdoc > 0 && { jsdoc }),
+      total,
     };
   }
 
@@ -223,6 +244,22 @@ export class CompareEvaluator {
       }
       return { metric: m.metric, values, better };
     });
+
+    // Penalty comparison (lower is better)
+    const penaltyValues = results.map((r) => ({
+      name: r.name,
+      value: r.penalties?.total || 0,
+    }));
+    if (penaltyValues.some((v) => (v.value as number) > 0)) {
+      const nums = penaltyValues.map((v) => v.value as number);
+      const minVal = Math.min(...nums);
+      const winners = penaltyValues.filter((v) => v.value === minVal);
+      metricComparison.push({
+        metric: "Penalties",
+        values: penaltyValues,
+        better: winners.length === 1 ? winners[0].name : "TIE",
+      });
+    }
 
     // Agent comparison
     let agentComparison: CompareResult["agentComparison"];

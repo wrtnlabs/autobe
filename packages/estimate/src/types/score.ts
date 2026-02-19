@@ -1,45 +1,48 @@
-import type { Issue } from './issue';
+import { AgentResult } from "../agents";
+import type { Issue } from "./issue";
 
-/**
- * Evaluation grade
- */
-export type Grade = 'A' | 'B' | 'C' | 'D' | 'F';
+export const GATE_ERROR_THRESHOLD = 0.05;
+export const GATE_PENALTY_PER_PERCENT = 5;
+export const AGENT_WEIGHT_RATIO = 0.3;
+export const AGENT_WEIGHTS: Record<string, number> = {
+  SecurityAgent: 0.5, // 50% of agent portion
+  LLMQualityAgent: 0.5, // 50% of agent portion
+};
 
-/**
- * Evaluation phase
- */
+/** Evaluation grade */
+export type Grade = "A" | "B" | "C" | "D" | "F";
+
+/** Evaluation phase */
 export type Phase =
   // Gate
-  | 'gate'
+  | "gate"
   // New scoring phases (affects score)
-  | 'documentQuality'
-  | 'requirementsCoverage'
-  | 'testCoverage'
-  | 'logicCompleteness'
-  | 'apiCompleteness'
+  | "documentQuality"
+  | "requirementsCoverage"
+  | "testCoverage"
+  | "logicCompleteness"
+  | "apiCompleteness"
   // Legacy phases (reference only, no score impact)
-  | 'requirements'
-  | 'database'
-  | 'api'
-  | 'test'
-  | 'implementation'
-  | 'functionality'
-  | 'quality'
-  | 'safety'
-  | 'llmSpecific';
+  | "requirements"
+  | "database"
+  | "api"
+  | "test"
+  | "implementation"
+  | "functionality"
+  | "quality"
+  | "safety"
+  | "llmSpecific";
 
-/**
- * New phase weights (total = 100%)
- */
+/** New phase weights (total = 100%) */
 export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.2,       // 20%
+  documentQuality: 0.2, // 20%
   requirementsCoverage: 0.25, // 25%
-  testCoverage: 0.2,          // 20%
-  logicCompleteness: 0.2,     // 20%
-  apiCompleteness: 0.15,      // 15%
+  testCoverage: 0.2, // 20%
+  logicCompleteness: 0.2, // 20%
+  apiCompleteness: 0.15, // 15%
   // Legacy (not used in score)
   requirements: 0,
   database: 0,
@@ -52,51 +55,43 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   llmSpecific: 0,
 };
 
-/**
- * Phase display names
- */
+/** Phase display names */
 export const PHASE_NAMES: Record<Phase, string> = {
-  gate: 'Gate',
+  gate: "Gate",
   // New scoring phases
-  documentQuality: 'Document Quality',
-  requirementsCoverage: 'Requirements Coverage',
-  testCoverage: 'Test Coverage',
-  logicCompleteness: 'Logic Completeness',
-  apiCompleteness: 'API Completeness',
+  documentQuality: "Document Quality",
+  requirementsCoverage: "Requirements Coverage",
+  testCoverage: "Test Coverage",
+  logicCompleteness: "Logic Completeness",
+  apiCompleteness: "API Completeness",
   // Legacy
-  requirements: 'Requirements (Analyze)',
-  database: 'DB Design (Database)',
-  api: 'API Design (Interface)',
-  test: 'Test (Test)',
-  implementation: 'Implementation (Realize)',
-  functionality: 'Functionality',
-  quality: 'Quality',
-  safety: 'Safety',
-  llmSpecific: 'LLM Specific',
+  requirements: "Requirements (Analyze)",
+  database: "DB Design (Database)",
+  api: "API Design (Interface)",
+  test: "Test (Test)",
+  implementation: "Implementation (Realize)",
+  functionality: "Functionality",
+  quality: "Quality",
+  safety: "Safety",
+  llmSpecific: "LLM Specific",
 };
 
-/**
- * Issue summary for a phase
- */
+/** Issue summary for a phase */
 export interface IssueSummary {
   code: string;
   count: number;
   message: string;
-  severity: 'critical' | 'warning' | 'suggestion';
+  severity: "critical" | "warning" | "suggestion";
 }
 
-/**
- * Score explanation - why the score is low
- */
+/** Score explanation - why the score is low */
 export interface ScoreExplanation {
   reasons: string[];
   issueSummaries: IssueSummary[];
   suggestions: string[];
 }
 
-/**
- * Phase evaluation result
- */
+/** Phase evaluation result */
 export interface PhaseResult {
   phase: Phase;
   passed: boolean;
@@ -109,9 +104,7 @@ export interface PhaseResult {
   explanation?: ScoreExplanation;
 }
 
-/**
- * Reference info (no score impact)
- */
+/** Reference info (no score impact) */
 export interface ReferenceInfo {
   complexity: {
     totalFunctions: number;
@@ -137,9 +130,7 @@ export interface ReferenceInfo {
   };
 }
 
-/**
- * Final evaluation result
- */
+/** Final evaluation result */
 export interface EvaluationResult {
   targetPath: string;
   totalScore: number;
@@ -175,22 +166,24 @@ export interface EvaluationResult {
     estimateVersion: string;
     evaluatedFiles: number;
   };
+  penalties?: {
+    warning?: { amount: number; ratio: string };
+    duplication?: { amount: number; blocks: number };
+    jsdoc?: { amount: number; missing: number; ratio: string };
+  };
+  agentEvaluations?: AgentResult[];
 }
 
-/**
- * Convert score to grade
- */
+/** Convert score to grade */
 export function scoreToGrade(score: number): Grade {
-  if (score >= 90) return 'A';
-  if (score >= 80) return 'B';
-  if (score >= 70) return 'C';
-  if (score >= 60) return 'D';
-  return 'F';
+  if (score >= 90) return "A";
+  if (score >= 80) return "B";
+  if (score >= 70) return "C";
+  if (score >= 60) return "D";
+  return "F";
 }
 
-/**
- * Create empty PhaseResult
- */
+/** Create empty PhaseResult */
 export function createEmptyPhaseResult(phase: Phase): PhaseResult {
   return {
     phase,
@@ -203,10 +196,11 @@ export function createEmptyPhaseResult(phase: Phase): PhaseResult {
   };
 }
 
-/**
- * Generate score explanation from issues
- */
-export function generateExplanation(issues: Issue[], score: number): ScoreExplanation {
+/** Generate score explanation from issues */
+export function generateExplanation(
+  issues: Issue[],
+  score: number,
+): ScoreExplanation {
   const reasons: string[] = [];
   const suggestions: string[] = [];
 
@@ -233,17 +227,17 @@ export function generateExplanation(issues: Issue[], score: number): ScoreExplan
     return b.count - a.count;
   });
 
-  const criticalCount = issues.filter(i => i.severity === 'critical').length;
-  const warningCount = issues.filter(i => i.severity === 'warning').length;
+  const criticalCount = issues.filter((i) => i.severity === "critical").length;
+  const warningCount = issues.filter((i) => i.severity === "warning").length;
 
   if (criticalCount > 0) {
     reasons.push(`${criticalCount} critical issue(s) found`);
-    suggestions.push('Fix all critical issues first');
+    suggestions.push("Fix all critical issues first");
   }
 
   if (warningCount > 10) {
     reasons.push(`${warningCount} warnings detected`);
-    suggestions.push('Address warnings to improve quality');
+    suggestions.push("Address warnings to improve quality");
   }
 
   for (const summary of issueSummaries.slice(0, 3)) {

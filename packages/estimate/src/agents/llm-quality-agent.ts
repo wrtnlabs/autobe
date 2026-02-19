@@ -1,15 +1,14 @@
-import { BaseAgent } from './base-agent';
-import { AgentConfig, AgentResult } from './types';
-import { EvaluationContext } from '../types';
-import * as path from 'path';
-import * as fs from 'fs/promises';
+import * as fs from "fs/promises";
+import * as path from "path";
 
-/**
- * LLM Quality evaluation agent
- */
+import { EvaluationContext } from "../types";
+import { BaseAgent } from "./base-agent";
+import { AgentConfig, AgentResult } from "./types";
+
+/** LLM Quality evaluation agent */
 export class LLMQualityAgent extends BaseAgent {
-  readonly name = 'LLMQualityAgent';
-  readonly description = 'Evaluates AI-generated code for common LLM mistakes';
+  readonly name = "LLMQualityAgent";
+  readonly description = "Evaluates AI-generated code for common LLM mistakes";
 
   constructor(config: AgentConfig) {
     super(config);
@@ -27,74 +26,65 @@ export class LLMQualityAgent extends BaseAgent {
         model: this.client.getModel(),
         issues: [],
         score: 100,
-        summary: 'No files to evaluate',
+        summary: "No files to evaluate",
         durationMs: Math.round(performance.now() - startTime),
       };
     }
 
-    let requirementsContent = '';
+    let requirementsContent = "";
     if (context.project.analysisDir) {
       try {
         const files = await fs.readdir(context.project.analysisDir);
         for (const file of files.slice(0, 5)) {
-          if (file.endsWith('.md')) {
+          if (file.endsWith(".md")) {
             const content = await fs.readFile(
               path.join(context.project.analysisDir, file),
-              'utf-8'
+              "utf-8",
             );
             requirementsContent += `\n### ${file}\n${content}\n`;
           }
         }
       } catch (error) {
-        console.error('Failed to read requirements:', error);
+        console.error("Failed to read requirements:", error);
       }
     }
 
-    const fileContents = await this.readFiles(targetFiles);
-
-    let codeContent = '';
-    for (const [filePath, content] of fileContents) {
-      const relativePath = path.relative(context.project.rootPath, filePath);
-      codeContent += `\n### File: ${relativePath}\n\`\`\`typescript\n${content}\n\`\`\`\n`;
-    }
-
     requirementsContent = this.truncateContent(requirementsContent, 20000);
-    codeContent = this.truncateContent(codeContent, 30000);
+    const reqSection = requirementsContent
+      ? `\n## Requirements\n${requirementsContent}\n`
+      : "";
 
-    const systemPrompt = await this.loadPrompt('LLM_QUALITY_AGENT.md');
+    const fileContents = await this.readFiles(targetFiles);
+    const chunks = this.splitIntoChunks(
+      fileContents,
+      context.project.rootPath,
+      60000,
+    );
 
-    const userPrompt = `Analyze this AI-generated code:
-${requirementsContent ? `\n## Requirements\n${requirementsContent}\n` : ''}
-## Code
-${codeContent}
+    console.log(
+      `  ${this.name}: ${targetFiles.length} files → ${chunks.length} chunk(s)`,
+    );
 
-Respond ONLY with valid JSON.`;
+    const systemPrompt = await this.loadPrompt("LLM_QUALITY_AGENT.md");
 
-    try {
-      const response = await this.client.chat(systemPrompt, userPrompt);
-      const parsed = this.parseResponse(response.content);
+    const { parsed, tokensUsed } = await this.evaluateChunks(
+      systemPrompt,
+      chunks,
+      (chunk, index, total) =>
+        total > 1
+          ? `Analyze this AI-generated code (chunk ${index}/${total}):${reqSection}\n## Code\n${chunk}\n\nRespond ONLY with valid JSON.`
+          : `Analyze this AI-generated code:${reqSection}\n## Code\n${chunk}\n\nRespond ONLY with valid JSON.`,
+    );
 
-      return {
-        agent: this.name,
-        provider: this.config.provider,
-        model: this.client.getModel(),
-        issues: parsed.issues,
-        score: parsed.score,
-        summary: parsed.summary,
-        durationMs: Math.round(performance.now() - startTime),
-        tokensUsed: response.tokensUsed,
-      };
-    } catch (error) {
-      console.error('LLMQualityAgent error:', error);
-      return {
-        agent: this.name,
-        provider: this.config.provider,
-        model: this.client.getModel(),
-        issues: [],
-        score: 100,
-        summary: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        durationMs: Math.round(performance.now() - startTime),
-      };
-    }
+    return {
+      agent: this.name,
+      provider: this.config.provider,
+      model: this.client.getModel(),
+      issues: parsed.issues,
+      score: parsed.score,
+      summary: parsed.summary,
+      durationMs: Math.round(performance.now() - startTime),
+      tokensUsed,
+    };
   }
 }

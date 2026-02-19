@@ -38,6 +38,12 @@ export interface ProjectResult {
     security: number;
     llmQuality: number;
   };
+  penalties?: {
+    warning?: number;
+    duplication?: number;
+    jsdoc?: number;
+    total: number;
+  };
   issues: {
     gate: number;
     requirements: number;
@@ -66,6 +72,11 @@ export interface EstimateReport {
     testCoverage?: { score?: number; metrics?: { testCount?: number } };
     logicCompleteness?: { score?: number; issues?: unknown[] };
     apiCompleteness?: { score?: number };
+  };
+  penalties?: {
+    warning?: { amount: number };
+    duplication?: { amount: number };
+    jsdoc?: { amount: number };
   };
   agentEvaluations?: AgentEvaluation[];
 }
