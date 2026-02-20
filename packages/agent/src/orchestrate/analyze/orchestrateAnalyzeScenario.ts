@@ -15,7 +15,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateScenarioFileNames } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeSceHistories } from "./histories/transformAnalyzeScenarioHistories";
+import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
@@ -41,7 +41,7 @@ export const orchestrateAnalyzeScenario = async (
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeSceHistories(ctx, preliminary),
+      ...transformAnalyzeScenarioHistory(ctx, preliminary),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({

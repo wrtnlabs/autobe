@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -11,20 +12,19 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteUnitHistories = (
+export const transformAnalyzeWriteUnitReviewHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    moduleIndex: number;
-    feedback?: string;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
     | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-    | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
+    | undefined = props.moduleEvent.moduleSections[props.unitEvent.moduleIndex];
 
   return {
     histories: [
@@ -47,7 +47,7 @@ export const transformAnalyzeWriteUnitHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -59,55 +59,44 @@ export const transformAnalyzeWriteUnitHistories = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Document Context
+        ## Parent Module Section Context
 
-        **Document Title**: ${props.moduleEvent.title}
-        **Document Summary**: ${props.moduleEvent.summary}
+        **Module Index**: ${props.unitEvent.moduleIndex}
+        **Module Section Title**: ${moduleSection?.title ?? "Unknown"}
+        **Module Section Purpose**: ${moduleSection?.purpose ?? "Unknown"}
 
-        ## Approved Module Section Structure
+        ### Module Section Content (Reference for Consistency)
+        ${moduleSection?.content ?? "No content available"}
 
-        Here are all the module sections for context:
+        **IMPORTANT**: Any numeric values, limits, or constraints defined in the module section above
+        MUST be consistent with the unit sections below. If there are contradictions, REJECT.
 
-        ${props.moduleEvent.moduleSections
+        ## Unit Sections to Review
+
+        Please review the following unit sections:
+
+        ${props.unitEvent.unitSections
           .map(
             (section, index) => `
-        ### ${index + 1}. ${section.title}
+        ### Unit Section ${index + 1}: ${section.title}
         **Purpose**: ${section.purpose}
+        **Content**: ${section.content}
+        **Keywords**: ${section.keywords.join(", ")}
         `,
           )
           .join("\n")}
 
-        ## Your Task: Create Unit Sections for Module Section ${props.moduleIndex + 1}
+        ## Review Criteria
 
-        You need to create unit sections (### level) for this module section:
-
-        **Module Section**: ${moduleSection?.title ?? "Unknown"}
-        **Module Index**: ${props.moduleIndex}
-        **Purpose**: ${moduleSection?.purpose ?? "Unknown"}
-        **Content**: ${moduleSection?.content ?? "Unknown"}
-
-        ## CRITICAL: Value Consistency
-
-        **You MUST use the EXACT same values defined in the module section content above.**
-        If the module section says "10MB file limit", you MUST use 10MB, not 25MB or 5MB.
-        If the module section says "5 attachments maximum", you MUST use 5, not 10.
-        Any deviation will cause the review to REJECT your output.
-
-        Create unit sections that break down this module section into functional groupings.
-        ${
-          props.feedback
-            ? `
-        ## Previous Attempt Feedback
-
-        Your previous attempt was rejected with the following feedback. Please address these issues:
-
-        ${props.feedback}
-        `
-            : ""
-        }
+        Please evaluate:
+        1. Do unit sections align with the module section's purpose?
+        2. Are all functional areas adequately covered?
+        3. Are section boundaries clear (no overlap)?
+        4. Are keywords specific and actionable for section generation?
+        5. Is content at appropriate abstraction level?
       `,
       },
     ],
-    userMessage: `Create unit sections (### level) for module section "${moduleSection?.title ?? "Unknown"}".`,
+    userMessage: "Review the unit sections and approve or reject.",
   };
 };

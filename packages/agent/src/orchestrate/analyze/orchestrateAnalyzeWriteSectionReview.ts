@@ -16,7 +16,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteSectionReviewHistories } from "./histories/transformAnalyzeWriteSectionReviewHistories";
+import { transformAnalyzeWriteSectionReviewHistory } from "./histories/transformAnalyzeWriteSectionReviewHistory";
 import { IAutoBeAnalyzeWriteSectionReviewApplication } from "./structures/IAutoBeAnalyzeWriteSectionReviewApplication";
 
 export const orchestrateAnalyzeWriteSectionReview = async (
@@ -52,7 +52,7 @@ export const orchestrateAnalyzeWriteSectionReview = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteSectionReviewHistories(ctx, {
+      ...transformAnalyzeWriteSectionReviewHistory(ctx, {
         scenario: props.scenario,
         file: props.file,
         moduleEvent: props.moduleEvent,

@@ -93,7 +93,7 @@ const SRS_STRUCTURE = [
   },
 ];
 
-export const transformAnalyzeWriteModuleHistories = (
+export const transformAnalyzeWriteModuleHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;

@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -12,19 +13,23 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteUnitReviewHistories = (
+export const transformAnalyzeWriteSectionReviewHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    sectionEvent: AutoBeAnalyzeWriteSectionEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
     | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-    | undefined = props.moduleEvent.moduleSections[props.unitEvent.moduleIndex];
+    | undefined =
+    props.moduleEvent.moduleSections[props.sectionEvent.moduleIndex];
+  const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
+    props.unitEvent.unitSections[props.sectionEvent.unitIndex];
 
   return {
     histories: [
@@ -47,7 +52,7 @@ export const transformAnalyzeWriteUnitReviewHistories = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_UNIT_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_SECTION_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -59,44 +64,52 @@ export const transformAnalyzeWriteUnitReviewHistories = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Parent Module Section Context
+        ## Parent Section Context (Reference for Consistency)
 
-        **Module Index**: ${props.unitEvent.moduleIndex}
-        **Module Section Title**: ${moduleSection?.title ?? "Unknown"}
-        **Module Section Purpose**: ${moduleSection?.purpose ?? "Unknown"}
-
-        ### Module Section Content (Reference for Consistency)
+        ### Module Section: ${moduleSection?.title ?? "Unknown"}
         ${moduleSection?.content ?? "No content available"}
 
-        **IMPORTANT**: Any numeric values, limits, or constraints defined in the module section above
-        MUST be consistent with the unit sections below. If there are contradictions, REJECT.
+        ### Unit Section: ${unitSection?.title ?? "Unknown"}
+        ${unitSection?.content ?? "No content available"}
 
-        ## Unit Sections to Review
+        **IMPORTANT**: Any numeric values, limits, or constraints defined in the parent sections above
+        MUST be consistent with the section sections below. Check for contradictions in:
+        - File size limits (e.g., 10MB, 25MB)
+        - Quantity limits (e.g., max attachments)
+        - Time limits (e.g., session timeout)
+        - Character limits (e.g., title length)
+        If there are any contradictions, REJECT with specific details.
 
-        Please review the following unit sections:
+        ## Keywords That Should Be Addressed
 
-        ${props.unitEvent.unitSections
+        ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+
+        ## Sections to Review
+
+        **Module Index**: ${props.sectionEvent.moduleIndex}
+        **Unit Index**: ${props.sectionEvent.unitIndex}
+
+        ${props.sectionEvent.sectionSections
           .map(
             (section, index) => `
-        ### Unit Section ${index + 1}: ${section.title}
-        **Purpose**: ${section.purpose}
-        **Content**: ${section.content}
-        **Keywords**: ${section.keywords.join(", ")}
+        ### Section ${index + 1}: ${section.title}
+
+        ${section.content}
         `,
           )
-          .join("\n")}
+          .join("\n---\n")}
 
         ## Review Criteria
 
-        Please evaluate:
-        1. Do unit sections align with the module section's purpose?
-        2. Are all functional areas adequately covered?
-        3. Are section boundaries clear (no overlap)?
-        4. Are keywords specific and actionable for section generation?
-        5. Is content at appropriate abstraction level?
+        Please verify:
+        1. All keywords are addressed
+        2. EARS format is correct (SHALL, not should)
+        3. Requirements are specific and measurable
+        4. No prohibited content (schemas, APIs, implementation)
+        5. Mermaid syntax is correct (if present)
       `,
       },
     ],
-    userMessage: "Review the unit sections and approve or reject.",
+    userMessage: "Review the sections and approve or reject.",
   };
 };

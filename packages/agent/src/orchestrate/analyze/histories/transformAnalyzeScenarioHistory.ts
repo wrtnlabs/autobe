@@ -6,7 +6,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeSceHistories = (
+export const transformAnalyzeScenarioHistory = (
   ctx: AutoBeContext,
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">,
 ): IAutoBeOrchestrateHistory => ({
