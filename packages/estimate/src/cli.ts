@@ -41,7 +41,7 @@ export function createProgram(): Command {
   program
     .name("estimate")
     .description("Evaluate AutoBE generated code quality")
-    .version("0.2.0")
+    .version("0.3.0")
     .requiredOption("-i, --input <path>", "Input project path")
     .requiredOption("-o, --output <path>", "Output directory for reports")
     .option("-v, --verbose", "Enable verbose output (default: false)", false)
@@ -241,6 +241,18 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
     const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
     adjustedScore = Math.round(phasesPortion + agentPortion);
+
+    // Cap score if agents found too many critical issues
+    const totalAgentCritical = agentResults.reduce(
+      (sum, r) =>
+        sum + r.issues.filter((i: any) => i.severity === "critical").length,
+      0,
+    );
+    if (totalAgentCritical >= 20) adjustedScore = Math.min(adjustedScore, 60);
+    else if (totalAgentCritical >= 10)
+      adjustedScore = Math.min(adjustedScore, 70);
+    else if (totalAgentCritical >= 5)
+      adjustedScore = Math.min(adjustedScore, 80);
   }
 
   const fullResult = {
@@ -265,14 +277,12 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   fs.writeFileSync(jsonPath, generateJsonReport(fullResult));
   fs.writeFileSync(mdPath, generateMarkdownReport(fullResult));
 
-  // Print everything: phases → reference → issues → agents → final score
   printResults(fullResult);
 
   if (agentResults.length > 0) {
     printAgentResults(agentResults);
   }
 
-  // Final score at the very bottom
   printFinalScore(
     fullResult,
     result.totalScore,
@@ -349,19 +359,17 @@ async function runCompare(options: {
 async function runAgentEvaluations(
   context: EvaluationContext,
   config: { provider: LLMProvider; apiKey: string },
-  verbose?: boolean,
+  _verbose?: boolean,
 ): Promise<AgentResult[]> {
-  const results: AgentResult[] = [];
-
   const securityAgent = new SecurityAgent(config);
-  const securityResult = await securityAgent.evaluate(context);
-  results.push(securityResult);
-
   const llmQualityAgent = new LLMQualityAgent(config);
-  const llmQualityResult = await llmQualityAgent.evaluate(context);
-  results.push(llmQualityResult);
 
-  return results;
+  const [securityResult, llmQualityResult] = await Promise.all([
+    securityAgent.evaluate(context),
+    llmQualityAgent.evaluate(context),
+  ]);
+
+  return [securityResult, llmQualityResult];
 }
 
 function printAgentResults(agentResults: AgentResult[]): void {
@@ -371,27 +379,24 @@ function printAgentResults(agentResults: AgentResult[]): void {
   for (const result of agentResults) {
     const scoreEmoji =
       result.score >= 80 ? "✅" : result.score >= 60 ? "⚠️" : "❌";
+    const criticalCount = result.issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
+    const warningCount = result.issues.filter(
+      (i) => i.severity === "warning",
+    ).length;
     console.log(`   ${result.agent}: ${result.score}/100 ${scoreEmoji}`);
-    console.log(`      Provider: ${result.provider} | Model: ${result.model}`);
-    console.log(`      Summary: ${result.summary}`);
-
-    if (result.tokensUsed) {
-      console.log(
-        `      Tokens: ${result.tokensUsed.input} in / ${result.tokensUsed.output} out`,
-      );
-    }
-
-    if (result.issues.length > 0) {
-      console.log(`      Issues found: ${result.issues.length}`);
-      for (const issue of result.issues.slice(0, 3)) {
-        console.log(`         • [${issue.severity}] ${issue.description}`);
-      }
-      if (result.issues.length > 3) {
-        console.log(`         ... and ${result.issues.length - 3} more`);
-      }
-    }
+    console.log(
+      `      Issues: ${result.issues.length} (${criticalCount} critical, ${warningCount} warning)`,
+    );
+    const summaryText =
+      result.summary.length > 120
+        ? result.summary.substring(0, 120) + "..."
+        : result.summary;
+    console.log(`      Summary: ${summaryText}`);
     console.log("");
   }
+
   console.log("─────────────────────────────────────────");
 }
 
@@ -414,13 +419,29 @@ function printFinalScore(
     `\n${gradeEmoji[result.grade] || "📊"} Final Score: ${result.totalScore}/100 (Grade: ${result.grade})\n`,
   );
 
-  if (hasAgents) {
+  if (!result.phases.gate.passed) {
+    console.log(`   ❌ Gate Failed — Score forced to 0`);
+    if (hasAgents && agentAvg > 0) {
+      const wouldBe = Math.round(phaseScore * 0.7 + agentAvg * 0.3);
+      console.log(
+        `   (Reference: Phase ${phaseScore}, Agent ${Math.round(agentAvg)} → ~${wouldBe}/100 if gate passed)`,
+      );
+    }
+  } else if (hasAgents) {
+    const rawTotal = Math.round(phaseScore * 0.7 + agentAvg * 0.3);
     console.log(
-      `   Phase Score:  ${phaseScore}/100 × 70% = ${Math.round(phaseScore * 0.7).toFixed(1)}`,
+      `   Phase Score:  ${phaseScore}/100 × 70% = ${(phaseScore * 0.7).toFixed(1)}`,
     );
     console.log(
-      `   Agent Score:  ${Math.round(agentAvg)}/100 × 30% = ${Math.round(agentAvg * 0.3).toFixed(1)}`,
+      `   Agent Score:  ${Math.round(agentAvg)}/100 × 30% = ${(agentAvg * 0.3).toFixed(1)}`,
     );
+    if (result.totalScore < rawTotal) {
+      console.log(`   ─────────────────────────────`);
+      console.log(`   Subtotal:     ${rawTotal}/100`);
+      console.log(
+        `   ⚠️  Agent Critical Cap: → ${result.totalScore}/100 (${rawTotal - result.totalScore} point cap applied)`,
+      );
+    }
     console.log(`   ─────────────────────────────`);
     console.log(`   Total:        ${result.totalScore}/100`);
   } else {
@@ -442,6 +463,10 @@ function printResults(result: EvaluationResult): void {
 
   const gateStatus = result.phases.gate.passed ? "✅ Pass" : "❌ Fail";
   console.log(`   Gate:                    ${gateStatus}`);
+  if (!result.phases.gate.passed && result.phases.gate.metrics?.reason) {
+    const reason = String(result.phases.gate.metrics.reason);
+    console.log(`   Reason:                  ${reason}`);
+  }
 
   printPhaseScore("documentQuality", result.phases.documentQuality);
   printPhaseScore("requirementsCoverage", result.phases.requirementsCoverage);
@@ -478,11 +503,13 @@ function printResults(result: EvaluationResult): void {
 
   if (result.summary.warningCount > 0) {
     console.log(`⚠️  Warnings: ${result.summary.warningCount}`);
+    console.log("   Top issues:\n");
     printGroupedIssues(result.warnings);
   }
 
   if (result.summary.suggestionCount > 0) {
     console.log(`💡 Suggestions: ${result.summary.suggestionCount}`);
+    console.log("   Top issues:\n");
     printGroupedIssues(result.suggestions);
   }
 }
@@ -515,15 +542,19 @@ function printGroupedIssues(issues: EvaluationResult["criticalIssues"]): void {
 
   const sorted = [...grouped.entries()].sort((a, b) => b[1].count - a[1].count);
 
-  for (const [code, info] of sorted.slice(0, 8)) {
+  for (const [code, info] of sorted.slice(0, 5)) {
     const fileHint = info.files.join(", ");
     const more = info.count > info.files.length ? " ..." : "";
-    console.log(`   • [${code}] ×${info.count} — ${info.message}`);
+    const msg =
+      info.message.length > 100
+        ? info.message.substring(0, 100) + "..."
+        : info.message;
+    console.log(`   • [${code}] ×${info.count} — ${msg}`);
     console.log(`     files: ${fileHint}${more}`);
   }
 
-  if (sorted.length > 8) {
-    console.log(`   ... and ${sorted.length - 8} more issue types\n`);
+  if (sorted.length > 5) {
+    console.log(`   ... and ${sorted.length - 5} more issue types\n`);
   } else {
     console.log("");
   }

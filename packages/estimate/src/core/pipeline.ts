@@ -1,10 +1,8 @@
-// Gate evaluators
 import {
   PrismaEvaluator,
   SyntaxEvaluator,
   TypeEvaluator,
 } from "../evaluators/gate";
-// Reference evaluators (no score impact)
 import {
   ComplexityEvaluator,
   DuplicationEvaluator,
@@ -12,7 +10,6 @@ import {
   NamingEvaluator,
 } from "../evaluators/quality";
 import { SecurityEvaluator } from "../evaluators/safety";
-// New scoring evaluators
 import {
   ApiCompletenessEvaluator,
   DocumentQualityEvaluator,
@@ -40,7 +37,6 @@ import { buildContext } from "./context-builder";
 
 const { version } = require("../../package.json");
 
-// Phase strategy definitions
 const phaseStrategies = [
   {
     key: "documentQuality",
@@ -95,7 +91,6 @@ export class EvaluationPipeline {
     this.log(`  - Tests: ${this.context.files.tests.length}`);
     this.log(`  - Prisma: ${this.context.files.prismaSchemas.length}`);
 
-    // Phase 0: Gate
     this.log("\n[Gate] Running basic validation...");
     const gateResult = await this.runGate(this.context);
 
@@ -108,16 +103,12 @@ export class EvaluationPipeline {
       return this.buildResult(
         input,
         this.context,
-        {
-          gate: gateResult,
-          ...emptyPhases,
-        },
+        { gate: gateResult, ...emptyPhases },
         this.createEmptyReference(),
         startTime,
       );
     }
 
-    // Run all scoring phases in parallel using strategy pattern
     this.log("\n[Scoring] Running evaluation phases...");
     const phaseResults = await Promise.all(
       phaseStrategies.map((strategy) => this.runPhase(this.context!, strategy)),
@@ -130,7 +121,6 @@ export class EvaluationPipeline {
       ),
     } as { gate: PhaseResult } & Record<PhaseKey, PhaseResult>;
 
-    // Reference info (no score impact) - run in parallel
     this.log("\n[Reference] Collecting code quality metrics...");
     const reference = await this.collectReferenceInfo(this.context);
 
@@ -154,6 +144,7 @@ export class EvaluationPipeline {
       };
     }
 
+    // Syntax check
     this.log("  - Checking syntax...");
     const syntaxResult = await new SyntaxEvaluator().evaluate(context);
     issues.push(...syntaxResult.issues);
@@ -171,16 +162,57 @@ export class EvaluationPipeline {
         threshold: GATE_ERROR_THRESHOLD * 100,
       });
     }
-    const penalty = Math.round(errorRatio * 100 * GATE_PENALTY_PER_PERCENT);
-    const gateScore = Math.max(0, 100 - penalty);
 
-    this.log(" -Checking types...");
+    const syntaxPenalty = Math.round(
+      errorRatio * 100 * GATE_PENALTY_PER_PERCENT,
+    );
+
+    // Gate fail if too many syntax warnings (e.g., unresolved modules)
+    const syntaxWarningCount = syntaxResult.issues.filter(
+      (i) => i.severity === "warning",
+    ).length;
+    if (syntaxWarningCount > 100 || syntaxWarningCount / totalFiles > 0.3) {
+      return this.createGateFailure(issues, "syntax-warnings", startTime, {
+        totalFiles,
+        filesWithErrors,
+        syntaxWarningCount,
+        reason: `Too many syntax warnings: ${syntaxWarningCount} warnings across ${totalFiles} files`,
+      });
+    }
+
+    // Type check
+    this.log("  - Checking types...");
     const typeResult = await new TypeEvaluator().evaluate(context);
     issues.push(...typeResult.issues);
 
-    this.log(" -Validating Prisma schema...");
+    const typeIssueCount = typeResult.issues.filter(
+      (i) => i.severity === "critical" || i.severity === "warning",
+    ).length;
+    const typeWarningCount = typeResult.issues.filter(
+      (i) => i.severity === "warning",
+    ).length;
+    if (typeIssueCount > 100 || typeWarningCount / totalFiles > 0.3) {
+      return this.createGateFailure(issues, "type-errors", startTime, {
+        totalFiles,
+        filesWithErrors,
+        typeErrorCount: typeIssueCount,
+        typeWarningCount,
+        reason: `Too many type errors: ${typeIssueCount} critical/warning (${typeWarningCount} warnings across ${totalFiles} files)`,
+      });
+    }
+
+    // Prisma check
+    this.log("  - Validating Prisma schema...");
     const prismaResult = await new PrismaEvaluator().evaluate(context);
     issues.push(...prismaResult.issues);
+
+    // Final gate score combines syntax + type penalties
+    const typePenalty = Math.min(
+      10,
+      Math.round((typeWarningCount / totalFiles) * 10),
+    );
+    const totalPenalty = syntaxPenalty + typePenalty;
+    const gateScore = Math.max(0, 100 - totalPenalty);
 
     return {
       phase: "gate",
@@ -194,8 +226,10 @@ export class EvaluationPipeline {
         totalFiles,
         filesWithErrors,
         errorRatio: Math.round(errorRatio * 100),
-        penalty,
-        softPass: filesWithErrors > 0,
+        penalty: totalPenalty,
+        typeErrorCount: typeIssueCount,
+        typeWarningCount,
+        softPass: filesWithErrors > 0 || typeWarningCount > 0,
       },
     };
   }
@@ -230,7 +264,6 @@ export class EvaluationPipeline {
       { key: "security", Evaluator: SecurityEvaluator, label: "security" },
     ] as const;
 
-    // Run all reference evaluators in parallel
     const results = await Promise.all(
       referenceEvaluators.map(async ({ key, Evaluator, label }) => {
         this.log(`  - Analyzing ${label}...`);
@@ -321,7 +354,7 @@ export class EvaluationPipeline {
       phases.gate.issues,
       ...phaseStrategies.map((s) => phases[s.key].issues),
     ].flat();
-    // Deduplicate issues
+
     const issueMap = new Map<string, Issue>();
     for (const issue of scoringIssues) {
       const key = `${issue.code}:${issue.location?.file || ""}:${issue.location?.line || ""}`;
@@ -331,7 +364,6 @@ export class EvaluationPipeline {
     }
     const uniqueIssues = [...issueMap.values()];
 
-    // Group by severity
     const criticalIssues = uniqueIssues.filter(
       (i) => i.severity === "critical",
     );
@@ -353,16 +385,15 @@ export class EvaluationPipeline {
       const gatePenalty = (phases.gate.metrics?.penalty as number) || 0;
       totalScore = Math.max(0, raw - gatePenalty);
 
-      // Penalty tracking
       const penaltyData: NonNullable<EvaluationResult["penalties"]> = {};
 
-      // Warning penalty
+      // Warning penalty: starts at 30%, max -20
       const totalFiles = context.files.typescript.length || 1;
       const warningRatio = warnings.length / totalFiles;
-      if (warningRatio > 0.5) {
+      if (warningRatio > 0.3) {
         const warningPenalty = Math.min(
-          10,
-          Math.round((warningRatio - 0.5) * 5),
+          20,
+          Math.round((warningRatio - 0.3) * 8),
         );
         totalScore = Math.max(0, totalScore - warningPenalty);
         penaltyData.warning = {
