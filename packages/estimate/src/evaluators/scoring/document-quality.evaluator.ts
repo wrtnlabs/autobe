@@ -171,4 +171,92 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     return score;
   }
 
-  private analyzeReadmeQuality(content: string, issues: Issue[]): number {
+  private analyzeReadmeQuality(content: string, issues: Issue[]): number {  private analyzeReadmeQuality(content: string, issues: Issue[]): number {
+    if (!content || content.length === 0) return 0;
+
+    let score = 0;
+
+    if (content.length >= 2000) score += 5;
+    else if (content.length >= 500) score += 3;
+    else if (content.length >= 100) score += 1;
+
+    const headers = (content.match(/^#{1,3}\s+\S/gm) || []).length;
+    if (headers >= 5) score += 5;
+    else if (headers >= 3) score += 3;
+    else if (headers >= 1) score += 1;
+
+    const usefulSections =
+      /\b(installation|setup|getting started|usage|api|architecture|endpoints|configuration|environment|deployment)\b/gi;
+    const sectionMatches = content.match(usefulSections) || [];
+    if (sectionMatches.length >= 3) score += 5;
+    else if (sectionMatches.length >= 1) score += 3;
+
+    if (headers === 0 && content.length < 500) {
+      issues.push(
+        createIssue({
+          severity: "suggestion",
+          category: "documentation",
+          code: "DOC006",
+          message: "README lacks structure — add headers and sections",
+        }),
+      );
+    }
+
+    return score;
+  }
+
+  private async readDocsFolder(
+    docsPath: string,
+    exists: boolean,
+  ): Promise<{
+    files: string[];
+    totalLength: number;
+    contents: Map<string, string>;
+  }> {
+    if (!exists) return { files: [], totalLength: 0, contents: new Map() };
+
+    try {
+      const allFiles = await fs.promises.readdir(docsPath);
+      const docFiles = allFiles.filter(
+        (f) => f.endsWith(".md") || f.endsWith(".json"),
+      );
+
+      const contents = new Map<string, string>();
+      await Promise.all(
+        docFiles.map(async (file) => {
+          try {
+            const content = await fs.promises.readFile(
+              path.join(docsPath, file),
+              "utf-8",
+            );
+            contents.set(file, content);
+          } catch {
+            // skip unreadable files
+          }
+        }),
+      );
+
+      let totalLength = 0;
+      for (const [, content] of contents) {
+        totalLength += content.length;
+      }
+
+      return { files: docFiles, totalLength, contents };
+    } catch {
+      return { files: [], totalLength: 0, contents: new Map() };
+    }
+  }
+
+  private async readReadme(
+    readmePath: string,
+    exists: boolean,
+  ): Promise<{ length: number; content: string }> {
+    if (!exists) return { length: 0, content: "" };
+
+    try {
+      const content = await fs.promises.readFile(readmePath, "utf-8");
+      return { length: content.length, content };
+    } catch {
+      return { length: 0, content: "" };
+    }
+  }
