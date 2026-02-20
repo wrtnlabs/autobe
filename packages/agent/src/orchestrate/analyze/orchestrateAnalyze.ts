@@ -24,6 +24,7 @@ import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteModuleReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
+import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
 
 interface IUnitReviewResult {
   allApproved: boolean;
@@ -247,7 +248,11 @@ async function processFileHierarchical(
   }
 
   // Step 4: Assemble final content
-  return assembleContent(moduleResult, unitResults, sectionResults);
+  return AutoBeAnalyzeProgrammer.assembleContent(
+    moduleResult,
+    unitResults,
+    sectionResults,
+  );
 }
 
 /**
@@ -285,10 +290,11 @@ async function reviewAllUnits(
   }
 
   // Apply revisions if provided
-  const reviewedUnits: AutoBeAnalyzeWriteUnitEvent[] = applyAllUnitRevisions(
-    props.unitEvents,
-    reviewEvent,
-  );
+  const reviewedUnits: AutoBeAnalyzeWriteUnitEvent[] =
+    AutoBeAnalyzeProgrammer.applyAllUnitRevisions(
+      props.unitEvents,
+      reviewEvent,
+    );
   return { allApproved: true, feedback: reviewEvent.feedback, reviewedUnits };
 }
 
@@ -330,7 +336,10 @@ async function reviewAllSections(
 
   // Apply revisions if provided
   const reviewedSections: AutoBeAnalyzeWriteSectionEvent[][] =
-    applyAllSectionRevisions(props.sectionEvents, reviewEvent);
+    AutoBeAnalyzeProgrammer.applyAllSectionRevisions(
+      props.sectionEvents,
+      reviewEvent,
+    );
   return {
     allApproved: true,
     feedback: reviewEvent.feedback,
@@ -377,7 +386,10 @@ async function writeAndReviewModule(
 
       if (reviewEvent.approved) {
         // Apply revisions if provided
-        return applyModuleRevisions(moduleEvent, reviewEvent);
+        return AutoBeAnalyzeProgrammer.applyModuleRevisions(
+          moduleEvent,
+          reviewEvent,
+        );
       }
 
       feedback = reviewEvent.feedback;
@@ -392,168 +404,4 @@ async function writeAndReviewModule(
     lastError ??
     new Error("[orchestrateAnalyze] Module write failed after max retries")
   );
-}
-
-/** Apply module review revisions to the module event */
-function applyModuleRevisions(
-  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
-  reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent,
-): AutoBeAnalyzeWriteModuleEvent {
-  return {
-    ...moduleEvent,
-    title: reviewEvent.revisedTitle?.length
-      ? reviewEvent.revisedTitle
-      : moduleEvent.title,
-    summary: reviewEvent.revisedSummary?.length
-      ? reviewEvent.revisedSummary
-      : moduleEvent.summary,
-    moduleSections: reviewEvent.revisedSections?.length
-      ? reviewEvent.revisedSections
-      : moduleEvent.moduleSections,
-  };
-}
-
-/** Apply batch unit review revisions to all unit events */
-function applyAllUnitRevisions(
-  unitEvents: AutoBeAnalyzeWriteUnitEvent[],
-  reviewEvent: Pick<AutoBeAnalyzeWriteAllUnitReviewEvent, "revisedUnits">,
-): AutoBeAnalyzeWriteUnitEvent[] {
-  if (!reviewEvent.revisedUnits) {
-    return unitEvents;
-  }
-
-  // Create a map of revisions by moduleIndex
-  const revisionsMap: Map<number, AutoBeAnalyzeWriteUnitEvent.IUnitSection[]> =
-    new Map();
-  for (const revision of reviewEvent.revisedUnits) {
-    revisionsMap.set(revision.moduleIndex, revision.unitSections);
-  }
-
-  // Apply revisions where available
-  return unitEvents.map((unitEvent, moduleIndex) => {
-    const revisedSections:
-      | AutoBeAnalyzeWriteUnitEvent.IUnitSection[]
-      | undefined = revisionsMap.get(moduleIndex);
-    if (revisedSections) {
-      return { ...unitEvent, unitSections: revisedSections };
-    }
-    return unitEvent;
-  });
-}
-
-/** Apply batch section review revisions to all section events */
-function applyAllSectionRevisions(
-  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
-  reviewEvent: Pick<AutoBeAnalyzeWriteAllSectionReviewEvent, "revisedSections">,
-): AutoBeAnalyzeWriteSectionEvent[][] {
-  if (!reviewEvent.revisedSections) {
-    return sectionEvents;
-  }
-
-  // Create a nested map of revisions by moduleIndex and unitIndex
-  const revisionsMap: Map<
-    number,
-    Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>
-  > = new Map();
-  for (const moduleRevision of reviewEvent.revisedSections) {
-    const unitMap: Map<
-      number,
-      AutoBeAnalyzeWriteSectionEvent.ISectionSection[]
-    > = new Map();
-    for (const unitRevision of moduleRevision.units) {
-      unitMap.set(unitRevision.unitIndex, unitRevision.sectionSections);
-    }
-    revisionsMap.set(moduleRevision.moduleIndex, unitMap);
-  }
-
-  // Apply revisions where available
-  return sectionEvents.map((sectionsForModule, moduleIndex) => {
-    const unitMap:
-      | Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>
-      | undefined = revisionsMap.get(moduleIndex);
-    if (!unitMap) {
-      return sectionsForModule;
-    }
-
-    return sectionsForModule.map((sectionEvent, unitIndex) => {
-      const revisedSections:
-        | AutoBeAnalyzeWriteSectionEvent.ISectionSection[]
-        | undefined = unitMap.get(unitIndex);
-      if (revisedSections) {
-        return { ...sectionEvent, sectionSections: revisedSections };
-      }
-      return sectionEvent;
-    });
-  });
-}
-
-/** Assemble all sections into final markdown content */
-function assembleContent(
-  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
-  unitEvents: AutoBeAnalyzeWriteUnitEvent[],
-  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
-): string {
-  const lines: string[] = [];
-
-  // Document title and summary
-  lines.push(`**${moduleEvent.title}**`);
-  lines.push("");
-  lines.push(moduleEvent.summary);
-  lines.push("");
-
-  // For each module section
-  for (
-    let moduleIndex: number = 0;
-    moduleIndex < moduleEvent.moduleSections.length;
-    moduleIndex++
-  ) {
-    const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection =
-      moduleEvent.moduleSections[moduleIndex]!;
-    const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
-      unitEvents[moduleIndex];
-    const sectionEventsForModule: AutoBeAnalyzeWriteSectionEvent[] | undefined =
-      sectionResults[moduleIndex];
-
-    // Module section header
-    lines.push(`# ${moduleSection.title}`);
-    lines.push("");
-    if (moduleSection.content) {
-      lines.push(moduleSection.content);
-      lines.push("");
-    }
-
-    // For each unit section
-    if (unitEvent) {
-      for (
-        let unitIndex: number = 0;
-        unitIndex < unitEvent.unitSections.length;
-        unitIndex++
-      ) {
-        const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection =
-          unitEvent.unitSections[unitIndex]!;
-        const sectionEvent: AutoBeAnalyzeWriteSectionEvent | undefined =
-          sectionEventsForModule?.[unitIndex];
-
-        // Unit section header
-        lines.push(`## ${unitSection.title}`);
-        lines.push("");
-        if (unitSection.content) {
-          lines.push(unitSection.content);
-          lines.push("");
-        }
-
-        // For each section section
-        if (sectionEvent) {
-          for (const sectionSection of sectionEvent.sectionSections) {
-            lines.push(`### ${sectionSection.title}`);
-            lines.push("");
-            lines.push(sectionSection.content);
-            lines.push("");
-          }
-        }
-      }
-    }
-  }
-
-  return lines.join("\n").trim();
 }
