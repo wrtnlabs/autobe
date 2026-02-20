@@ -171,7 +171,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     return score;
   }
 
-  private analyzeReadmeQuality(content: string, issues: Issue[]): number {  private analyzeReadmeQuality(content: string, issues: Issue[]): number {
+  private analyzeReadmeQuality(content: string, issues: Issue[]): number {
     if (!content || content.length === 0) return 0;
 
     let score = 0;
@@ -260,3 +260,4 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       return { length: 0, content: "" };
     }
   }
+}
