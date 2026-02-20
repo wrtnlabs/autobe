@@ -20,19 +20,14 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     const hasDocsFolder = fs.existsSync(docsPath);
     const hasReadme = fs.existsSync(readmePath);
 
-    let docFiles: string[] = [];
-    let totalDocLength = 0;
-
-    // Read docs and README in parallel
     const [docsResult, readmeResult] = await Promise.all([
       this.readDocsFolder(docsPath, hasDocsFolder),
       this.readReadme(readmePath, hasReadme),
     ]);
 
-    docFiles = docsResult.files;
-    totalDocLength = docsResult.totalLength + readmeResult.length;
+    const docFiles = docsResult.files;
+    const totalDocLength = docsResult.totalLength + readmeResult.length;
 
-    // Calculate score
     let score = 0;
 
     if (!hasDocsFolder && !hasReadme) {
@@ -47,17 +42,28 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
         }),
       );
     } else {
-      if (hasDocsFolder) score += 40;
-      if (hasReadme) score += 20;
+      if (hasDocsFolder) score += 20;
+      if (hasReadme) score += 10;
 
-      if (docFiles.length >= 5) score += 20;
-      else if (docFiles.length >= 3) score += 15;
-      else if (docFiles.length >= 1) score += 10;
+      if (docFiles.length >= 5) score += 15;
+      else if (docFiles.length >= 3) score += 10;
+      else if (docFiles.length >= 1) score += 5;
 
-      if (totalDocLength >= 50000) score += 20;
-      else if (totalDocLength >= 20000) score += 15;
-      else if (totalDocLength >= 5000) score += 10;
-      else if (totalDocLength >= 1000) score += 5;
+      if (totalDocLength >= 50000) score += 15;
+      else if (totalDocLength >= 20000) score += 10;
+      else if (totalDocLength >= 5000) score += 5;
+
+      const qualityScore = this.analyzeContentQuality(
+        docsResult.contents,
+        issues,
+      );
+      score += qualityScore;
+
+      const readmeScore = this.analyzeReadmeQuality(
+        readmeResult.content,
+        issues,
+      );
+      score += readmeScore;
 
       score = Math.min(100, score);
 
@@ -112,49 +118,57 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     };
   }
 
-  private async readDocsFolder(
-    docsPath: string,
-    exists: boolean,
-  ): Promise<{ files: string[]; totalLength: number }> {
-    if (!exists) return { files: [], totalLength: 0 };
+  private analyzeContentQuality(
+    contents: Map<string, string>,
+    issues: Issue[],
+  ): number {
+    if (contents.size === 0) return 0;
 
-    try {
-      const allFiles = await fs.promises.readdir(docsPath);
-      const docFiles = allFiles.filter(
-        (f) => f.endsWith(".md") || f.endsWith(".json"),
-      );
+    let score = 0;
 
-      const contents = await Promise.all(
-        docFiles.map(async (file) => {
-          try {
-            return await fs.promises.readFile(
-              path.join(docsPath, file),
-              "utf-8",
-            );
-          } catch {
-            return "";
-          }
+    let filesWithHeaders = 0;
+    for (const [, content] of contents) {
+      const headerCount = (content.match(/^#{1,3}\s+\S/gm) || []).length;
+      if (headerCount >= 2) filesWithHeaders++;
+    }
+    const headerRatio = filesWithHeaders / contents.size;
+    score += Math.round(headerRatio * 10);
+
+    const requirementPatterns =
+      /\b(shall|must|should|endpoint|api|database|schema|model|entity|table|column|field|interface|controller|provider|service|authentication|authorization)\b/gi;
+    let filesWithRequirements = 0;
+    for (const [, content] of contents) {
+      const matches = content.match(requirementPatterns) || [];
+      if (matches.length >= 5) filesWithRequirements++;
+    }
+    const reqRatio = filesWithRequirements / contents.size;
+    score += Math.round(reqRatio * 10);
+
+    const boilerplatePatterns =
+      /\b(lorem ipsum|placeholder|todo|tbd|coming soon|work in progress)\b/gi;
+    let boilerplateFiles = 0;
+    for (const [, content] of contents) {
+      if (boilerplatePatterns.test(content) || content.trim().length < 200) {
+        boilerplateFiles++;
+      }
+      boilerplatePatterns.lastIndex = 0;
+    }
+
+    if (boilerplateFiles > 0) {
+      issues.push(
+        createIssue({
+          severity: "warning",
+          category: "documentation",
+          code: "DOC005",
+          message: `${boilerplateFiles} doc file(s) contain boilerplate or minimal content`,
         }),
       );
-
-      const totalLength = contents.reduce((sum, c) => sum + c.length, 0);
-      return { files: docFiles, totalLength };
-    } catch {
-      return { files: [], totalLength: 0 };
     }
+
+    const realContentRatio = (contents.size - boilerplateFiles) / contents.size;
+    score += Math.round(realContentRatio * 5);
+
+    return score;
   }
 
-  private async readReadme(
-    readmePath: string,
-    exists: boolean,
-  ): Promise<{ length: number }> {
-    if (!exists) return { length: 0 };
-
-    try {
-      const content = await fs.promises.readFile(readmePath, "utf-8");
-      return { length: content.length };
-    } catch {
-      return { length: 0 };
-    }
-  }
-}
+  private analyzeReadmeQuality(content: string, issues: Issue[]): number {

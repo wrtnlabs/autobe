@@ -248,6 +248,18 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     totalScore: adjustedScore,
     grade: scoreToGrade(adjustedScore),
     agentEvaluations: agentResults,
+    scoreBreakdown: {
+      phaseScore: result.totalScore,
+      phaseWeight: agentResults.length > 0 ? 0.7 : 1.0,
+      phaseContribution:
+        agentResults.length > 0
+          ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
+          : result.totalScore,
+      agentScore: agentResults.length > 0 ? Math.round(agentAvg) : null,
+      agentWeight: agentResults.length > 0 ? 0.3 : 0,
+      agentContribution:
+        agentResults.length > 0 ? Math.round(agentAvg * AGENT_WEIGHT_RATIO) : 0,
+    },
   };
 
   fs.writeFileSync(jsonPath, generateJsonReport(fullResult));

@@ -24,6 +24,12 @@ Reference: https://www.pentasecurity.co.kr/insight/owasp-top-10-2025-rc1-explain
 - XSS is a client-side vulnerability; focus on response sanitization only if API returns rendered HTML
 - Focus on Guards, Interceptors, Pipes for access control and validation patterns
 
+## Evaluation Guidelines
+- Focus on **file-specific** vulnerabilities, not generic patterns that apply to all endpoints
+- If multiple endpoints share the same vulnerability pattern (e.g., missing RBAC guard), report it ONCE with a list of affected files rather than separate issues per file
+- Prioritize critical issues over repetitive warnings
+- Score should reflect the overall security posture, not just issue count
+
 ## Response Format
 
 Respond ONLY with valid JSON:

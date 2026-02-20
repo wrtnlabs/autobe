@@ -144,7 +144,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     issues: Issue[],
   ): void {
     const emptyMethodPattern =
-      /(?:async\s+)?(?:\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{\s*\}/g;
+      /(?:async\s+)?(?:\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{\s*\n?\s*\}/g;
     let match;
     while ((match = emptyMethodPattern.exec(content)) !== null) {
       const line = content.substring(0, match.index).split("\n").length;
@@ -166,7 +166,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     filePath: string,
     issues: Issue[],
   ): void {
-    const emptyCatchPattern = /catch\s*\([^)]*\)\s*\{\s*\}/g;
+    const emptyCatchPattern = /catch\s*\([^)]*\)\s*\{\s*\n?\s*\}/g;
     let match;
     while ((match = emptyCatchPattern.exec(content)) !== null) {
       const line = content.substring(0, match.index).split("\n").length;
