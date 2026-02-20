@@ -16,12 +16,6 @@ Find common LLM mistakes:
 9. **Dead Code**
 10. **Requirements Mismatch**
 
-## Evaluation Guidelines
-- Report each unique issue ONCE — if the same pattern (e.g., hallucinated import) appears in multiple files, group them into a single issue listing all affected files
-- Focus on issues that are specific to this codebase, not generic code quality concerns
-- Prioritize critical issues (hallucinations, logic errors) over style issues
-- Score should reflect how well the code meets its intended requirements
-
 ## Response Format
 
 Respond ONLY with valid JSON:

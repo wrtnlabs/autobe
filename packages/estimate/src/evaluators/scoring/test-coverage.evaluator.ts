@@ -100,18 +100,13 @@ export class TestCoverageEvaluator extends BaseEvaluator {
             content,
           );
 
-        const hasTestStructure =
-          /\b(describe|it|test|beforeAll|beforeEach|afterAll|afterEach)\s*\(/i.test(
-            content,
-          );
-
         // Check for stub patterns
         const isStub =
           /(?:\/\/\s*TODO|throw new Error\(["']not implemented["']\)|pending\(\)|skip\()/i.test(
             content,
           ) || content.length < 200;
 
-        if ((hasAssertions || hasTestStructure) && !isStub) {
+        if (hasAssertions && !isStub) {
           withAssertions++;
         } else {
           stubCount++;

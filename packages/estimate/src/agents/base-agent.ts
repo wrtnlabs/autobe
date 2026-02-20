@@ -140,14 +140,12 @@ export abstract class BaseAgent {
     let totalInput = 0;
     let totalOutput = 0;
 
-    const chunkResults = await this.runWithConcurrency(
-      chunks,
-      async (chunk, i) => {
+    const chunkResults = await Promise.all(
+      chunks.map(async (chunk, i) => {
         console.log(`    chunk ${i + 1}/${chunks.length}...`);
         const prompt = buildUserPrompt(chunk, i + 1, chunks.length);
         return this.chatWithRetry(systemPrompt, prompt);
-      },
-      3, // max 3 concurrent requests
+      }),
     );
 
     for (const { parsed, tokensUsed } of chunkResults) {
@@ -180,30 +178,6 @@ export abstract class BaseAgent {
       },
       tokensUsed: { input: totalInput, output: totalOutput },
     };
-  }
-
-  /** Run async tasks with concurrency limit */
-  protected async runWithConcurrency<T, R>(
-    items: T[],
-    fn: (item: T, index: number) => Promise<R>,
-    limit: number,
-  ): Promise<R[]> {
-    const results: R[] = new Array(items.length);
-    let next = 0;
-
-    async function worker() {
-      while (next < items.length) {
-        const i = next++;
-        results[i] = await fn(items[i], i);
-      }
-    }
-
-    const workers = Array.from({ length: Math.min(limit, items.length) }, () =>
-      worker(),
-    );
-    await Promise.all(workers);
-
-    return results;
   }
 
   /** Deduplicate agent issues by type+file or description similarity */

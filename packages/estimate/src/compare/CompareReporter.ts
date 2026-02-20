@@ -1,148 +1,110 @@
-import chalk from "chalk";
-import * as fs from "fs";
-import * as path from "path";
-
-import type { CompareResult } from "./types";
+import * as fs from 'fs';
+import * as path from 'path';
+import chalk from 'chalk';
+import type { CompareResult } from './types';
 
 export class CompareReporter {
   generateMarkdown(result: CompareResult): string {
     const lines: string[] = [];
 
-    lines.push("# Project Comparison Report");
-    lines.push("");
+    lines.push('# Project Comparison Report');
+    lines.push('');
     lines.push(`**Generated**: ${result.timestamp}`);
     lines.push(`**Projects Compared**: ${result.projectCount}`);
-    lines.push("");
+    lines.push('');
 
     // 1. Ranking
-    lines.push("## 1. Overall Ranking");
-    lines.push("");
-    lines.push("| Rank | Project | Score | Grade |");
-    lines.push("|------|---------|-------|-------|");
+    lines.push('## 1. Overall Ranking');
+    lines.push('');
+    lines.push('| Rank | Project | Score | Grade |');
+    lines.push('|------|---------|-------|-------|');
     for (const r of result.ranking) {
-      const medal =
-        r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : "";
-      lines.push(
-        `| ${medal} ${r.rank} | ${r.name} | ${r.score}/100 | ${r.grade} |`,
-      );
+      const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : '';
+      lines.push(`| ${medal} ${r.rank} | ${r.name} | ${r.score}/100 | ${r.grade} |`);
     }
-    lines.push("");
+    lines.push('');
 
     // Winner
-    lines.push("### 🏆 Winner");
-    lines.push("");
+    lines.push('### 🏆 Winner');
+    lines.push('');
     lines.push(`**${result.summary.overallWinner}**`);
-    lines.push("");
+    lines.push('');
     lines.push(`> ${result.summary.recommendation}`);
-    lines.push("");
+    lines.push('');
 
     // 2. Project Details
-    lines.push("## 2. Project Details");
-    lines.push("");
+    lines.push('## 2. Project Details');
+    lines.push('');
     for (const p of result.projects) {
       lines.push(`### ${p.name}`);
-      lines.push("");
+      lines.push('');
       lines.push(`- **Score**: ${p.totalScore}/100 (${p.grade})`);
-      lines.push(`- **Gate**: ${p.gatePass ? "✅ Pass" : "❌ Fail"}`);
-      lines.push(
-        `- **Files**: ${p.metrics.files} | **Controllers**: ${p.metrics.controllers} | **Providers**: ${p.metrics.providers} | **Tests**: ${p.metrics.tests}`,
-      );
+      lines.push(`- **Gate**: ${p.gatePass ? '✅ Pass' : '❌ Fail'}`);
+      lines.push(`- **Files**: ${p.metrics.files} | **Controllers**: ${p.metrics.controllers} | **Providers**: ${p.metrics.providers} | **Tests**: ${p.metrics.tests}`);
       if (p.agentScores) {
-        lines.push(
-          `- **Security**: ${p.agentScores.security}/100 | **LLM Quality**: ${p.agentScores.llmQuality}/100`,
-        );
+        lines.push(`- **Security**: ${p.agentScores.security}/100 | **LLM Quality**: ${p.agentScores.llmQuality}/100`);
       }
-      if (p.penalties) {
-        const parts: string[] = [];
-        if (p.penalties.warning) parts.push(`Warning -${p.penalties.warning}`);
-        if (p.penalties.duplication)
-          parts.push(`Duplication -${p.penalties.duplication}`);
-        if (p.penalties.jsdoc) parts.push(`JSDoc -${p.penalties.jsdoc}`);
-        lines.push(
-          `- **Penalties**: ${parts.join(" | ")} (Total: -${p.penalties.total})`,
-        );
-      }
-      lines.push("");
+      lines.push('');
     }
 
     // 3. Phase Comparison
-    lines.push("## 3. Phase Score Comparison");
-    lines.push("");
-    const phaseHeaders = [
-      "Phase",
-      ...result.projects.map((p) => p.name),
-      "Winner",
-    ];
-    lines.push("| " + phaseHeaders.join(" | ") + " |");
-    lines.push("|" + phaseHeaders.map(() => "------").join("|") + "|");
+    lines.push('## 3. Phase Score Comparison');
+    lines.push('');
+    const phaseHeaders = ['Phase', ...result.projects.map(p => p.name), 'Winner'];
+    lines.push('| ' + phaseHeaders.join(' | ') + ' |');
+    lines.push('|' + phaseHeaders.map(() => '------').join('|') + '|');
     for (const phase of result.phaseComparison) {
-      const scores = phase.scores.map((s) => `${s.score}/100`);
-      lines.push(
-        `| ${phase.phase} | ${scores.join(" | ")} | ${phase.winner} |`,
-      );
+      const scores = phase.scores.map(s => `${s.score}/100`);
+      lines.push(`| ${phase.phase} | ${scores.join(' | ')} | ${phase.winner} |`);
     }
-    lines.push("");
+    lines.push('');
 
     // 4. Metrics Comparison
-    lines.push("## 4. Code Metrics Comparison");
-    lines.push("");
-    const metricHeaders = [
-      "Metric",
-      ...result.projects.map((p) => p.name),
-      "Better",
-    ];
-    lines.push("| " + metricHeaders.join(" | ") + " |");
-    lines.push("|" + metricHeaders.map(() => "------").join("|") + "|");
+    lines.push('## 4. Code Metrics Comparison');
+    lines.push('');
+    const metricHeaders = ['Metric', ...result.projects.map(p => p.name), 'Better'];
+    lines.push('| ' + metricHeaders.join(' | ') + ' |');
+    lines.push('|' + metricHeaders.map(() => '------').join('|') + '|');
     for (const m of result.metricComparison) {
-      const values = m.values.map((v) => String(v.value));
-      lines.push(`| ${m.metric} | ${values.join(" | ")} | ${m.better} |`);
+      const values = m.values.map(v => String(v.value));
+      lines.push(`| ${m.metric} | ${values.join(' | ')} | ${m.better} |`);
     }
-    lines.push("");
+    lines.push('');
 
     // 5. Agent Comparison (if available)
     if (result.agentComparison) {
-      lines.push("## 5. AI Agent Comparison");
-      lines.push("");
-      const agentHeaders = [
-        "Agent",
-        ...result.projects.map((p) => p.name),
-        "Winner",
-      ];
-      lines.push("| " + agentHeaders.join(" | ") + " |");
-      lines.push("|" + agentHeaders.map(() => "------").join("|") + "|");
+      lines.push('## 5. AI Agent Comparison');
+      lines.push('');
+      const agentHeaders = ['Agent', ...result.projects.map(p => p.name), 'Winner'];
+      lines.push('| ' + agentHeaders.join(' | ') + ' |');
+      lines.push('|' + agentHeaders.map(() => '------').join('|') + '|');
       for (const a of result.agentComparison) {
-        const scores = a.scores.map((s) => `${s.score}/100`);
-        lines.push(`| ${a.agent} | ${scores.join(" | ")} | ${a.winner} |`);
+        const scores = a.scores.map(s => `${s.score}/100`);
+        lines.push(`| ${a.agent} | ${scores.join(' | ')} | ${a.winner} |`);
       }
-      lines.push("");
+      lines.push('');
     }
 
     // 6. Issues Summary
-    lines.push("## 6. Issues Summary");
-    lines.push("");
-    const issueHeaders = ["Category", ...result.projects.map((p) => p.name)];
-    lines.push("| " + issueHeaders.join(" | ") + " |");
-    lines.push("|" + issueHeaders.map(() => "------").join("|") + "|");
-    lines.push(
-      `| Gate Issues | ${result.projects.map((p) => (p.issues.gate === 0 ? "✅ 0" : p.issues.gate)).join(" | ")} |`,
-    );
-    lines.push(
-      `| Requirements Issues | ${result.projects.map((p) => (p.issues.requirements === 0 ? "✅ 0" : p.issues.requirements)).join(" | ")} |`,
-    );
-    lines.push(
-      `| Logic Issues | ${result.projects.map((p) => (p.issues.logic === 0 ? "✅ 0" : p.issues.logic)).join(" | ")} |`,
-    );
-    lines.push("");
+    lines.push('## 6. Issues Summary');
+    lines.push('');
+    const issueHeaders = ['Category', ...result.projects.map(p => p.name)];
+    lines.push('| ' + issueHeaders.join(' | ') + ' |');
+    lines.push('|' + issueHeaders.map(() => '------').join('|') + '|');
+    lines.push(`| Gate Issues | ${result.projects.map(p => p.issues.gate === 0 ? '✅ 0' : p.issues.gate).join(' | ')} |`);
+    lines.push(`| Requirements Issues | ${result.projects.map(p => p.issues.requirements === 0 ? '✅ 0' : p.issues.requirements).join(' | ')} |`);
+    lines.push(`| Logic Issues | ${result.projects.map(p => p.issues.logic === 0 ? '✅ 0' : p.issues.logic).join(' | ')} |`);
+    lines.push('');
 
     // 7. Conclusion
-    lines.push("## 7. Conclusion");
-    lines.push("");
+    lines.push('## 7. Conclusion');
+    lines.push('');
     lines.push(result.summary.recommendation);
-    lines.push("");
-    lines.push("---");
-    lines.push("*Generated by @autobe/estimate compare*");
+    lines.push('');
+    lines.push('---');
+    lines.push('*Generated by @autobe/estimate compare*');
 
-    return lines.join("\n");
+    return lines.join('\n');
   }
 
   generateJson(result: CompareResult): string {
@@ -150,111 +112,75 @@ export class CompareReporter {
   }
 
   printToTerminal(result: CompareResult): void {
-    console.log("");
-    console.log(chalk.bold("═".repeat(70)));
-    console.log(chalk.bold.cyan("  📊 Project Comparison Result"));
-    console.log(chalk.bold("═".repeat(70)));
-    console.log("");
+    console.log('');
+    console.log(chalk.bold('═'.repeat(70)));
+    console.log(chalk.bold.cyan('  📊 Project Comparison Result'));
+    console.log(chalk.bold('═'.repeat(70)));
+    console.log('');
 
     // Ranking
-    this.printSection("🏆 Ranking");
+    this.printSection('🏆 Ranking');
     for (const r of result.ranking) {
-      const medal =
-        r.rank === 1 ? "🥇" : r.rank === 2 ? "🥈" : r.rank === 3 ? "🥉" : "  ";
-      const scoreColor =
-        r.score >= 90 ? chalk.green : r.score >= 70 ? chalk.yellow : chalk.red;
-      console.log(
-        `  ${medal} #${r.rank}  ${r.name.padEnd(25)} ${scoreColor(`${r.score}/100`)} (${r.grade})`,
-      );
-      const project = result.projects.find((p) => p.name === r.name);
-      if (project?.penalties) {
-        console.log(`         Penalties: -${project.penalties.total}`);
-      }
+      const medal = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : '  ';
+      const scoreColor = r.score >= 90 ? chalk.green : r.score >= 70 ? chalk.yellow : chalk.red;
+      console.log(`  ${medal} #${r.rank}  ${r.name.padEnd(25)} ${scoreColor(`${r.score}/100`)} (${r.grade})`);
     }
-    console.log("");
+    console.log('');
 
     // Phase Comparison
-    this.printSection("📈 Phase Score Comparison");
+    this.printSection('📈 Phase Score Comparison');
     for (const phase of result.phaseComparison) {
-      const scores = phase.scores
-        .map((s) => {
-          const color =
-            s.score >= 90
-              ? chalk.green
-              : s.score >= 70
-                ? chalk.yellow
-                : chalk.red;
-          return `${s.name.substring(0, 12)}: ${color(`${s.score}`)}`;
-        })
-        .join(" │ ");
-      console.log(
-        `  ${phase.phase.padEnd(22)} │ ${scores} │ ${chalk.cyan(phase.winner)}`,
-      );
+      const scores = phase.scores.map(s => {
+        const color = s.score >= 90 ? chalk.green : s.score >= 70 ? chalk.yellow : chalk.red;
+        return `${s.name.substring(0, 12)}: ${color(`${s.score}`)}`;
+      }).join(' │ ');
+      console.log(`  ${phase.phase.padEnd(22)} │ ${scores} │ ${chalk.cyan(phase.winner)}`);
     }
-    console.log("");
+    console.log('');
 
     // Metrics
-    this.printSection("📊 Metrics Comparison");
+    this.printSection('📊 Metrics Comparison');
     for (const m of result.metricComparison) {
-      const values = m.values
-        .map((v) => `${v.name.substring(0, 12)}: ${v.value}`)
-        .join(" │ ");
-      console.log(
-        `  ${m.metric.padEnd(15)} │ ${values} │ ${chalk.cyan(m.better)}`,
-      );
+      const values = m.values.map(v => `${v.name.substring(0, 12)}: ${v.value}`).join(' │ ');
+      console.log(`  ${m.metric.padEnd(15)} │ ${values} │ ${chalk.cyan(m.better)}`);
     }
-    console.log("");
+    console.log('');
 
     // Agent Comparison
     if (result.agentComparison) {
-      this.printSection("🤖 AI Agent Comparison");
+      this.printSection('🤖 AI Agent Comparison');
       for (const a of result.agentComparison) {
-        const scores = a.scores
-          .map((s) => {
-            const color =
-              s.score >= 90
-                ? chalk.green
-                : s.score >= 70
-                  ? chalk.yellow
-                  : chalk.red;
-            return `${s.name.substring(0, 12)}: ${color(`${s.score}`)}`;
-          })
-          .join(" │ ");
-        console.log(
-          `  ${a.agent.padEnd(18)} │ ${scores} │ ${chalk.cyan(a.winner)}`,
-        );
+        const scores = a.scores.map(s => {
+          const color = s.score >= 90 ? chalk.green : s.score >= 70 ? chalk.yellow : chalk.red;
+          return `${s.name.substring(0, 12)}: ${color(`${s.score}`)}`;
+        }).join(' │ ');
+        console.log(`  ${a.agent.padEnd(18)} │ ${scores} │ ${chalk.cyan(a.winner)}`);
       }
-      console.log("");
+      console.log('');
     }
 
     // Summary
-    console.log(chalk.bold("═".repeat(70)));
-    console.log(
-      chalk.bold("🏆 Winner: ") +
-        chalk.green.bold(result.summary.overallWinner),
-    );
-    console.log(chalk.bold("📝 ") + result.summary.recommendation);
-    console.log(chalk.bold("═".repeat(70)));
-    console.log("");
+    console.log(chalk.bold('═'.repeat(70)));
+    console.log(chalk.bold('🏆 Winner: ') + chalk.green.bold(result.summary.overallWinner));
+    console.log(chalk.bold('📝 ') + result.summary.recommendation);
+    console.log(chalk.bold('═'.repeat(70)));
+    console.log('');
   }
 
   private printSection(title: string): void {
-    console.log(chalk.bold("┌" + "─".repeat(68) + "┐"));
+    console.log(chalk.bold('┌' + '─'.repeat(68) + '┐'));
     console.log(chalk.bold(`│  ${title.padEnd(65)} │`));
-    console.log(chalk.bold("└" + "─".repeat(68) + "┘"));
-    console.log("");
+    console.log(chalk.bold('└' + '─'.repeat(68) + '┘'));
+    console.log('');
   }
 
-  saveReports(
-    result: CompareResult,
-    outputPath: string,
-  ): { mdPath: string; jsonPath: string } {
+  saveReports(result: CompareResult, outputPath: string): { mdPath: string; jsonPath: string } {
     if (!fs.existsSync(outputPath)) {
       fs.mkdirSync(outputPath, { recursive: true });
     }
 
-    const mdPath = path.join(outputPath, "comparison-report.md");
-    const jsonPath = path.join(outputPath, "comparison-report.json");
+    const mdPath = path.join(outputPath, 'comparison-report.md');
+    const jsonPath = path.join(outputPath, 'comparison-report.json');
 
     fs.writeFileSync(mdPath, this.generateMarkdown(result));
     fs.writeFileSync(jsonPath, this.generateJson(result));
