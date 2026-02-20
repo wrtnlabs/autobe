@@ -245,7 +245,9 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Cap score if agents found too many critical issues
     const totalAgentCritical = agentResults.reduce(
       (sum, r) =>
-        sum + r.issues.filter((i: any) => i.severity === "critical").length,
+        sum +
+        r.issues.filter((i: { severity: string }) => i.severity === "critical")
+          .length,
       0,
     );
     if (totalAgentCritical >= 20) adjustedScore = Math.min(adjustedScore, 60);
