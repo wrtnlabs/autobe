@@ -6,7 +6,7 @@ export const OpenAIUserAudioContent = ({
 }: {
   content: AutoBeUserMessageAudioContent;
 }) => {
-  const isRight = true; // UserContent는 항상 오른쪽
+  const isRight = true;
 
   return (
     <div

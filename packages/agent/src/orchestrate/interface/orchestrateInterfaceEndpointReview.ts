@@ -1,5 +1,6 @@
 import {
   AutoBeAnalyzeActor,
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -13,6 +14,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { AutoBeInterfaceEndpointReviewProgrammer } from "./programmers/AutoBeInterfaceEndpointReviewProgrammer";
@@ -43,6 +46,24 @@ export const orchestrateInterfaceEndpointReview = async (
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const queryText: string = [
+    "interface",
+    "endpoint",
+    "review",
+    props.group.name,
+    ...props.group.databaseSchemas,
+    ...props.designs.map((d) => `${d.endpoint.method} ${d.endpoint.path}`),
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "interfaceEndpointReview" },
+  );
+
   const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
     { value: null };
   const preliminary: AutoBePreliminaryController<
@@ -64,7 +85,7 @@ export const orchestrateInterfaceEndpointReview = async (
     ],
     state: ctx.state(),
     local: {
-      analysisFiles: ctx.state().analyze?.files ?? [],
+      analysisFiles: ragAnalysisFiles,
       databaseSchemas:
         ctx
           .state()

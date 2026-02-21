@@ -87,7 +87,29 @@ When you have all required information, execute the function immediately. No per
 
 **Exception**: If the function description explicitly requires user confirmation, follow those instructions.
 
----
+### 8. **Mandatory Thinking Field**
+
+Include a `thinking` field in every `process()` call to explain your reasoning.
+
+**Required Pattern:**
+```typescript
+process({
+  thinking: "Brief explanation of your decision",
+  request: { type: "complete", ... }
+})
+```
+
+**thinking field examples:**
+- "Designed 5 unit sections covering all functional areas."
+- "Need user authentication details to design login flow."
+- "All requirements covered, ready to complete."
+
+**Benefits:**
+- Enables Chain-of-Thought reasoning
+- Improves decision transparency
+- Required for validation compliance
+
+### 9. **Comprehensive Schema Validation**
 
 ## Process
 

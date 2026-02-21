@@ -24,6 +24,15 @@ export namespace ArchiveLogger {
     //----
     if (typia.is<ProgressEvent>(event))
       content.push(`  - progress: (${event.completed} of ${event.total})`);
+    if (
+      event.type === "analyzeWriteModule" ||
+      event.type === "analyzeWriteModuleReview" ||
+      event.type === "analyzeWriteUnit" ||
+      event.type === "analyzeWriteAllUnitReview" ||
+      event.type === "analyzeWriteSection" ||
+      event.type === "analyzeWriteAllSectionReview"
+    )
+      content.push(`  - retry: ${event.retry}`);
     if (typia.is<TokenUsageEvent>(event))
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,

@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceOperationReviewEvent,
@@ -13,6 +14,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
@@ -52,6 +55,48 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IOperation | false> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const op = props.operation;
+  const pathSegments = op.path
+    .split("/")
+    .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
+
+  // Build rich query text for better retrieval in review
+  const queryParts: string[] = [
+    "review",
+    "operation",
+    op.method,
+    ...pathSegments,
+  ];
+
+  if (op.authorizationActor) {
+    queryParts.push(`auth:${op.authorizationActor}`);
+  }
+  if (op.requestBody?.typeName) {
+    queryParts.push(`req:${op.requestBody.typeName}`);
+  }
+  if (op.responseBody?.typeName) {
+    queryParts.push(`res:${op.responseBody.typeName}`);
+  }
+  if (op.description) {
+    const descKeywords = op.description
+      .slice(0, 100)
+      .split(/\s+/)
+      .filter((w) => w.length >= 3)
+      .slice(0, 5);
+    queryParts.push(...descKeywords);
+  }
+
+  const queryText: string = queryParts.join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "interfaceOperationReview" },
+  );
+
   const files: AutoBeDatabase.IFile[] =
     ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
@@ -72,6 +117,9 @@ async function process(
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
+    local: {
+      analysisFiles: ragAnalysisFiles,
+    },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
     const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IComplete | null> =

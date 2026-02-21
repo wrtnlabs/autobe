@@ -6,7 +6,7 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeSceHistories = (
+export const transformAnalyzeScenarioHistory = (
   ctx: AutoBeContext,
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">,
 ): IAutoBeOrchestrateHistory => ({
@@ -20,23 +20,12 @@ export const transformAnalyzeSceHistories = (
       text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO,
       created_at: new Date().toISOString(),
     },
-    {
-      id: v7(),
-      type: "systemMessage",
-      text: StringUtil.trim`
-        > One agent per page of the document you specify will 
-        > write according to the instructions below. You should also refer 
-        > to the content to define the document list.
-
-        ----------------------
-
-        ${AutoBeSystemPromptConstant.ANALYZE_WRITE}
-      `,
-      created_at: new Date().toISOString(),
-    },
     ...preliminary.getHistories(),
   ],
   userMessage: StringUtil.trim`
+    You are in the Analyze Scenario stage, which comes BEFORE Analyze Write.
+    Your job is to design the document list and user actors, not to write any documents.
+
     Design a complete list of documents and user actors for this project.
     Define user actors that can authenticate via API and create appropriate documentation files.
     You must respect the number of documents specified by the user.

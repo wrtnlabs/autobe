@@ -49,22 +49,52 @@ export class AutoBeListener {
 
       // ANALYZE
       analyzeStart: async (event) => {
-        this.dict_.delete("analyzeWrite");
-        this.dict_.delete("analyzeReview");
+        this.dict_.delete("analyzeWriteModule");
+        this.dict_.delete("analyzeWriteModuleReview");
+        this.dict_.delete("analyzeWriteUnit");
+        this.dict_.delete("analyzeWriteUnitReview");
+        this.dict_.delete("analyzeWriteSection");
+        this.dict_.delete("analyzeWriteSectionReview");
+        this.dict_.delete("analyzeWriteAllUnitReview");
+        this.dict_.delete("analyzeWriteAllSectionReview");
         this.insert(event);
       },
       analyzeScenario: async (event) => {
         this.accumulate(event);
       },
-      analyzeWrite: async (event) => {
+      analyzeWriteModule: async (event) => {
         this.accumulate(event);
       },
-      analyzeReview: async (event) => {
+      analyzeWriteModuleReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteUnit: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteUnitReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteSection: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteSectionReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteAllUnitReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteAllSectionReview: async (event) => {
         this.accumulate(event);
       },
       analyzeComplete: async (event) => {
-        this.dict_.delete("analyzeWrite");
-        this.dict_.delete("analyzeReview");
+        this.dict_.delete("analyzeWriteModule");
+        this.dict_.delete("analyzeWriteModuleReview");
+        this.dict_.delete("analyzeWriteUnit");
+        this.dict_.delete("analyzeWriteUnitReview");
+        this.dict_.delete("analyzeWriteSection");
+        this.dict_.delete("analyzeWriteSectionReview");
+        this.dict_.delete("analyzeWriteAllUnitReview");
+        this.dict_.delete("analyzeWriteAllSectionReview");
         this.state_.setAnalyze(event);
         this.insert(event);
       },

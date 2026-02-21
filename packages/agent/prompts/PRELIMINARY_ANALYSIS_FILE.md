@@ -66,6 +66,21 @@ You may request these files if genuinely needed.
 - Making duplicate requests "just to be sure"
 - Requesting files that do not exist in "Not Yet Loaded" list
 - Inventing or imagining file names not explicitly listed
+- Doubting the accuracy of the loaded/available lists
+
+### CRITICAL: File Name Accuracy
+
+Follow these steps before every `getAnalysisFiles` call:
+
+1. **Check the "NOT YET LOADED" list** in this prompt
+2. **Copy file names exactly** - use the exact spelling shown
+3. **Verify each file name exists** in the available list
+4. **Match character-by-character** - no typos, no variations
+
+Use only file names from the "NOT YET LOADED" list. Creating non-existent file names causes validation failures.
+
+### Request Strategy
+
 
 ### Example
 ```typescript

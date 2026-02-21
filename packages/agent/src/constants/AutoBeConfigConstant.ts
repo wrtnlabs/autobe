@@ -84,6 +84,49 @@ export const enum AutoBeConfigConstant {
    * beyond 3 rarely improve success rates but notably increase latency and
    * resource usage.
    */
+  FUNCTION_CALLING_RETRY = 3,
+
+  /**
+   * Retry attempts for the Analyze Phase.
+   *
+   * Used when the Analyze Phase fails to write the module, unit, or section.
+   * Value of 3 keeps the Analyze Phase shorter than general LLM interaction
+   * retries (which default to 5). Most Analyze Phase issues are either resolved
+   * within the first couple of passes or indicate a fundamental mismatch that
+   * won't benefit from further attempts. The lower limit reduces end-to-end
+   * latency and avoids long-running write/review loops while still allowing
+   * meaningful automatic correction.
+   */
+  ANALYZE_RETRY = 3,
+
+  /**
+   * Maximum consecutive error threshold for fast-fail during the Analyze
+   * Phase's hierarchical file processing.
+   *
+   * Used by `processFileHierarchical` in `orchestrateAnalyze` to detect
+   * persistent failure patterns within a single file's Module → Unit → Section
+   * pipeline. When errors occur consecutively without any successful sub-task
+   * in between, the counter increments. If it reaches this threshold the entire
+   * file processing is aborted immediately, preventing further wasted LLM calls
+   * on a file that is unlikely to recover.
+   *
+   * Value of 5 allows transient failures (rate limits, occasional
+   * hallucinations) to be tolerated while catching truly broken scenarios
+   * (e.g., fundamentally invalid file structure, persistent API outages) before
+   * they consume excessive resources.
+   */
+  ANALYZE_CONSECUTIVE_ERROR = 5,
+
+  /**
+   * Batch count for parallel operation processing.
+   *
+   * Controls how many batches `divideArray` creates when splitting large
+   * operation lists for concurrent processing. Value of 2 provides optimal
+   * balance: parallelizes work to reduce latency while keeping batch sizes
+   * large enough for effective prompt caching. Higher values increase
+   * parallelism but reduce cache hit rates.
+   */
+  INTERFACE_CAPACITY = 1,
   API_ERROR_RETRY = 3,
 
   /**

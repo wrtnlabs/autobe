@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabaseComponent,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
@@ -12,6 +13,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";
@@ -61,6 +64,23 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const queryText: string = [
+    "prisma",
+    "schema",
+    "component",
+    props.group.filename,
+    props.group.namespace,
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "prismaComponent" },
+  );
+
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
@@ -72,6 +92,9 @@ async function process(
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
+    local: {
+      analysisFiles: ragAnalysisFiles,
+    },
   });
 
   return await preliminary.orchestrate(ctx, async (out) => {

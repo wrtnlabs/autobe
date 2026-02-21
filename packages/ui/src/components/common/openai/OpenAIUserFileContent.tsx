@@ -6,7 +6,7 @@ export const OpenAIUserFileContent = ({
 }: {
   content: AutoBeUserMessageFileContent;
 }) => {
-  const isRight = true; // UserContent는 항상 오른쪽
+  const isRight = true;
   const fileName =
     content.file.type === "base64"
       ? content.file.name

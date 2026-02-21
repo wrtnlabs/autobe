@@ -1,5 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
@@ -15,6 +16,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
@@ -108,9 +111,27 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const pathSegments = props.operation.path
+    .split("/")
+    .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
+  const queryText: string = [
+    "test",
+    "scenario",
+    props.operation.method,
+    ...pathSegments,
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "testScenario" },
+  );
+
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
-
   const preliminary: AutoBePreliminaryController<
     "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
@@ -122,6 +143,7 @@ async function process(
       interfaceOperations: props.document.operations,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: (() => {
         const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
           AutoBeOpenApiEndpointComparator.hashCode,
@@ -162,7 +184,7 @@ async function process(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioHistory({
+       ...transformTestScenarioHistory({
         state: ctx.state(),
         operation: props.operation,
         instruction: props.instruction,

@@ -13,8 +13,9 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { validateScenarioFileNames } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeSceHistories } from "./histories/transformAnalyzeScenarioHistories";
+import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
@@ -40,7 +41,7 @@ export const orchestrateAnalyzeScenario = async (
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeSceHistories(ctx, preliminary),
+      ...transformAnalyzeScenarioHistory(ctx, preliminary),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({
@@ -77,8 +78,28 @@ function createController(props: {
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
-    if (result.success === false || result.data.request.type === "complete")
+    if (result.success === false) return result;
+
+    // Validate file naming for complete requests
+    if (result.data.request.type === "complete") {
+      const fileNameValidation = validateScenarioFileNames(
+        result.data.request.files,
+      );
+      if (!fileNameValidation.valid) {
+        return {
+          success: false,
+          errors: fileNameValidation.errors.map((error) => ({
+            path: "$input.request.files",
+            expected:
+              "Sequential file names (00-toc.md, 01-xxx.md, 02-xxx.md, ...)",
+            value: error,
+          })),
+          data: result.data,
+        };
+      }
       return result;
+    }
+
     return props.preliminary.validate({
       thinking: result.data.thinking,
       request: result.data.request,

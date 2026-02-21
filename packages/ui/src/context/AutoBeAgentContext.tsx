@@ -30,9 +30,9 @@ export type AutoBeServiceFactory = (
 ) => Promise<IAutoBeServiceData>;
 
 export type AutoBeConnectionStatus =
-  | "disconnected" // 연결되지 않음
-  | "connecting" // 연결 중
-  | "connected"; // 연결 완료 및 활성 상태
+  | "disconnected"
+  | "connecting"
+  | "connected";
 
 interface AutoBeAgentContextType {
   // Service state

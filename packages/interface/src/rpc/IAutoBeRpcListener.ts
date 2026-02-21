@@ -1,9 +1,15 @@
 import {
   AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeReviewEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteModuleReviewEvent,
+  AutoBeAnalyzeWriteUnitEvent,
+  AutoBeAnalyzeWriteUnitReviewEvent,
+  AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteSectionReviewEvent,
+  AutoBeAnalyzeWriteAllUnitReviewEvent,
+  AutoBeAnalyzeWriteAllSectionReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -166,22 +172,78 @@ export interface IAutoBeRpcListener {
   analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
-   * Optional handler for requirements analysis writing progress events.
+   * Optional handler for module section generation events (V2 hierarchical writing).
    *
-   * Called during the writing phase as analysis documents are being created,
-   * allowing client applications to display real-time progress and provide
-   * visibility into the document generation process.
+   * Called when the hierarchical writing agent generates module section structure
+   * including document title, summary, and module section outlines.
    */
-  analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
+  analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for requirements analysis review events.
+   * Optional handler for module section review events (V2 hierarchical writing).
    *
-   * Called during the review and amendment phase, enabling client applications
-   * to show that requirements are being refined and improved based on feedback
-   * and additional analysis.
+   * Called when the module section structure is reviewed and validated
+   * before proceeding to unit section generation.
    */
-  analyzeReview?(event: AutoBeAnalyzeReviewEvent): Promise<void>;
+  analyzeWriteModuleReview?(
+    event: AutoBeAnalyzeWriteModuleReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for unit section generation events (V2 hierarchical writing).
+   *
+   * Called when the hierarchical writing agent generates unit section content
+   * for a specific module section.
+   */
+  analyzeWriteUnit?(event: AutoBeAnalyzeWriteUnitEvent): Promise<void>;
+
+  /**
+   * Optional handler for unit section review events (V2 hierarchical writing).
+   *
+   * Called when the unit section content is reviewed and validated
+   * before proceeding to section section generation.
+   */
+  analyzeWriteUnitReview?(
+    event: AutoBeAnalyzeWriteUnitReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for section section generation events (V2 hierarchical writing).
+   *
+   * Called when the hierarchical writing agent generates detailed section
+   * content with EARS-formatted requirements.
+   */
+  analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
+
+  /**
+   * Optional handler for section review events (V2 hierarchical writing).
+   *
+   * Called when the section content is reviewed for quality assurance
+   * before final document assembly.
+   */
+  analyzeWriteSectionReview?(
+    event: AutoBeAnalyzeWriteSectionReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for batch unit review events (V2 hierarchical writing).
+   *
+   * Called when ALL unit sections for a file are reviewed in a single LLM call,
+   * providing holistic validation of the entire file's unit structure.
+   */
+  analyzeWriteAllUnitReview?(
+    event: AutoBeAnalyzeWriteAllUnitReviewEvent,
+  ): Promise<void>;
+
+  /**
+   * Optional handler for batch section review events (V2 hierarchical writing).
+   *
+   * Called when ALL section sections for a file are reviewed in a single LLM call,
+   * providing holistic validation of the entire file's detailed content.
+   */
+  analyzeWriteAllSectionReview?(
+    event: AutoBeAnalyzeWriteAllSectionReviewEvent,
+  ): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.

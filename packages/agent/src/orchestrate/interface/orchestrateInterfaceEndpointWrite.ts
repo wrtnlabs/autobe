@@ -1,5 +1,6 @@
 import {
   AutoBeAnalyzeActor,
+  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
@@ -15,6 +16,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointWriteApplication } from "./structures/IAutoBeInterfaceEndpointWriteApplication";
@@ -48,6 +51,23 @@ export const orchestrateInterfaceEndpointWrite = async (
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
   const start: Date = new Date();
+
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const queryText: string = [
+    "interface",
+    "endpoint",
+    props.group.name,
+    ...props.group.databaseSchemas,
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "interfaceEndpointWrite" },
+  );
+
   const databaseSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
     ctx
       .state()
@@ -73,6 +93,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     source: SOURCE,
     state: ctx.state(),
     local: {
+      analysisFiles: ragAnalysisFiles,
       databaseSchemas: props.group.databaseSchemas
         .map((key) => databaseSchemas.get(key))
         .filter((m) => m !== undefined),

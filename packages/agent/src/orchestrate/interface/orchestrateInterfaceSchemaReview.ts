@@ -1,8 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaPropertyRevise,
+  // AutoBeInterfaceSchemaReviewEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -13,6 +15,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { getEmbedder } from "../../utils/getEmbedder";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
@@ -23,6 +27,11 @@ import { IAutoBeInterfaceSchemaReviewConfig } from "./structures/IAutoBeInterfac
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
+
+// interface IConfig {
+//   kind: AutoBeInterfaceSchemaReviewEvent["kind"];
+//   systemPrompt: string;
+// }
 
 export async function orchestrateInterfaceSchemaReview<
   Revise extends AutoBeInterfaceSchemaPropertyRevise,
@@ -106,6 +115,22 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+
+  const schemaNames = [props.typeName];
+  const opSummaries = props.reviewOperations
+    .map((op) => `${op.method} ${op.path}: ${op.name}`)
+    .join("\n");
+  const queryText: string = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "interfaceSchemaReview" },
+  );
+
   const preliminary: AutoBePreliminaryController<
     | "analysisFiles"
     | "databaseSchemas"
@@ -138,6 +163,7 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
       databaseSchemas: (() => {

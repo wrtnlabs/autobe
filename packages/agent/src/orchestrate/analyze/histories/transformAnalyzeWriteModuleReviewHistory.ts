@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeWriteModuleEvent,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
@@ -10,11 +11,12 @@ import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
-export const transformAnalyzeWriteHistories = (
+export const transformAnalyzeWriteModuleReviewHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => ({
@@ -36,7 +38,7 @@ export const transformAnalyzeWriteHistories = (
       id: v7(),
       created_at: new Date().toISOString(),
       type: "systemMessage",
-      text: AutoBeSystemPromptConstant.ANALYZE_WRITE,
+      text: AutoBeSystemPromptConstant.ANALYZE_WRITE_MODULE_REVIEW,
     },
     ...(props.preliminary?.getHistories() ?? []),
     {
@@ -45,37 +47,47 @@ export const transformAnalyzeWriteHistories = (
       type: "assistantMessage",
       text: StringUtil.trim`
         ## Language
-        
+
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
-        
-        ## Metadata
-        
-        Prefix name of the service to create is ${props.scenario.prefix}
-        and here is the list of the actors to reference.
 
-        \`\`\`json
-        ${JSON.stringify(props.scenario.actors)}
-        \`\`\`
+        ## Document Metadata
 
-        Here is the entire list of the documents that would be published
-        in someday, and your task is to write a document of them:
-        
-        ## The other documents that would be published in someday
-
-        \`\`\`json
-        ${JSON.stringify(
-          props.scenario.files.filter(
-            (f) => f.filename !== props.file.filename,
-          ),
-        )}
-        \`\`\`
-        
-        ## The document to write
         \`\`\`json
         ${JSON.stringify(props.file)}
         \`\`\`
+
+        ## Module Section Structure to Review
+
+        Please review the following module section structure:
+
+        ### Title
+        ${props.moduleEvent.title}
+
+        ### Summary
+        ${props.moduleEvent.summary}
+
+        ### Module Sections
+        ${props.moduleEvent.moduleSections
+          .map(
+            (section, index) => `
+        #### Section ${index + 1}: ${section.title}
+        **Purpose**: ${section.purpose}
+        **Content**: ${section.content}
+        `,
+          )
+          .join("\n")}
+
+        ## Review Criteria
+
+        Please evaluate:
+        1. Is the title clear and descriptive?
+        2. Does the summary explain purpose and scope?
+        3. Are all business domains covered?
+        4. Are section boundaries clear (no overlap)?
+        5. Is the order logical?
+        6. Is content at appropriate abstraction level?
       `,
     },
   ],
-  userMessage: "Write requirement analysis report.",
+  userMessage: "Review the module section structure and approve or reject.",
 });
