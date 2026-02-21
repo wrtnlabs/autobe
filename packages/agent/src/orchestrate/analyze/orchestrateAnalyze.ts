@@ -60,8 +60,29 @@ export const orchestrateAnalyze = async (
   else ctx.dispatch(scenario);
 
   // Process each file with hierarchical write flow
-  const progress: AutoBeProgressEventBase = {
+  // Each agent type gets its own progress object (Interface pattern)
+  const moduleWriteProgress: AutoBeProgressEventBase = {
     total: scenario.files.length,
+    completed: 0,
+  };
+  const moduleReviewProgress: AutoBeProgressEventBase = {
+    total: scenario.files.length,
+    completed: 0,
+  };
+  const allUnitReviewProgress: AutoBeProgressEventBase = {
+    total: scenario.files.length,
+    completed: 0,
+  };
+  const allSectionReviewProgress: AutoBeProgressEventBase = {
+    total: scenario.files.length,
+    completed: 0,
+  };
+  const unitWriteProgress: AutoBeProgressEventBase = {
+    total: 0,
+    completed: 0,
+  };
+  const sectionWriteProgress: AutoBeProgressEventBase = {
+    total: 0,
     completed: 0,
   };
 
@@ -72,11 +93,15 @@ export const orchestrateAnalyze = async (
         processFileHierarchical(ctx, {
           scenario,
           file,
-          progress,
+          moduleWriteProgress,
+          moduleReviewProgress,
+          allUnitReviewProgress,
+          allSectionReviewProgress,
+          unitWriteProgress,
+          sectionWriteProgress,
           promptCacheKey,
         }),
       );
-      progress.completed++;
       return {
         ...file,
         content,
@@ -104,7 +129,12 @@ async function processFileHierarchical(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    progress: AutoBeProgressEventBase;
+    moduleWriteProgress: AutoBeProgressEventBase;
+    moduleReviewProgress: AutoBeProgressEventBase;
+    allUnitReviewProgress: AutoBeProgressEventBase;
+    allSectionReviewProgress: AutoBeProgressEventBase;
+    unitWriteProgress: AutoBeProgressEventBase;
+    sectionWriteProgress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<string> {
@@ -129,7 +159,14 @@ async function processFileHierarchical(
   }
 
   const moduleResult: AutoBeAnalyzeWriteModuleEvent = await withErrorTracking(
-    () => writeAndReviewModule(ctx, props),
+    () =>
+      writeAndReviewModule(ctx, {
+        scenario: props.scenario,
+        file: props.file,
+        moduleWriteProgress: props.moduleWriteProgress,
+        moduleReviewProgress: props.moduleReviewProgress,
+        promptCacheKey: props.promptCacheKey,
+      }),
   );
 
   let unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
@@ -140,6 +177,9 @@ async function processFileHierarchical(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY;
     attempt++
   ) {
+    // Dynamically increase shared progress total for this attempt
+    props.unitWriteProgress.total += moduleResult.moduleSections.length;
+
     unitResults = [];
     for (
       let moduleIndex: number = 0;
@@ -153,9 +193,10 @@ async function processFileHierarchical(
             file: props.file,
             moduleEvent: moduleResult,
             moduleIndex,
-            progress: props.progress,
+            progress: props.unitWriteProgress,
             promptCacheKey: props.promptCacheKey,
             feedback: unitFeedback,
+            retry: attempt,
           }),
       );
       unitResults.push(unitEvent);
@@ -163,9 +204,13 @@ async function processFileHierarchical(
 
     const unitReviewResult: IUnitReviewResult = await withErrorTracking(() =>
       reviewAllUnits(ctx, {
-        ...props,
+        scenario: props.scenario,
+        file: props.file,
         moduleEvent: moduleResult,
         unitEvents: unitResults,
+        progress: props.allUnitReviewProgress,
+        promptCacheKey: props.promptCacheKey,
+        retry: attempt,
       }),
     );
 
@@ -191,6 +236,12 @@ async function processFileHierarchical(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY;
     attempt++
   ) {
+    // Dynamically increase shared progress total for this attempt
+    props.sectionWriteProgress.total += unitResults.reduce(
+      (sum, u) => sum + u.unitSections.length,
+      0,
+    );
+
     sectionResults = [];
     for (
       let moduleIndex: number = 0;
@@ -213,9 +264,10 @@ async function processFileHierarchical(
               unitEvent,
               moduleIndex,
               unitIndex,
-              progress: props.progress,
+              progress: props.sectionWriteProgress,
               promptCacheKey: props.promptCacheKey,
               feedback: sectionFeedback,
+              retry: attempt,
             }),
           );
         sectionsForModule.push(sectionEvent);
@@ -226,10 +278,14 @@ async function processFileHierarchical(
     const sectionReviewResult: ISectionReviewResult = await withErrorTracking(
       () =>
         reviewAllSections(ctx, {
-          ...props,
+          scenario: props.scenario,
+          file: props.file,
           moduleEvent: moduleResult,
           unitEvents: unitResults,
           sectionEvents: sectionResults,
+          progress: props.allSectionReviewProgress,
+          promptCacheKey: props.promptCacheKey,
+          retry: attempt,
         }),
     );
 
@@ -268,6 +324,7 @@ async function reviewAllUnits(
     unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    retry: number;
   },
 ): Promise<IUnitReviewResult> {
   // Single LLM call to review ALL units at once
@@ -279,6 +336,7 @@ async function reviewAllUnits(
       unitEvents: props.unitEvents,
       progress: props.progress,
       promptCacheKey: props.promptCacheKey,
+      retry: props.retry,
     });
 
   if (!reviewEvent.approved) {
@@ -312,6 +370,7 @@ async function reviewAllSections(
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    retry: number;
   },
 ): Promise<ISectionReviewResult> {
   // Single LLM call to review ALL sections at once
@@ -324,6 +383,7 @@ async function reviewAllSections(
       sectionEvents: props.sectionEvents,
       progress: props.progress,
       promptCacheKey: props.promptCacheKey,
+      retry: props.retry,
     });
 
   if (!reviewEvent.approved) {
@@ -353,7 +413,8 @@ async function writeAndReviewModule(
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
-    progress: AutoBeProgressEventBase;
+    moduleWriteProgress: AutoBeProgressEventBase;
+    moduleReviewProgress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
 ): Promise<AutoBeAnalyzeWriteModuleEvent> {
@@ -370,9 +431,10 @@ async function writeAndReviewModule(
         await orchestrateAnalyzeWriteModule(ctx, {
           scenario: props.scenario,
           file: props.file,
-          progress: props.progress,
+          progress: props.moduleWriteProgress,
           promptCacheKey: props.promptCacheKey,
           feedback,
+          retry: attempt,
         });
 
       const reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent =
@@ -380,8 +442,9 @@ async function writeAndReviewModule(
           scenario: props.scenario,
           file: props.file,
           moduleEvent,
-          progress: props.progress,
+          progress: props.moduleReviewProgress,
           promptCacheKey: props.promptCacheKey,
+          retry: attempt,
         });
 
       if (reviewEvent.approved) {

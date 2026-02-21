@@ -35,6 +35,7 @@ export const orchestrateAnalyzeWriteAllSectionReview = async (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    retry: number;
   },
 ): Promise<AutoBeAnalyzeWriteAllSectionReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -80,7 +81,8 @@ export const orchestrateAnalyzeWriteAllSectionReview = async (
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
       total: props.progress.total,
-      completed: props.progress.completed,
+      completed: ++props.progress.completed,
+      retry: props.retry,
       created_at: new Date().toISOString(),
     };
     ctx.dispatch(event);

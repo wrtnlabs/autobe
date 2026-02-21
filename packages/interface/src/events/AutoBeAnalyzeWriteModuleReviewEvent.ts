@@ -71,4 +71,13 @@ export interface AutoBeAnalyzeWriteModuleReviewEvent
    * Tracks how many review cycles have been completed for this document.
    */
   step: number;
+
+  /**
+   * Retry attempt number for this event.
+   *
+   * Starts at 0 for the first attempt. Increments each time the review
+   * rejects and the generation is retried. When retry > 0, completed may
+   * exceed total due to repeated work.
+   */
+  retry: number;
 }

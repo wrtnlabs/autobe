@@ -49,6 +49,7 @@ export const validate_analyze_write_unit = async (props: {
       moduleEvent,
       moduleIndex: 0,
       progress,
+      retry: 0,
     },
   );
 
