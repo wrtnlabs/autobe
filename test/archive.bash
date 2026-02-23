@@ -40,11 +40,11 @@ pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project shopping > archive.m
 ######################################################
 # GLM
 ######################################################
-# z-ai/glm-4.7 (0.4) -> not working
-pnpm run archive:go --vendor z-ai/glm-4.7 --project todo > archive.z-ai-glm-4.7.todo.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project bbs > archive.z-ai-glm-4.7.bbs.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project reddit > archive.z-ai-glm-4.7.reddit.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project shopping > archive.z-ai-glm-4.7.shopping.log
+# z-ai/glm-5 (0.95) -> working
+pnpm run archive:go --vendor z-ai/glm-5 --project todo > archive.z-ai-glm-5.todo.log
+pnpm run archive:go --vendor z-ai/glm-5 --project bbs > archive.z-ai-glm-5.bbs.log
+pnpm run archive:go --vendor z-ai/glm-5 --project reddit > archive.z-ai-glm-5.reddit.log
+pnpm run archive:go --vendor z-ai/glm-5 --project shopping > archive.z-ai-glm-5.shopping.log
 
 ######################################################
 # DEEPSEEK
