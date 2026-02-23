@@ -72,6 +72,23 @@ import { v4 } from "uuid";
 export async function ...
 ```
 
+### 4.3. Preserve Given Function Signature
+
+The function name, parameter types, and return type are provided by the system. Use them exactly as given.
+
+```typescript
+// Given signature:
+export async function getArticlesById(props: {
+  articleId: string & tags.Format<"uuid">;
+}): Promise<IBbsArticle> {
+
+// ❌ WRONG - Changing return type
+}): Promise<IBbsArticle | null> {   // ❌ Added | null
+
+// ❌ WRONG - Changing parameter type
+  articleId: string;                 // ❌ Removed Format<"uuid">
+```
+
 ## 5. Collector/Transformer Reuse Strategy
 
 ### 5.1. Core Principle: Maximize Reuse
@@ -380,21 +397,10 @@ bbs_users: { select: { id: true, name: true } }
 bbs_user_id: { select: {...} }  // bbs_user_id is scalar, not relation!
 ```
 
-When a Transformer exists for a nested relation, use it directly instead of inline select:
+When a Transformer exists for a nested relation, reuse it (see Section 6.6). Assign `select()` directly — do NOT unwrap with `.select`:
 
 ```typescript
-// ✅ CORRECT - Reuse Transformer
-const comment = await MyGlobal.prisma.bbs_article_comments.findUniqueOrThrow({
-  where: { id: props.commentId },
-  select: {
-    id: true,
-    body: true,
-    user: BbsUserAtSummaryTransformer.select(),      // ✅ Direct assignment
-    created_at: true,
-  }
-});
-
-// ❌ WRONG - Unwrapping with .select
+user: BbsUserAtSummaryTransformer.select(),          // ✅ Direct assignment
 user: BbsUserAtSummaryTransformer.select().select,   // ❌ Strips the wrapper
 ```
 

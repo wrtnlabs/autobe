@@ -336,21 +336,18 @@ totalQuantity: input.orders.reduce((sum, o) => sum + o.quantity, 0),
 | Non-transformable DTOs | Not DB-backed (pagination, computed) |
 | Simple scalar mapping | No complex logic |
 
-**Even when the outer layer is inline, check if a neighbor Transformer exists for the inner relation**.
+Even when inline, check if a neighbor exists for the inner relation (see Section 6.3 for M:N examples).
 
 In `select()`, inline nested selects use `satisfies Prisma.{table}FindManyArgs`:
 
 ```typescript
-// ✅ CORRECT - join table is inline, but inner relation reuses neighbor
 export function select() {
   return {
     select: {
       id: true,
-      articleTags: {
-        select: {
-          tag: BbsTagAtSummaryTransformer.select(),    // ✅ Neighbor inside inline
-        },
-      } satisfies Prisma.bbs_article_tagsFindManyArgs,
+      files: {
+        select: { id: true, url: true, name: true },
+      } satisfies Prisma.bbs_article_filesFindManyArgs,
     },
   } satisfies Prisma.bbs_articlesFindManyArgs;
 }
@@ -359,14 +356,9 @@ export function select() {
 In `transform()`, inline nested objects use `satisfies IDtoType`:
 
 ```typescript
-// ✅ CORRECT - inline transform reusing neighbor for inner relation
 export async function transform(input: Payload): Promise<IBbsArticle> {
   return {
     id: input.id,
-    tags: await ArrayUtil.asyncMap(
-      input.articleTags,
-      (at) => BbsTagAtSummaryTransformer.transform(at.tag),  // ✅ Neighbor transform
-    ),
     member: {
       id: input.author.id,
       name: input.author.name,

@@ -43,6 +43,8 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
 
 **CRITICAL**: No import statements - start directly with `export async function...`
 
+**CRITICAL**: The function name, parameter types, and return type are given by the system — preserve them exactly. Fix errors in the **implementation body**, not by altering the signature (e.g., adding `| null` to the return type).
+
 ## 4. Common Error Patterns
 
 ### 4.1. Error 2353: "Field does not exist in type"
