@@ -26,7 +26,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - **Approved**: All structures are valid, proceed to section generation
  * - **Rejected**: Structures need revision, regenerate ALL units with feedback
  *
- * @author AutoBE
+ * @author Juntak
  */
 export interface AutoBeAnalyzeWriteAllUnitReviewEvent
   extends

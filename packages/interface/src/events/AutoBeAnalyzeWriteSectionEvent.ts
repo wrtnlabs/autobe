@@ -24,7 +24,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Produces implementation-ready specification content
  * - Must be approved by review before final document assembly
  *
- * @author AutoBE
+ * @author Juntak
  */
 export interface AutoBeAnalyzeWriteSectionEvent
   extends

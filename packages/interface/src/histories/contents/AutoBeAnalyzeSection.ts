@@ -7,7 +7,7 @@
  * implementation-ready content using EARS format for requirements and Mermaid
  * syntax for diagrams.
  *
- * @author michael
+ * @author Juntak
  */
 export interface AutoBeAnalyzeSection {
   /** Title of the section (### level heading). */

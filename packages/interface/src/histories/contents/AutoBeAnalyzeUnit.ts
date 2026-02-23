@@ -12,7 +12,7 @@ import { AutoBeAnalyzeSection } from "./AutoBeAnalyzeSection";
  * about the topics covered, enabling intelligent search and categorization of
  * requirements.
  *
- * @author michael
+ * @author Juntak
  */
 export interface AutoBeAnalyzeUnit {
   /** Title of the unit (## level heading). */

@@ -24,7 +24,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Provides keywords as hints for section generation
  * - Must be approved by review before sections are generated
  *
- * @author AutoBE
+ * @author Juntak
  */
 export interface AutoBeAnalyzeWriteUnitEvent
   extends

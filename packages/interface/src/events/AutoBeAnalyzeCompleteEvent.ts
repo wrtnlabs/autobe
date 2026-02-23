@@ -18,6 +18,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  * implementation.
  *
  * @author Kakasoo
+ * @author Juntak
  */
 export interface AutoBeAnalyzeCompleteEvent extends AutoBeCompleteEventBase<"analyzeComplete"> {
   /**
