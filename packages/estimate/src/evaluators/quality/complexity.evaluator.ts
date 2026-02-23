@@ -44,9 +44,7 @@ export class ComplexityEvaluator extends BaseEvaluator {
     };
   }
 
-  private async analyzeFile(
-    filePath: string,
-  ): Promise<{
+  private async analyzeFile(filePath: string): Promise<{
     issues: Issue[];
     maxComplexity: number;
     functionCount: number;
