@@ -16,7 +16,7 @@ import { AutoBeAnalyzeUnit } from "./AutoBeAnalyzeUnit";
  * The structure mirrors the three-level hierarchy used during generation:
  * Module (#) → Unit (##) → Section (###)
  *
- * @author michael
+ * @author Juntak
  */
 export interface AutoBeAnalyzeModule {
   /**

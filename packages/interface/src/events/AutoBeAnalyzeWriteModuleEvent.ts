@@ -24,7 +24,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - Creates the foundational structure for subsequent unit/section sections
  * - Must be approved by review before lower-level generation begins
  *
- * @author AutoBE
+ * @author Juntak
  */
 export interface AutoBeAnalyzeWriteModuleEvent
   extends

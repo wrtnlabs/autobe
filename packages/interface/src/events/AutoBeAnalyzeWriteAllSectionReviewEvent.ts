@@ -28,7 +28,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * - **Approved**: All content is ready for document assembly
  * - **Rejected**: Content needs revision, regenerate ALL sections with feedback
  *
- * @author AutoBE
+ * @author Juntak
  */
 export interface AutoBeAnalyzeWriteAllSectionReviewEvent
   extends
