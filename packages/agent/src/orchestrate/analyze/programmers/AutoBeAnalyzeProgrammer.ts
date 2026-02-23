@@ -188,9 +188,9 @@ export namespace AutoBeAnalyzeProgrammer {
   /**
    * Assemble structured module data from events.
    *
-   * This method builds the hierarchical AutoBeAnalyzeModule structure from
-   * the module, unit, and section events, preserving the three-level hierarchy
-   * that would otherwise be lost when assembling into flat markdown.
+   * This method builds the hierarchical AutoBeAnalyzeModule structure from the
+   * module, unit, and section events, preserving the three-level hierarchy that
+   * would otherwise be lost when assembling into flat markdown.
    */
   export const assembleModule = (
     moduleEvent: AutoBeAnalyzeWriteModuleEvent,

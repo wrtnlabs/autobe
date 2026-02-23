@@ -1,51 +1,43 @@
-/**
- * Issue severity levels
- */
-export type Severity = 'critical' | 'warning' | 'suggestion';
+/** Issue severity levels */
+export type Severity = "critical" | "warning" | "suggestion";
 
-/**
- * Issue categories
- */
+/** Issue categories */
 export type IssueCategory =
   // Gate
-  | 'syntax'
-  | 'syntax-error'
-  | 'type-error'
-  | 'prisma'
-  | 'prisma-error'
+  | "syntax"
+  | "syntax-error"
+  | "type-error"
+  | "prisma"
+  | "prisma-error"
   // Quality
-  | 'complexity'
-  | 'naming'
-  | 'jsdoc'
-  | 'duplication'
+  | "complexity"
+  | "naming"
+  | "jsdoc"
+  | "duplication"
   // Safety
-  | 'security'
-  | 'error-handling'
-  | 'validation'
+  | "security"
+  | "error-handling"
+  | "validation"
   // LLM Specific
-  | 'hallucination'
-  | 'todo-left'
-  | 'incomplete'
+  | "hallucination"
+  | "todo-left"
+  | "incomplete"
   // Functionality
-  | 'test'
-  | 'requirements'
+  | "test"
+  | "requirements"
   // New scoring categories
-  | 'documentation'
-  | 'api'
-  | 'completeness';
+  | "documentation"
+  | "api"
+  | "completeness";
 
-/**
- * Source location
- */
+/** Source location */
 export interface SourceLocation {
   file: string;
   line?: number;
   column?: number;
 }
 
-/**
- * Issue definition
- */
+/** Issue definition */
 export interface Issue {
   id: string;
   severity: Severity;
@@ -58,15 +50,18 @@ export interface Issue {
   docsUrl?: string;
 }
 
-/**
- * Create issue helper
- */
+/** Create issue helper */
 export function createIssue(
-  partial: Omit<Issue, 'id' | 'autoFixable'> & { id?: string; autoFixable?: boolean }
+  partial: Omit<Issue, "id" | "autoFixable"> & {
+    id?: string;
+    autoFixable?: boolean;
+  },
 ): Issue {
   return {
     ...partial,
-    id: partial.id ?? `${partial.category}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    id:
+      partial.id ??
+      `${partial.category}-${Date.now()}-${Math.random().toString(36).slice(2)}`,
     autoFixable: partial.autoFixable ?? false,
   };
 }

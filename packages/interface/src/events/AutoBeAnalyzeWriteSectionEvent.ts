@@ -12,10 +12,12 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * within an approved unit section structure.
  *
  * The Section Agent operates with:
+ *
  * - Input: Approved unit section from UnitReviewEvent
  * - Output: Sections with complete detailed content
  *
  * Key characteristics of the section generation process:
+ *
  * - Receives confirmed unit section structure as input
  * - Generates detailed requirements using EARS format
  * - Creates Mermaid diagrams where appropriate
@@ -25,7 +27,8 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * @author AutoBE
  */
 export interface AutoBeAnalyzeWriteSectionEvent
-  extends AutoBeEventBase<"analyzeWriteSection">,
+  extends
+    AutoBeEventBase<"analyzeWriteSection">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
@@ -39,53 +42,49 @@ export interface AutoBeAnalyzeWriteSectionEvent
   /**
    * Index of the parent unit section.
    *
-   * References which unit section (0-based) within the module section
-   * these sections belong to.
+   * References which unit section (0-based) within the module section these
+   * sections belong to.
    */
   unitIndex: number;
 
   /**
    * Array of sections generated for this unit section.
    *
-   * Each section represents a detailed subsection (#### level)
-   * with complete implementation-ready content.
+   * Each section represents a detailed subsection (#### level) with complete
+   * implementation-ready content.
    */
   sectionSections: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
 
   /**
    * Current iteration number of the section generation.
    *
-   * Indicates which version is being generated. Increments with each
-   * retry after review feedback.
+   * Indicates which version is being generated. Increments with each retry
+   * after review feedback.
    */
   step: number;
 
   /**
    * Retry attempt number for this event.
    *
-   * Starts at 0 for the first attempt. Increments each time the review
-   * rejects and the generation is retried. When retry > 0, completed may
-   * exceed total due to repeated work.
+   * Starts at 0 for the first attempt. Increments each time the review rejects
+   * and the generation is retried. When retry > 0, completed may exceed total
+   * due to repeated work.
    */
   retry: number;
 }
 
 export namespace AutoBeAnalyzeWriteSectionEvent {
-  /**
-   * Structure representing a single section in the document.
-   */
+  /** Structure representing a single section in the document. */
   export interface ISectionSection {
-    /**
-     * Title of the section (#### level heading).
-     */
+    /** Title of the section (#### level heading). */
     title: string;
 
     /**
      * Complete content for the section.
      *
-     * Contains detailed requirements, specifications, and diagrams.
-     * Should use EARS format for requirements and proper Mermaid
-     * syntax for any diagrams included.
+     * Contains detailed requirements, specifications, and diagrams. Should use
+     * EARS format for requirements and proper Mermaid syntax for any diagrams
+     * included.
      */
     content: string;
   }

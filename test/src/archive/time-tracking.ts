@@ -16,7 +16,13 @@ const PROJECT_NAME = "time-tracking";
 const SCRIPT_PATH = `${__dirname}/../../scripts/${PROJECT_NAME}.md`;
 const OUTPUT_ROOT = `${__dirname}/../../results`;
 
-const PHASES: AutoBePhase[] = ["analyze", "database", "interface", "test", "realize"];
+const PHASES: AutoBePhase[] = [
+  "analyze",
+  "database",
+  "interface",
+  "test",
+  "realize",
+];
 
 const PROMPT_TEMPLATE: Record<string, string> = {
   database: "Design the database schema.",
@@ -51,7 +57,9 @@ const main = async (): Promise<void> => {
   let histories: AutoBeHistory[] = [];
 
   for (const phase of PHASES) {
-    console.log(`\n[${"=".repeat(20)} ${phase.toUpperCase()} ${"=".repeat(20)}]`);
+    console.log(
+      `\n[${"=".repeat(20)} ${phase.toUpperCase()} ${"=".repeat(20)}]`,
+    );
 
     const agent = new AutoBeAgent({
       vendor: TestGlobal.getVendorConfig(vendor),
@@ -62,7 +70,7 @@ const main = async (): Promise<void> => {
     });
 
     const userMessage = await getUserMessage(phase);
-    
+
     let success = false;
     for (let attempt = 1; attempt <= 3; attempt++) {
       console.log(`Attempt ${attempt}/3...`);
@@ -93,12 +101,19 @@ const main = async (): Promise<void> => {
   console.log("\nDone!");
 };
 
-const getUserMessage = async (phase: AutoBePhase): Promise<AutoBeUserConversateContent[]> => {
+const getUserMessage = async (
+  phase: AutoBePhase,
+): Promise<AutoBeUserConversateContent[]> => {
   if (phase === "analyze") {
     const text = await fs.promises.readFile(SCRIPT_PATH, "utf8");
     return [{ type: "text", text }];
   }
-  return [{ type: "text", text: PROMPT_TEMPLATE[phase] || `Execute ${phase}.` }];
+  return [
+    { type: "text", text: PROMPT_TEMPLATE[phase] || `Execute ${phase}.` },
+  ];
 };
 
-main().catch((e) => { console.error(e); process.exit(-1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(-1);
+});

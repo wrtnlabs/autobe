@@ -22,52 +22,46 @@ export interface AutoBeAnalyzeModule {
   /**
    * Document title (bold text, not a heading).
    *
-   * The main title of the requirements document that appears at the top
-   * of the generated markdown file.
+   * The main title of the requirements document that appears at the top of the
+   * generated markdown file.
    */
   title: string;
 
   /**
    * Executive summary of the document.
    *
-   * A concise overview (2-3 sentences) describing the purpose and scope
-   * of the requirements document.
+   * A concise overview (2-3 sentences) describing the purpose and scope of the
+   * requirements document.
    */
   summary: string;
 
   /**
    * Array of modules (# level) in the document.
    *
-   * Each module represents a major chapter or topic area in the
-   * requirements document, containing its own hierarchy of units and
-   * sections.
+   * Each module represents a major chapter or topic area in the requirements
+   * document, containing its own hierarchy of units and sections.
    */
   modules: AutoBeAnalyzeModule.IModule[];
 }
 
 export namespace AutoBeAnalyzeModule {
-  /**
-   * Structure representing a single module (# level) in the document.
-   */
+  /** Structure representing a single module (# level) in the document. */
   export interface IModule {
-    /**
-     * Title of the module (# level heading).
-     */
+    /** Title of the module (# level heading). */
     title: string;
 
     /**
      * Purpose statement explaining what this module covers.
      *
-     * A brief description (1-2 sentences) of the module's role in the
-     * overall document structure.
+     * A brief description (1-2 sentences) of the module's role in the overall
+     * document structure.
      */
     purpose: string;
 
     /**
      * Introductory content for the module.
      *
-     * Content that appears after the module heading, before any unit
-     * sections.
+     * Content that appears after the module heading, before any unit sections.
      */
     content: string;
 

@@ -1,9 +1,6 @@
-import type { Phase, PhaseResult, EvaluationContext, Issue } from '../types';
+import type { EvaluationContext, Issue, Phase, PhaseResult } from "../types";
 
-/**
- * Base evaluator abstract class
- * All evaluators must extend this class
- */
+/** Base evaluator abstract class All evaluators must extend this class */
 export abstract class BaseEvaluator {
   /** Evaluator name */
   abstract readonly name: string;
@@ -14,15 +11,13 @@ export abstract class BaseEvaluator {
   /** Evaluator description */
   abstract readonly description: string;
 
-  /**
-   * Run evaluation
-   */
+  /** Run evaluation */
   abstract evaluate(context: EvaluationContext): Promise<PhaseResult>;
 
-  /**
-   * Time measurement wrapper
-   */
-  protected async measureTime<T>(fn: () => Promise<T>): Promise<{ result: T; durationMs: number }> {
+  /** Time measurement wrapper */
+  protected async measureTime<T>(
+    fn: () => Promise<T>,
+  ): Promise<{ result: T; durationMs: number }> {
     const start = performance.now();
     const result = await fn();
     const durationMs = Math.round(performance.now() - start);
@@ -31,6 +26,7 @@ export abstract class BaseEvaluator {
 
   /**
    * Calculate score based on issues
+   *
    * - Critical: -20 points
    * - Warning: -5 points
    * - Suggestion: -1 point
@@ -40,13 +36,13 @@ export abstract class BaseEvaluator {
 
     for (const issue of issues) {
       switch (issue.severity) {
-        case 'critical':
+        case "critical":
           score -= 20;
           break;
-        case 'warning':
+        case "warning":
           score -= 5;
           break;
-        case 'suggestion':
+        case "suggestion":
           score -= 1;
           break;
         default: {
@@ -59,9 +55,7 @@ export abstract class BaseEvaluator {
     return Math.max(0, Math.min(100, score));
   }
 
-  /**
-   * Log output (for verbose mode)
-   */
+  /** Log output (for verbose mode) */
   protected log(message: string, verbose: boolean = false): void {
     if (verbose) {
       console.log(`[${this.name}] ${message}`);
@@ -69,16 +63,11 @@ export abstract class BaseEvaluator {
   }
 }
 
-/**
- * Gate evaluator abstract class
- * Gate only determines pass/fail
- */
+/** Gate evaluator abstract class Gate only determines pass/fail */
 export abstract class GateEvaluator extends BaseEvaluator {
-  readonly phase: Phase = 'gate';
+  readonly phase: Phase = "gate";
 
-  /**
-   * Check gate pass status
-   */
+  /** Check gate pass status */
   abstract checkGate(context: EvaluationContext): Promise<{
     passed: boolean;
     issues: Issue[];
@@ -86,10 +75,12 @@ export abstract class GateEvaluator extends BaseEvaluator {
   }>;
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
-    const { result, durationMs } = await this.measureTime(() => this.checkGate(context));
+    const { result, durationMs } = await this.measureTime(() =>
+      this.checkGate(context),
+    );
 
     return {
-      phase: 'gate',
+      phase: "gate",
       passed: result.passed,
       score: result.passed ? 100 : 0,
       maxScore: 100,

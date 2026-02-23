@@ -2,14 +2,14 @@ import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
+  AutoBeAnalyzeWriteAllSectionReviewEvent,
+  AutoBeAnalyzeWriteAllUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteModuleReviewEvent,
-  AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteSectionReviewEvent,
-  AutoBeAnalyzeWriteAllUnitReviewEvent,
-  AutoBeAnalyzeWriteAllSectionReviewEvent,
+  AutoBeAnalyzeWriteUnitEvent,
+  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -172,25 +172,28 @@ export interface IAutoBeRpcListener {
   analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
-   * Optional handler for module section generation events (V2 hierarchical writing).
+   * Optional handler for module section generation events (V2 hierarchical
+   * writing).
    *
-   * Called when the hierarchical writing agent generates module section structure
-   * including document title, summary, and module section outlines.
+   * Called when the hierarchical writing agent generates module section
+   * structure including document title, summary, and module section outlines.
    */
   analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for module section review events (V2 hierarchical writing).
+   * Optional handler for module section review events (V2 hierarchical
+   * writing).
    *
-   * Called when the module section structure is reviewed and validated
-   * before proceeding to unit section generation.
+   * Called when the module section structure is reviewed and validated before
+   * proceeding to unit section generation.
    */
   analyzeWriteModuleReview?(
     event: AutoBeAnalyzeWriteModuleReviewEvent,
   ): Promise<void>;
 
   /**
-   * Optional handler for unit section generation events (V2 hierarchical writing).
+   * Optional handler for unit section generation events (V2 hierarchical
+   * writing).
    *
    * Called when the hierarchical writing agent generates unit section content
    * for a specific module section.
@@ -200,15 +203,16 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for unit section review events (V2 hierarchical writing).
    *
-   * Called when the unit section content is reviewed and validated
-   * before proceeding to section section generation.
+   * Called when the unit section content is reviewed and validated before
+   * proceeding to section section generation.
    */
   analyzeWriteUnitReview?(
     event: AutoBeAnalyzeWriteUnitReviewEvent,
   ): Promise<void>;
 
   /**
-   * Optional handler for section section generation events (V2 hierarchical writing).
+   * Optional handler for section section generation events (V2 hierarchical
+   * writing).
    *
    * Called when the hierarchical writing agent generates detailed section
    * content with EARS-formatted requirements.
@@ -218,8 +222,8 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for section review events (V2 hierarchical writing).
    *
-   * Called when the section content is reviewed for quality assurance
-   * before final document assembly.
+   * Called when the section content is reviewed for quality assurance before
+   * final document assembly.
    */
   analyzeWriteSectionReview?(
     event: AutoBeAnalyzeWriteSectionReviewEvent,
@@ -238,8 +242,8 @@ export interface IAutoBeRpcListener {
   /**
    * Optional handler for batch section review events (V2 hierarchical writing).
    *
-   * Called when ALL section sections for a file are reviewed in a single LLM call,
-   * providing holistic validation of the entire file's detailed content.
+   * Called when ALL section sections for a file are reviewed in a single LLM
+   * call, providing holistic validation of the entire file's detailed content.
    */
   analyzeWriteAllSectionReview?(
     event: AutoBeAnalyzeWriteAllSectionReviewEvent,

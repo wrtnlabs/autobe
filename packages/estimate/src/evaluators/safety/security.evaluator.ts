@@ -1,19 +1,45 @@
-import * as fs from 'fs';
-import { BaseEvaluator } from '../base';
-import type { EvaluationContext, PhaseResult, Issue } from '../../types';
-import { createIssue } from '../../types';
+import * as fs from "fs";
+
+import type { EvaluationContext, Issue, PhaseResult } from "../../types";
+import { createIssue } from "../../types";
+import { BaseEvaluator } from "../base";
 
 export class SecurityEvaluator extends BaseEvaluator {
-  readonly name = 'SecurityEvaluator';
-  readonly phase = 'safety' as const;
-  readonly description = 'Checks for security vulnerabilities';
+  readonly name = "SecurityEvaluator";
+  readonly phase = "safety" as const;
+  readonly description = "Checks for security vulnerabilities";
 
   private readonly PATTERNS = [
-    { pattern: /password\s*[=:]\s*['`][^'"`]+['"`]/gi, code: 'S001', message: 'Hardcoded password detected', severity: 'critical' as const },
-    { pattern: /api[_-]?key\s*[=:]\s*['`][^'"`]+['"`]/gi, code: 'S002', message: 'Hardcoded API key detected', severity: 'critical' as const },
-    { pattern: /secret\s*[=:]\s*['`][^'"`]+['"`]/gi, code: 'S003', message: 'Hardcoded secret detected', severity: 'critical' as const },
-    { pattern: /\beval\s*\(/gi, code: 'S004', message: 'Use of eval() is dangerous', severity: 'critical' as const },
-    { pattern: /\.innerHTML\s*=/gi, code: 'S005', message: 'innerHTML assignment may lead to XSS', severity: 'warning' as const },
+    {
+      pattern: /password\s*[=:]\s*['`][^'"`]+['"`]/gi,
+      code: "S001",
+      message: "Hardcoded password detected",
+      severity: "critical" as const,
+    },
+    {
+      pattern: /api[_-]?key\s*[=:]\s*['`][^'"`]+['"`]/gi,
+      code: "S002",
+      message: "Hardcoded API key detected",
+      severity: "critical" as const,
+    },
+    {
+      pattern: /secret\s*[=:]\s*['`][^'"`]+['"`]/gi,
+      code: "S003",
+      message: "Hardcoded secret detected",
+      severity: "critical" as const,
+    },
+    {
+      pattern: /\beval\s*\(/gi,
+      code: "S004",
+      message: "Use of eval() is dangerous",
+      severity: "critical" as const,
+    },
+    {
+      pattern: /\.innerHTML\s*=/gi,
+      code: "S005",
+      message: "innerHTML assignment may lead to XSS",
+      severity: "warning" as const,
+    },
   ];
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
@@ -23,17 +49,17 @@ export class SecurityEvaluator extends BaseEvaluator {
       ...context.files.controllers,
       ...context.files.providers,
       ...context.files.structures,
-    ].filter(filePath => !this.isTestFile(filePath));
+    ].filter((filePath) => !this.isTestFile(filePath));
 
     const results = await Promise.all(
-      filesToCheck.map(filePath => this.analyzeFile(filePath))
+      filesToCheck.map((filePath) => this.analyzeFile(filePath)),
     );
 
-    const issues = results.flatMap(r => r);
+    const issues = results.flatMap((r) => r);
     const score = this.calculateScore(issues);
 
     return {
-      phase: 'safety',
+      phase: "safety",
       passed: true,
       score,
       maxScore: 100,
@@ -49,8 +75,8 @@ export class SecurityEvaluator extends BaseEvaluator {
 
   private async analyzeFile(filePath: string): Promise<Issue[]> {
     try {
-      const content = await fs.promises.readFile(filePath, 'utf-8');
-      const lines = content.split('\n');
+      const content = await fs.promises.readFile(filePath, "utf-8");
+      const lines = content.split("\n");
       const issues: Issue[] = [];
 
       for (let i = 0; i < lines.length; i++) {
@@ -58,13 +84,15 @@ export class SecurityEvaluator extends BaseEvaluator {
         for (const { pattern, code, message, severity } of this.PATTERNS) {
           pattern.lastIndex = 0;
           if (pattern.test(line)) {
-            issues.push(createIssue({
-              severity,
-              category: 'security',
-              code,
-              message,
-              location: { file: filePath, line: i + 1 },
-            }));
+            issues.push(
+              createIssue({
+                severity,
+                category: "security",
+                code,
+                message,
+                location: { file: filePath, line: i + 1 },
+              }),
+            );
           }
         }
       }
@@ -76,9 +104,11 @@ export class SecurityEvaluator extends BaseEvaluator {
   }
 
   private isTestFile(filePath: string): boolean {
-    return filePath.includes('/test/') ||
-           filePath.includes('.test.') ||
-           filePath.includes('.spec.') ||
-           filePath.includes('test_');
+    return (
+      filePath.includes("/test/") ||
+      filePath.includes(".test.") ||
+      filePath.includes(".spec.") ||
+      filePath.includes("test_")
+    );
   }
 }

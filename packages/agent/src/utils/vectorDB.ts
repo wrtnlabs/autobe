@@ -1,10 +1,8 @@
-/**
- * @author juntak
- */
+/** @author juntak */
 import { AutoBeAnalyzeFile } from "@autobe/interface";
+import { createHash } from "node:crypto";
 
 import { EmbeddingProvider } from "./EmbeddingProvider";
-import { createHash } from "node:crypto";
 
 export interface RequirementSection {
   filename: `${string}.md`;
@@ -52,7 +50,10 @@ function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 // Parse
-function parseByLevel(file: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>, level: 2 | 3): RequirementSection[] {
+function parseByLevel(
+  file: Pick<AutoBeAnalyzeFile, "filename" | "content">,
+  level: 2 | 3,
+): RequirementSection[] {
   const lines = file.content.split("\n");
   const re = level === 3 ? /^###\s+/ : /^##\s+/;
   const sections: RequirementSection[] = [];
@@ -84,11 +85,11 @@ function parseByLevel(file: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>, lev
 
 function parseByH3(
   section: RequirementSection,
-  maxLength: number = 1000
+  maxLength: number = 1000,
 ): RequirementSection[] {
   if (section.content.length <= maxLength) return [section];
 
-  const fileLike: Pick<AutoBeAnalyzeFile, 'filename' | 'content'> = {
+  const fileLike: Pick<AutoBeAnalyzeFile, "filename" | "content"> = {
     filename: section.filename,
     content: section.content,
   };
@@ -104,8 +105,8 @@ function parseByH3(
           index: section.index * 1000 + i,
           level: 3,
         },
-        maxLength
-      )
+        maxLength,
+      ),
     );
   }
 
@@ -129,14 +130,13 @@ function parseByH3(
   return forcedChunks;
 }
 
-
 // BM25
 function tokenize(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[`"'.,:;!?()[\]{}<>]/g, " ") 
-    .split(/\s+/) 
-    .filter((t) => t.length >= 2); 
+    .replace(/[`"'.,:;!?()[\]{}<>]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 2);
 }
 
 function buildTf(tokens: string[]): Map<string, number> {
@@ -150,7 +150,7 @@ function buildDf(indexDocs: { tokens: string[] }[]): Map<string, number> {
   for (const d of indexDocs) {
     const uniq = new Set(d.tokens);
     for (const term of uniq) df.set(term, (df.get(term) ?? 0) + 1);
-  } 
+  }
   return df;
 }
 
@@ -160,7 +160,7 @@ function bm25Score(
   docLen: number,
   stats: Bm25Stats,
   k1: number = 1.5,
-  b: number = 0.75
+  b: number = 0.75,
 ): number {
   let score = 0;
   const uq = new Set(queryTokens);
@@ -171,7 +171,7 @@ function bm25Score(
     const tf = docTf.get(term) ?? 0;
     if (tf === 0) continue;
     const denom = tf + k1 * (1 - b + b * (docLen / stats.avgdl));
-    score += idf * ((tf * (k1 + 1)) / denom); 
+    score += idf * ((tf * (k1 + 1)) / denom);
   }
   return score;
 }
@@ -186,7 +186,7 @@ function minMaxNormalize(values: number[]): number[] {
 
 export async function buildVectorIndexHybrid(
   embedder: EmbeddingProvider,
-  sections: RequirementSection[]
+  sections: RequirementSection[],
 ): Promise<{ index: VectorIndexItem[]; bm25: Bm25Stats }> {
   const docs = sections.map((s) => {
     const text = `${s.heading}\n${s.content}`;
@@ -194,9 +194,9 @@ export async function buildVectorIndexHybrid(
     const tf = buildTf(tokens);
     return {
       id: `${s.filename}:${s.index}`,
-      text, 
+      text,
       section: s,
-      tokens, 
+      tokens,
       tf,
       docLen: tokens.length,
     };
@@ -221,13 +221,12 @@ export async function buildVectorIndexHybrid(
 }
 
 export function preprocessFiles(
-  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
-  h3MaxLength: number = 1000
+  files: Pick<AutoBeAnalyzeFile, "filename" | "content">[],
+  h3MaxLength: number = 1000,
 ): RequirementSection[] {
   const h2Sections = files.flatMap((f) => parseByLevel(f, 2));
   return h2Sections.flatMap((s) => parseByH3(s, h3MaxLength));
 }
-
 
 function clamp(x: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, x));
@@ -265,11 +264,10 @@ export async function retrieveTopKAdaptiveHybrid(
   kMax?: number,
   wVec: number = 0.6,
   wBm25: number = 0.4,
-  debug: boolean = false
+  debug: boolean = false,
 ): Promise<RetrievalHit[]> {
   const N = index.length;
-  const effectiveKMax =
-    kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
+  const effectiveKMax = kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
 
   const qVecs = await embedder.embed([queryText]);
   const qVec = qVecs[0];
@@ -279,7 +277,7 @@ export async function retrieveTopKAdaptiveHybrid(
 
   const vecScores = index.map((item) => cosineSimilarity(qVec, item.vector));
   const bmScores = index.map((item) =>
-    bm25Score(qTokens, item.tf, item.docLen, bm25)
+    bm25Score(qTokens, item.tf, item.docLen, bm25),
   );
 
   const vecNorm = minMaxNormalize(vecScores);
@@ -303,14 +301,16 @@ export async function retrieveTopKAdaptiveHybrid(
   const p50 = percentile(sorted, 50);
   const gap = p90 - p50;
   const GAP_MIN = 0.02;
-  const GAP_MAX = 0.50;
+  const GAP_MAX = 0.5;
   const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
   const K = Math.round(kMin + (1 - sharpness) * (effectiveKMax - kMin));
 
   if (debug) {
     console.log(`[DYNAMIC-K-DEBUG]`);
     console.log(`  kMin=${kMin}, kMax=${effectiveKMax}, computedK=${K}`);
-    console.log(`  p90=${p90.toFixed(4)}, p50=${p50.toFixed(4)}, gap=${gap.toFixed(4)}`);
+    console.log(
+      `  p90=${p90.toFixed(4)}, p50=${p50.toFixed(4)}, gap=${gap.toFixed(4)}`,
+    );
     console.log(`  sharpness=${sharpness.toFixed(4)} (0=flat, 1=sharp)`);
     console.log(`  totalHits=${hits.length}`);
   }
@@ -320,16 +320,16 @@ export async function retrieveTopKAdaptiveHybrid(
 
 // Extended version that returns all hits for OOD detection
 export interface RetrievalResultEx {
-  topK: RetrievalHit[];       // Sliced top-K results
-  all: RetrievalHit[];        // All hits sorted by score (before slice)
-  K: number;                  // Computed K value
+  topK: RetrievalHit[]; // Sliced top-K results
+  all: RetrievalHit[]; // All hits sorted by score (before slice)
+  K: number; // Computed K value
   stats: {
     p90: number;
     p50: number;
     gap: number;
     sharpness: number;
-    vecRawMax: number;        // Raw cosine similarity max (before normalization)
-    bm25RawMax: number;       // Raw BM25 score max (before normalization)
+    vecRawMax: number; // Raw cosine similarity max (before normalization)
+    bm25RawMax: number; // Raw BM25 score max (before normalization)
   };
 }
 
@@ -344,8 +344,7 @@ export async function retrieveTopKAdaptiveHybridEx(
   wBm25: number = 0.4,
 ): Promise<RetrievalResultEx> {
   const N = index.length;
-  const effectiveKMax =
-    kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
+  const effectiveKMax = kMax ?? Math.min(12, Math.max(8, Math.ceil(0.05 * N)));
 
   const qVecs = await embedder.embed([queryText]);
   const qVec = qVecs[0];
@@ -354,7 +353,14 @@ export async function retrieveTopKAdaptiveHybridEx(
       topK: [],
       all: [],
       K: 0,
-      stats: { p90: 0, p50: 0, gap: 0, sharpness: 0, vecRawMax: 0, bm25RawMax: 0 },
+      stats: {
+        p90: 0,
+        p50: 0,
+        gap: 0,
+        sharpness: 0,
+        vecRawMax: 0,
+        bm25RawMax: 0,
+      },
     };
   }
 
@@ -362,7 +368,7 @@ export async function retrieveTopKAdaptiveHybridEx(
 
   const vecScores = index.map((item) => cosineSimilarity(qVec, item.vector));
   const bmScores = index.map((item) =>
-    bm25Score(qTokens, item.tf, item.docLen, bm25)
+    bm25Score(qTokens, item.tf, item.docLen, bm25),
   );
 
   // Raw max values for OOD detection
@@ -388,7 +394,7 @@ export async function retrieveTopKAdaptiveHybridEx(
   const p50 = percentile(sorted, 50);
   const gap = p90 - p50;
   const GAP_MIN = 0.02;
-  const GAP_MAX = 0.50;
+  const GAP_MAX = 0.5;
   const sharpness = clamp((gap - GAP_MIN) / (GAP_MAX - GAP_MIN), 0, 1);
   const K = Math.round(kMin + (1 - sharpness) * (effectiveKMax - kMin));
 
@@ -414,7 +420,9 @@ type BuildResult = { index: VectorIndexItem[]; bm25: Bm25Stats };
 const _indexCache = new Map<string, CachedRetrievalIndex>();
 const _buildingPromises = new Map<string, Promise<BuildResult>>();
 
-function computeFilesHash(files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[]): string {
+function computeFilesHash(
+  files: Pick<AutoBeAnalyzeFile, "filename" | "content">[],
+): string {
   const combinedPayload = files
     .map((f) => `file:${f.filename}\ncontent:${f.content}`)
     .sort()
@@ -425,8 +433,8 @@ function computeFilesHash(files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>
 
 export async function getOrBuildIndex(
   embedder: EmbeddingProvider,
-  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
-  h3MaxLength: number = 1000
+  files: Pick<AutoBeAnalyzeFile, "filename" | "content">[],
+  h3MaxLength: number = 1000,
 ): Promise<BuildResult> {
   const hash = computeFilesHash(files);
 
@@ -443,7 +451,10 @@ export async function getOrBuildIndex(
   const buildPromise = (async (): Promise<BuildResult> => {
     const sections = preprocessFiles(files, h3MaxLength);
     if (sections.length === 0) {
-      return { index: [], bm25: { N: 0, avgdl: 0, df: new Map<string, number>() } };
+      return {
+        index: [],
+        bm25: { N: 0, avgdl: 0, df: new Map<string, number>() },
+      };
     }
 
     const { index, bm25 } = await buildVectorIndexHybrid(embedder, sections);
@@ -492,7 +503,8 @@ export function hitsToAnalysisFiles(hits: RetrievalHit[]): RagAnalysisFile[] {
       .map((h) => `${h.section.heading}\n${h.section.content.trim()}`)
       .join("\n\n");
 
-    const avgScore = fileHits.reduce((sum, h) => sum + h.score, 0) / fileHits.length;
+    const avgScore =
+      fileHits.reduce((sum, h) => sum + h.score, 0) / fileHits.length;
 
     result.push({
       filename: filename as `${string}.md`,
@@ -515,9 +527,9 @@ export interface RetrieveAnalysisFilesOptions {
 
 export async function retrieveRelevantAnalysisFiles(
   embedder: EmbeddingProvider,
-  files: Pick<AutoBeAnalyzeFile, 'filename' | 'content'>[],
+  files: Pick<AutoBeAnalyzeFile, "filename" | "content">[],
   query: string,
-  options?: RetrieveAnalysisFilesOptions
+  options?: RetrieveAnalysisFilesOptions,
 ): Promise<RagAnalysisFile[]> {
   const log = options?.log ?? false;
   const prefix = options?.logPrefix ? `[${options.logPrefix}]` : "";
@@ -544,7 +556,7 @@ export async function retrieveRelevantAnalysisFiles(
     const { index, bm25 } = await getOrBuildIndex(
       embedder,
       files,
-      options?.h3MaxLength ?? 1000
+      options?.h3MaxLength ?? 1000,
     );
 
     if (index.length === 0) {
@@ -564,7 +576,7 @@ export async function retrieveRelevantAnalysisFiles(
       index,
       bm25,
       kMin,
-      kMax
+      kMax,
     );
 
     const results = hitsToAnalysisFiles(hits);
@@ -575,9 +587,10 @@ export async function retrieveRelevantAnalysisFiles(
         (sum, f) => sum + (f.content?.length ?? 0),
         0,
       );
-      const reduction = inputTotalChars > 0
-        ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
-        : "0";
+      const reduction =
+        inputTotalChars > 0
+          ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
+          : "0";
       console.log(
         `[RAG]${prefix}[RESULT] hits=${results.length} totalChars=${resultTotalChars} reduction=${reduction}%`,
       );
@@ -586,7 +599,10 @@ export async function retrieveRelevantAnalysisFiles(
     return results;
   } catch (error) {
     if (log) {
-      console.error(`[RAG]${prefix}[ERROR] retrieveRelevantAnalysisFiles failed:`, error);
+      console.error(
+        `[RAG]${prefix}[ERROR] retrieveRelevantAnalysisFiles failed:`,
+        error,
+      );
       console.log(`[RAG]${prefix}[RESULT] hits=0 totalChars=0 (error)`);
     }
     return [];
@@ -604,6 +620,7 @@ export function clearIndexCache(): void {
 
 /**
  * Analysis context mode for RAG control.
+ *
  * - "TOPK": Use RAG retrieval (calls retrieveRelevantAnalysisFiles)
  * - "FULL": Use all analysis files without filtering (no RAG call)
  * - "NONE": Use no analysis files (no RAG call)
@@ -623,6 +640,7 @@ export interface BuildAnalysisContextOptions {
  * Build analysis context files based on the specified mode.
  *
  * This is the central function for RAG policy enforcement.
+ *
  * - NONE: Returns [] without calling retrieveRelevantAnalysisFiles
  * - FULL: Returns all files without calling retrieveRelevantAnalysisFiles
  * - TOPK: Calls retrieveRelevantAnalysisFiles for filtered results
@@ -630,7 +648,8 @@ export interface BuildAnalysisContextOptions {
  * The function uses generics to preserve the input file type for FULL mode,
  * while TOPK mode returns RagAnalysisFile[].
  *
- * @param embedder - Embedding provider for vector search (only used in TOPK mode)
+ * @param embedder - Embedding provider for vector search (only used in TOPK
+ *   mode)
  * @param files - Source analysis files (any type with filename and content)
  * @param query - Query text for retrieval (only used in TOPK mode)
  * @param mode - Analysis context mode
@@ -638,27 +657,25 @@ export interface BuildAnalysisContextOptions {
  * @returns Filtered or full analysis files based on mode
  */
 export async function buildAnalysisContextFiles<
-  T extends Pick<AutoBeAnalyzeFile, 'filename' | 'content'>
+  T extends Pick<AutoBeAnalyzeFile, "filename" | "content">,
 >(
   embedder: EmbeddingProvider,
   files: T[],
   query: string,
   mode: AnalysisContextMode,
-  options?: BuildAnalysisContextOptions
+  options?: BuildAnalysisContextOptions,
 ): Promise<T[]> {
   const log = options?.log ?? false;
   const prefix = options?.logPrefix ? `[${options.logPrefix}]` : "";
 
   const inputTotalChars = files.reduce(
     (sum, f) => sum + (f.content?.length ?? 0),
-    0
+    0,
   );
 
   if (mode === "NONE") {
     if (log) {
-      console.log(
-        `[RAG-CONTEXT]${prefix} mode=NONE files=0 chars=0 (skipped)`
-      );
+      console.log(`[RAG-CONTEXT]${prefix} mode=NONE files=0 chars=0 (skipped)`);
     }
     return [];
   }
@@ -666,7 +683,7 @@ export async function buildAnalysisContextFiles<
   if (mode === "FULL") {
     if (log) {
       console.log(
-        `[RAG-CONTEXT]${prefix} mode=FULL files=${files.length} chars=${inputTotalChars} (pass-through)`
+        `[RAG-CONTEXT]${prefix} mode=FULL files=${files.length} chars=${inputTotalChars} (pass-through)`,
       );
     }
     return files;
@@ -685,13 +702,14 @@ export async function buildAnalysisContextFiles<
   if (log) {
     const resultTotalChars = result.reduce(
       (sum, f) => sum + (f.content?.length ?? 0),
-      0
+      0,
     );
-    const reduction = inputTotalChars > 0
-      ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
-      : "0";
+    const reduction =
+      inputTotalChars > 0
+        ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
+        : "0";
     console.log(
-      `[RAG-CONTEXT]${prefix} mode=TOPK files=${result.length} chars=${resultTotalChars} reduction=${reduction}%`
+      `[RAG-CONTEXT]${prefix} mode=TOPK files=${result.length} chars=${resultTotalChars} reduction=${reduction}%`,
     );
   }
 

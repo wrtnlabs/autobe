@@ -184,7 +184,7 @@ async function process(
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-       ...transformTestScenarioHistory({
+      ...transformTestScenarioHistory({
         state: ctx.state(),
         operation: props.operation,
         instruction: props.instruction,
