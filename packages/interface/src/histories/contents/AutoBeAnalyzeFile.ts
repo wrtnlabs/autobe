@@ -1,3 +1,5 @@
+import { AutoBeAnalyzeModule } from "./AutoBeAnalyzeModule";
+
 /**
  * Interface representing a planning document file structure used by the Analyze
  * Agent in the AutoBE system.
@@ -49,6 +51,23 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * outside the document content.
    */
   content: string;
+
+  /**
+   * Structured representation of the document's hierarchical content.
+   *
+   * This property preserves the three-level hierarchy (Module → Unit → Section)
+   * that would otherwise be lost when content is assembled into a flat markdown
+   * string. By maintaining this structure, the system enables:
+   *
+   * - Partial modification of specific sections without full regeneration
+   * - Structural search and filtering of document content
+   * - Hierarchical UI representation with collapsible sections
+   * - Easier debugging by tracking which module/unit/section has issues
+   *
+   * The `content` property contains the assembled markdown for compatibility,
+   * while this `module` property provides programmatic access to the structure.
+   */
+  module: AutoBeAnalyzeModule;
 }
 export namespace AutoBeAnalyzeFile {
   export interface Scenario {

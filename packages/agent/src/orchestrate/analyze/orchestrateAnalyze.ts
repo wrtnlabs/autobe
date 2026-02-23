@@ -1,6 +1,7 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
+  AutoBeAnalyzeModule,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteAllSectionReviewEvent,
   AutoBeAnalyzeWriteAllUnitReviewEvent,
@@ -25,6 +26,11 @@ import { orchestrateAnalyzeWriteModuleReview } from "./orchestrateAnalyzeWriteMo
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
+
+interface IAnalyzeFileResult {
+  content: string;
+  module: AutoBeAnalyzeModule;
+}
 
 interface IUnitReviewResult {
   allApproved: boolean;
@@ -60,7 +66,7 @@ export const orchestrateAnalyze = async (
   else ctx.dispatch(scenario);
 
   // Process each file with hierarchical write flow
-  // Each agent type gets its own progress object (Interface pattern)
+  // Each agent type gets its own progress object
   const moduleWriteProgress: AutoBeProgressEventBase = {
     total: scenario.files.length,
     completed: 0,
@@ -89,7 +95,7 @@ export const orchestrateAnalyze = async (
   const files: AutoBeAnalyzeFile[] = await executeCachedBatch(
     ctx,
     scenario.files.map((file) => async (promptCacheKey) => {
-      const content: string = await forceRetry(() =>
+      const result: IAnalyzeFileResult = await forceRetry(() =>
         processFileHierarchical(ctx, {
           scenario,
           file,
@@ -104,7 +110,8 @@ export const orchestrateAnalyze = async (
       );
       return {
         ...file,
-        content,
+        content: result.content,
+        module: result.module,
       };
     }),
   );
@@ -137,7 +144,7 @@ async function processFileHierarchical(
     sectionWriteProgress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
-): Promise<string> {
+): Promise<IAnalyzeFileResult> {
   // Consecutive error tracking for fast-fail on repeated failures
   let consecutiveErrors: number = 0;
 
@@ -303,12 +310,19 @@ async function processFileHierarchical(
     );
   }
 
-  // Step 4: Assemble final content
-  return AutoBeAnalyzeProgrammer.assembleContent(
-    moduleResult,
-    unitResults,
-    sectionResults,
-  );
+  // Step 4: Assemble final content and module structure
+  return {
+    content: AutoBeAnalyzeProgrammer.assembleContent(
+      moduleResult,
+      unitResults,
+      sectionResults,
+    ),
+    module: AutoBeAnalyzeProgrammer.assembleModule(
+      moduleResult,
+      unitResults,
+      sectionResults,
+    ),
+  };
 }
 
 /**

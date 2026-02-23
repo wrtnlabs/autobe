@@ -1,4 +1,7 @@
 import {
+  AutoBeAnalyzeModule,
+  AutoBeAnalyzeSection,
+  AutoBeAnalyzeUnit,
   AutoBeAnalyzeWriteAllSectionReviewEvent,
   AutoBeAnalyzeWriteAllUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
@@ -180,5 +183,76 @@ export namespace AutoBeAnalyzeProgrammer {
     }
 
     return lines.join("\n").trim();
+  };
+
+  /**
+   * Assemble structured module data from events.
+   *
+   * This method builds the hierarchical AutoBeAnalyzeModule structure from
+   * the module, unit, and section events, preserving the three-level hierarchy
+   * that would otherwise be lost when assembling into flat markdown.
+   */
+  export const assembleModule = (
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent,
+    unitEvents: AutoBeAnalyzeWriteUnitEvent[],
+    sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
+  ): AutoBeAnalyzeModule => {
+    const modules: AutoBeAnalyzeModule.IModule[] = [];
+
+    for (
+      let moduleIndex: number = 0;
+      moduleIndex < moduleEvent.moduleSections.length;
+      moduleIndex++
+    ) {
+      const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection =
+        moduleEvent.moduleSections[moduleIndex]!;
+      const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
+        unitEvents[moduleIndex];
+      const sectionEventsForModule:
+        | AutoBeAnalyzeWriteSectionEvent[]
+        | undefined = sectionResults[moduleIndex];
+
+      const units: AutoBeAnalyzeUnit[] = [];
+
+      if (unitEvent) {
+        for (
+          let unitIndex: number = 0;
+          unitIndex < unitEvent.unitSections.length;
+          unitIndex++
+        ) {
+          const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection =
+            unitEvent.unitSections[unitIndex]!;
+          const sectionEvent: AutoBeAnalyzeWriteSectionEvent | undefined =
+            sectionEventsForModule?.[unitIndex];
+
+          const sections: AutoBeAnalyzeSection[] =
+            sectionEvent?.sectionSections.map((s) => ({
+              title: s.title,
+              content: s.content,
+            })) ?? [];
+
+          units.push({
+            title: unitSection.title,
+            purpose: unitSection.purpose,
+            content: unitSection.content,
+            keywords: unitSection.keywords,
+            sections,
+          });
+        }
+      }
+
+      modules.push({
+        title: moduleSection.title,
+        purpose: moduleSection.purpose,
+        content: moduleSection.content,
+        units,
+      });
+    }
+
+    return {
+      title: moduleEvent.title,
+      summary: moduleEvent.summary,
+      modules,
+    };
   };
 }
