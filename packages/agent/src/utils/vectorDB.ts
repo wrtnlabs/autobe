@@ -460,7 +460,16 @@ export async function getOrBuildIndex(
   }
 }
 
-export interface RagAnalysisFile extends AutoBeAnalyzeFile {
+/**
+ * Simplified analysis file type for RAG operations.
+ *
+ * This type is used for vector search retrieval results where the full module
+ * structure is not needed. It only includes the essential fields for RAG:
+ * filename, content, and a reason explaining why this file was retrieved.
+ */
+export interface RagAnalysisFile {
+  filename: `${string}.md`;
+  content: string;
   reason: string;
 }
 
