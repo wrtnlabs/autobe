@@ -19,7 +19,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
-import { buildAnalysisContextFiles } from "../../utils/vectorDB";
+import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";

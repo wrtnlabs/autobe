@@ -14,7 +14,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { buildAnalysisContextFiles } from "../../utils/vectorDB";
+import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaComponentsHistory } from "./histories/transformPrismaComponentsHistory";
 import { AutoBeDatabaseComponentProgrammer } from "./programmers/AutoBeDatabaseComponentProgrammer";

@@ -17,7 +17,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { buildAnalysisContextFiles } from "../../utils/vectorDB";
+import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointWriteApplication } from "./structures/IAutoBeInterfaceEndpointWriteApplication";

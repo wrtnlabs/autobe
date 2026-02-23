@@ -19,7 +19,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { buildAnalysisContextFiles } from "../../utils/vectorDB";
+import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformInterfaceOperationHistory } from "./histories/transformInterfaceOperationHistory";
 import { orchestrateInterfaceOperationReview } from "./orchestrateInterfaceOperationReview";
