@@ -99,7 +99,7 @@ const session = await MyGlobal.prisma.shopping_seller_sessions.create({
 
 | Schema Type | Action |
 |-------------|--------|
-| `DateTime` (NOT NULL) | MUST provide: `expired_at: toISOStringSafe(accessExpires)` |
+| `DateTime` (NOT NULL) | MUST provide: `expired_at: accessExpires.toISOString()` |
 | `DateTime?` (Nullable) | Recommended: provide value. NULL = unlimited session = security risk |
 
 ## 7. JWT Token Generation
@@ -127,8 +127,8 @@ const token = {
     MyGlobal.env.JWT_SECRET_KEY,
     { expiresIn: "7d", issuer: "autobe" }
   ),
-  expired_at: toISOStringSafe(accessExpires),
-  refreshable_until: toISOStringSafe(refreshExpires),
+  expired_at: accessExpires.toISOString(),
+  refreshable_until: refreshExpires.toISOString(),
 };
 ```
 
@@ -200,8 +200,8 @@ export async function postAuthSellerJoin(props: {
       MyGlobal.env.JWT_SECRET_KEY,
       { expiresIn: "7d", issuer: "autobe" }
     ),
-    expired_at: toISOStringSafe(accessExpires),
-    refreshable_until: toISOStringSafe(refreshExpires),
+    expired_at: accessExpires.toISOString(),
+    refreshable_until: refreshExpires.toISOString(),
   };
 
   // 5. Return IAuthorized

@@ -259,8 +259,8 @@ export async function postBbsArticleComments(props: {
   return {
     id: comment.id,
     body: comment.body,
-    created_at: toISOStringSafe(comment.created_at),
-    deleted_at: comment.deleted_at ? toISOStringSafe(comment.deleted_at) : null,
+    created_at: comment.created_at.toISOString(),
+    deleted_at: comment.deleted_at?.toISOString() ?? null,
   };
 }
 ```
@@ -307,7 +307,7 @@ export async function getBbsArticlesById(props: {
       article.articleTags,
       (at) => BbsTagAtSummaryTransformer.transform(at.tag),  // ✅ Neighbor inside join table
     ),
-    created_at: toISOStringSafe(article.created_at),
+    created_at: article.created_at.toISOString(),
   };
 }
 
@@ -431,9 +431,9 @@ bbs_user_id: props.user.id,
 
 | Transformation | Pattern |
 |----------------|---------|
-| Date → String | `toISOStringSafe(record.created_at)` |
+| Date → String | `record.created_at.toISOString()` |
 | Optional field (null → undefined) | `record.field === null ? undefined : record.field` |
-| Nullable field (keep null) | `record.field ? toISOStringSafe(record.field) : null` |
+| Nullable field (keep null) | `record.field?.toISOString() ?? null` |
 | Branded type | `record.id as string & tags.Format<"uuid">` |
 | Nested object | `{ id: record.author.id, ... } satisfies IAuthor.ISummary` |
 
@@ -684,7 +684,7 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Used relation property names (NOT table names or FK columns)
 - [ ] Used `connect` syntax for relations (NOT direct FK assignment)
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
-- [ ] Converted dates with `toISOStringSafe()`
+- [ ] Converted dates with `.toISOString()`
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields
 

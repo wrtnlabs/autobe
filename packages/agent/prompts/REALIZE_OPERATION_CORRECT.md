@@ -62,7 +62,7 @@ where: { name: { contains: term } }  // Use correct field from schema
 | Pattern | Fix |
 |---------|-----|
 | `string \| null` → `string` | `value ?? ""` |
-| `Date` → `string` | `toISOStringSafe(value)` |
+| `Date` → `string` | `value.toISOString()` |
 | `Decimal` → `number` | `Number(value)` |
 
 ### 4.3. Error 2339: "Property does not exist on type"
@@ -192,7 +192,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 |-------|-----------|-------------|
 | 2353 (field doesn't exist) | DELETE the field | Use correct field name |
 | 2322 (null → string) | Add `?? ""` | Check if optional |
-| 2322 (Date → string) | `toISOStringSafe()` | - |
+| 2322 (Date → string) | `.toISOString()` | - |
 | 2339 (property doesn't exist) | Add to select | Check relation |
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |

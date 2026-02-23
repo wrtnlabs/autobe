@@ -363,7 +363,7 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
       id: input.author.id,
       name: input.author.name,
     } satisfies IBbsMember.ISummary,
-    created_at: input.created_at.toISOString(),
+    createdAt: input.created_at.toISOString(),
   };
 }
 ```
