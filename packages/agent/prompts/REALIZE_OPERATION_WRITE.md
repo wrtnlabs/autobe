@@ -72,16 +72,29 @@ import { v4 } from "uuid";
 export async function ...
 ```
 
-## 5. Trilogy Pattern: Collector/Transformer Decision
+## 5. Collector/Transformer Reuse Strategy
 
-### 5.1. Decision Flow
+### 5.1. Core Principle: Maximize Reuse
 
-| Check | Result | Action |
-|-------|--------|--------|
-| POST/CREATE? | Collector EXISTS | Use Pattern A |
-| POST/CREATE? | Collector MISSING | Use Pattern B |
-| GET/READ? | Transformer EXISTS | Use Pattern A |
-| GET/READ? | Transformer MISSING | Use Pattern B |
+Mutation (write) and response (read) are **independent concerns**. Decide each side separately:
+
+| Concern | Available? | Use it |
+|---------|-----------|--------|
+| **Write side** (create/update data) | Collector EXISTS | `Collector.collect()` for `data` |
+| **Write side** | Collector MISSING | Manual `data: { ... }` |
+| **Read side** (build response) | Transformer EXISTS | `Transformer.select()` + `Transformer.transform()` |
+| **Read side** | Transformer MISSING | Manual `select` + manual object construction |
+
+This produces four combinations:
+
+| Combination | Example |
+|-------------|---------|
+| Collector + Transformer | POST: `create({ data: Collector.collect(), ...Transformer.select() })` → `Transformer.transform()` |
+| Collector only | POST: `create({ data: Collector.collect(), select: { ... } })` → manual transform |
+| Transformer only | PUT: manual `update({ data: { ... } })` → `findUniqueOrThrow({ ...Transformer.select() })` → `Transformer.transform()` |
+| Neither | Full manual implementation (Pattern B) |
+
+**Always request available Collectors/Transformers via `getRealizeCollectors`/`getRealizeTransformers` before writing code.**
 
 ### 5.2. Transformer Naming Algorithm
 
@@ -98,9 +111,9 @@ For nested DTO types (e.g., `IShoppingSale.ISummary`):
 | `IShoppingSale.ISummary` | `ShoppingSaleAtSummaryTransformer` |
 | `IBbsArticleComment.IInvert` | `BbsArticleCommentAtInvertTransformer` |
 
-## 6. Pattern A: WITH Collector/Transformer
+## 6. Reuse Patterns
 
-### 6.1. CREATE Operation
+### 6.1. Both Collector + Transformer (CREATE)
 
 ```typescript
 export async function postShoppingSales(props: {
@@ -119,7 +132,7 @@ export async function postShoppingSales(props: {
 }
 ```
 
-### 6.2. READ Operation
+### 6.2. Transformer Only (READ)
 
 ```typescript
 export async function getShoppingSalesById(props: {
@@ -133,7 +146,7 @@ export async function getShoppingSalesById(props: {
 }
 ```
 
-### 6.3. LIST/PAGINATION Operation
+### 6.3. Transformer Only (LIST/PAGINATION)
 
 ```typescript
 export async function patchShoppingSales(props: {
@@ -167,6 +180,126 @@ export async function patchShoppingSales(props: {
 }
 ```
 
+### 6.4. Transformer Only (UPDATE — Manual Mutation)
+
+When no Collector exists, write the mutation manually — but reuse the Transformer for the response.
+
+```typescript
+export async function putShoppingSalesById(props: {
+  customer: ActorPayload;
+  saleId: string & tags.Format<"uuid">;
+  body: IShoppingSale.IUpdate;
+}): Promise<IShoppingSale> {
+  const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
+    where: { id: props.saleId },
+    select: { id: true, shopping_customer_id: true },
+  });
+  if (sale.shopping_customer_id !== props.customer.id) {
+    throw new HttpException("Forbidden", 403);
+  }
+
+  await MyGlobal.prisma.shopping_sales.update({
+    where: { id: props.saleId },
+    data: {
+      ...(props.body.title !== undefined && { title: props.body.title }),
+      ...(props.body.content !== undefined && { content: props.body.content }),
+      updated_at: new Date(),
+    },
+  });
+
+  const updated = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
+    where: { id: props.saleId },
+    ...ShoppingSaleTransformer.select(),
+  });
+  return await ShoppingSaleTransformer.transform(updated);
+}
+```
+
+### 6.5. Collector Only (CREATE — Manual Response)
+
+When a Collector exists but no Transformer matches the return type, use the Collector for data and build the response manually.
+
+```typescript
+export async function postBbsArticleComments(props: {
+  user: UserPayload;
+  articleId: string & tags.Format<"uuid">;
+  body: IBbsArticleComment.ICreate;
+}): Promise<IBbsArticleComment> {
+  const comment = await MyGlobal.prisma.bbs_article_comments.create({
+    data: await BbsArticleCommentCollector.collect({
+      body: props.body,
+      user: props.user,
+      articleId: props.articleId,
+    }),
+    select: {
+      id: true,
+      body: true,
+      created_at: true,
+      deleted_at: true,
+    }
+  });
+
+  return {
+    id: comment.id,
+    body: comment.body,
+    created_at: toISOStringSafe(comment.created_at),
+    deleted_at: comment.deleted_at ? toISOStringSafe(comment.deleted_at) : null,
+  };
+}
+```
+
+### 6.6. Inline Neighbor Reuse in Manual Code
+
+Even in fully manual code (Pattern B), check if a Transformer exists for any **nested relation** in the response. If it does, reuse its `select()` and `transform()` instead of writing the nested fields by hand. This applies to **every depth** — including inside M:N join tables and wrapper tables.
+
+```typescript
+// ✅ CORRECT - Reuses neighbors at multiple depths
+export async function getBbsArticlesById(props: {
+  articleId: string & tags.Format<"uuid">;
+}): Promise<IBbsArticle> {
+  const article = await MyGlobal.prisma.bbs_articles.findUniqueOrThrow({
+    where: { id: props.articleId },
+    select: {
+      id: true,
+      title: true,
+      body: true,
+      author: BbsUserAtSummaryTransformer.select(),       // ✅ Direct neighbor reuse
+      files: {
+        select: { id: true, url: true, name: true }
+      } satisfies Prisma.bbs_article_filesFindManyArgs,   // No transformer → inline
+      articleTags: {
+        select: {
+          tag: BbsTagAtSummaryTransformer.select(),       // ✅ Neighbor inside inline join table
+        }
+      } satisfies Prisma.bbs_article_tagsFindManyArgs,
+      created_at: true,
+    }
+  });
+
+  return {
+    id: article.id,
+    title: article.title,
+    body: article.body,
+    author: await BbsUserAtSummaryTransformer.transform(article.author),
+    files: article.files.map((f) => ({
+      id: f.id,
+      url: f.url,
+      name: f.name,
+    })),
+    tags: await ArrayUtil.asyncMap(
+      article.articleTags,
+      (at) => BbsTagAtSummaryTransformer.transform(at.tag),  // ✅ Neighbor inside join table
+    ),
+    created_at: toISOStringSafe(article.created_at),
+  };
+}
+
+// ❌ WRONG - Transformer exists but manually writes the same select/transform
+select: {
+  author: { select: { id: true, name: true, email: true } },  // ❌ Duplicating transformer logic
+}
+```
+
 ## 7. Pattern B: WITHOUT Collector/Transformer (Manual)
 
 ### 7.1. Database Schema is Absolute Source of Truth
@@ -177,56 +310,118 @@ export async function patchShoppingSales(props: {
 3. VERIFY relation property names from schema
 4. NEVER fabricate, imagine, or guess
 
-**Key Hints from DTO Schema**:
-- `x-autobe-database-schema`: The DB table this DTO maps to
-- `x-autobe-database-schema-property`: The DB column name for each DTO field
-- `x-autobe-specification`: Implementation guidance for specific fields
+**Key Hints from DTO Schema** — each DTO property has JSDoc annotations:
+- `@x-autobe-database-schema`: The DB table this DTO maps to
+- `@x-autobe-database-schema-property`: The DB column or relation name for each DTO field
+- `@x-autobe-specification`: Implementation hints (e.g., "JOIN via foreign key", "Direct mapping", "aggregation logic")
 
-### 7.2. Prisma Select (READ Operations)
+**IMPORTANT**: These specifications are drafts — treat them as **reference hints, not absolute truth**. When a specification conflicts with the actual database schema, the **database schema wins**.
+
+### 7.2. Use Relation Property Names
+
+Given this Prisma schema:
+
+```prisma
+model bbs_article_comments {
+  //----
+  // COLUMNS
+  //----
+  id              String    @id @db.Uuid
+  bbs_article_id  String    @db.Uuid
+  bbs_user_id     String    @db.Uuid
+  body            String
+  created_at      DateTime  @db.Timestamptz
+  deleted_at      DateTime? @db.Timestamptz
+
+  //----
+  // BELONGED RELATIONS
+  //   - format: (propertyKey targetModel constraint)
+  //----
+  article         bbs_articles              @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
+  user            bbs_users                 @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
+
+  //----
+  // HAS RELATIONS
+  //   - format: (propertyKey targetModel)
+  //----
+  files           bbs_article_comment_files[]
+  hits            bbs_article_comment_hits[]
+}
+```
+
+In both `select` and `create`, use the **relation property name** (left side of the model definition), not the referenced table name.
+
+### 7.3. Prisma Select (READ Operations)
 
 ```typescript
-// ✅ CORRECT - Use select with relation names
-const sale = await MyGlobal.prisma.shopping_sales.findUnique({
-  where: { id: props.saleId },
+// ✅ CORRECT - Use select with relation property names + satisfies
+const comment = await MyGlobal.prisma.bbs_article_comments.findUniqueOrThrow({
+  where: { id: props.commentId },
   select: {
     id: true,
-    title: true,
-    price: true,
-    customer: {        // ✅ Relation name
+    body: true,
+    user: {                                          // ✅ Relation name
       select: { id: true, name: true }
-    },
+    } satisfies Prisma.bbs_usersFindManyArgs,
+    files: {                                         // ✅ Relation name
+      select: { id: true, url: true }
+    } satisfies Prisma.bbs_article_comment_filesFindManyArgs,
     created_at: true,
   }
 });
 
 // ❌ WRONG - Using include
-include: { customer: true }  // FORBIDDEN!
+include: { user: true }
+
+// ❌ WRONG - Table name instead of relation property name
+bbs_users: { select: { id: true, name: true } }
 
 // ❌ WRONG - Foreign key as relation
-customer_id: { select: {...} }  // customer_id is scalar, not relation!
+bbs_user_id: { select: {...} }  // bbs_user_id is scalar, not relation!
 ```
 
-### 7.3. Prisma CreateInput (CREATE Operations)
+When a Transformer exists for a nested relation, use it directly instead of inline select:
 
 ```typescript
-// ✅ CORRECT - Use connect for relations
-await MyGlobal.prisma.shopping_sale_reviews.create({
-  data: {
-    id: v4(),
-    content: props.body.content,
-    rating: props.body.rating,
-    sale: { connect: { id: props.saleId } },          // ✅ Relation name
-    customer: { connect: { id: props.customer.id } }, // ✅ Relation name
-    created_at: toISOStringSafe(new Date()),
+// ✅ CORRECT - Reuse Transformer
+const comment = await MyGlobal.prisma.bbs_article_comments.findUniqueOrThrow({
+  where: { id: props.commentId },
+  select: {
+    id: true,
+    body: true,
+    user: BbsUserAtSummaryTransformer.select(),      // ✅ Direct assignment
+    created_at: true,
   }
 });
 
-// ❌ WRONG - Direct foreign key assignment
-shopping_sale_id: props.saleId,        // FORBIDDEN!
-shopping_customer_id: props.customer.id // FORBIDDEN!
+// ❌ WRONG - Unwrapping with .select
+user: BbsUserAtSummaryTransformer.select().select,   // ❌ Strips the wrapper
 ```
 
-### 7.4. Data Transformation Rules
+### 7.4. Prisma CreateInput (CREATE Operations)
+
+```typescript
+// ✅ CORRECT - Use connect with relation property names
+await MyGlobal.prisma.bbs_article_comments.create({
+  data: {
+    id: v4(),
+    body: props.body.content,
+    article: { connect: { id: props.articleId } },    // ✅ Relation name
+    user: { connect: { id: props.user.id } },         // ✅ Relation name
+    created_at: new Date(),
+    deleted_at: null,
+  }
+});
+
+// ❌ WRONG - Table name instead of relation property name
+bbs_articles: { connect: { id: props.articleId } },
+
+// ❌ WRONG - Direct foreign key assignment
+bbs_article_id: props.articleId,
+bbs_user_id: props.user.id,
+```
+
+### 7.5. Data Transformation Rules
 
 | Transformation | Pattern |
 |----------------|---------|
@@ -265,7 +460,7 @@ return {
 };
 ```
 
-### 7.5. DELETE Operation: Cascade Deletion
+### 7.6. DELETE Operation: Cascade Deletion
 
 All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
 
@@ -287,7 +482,7 @@ await MyGlobal.prisma.shopping_sales.delete({
 });
 ```
 
-### 7.6. Manual CREATE Example
+### 7.7. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -470,17 +665,18 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] No import statements
 - [ ] No runtime type validation on parameters
 
-### Pattern A (WITH Collector/Transformer)
-- [ ] Requested collectors/transformers via preliminary calls
-- [ ] Used correct Transformer name for return type (check naming algorithm!)
-- [ ] Used `...Transformer.select()` in queries
-- [ ] Used `await Transformer.transform()` for response
-- [ ] Used `await Collector.collect()` for create/update
+### Collector/Transformer Reuse
+- [ ] Requested available collectors/transformers via preliminary calls
+- [ ] Used Collector for write side when available (`Collector.collect()`)
+- [ ] Used Transformer for read side when available (`Transformer.select()` + `Transformer.transform()`)
+- [ ] Checked neighbor Transformers for nested relations in manual code
+- [ ] Transformer.select() assigned directly (NOT `.select().select`)
 
-### Pattern B (Manual)
+### Manual Code (when no Collector/Transformer)
 - [ ] Verified ALL field/relation names against database schema
-- [ ] Used relation names in select (NOT foreign key columns)
+- [ ] Used relation property names (NOT table names or FK columns)
 - [ ] Used `connect` syntax for relations (NOT direct FK assignment)
+- [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Converted dates with `toISOStringSafe()`
 - [ ] Handled null→undefined for optional fields
 - [ ] Handled null→null for nullable fields
@@ -488,6 +684,6 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 ### Database Operations
 - [ ] Inline parameters (no intermediate variables except complex WHERE/ORDERBY)
 - [ ] Sequential await for findMany + count (NOT Promise.all)
-- [ ] `ArrayUtil.asyncMap` for Pattern A list transforms
-- [ ] Regular `.map()` for Pattern B list transforms
+- [ ] `ArrayUtil.asyncMap` for Transformer list transforms
+- [ ] Regular `.map()` for manual list transforms
 - [ ] DELETE targets only the parent record (cascade handles children)

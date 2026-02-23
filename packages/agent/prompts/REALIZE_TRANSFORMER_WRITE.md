@@ -104,7 +104,11 @@ selectMappings: [
 
 **transformMappings** - One entry for EVERY DTO property:
 
-Use `x-autobe-database-schema-property` to find the DB column name, and `x-autobe-specification` for implementation hints.
+Each DTO property has JSDoc annotations that guide implementation:
+- `@x-autobe-database-schema-property`: The DB column or relation name this property maps to
+- `@x-autobe-specification`: Implementation hints (e.g., "JOIN via foreign key", "Direct mapping", "aggregation logic")
+
+**IMPORTANT**: These specifications are drafts — treat them as **reference hints, not absolute truth**. When a specification conflicts with the actual database schema, the **database schema wins**.
 
 ```typescript
 transformMappings: [
@@ -226,6 +230,25 @@ category: ShoppingCategoryTransformer.select(),
 category: ShoppingCategoryTransformer.select().select,
 ```
 
+**Inside inline code (M:N join tables, wrapper tables), still reuse neighbors for the inner relation**:
+```typescript
+// M:N: bbs_articles → bbs_article_tags (join) → bbs_tags
+// No transformer for the join table, but BbsTagAtSummaryTransformer exists for bbs_tags
+
+// select()
+articleTags: {
+  select: {
+    tag: BbsTagAtSummaryTransformer.select(),       // ✅ Reuse neighbor inside inline
+  }
+} satisfies Prisma.bbs_article_tagsFindManyArgs,
+
+// transform()
+tags: await ArrayUtil.asyncMap(
+  input.articleTags,
+  (at) => BbsTagAtSummaryTransformer.transform(at.tag),  // ✅ Reuse neighbor transform
+),
+```
+
 ### 6.4. Transformer Naming Algorithm
 
 | DTO Type | Transformer Name |
@@ -313,33 +336,37 @@ totalQuantity: input.orders.reduce((sum, o) => sum + o.quantity, 0),
 | Non-transformable DTOs | Not DB-backed (pagination, computed) |
 | Simple scalar mapping | No complex logic |
 
-**Inline `satisfies` in both select() and transform()**:
+**Even when the outer layer is inline, check if a neighbor Transformer exists for the inner relation**.
 
 In `select()`, inline nested selects use `satisfies Prisma.{table}FindManyArgs`:
 
 ```typescript
-// ✅ CORRECT - inline select with satisfies
+// ✅ CORRECT - join table is inline, but inner relation reuses neighbor
 export function select() {
   return {
     select: {
       id: true,
-      tags: {
+      articleTags: {
         select: {
-          value: true,
+          tag: BbsTagAtSummaryTransformer.select(),    // ✅ Neighbor inside inline
         },
-      } satisfies Prisma.discussion_board_article_tagsFindManyArgs,
+      } satisfies Prisma.bbs_article_tagsFindManyArgs,
     },
-  } satisfies Prisma.discussion_board_articlesFindManyArgs;
+  } satisfies Prisma.bbs_articlesFindManyArgs;
 }
 ```
 
 In `transform()`, inline nested objects use `satisfies IDtoType`:
 
 ```typescript
-// ✅ CORRECT - inline transform with satisfies
+// ✅ CORRECT - inline transform reusing neighbor for inner relation
 export async function transform(input: Payload): Promise<IBbsArticle> {
   return {
     id: input.id,
+    tags: await ArrayUtil.asyncMap(
+      input.articleTags,
+      (at) => BbsTagAtSummaryTransformer.transform(at.tag),  // ✅ Neighbor transform
+    ),
     member: {
       id: input.author.id,
       name: input.author.name,
