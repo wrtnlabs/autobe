@@ -65,7 +65,8 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * - Easier debugging by tracking which module/unit/section has issues
    *
    * The `content` property contains the assembled markdown for compatibility,
-   * while this `module` property provides programmatic access to the structure.
+   * while this `module` property provides programmatic access to the
+   * structure.
    */
   module: AutoBeAnalyzeModule;
 }

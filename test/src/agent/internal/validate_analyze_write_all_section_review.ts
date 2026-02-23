@@ -3,18 +3,18 @@ import { orchestrateAnalyzeWriteAllSectionReview } from "@autobe/agent/src/orche
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
-  AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteAllSectionReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 
 import { validate_analyze_scenario } from "./validate_analyze_scenario";
 import { validate_analyze_write_module } from "./validate_analyze_write_module";
-import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 import { validate_analyze_write_section } from "./validate_analyze_write_section";
+import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 
 export const validate_analyze_write_all_section_review = async (props: {
   agent: AutoBeAgent;
@@ -52,7 +52,11 @@ export const validate_analyze_write_all_section_review = async (props: {
   for (let moduleIndex = 0; moduleIndex < unitEvents.length; moduleIndex++) {
     const unitEvent = unitEvents[moduleIndex]!;
     const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
-    for (let unitIndex = 0; unitIndex < unitEvent.unitSections.length; unitIndex++) {
+    for (
+      let unitIndex = 0;
+      unitIndex < unitEvent.unitSections.length;
+      unitIndex++
+    ) {
       const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
         (await AutoBeExampleStorage.load({
           vendor: props.vendor,

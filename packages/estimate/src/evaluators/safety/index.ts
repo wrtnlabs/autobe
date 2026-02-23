@@ -1,1 +1,1 @@
-export { SecurityEvaluator } from './security.evaluator';
+export { SecurityEvaluator } from "./security.evaluator";

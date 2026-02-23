@@ -24,7 +24,10 @@ export function transformRealizeOperationCorrectHistory(props: {
   dto: Record<string, string>;
   failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "realizeCollectors"
+    | "realizeTransformers"
   >;
 }): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument = props.state.interface!.document;

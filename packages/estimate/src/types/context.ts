@@ -1,49 +1,43 @@
-/**
- * AutoBE generated project structure
- */
+/** AutoBE generated project structure */
 export interface AutoBEProjectStructure {
   /** Project root path */
   rootPath: string;
 
-  /** docs/analysis/ folder (requirements analysis) */
+  /** Docs/analysis/ folder (requirements analysis) */
   analysisDir?: string;
 
-  /** docs/ERD.md */
+  /** Docs/ERD.md */
   erdPath?: string;
 
-  /** prisma/schema/ */
+  /** Prisma/schema/ */
   prismaSchemaDir?: string;
 
-  /** src/api/structures/ (DTO) */
+  /** Src/api/structures/ (DTO) */
   structuresDir?: string;
 
-  /** src/controllers/ */
+  /** Src/controllers/ */
   controllersDir?: string;
 
-  /** src/providers/ */
+  /** Src/providers/ */
   providersDir?: string;
 
-  /** test/features/api/ */
+  /** Test/features/api/ */
   testDir?: string;
 }
 
-/**
- * Project dependencies information
- */
+/** Project dependencies information */
 export interface ProjectDependencies {
-  /** package.json path */
+  /** Package.json path */
   packageJsonPath?: string;
 
-  /** dependencies */
+  /** Dependencies */
   dependencies: Record<string, string>;
 
-  /** devDependencies */
+  /** DevDependencies */
   devDependencies: Record<string, string>;
 }
 
-/**
- * Discovered source files
- */
+/** Discovered source files */
 export interface SourceFiles {
   /** All TypeScript files */
   typescript: string[];
@@ -64,10 +58,7 @@ export interface SourceFiles {
   prismaSchemas: string[];
 }
 
-/**
- * Evaluation context
- * Contains all information needed for evaluation
- */
+/** Evaluation context Contains all information needed for evaluation */
 export interface EvaluationContext {
   /** Project structure */
   project: AutoBEProjectStructure;
@@ -81,16 +72,14 @@ export interface EvaluationContext {
   /** Requirements document content (parsed from docs/analysis/) */
   requirements?: string[];
 
-  /** tsconfig.json path */
+  /** Tsconfig.json path */
   tsconfigPath?: string;
 
   /** ESLint config path */
   eslintConfigPath?: string;
 }
 
-/**
- * Evaluation input
- */
+/** Evaluation input */
 export interface EvaluationInput {
   /** Target project path */
   inputPath: string;
@@ -102,9 +91,7 @@ export interface EvaluationInput {
   options?: EvaluationOptions;
 }
 
-/**
- * Evaluation options
- */
+/** Evaluation options */
 export interface EvaluationOptions {
   /** Run specific phases only */
   phases?: string[];

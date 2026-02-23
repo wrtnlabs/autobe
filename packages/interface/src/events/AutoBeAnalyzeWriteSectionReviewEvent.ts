@@ -1,8 +1,8 @@
+import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
-import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
 
 /**
  * Event fired during the review phase of section (###) generation.
@@ -12,6 +12,7 @@ import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent
  * content before final document assembly.
  *
  * Review criteria include:
+ *
  * - Alignment with parent unit section's keywords and purpose
  * - EARS format compliance for requirements
  * - Mermaid diagram syntax correctness
@@ -20,56 +21,54 @@ import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent
  * - No prohibited content (database schemas, API specs, etc.)
  *
  * Review outcomes:
+ *
  * - **Approved**: Content is valid, ready for document assembly
  * - **Rejected**: Content needs revision, provide specific feedback
  *
  * @author AutoBE
  */
 export interface AutoBeAnalyzeWriteSectionReviewEvent
-  extends AutoBeEventBase<"analyzeWriteSectionReview">,
+  extends
+    AutoBeEventBase<"analyzeWriteSectionReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
-  /**
-   * Index of the grandparent module section being reviewed.
-   */
+  /** Index of the grandparent module section being reviewed. */
   moduleIndex: number;
 
-  /**
-   * Index of the parent unit section being reviewed.
-   */
+  /** Index of the parent unit section being reviewed. */
   unitIndex: number;
 
   /**
    * Whether the section content passed review.
    *
-   * If true, the content is ready for final document assembly.
-   * If false, the section generation must be retried with feedback.
+   * If true, the content is ready for final document assembly. If false, the
+   * section generation must be retried with feedback.
    */
   approved: boolean;
 
   /**
    * Detailed review feedback.
    *
-   * Contains specific validation results and recommendations.
-   * If approved, may contain suggestions for future reference.
-   * If rejected, contains actionable feedback for revision.
+   * Contains specific validation results and recommendations. If approved, may
+   * contain suggestions for future reference. If rejected, contains actionable
+   * feedback for revision.
    */
   feedback: string;
 
   /**
    * Revised sections if modifications were made during review.
    *
-   * If the reviewer made direct corrections to the content,
-   * this field contains the updated sections. Otherwise undefined.
+   * If the reviewer made direct corrections to the content, this field contains
+   * the updated sections. Otherwise undefined.
    */
   revisedSections?: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
 
   /**
    * Current iteration number of the review process.
    *
-   * Tracks how many review cycles have been completed for this
-   * unit section's content.
+   * Tracks how many review cycles have been completed for this unit section's
+   * content.
    */
   step: number;
 }

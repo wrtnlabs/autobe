@@ -1,13 +1,14 @@
-import * as ts from 'typescript';
-import * as fs from 'fs';
-import { BaseEvaluator } from '../base';
-import type { EvaluationContext, PhaseResult, Issue } from '../../types';
-import { createIssue } from '../../types';
+import * as fs from "fs";
+import * as ts from "typescript";
+
+import type { EvaluationContext, Issue, PhaseResult } from "../../types";
+import { createIssue } from "../../types";
+import { BaseEvaluator } from "../base";
 
 export class ComplexityEvaluator extends BaseEvaluator {
-  readonly name = 'ComplexityEvaluator';
-  readonly phase = 'quality' as const;
-  readonly description = 'Checks cyclomatic complexity of functions';
+  readonly name = "ComplexityEvaluator";
+  readonly phase = "quality" as const;
+  readonly description = "Checks cyclomatic complexity of functions";
 
   private readonly MAX_COMPLEXITY = 20;
   private readonly WARNING_COMPLEXITY = 15;
@@ -16,16 +17,18 @@ export class ComplexityEvaluator extends BaseEvaluator {
     const startTime = performance.now();
 
     const results = await Promise.all(
-      context.files.typescript.map(filePath => this.analyzeFile(filePath))
+      context.files.typescript.map((filePath) => this.analyzeFile(filePath)),
     );
 
-    const issues = results.flatMap(r => r.issues);
-    const maxComplexity = Math.max(0, ...results.map(r => r.maxComplexity));
+    const issues = results.flatMap((r) => r.issues);
+    const maxComplexity = Math.max(0, ...results.map((r) => r.maxComplexity));
     const totalFunctions = results.reduce((sum, r) => sum + r.functionCount, 0);
-    const complexFunctions = issues.filter(i => i.severity === 'critical').length;
+    const complexFunctions = issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
 
     return {
-      phase: 'quality',
+      phase: "quality",
       passed: true,
       score: this.calculateScore(issues),
       maxScore: 100,
@@ -41,10 +44,14 @@ export class ComplexityEvaluator extends BaseEvaluator {
     };
   }
 
-  private async analyzeFile(filePath: string): Promise<{ issues: Issue[]; maxComplexity: number; functionCount: number }> {
+  private async analyzeFile(filePath: string): Promise<{
+    issues: Issue[];
+    maxComplexity: number;
+    functionCount: number;
+  }> {
     let content: string;
     try {
-      content = await fs.promises.readFile(filePath, 'utf-8');
+      content = await fs.promises.readFile(filePath, "utf-8");
     } catch {
       return { issues: [], maxComplexity: 0, functionCount: 0 };
     }
@@ -52,7 +59,12 @@ export class ComplexityEvaluator extends BaseEvaluator {
     const issues: Issue[] = [];
     let maxComplexity = 0;
 
-    const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
+    const sourceFile = ts.createSourceFile(
+      filePath,
+      content,
+      ts.ScriptTarget.Latest,
+      true,
+    );
 
     const visit = (node: ts.Node) => {
       const isFunction =
@@ -68,35 +80,46 @@ export class ComplexityEvaluator extends BaseEvaluator {
 
       const complexity = this.calculateComplexity(node);
       const name = this.getFunctionName(node);
-      const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart());
+      const { line } = sourceFile.getLineAndCharacterOfPosition(
+        node.getStart(),
+      );
 
       if (complexity > maxComplexity) maxComplexity = complexity;
 
       if (complexity > this.MAX_COMPLEXITY) {
-        issues.push(createIssue({
-          severity: 'critical',
-          category: 'complexity',
-          code: 'C001',
-          message: `Function "${name}" has complexity ${complexity} (max: ${this.MAX_COMPLEXITY})`,
-          location: { file: filePath, line: line + 1 },
-          suggestion: 'Consider breaking this function into smaller functions',
-        }));
+        issues.push(
+          createIssue({
+            severity: "critical",
+            category: "complexity",
+            code: "C001",
+            message: `Function "${name}" has complexity ${complexity} (max: ${this.MAX_COMPLEXITY})`,
+            location: { file: filePath, line: line + 1 },
+            suggestion:
+              "Consider breaking this function into smaller functions",
+          }),
+        );
       } else if (complexity > this.WARNING_COMPLEXITY) {
-        issues.push(createIssue({
-          severity: 'warning',
-          category: 'complexity',
-          code: 'C002',
-          message: `Function "${name}" has complexity ${complexity} (recommended: ${this.WARNING_COMPLEXITY})`,
-          location: { file: filePath, line: line + 1 },
-          suggestion: 'Consider simplifying this function',
-        }));
+        issues.push(
+          createIssue({
+            severity: "warning",
+            category: "complexity",
+            code: "C002",
+            message: `Function "${name}" has complexity ${complexity} (recommended: ${this.WARNING_COMPLEXITY})`,
+            location: { file: filePath, line: line + 1 },
+            suggestion: "Consider simplifying this function",
+          }),
+        );
       }
 
       ts.forEachChild(node, visit);
     };
 
     visit(sourceFile);
-    return { issues, maxComplexity, functionCount: this.countFunctions(content) };
+    return {
+      issues,
+      maxComplexity,
+      functionCount: this.countFunctions(content),
+    };
   }
 
   private calculateComplexity(node: ts.Node): number {
@@ -126,20 +149,34 @@ export class ComplexityEvaluator extends BaseEvaluator {
 
   private getFunctionName(node: ts.Node): string {
     if (ts.isFunctionDeclaration(node) && node.name) return node.name.text;
-    if (ts.isMethodDeclaration(node) && ts.isIdentifier(node.name)) return node.name.text;
+    if (ts.isMethodDeclaration(node) && ts.isIdentifier(node.name))
+      return node.name.text;
     if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
       const parent = node.parent;
-      if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) return parent.name.text;
-      if (ts.isPropertyAssignment(parent) && ts.isIdentifier(parent.name)) return parent.name.text;
+      if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name))
+        return parent.name.text;
+      if (ts.isPropertyAssignment(parent) && ts.isIdentifier(parent.name))
+        return parent.name.text;
     }
-    return '<anonymous>';
+    return "<anonymous>";
   }
 
   private countFunctions(content: string): number {
-    const sourceFile = ts.createSourceFile('temp.ts', content, ts.ScriptTarget.Latest, true);
+    const sourceFile = ts.createSourceFile(
+      "temp.ts",
+      content,
+      ts.ScriptTarget.Latest,
+      true,
+    );
     let count = 0;
     const visit = (node: ts.Node) => {
-      if (ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) || ts.isArrowFunction(node) || ts.isFunctionExpression(node)) count++;
+      if (
+        ts.isFunctionDeclaration(node) ||
+        ts.isMethodDeclaration(node) ||
+        ts.isArrowFunction(node) ||
+        ts.isFunctionExpression(node)
+      )
+        count++;
       ts.forEachChild(node, visit);
     };
     visit(sourceFile);

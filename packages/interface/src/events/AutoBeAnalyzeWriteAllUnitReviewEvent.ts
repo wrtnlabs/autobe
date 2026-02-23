@@ -1,18 +1,20 @@
+import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
-import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
 
 /**
- * Event fired during the batch review phase of ALL unit sections (##) in a file.
+ * Event fired during the batch review phase of ALL unit sections (##) in a
+ * file.
  *
- * This event represents the quality assurance step for ALL unit sections
- * in a single file, reviewed together in one LLM call. The Batch Unit Review
- * Agent validates the entire file's unit structure before allowing progression
- * to section generation.
+ * This event represents the quality assurance step for ALL unit sections in a
+ * single file, reviewed together in one LLM call. The Batch Unit Review Agent
+ * validates the entire file's unit structure before allowing progression to
+ * section generation.
  *
  * Review criteria include:
+ *
  * - Alignment of all unit sections with their parent module sections
  * - Consistency across the entire file's structure
  * - Complete functional requirement coverage without overlap
@@ -20,39 +22,42 @@ import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
  * - Keywords adequately represent section topics
  *
  * Review outcomes:
+ *
  * - **Approved**: All structures are valid, proceed to section generation
  * - **Rejected**: Structures need revision, regenerate ALL units with feedback
  *
  * @author AutoBE
  */
 export interface AutoBeAnalyzeWriteAllUnitReviewEvent
-  extends AutoBeEventBase<"analyzeWriteAllUnitReview">,
+  extends
+    AutoBeEventBase<"analyzeWriteAllUnitReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
   /**
    * Whether ALL unit sections passed review.
    *
-   * If true, section generation can proceed for all modules.
-   * If false, ALL unit generation must be retried with feedback.
+   * If true, section generation can proceed for all modules. If false, ALL unit
+   * generation must be retried with feedback.
    */
   approved: boolean;
 
   /**
    * Detailed review feedback covering the entire file's unit structure.
    *
-   * Contains specific validation results and recommendations.
-   * If approved, may contain suggestions for future reference.
-   * If rejected, contains actionable feedback for revision of all units.
+   * Contains specific validation results and recommendations. If approved, may
+   * contain suggestions for future reference. If rejected, contains actionable
+   * feedback for revision of all units.
    */
   feedback: string;
 
   /**
-   * Revised unit sections for ALL modules if modifications were made during review.
+   * Revised unit sections for ALL modules if modifications were made during
+   * review.
    *
-   * If the reviewer made direct corrections to the structure,
-   * this field contains the updated sections organized by module index.
-   * Otherwise undefined.
+   * If the reviewer made direct corrections to the structure, this field
+   * contains the updated sections organized by module index. Otherwise
+   * undefined.
    */
   revisedUnits?: IRevisedModuleUnit[];
 
@@ -66,24 +71,18 @@ export interface AutoBeAnalyzeWriteAllUnitReviewEvent
   /**
    * Retry attempt number for this event.
    *
-   * Starts at 0 for the first attempt. Increments each time the review
-   * rejects and the generation is retried. When retry > 0, completed may
-   * exceed total due to repeated work.
+   * Starts at 0 for the first attempt. Increments each time the review rejects
+   * and the generation is retried. When retry > 0, completed may exceed total
+   * due to repeated work.
    */
   retry: number;
 }
 
-/**
- * Structure for revised units of a single module section.
- */
+/** Structure for revised units of a single module section. */
 export interface IRevisedModuleUnit {
-  /**
-   * Index of the module section these units belong to.
-   */
+  /** Index of the module section these units belong to. */
   moduleIndex: number;
 
-  /**
-   * Revised unit sections for this module.
-   */
+  /** Revised unit sections for this module. */
   unitSections: AutoBeAnalyzeWriteUnitEvent.IUnitSection[];
 }

@@ -68,7 +68,9 @@ async function process(
 
   const domains = Array.from(
     new Set(
-      props.operation.path.split("/").filter((p) => p && !p.startsWith(":") && !p.startsWith("{")),
+      props.operation.path
+        .split("/")
+        .filter((p) => p && !p.startsWith(":") && !p.startsWith("{")),
     ),
   ).join(", ");
 
@@ -117,7 +119,6 @@ async function process(
     local: {
       analysisFiles: ragAnalysisFiles,
       interfaceOperations: [props.operation],
-
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
