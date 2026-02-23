@@ -46,17 +46,15 @@ const main = async (): Promise<void> => {
   const dbms: "sqlite" | "postgres" = typia.assert<"sqlite" | "postgres">(
     TestGlobal.getArguments("dbms")?.[0] ?? "postgres",
   );
-  const project = typia.assert<AutoBeExampleProject>(
-    TestGlobal.getArguments("project")?.[0],
-  );
-  for (const phase of typia.misc.literals<AutoBePhase>())
-    try {
-      await archive({
-        vendor: TestGlobal.vendorModel,
-        project,
-        phase,
-        dbms,
-      });
-    } catch {}
+  for (const project of typia.misc.literals<AutoBeExampleProject>())
+    for (const phase of typia.misc.literals<AutoBePhase>())
+      try {
+        await archive({
+          vendor: TestGlobal.vendorModel,
+          project,
+          phase,
+          dbms,
+        });
+      } catch {}
 };
 main().catch(console.error);

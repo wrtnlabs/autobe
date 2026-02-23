@@ -58,15 +58,47 @@ Strategy:
 
 ### Phase 2: Mappings (CoT Mechanism)
 
+Given this Prisma schema:
+
+```prisma
+model bbs_article_comments {
+  //----
+  // COLUMNS
+  //----
+  id              String    @id @db.Uuid
+  bbs_article_id  String    @db.Uuid
+  bbs_user_id     String    @db.Uuid
+  body            String
+  created_at      DateTime  @db.Timestamptz
+  deleted_at      DateTime? @db.Timestamptz
+
+  //----
+  // BELONGED RELATIONS,
+  //   - format: (propertyKey targetModel constraint)
+  //----
+  article         bbs_articles              @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
+  user            bbs_users                 @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
+
+  //----
+  // HAS RELATIONS
+  //   - format: (propertyKey targetModel)
+  //----
+  files           bbs_article_comment_files[]
+  hits            bbs_article_comment_hits[]
+}
+```
+
 **selectMappings** - One entry for EVERY database field needed:
 
 ```typescript
 selectMappings: [
   { member: "id", kind: "scalar", nullable: false, how: "For DTO.id" },
+  { member: "body", kind: "scalar", nullable: false, how: "For DTO.body" },
   { member: "created_at", kind: "scalar", nullable: false, how: "For DTO.createdAt (.toISOString())" },
+  { member: "deleted_at", kind: "scalar", nullable: true, how: "For DTO.deletedAt (nullable DateTime)" },
   { member: "user", kind: "belongsTo", nullable: false, how: "For DTO.writer (BbsUserAtSummaryTransformer)" },
-  { member: "files", kind: "hasMany", nullable: null, how: "For DTO.files" },
-  { member: "_count", kind: "scalar", nullable: false, how: "For DTO.hit and DTO.like" },
+  { member: "files", kind: "hasMany", nullable: null, how: "For DTO.files (BbsArticleCommentFileTransformer)" },
+  { member: "hits", kind: "hasMany", nullable: null, how: "For DTO.hit (count of hits)" },
 ]
 ```
 
@@ -77,10 +109,12 @@ Use `x-autobe-database-schema-property` to find the DB column name, and `x-autob
 ```typescript
 transformMappings: [
   { property: "id", how: "From input.id" },
+  { property: "body", how: "From input.body" },
   { property: "createdAt", how: "From input.created_at.toISOString()" },  // x-autobe-database-schema-property: "created_at"
-  { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },
+  { property: "deletedAt", how: "From input.deleted_at?.toISOString() ?? null" },  // nullable DateTime
+  { property: "writer", how: "Transform with BbsUserAtSummaryTransformer" },  // from user relation
   { property: "files", how: "Array map with BbsArticleCommentFileTransformer" },
-  { property: "hit", how: "From input._count.hits" },
+  { property: "hit", how: "From input.hits.length" },
 ]
 ```
 
@@ -102,8 +136,8 @@ export namespace ShoppingSaleTransformer {
         id: true,
         name: true,
         created_at: true,
-        category: ShoppingCategoryTransformer.select(),  // Reuse neighbor
-        tags: ShoppingSaleTagTransformer.select(),       // Reuse neighbor
+        category: ShoppingCategoryTransformer.select(),  // Relation name, NOT table name
+        tags: ShoppingSaleTagTransformer.select(),       // Relation name, NOT table name
       },
     } satisfies Prisma.shopping_salesFindManyArgs;
   }
@@ -131,11 +165,38 @@ include: { category: true }
 
 // ✅ REQUIRED
 select: {
-  category: { select: { id: true, name: true } }
+  category: {
+    select: { id: true, name: true }
+  } satisfies Prisma.shopping_categoriesFindManyArgs,
 }
 ```
 
-### 6.2. Mandatory Neighbor Transformer Reuse
+### 6.2. Use Relation Property Names in `select()`
+
+In `select()`, use the **relation property name** (left side of the model definition), not the referenced table name.
+
+```prisma
+model shopping_sales {
+  category  shopping_categories     @relation(...)   // propertyKey = "category"
+  tags      shopping_sale_tags[]                      // propertyKey = "tags"
+}
+```
+
+```typescript
+// ✅ CORRECT - Relation property name
+select: {
+  category: ShoppingCategoryTransformer.select(),
+  tags: ShoppingSaleTagTransformer.select(),
+}
+
+// ❌ WRONG - Table name instead of relation property name
+select: {
+  shopping_categories: ShoppingCategoryTransformer.select(),
+  shopping_sale_tags: ShoppingSaleTagTransformer.select(),
+}
+```
+
+### 6.3. Mandatory Neighbor Transformer Reuse
 
 ```typescript
 // If ShoppingCategoryTransformer exists in neighbors:
@@ -156,7 +217,16 @@ category: ShoppingCategoryTransformer.select(),
 category: await ShoppingCategoryTransformer.transform(input.category),
 ```
 
-### 6.3. Transformer Naming Algorithm
+**Pass `select()` directly — the return value is already `{ select: { ... } }`**:
+```typescript
+// ✅ CORRECT - Assign directly
+category: ShoppingCategoryTransformer.select(),
+
+// ❌ WRONG - Unwrapping with .select
+category: ShoppingCategoryTransformer.select().select,
+```
+
+### 6.4. Transformer Naming Algorithm
 
 | DTO Type | Transformer Name |
 |----------|-----------------|
@@ -166,7 +236,7 @@ category: await ShoppingCategoryTransformer.transform(input.category),
 
 Algorithm: Split by `.`, remove `I` prefix, join with `At`, append `Transformer`.
 
-### 6.4. NULL vs UNDEFINED Handling
+### 6.5. NULL vs UNDEFINED Handling
 
 | Pattern | DTO Signature | Handling |
 |---------|--------------|----------|
@@ -181,7 +251,7 @@ description: input.description ?? undefined,
 deletedAt: input.deleted_at ? input.deleted_at.toISOString() : null,
 ```
 
-### 6.6. No Import Statements
+### 6.7. No Import Statements
 
 ```typescript
 // ❌ WRONG
@@ -199,19 +269,22 @@ export namespace ShoppingSaleTransformer {
 | DateTime → ISO | `input.created_at.toISOString()` |
 | Decimal → Number | `Number(input.price)` |
 | Nullable DateTime | `input.deleted_at?.toISOString() ?? null` |
-| Aggregation | `input._count.reviews` |
+| Count via relation | `input._count.reviews` (select the `reviews` relation in mappings) |
 
 ## 8. Computed Fields (Not in DB)
 
-When DTO field doesn't exist in database:
+When a DTO field doesn't exist as a database column, select the underlying relation and compute in `transform()`. Every aggregation is backed by a real relation — select that relation, then derive the value.
 
 ```typescript
 // DTO: reviewCount, averageRating (NOT in DB)
-// Solution: Select source data, compute in transform()
+// Underlying relation: reviews (hasMany)
 
-// select()
+// selectMappings: map the relation, not _count
+{ member: "reviews", kind: "hasMany", nullable: null, how: "For DTO.reviewCount and DTO.averageRating" }
+
+// select() — can use _count as a Prisma shortcut, but ALSO select the relation for averageRating
 _count: { select: { reviews: true } },
-reviews: { select: { rating: true } },
+reviews: { select: { rating: true } } satisfies Prisma.shopping_sale_reviewsFindManyArgs,
 
 // transform()
 reviewCount: input._count.reviews,
@@ -220,15 +293,13 @@ averageRating: input.reviews.length > 0
   : 0,
 ```
 
-**⚠️ AGGREGATION LIMITATION**: `_sum`, `_avg`, `_min`, `_max` do NOT work on nested relation fields - they only aggregate columns on the **current table**. For nested data aggregation, load the relation and compute manually in `transform()`.
+`_sum`, `_avg`, `_min`, `_max` do NOT work on nested relation fields — they only aggregate columns on the **current table**. For nested data, load the relation and compute in `transform()`.
 
 ```typescript
-// ❌ WRONG - Cannot aggregate nested relation fields
-_sum: { orders: { quantity: true } }  // This syntax doesn't exist!
+// Underlying relation: orders (hasMany)
 
-// ✅ CORRECT - Load relations, aggregate in transform()
 // select()
-orders: { select: { quantity: true } },
+orders: { select: { quantity: true } } satisfies Prisma.shopping_ordersFindManyArgs,
 
 // transform()
 totalQuantity: input.orders.reduce((sum, o) => sum + o.quantity, 0),
@@ -242,26 +313,40 @@ totalQuantity: input.orders.reduce((sum, o) => sum + o.quantity, 0),
 | Non-transformable DTOs | Not DB-backed (pagination, computed) |
 | Simple scalar mapping | No complex logic |
 
-**When writing inline nested objects, ALWAYS append `satisfies IDtoType`**:
+**Inline `satisfies` in both select() and transform()**:
+
+In `select()`, inline nested selects use `satisfies Prisma.{table}FindManyArgs`:
 
 ```typescript
-// ✅ CORRECT - inline with satisfies
-export async function transform(input: Payload): Promise<IArticle> {
+// ✅ CORRECT - inline select with satisfies
+export function select() {
+  return {
+    select: {
+      id: true,
+      tags: {
+        select: {
+          value: true,
+        },
+      } satisfies Prisma.discussion_board_article_tagsFindManyArgs,
+    },
+  } satisfies Prisma.discussion_board_articlesFindManyArgs;
+}
+```
+
+In `transform()`, inline nested objects use `satisfies IDtoType`:
+
+```typescript
+// ✅ CORRECT - inline transform with satisfies
+export async function transform(input: Payload): Promise<IBbsArticle> {
   return {
     id: input.id,
-    author: {
+    member: {
       id: input.author.id,
       name: input.author.name,
-    } satisfies IAuthor.ISummary,
+    } satisfies IBbsMember.ISummary,
     created_at: input.created_at.toISOString(),
   };
 }
-
-// ❌ WRONG - inline without satisfies
-author: {
-  id: input.author.id,
-  name: input.author.name,
-},  // Type error points to the entire return, not this object
 ```
 
 ## 10. Final Checklist
@@ -274,7 +359,7 @@ author: {
 ### Code Structure
 - [ ] Order: Payload → select() → transform()
 - [ ] No import statements
-- [ ] `satisfies Prisma.{table}FindManyArgs` on select()
+- [ ] `satisfies Prisma.{table}FindManyArgs` on select() return and inline nested selects
 - [ ] Async transform() with Promise return type
 
 ### Transformer Reuse

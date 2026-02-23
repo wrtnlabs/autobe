@@ -125,11 +125,10 @@ export async function postShoppingSales(props: {
 export async function getShoppingSalesById(props: {
   saleId: string & tags.Format<"uuid">;
 }): Promise<IShoppingSale> {
-  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
     where: { id: props.saleId },
     ...ShoppingSaleTransformer.select(),
   });
-  if (!sale) throw new HttpException("Sale not found", 404);
   return await ShoppingSaleTransformer.transform(sale);
 }
 ```
@@ -244,22 +243,22 @@ shopping_customer_id: props.customer.id // FORBIDDEN!
 return {
   id: record.id,
   title: record.title,
-  author: {
+  member: {
     id: record.author.id,
     name: record.author.name,
     created_at: record.author.created_at.toISOString(),
-  } satisfies IAuthor.ISummary,
+  } satisfies IBbsMember.ISummary,
   category: {
     id: record.category.id,
     name: record.category.name,
-  } satisfies ICategory.ISummary,
+  } satisfies IBbsCategory.ISummary,
   created_at: record.created_at.toISOString(),
-};
+} satisfies IBbsArticle.ISummary;
 
 // ❌ WRONG - nested object without satisfies
 return {
   id: record.id,
-  author: {
+  member: {
     id: record.author.id,
     name: record.author.name,
   },  // Missing satisfies — type error points to the entire return, not this object
@@ -296,10 +295,9 @@ export async function postShoppingSaleReview(props: {
   saleId: string & tags.Format<"uuid">;
   body: IShoppingSaleReview.ICreate;
 }): Promise<IShoppingSaleReview> {
-  const sale = await MyGlobal.prisma.shopping_sales.findUnique({
+  await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
     where: { id: props.saleId },
   });
-  if (!sale) throw new HttpException("Sale not found", 404);
 
   const review = await MyGlobal.prisma.shopping_sale_reviews.create({
     data: {
@@ -429,16 +427,39 @@ const votes = await MyGlobal.prisma.comment_votes.groupBy({
 
 ## 10. Error Handling
 
+### 10.1. Record Not Found → Use `OrThrow`
+
+When a record must exist, use `findUniqueOrThrow` or `findFirstOrThrow`. The system automatically converts the thrown error into an HTTP 404 response — no manual null check or `HttpException` needed.
+
+```typescript
+// ✅ CORRECT - OrThrow handles 404 automatically
+const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
+  where: { id: props.saleId },
+});
+
+// Use plain findUnique/findFirst when null is a valid state in your logic
+const existing = await MyGlobal.prisma.shopping_coupons.findUnique({
+  where: { id: props.couponId },
+});
+if (existing) {
+  // apply coupon logic
+}
+```
+
+### 10.2. Business Errors → `HttpException`
+
+For business logic errors (not "record not found"), use `HttpException` with a numeric status code.
+
 ```typescript
 // ✅ CORRECT - HttpException with numeric status
-throw new HttpException("Sale not found", 404);
 throw new HttpException("Forbidden", 403);
+throw new HttpException("Quantity exceeds maximum", 400);
 
 // ❌ WRONG - Plain Error
-throw new Error("Sale not found");
+throw new Error("Something went wrong");
 
 // ❌ WRONG - Enum status codes
-throw new HttpException("Not found", HttpStatus.NOT_FOUND);
+throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 ```
 
 ## 11. Final Checklist
