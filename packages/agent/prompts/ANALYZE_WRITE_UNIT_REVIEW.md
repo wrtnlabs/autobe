@@ -91,7 +91,8 @@ process({
     type: "complete",
     moduleIndex: 0,
     approved: true,
-    feedback: "Well-organized functional groupings. Keywords will guide section sections effectively."
+    feedback: "Well-organized functional groupings. Keywords will guide section sections effectively.",
+    revisedSections: null
   }
 });
 ```
@@ -104,7 +105,8 @@ process({
     type: "complete",
     moduleIndex: 0,
     approved: false,
-    feedback: "Issues: 1) Missing 'Password Recovery' - critical for user management. 2) 'Login' and 'Authentication' overlap - consolidate into one section. Recommendations: Add password recovery section, merge login/authentication."
+    feedback: "Issues: 1) Missing 'Password Recovery' - critical for user management. 2) 'Login' and 'Authentication' overlap - consolidate into one section. Recommendations: Add password recovery section, merge login/authentication.",
+    revisedSections: null
   }
 });
 ```

@@ -54,15 +54,21 @@ export interface AutoBeAnalyzeWriteModuleReviewEvent
    * Revised module sections if modifications were made during review.
    *
    * If the reviewer made direct corrections to the structure, this field
-   * contains the updated sections. Otherwise undefined.
+   * contains the updated sections. Set to `null` if no revisions were made.
    */
-  revisedSections?: AutoBeAnalyzeWriteModuleEvent.IModuleSection[];
+  revisedSections: AutoBeAnalyzeWriteModuleEvent.IModuleSection[] | null;
 
-  /** Revised title if modified during review. */
-  revisedTitle?: string;
+  /**
+   * Revised title if modified during review. Set to `null` if no revisions were
+   * made.
+   */
+  revisedTitle: string | null;
 
-  /** Revised summary if modified during review. */
-  revisedSummary?: string;
+  /**
+   * Revised summary if modified during review. Set to `null` if no revisions
+   * were made.
+   */
+  revisedSummary: string | null;
 
   /**
    * Current iteration number of the review process.

@@ -57,9 +57,9 @@ export interface AutoBeAnalyzeWriteUnitReviewEvent
    * Revised unit sections if modifications were made during review.
    *
    * If the reviewer made direct corrections to the structure, this field
-   * contains the updated sections. Otherwise undefined.
+   * contains the updated sections. Set to `null` if no revisions were made.
    */
-  revisedSections?: AutoBeAnalyzeWriteUnitEvent.IUnitSection[];
+  revisedSections: AutoBeAnalyzeWriteUnitEvent.IUnitSection[] | null;
 
   /**
    * Current iteration number of the review process.

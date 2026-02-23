@@ -89,7 +89,10 @@ process({
   request: {
     type: "complete",
     approved: true,
-    feedback: "Structure is well-organized. Consider expanding the security section in unit sections."
+    feedback: "Structure is well-organized. Consider expanding the security section in unit sections.",
+    revisedTitle: null,
+    revisedSummary: null,
+    revisedSections: null
   }
 });
 ```
@@ -101,7 +104,10 @@ process({
   request: {
     type: "complete",
     approved: false,
-    feedback: "Structure is missing a dedicated section for payment processing. The business rules section overlaps with functional requirements. Recommend: 1) Add 'Payment & Transaction Management' as a module section, 2) Clarify boundary between business rules and functional requirements."
+    feedback: "Structure is missing a dedicated section for payment processing. The business rules section overlaps with functional requirements. Recommend: 1) Add 'Payment & Transaction Management' as a module section, 2) Clarify boundary between business rules and functional requirements.",
+    revisedTitle: null,
+    revisedSummary: null,
+    revisedSections: null
   }
 });
 ```
@@ -115,7 +121,8 @@ process({
     approved: true,
     feedback: "Structure is comprehensive. Revised title for clarity.",
     revisedTitle: "E-Commerce Platform Business Requirements Specification",
-    revisedSections: [...]  // Only if sections need modification
+    revisedSummary: null,
+    revisedSections: [...]  // Only if sections need modification, otherwise null
   }
 });
 ```

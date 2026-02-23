@@ -94,9 +94,10 @@ export namespace IAutoBeAnalyzeWriteSectionReviewApplication {
     /**
      * Revised sections if modifications were made.
      *
-     * Only provided if the reviewer made direct corrections.
+     * Only provided if the reviewer made direct corrections. Set to `null` if
+     * no revisions were made.
      */
-    revisedSections?: IRevisedSectionSection[];
+    revisedSections: IRevisedSectionSection[] | null;
   }
 
   /** Structure for revised sections. */
