@@ -37,7 +37,7 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
      * - Is there consistency across the entire file's structure?
      * - Are all functional requirements covered without overlap?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;

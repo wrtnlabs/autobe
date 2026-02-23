@@ -45,7 +45,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * This reflection helps you avoid duplicate requests and premature
      * completion.
      */
-    thinking: string;
+    thinking?: string | null;
 
     /**
      * Type discriminator for the request.

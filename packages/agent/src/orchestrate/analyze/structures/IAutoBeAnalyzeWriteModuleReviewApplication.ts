@@ -39,7 +39,7 @@ export namespace IAutoBeAnalyzeWriteModuleReviewApplication {
      * - Why is the structure approved or rejected?
      * - What specific feedback will help improve the next iteration?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;

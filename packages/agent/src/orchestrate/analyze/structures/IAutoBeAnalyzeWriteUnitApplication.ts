@@ -40,7 +40,7 @@ export namespace IAutoBeAnalyzeWriteUnitApplication {
      * - What functional areas are covered?
      * - Are the keywords appropriate for guiding section generation?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;

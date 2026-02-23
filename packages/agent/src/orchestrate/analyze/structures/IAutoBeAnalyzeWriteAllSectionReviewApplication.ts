@@ -38,7 +38,7 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      * - Is the content implementation-ready across all sections?
      * - Are there any prohibited contents in any section?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;

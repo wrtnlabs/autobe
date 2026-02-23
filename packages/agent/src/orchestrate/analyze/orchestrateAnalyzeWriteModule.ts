@@ -109,7 +109,7 @@ function createController(props: {
     }
 
     return props.preliminary.validate({
-      thinking: result.data.thinking,
+      thinking: result.data.thinking ?? "",
       request: result.data.request,
     });
   };

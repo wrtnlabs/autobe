@@ -104,7 +104,7 @@ function createController(props: {
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
-      thinking: result.data.thinking,
+      thinking: result.data.thinking ?? "",
       request: result.data.request,
     });
   };

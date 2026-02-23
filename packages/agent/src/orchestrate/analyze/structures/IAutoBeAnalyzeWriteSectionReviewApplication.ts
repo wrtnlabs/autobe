@@ -40,7 +40,7 @@ export namespace IAutoBeAnalyzeWriteSectionReviewApplication {
      * - Is the content implementation-ready?
      * - Are there any prohibited contents?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;

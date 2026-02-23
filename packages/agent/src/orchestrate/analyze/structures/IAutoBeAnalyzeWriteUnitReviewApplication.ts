@@ -39,7 +39,7 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
      * - Are the keywords adequate for guiding section generation?
      * - What specific issues need to be addressed?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
