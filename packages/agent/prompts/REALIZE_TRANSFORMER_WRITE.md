@@ -385,6 +385,8 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
 - [ ] Checked neighbor transformers table
 - [ ] Using BOTH select() and transform() together
 - [ ] Correct Transformer names (ShoppingSaleAtSummaryTransformer for ISummary)
+- [ ] Transformer.select() assigned directly (NOT `.select().select`)
+- [ ] Checked for neighbor reuse inside inline code (M:N, wrapper tables)
 
 ### Mappings
 - [ ] selectMappings covers all DB fields needed

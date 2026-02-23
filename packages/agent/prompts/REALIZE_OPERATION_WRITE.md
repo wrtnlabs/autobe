@@ -670,6 +670,7 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] No namespace/class wrappers
 - [ ] No import statements
 - [ ] No runtime type validation on parameters
+- [ ] Function signature preserved exactly as given (no return type changes)
 
 ### Collector/Transformer Reuse
 - [ ] Requested available collectors/transformers via preliminary calls
@@ -693,3 +694,4 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] `ArrayUtil.asyncMap` for Transformer list transforms
 - [ ] Regular `.map()` for manual list transforms
 - [ ] DELETE targets only the parent record (cascade handles children)
+- [ ] `findUniqueOrThrow`/`findFirstOrThrow` for record-must-exist queries
