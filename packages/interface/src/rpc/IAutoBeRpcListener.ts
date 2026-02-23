@@ -2,14 +2,9 @@ import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteAllSectionReviewEvent,
-  AutoBeAnalyzeWriteAllUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
-  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -181,17 +176,6 @@ export interface IAutoBeRpcListener {
   analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for module section review events (V2 hierarchical
-   * writing).
-   *
-   * Called when the module section structure is reviewed and validated before
-   * proceeding to unit section generation.
-   */
-  analyzeWriteModuleReview?(
-    event: AutoBeAnalyzeWriteModuleReviewEvent,
-  ): Promise<void>;
-
-  /**
    * Optional handler for unit section generation events (V2 hierarchical
    * writing).
    *
@@ -201,16 +185,6 @@ export interface IAutoBeRpcListener {
   analyzeWriteUnit?(event: AutoBeAnalyzeWriteUnitEvent): Promise<void>;
 
   /**
-   * Optional handler for unit section review events (V2 hierarchical writing).
-   *
-   * Called when the unit section content is reviewed and validated before
-   * proceeding to section section generation.
-   */
-  analyzeWriteUnitReview?(
-    event: AutoBeAnalyzeWriteUnitReviewEvent,
-  ): Promise<void>;
-
-  /**
    * Optional handler for section section generation events (V2 hierarchical
    * writing).
    *
@@ -218,36 +192,6 @@ export interface IAutoBeRpcListener {
    * content with EARS-formatted requirements.
    */
   analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
-
-  /**
-   * Optional handler for section review events (V2 hierarchical writing).
-   *
-   * Called when the section content is reviewed for quality assurance before
-   * final document assembly.
-   */
-  analyzeWriteSectionReview?(
-    event: AutoBeAnalyzeWriteSectionReviewEvent,
-  ): Promise<void>;
-
-  /**
-   * Optional handler for batch unit review events (V2 hierarchical writing).
-   *
-   * Called when ALL unit sections for a file are reviewed in a single LLM call,
-   * providing holistic validation of the entire file's unit structure.
-   */
-  analyzeWriteAllUnitReview?(
-    event: AutoBeAnalyzeWriteAllUnitReviewEvent,
-  ): Promise<void>;
-
-  /**
-   * Optional handler for batch section review events (V2 hierarchical writing).
-   *
-   * Called when ALL section sections for a file are reviewed in a single LLM
-   * call, providing holistic validation of the entire file's detailed content.
-   */
-  analyzeWriteAllSectionReview?(
-    event: AutoBeAnalyzeWriteAllSectionReviewEvent,
-  ): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.

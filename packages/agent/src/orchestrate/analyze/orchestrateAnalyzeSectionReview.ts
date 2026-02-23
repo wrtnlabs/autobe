@@ -1,10 +1,10 @@
 import { IAgenticaController } from "@agentica/core";
 import {
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
-  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
   AutoBeEventSource,
   AutoBeProgressEventBase,
@@ -16,31 +16,42 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeWriteSectionReviewHistory } from "./histories/transformAnalyzeWriteSectionReviewHistory";
-import { IAutoBeAnalyzeWriteSectionReviewApplication } from "./structures/IAutoBeAnalyzeWriteSectionReviewApplication";
+import { transformAnalyzeSectionReviewHistory } from "./histories/transformAnalyzeSectionReviewHistory";
+import { IAutoBeAnalyzeSectionReviewApplication } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
 
-export const orchestrateAnalyzeWriteSectionReview = async (
+/**
+ * Orchestrate cross-file review of section content across ALL files.
+ *
+ * This function reviews all files' section content together in a single LLM
+ * call, providing cross-file validation for EARS format, value consistency,
+ * terminology, and Mermaid diagram style.
+ */
+export const orchestrateAnalyzeSectionReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvent: AutoBeAnalyzeWriteUnitEvent;
-    sectionEvent: AutoBeAnalyzeWriteSectionEvent;
+    allFileSections: Array<{
+      file: AutoBeAnalyzeFile.Scenario;
+      moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+      unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+      sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+      status: "approved" | "rewritten" | "new";
+    }>;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
+    retry: number;
   },
-): Promise<AutoBeAnalyzeWriteSectionReviewEvent> => {
+): Promise<AutoBeAnalyzeSectionReviewEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeWriteSectionReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeSectionReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteSectionReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -52,31 +63,25 @@ export const orchestrateAnalyzeWriteSectionReview = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteSectionReviewHistory(ctx, {
+      ...transformAnalyzeSectionReviewHistory(ctx, {
         scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvent: props.unitEvent,
-        sectionEvent: props.sectionEvent,
+        allFileSections: props.allFileSections,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeAnalyzeWriteSectionReviewEvent = {
+    const event: AutoBeAnalyzeSectionReviewEvent = {
       type: SOURCE,
       id: v7(),
-      moduleIndex: pointer.value.moduleIndex,
-      unitIndex: pointer.value.unitIndex,
-      approved: pointer.value.approved,
-      feedback: pointer.value.feedback,
-      revisedSections: pointer.value.revisedSections,
+      fileResults: pointer.value.fileResults,
       acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
       metric: result.metric,
       step: (ctx.state().analyze?.step ?? -1) + 1,
       total: props.progress.total,
-      completed: props.progress.completed,
+      completed: ++props.progress.completed,
+      retry: props.retry,
       created_at: new Date().toISOString(),
     };
     ctx.dispatch(event);
@@ -85,14 +90,14 @@ export const orchestrateAnalyzeWriteSectionReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteSectionReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteSectionReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeWriteSectionReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteSectionReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeSectionReviewApplication.IProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -101,7 +106,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteSectionReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeSectionReviewApplication>({
       validate: {
         process: validate,
       },
@@ -116,8 +121,8 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeWriteSectionReviewApplication,
+    } satisfies IAutoBeAnalyzeSectionReviewApplication,
   };
 }
 
-const SOURCE = "analyzeWriteSectionReview" satisfies AutoBeEventSource;
+const SOURCE = "analyzeSectionReview" satisfies AutoBeEventSource;

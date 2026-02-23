@@ -14,19 +14,24 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 /**
- * Transform histories for batch review of ALL section sections in a file.
+ * Transform histories for cross-file review of section content across ALL
+ * files.
  *
- * This transformer provides context for reviewing all sections at once,
- * enabling holistic validation of the entire file's detailed content.
+ * This transformer provides context for reviewing all files' section content
+ * together, enabling cross-file validation for EARS format, value consistency,
+ * terminology, and Mermaid diagram style.
  */
-export const transformAnalyzeWriteAllSectionReviewHistory = (
+export const transformAnalyzeSectionReviewHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+    allFileSections: Array<{
+      file: AutoBeAnalyzeFile.Scenario;
+      moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+      unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+      sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+      status: "approved" | "rewritten" | "new";
+    }>;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -51,7 +56,7 @@ export const transformAnalyzeWriteAllSectionReviewHistory = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_SECTION_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_SECTION_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -63,28 +68,30 @@ export const transformAnalyzeWriteAllSectionReviewHistory = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Document Structure
+        ## All Files' Section Content to Review
 
-        **File**: ${props.file.filename}
-        **Title**: ${props.moduleEvent.title}
-        **Summary**: ${props.moduleEvent.summary}
+        Please review ALL files' section content below for cross-file consistency:
 
-        ## Complete Document Content to Review
+        ${props.allFileSections
+          .map(
+            (
+              { file, moduleEvent, unitEvents, sectionEvents, status },
+              fileIndex,
+            ) => `
+        ---
+        ## File ${fileIndex + 1}: ${file.filename} [Status: ${status === "approved" ? "✅ Previously Approved" : status === "rewritten" ? "🔄 Rewritten" : "🆕 New"}]
 
-        Please review ALL section sections below for the entire file:
+        **Title**: ${moduleEvent.title}
 
-        ${props.sectionEvents
+        ${sectionEvents
           .map((sectionsForModule, moduleIndex) => {
             const moduleSection:
               | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-              | undefined = props.moduleEvent.moduleSections[moduleIndex];
+              | undefined = moduleEvent.moduleSections[moduleIndex];
             const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
-              props.unitEvents[moduleIndex];
-
+              unitEvents[moduleIndex];
             return `
-        ---
-        # Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
-        ${moduleSection?.content ?? "No content"}
+        ### Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
 
         ${sectionsForModule
           .map((sectionEvent, unitIndex) => {
@@ -92,39 +99,38 @@ export const transformAnalyzeWriteAllSectionReviewHistory = (
               | AutoBeAnalyzeWriteUnitEvent.IUnitSection
               | undefined = unitEvent?.unitSections[unitIndex];
             return `
-        ## Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
-        **Keywords**: ${unitSection?.keywords.join(", ") ?? "No keywords"}
+        #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
 
         ${sectionEvent.sectionSections
           .map(
-            (section, sectionIndex) => `
-        ### Section ${moduleIndex + 1}.${unitIndex + 1}.${sectionIndex + 1}: ${section.title}
-
+            (section) => `
+        ##### ${section.title}
         ${section.content}
         `,
           )
-          .join("\n---\n")}
+          .join("\n")}
         `;
           })
           .join("\n")}
         `;
           })
-          .join("\n=====\n")}
+          .join("\n")}
+        `,
+          )
+          .join("\n")}
 
-        ## Review Criteria
+        ## Cross-File Review Criteria
 
-        Please evaluate the ENTIRE file's section content:
-        1. Are ALL keywords addressed for each unit?
-        2. Is EARS format correct throughout (SHALL not should)?
-        3. Are requirements specific and measurable everywhere?
-        4. Is there NO prohibited content anywhere?
-        5. Are Mermaid diagrams syntactically correct (if present)?
-        6. Is content implementation-ready throughout?
-        7. Are values consistent across all sections?
+        Please evaluate across ALL files:
+        1. Is EARS format consistent across all files?
+        2. Are values and constraints consistent?
+        3. Is terminology aligned across all files?
+        4. Are Mermaid diagram styles uniform?
+        5. Is there any prohibited content?
       `,
       },
     ],
     userMessage:
-      "Review ALL section sections for the entire file and approve or reject as a whole.",
+      "Review ALL files' section content for cross-file consistency and provide per-file approved/rejected verdicts.",
   };
 };

@@ -13,18 +13,22 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 /**
- * Transform histories for batch review of ALL unit sections in a file.
+ * Transform histories for cross-file review of unit sections across ALL files.
  *
- * This transformer provides context for reviewing all units at once, enabling
- * holistic validation of the entire file's unit structure.
+ * This transformer provides context for reviewing all files' unit structures
+ * together, enabling cross-file validation for functional decomposition
+ * consistency, keyword style, and depth balance.
  */
-export const transformAnalyzeWriteAllUnitReviewHistory = (
+export const transformAnalyzeUnitReviewHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+    allFileUnits: Array<{
+      file: AutoBeAnalyzeFile.Scenario;
+      moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+      unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+      status: "approved" | "rewritten" | "new";
+    }>;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -49,7 +53,7 @@ export const transformAnalyzeWriteAllUnitReviewHistory = (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.ANALYZE_WRITE_ALL_UNIT_REVIEW,
+        text: AutoBeSystemPromptConstant.ANALYZE_UNIT_REVIEW,
       },
       ...(props.preliminary?.getHistories() ?? []),
       {
@@ -61,41 +65,31 @@ export const transformAnalyzeWriteAllUnitReviewHistory = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## Document Structure
+        ## All Files' Unit Structures to Review
 
-        **File**: ${props.file.filename}
-        **Title**: ${props.moduleEvent.title}
-        **Summary**: ${props.moduleEvent.summary}
+        Please review ALL files' unit structures below for cross-file consistency:
 
-        ## Module Sections Overview
-
-        ${props.moduleEvent.moduleSections
+        ${props.allFileUnits
           .map(
-            (section, index) => `
-        ### Module ${index + 1}: ${section.title}
-        **Purpose**: ${section.purpose}
-        **Content**: ${section.content ?? "No content"}
-        `,
-          )
-          .join("\n")}
+            ({ file, moduleEvent, unitEvents, status }, fileIndex) => `
+        ---
+        ## File ${fileIndex + 1}: ${file.filename} [Status: ${status === "approved" ? "✅ Previously Approved" : status === "rewritten" ? "🔄 Rewritten" : "🆕 New"}]
 
-        ## All Unit Sections to Review
+        **Title**: ${moduleEvent.title}
+        **Summary**: ${moduleEvent.summary}
 
-        Please review ALL unit sections below for the entire file:
-
-        ${props.unitEvents
+        ${unitEvents
           .map((unitEvent, moduleIndex) => {
             const moduleSection:
               | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-              | undefined = props.moduleEvent.moduleSections[moduleIndex];
+              | undefined = moduleEvent.moduleSections[moduleIndex];
             return `
-        ---
-        ## Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
+        ### Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
 
         ${unitEvent.unitSections
           .map(
             (section, unitIndex) => `
-        ### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${section.title}
+        #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${section.title}
         **Purpose**: ${section.purpose}
         **Content**: ${section.content}
         **Keywords**: ${section.keywords.join(", ")}
@@ -105,20 +99,22 @@ export const transformAnalyzeWriteAllUnitReviewHistory = (
         `;
           })
           .join("\n")}
+        `,
+          )
+          .join("\n")}
 
-        ## Review Criteria
+        ## Cross-File Review Criteria
 
-        Please evaluate the ENTIRE file's unit structure:
-        1. Do ALL unit sections align with their parent module sections?
-        2. Is there consistency across the entire file?
-        3. Are all functional areas adequately covered without overlap?
-        4. Are section boundaries clear throughout?
-        5. Are keywords specific and actionable for section generation?
-        6. Is content at appropriate abstraction level?
+        Please evaluate across ALL files:
+        1. Is functional decomposition granularity consistent?
+        2. Are keyword styles and specificity uniform?
+        3. Are unit section depths balanced across files?
+        4. Are section boundaries drawn using consistent principles?
+        5. Are values consistent throughout?
       `,
       },
     ],
     userMessage:
-      "Review ALL unit sections for the entire file and approve or reject as a whole.",
+      "Review ALL files' unit structures for cross-file consistency and provide per-file approved/rejected verdicts.",
   };
 };
