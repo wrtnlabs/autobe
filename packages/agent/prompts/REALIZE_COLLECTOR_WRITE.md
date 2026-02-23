@@ -103,7 +103,7 @@ export namespace ShoppingSaleCollector {
       updated_at: new Date(),
       deleted_at: null,
 
-      // BelongsTo relations (MUST use connect)
+      // BelongsTo relations (MUST use connect, relation name NOT table name)
       seller: { connect: { id: props.seller.id } },
       session: { connect: { id: props.session.id } },
       category: { connect: { id: props.body.categoryId } },
@@ -113,7 +113,7 @@ export namespace ShoppingSaleCollector {
         ? { connect: { id: props.body.parentId } }
         : undefined,
 
-      // HasMany relations (reuse neighbor collectors)
+      // HasMany relations (relation name NOT table name, reuse neighbor collectors)
       tags: props.body.tags.length
         ? {
             create: await ArrayUtil.asyncMap(
@@ -159,7 +159,28 @@ parent: props.body.parentId
   : undefined,  // ✅ Skip field entirely
 ```
 
-### 6.3. Neighbor Collector Reuse (MANDATORY)
+### 6.3. Use Relation Property Names in CreateInput
+
+In the return object, use the **relation property name** (left side of the model definition), not the referenced table name.
+
+```prisma
+model shopping_sales {
+  seller    shopping_sellers      @relation(...)   // propertyKey = "seller"
+  tags      shopping_sale_tags[]                    // propertyKey = "tags"
+}
+```
+
+```typescript
+// ✅ CORRECT - Relation property name
+seller: { connect: { id: props.seller.id } },
+tags: { create: await ArrayUtil.asyncMap(...) },
+
+// ❌ WRONG - Table name instead of relation property name
+shopping_sellers: { connect: { id: props.seller.id } },
+shopping_sale_tags: { create: await ArrayUtil.asyncMap(...) },
+```
+
+### 6.4. Neighbor Collector Reuse (MANDATORY)
 
 ```typescript
 // If ShoppingSaleTagCollector exists in neighbors:
@@ -189,7 +210,28 @@ tags: {
 - M:N join tables with no corresponding DTO
 - No neighbor collector exists (after careful check)
 
-### 6.4. No Import Statements
+**Inside inline code (M:N join tables, wrapper tables), still reuse neighbors for the inner relation**:
+```typescript
+// M:N: bbs_articles → bbs_article_tags (join) → bbs_tags
+// No collector for the join table, but BbsTagCollector exists for bbs_tags
+
+articleTags: {
+  create: await ArrayUtil.asyncMap(
+    props.body.tags,
+    (tag) => ({
+      id: v4(),
+      tag: {
+        connectOrCreate: {
+          where: { value: tag.value },
+          create: await BbsTagCollector.collect({ body: tag }),  // ✅ Reuse neighbor inside inline
+        },
+      },
+    }),
+  ),
+},
+```
+
+### 6.5. No Import Statements
 
 ```typescript
 // ❌ WRONG
@@ -204,7 +246,11 @@ export namespace ShoppingSaleCollector {
 
 **MANDATORY**: Create one mapping entry for EVERY database schema member.
 
-Use `x-autobe-database-schema-property` to find the DB column name for each DTO field, and `x-autobe-specification` for implementation hints (e.g., password hashing, data transformations).
+Each DTO property has JSDoc annotations that guide implementation:
+- `@x-autobe-database-schema-property`: The DB column or relation name this property maps to
+- `@x-autobe-specification`: Implementation hints (e.g., "password hashing", "Direct mapping", "connect via foreign key")
+
+**IMPORTANT**: These specifications are drafts — treat them as **reference hints, not absolute truth**. When a specification conflicts with the actual database schema, the **database schema wins**.
 
 ```typescript
 interface Mapping {
@@ -215,16 +261,46 @@ interface Mapping {
 }
 ```
 
+Given this Prisma schema:
+
+```prisma
+model bbs_article_comments {
+  //----
+  // COLUMNS
+  //----
+  id              String    @id @db.Uuid
+  bbs_article_id  String    @db.Uuid
+  bbs_user_id     String    @db.Uuid
+  body            String
+  created_at      DateTime  @db.Timestamptz
+  deleted_at      DateTime? @db.Timestamptz
+
+  //----
+  // BELONGED RELATIONS
+  //   - format: (propertyKey targetModel constraint)
+  //----
+  article         bbs_articles              @relation(fields: [bbs_article_id], references: [id], onDelete: Cascade)
+  user            bbs_users                 @relation(fields: [bbs_user_id], references: [id], onDelete: Cascade)
+
+  //----
+  // HAS RELATIONS
+  //   - format: (propertyKey targetModel)
+  //----
+  files           bbs_article_comment_files[]
+  children        bbs_article_comments[]
+}
+```
+
 **Example**:
 ```typescript
 mappings: [
   { member: "id", kind: "scalar", nullable: false, how: "Generate with v4()" },
-  { member: "content", kind: "scalar", nullable: false, how: "From props.body.content" },  // x-autobe-database-schema-property: "content"
+  { member: "body", kind: "scalar", nullable: false, how: "From props.body.content" },  // x-autobe-database-schema-property: "body"
   { member: "created_at", kind: "scalar", nullable: false, how: "Default to new Date()" },
   { member: "deleted_at", kind: "scalar", nullable: true, how: "Default to null" },
 
-  { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.bbsArticle.id" },
-  { member: "parent", kind: "belongsTo", nullable: true, how: "Connect if exists, else undefined" },
+  { member: "article", kind: "belongsTo", nullable: false, how: "Connect using props.article.id" },
+  { member: "user", kind: "belongsTo", nullable: false, how: "Connect using props.user.id" },
 
   { member: "children", kind: "hasMany", nullable: null, how: "Cannot create (reverse relation)" },
   { member: "files", kind: "hasMany", nullable: null, how: "Nested create with BbsArticleCommentFileCollector" },
@@ -335,6 +411,7 @@ export async function collect(props: {
 - [ ] Using `{ connect: {...} }` for all relations
 - [ ] Using `undefined` (NOT `null`) for optional FK
 - [ ] Reusing neighbor collectors where they exist
+- [ ] Checked for neighbor reuse inside inline code (M:N, wrapper tables)
 - [ ] No `$queryRaw`/`$executeRaw` (raw queries bypass type safety)
 
 ### Mappings

@@ -127,8 +127,8 @@ export async function postAuthSellerRefresh(props: {
       MyGlobal.env.JWT_SECRET_KEY,
       { expiresIn: "7d", issuer: "autobe" }
     ),
-    expired_at: toISOStringSafe(accessExpires),
-    refreshable_until: toISOStringSafe(refreshExpires),
+    expired_at: accessExpires.toISOString(),
+    refreshable_until: refreshExpires.toISOString(),
   };
 
   // 6. Update session expiration
