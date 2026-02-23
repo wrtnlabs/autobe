@@ -8,6 +8,9 @@ export * from "./AutoBeImageDescribeDraft";
 
 export * from "./AutoBeAnalyzeActor";
 export * from "./AutoBeAnalyzeFile";
+export * from "./AutoBeAnalyzeModule";
+export * from "./AutoBeAnalyzeSection";
+export * from "./AutoBeAnalyzeUnit";
 
 export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";
