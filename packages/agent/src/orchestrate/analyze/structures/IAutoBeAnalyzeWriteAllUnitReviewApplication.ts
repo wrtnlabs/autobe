@@ -84,9 +84,9 @@ export namespace IAutoBeAnalyzeWriteAllUnitReviewApplication {
      * Revised unit sections for ALL modules if modifications were made.
      *
      * Only provided if the reviewer made direct corrections. Array index
-     * corresponds to moduleIndex.
+     * corresponds to moduleIndex. Set to `null` if no revisions were made.
      */
-    revisedUnits?: IRevisedModuleUnit[];
+    revisedUnits: IRevisedModuleUnit[] | null;
   }
 
   /** Structure for revised units of a single module section. */

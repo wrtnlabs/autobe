@@ -56,10 +56,10 @@ export interface AutoBeAnalyzeWriteAllUnitReviewEvent
    * review.
    *
    * If the reviewer made direct corrections to the structure, this field
-   * contains the updated sections organized by module index. Otherwise
-   * undefined.
+   * contains the updated sections organized by module index. Set to `null` if
+   * no revisions were made.
    */
-  revisedUnits?: IRevisedModuleUnit[];
+  revisedUnits: IRevisedModuleUnit[] | null;
 
   /**
    * Current iteration number of the review process.

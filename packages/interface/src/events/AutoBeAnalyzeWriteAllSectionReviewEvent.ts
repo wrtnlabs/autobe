@@ -58,10 +58,10 @@ export interface AutoBeAnalyzeWriteAllSectionReviewEvent
    * review.
    *
    * If the reviewer made direct corrections to the content, this field contains
-   * the updated sections organized by module and unit index. Otherwise
-   * undefined.
+   * the updated sections organized by module and unit index. Set to `null` if
+   * no revisions were made.
    */
-  revisedSections?: IRevisedModuleSections[];
+  revisedSections: IRevisedModuleSections[] | null;
 
   /**
    * Current iteration number of the review process.

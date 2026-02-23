@@ -88,9 +88,10 @@ export namespace IAutoBeAnalyzeWriteUnitReviewApplication {
     /**
      * Revised unit sections if modifications were made.
      *
-     * Only provided if the reviewer made direct corrections.
+     * Only provided if the reviewer made direct corrections. Set to `null` if
+     * no revisions were made.
      */
-    revisedSections?: IRevisedUnitSection[];
+    revisedSections: IRevisedUnitSection[] | null;
   }
 
   /** Structure for revised unit sections. */

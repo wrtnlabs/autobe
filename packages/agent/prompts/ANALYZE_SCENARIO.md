@@ -236,7 +236,7 @@ process({
 - **reason**: Explanation for the analysis and composition
 - **prefix**: Project prefix (camelCase)
 - **actors**: Array of user actors with name, kind, and description
-- **language**: Optional language specification for documents
+- **language**: Language specification for documents, or `null` if not specified
 - **page**: Number of pages (must match files.length)
 - **files**: Complete array of document metadata objects
 

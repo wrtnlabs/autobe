@@ -77,7 +77,8 @@ process({
   request: {
     type: "complete",
     approved: true,
-    feedback: "Well-organized functional groupings across all modules. Keywords will guide section generation effectively."
+    feedback: "Well-organized functional groupings across all modules. Keywords will guide section generation effectively.",
+    revisedUnits: null
   }
 });
 ```
@@ -89,7 +90,8 @@ process({
   request: {
     type: "complete",
     approved: false,
-    feedback: "Issues: 1) Module 1 'User Features' overlaps with Module 2 'Authentication'. 2) Missing error handling across all modules. 3) Inconsistent depth between modules. Recommendations: Consolidate overlapping sections, add error handling keywords, balance depth."
+    feedback: "Issues: 1) Module 1 'User Features' overlaps with Module 2 'Authentication'. 2) Missing error handling across all modules. 3) Inconsistent depth between modules. Recommendations: Consolidate overlapping sections, add error handling keywords, balance depth.",
+    revisedUnits: null
   }
 });
 ```

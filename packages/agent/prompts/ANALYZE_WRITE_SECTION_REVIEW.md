@@ -98,7 +98,8 @@ process({
     moduleIndex: 0,
     unitIndex: 0,
     approved: true,
-    feedback: "All requirements meet quality standards. EARS format is correct."
+    feedback: "All requirements meet quality standards. EARS format is correct.",
+    revisedSections: null
   }
 });
 ```
@@ -112,7 +113,8 @@ process({
     moduleIndex: 0,
     unitIndex: 0,
     approved: false,
-    feedback: "Issues: 1) 'password recovery' keyword not addressed. 2) Requirement 3 uses 'should' instead of 'SHALL'. 3) Mermaid diagram has spaces in quotes. Recommendations: Add password recovery section section, fix EARS syntax, correct Mermaid formatting."
+    feedback: "Issues: 1) 'password recovery' keyword not addressed. 2) Requirement 3 uses 'should' instead of 'SHALL'. 3) Mermaid diagram has spaces in quotes. Recommendations: Add password recovery section section, fix EARS syntax, correct Mermaid formatting.",
+    revisedSections: null
   }
 });
 ```

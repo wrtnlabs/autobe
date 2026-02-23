@@ -91,20 +91,25 @@ export namespace IAutoBeAnalyzeWriteModuleReviewApplication {
     /**
      * Revised title if modifications were needed.
      *
-     * Only provided if the reviewer made direct corrections.
+     * Only provided if the reviewer made direct corrections. Set to `null` if
+     * no revisions were made.
      */
-    revisedTitle?: string;
+    revisedTitle: string | null;
 
-    /** Revised summary if modifications were needed. */
-    revisedSummary?: string;
+    /**
+     * Revised summary if modifications were needed. Set to `null` if no
+     * revisions were made.
+     */
+    revisedSummary: string | null;
 
     /**
      * Revised module sections if modifications were made.
      *
      * Only provided if the reviewer made direct corrections to fix issues while
-     * still approving the overall structure.
+     * still approving the overall structure. Set to `null` if no revisions were
+     * made.
      */
-    revisedSections?: IRevisedModuleSection[];
+    revisedSections: IRevisedModuleSection[] | null;
   }
 
   /** Structure for revised module sections. */

@@ -85,7 +85,8 @@ process({
   request: {
     type: "complete",
     approved: true,
-    feedback: "All requirements meet quality standards throughout the file. EARS format is correct everywhere."
+    feedback: "All requirements meet quality standards throughout the file. EARS format is correct everywhere.",
+    revisedSections: null
   }
 });
 ```
@@ -97,7 +98,8 @@ process({
   request: {
     type: "complete",
     approved: false,
-    feedback: "Issues: 1) Module 1, Unit 2: 'password recovery' keyword not addressed. 2) Module 2, Unit 1, Section 3: uses 'should' instead of 'SHALL'. 3) Module 1, Unit 1, Section 2: Mermaid has spaces in quotes. Recommendations: Address all keywords, fix EARS syntax everywhere, correct all Mermaid formatting."
+    feedback: "Issues: 1) Module 1, Unit 2: 'password recovery' keyword not addressed. 2) Module 2, Unit 1, Section 3: uses 'should' instead of 'SHALL'. 3) Module 1, Unit 1, Section 2: Mermaid has spaces in quotes. Recommendations: Address all keywords, fix EARS syntax everywhere, correct all Mermaid formatting.",
+    revisedSections: null
   }
 });
 ```

@@ -60,9 +60,9 @@ export interface AutoBeAnalyzeWriteSectionReviewEvent
    * Revised sections if modifications were made during review.
    *
    * If the reviewer made direct corrections to the content, this field contains
-   * the updated sections. Otherwise undefined.
+   * the updated sections. Set to `null` if no revisions were made.
    */
-  revisedSections?: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
+  revisedSections: AutoBeAnalyzeWriteSectionEvent.ISectionSection[] | null;
 
   /**
    * Current iteration number of the review process.

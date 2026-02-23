@@ -98,9 +98,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
 
     /**
      * Language for document content. When specified by the user, this takes
-     * precedence over the locale setting for determining document language.
+     * precedence over the locale setting for determining document language. Set
+     * to `null` if not specified.
      */
-    language?: string;
+    language: string | null;
 
     /**
      * If the user has requested a specific number of pages, enter that number.

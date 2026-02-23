@@ -87,9 +87,9 @@ export namespace IAutoBeAnalyzeWriteAllSectionReviewApplication {
      * Revised sections for ALL units if modifications were made.
      *
      * Only provided if the reviewer made direct corrections. Organized by
-     * module index and unit index.
+     * module index and unit index. Set to `null` if no revisions were made.
      */
-    revisedSections?: IRevisedModuleSections[];
+    revisedSections: IRevisedModuleSections[] | null;
   }
 
   /** Structure for revised sections of a single module. */
