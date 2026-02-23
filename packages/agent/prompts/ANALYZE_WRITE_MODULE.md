@@ -180,41 +180,41 @@ process({
 **Type 2: Complete Module Section Generation (ISO 29148 Structure)**
 ```typescript
 process({
-  thinking: "Designed ISO 29148 compliant SRS structure with all 6 mandatory sections.",
+  thinking: "Designed ISO 29148 compliant SRS structure with all 6 mandatory sections, each with entity ownership declarations and module boundary definitions.",
   request: {
     type: "complete",
     title: "E-Commerce Platform Software Requirements Specification",
-    summary: "This SRS defines the requirements for an e-commerce platform following ISO/IEC/IEEE 29148:2018...",
+    summary: "This SRS defines the complete business requirements for an e-commerce platform enabling product browsing, shopping cart management, order processing, and multi-vendor seller operations. The specification follows ISO/IEC/IEEE 29148:2018 and covers all actor roles (guest, buyer, seller, admin) with their respective capabilities and permission boundaries.",
     moduleSections: [
       {
         title: "Introduction",
         purpose: "Define the purpose, scope, audience, domain glossary, and external references of the system.",
-        content: "This section establishes the purpose and scope of the e-commerce platform..."
+        content: "This section establishes the purpose and scope of the e-commerce platform. It defines the system boundary, target user groups, and domain-specific terminology used throughout the specification.\n\n**Primary Entities**: None (introductory module)\n**Referenced Entities**: All entities referenced at glossary level\n\n**Covers**: system purpose, scope definition, audience identification, domain glossary, document conventions, and external standard references.\n**Does NOT cover**: any functional requirements, capabilities, or constraints.\n\nPrimary audience: development team, QA team, project stakeholders."
       },
       {
         title: "System Overview",
         purpose: "Provide high-level system context including stakeholders, assumptions, and constraints.",
-        content: "This section provides the system context and identifies stakeholders..."
+        content: "This section provides the system context, identifies all stakeholder roles, and documents operating assumptions and constraints. It establishes the actor hierarchy that all capability modules will reference.\n\n**Primary Entities**: ActorRole (guest, buyer, seller, admin, superAdmin)\n**Referenced Entities**: None\n\n**Covers**: system context description, complete actor/stakeholder identification with role hierarchy, operating environment assumptions, regulatory constraints, and business constraints.\n**Does NOT cover**: specific functional capabilities (Module 4), interface specifications (Module 3), or security implementation (Module 6).\n\nAll downstream modules reference the actor definitions established here. DB phase should expect a user/role component group."
       },
       {
         title: "External Interface Requirements",
         purpose: "Describe interfaces with external systems, databases, services, and protocols.",
-        content: "This section specifies external system integrations..."
+        content: "This section specifies all external system integrations and third-party service dependencies required by the e-commerce platform. It covers payment gateway integration, email/notification services, file storage, and any external data sources.\n\n**Primary Entities**: PaymentTransaction, NotificationRecord, FileStorage\n**Referenced Entities**: Order (from Module 4), User (from Module 2)\n\n**Covers**: payment gateway integration (PG), email/SMS notification dispatch, file upload/storage service, external search engine integration, and third-party authentication providers.\n**Does NOT cover**: internal business logic (Module 4), security policies (Module 6).\n\nPrimary actors: system (automated integrations), admin (configuration). DB phase should expect payment and notification component groups."
       },
       {
         title: "System Capabilities and Functional Requirements",
-        purpose: "Define capabilities, use cases, and detailed functional requirements.",
-        content: "This section covers the primary business capabilities and use cases..."
+        purpose: "Define capabilities, use cases, and detailed functional requirements organized by business domain with entity ownership.",
+        content: "This is the core module covering all primary business capabilities of the e-commerce platform. It is organized by business domain: product catalog, shopping cart, order management, seller operations, and buyer account management.\n\n**Primary Entities**: Product, ProductCategory, ProductVariant, CartItem, Order, OrderItem, OrderStatus, Review, SellerShop, BuyerProfile\n**Referenced Entities**: User/ActorRole (from Module 2), PaymentTransaction (from Module 3)\n\n**Covers**: product CRUD and catalog browsing, category management, shopping cart operations, order lifecycle (placement→payment→shipping→delivery→completion), order cancellation and refund, product review and rating, seller shop management, buyer profile management.\n**Does NOT cover**: user authentication (Module 6), payment processing internals (Module 3), performance targets (Module 5).\n\nPrimary actors: buyer (browse, purchase, review), seller (manage products, fulfill orders), admin (moderate content, manage categories). DB phase should expect product, order, and review component groups. Interface phase should expect product, cart, order, and review API controllers."
       },
       {
         title: "Physical and Performance Characteristics",
         purpose: "Specify physical constraints and quantified performance requirements.",
-        content: "This section defines deployment and performance requirements..."
+        content: "This section defines deployment environment constraints and quantified performance requirements for the e-commerce platform. All targets are measurable and testable.\n\n**Primary Entities**: None (non-functional requirements)\n**Referenced Entities**: All entities (performance applies system-wide)\n\n**Covers**: response time SLOs (per endpoint category), throughput requirements, availability targets, scalability expectations, data retention policies, and storage capacity planning.\n**Does NOT cover**: specific functional behaviors (Module 4), security measures (Module 6).\n\nPerformance targets apply to all API endpoints and user-facing operations defined in other modules."
       },
       {
         title: "Security and Quality Attributes",
-        purpose: "Define security requirements and quality attribute scenarios.",
-        content: "This section specifies security and quality requirements..."
+        purpose: "Define security requirements, authentication/authorization, and quality attribute scenarios.",
+        content: "This section specifies authentication mechanisms, authorization policies, data protection requirements, and quality attribute scenarios for the e-commerce platform.\n\n**Primary Entities**: UserCredential, Session, LoginAttempt, AuditLog, Permission\n**Referenced Entities**: User/ActorRole (from Module 2), all business entities (for authorization rules)\n\n**Covers**: user authentication (registration, login, password management, session lifecycle), role-based authorization matrix, data encryption requirements, audit logging, account security (lockout, 2FA), privacy compliance, and system reliability/maintainability.\n**Does NOT cover**: business-specific CRUD operations (Module 4), external service integrations (Module 3).\n\nPrimary actors: all roles (authentication), admin/superAdmin (authorization management). DB phase should expect auth and audit component groups. Interface phase should expect auth-related API controllers."
       }
     ]
   }
@@ -257,11 +257,47 @@ Write a 2-3 sentence executive summary that includes:
 
 ## 4. Module Section Content Guidelines
 
-Each module section's `content` field should:
-- Provide context for what the section covers
-- NOT include detailed requirements (save for Unit/Section steps)
-- Be 2-5 sentences maximum
-- Set the stage for the unit sections that will follow
+Each module section's `content` field should be **5-15 sentences** and include:
+
+1. **Module Overview** (2-3 sentences): What this module covers and its role in the overall system
+2. **Primary Entities** (1-2 sentences): Entities that this module has primary ownership/responsibility for
+3. **Referenced Entities** (1-2 sentences): Entities from other modules that are referenced but not owned here
+4. **Module Boundary** (2-3 sentences): Explicit "Covers / Does NOT cover" declaration
+5. **Key Stakeholder Involvement** (1-2 sentences): Which actors primarily interact with this module's scope
+6. **Downstream Hints** (2-3 sentences): Brief hints about expected DB component groups and API endpoint clusters
+
+### Why Entity Mapping Matters:
+
+- **DB Phase** uses module boundaries to determine component group boundaries
+- **Interface Phase** uses entity lists to determine API controller/route grouping
+- **Review Phase** uses entity ownership to detect cross-module overlap
+
+### Module Content Example:
+
+```
+This module specifies article management capabilities including creation,
+editing, publishing lifecycle, and content organization.
+
+**Primary Entities**: Article, ArticleAttachment, ArticleTag (junction)
+**Referenced Entities**: User (from Module 4: Security), Category (from Module 3: External Interface)
+
+**Covers**: article CRUD operations, publishing state machine (draft→published→archived→deleted),
+attachment management (upload, delete, size limits), tag assignment and removal,
+article search and filtering, content versioning.
+**Does NOT cover**: user authentication (Module 4), comment management (Module 5),
+notification dispatch (Module 3).
+
+Primary actors: member (article author/owner), admin (content moderation).
+Guest actors have read-only access to published articles.
+
+DB phase should expect an "article" component group with Article, ArticleAttachment, and ArticleTag tables.
+Interface phase should expect article-related CRUD endpoints grouped under an article controller.
+```
+
+### Do NOT include:
+- Detailed requirements (those are for Unit/Section steps)
+- EARS-format statements
+- Database schemas or API specifications
 
 ## 5. ISO/IEC/IEEE 29148:2018 SRS Structure (MANDATORY)
 
@@ -289,10 +325,12 @@ Create exactly **6 module sections** in this order:
    - API integration requirements (NOT internal API specs)
 
 4. **System Capabilities and Functional Requirements**
-   - High-level system capabilities
+   - High-level system capabilities organized by business domain
    - Use case descriptions with actors
    - Functional requirements in EARS format
    - Business rules and invariants
+   - **Entity ownership declarations** (Primary Entities / Referenced Entities for each capability area)
+   - **Operation inventory hints** (what CRUD + business operations exist per entity)
 
 5. **Physical and Performance Characteristics**
    - Deployment environment requirements

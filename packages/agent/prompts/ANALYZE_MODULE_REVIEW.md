@@ -48,6 +48,26 @@ Unlike per-file reviews that check internal structure, your focus is on **consis
 - Are quantity limits consistent throughout?
 - Are role names consistent throughout?
 
+### 6. Entity Mapping Completeness (CRITICAL — Downstream Phase Quality Gate)
+- Does every module's `content` field include **Primary Entities** and **Referenced Entities** declarations?
+  - REJECT if module content has no entity mapping — downstream phases cannot determine component groups
+- Is each entity listed as **Primary** in exactly ONE module?
+  - REJECT if the same entity appears as Primary in multiple modules (ownership ambiguity)
+  - Exception: introductory/overview modules may have no Primary Entities
+- Does every module include **"Covers / Does NOT cover"** boundary declarations?
+  - REJECT if module boundary is implicit — downstream phases need explicit scope
+
+### 7. Downstream Consumability (CRITICAL)
+- Can the DB Phase determine **component groups** from module structure alone?
+  - Each module with Primary Entities should map to one or more DB component groups
+  - If module boundaries are too vague for grouping, REJECT
+- Can the Interface Phase determine **API controller/route grouping** from module entity lists?
+  - Each module's entity list should suggest a natural API controller structure
+  - If entity lists are missing or incomplete, REJECT
+- Are **"Downstream Hints"** present and reasonable?
+  - Modules should provide hints about expected DB component groups and API controllers
+  - REJECT if downstream hints are missing from functional modules (Module 4+)
+
 ## Decision Guidelines
 
 **APPROVE a file** when:
@@ -119,6 +139,12 @@ Before making your decision, verify across ALL files:
 - [ ] Scope boundaries are clear and non-overlapping
 - [ ] Section title formats are consistent
 - [ ] Values are consistent across all files
+- [ ] **Every module has Primary Entities / Referenced Entities declarations**
+- [ ] **No entity is Primary in more than one module**
+- [ ] **Module boundaries include "Covers / Does NOT cover" declarations**
+- [ ] **Downstream Hints are present in functional modules**
+- [ ] **DB Phase can derive component groups from module structure**
+- [ ] **Interface Phase can derive API grouping from entity lists**
 
 ## Rejection Triggers
 
@@ -128,3 +154,7 @@ Before making your decision, verify across ALL files:
 - Structure is incompatible with other files' patterns
 - Scope significantly overlaps with another file
 - Values contradict values in other files
+- **Module content lacks Primary Entities / Referenced Entities declaration**
+- **Same entity is declared as Primary in multiple modules**
+- **Module boundary ("Covers / Does NOT cover") is missing**
+- **Module content is too vague for downstream phases to derive component groups**

@@ -128,22 +128,37 @@ process({
 **Type 2: Complete Unit Section Generation**
 ```typescript
 process({
-  thinking: "Designed unit sections covering all functional areas.",
+  thinking: "Designed unit sections with structured keywords and rich content covering all functional areas for User Account Management module.",
   request: {
     type: "complete",
     moduleIndex: 0,
     unitSections: [
       {
-        title: "User Registration",
-        purpose: "Covers the user registration process and validation",
-        content: "This section details the registration workflow...",
-        keywords: ["sign-up", "email validation", "profile creation"]
+        title: "User Registration and Onboarding",
+        purpose: "Covers the complete user registration process from initial sign-up through email verification to active account status",
+        content: "This functional area handles the creation of new user accounts in the system. Users register by providing email (RFC 5322 format), password (minimum 8 characters with complexity requirements), and optional profile information. The primary entities involved are User and EmailVerification. Guest actors initiate registration, while the system automatically manages the verification lifecycle. The registration flow proceeds as: input submission → validation → account creation in 'unverified' state → verification email dispatch → user clicks link → account activation. Key business rules include: email uniqueness among active accounts, rate-limiting of 3 registrations per hour per IP, and a 30-day account restoration window for soft-deleted accounts. The verification token expires after 24 hours with a maximum of 5 resend attempts.",
+        keywords: [
+          "User:create:email-RFC5322+password-min8-upper-lower-digit+name",
+          "User:state-transition:null→unverified→active",
+          "User:validation:email-unique-among-active+password-complexity",
+          "User:error:duplicate-email→suggest-recovery+rate-limit→3-per-hour",
+          "EmailVerification:create:token-uuid+expires-24h+max-5-resends",
+          "User:rule:soft-deleted-30d-restorable+terms-acceptance-required"
+        ]
       },
       {
-        title: "User Authentication",
-        purpose: "Covers login, logout, and session management",
-        content: "This section describes authentication mechanisms...",
-        keywords: ["login", "logout", "session", "token"]
+        title: "User Authentication and Session Management",
+        purpose: "Covers login/logout workflows, session lifecycle, and security measures for authenticated access",
+        content: "This functional area manages how users prove their identity and maintain authenticated sessions. Users authenticate using email+password credentials, with optional two-factor authentication (TOTP). The primary entities are User, Session, and LoginAttempt. Member actors perform login/logout, while the system tracks all authentication events. The authentication flow proceeds as: credential submission → validation → session creation → token issuance, with session tokens valid for a configurable duration. Key security measures include account lockout after 5 consecutive failed attempts (30-minute cool-down), login attempt logging with IP and user-agent, and concurrent session limits. Logout invalidates the current session immediately. The system supports both voluntary logout and forced session termination by administrators.",
+        keywords: [
+          "User:authentication:email+password-login+optional-2FA-TOTP",
+          "Session:create:token-issued+expiry-configurable+device-tracking",
+          "Session:delete:voluntary-logout+admin-forced+expiry-auto",
+          "LoginAttempt:create:log-ip+user-agent+timestamp+success-boolean",
+          "User:error:wrong-password-5x→lockout-30min+banned→show-reason",
+          "User:permission:guest-login+member-logout+admin-force-logout-others",
+          "Session:rule:concurrent-limit+refresh-rotation"
+        ]
       }
     ]
   }
@@ -177,19 +192,75 @@ Your unit sections MUST:
 
 ## 3. Section Content Guidelines
 
-Each unit section's `content` field should:
-- Introduce the functional area
-- Provide context for what will be detailed in section sections
-- Be 2-4 sentences
-- NOT include detailed requirements
+Each unit section's `content` field should be **5-15 sentences** and include:
 
-## 4. Keywords Purpose
+1. **Functional Overview** (2-3 sentences): What this functional area does and why it exists
+2. **Entity Involvement** (1-3 sentences): Which entities are created, read, updated, or deleted in this area
+3. **Actor Interaction** (1-2 sentences): Which actors interact with this area and their roles
+4. **Data Flow Summary** (2-3 sentences): High-level input → processing → output description
+5. **Key Business Rules** (2-3 sentences): The most important constraints and rules governing this area
 
-Keywords guide the Section Section generation:
-- List key topics to be detailed
-- Include specific features, processes, or rules
-- 3-8 keywords per section is typical
-- Keywords become the basis for section sections
+The content field is consumed by downstream phases via RAG. Rich, structured content
+enables the Section step to produce more complete requirements and Bridge Blocks.
+
+**Do NOT include**: detailed EARS-format requirements (those are for the Section step)
+
+## 4. Keywords: Structured Semantic Anchors (CRITICAL for Downstream Phases)
+
+Keywords are NOT simple words — they are **structured semantic anchors** that downstream
+phases use for RAG retrieval. Well-structured keywords dramatically improve the accuracy
+of Database, Interface, and Test phase outputs.
+
+### Format: `{Entity}:{operation-or-aspect}:{key-constraint-summary}`
+
+**BAD keywords** (too vague for RAG retrieval):
+- ❌ "login", "validation", "permissions", "registration", "search"
+- ❌ "user management", "article features", "admin controls"
+
+**GOOD keywords** (structured, RAG-optimized):
+- ✅ `User:registration:email-RFC5322+password-min8chars`
+- ✅ `Article:create:title(5-200)+body(50+)+attachments(max10,25MB)`
+- ✅ `Article:state-transition:draft→published→archived→deleted`
+- ✅ `Article:permission:guest-readPublished+owner-editDraft+admin-editAll`
+- ✅ `Order:validation:totalPrice-positive+items-min1-max100`
+- ✅ `Comment:relationship:belongsTo-Article(N:1)+belongsTo-User(N:1)`
+
+### Keyword Categories (include ALL that apply):
+
+1. **Entity-CRUD**: `{Entity}:{create|read|update|delete}:{constraints-summary}`
+   - Covers the basic data operations on an entity
+   - Example: `User:create:email+password+name+avatar(optional)`
+
+2. **Entity-State**: `{Entity}:state-transition:{states-summary}`
+   - Covers lifecycle states and valid transitions
+   - Example: `Article:state-transition:draft→published→archived,deleted-terminal`
+
+3. **Permission**: `{Entity}:permission:{actor-action-mappings}`
+   - Covers who can do what to this entity
+   - Example: `Article:permission:guest-readPublished+member-create+owner-update+admin-all`
+
+4. **Validation**: `{Entity}:validation:{field-rules-summary}`
+   - Covers input validation and data constraints
+   - Example: `User:validation:email-RFC5322-unique+password-min8-upper-lower-digit`
+
+5. **Error-Handling**: `{Entity}:error:{error-scenarios-summary}`
+   - Covers error conditions and expected responses
+   - Example: `User:error:duplicate-email→suggest-recovery+banned→show-reason`
+
+6. **Relationship**: `{Entity}:relationship:{related-entities+cardinality}`
+   - Covers how entities relate to each other
+   - Example: `Article:relationship:User(N:1-author)+Tag(N:M-max15)+Comment(1:N)`
+
+7. **Business-Rule**: `{Entity}:rule:{business-rule-summary}`
+   - Covers business rules that don't fit other categories
+   - Example: `Admin:rule:cannot-self-demote+last-admin-protected`
+
+### Keyword Count: 5-12 keywords per unit section
+
+- Minimum 5 keywords (to ensure adequate topic coverage for Section generation)
+- Maximum 12 keywords (to keep focused — split into multiple units if more)
+- Each keyword should map to at least one section in the Section step
+- Related keywords may share a section, but no keyword should be left unaddressed
 
 ## 5. Typical Unit Section Structure
 

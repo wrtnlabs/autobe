@@ -48,6 +48,26 @@ Unlike per-file reviews that check internal structure, your focus is on **consis
 - Are quantity limits consistent throughout?
 - Are role names consistent throughout?
 
+### 6. Structured Keywords Quality (CRITICAL — Downstream RAG Quality Gate)
+- Do keywords follow the `{Entity}:{aspect}:{constraint}` structured format?
+  - REJECT vague keywords like "login", "search", "validation" — these are useless for RAG
+  - ACCEPT structured keywords like `User:authentication:email+password-login`, `Article:create:title(5-200)+body(50+)`
+- Does each unit section have at least **5 keywords**?
+  - REJECT units with fewer than 5 keywords — insufficient for Section step guidance
+- Do keywords cover the expected categories for their domain?
+  - Entity-CRUD keywords for data operations
+  - Entity-State keywords for stateful entities
+  - Permission keywords for access-controlled operations
+  - Validation keywords for input constraints
+  - Error keywords for failure scenarios
+  - Relationship keywords for cross-entity references
+
+### 7. Entity Coverage Completeness
+- Do all **Primary Entities** declared in the parent module's content appear in at least one unit's keywords?
+  - REJECT if a module declares "Primary Entities: Article, ArticleAttachment, ArticleTag" but no unit keyword references ArticleAttachment
+- Are entity names consistent between module content and unit keywords?
+  - REJECT if module says "Article" but keywords say "Post" or "article" (case-sensitive for entity names)
+
 ## Decision Guidelines
 
 **APPROVE a file** when:
@@ -119,12 +139,19 @@ Before making your decision, verify across ALL files:
 - [ ] Section boundaries use consistent principles
 - [ ] Values are consistent across all files
 - [ ] No prohibited content (schemas, APIs)
+- [ ] **Keywords follow `Entity:aspect:constraint` structured format**
+- [ ] **Minimum 5 keywords per unit section**
+- [ ] **All module-declared Primary Entities appear in unit keywords**
+- [ ] **Entity names are consistent between module content and unit keywords**
 
 ## Rejection Triggers
 
 **REJECT a file immediately if**:
 - Non-English text detected
 - Granularity is significantly different from other files
-- Keywords are too vague compared to other files
+- Keywords are too vague compared to other files (e.g., single words like "login", "search")
 - Unit count is disproportionate to scope
 - Values contradict other files
+- **Keywords do not follow structured `Entity:aspect:constraint` format**
+- **Any unit has fewer than 5 keywords**
+- **Module-declared Primary Entity is missing from all unit keywords**

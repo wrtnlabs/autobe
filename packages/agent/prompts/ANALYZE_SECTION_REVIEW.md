@@ -56,6 +56,28 @@ Unlike per-file reviews that check internal content quality, your focus is on **
 - No implementation details in any file?
 - No frontend specifications in any file?
 
+### 6. Downstream Bridge Block Validation (CRITICAL — Downstream Phase Quality Gate)
+- Does EVERY section in every file end with a `[DOWNSTREAM CONTEXT]` block?
+- Does `Attributes Specified` include data type + required/optional + constraints for each attribute?
+  - REJECT if attributes are listed by name only without type/constraints
+- Does `Operations Implied` include actor + action description for each operation?
+  - REJECT if operations lack actor specification
+- Are `Error Scenarios` concrete and specific?
+  - REJECT generic errors like "validation error" — require specific condition + specific response
+- Are `Permission Rules` expressed as `actor → operation → condition`?
+- Are `State Changes` expressed as `from → to (trigger)`?
+
+### 7. Cross-File Constraint Consistency (CRITICAL)
+- Is the same `entity.attribute` described with the same type and constraints in ALL files?
+  - Example: If `User.email` is `email(RFC-5322), required, unique` in File 1, it MUST be the same in File 3
+  - REJECT if the same attribute has different constraints in different files
+- Are the same operations' permission rules consistent across all files?
+  - Example: If `CreateArticle` requires `member` role in File 2, it must not require `admin` in File 5
+- Are entity lifecycle states consistent?
+  - Example: If `Article.status` is `enum(draft|published|archived|deleted)` in File 2, File 4 must not reference a `suspended` state
+- Are validation rules for the same field consistent?
+  - Example: If `title` has `min 5, max 200` in one file, it must not be `min 10, max 100` in another
+
 ## Decision Guidelines
 
 **APPROVE a file** when:
@@ -130,6 +152,11 @@ Before making your decision, verify across ALL files:
 - [ ] No prohibited content in any file
 - [ ] Role names are identical across all files
 - [ ] Numeric constraints use same formats and units
+- [ ] **Every section has a `[DOWNSTREAM CONTEXT]` Bridge Block**
+- [ ] **Entity attributes in Bridge Blocks have type + required/optional + constraints**
+- [ ] **Same entity.attribute has consistent constraints across ALL files**
+- [ ] **Permission rules for the same operation are consistent across ALL files**
+- [ ] **Error scenarios are concrete (not generic "validation error")**
 
 ## Rejection Triggers
 
@@ -140,3 +167,7 @@ Before making your decision, verify across ALL files:
 - Terminology is inconsistent with other files
 - Mermaid style conventions differ
 - Prohibited content present
+- **`[DOWNSTREAM CONTEXT]` Bridge Block is missing in ANY section**
+- **Same entity.attribute has different constraints in different files**
+- **Entity attributes listed without type or constraints in Bridge Block**
+- **Operations in Bridge Block lack actor specification**

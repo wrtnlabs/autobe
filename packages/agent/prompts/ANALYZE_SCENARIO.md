@@ -368,21 +368,66 @@ Consider the relationships between documents when organizing:
 **Common Non-goals to consider explicitly**: payment provider specifics, international shipping, multi-vendor marketplace, settlement/ledger, points/coupons, recommendations/personalization, CS automation
 ```
 
-#### 3. Core Domain Model (Business-Level, MANDATORY)
+#### 3. Core Domain Model — Exhaustive Specification (MANDATORY — DB Phase Direct Input)
+
+This section is the **primary input** for the Database Phase. Completeness here directly
+determines the quality of generated database schemas.
+
 ```markdown
 ## Core Domain Model
 
-### Key Entities (Business-Level)
-- [Entity 1]: [Business definition and purpose]
-- [Entity 2]: [Business definition and purpose]
-- [Entity N]: [Business definition and purpose]
+### Entity Catalog (MANDATORY)
 
-### Entity Relationships (Business-Level)
-- [Entity A] is owned by [Actor/Entity B]
-- [Entity C] references [Entity D] for [business reason]
-- [Entity E] is derived from [Entity F] when [condition]
+For each entity, provide ALL of the following:
 
-**Constraints**: Describe only business constraints (NO database schemas or field-level design).
+| Field | Description | Example |
+|-------|-------------|---------|
+| Entity Name | singular, PascalCase-ready | "Article", "Order" |
+| Description | 2-3 sentence business purpose | "Represents..." |
+| Ownership Actor | which actor owns/creates | "member" |
+| Lifecycle States | ALL possible states | ["draft", "published", "deleted"] |
+| Key Attributes | structured table (see below) | — |
+| Uniqueness Rules | business-level unique constraints | "email unique per active user" |
+| Soft Delete | soft/hard delete policy | "Soft delete with deletedAt" |
+
+Each Entity's Key Attributes table:
+
+| Attribute | Type | Required | Constraints | Description |
+|-----------|------|----------|-------------|-------------|
+| title | text(5-200) | yes | trim whitespace | Article heading |
+| status | enum(draft|published|archived) | yes | default: draft | Publishing state |
+| body | text(50-50000) | yes | HTML sanitized | Article content |
+| viewCount | integer(0-∞) | yes | default: 0 | View counter |
+
+Type notation: text(min-max), email, url, integer(min-max), decimal(precision,scale),
+currency(code), boolean, datetime, date, enum(val1|val2|...), file(max_size, types), uuid
+
+### Relationship Map (MANDATORY)
+
+| From | To | Cardinality | Name | Required | Cascade/Rules |
+|------|----|-------------|------|----------|--------------|
+| Article | User | N:1 | "authored by" | yes | soft-delete: keep articles, mark author as deleted |
+| Article | Tag | N:M | "tagged with" | no | max 15 tags per article |
+| Article | Category | N:1 | "belongs to" | yes | category deletion blocked if articles exist |
+| ArticleAttachment | Article | N:1 | "attached to" | yes | cascade delete with parent |
+
+Include ALL relationships including junction/bridge entities for N:M relations.
+
+### Operation Inventory (MANDATORY — Interface Phase Direct Input)
+
+List ALL business operations per entity:
+
+| Operation | Actor | Input Summary | Preconditions | Primary Error Cases |
+|-----------|-------|---------------|---------------|-------------------|
+| CreateArticle | member | title, body, tags?, attachments? | authenticated, not banned | title too short, body too short |
+| UpdateArticle | member(owner), admin | title?, body?, tags? | article exists, draft state (owner) | not owner + not admin → forbidden |
+| DeleteArticle | member(owner), admin | articleId | article exists | not owner + not admin → forbidden |
+| PublishArticle | member(owner), admin | articleId | article in draft, body ≥ 50 chars | body too short → cannot publish |
+| SearchArticles | guest, member, admin | query, filters | — | no results → empty list |
+
+**Constraints**: Describe business constraints only (NO database schemas or column definitions).
+Entity Catalog provides the "what exists", Relationship Map provides the "how connected",
+Operation Inventory provides the "what can be done".
 ```
 
 #### 4. Core Workflows & Rules (Business-Level, MANDATORY)
@@ -390,23 +435,45 @@ Consider the relationships between documents when organizing:
 ## Core Workflows & Rules
 
 ### Primary Workflows
-- [Workflow 1]: step-by-step business flow (happy path)
-- [Workflow 2]: step-by-step business flow (happy path)
+For each major business flow, describe the complete happy path:
+
+- **[Workflow Name]**: [Actor] → [Step 1] → [Step 2] → ... → [Final Outcome]
+  - Inputs: [what the actor provides]
+  - Outputs: [what the system produces]
+  - Entities touched: [which entities are created/modified]
 
 ### Exceptions & Edge Cases
-- [Exception 1]: condition → expected business outcome
-- [Exception 2]: condition → expected business outcome
+For each workflow, list ALL known exception paths:
 
-### State Transitions (Business-Level)
-- [Entity/Process] states: [State A] → [State B] → [State C]
-- Transition rules: [Only allowed when ...], [Forbidden when ...]
+- [Exception 1]: [condition] → [expected business outcome]
+- [Exception 2]: [condition] → [expected business outcome]
+
+### State Transition Matrix (MANDATORY for ALL stateful entities)
+
+| From State | To State | Trigger | Actor | Guard Condition | Side Effects |
+|-----------|----------|---------|-------|----------------|-------------|
+| draft | published | Publish | owner, admin | body ≥ 50 chars, title present | set publishedAt timestamp |
+| published | archived | Archive | owner, admin | — | remove from search results |
+| published | draft | Unpublish | owner, admin | — | clear publishedAt |
+| ANY | deleted | Delete | owner(draft only), admin | — | soft-delete, retain 30 days |
+
+**INVALID transitions MUST also be explicitly listed:**
+- deleted → ANY: deleted items cannot be restored
+- draft → archived: must publish before archiving
+
+**Every entity with lifecycle states MUST have a State Transition Matrix.**
 ```
 
-**Minimum detail (Medium reinforcement)**:
-- Each key entity must include at least one lifecycle workflow (create/update/archive) in Primary Workflows
-- Each key entity must have at least one relationship to an actor or another entity
-- For each primary workflow, include at least one exception/edge case
-- For each state transition, specify at least one allowed and one forbidden condition
+**Minimum detail (STRICT enforcement — completeness required for downstream phases)**:
+- Each entity in the Entity Catalog MUST have at least **5 key attributes** specified with types and constraints
+- Each entity MUST have at least **one relationship** in the Relationship Map with cardinality + cascade behavior
+- Each entity MUST have at least **3 operations** in the Operation Inventory with actor + preconditions + error cases
+- Each entity with lifecycle states MUST have a complete **State Transition Matrix** including invalid transitions
+- Each primary workflow MUST list at least **2 exception/edge cases**
+- Each state transition MUST specify **trigger + guard condition + side effects**
+- The Entity Catalog MUST cover ALL entities mentioned anywhere in the requirements
+- The Relationship Map MUST include ALL cross-entity references (no implicit relationships)
+- The Operation Inventory MUST include ALL CRUD + business operations per entity
 
 **Without these sections, downstream phases will continuously expand requirements and introduce instability.**
 
