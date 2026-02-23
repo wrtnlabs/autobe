@@ -15,6 +15,7 @@ import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { forceRetry } from "../../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
@@ -188,13 +189,15 @@ const correct = async <
               },
             ];
           try {
-            return await process(ctx, {
-              programmer: props.programmer,
-              progress: props.progress,
-              preliminary: props.preliminaries.get(location)!,
-              function: localFunction,
-              failures: localFailures,
-            });
+            return await forceRetry(() =>
+              process(ctx, {
+                programmer: props.programmer,
+                progress: props.progress,
+                preliminary: props.preliminaries.get(location)!,
+                function: localFunction,
+                failures: localFailures,
+              }),
+            );
           } catch (error) {
             console.log("realizeCorrectOverall", localFunction.location, error);
             return {
@@ -366,7 +369,7 @@ const compileWithFiltering = async <
         props.progress.completed = props.functions.length;
       else if (result.type === "failure")
         props.progress.completed =
-          props.progress.completed -
+          props.progress.total -
           new Set(
             result.diagnostics
               .map((d) => d.file)

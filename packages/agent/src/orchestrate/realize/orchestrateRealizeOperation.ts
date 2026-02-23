@@ -28,7 +28,7 @@ export async function orchestrateRealizeOperation(
       transformers: props.transformers,
       progress: props.writeProgress,
     });
-  props.validateProgress.total += functions.length;
+  props.validateProgress.total += 2 * functions.length;
 
   functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
     authorizations: props.authorizations,
