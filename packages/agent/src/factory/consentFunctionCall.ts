@@ -20,6 +20,7 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
+import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 
 /**
  * Generates automatic consent messages when AI hesitates and seeks permission
@@ -114,6 +115,7 @@ export const consentFunctionCall = async (props: {
     ],
   });
   supportMistral(agent, props.vendor);
+  supportFunctionCallFallback(agent, props.vendor);
 
   const histories: MicroAgenticaHistory[] = await agent.conversate(
     "Analyze and judge this assistant message please.",

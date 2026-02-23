@@ -58,6 +58,7 @@ import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
+import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -168,6 +169,7 @@ export const createAutoBeContext = (props: {
           controllers: [next.controller],
         });
         supportMistral(agent, props.vendor);
+        supportFunctionCallFallback(agent, props.vendor);
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {

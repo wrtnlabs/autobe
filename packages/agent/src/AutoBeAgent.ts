@@ -32,6 +32,7 @@ import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
 import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { getValidationErrorPrompt } from "./factory/getValidationErrorPrompt";
 import { supportMistral } from "./factory/supportMistral";
+import { supportFunctionCallFallback } from "./factory/supportFunctionCallFallback";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
 import { transformFacadeStateMessage } from "./orchestrate/facade/structures/transformFacadeStateMessage";
 import { IAutoBeProps } from "./structures/IAutoBeProps";
@@ -190,6 +191,7 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
       ],
     });
     supportMistral(this.agentica_, props.vendor);
+    supportFunctionCallFallback(this.agentica_, props.vendor);
     this.agentica_.getHistories().push(
       ...this.histories_
         .map((history) =>
