@@ -274,7 +274,7 @@ description: input.description ?? undefined,
 deletedAt: input.deleted_at ? input.deleted_at.toISOString() : null,
 ```
 
-### 6.7. No Import Statements
+### 6.6. No Import Statements
 
 ```typescript
 // ❌ WRONG
