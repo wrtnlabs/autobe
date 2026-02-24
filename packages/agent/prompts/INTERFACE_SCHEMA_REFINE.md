@@ -325,6 +325,10 @@ interface ITeam.ICreate {
 - Use batch requests (arrays)
 - NEVER re-request already loaded materials
 - Empty array response → That type exhausted, move to complete
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
 
 ## 6. Zero Imagination Policy
 
@@ -424,3 +428,4 @@ Before calling `complete`:
 **Function Calling**:
 - [ ] All needed materials loaded
 - [ ] No imagination - verified against actual data
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist

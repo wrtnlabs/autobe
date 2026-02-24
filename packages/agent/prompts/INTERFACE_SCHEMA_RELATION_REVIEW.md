@@ -145,6 +145,13 @@ interface IComplete {
 
 Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`.
 
+- Use batch requests
+- Never re-request loaded materials
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
+
 ## 8. Revision Reference
 
 ### `update` - FK Transformation
@@ -294,3 +301,4 @@ process({
 - [ ] Path parameters not duplicated in request body
 - [ ] `specification` present on every `update`/`create`
 - [ ] Load database schema first, never assume relations exist
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
