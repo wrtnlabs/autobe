@@ -51,6 +51,7 @@ Do NOT create entities describing the requirements process:
 - **NO Mermaid diagrams**
 - **Plain, concise content** using tables and bullet lists
 - Each section: **50-100 words maximum**
+- **Use ONLY the provided document list** — do NOT invent filenames or titles
 
 ### TOC Section Content Style:
 

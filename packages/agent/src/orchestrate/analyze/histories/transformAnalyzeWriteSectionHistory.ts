@@ -66,6 +66,18 @@ export const transformAnalyzeWriteSectionHistory = (
         **Document Title**: ${props.moduleEvent.title}
         **Document Summary**: ${props.moduleEvent.summary}
 
+        ${
+          props.file.filename === "00-toc.md"
+            ? `
+        ## AUTHORITATIVE Document List (TOC MUST use ONLY these filenames)
+
+        ${props.scenario.files
+          .map((f, i) => `${i + 1}. ${f.filename} — ${f.documentType}`)
+          .join("\n")}
+        `
+            : ""
+        }
+
         ## Parent Module Section
 
         **Module Index**: ${props.moduleIndex}
