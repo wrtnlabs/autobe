@@ -24,13 +24,13 @@ export const enum AutoBeConfigConstant {
    * diagnostics) back to the AI for correction. This iterative feedback loop
    * transforms hallucinations into learning opportunities.
    *
-   * Value of 8 provides sufficient attempts for complex validation scenarios
+   * Value of 5 provides sufficient attempts for complex validation scenarios
    * while keeping latency reasonable. Most validation errors resolve within 2-3
    * attempts, but complex schema corrections may need additional cycles.
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
    * rather than wasting resources.
    */
-  VALIDATION_RETRY = 8,
+  VALIDATION_RETRY = 5,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.

@@ -99,6 +99,9 @@ interface IComplete {
 
 Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`.
 
+- `$ref` does NOT require the target type to exist
+  - Another agent creates missing `$ref` targets later
+
 ## 6. Revision Reference
 
 ### `erase` - Remove Security Violation from DTO
@@ -219,3 +222,4 @@ process({
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields
+- [ ] Did NOT attempt to fetch or verify `$ref` target types that do not yet exist
