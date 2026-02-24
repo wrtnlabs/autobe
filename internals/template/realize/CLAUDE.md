@@ -151,7 +151,6 @@ type: "create" | "update" | "delete";
 
 | Function | Location | Purpose |
 |----------|----------|---------|
-| `toISOStringSafe()` | `/src/utils/toISOStringSafe` | Safe date to ISO string |
 | `v4()` | `uuid` package | Generate UUIDs |
 | `PasswordUtil.hash()` | `/src/utils/PasswordUtil` | Hash passwords |
 | `PasswordUtil.compare()` | `/src/utils/PasswordUtil` | Compare passwords |

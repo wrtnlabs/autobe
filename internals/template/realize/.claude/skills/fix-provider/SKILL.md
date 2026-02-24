@@ -119,18 +119,16 @@ export namespace {Prefix}{Entity}Collector {
 import { I{Prefix}{Entity} } from "@ORGANIZATION/PROJECT-api/lib/structures/I{Prefix}{Entity}";
 import { {table_name} } from "@prisma/sdk";
 
-import { toISOStringSafe } from "../utils/toISOStringSafe";
-
 export namespace {Prefix}{Entity}Transformer {
   export function transform(record: {table_name}): I{Prefix}{Entity} {
     return {
       id: record.id,
       name: record.name,
       status: record.status,
-      created_at: toISOStringSafe(record.created_at),
-      updated_at: toISOStringSafe(record.updated_at),
+      created_at: record.created_at.toISOString(),
+      updated_at: record.updated_at.toISOString(),
       deleted_at: record.deleted_at
-        ? toISOStringSafe(record.deleted_at)
+        ? record.deleted_at.toISOString()
         : null,
     };
   }
@@ -140,7 +138,7 @@ export namespace {Prefix}{Entity}Transformer {
       id: record.id,
       name: record.name,
       status: record.status,
-      created_at: toISOStringSafe(record.created_at),
+      created_at: record.created_at.toISOString(),
     };
   }
 
