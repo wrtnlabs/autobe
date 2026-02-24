@@ -1,25 +1,17 @@
-# STOP: `"{{REQUEST_TYPE}}"` Is Permanently Banned
+# All Requested Items Already Loaded
 
-All items you requested are **already in your memory**. The type `"{{REQUEST_TYPE}}"` has been **removed from the discriminated union**. It no longer exists.
+Every item you requested via `"{{REQUEST_TYPE}}"` is **already in your memory**. You already have this data — requesting it again does nothing.
 
-**Your ONLY options right now:**
-1. Use a different type from the `expected` field in the validation error
-2. Call `type: "complete"` if your task is done
+## Already loaded (do NOT re-request these):
 
-**Every form of `"{{REQUEST_TYPE}}"` is rejected — changing parameters does not help:**
-```typescript
-process({ request: { type: "{{REQUEST_TYPE}}", ... } }) // REJECTED — any parameters
-```
+{{OLDBIE}}
 
-**Do NOT:**
-- Retry `"{{REQUEST_TYPE}}"` with different items — same rejection
-- Retry `"{{REQUEST_TYPE}}"` with fewer items — same rejection
-- Retry `"{{REQUEST_TYPE}}"` with any variation — same rejection
-- Assume the system is wrong — the system is correct
-- Assume you need data you don't have — it is already in your history
+## Not yet loaded:
 
-The data you need is already loaded. Use it. Move on.
+{{NEWBIE}}
 
-**THE ITEMS ALREADY LOADED:**
+## What to do now:
 
-{{LOADED}}
+1. If there are items in "Not yet loaded" above, request ONLY those items via `"{{REQUEST_TYPE}}"`
+2. If "Not yet loaded" is empty, use a **different type** from the `expected` field
+3. If you have all the data you need, call `type: "complete"` immediately
