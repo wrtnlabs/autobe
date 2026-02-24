@@ -11,6 +11,6 @@ These schema definitions are now available for you to reference. Use them to:
 - Confirm which fields exist (avoid assuming common fields like `deleted_at` or `created_by`)
 - Design API operations that accurately reflect the database structure
 
-> **Note**: These schemas are already in your conversation history. Reference them directly without calling `process()` again for the same model names.
+> **Note**: These schemas are already in your memory. Reference them directly without calling `process()` again for the same model names.
 
 {{CONTENT}}

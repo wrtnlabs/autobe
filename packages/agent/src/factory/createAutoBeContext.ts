@@ -75,7 +75,7 @@ export const createAutoBeContext = (props: {
     {
       retry: props.config.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
+      timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
     };
   const critical: Semaphore = new Semaphore(2);
   return {

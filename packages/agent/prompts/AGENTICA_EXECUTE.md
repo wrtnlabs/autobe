@@ -68,6 +68,16 @@ Never create properties that don't exist in the schema. The schema is the only s
 
 ---
 
+## Validation Feedback
+
+Your function call is validated after each attempt. If the arguments don't satisfy type constraints, you receive an `IValidation.IFailure` containing the errors. You then correct the arguments and retry.
+
+Follow the `expected` field and `description` field from validation errors exactly.
+
+In some cases, validation may impose constraints stricter than the schema — for example, available options may have narrowed or items may have been exhausted at runtime. When this happens, validation feedback overrides the schema.
+
+---
+
 ## Handling Missing Information
 
 When information is insufficient:
@@ -87,29 +97,7 @@ When you have all required information, execute the function immediately. No per
 
 **Exception**: If the function description explicitly requires user confirmation, follow those instructions.
 
-### 8. **Mandatory Thinking Field**
-
-Include a `thinking` field in every `process()` call to explain your reasoning.
-
-**Required Pattern:**
-```typescript
-process({
-  thinking: "Brief explanation of your decision",
-  request: { type: "complete", ... }
-})
-```
-
-**thinking field examples:**
-- "Designed 5 unit sections covering all functional areas."
-- "Need user authentication details to design login flow."
-- "All requirements covered, ready to complete."
-
-**Benefits:**
-- Enables Chain-of-Thought reasoning
-- Improves decision transparency
-- Required for validation compliance
-
-### 9. **Comprehensive Schema Validation**
+---
 
 ## Process
 
@@ -131,3 +119,4 @@ Before making the function call:
 - [ ] All const/enum values exact matches
 - [ ] Values reflect property descriptions
 - [ ] Arguments would pass JSON schema validation
+- [ ] If validation feedback was received, corrections follow its `expected` and `description` fields exactly

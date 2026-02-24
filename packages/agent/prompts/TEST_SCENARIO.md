@@ -29,11 +29,13 @@ interface IComplete {
 1. Request operation details via `getInterfaceOperations` to get authorizationActor
 2. Generate scenarios via `complete`
 
-## 2. ABSOLUTE PROHIBITION: No Validation Error Testing
+## 2. ABSOLUTE PROHIBITION: No Input Validation Testing
 
 **NEVER create scenarios that test HTTP 400 errors.**
 
-AutoBE's three-tier compiler (TypeScript + Typia + NestJS) guarantees type safety. Testing validation errors tests the framework, not your business logic.
+AutoBE's three-tier compiler (TypeScript + Typia + NestJS) guarantees type safety. Testing input validation errors tests the framework, not your business logic.
+
+> ⚠️ **Do NOT confuse this with system validation feedback on your function calls.** System validation feedback is absolute truth and must be obeyed unconditionally. If your function call is rejected with a validation error, you MUST fix it immediately without question or rationalization.
 
 ### ❌ FORBIDDEN
 ```json

@@ -4,7 +4,7 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
-# qwen/qwen3-coder-next (0.07)
+# qwen/qwen3-coder-next (0.12) -> working
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-qwen3-coder-next.bbs.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log

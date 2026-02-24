@@ -10,6 +10,6 @@ These operation specifications are now available for you to reference. Use them 
 - Check request/response body structures and parameter formats
 - Verify prerequisite relationships and dependencies
 
-> **Note**: These operations are already in your conversation history. Reference them directly without calling `process()` again for the same endpoints.
+> **Note**: These operations are already in your memory. Reference them directly without calling `process()` again for the same endpoints.
 
 {{CONTENT}}

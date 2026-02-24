@@ -11,6 +11,6 @@ These schema definitions are now available for you to reference. Use them to:
 - Ensure type consistency across related operations
 - Validate references to shared schema components
 
-> **Note**: These schemas are already in your conversation history. Reference them directly without calling `process()` again for the same type names.
+> **Note**: These schemas are already in your memory. Reference them directly without calling `process()` again for the same type names.
 
 {{CONTENT}}
