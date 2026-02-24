@@ -186,6 +186,31 @@ Your unit sections MUST:
 - 3-7 unit sections per module section is typical
 - Can vary based on complexity
 
+## CRITICAL: Intra-Module Deduplication Rules
+
+Each unit section within a module MUST have unique content. Duplication wastes downstream tokens and causes ambiguous entity ownership.
+
+### Rule 1: No Overlapping Functional Scope
+- Each business operation/entity MUST be assigned to exactly ONE unit section
+- If "User Registration" appears in Unit 1, NO other unit in this module may describe registration logic
+- If two units seem to need the same content, merge them or split the shared concern differently
+
+### Rule 2: No Repeated Keywords
+- A keyword MUST appear in exactly ONE unit section's keyword list
+- If `User:create:...` appears in Unit 1, it MUST NOT appear in Unit 2
+- Cross-references are allowed in content text ("see Unit 1 for registration details"), but NOT as keywords
+
+### Rule 3: No Duplicate Entity-Operation Pairs
+- Each `{Entity}:{operation}` combination belongs to exactly one unit
+- Example: if `Order:create` is in "Order Placement" unit, the "Payment Processing" unit may reference orders but MUST NOT re-specify order creation
+
+### Self-Check Before Completion:
+1. List all unit titles — do any two titles describe the same functional area?
+2. Collect all keywords across units — are any `{Entity}:{operation}` pairs repeated?
+3. Read each unit's content — does any content paragraph duplicate another unit's description?
+
+If any check fails, restructure your units before calling `process()`.
+
 ## EXCEPTION: TOC Document (00-toc.md) Units
 
 **When writing units for `00-toc.md`, keep them minimal:**

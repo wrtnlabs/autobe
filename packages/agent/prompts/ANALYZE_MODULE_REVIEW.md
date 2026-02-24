@@ -128,6 +128,19 @@ process({
 });
 ```
 
+### 8. Module Selection Appropriateness (CRITICAL)
+
+- Are the 3 required modules (Introduction, System Overview, Capabilities) present in every file?
+  - REJECT if any required module is missing
+- Are optional modules justified by the project's actual needs?
+  - REJECT if an optional module is included but its content is thin/padded/generic
+  - A module with only 1-2 sentences of unique content does NOT warrant separate module status
+- Are omitted optional modules genuinely not needed?
+  - If a clearly relevant optional topic (e.g., Security for a multi-role system) is missing, REJECT
+- Is module count proportional to project complexity?
+  - A simple CRUD app should have 3-5 modules, not 8-10
+  - A complex enterprise system may warrant 7-10 modules
+
 ## Review Checklist
 
 Before making your decision, verify across ALL files:
@@ -145,6 +158,9 @@ Before making your decision, verify across ALL files:
 - [ ] **Downstream Hints are present in functional modules**
 - [ ] **DB Phase can derive component groups from module structure**
 - [ ] **Interface Phase can derive API grouping from entity lists**
+- [ ] **3 required modules are present in every file**
+- [ ] **Optional modules are justified and not padded**
+- [ ] **Module count is proportional to project complexity**
 
 ## Rejection Triggers
 
@@ -158,3 +174,5 @@ Before making your decision, verify across ALL files:
 - **Same entity is declared as Primary in multiple modules**
 - **Module boundary ("Covers / Does NOT cover") is missing**
 - **Module content is too vague for downstream phases to derive component groups**
+- **Any of the 3 required modules (Introduction, System Overview, Capabilities) is missing**
+- **Optional module is included but has thin/padded content with no substantial unique information**

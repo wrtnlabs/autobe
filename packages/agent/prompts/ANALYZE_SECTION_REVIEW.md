@@ -140,6 +140,25 @@ process({
 });
 ```
 
+### 8. Intra-File Content Deduplication (CRITICAL)
+
+- Within each file, are requirements stated exactly once?
+  - REJECT if the same requirement appears (even paraphrased) in multiple sections
+  - Example: "email must be RFC 5322 format" should appear once; other sections should cross-reference
+- Within each file, are DOWNSTREAM CONTEXT entries specified once?
+  - REJECT if the same `Entity.attribute` is fully specified in multiple Bridge Blocks within the same file
+  - Subsequent Bridge Blocks should use: `- Entity.attr: (defined in "Section Name")`
+- Within each file, are state transitions defined once?
+  - REJECT if the same `from -> to` transition is fully specified in multiple sections
+- Are operations defined once?
+  - REJECT if the same operation (e.g., `CreateUser`) appears with full specification in multiple Bridge Blocks within the same file
+
+### 9. Cross-File Content Deduplication
+
+- Across files, are the same requirements NOT duplicated?
+  - Cross-file references should use: "See [filename] for [topic]"
+  - REJECT if two files specify the same entity's attributes with identical or near-identical content
+
 ## Review Checklist
 
 Before making your decision, verify across ALL files:
@@ -157,6 +176,10 @@ Before making your decision, verify across ALL files:
 - [ ] **Same entity.attribute has consistent constraints across ALL files**
 - [ ] **Permission rules for the same operation are consistent across ALL files**
 - [ ] **Error scenarios are concrete (not generic "validation error")**
+- [ ] **No duplicate requirements within a file (even paraphrased)**
+- [ ] **No duplicate Entity.attribute specifications in Bridge Blocks within a file**
+- [ ] **No duplicate state transitions within a file**
+- [ ] **No duplicate operation definitions within a file**
 
 ## Rejection Triggers
 
@@ -171,3 +194,6 @@ Before making your decision, verify across ALL files:
 - **Same entity.attribute has different constraints in different files**
 - **Entity attributes listed without type or constraints in Bridge Block**
 - **Operations in Bridge Block lack actor specification**
+- **Same requirement restated in multiple sections within a file**
+- **Same Entity.attribute fully specified in multiple Bridge Blocks within a file**
+- **Same state transition fully defined in multiple sections within a file**

@@ -54,7 +54,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 | Scope Definition | Introduction module ONLY | Reference only |
 | Stakeholder List | System Overview module ONLY | Reference only |
 
-### Rules for Other Modules (Module 02-06):
+### Rules for Non-Introduction Modules:
 
 1. **DO NOT restate** Introduction, System Overview, or Glossary content
 2. **Reference format**: "See Introduction for system scope definition"
@@ -299,58 +299,43 @@ Interface phase should expect article-related CRUD endpoints grouped under an ar
 - EARS-format statements
 - Database schemas or API specifications
 
-## 5. ISO/IEC/IEEE 29148:2018 SRS Structure (MANDATORY)
+## 5. ISO/IEC/IEEE 29148:2018 SRS Structure — Dynamic Module Selection (MANDATORY)
 
-**CRITICAL**: Your module sections MUST follow the ISO/IEC/IEEE 29148:2018 standard structure exactly as provided in the context. The SRS structure will be provided in JSON format in the assistant message.
+**CRITICAL**: Your module sections follow the ISO/IEC/IEEE 29148:2018 standard with **dynamic category selection**. The available modules (required and optional) are provided as JSON in the assistant message.
 
-Create exactly **6 module sections** in this order:
+### Selection Rules:
 
-1. **Introduction**
-   - Purpose statement (why this system exists)
-   - Scope (what is included and excluded)
-   - Target audience and reading guide
-   - Domain-specific glossary terms
-   - References to external documents or standards
+1. **Always include all 3 required modules** (Introduction, System Overview, System Capabilities and Functional Requirements) in order.
+2. **Evaluate each optional module** against the project's actual needs:
+   - Read the `relevanceHint` for each optional module
+   - Include it ONLY if the project genuinely needs that module as a separate concern
+   - Do NOT include optional modules just to "be thorough" — padding creates bloat
+3. **Minimum 3, Maximum 10 modules** per file.
+4. **Omitted modules are not lost** — if an optional topic is briefly relevant, address it within the Capabilities module as a subsection rather than creating a separate module.
+5. **Number selected modules sequentially** starting from 1.
 
-2. **System Overview**
-   - System context diagram description
-   - Stakeholder identification
-   - Key assumptions about the operating environment
-   - Known constraints (technical, business, regulatory)
+### Selection Examples:
 
-3. **External Interface Requirements**
-   - External system integrations
-   - Third-party service dependencies
-   - Data exchange formats and protocols
-   - API integration requirements (NOT internal API specs)
+**Simple TodoApp** (3-4 modules):
+- Introduction (required)
+- System Overview (required)
+- System Capabilities and Functional Requirements (required)
+- Maybe: Security and Quality Attributes (if multi-user auth needed)
 
-4. **System Capabilities and Functional Requirements**
-   - High-level system capabilities organized by business domain
-   - Use case descriptions with actors
-   - Functional requirements in EARS format
-   - Business rules and invariants
-   - **Entity ownership declarations** (Primary Entities / Referenced Entities for each capability area)
-   - **Operation inventory hints** (what CRUD + business operations exist per entity)
+**E-Commerce Platform** (7-8 modules):
+- Introduction (required)
+- System Overview (required)
+- External Interface Requirements (payment gateways, shipping APIs)
+- System Capabilities and Functional Requirements (required)
+- Actor Permission Matrix (buyer, seller, admin roles)
+- Workflow and State Machines (order lifecycle, refund flows)
+- Security and Quality Attributes (payment security, PCI compliance)
 
-5. **Physical and Performance Characteristics**
-   - Deployment environment requirements
-   - Hardware constraints
-   - Response time requirements
-   - Throughput and scalability requirements
-   - Availability targets
-
-6. **Security and Quality Attributes**
-   - Authentication and authorization requirements
-   - Data protection requirements
-   - Audit and logging requirements
-   - Reliability requirements
-   - Maintainability considerations
-
-**IMPORTANT**: Do NOT deviate from this structure. The downstream phases (Database, Interface, Test, Realize) depend on this exact structure for semantic parsing.
+**IMPORTANT**: Do NOT create empty or padded modules. Each selected module must have substantial, unique content specific to this project. The downstream phases (Database, Interface, Test, Realize) depend on this structure for semantic parsing.
 
 ## EXCEPTION: TOC Document (00-toc.md) Structure
 
-**When the document filename is `00-toc.md` (Table of Contents), DO NOT use the ISO 29148 6-module structure above.**
+**When the document filename is `00-toc.md` (Table of Contents), DO NOT use the ISO 29148 dynamic module selection above.**
 
 The TOC is a **navigation index + global context** document, NOT a requirements specification. It must be lightweight (~150-200 lines total).
 

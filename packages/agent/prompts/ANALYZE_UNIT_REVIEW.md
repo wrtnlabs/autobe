@@ -128,6 +128,17 @@ process({
 });
 ```
 
+### 8. Intra-File Deduplication Validation (CRITICAL)
+
+- Within each file, are unit sections across ALL modules free from content overlap?
+  - REJECT if two units in the same file describe the same functional area (e.g., "User Authentication" in both Module 2 and Module 6)
+  - Exception: A unit may briefly cross-reference another unit's topic
+- Are keywords unique across all units within a file?
+  - REJECT if the same `{Entity}:{operation}` keyword appears in multiple units within the same file
+  - Example: `User:authentication:email+password` should appear in exactly one unit
+- Are entity-operation pairs assigned to single units?
+  - REJECT if "Order:create" is covered in both "Order Management" and "Checkout Flow" units — one must own it, the other references it
+
 ## Review Checklist
 
 Before making your decision, verify across ALL files:
@@ -143,6 +154,9 @@ Before making your decision, verify across ALL files:
 - [ ] **Minimum 5 keywords per unit section**
 - [ ] **All module-declared Primary Entities appear in unit keywords**
 - [ ] **Entity names are consistent between module content and unit keywords**
+- [ ] **No duplicate functional scope between units within the same file**
+- [ ] **No duplicate keywords across units within the same file**
+- [ ] **Each entity-operation pair assigned to exactly one unit per file**
 
 ## Rejection Triggers
 
@@ -155,3 +169,5 @@ Before making your decision, verify across ALL files:
 - **Keywords do not follow structured `Entity:aspect:constraint` format**
 - **Any unit has fewer than 5 keywords**
 - **Module-declared Primary Entity is missing from all unit keywords**
+- **Same functional area appears in multiple units within a file (scope overlap)**
+- **Same keyword appears in multiple units within a file**

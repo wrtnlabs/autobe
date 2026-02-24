@@ -326,6 +326,40 @@ When specifying numeric values or constraints:
 - [ ] Role names match across all sections
 - [ ] Time limits (session expiry, lock duration) match across all sections
 
+## CRITICAL: Intra-Unit Deduplication Rules
+
+Content duplication across sections within a unit wastes tokens and creates conflicting requirements. Every section MUST contain unique information.
+
+### Rule 1: No Repeated Requirements
+- A requirement stated in Section A MUST NOT be restated (even paraphrased) in Section B
+- If two sections need the same constraint, state it in the most relevant section and cross-reference: "Per the constraints defined in [Section Name], ..."
+- Example: If "email must be RFC 5322 format" appears in "Registration", do NOT repeat it in "Profile Update" — instead write "Email validation follows the same rules as registration (see Registration section)"
+
+### Rule 2: No Repeated DOWNSTREAM CONTEXT Entries
+- An `Entity.attribute` specification MUST appear in the DOWNSTREAM CONTEXT block of exactly ONE section
+- If `User.email: email(RFC-5322), required, unique` is defined in Section 1's Bridge Block, Section 2 MUST NOT re-specify it
+- Section 2's Bridge Block may reference it: `- User.email: (see Registration section for full specification)`
+- Operations, Permission Rules, and Validation Rules follow the same principle: define once, reference elsewhere
+
+### Rule 3: No Repeated State Transitions
+- A state transition (e.g., `draft -> published`) MUST be fully specified in exactly ONE section
+- Other sections that trigger the same transition should reference it: "Triggers the draft->published transition defined in [Publishing section]"
+
+### Rule 4: Entity Attribute Definition Ownership
+- The FIRST section that introduces an `Entity.attribute` owns its full specification
+- Subsequent sections referencing the same attribute MUST use a short reference format in their Bridge Block:
+  ```
+  - User.email: (defined in "User Registration" section)
+  ```
+
+### Self-Check Before Completion:
+1. Scan all section titles — do any two address the same keyword or topic?
+2. Collect all `Entity.attribute` entries across Bridge Blocks — are any fully specified more than once?
+3. Read each requirement — is any requirement a paraphrase of another section's requirement?
+4. Check all operations — is any `{OperationName}` defined in multiple Bridge Blocks?
+
+If any check fails, restructure before calling `process()`.
+
 ## Downstream Bridge Block (MANDATORY in EVERY section)
 
 Every section MUST end with a structured `[DOWNSTREAM CONTEXT]` block.
