@@ -90,6 +90,14 @@ export const transformAnalyzeWriteSectionHistory = (
         If the parent section says "5 attachments maximum", you MUST use 5, not 10.
         Any deviation will cause the review to REJECT your output.
 
+        ## CRITICAL: No Duplicate Content
+
+        Each section MUST contain unique information:
+        - Do NOT restate requirements already implied by sibling sections' keywords
+        - In your [DOWNSTREAM CONTEXT] Bridge Block, define each Entity.attribute ONLY in the first section that introduces it
+        - Subsequent sections referencing the same attribute should use: "(defined in [Section Name])"
+        - Do NOT duplicate state transitions, operations, or permission rules across sections
+
         ## Keywords to Address
 
         You MUST create sections that address these keywords:

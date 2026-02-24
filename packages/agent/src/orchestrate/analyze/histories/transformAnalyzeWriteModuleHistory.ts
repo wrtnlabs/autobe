@@ -11,87 +11,149 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 /**
- * ISO/IEC/IEEE 29148:2018 SRS Structure
+ * ISO/IEC/IEEE 29148:2018 SRS Structure — Dynamic Module Selection
  *
- * This structure defines the 6 mandatory module sections for a compliant
- * Software Requirements Specification document.
+ * 3 required modules are always present; 7 optional modules are selected
+ * by the LLM based on project characteristics. This aligns with the
+ * semantic layer's AutoBeAnalyzeDocumentSrs.Category type.
  */
-const SRS_STRUCTURE = [
-  {
-    section: 1,
-    title: "Introduction",
-    purpose:
-      "Define the purpose, scope, audience, domain glossary, and external references of the system.",
-    includes: [
-      "Purpose statement (why this system exists)",
-      "Scope (what is included and excluded)",
-      "Target audience and reading guide",
-      "Domain-specific glossary terms",
-      "References to external documents or standards",
-    ],
-  },
-  {
-    section: 2,
-    title: "System Overview",
-    purpose:
-      "Provide high-level system context including stakeholders, assumptions, and constraints.",
-    includes: [
-      "System context diagram description",
-      "Stakeholder identification",
-      "Key assumptions about the operating environment",
-      "Known constraints (technical, business, regulatory)",
-    ],
-  },
-  {
-    section: 3,
-    title: "External Interface Requirements",
-    purpose:
-      "Describe interfaces with external systems, databases, services, and protocols.",
-    includes: [
-      "External system integrations",
-      "Third-party service dependencies",
-      "Data exchange formats and protocols",
-      "API integration requirements (NOT internal API specs)",
-    ],
-  },
-  {
-    section: 4,
-    title: "System Capabilities and Functional Requirements",
-    purpose:
-      "Define capabilities, use cases, and detailed functional requirements.",
-    includes: [
-      "High-level system capabilities",
-      "Use case descriptions with actors",
-      "Functional requirements in EARS format",
-      "Business rules and invariants",
-    ],
-  },
-  {
-    section: 5,
-    title: "Physical and Performance Characteristics",
-    purpose:
-      "Specify physical constraints and quantified performance requirements.",
-    includes: [
-      "Deployment environment requirements",
-      "Hardware constraints",
-      "Response time requirements",
-      "Throughput and scalability requirements",
-      "Availability targets",
-    ],
-  },
-  {
-    section: 6,
-    title: "Security and Quality Attributes",
-    purpose: "Define security requirements and quality attribute scenarios.",
-    includes: [
-      "Authentication and authorization requirements",
-      "Data protection requirements",
-      "Audit and logging requirements",
-      "Reliability requirements",
-      "Maintainability considerations",
-    ],
-  },
-];
+const SRS_STRUCTURE = {
+  required: [
+    {
+      title: "Introduction",
+      categoryKey: "introduction",
+      purpose:
+        "Define the purpose, scope, audience, domain glossary, and external references of the system.",
+      includes: [
+        "Purpose statement (why this system exists)",
+        "Scope (what is included and excluded)",
+        "Target audience and reading guide",
+        "Domain-specific glossary terms",
+        "References to external documents or standards",
+      ],
+    },
+    {
+      title: "System Overview",
+      categoryKey: "systemOverview",
+      purpose:
+        "Provide high-level system context including stakeholders, assumptions, and constraints.",
+      includes: [
+        "System context diagram description",
+        "Stakeholder identification",
+        "Key assumptions about the operating environment",
+        "Known constraints (technical, business, regulatory)",
+      ],
+    },
+    {
+      title: "System Capabilities and Functional Requirements",
+      categoryKey: "capabilities",
+      purpose:
+        "Define capabilities, use cases, and detailed functional requirements.",
+      includes: [
+        "High-level system capabilities",
+        "Use case descriptions with actors",
+        "Functional requirements in EARS format",
+        "Business rules and invariants",
+      ],
+    },
+  ],
+  optional: [
+    {
+      title: "External Interface Requirements",
+      categoryKey: "externalInterface",
+      purpose:
+        "Describe interfaces with external systems, databases, services, and protocols.",
+      includes: [
+        "External system integrations",
+        "Third-party service dependencies",
+        "Data exchange formats and protocols",
+        "API integration requirements (NOT internal API specs)",
+      ],
+      relevanceHint:
+        "Include when the system integrates with external services, payment gateways, third-party APIs, or data feeds.",
+    },
+    {
+      title: "Physical and Performance Characteristics",
+      categoryKey: "physicalPerformance",
+      purpose:
+        "Specify physical constraints and quantified performance requirements.",
+      includes: [
+        "Deployment environment requirements",
+        "Hardware constraints",
+        "Response time requirements",
+        "Throughput and scalability requirements",
+        "Availability targets",
+      ],
+      relevanceHint:
+        "Include when the system has specific performance SLOs, scalability needs, or deployment constraints beyond defaults.",
+    },
+    {
+      title: "Security and Quality Attributes",
+      categoryKey: "securityQuality",
+      purpose: "Define security requirements and quality attribute scenarios.",
+      includes: [
+        "Authentication and authorization requirements",
+        "Data protection requirements",
+        "Audit and logging requirements",
+        "Reliability requirements",
+        "Maintainability considerations",
+      ],
+      relevanceHint:
+        "Include when the system has multi-role authentication, sensitive data handling, compliance requirements, or audit needs.",
+    },
+    {
+      title: "Domain Model and Business Rules",
+      categoryKey: "domainModel",
+      purpose:
+        "Define domain entities, relationships, and core business rules.",
+      includes: [
+        "Entity definitions and relationships",
+        "Business rule catalog",
+        "Data invariants and integrity constraints",
+      ],
+      relevanceHint:
+        "Include when the domain has complex entity relationships, business rules, or data integrity constraints beyond what fits in Capabilities.",
+    },
+    {
+      title: "Actor Permission Matrix",
+      categoryKey: "actorPermissionMatrix",
+      purpose:
+        "Define per-actor permission mappings for all operations.",
+      includes: [
+        "Role-based access control matrix",
+        "Resource-level permission rules",
+        "Permission inheritance and escalation rules",
+      ],
+      relevanceHint:
+        "Include when the system has 3+ actor roles with distinct permission boundaries.",
+    },
+    {
+      title: "Workflow and State Machines",
+      categoryKey: "workflowStateMachine",
+      purpose: "Define state transitions and multi-step workflows.",
+      includes: [
+        "Entity lifecycle state machines",
+        "Multi-step business workflows",
+        "Approval chains and escalation paths",
+      ],
+      relevanceHint:
+        "Include when the system has entities with lifecycle states, approval workflows, or multi-step processes.",
+    },
+    {
+      title: "Data Dictionary",
+      categoryKey: "dataDictionary",
+      purpose:
+        "Define per-field constraints, validation rules, and data formats.",
+      includes: [
+        "Field-level constraints and formats",
+        "Validation rule catalog",
+        "Default values and computed fields",
+      ],
+      relevanceHint:
+        "Include when the system has complex data validation needs, many entity attributes, or strict data format requirements.",
+    },
+  ],
+};
 
 export const transformAnalyzeWriteModuleHistory = (
   ctx: AutoBeContext,
@@ -141,16 +203,29 @@ export const transformAnalyzeWriteModuleHistory = (
         ${JSON.stringify(props.scenario.actors)}
         \`\`\`
 
-        ## SRS Structure (ISO/IEC/IEEE 29148:2018)
+        ## SRS Structure (ISO/IEC/IEEE 29148:2018) — Dynamic Module Selection
 
-        Your module sections MUST follow this standardized structure:
+        Your module sections follow the ISO 29148 standard with dynamic category selection.
+
+        ### Required Modules (MUST always include):
 
         \`\`\`json
-        ${JSON.stringify(SRS_STRUCTURE, null, 2)}
+        ${JSON.stringify(SRS_STRUCTURE.required, null, 2)}
         \`\`\`
 
-        **IMPORTANT**: Create exactly these 6 module sections in this order.
-        Each section's content should follow the purpose described above.
+        ### Optional Modules (include ONLY if relevant to this project):
+
+        \`\`\`json
+        ${JSON.stringify(SRS_STRUCTURE.optional, null, 2)}
+        \`\`\`
+
+        **MODULE SELECTION RULES**:
+        1. Always include all 3 required modules in the order shown.
+        2. Evaluate each optional module against the project scope — include ONLY if the \`relevanceHint\` condition is met.
+        3. Minimum total: 3 modules (all required). Maximum total: 10 modules (3 required + 7 optional).
+        4. Omitted optional modules mean that domain is not complex enough to warrant a separate module — their content may be briefly addressed within the Capabilities module if relevant.
+        5. Number each selected module sequentially starting from 1.
+        6. Do NOT create empty or padded modules. Each module must have substantial, unique content.
 
         ## Document to Create
 

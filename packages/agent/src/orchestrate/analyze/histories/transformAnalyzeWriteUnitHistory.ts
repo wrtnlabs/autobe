@@ -93,6 +93,14 @@ export const transformAnalyzeWriteUnitHistory = (
         If the module section says "5 attachments maximum", you MUST use 5, not 10.
         Any deviation will cause the review to REJECT your output.
 
+        ## CRITICAL: No Duplication with Other Module Sections
+
+        The module sections listed above define clear boundaries. Your unit sections
+        for "${moduleSection?.title ?? "Unknown"}" MUST NOT overlap with content belonging
+        to other module sections. If a topic is covered by another module (e.g., Security
+        covers authentication), do NOT create units for that topic here.
+        Each entity-operation pair must belong to exactly ONE unit — no duplicates.
+
         Create unit sections that break down this module section into functional groupings.
         ${
           props.feedback
