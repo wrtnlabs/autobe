@@ -3,6 +3,7 @@ export * from "./orchestrateAnalyzeScenario";
 export * from "./orchestrateAnalyzeWriteModule";
 export * from "./orchestrateAnalyzeWriteUnit";
 export * from "./orchestrateAnalyzeWriteSection";
+export * from "./orchestrateAnalyzeWriteSectionPatch";
 export * from "./orchestrateAnalyzeModuleReview";
 export * from "./orchestrateAnalyzeUnitReview";
 export * from "./orchestrateAnalyzeSectionReview";

@@ -23,6 +23,7 @@ import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSe
 import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionReview";
 import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
+import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
 
@@ -472,20 +473,36 @@ async function processStageSection(
               const targetedFeedback: string | undefined =
                 feedbackMap.get(`${moduleIndex}:${unitIndex}`) ??
                 state.sectionFeedback;
+              const previousSection: AutoBeAnalyzeWriteSectionEvent | undefined =
+                state.sectionResults?.[moduleIndex]?.[unitIndex];
               const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
-                await orchestrateAnalyzeWriteSection(ctx, {
-                  scenario: props.scenario,
-                  file: state.file,
-                  moduleEvent: moduleResult,
-                  unitEvent,
-                  allUnitEvents: unitResults,
-                  moduleIndex,
-                  unitIndex,
-                  progress: props.sectionWriteProgress,
-                  promptCacheKey: cacheKey,
-                  feedback: targetedFeedback,
-                  retry: attempt,
-                });
+                previousSection && targetedFeedback?.trim()
+                  ? await orchestrateAnalyzeWriteSectionPatch(ctx, {
+                      scenario: props.scenario,
+                      file: state.file,
+                      moduleEvent: moduleResult,
+                      unitEvent,
+                      moduleIndex,
+                      unitIndex,
+                      previousSectionEvent: previousSection,
+                      feedback: targetedFeedback,
+                      progress: props.sectionWriteProgress,
+                      promptCacheKey: cacheKey,
+                      retry: attempt,
+                    })
+                  : await orchestrateAnalyzeWriteSection(ctx, {
+                      scenario: props.scenario,
+                      file: state.file,
+                      moduleEvent: moduleResult,
+                      unitEvent,
+                      allUnitEvents: unitResults,
+                      moduleIndex,
+                      unitIndex,
+                      progress: props.sectionWriteProgress,
+                      promptCacheKey: cacheKey,
+                      feedback: targetedFeedback,
+                      retry: attempt,
+                    });
               sectionsForModule.push(sectionEvent);
             } else {
               // Keep existing approved section
