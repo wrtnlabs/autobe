@@ -131,6 +131,11 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetAnalysisFiles["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            Array.from(oldbie.keys())
+              .map((k) => `- ${k}`)
+              .join("\n"),
           ),
       });
     return finalize(input, errors);
@@ -222,6 +227,11 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetDatabaseSchemas["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            Array.from(oldbie.keys())
+              .map((k) => `- ${k}`)
+              .join("\n"),
           ),
       });
     return finalize(input, errors);
@@ -332,6 +342,15 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetInterfaceOperations["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            StringUtil.trim`
+              Path | Method
+              -----|-------
+              ${Array.from(oldbie.toJSON())
+                .sort(AutoBeOpenApiEndpointComparator.compare)
+                .map((o) => `${o.path} | ${o.method}`)}
+            `,
           ),
       });
     return finalize(input, errors);
@@ -422,6 +441,11 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetInterfaceSchemas["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            Array.from(oldbie.keys())
+              .map((k) => `- ${k}`)
+              .join("\n"),
           ),
       });
     return finalize(input, errors);
@@ -499,6 +523,11 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetRealizeCollectors["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            Array.from(oldbie.keys())
+              .map((k) => `- ${k}`)
+              .join("\n"),
           ),
       });
     return finalize(input, errors);
@@ -576,6 +605,11 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetRealizeTransformers["type"]
             >()[0],
+          ).replace(
+            "{{LOADED}}",
+            Array.from(oldbie.keys())
+              .map((k) => `- ${k}`)
+              .join("\n"),
           ),
       });
     return finalize(input, errors);

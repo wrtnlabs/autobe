@@ -1,6 +1,6 @@
 # STOP: `"{{REQUEST_TYPE}}"` Is Permanently Banned
 
-All items you requested are **already in your conversation history**. The type `"{{REQUEST_TYPE}}"` has been **removed from the discriminated union**. It no longer exists.
+All items you requested are **already in your memory**. The type `"{{REQUEST_TYPE}}"` has been **removed from the discriminated union**. It no longer exists.
 
 **Your ONLY options right now:**
 1. Use a different type from the `expected` field in the validation error
@@ -19,3 +19,7 @@ process({ request: { type: "{{REQUEST_TYPE}}", ... } }) // REJECTED — any para
 - Assume you need data you don't have — it is already in your history
 
 The data you need is already loaded. Use it. Move on.
+
+**THE ITEMS ALREADY LOADED:**
+
+{{LOADED}}

@@ -49,13 +49,13 @@ The following Realize Transformer functions have been ALREADY LOADED into your c
 
 1. Token Efficiency: Re-requesting wastes your limited function call budget
 2. Performance: Duplicate requests slow down the entire generation pipeline
-3. Correctness: These transformers are ALREADY in your conversation history
+3. Correctness: These transformers are ALREADY in your memory
 4. System Stability: Repeated calls for same data trigger infinite loops
 
 ### What You Have Available
 
 ALREADY LOADED AND AVAILABLE:
-- All transformer functions listed above are FULLY LOADED in your conversation history
+- All transformer functions listed above are FULLY LOADED in your memory
 - Complete implementation code, planning information, and neighbor dependencies are accessible
 - You can reference them directly without any additional function calls
 - Their complete function definitions are accessible to you RIGHT NOW
