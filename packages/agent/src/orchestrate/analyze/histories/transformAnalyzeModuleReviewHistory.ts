@@ -18,7 +18,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
  * together, enabling cross-file validation for consistency and uniformity.
  */
 export const transformAnalyzeModuleReviewHistory = (
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     allFileModules: Array<{
@@ -31,21 +31,6 @@ export const transformAnalyzeModuleReviewHistory = (
 ): IAutoBeOrchestrateHistory => {
   return {
     histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        )
-        .map((h) => {
-          if (h.type === "userMessage") {
-            return {
-              ...h,
-              contents: h.contents,
-            };
-          } else {
-            return h;
-          }
-        }),
       {
         id: v7(),
         created_at: new Date().toISOString(),

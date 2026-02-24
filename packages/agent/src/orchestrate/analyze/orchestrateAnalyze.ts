@@ -19,6 +19,7 @@ import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeModuleReview } from "./orchestrateAnalyzeModuleReview";
 import { orchestrateAnalyzeUnitReview } from "./orchestrateAnalyzeUnitReview";
+import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
 import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionReview";
 import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
@@ -91,6 +92,10 @@ export const orchestrateAnalyze = async (
     total: 0,
     completed: 0,
   };
+  const perFileSectionReviewProgress: AutoBeProgressEventBase = {
+    total: scenario.files.length,
+    completed: 0,
+  };
   const crossFileSectionReviewProgress: AutoBeProgressEventBase = {
     total: 1,
     completed: 0,
@@ -117,6 +122,7 @@ export const orchestrateAnalyze = async (
     scenario,
     fileStates,
     sectionWriteProgress,
+    perFileSectionReviewProgress,
     crossFileSectionReviewProgress,
   });
 
@@ -368,10 +374,16 @@ async function processStageUnit(
 // SECTION
 
 /**
- * Process the Section stage for all files with cross-file review.
+ * Process the Section stage for all files with 2-pass review.
  *
- * Flow: Write sections for pending files in parallel → Cross-file review all
- * files → Retry only rejected files (max 3 attempts).
+ * Flow:
+ * 1. Write sections for pending files in parallel
+ * 2. Pass 1: Per-file detailed review (parallel) — validates EARS format,
+ *    value consistency, bridge blocks, intra-file deduplication
+ * 3. Pass 2: Cross-file lightweight review (single call) — validates
+ *    terminology alignment, value consistency across files, naming conventions
+ * 4. Merge results from both passes — reject if either pass rejects
+ * 5. Retry only rejected files (max 3 attempts)
  */
 async function processStageSection(
   ctx: AutoBeContext,
@@ -379,6 +391,7 @@ async function processStageSection(
     scenario: AutoBeAnalyzeScenarioEvent;
     fileStates: IFileState[];
     sectionWriteProgress: AutoBeProgressEventBase;
+    perFileSectionReviewProgress: AutoBeProgressEventBase;
     crossFileSectionReviewProgress: AutoBeProgressEventBase;
   },
 ): Promise<void> {
@@ -391,8 +404,9 @@ async function processStageSection(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY && pendingIndices.size > 0;
     attempt++
   ) {
-    // Dynamically increase review progress for retries
+    // Dynamically increase progress for retries
     if (attempt > 0) {
+      props.perFileSectionReviewProgress.total += pendingIndices.size;
       props.crossFileSectionReviewProgress.total++;
     }
 
@@ -453,11 +467,37 @@ async function processStageSection(
       promptCacheKey,
     );
 
-    // Cross-file review all sections
-    const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
-      await orchestrateAnalyzeSectionReview(ctx, {
+    // Pass 1: Per-file detailed review (parallel)
+    const perFileReviewResults: Map<number, AutoBeAnalyzeSectionReviewEvent> =
+      new Map();
+    await executeCachedBatch(
+      ctx,
+      pendingArray.map((fileIndex) => async (cacheKey) => {
+        const state: IFileState = props.fileStates[fileIndex]!;
+        const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
+          await orchestrateAnalyzeSectionReview(ctx, {
+            scenario: props.scenario,
+            fileIndex,
+            file: state.file,
+            moduleEvent: state.moduleResult!,
+            unitEvents: state.unitResults!,
+            sectionEvents: state.sectionResults!,
+            feedback: state.sectionFeedback,
+            progress: props.perFileSectionReviewProgress,
+            promptCacheKey: cacheKey,
+            retry: attempt,
+          });
+        perFileReviewResults.set(fileIndex, reviewEvent);
+        return reviewEvent;
+      }),
+      promptCacheKey,
+    );
+
+    // Pass 2: Cross-file lightweight review (single call)
+    const crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent =
+      await orchestrateAnalyzeSectionCrossFileReview(ctx, {
         scenario: props.scenario,
-        allFileSections: props.fileStates.map((state, fileIndex) => ({
+        allFileSummaries: props.fileStates.map((state, fileIndex) => ({
           file: state.file,
           moduleEvent: state.moduleResult!,
           unitEvents: state.unitResults!,
@@ -473,20 +513,46 @@ async function processStageSection(
         retry: attempt,
       });
 
-    // Process per-file results
-    for (const fileResult of reviewEvent.fileResults) {
-      if (fileResult.approved) {
-        // Apply revisions if provided
-        const state: IFileState = props.fileStates[fileResult.fileIndex]!;
-        state.sectionResults =
-          AutoBeAnalyzeProgrammer.applySectionRevisions(
+    // Merge results from both passes
+    const crossFileResultMap: Map<
+      number,
+      AutoBeAnalyzeSectionReviewEvent.IFileResult
+    > = new Map();
+    for (const fr of crossFileReviewEvent.fileResults)
+      crossFileResultMap.set(fr.fileIndex, fr);
+
+    for (const fileIndex of pendingArray) {
+      const perFileEvent = perFileReviewResults.get(fileIndex);
+      const perFileResult = perFileEvent?.fileResults[0];
+      const crossFileResult = crossFileResultMap.get(fileIndex);
+
+      const perFileApproved = perFileResult?.approved ?? true;
+      const crossFileApproved = crossFileResult?.approved ?? true;
+      const approved = perFileApproved && crossFileApproved;
+
+      if (approved) {
+        // Apply per-file revisions if provided
+        const state: IFileState = props.fileStates[fileIndex]!;
+        if (perFileResult?.revisedSections) {
+          state.sectionResults = AutoBeAnalyzeProgrammer.applySectionRevisions(
             state.sectionResults!,
-            fileResult,
+            perFileResult,
           );
-        pendingIndices.delete(fileResult.fileIndex);
+        }
+        pendingIndices.delete(fileIndex);
       } else {
-        props.fileStates[fileResult.fileIndex]!.sectionFeedback =
-          fileResult.feedback;
+        // Combine feedback from both passes
+        const feedbackParts: string[] = [];
+        if (!perFileApproved && perFileResult?.feedback)
+          feedbackParts.push(
+            `[Per-file review] ${perFileResult.feedback}`,
+          );
+        if (!crossFileApproved && crossFileResult?.feedback)
+          feedbackParts.push(
+            `[Cross-file review] ${crossFileResult.feedback}`,
+          );
+        props.fileStates[fileIndex]!.sectionFeedback =
+          feedbackParts.join("\n\n");
       }
     }
   }

@@ -156,7 +156,7 @@ const SRS_STRUCTURE = {
 };
 
 export const transformAnalyzeWriteModuleHistory = (
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
@@ -165,19 +165,6 @@ export const transformAnalyzeWriteModuleHistory = (
   },
 ): IAutoBeOrchestrateHistory => ({
   histories: [
-    ...ctx
-      .histories()
-      .filter((h) => h.type === "userMessage" || h.type === "assistantMessage")
-      .map((h) => {
-        if (h.type === "userMessage") {
-          return {
-            ...h,
-            contents: h.contents,
-          };
-        } else {
-          return h;
-        }
-      }),
     {
       id: v7(),
       created_at: new Date().toISOString(),

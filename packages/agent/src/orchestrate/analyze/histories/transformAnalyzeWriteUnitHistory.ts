@@ -12,7 +12,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformAnalyzeWriteUnitHistory = (
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
@@ -28,21 +28,6 @@ export const transformAnalyzeWriteUnitHistory = (
 
   return {
     histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        )
-        .map((h) => {
-          if (h.type === "userMessage") {
-            return {
-              ...h,
-              contents: h.contents,
-            };
-          } else {
-            return h;
-          }
-        }),
       {
         id: v7(),
         created_at: new Date().toISOString(),

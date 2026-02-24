@@ -16,29 +16,32 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { transformAnalyzeSectionReviewHistory } from "./histories/transformAnalyzeSectionReviewHistory";
-import { IAutoBeAnalyzeSectionReviewApplication } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
+import { transformAnalyzeSectionCrossFileReviewHistory } from "./histories/transformAnalyzeSectionCrossFileReviewHistory";
+import { IAutoBeAnalyzeSectionCrossFileReviewApplication } from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
 
 /**
- * Orchestrate per-file review of section content for a SINGLE file.
+ * Orchestrate cross-file lightweight review of section metadata across ALL
+ * files.
  *
- * This function reviews one file's section content in a single LLM call,
- * validating EARS format, value consistency, prohibited content, bridge
- * block completeness, and intra-file deduplication.
+ * This function reviews all files' section metadata (titles, keywords,
+ * purposes) together in a single LLM call, providing cross-file validation
+ * for terminology alignment, value consistency, naming conventions, and
+ * content deduplication.
  *
- * For cross-file consistency checks (terminology alignment, value consistency
- * across files, naming conventions), use orchestrateAnalyzeSectionCrossFileReview.
+ * Unlike the per-file review which checks full content, this review only
+ * receives lightweight metadata to stay within context limits.
  */
-export const orchestrateAnalyzeSectionReview = async (
+export const orchestrateAnalyzeSectionCrossFileReview = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    fileIndex: number;
-    file: AutoBeAnalyzeFile.Scenario;
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-    feedback?: string;
+    allFileSummaries: Array<{
+      file: AutoBeAnalyzeFile.Scenario;
+      moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+      unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+      sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+      status: "approved" | "rewritten" | "new";
+    }>;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
@@ -47,13 +50,13 @@ export const orchestrateAnalyzeSectionReview = async (
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
     new AutoBePreliminaryController({
       application:
-        typia.json.application<IAutoBeAnalyzeSectionReviewApplication>(),
+        typia.json.application<IAutoBeAnalyzeSectionCrossFileReviewApplication>(),
       source: SOURCE,
       kinds: ["previousAnalysisFiles"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IComplete | null> =
       {
         value: null,
       };
@@ -65,25 +68,20 @@ export const orchestrateAnalyzeSectionReview = async (
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeSectionReviewHistory(ctx, {
+      ...transformAnalyzeSectionCrossFileReviewHistory(ctx, {
         scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvents: props.unitEvents,
-        sectionEvents: props.sectionEvents,
-        feedback: props.feedback,
+        allFileSummaries: props.allFileSummaries,
         preliminary,
       }),
     });
     if (pointer.value === null) return out(result)(null);
 
-    // Map LLM's fileIndex (always 0 for single file) to actual fileIndex
     const event: AutoBeAnalyzeSectionReviewEvent = {
       type: SOURCE,
       id: v7(),
       fileResults: pointer.value.fileResults.map((fr) => ({
         ...fr,
-        fileIndex: props.fileIndex,
+        revisedSections: null,
       })),
       acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
@@ -100,14 +98,16 @@ export const orchestrateAnalyzeSectionReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeSectionReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> => {
+    const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps>(
+        input,
+      );
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({
@@ -116,7 +116,7 @@ function createController(props: {
     });
   };
   const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeSectionReviewApplication>({
+    typia.llm.application<IAutoBeAnalyzeSectionCrossFileReviewApplication>({
       validate: {
         process: validate,
       },
@@ -131,7 +131,7 @@ function createController(props: {
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeAnalyzeSectionReviewApplication,
+    } satisfies IAutoBeAnalyzeSectionCrossFileReviewApplication,
   };
 }
 

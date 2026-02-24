@@ -14,44 +14,26 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 /**
- * Transform histories for cross-file review of section content across ALL
- * files.
+ * Transform histories for per-file review of section content.
  *
- * This transformer provides context for reviewing all files' section content
- * together, enabling cross-file validation for EARS format, value consistency,
- * terminology, and Mermaid diagram style.
+ * This transformer provides context for reviewing a SINGLE file's section
+ * content, validating EARS format, value consistency, prohibited content,
+ * bridge block completeness, and intra-file deduplication.
  */
 export const transformAnalyzeSectionReviewHistory = (
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    allFileSections: Array<{
-      file: AutoBeAnalyzeFile.Scenario;
-      moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-      unitEvents: AutoBeAnalyzeWriteUnitEvent[];
-      sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-      status: "approved" | "rewritten" | "new";
-    }>;
+    file: AutoBeAnalyzeFile.Scenario;
+    moduleEvent: AutoBeAnalyzeWriteModuleEvent;
+    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+    feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
   return {
     histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        )
-        .map((h) => {
-          if (h.type === "userMessage") {
-            return {
-              ...h,
-              contents: h.contents,
-            };
-          } else {
-            return h;
-          }
-        }),
       {
         id: v7(),
         created_at: new Date().toISOString(),
@@ -68,28 +50,20 @@ export const transformAnalyzeSectionReviewHistory = (
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
 
-        ## All Files' Section Content to Review
+        ## File: ${props.file.filename}
 
-        Please review ALL files' section content below for cross-file consistency:
+        **Title**: ${props.moduleEvent.title}
+        **Summary**: ${props.moduleEvent.summary}
 
-        ${props.allFileSections
-          .map(
-            (
-              { file, moduleEvent, unitEvents, sectionEvents, status },
-              fileIndex,
-            ) => `
-        ---
-        ## File ${fileIndex + 1}: ${file.filename} [Status: ${status === "approved" ? "✅ Previously Approved" : status === "rewritten" ? "🔄 Rewritten" : "🆕 New"}]
+        ## Section Content to Review
 
-        **Title**: ${moduleEvent.title}
-
-        ${sectionEvents
+        ${props.sectionEvents
           .map((sectionsForModule, moduleIndex) => {
             const moduleSection:
               | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-              | undefined = moduleEvent.moduleSections[moduleIndex];
+              | undefined = props.moduleEvent.moduleSections[moduleIndex];
             const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
-              unitEvents[moduleIndex];
+              props.unitEvents[moduleIndex];
             return `
         ### Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
 
@@ -115,22 +89,31 @@ export const transformAnalyzeSectionReviewHistory = (
         `;
           })
           .join("\n")}
-        `,
-          )
-          .join("\n")}
 
-        ## Cross-File Review Criteria
+        ## Per-File Review Criteria
 
-        Please evaluate across ALL files:
-        1. Is EARS format consistent across all files?
-        2. Are values and constraints consistent?
-        3. Is terminology aligned across all files?
-        4. Are Mermaid diagram styles uniform?
-        5. Is there any prohibited content?
+        Please evaluate this file's section content:
+        1. Is EARS format correct and consistent within this file?
+        2. Are values consistent with parent module/unit definitions?
+        3. Is there any prohibited content?
+        4. Does every section have a complete [DOWNSTREAM CONTEXT] Bridge Block?
+        5. Are Bridge Block attributes properly specified with type + constraints?
+        6. Is there no duplicate content within this file?
+        ${
+          props.feedback
+            ? `
+        ## Previous Attempt Feedback
+
+        Your previous attempt was rejected. Please address these issues:
+
+        ${props.feedback}
+        `
+            : ""
+        }
       `,
       },
     ],
     userMessage:
-      "Review ALL files' section content for cross-file consistency and provide per-file approved/rejected verdicts.",
+      "Review this file's section content for quality and provide an approved/rejected verdict.",
   };
 };

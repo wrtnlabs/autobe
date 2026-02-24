@@ -20,7 +20,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
  * consistency, keyword style, and depth balance.
  */
 export const transformAnalyzeUnitReviewHistory = (
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     allFileUnits: Array<{
@@ -34,21 +34,6 @@ export const transformAnalyzeUnitReviewHistory = (
 ): IAutoBeOrchestrateHistory => {
   return {
     histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        )
-        .map((h) => {
-          if (h.type === "userMessage") {
-            return {
-              ...h,
-              contents: h.contents,
-            };
-          } else {
-            return h;
-          }
-        }),
       {
         id: v7(),
         created_at: new Date().toISOString(),
