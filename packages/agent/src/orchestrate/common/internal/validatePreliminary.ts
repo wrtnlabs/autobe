@@ -531,7 +531,7 @@ namespace PreliminaryApplicationValidator {
 
             ${
               newbie.size === 0
-                ? "All available collectors have already been requested."
+                ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
                 : ""
             }
           `,
@@ -620,7 +620,7 @@ namespace PreliminaryApplicationValidator {
 
             ${
               newbie.size === 0
-                ? "All available transformers have already been requested."
+                ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
                 : ""
             }
           `,

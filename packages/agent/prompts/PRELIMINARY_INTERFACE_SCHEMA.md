@@ -39,8 +39,6 @@ These TypeScript type schemas are ALREADY in your memory. Reference them directl
 
 {{LOADED}}
 
-{{EXHAUSTED}}
-
 ---
 
 ## Not Yet Loaded (Available on Request)

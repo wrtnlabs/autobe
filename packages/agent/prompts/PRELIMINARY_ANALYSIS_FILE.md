@@ -39,8 +39,6 @@ These files are ALREADY in your memory. Reference them directly without any addi
 
 {{LOADED}}
 
-{{EXHAUSTED}}
-
 ---
 
 ## Not Yet Loaded (Available on Request)
