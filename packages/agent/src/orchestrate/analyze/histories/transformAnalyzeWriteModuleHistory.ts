@@ -190,6 +190,19 @@ export const transformAnalyzeWriteModuleHistory = (
         ${JSON.stringify(props.scenario.actors)}
         \`\`\`
 
+        ## AUTHORITATIVE Entity Catalog
+
+        ${props.scenario.entities.map((e) => `- **${e.name}**: ${e.attributes.join(", ")}${e.relationships?.length ? ` | ${e.relationships.join(", ")}` : ""}`).join("\n")}
+
+        ## CRITICAL: Scope Adherence
+
+        You are writing modules for file "${props.file.filename}".
+        Rules:
+        - ONLY reference actors defined in the metadata above
+        - ONLY reference entities from the Entity Catalog above
+        - Do NOT create modules for features excluded from the file's scope
+        - TOC entity/workflow summaries must match ONLY entities from the Entity Catalog
+
         ## SRS Structure (ISO/IEC/IEEE 29148:2018) — Dynamic Module Selection
 
         Your module sections follow the ISO 29148 standard with dynamic category selection.
@@ -213,6 +226,22 @@ export const transformAnalyzeWriteModuleHistory = (
         4. Omitted optional modules mean that domain is not complex enough to warrant a separate module — their content may be briefly addressed within the Capabilities module if relevant.
         5. Number each selected module sequentially starting from 1.
         6. Do NOT create empty or padded modules. Each module must have substantial, unique content.
+
+        ### Alternative: Domain-Functional Split (PREFERRED for focused apps)
+
+        **When to use**: Project has ≤ 3 actors AND ≤ 2 external integrations.
+
+        Instead of generic ISO categories (Introduction → System Overview → System Capabilities with ALL features in one module),
+        split modules by FUNCTIONAL DOMAIN where each module OWNS one functional domain completely.
+
+        Example for a TodoApp:
+        - ✅ Module 1: Service Overview & Authentication
+        - ✅ Module 2: Core Todo Functionality
+        - ✅ Module 3: Edit History Management
+        - ✅ Module 4: Trash and Deletion Workflow
+        - ✅ Module 5: Filtering, Sorting, Pagination
+
+        This produces more focused, implementable documents than stuffing all features into a single "Capabilities" module.
 
         ## Document to Create
 

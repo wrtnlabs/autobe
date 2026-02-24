@@ -49,6 +49,12 @@ export const transformAnalyzeWriteUnitHistory = (
         **Document Title**: ${props.moduleEvent.title}
         **Document Summary**: ${props.moduleEvent.summary}
 
+        ## Domain Entities Reference
+
+        ${props.scenario.entities.map((e) => `- **${e.name}**: ${e.attributes.slice(0, 3).join(", ")}`).join("\n")}
+
+        Units MUST reference ONLY entities listed above.
+
         ## Approved Module Section Structure
 
         Here are all the module sections for context:

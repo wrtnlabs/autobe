@@ -30,6 +30,17 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER include frontend UI/UX specifications
 - ❌ NEVER ask for user confirmation
 
+## CRITICAL: No Meta-Entities
+
+Do NOT create entities describing the requirements process:
+- ❌ InterpretationLog, ScopeDecisionLog, ExclusionLog
+- ❌ CoreVocabularyRegistry, DocumentReference, LegendIndex
+- ❌ RequirementTrace, UserInput, AssumptionRecord
+
+**Test**: "Would a running production server have a database table for this?"
+- NO → meta-entity, PROHIBITED
+- YES → business entity, include it
+
 ## EXCEPTION: TOC Document (00-toc.md) Sections
 
 **When writing sections for `00-toc.md`, use a fundamentally different approach:**
@@ -159,6 +170,36 @@ Before writing each requirement, verify all four dimensions:
    - If YES → Proceed
    - If NO → Rewrite with concrete values, thresholds, and expected behaviors
 
+## CRITICAL: Anti-Verbosity Rules
+
+### PROHIBITED Padding Patterns:
+
+1. **Meta-descriptions** — DO NOT start sections with:
+   - ❌ "This section provides/presents/establishes/defines/specifies..."
+   - ❌ "This unit details the core X entity, which serves as..."
+   - ✅ Start DIRECTLY with the first EARS requirement
+
+2. **Restating titles** — DO NOT restate the section title as prose:
+   - ❌ "User Registration: This section covers user registration requirements"
+   - ✅ "WHEN a user submits registration, THE system SHALL..."
+
+3. **Filler sentences** — REMOVE any sentence without testable content:
+   - ❌ "This is critical for the platform"
+   - ❌ "Ensuring quality and reliability is paramount"
+
+4. **Compact Bridge Blocks**: Maximum 15 lines per Bridge Block.
+   Cross-reference previously defined attributes: "(defined in X section)"
+
+### Word Budget:
+- **Regular sections**: 150-500 words (including Bridge Block)
+- **Complex sections** (with permission matrices/state tables): 300-800 words
+- **TOC sections**: 50-100 words
+
+### The "Delete Test":
+Read each sentence. "If I delete this, is any implementable information lost?"
+- NO → delete it
+- YES → keep it
+
 ## Content Guidelines
 
 **Guideline Ranges**:
@@ -252,10 +293,74 @@ before completing registration.
 ---
 ```
 
+### Exemplary Pattern (FOLLOW THIS STYLE):
+
+```
+### Todo Creation
+
+WHEN a user submits a request to create a todo, THE system SHALL require:
+
+- `title`: Non-empty, trimmed string, 1-500 characters
+- `description`: Optional string, maximum 5,000 characters
+- `startDate`: Optional ISO 8601 timestamp
+- `dueDate`: Optional ISO 8601 timestamp
+
+WHEN created, THE system SHALL assign defaults:
+
+- `completed`: `false`
+- `createdAt`: Current timestamp (ISO 8601)
+- `updatedAt`: Same as `createdAt`
+- `userId`: Authenticated user's ID from token
+- `deletedAt`: `null`
+
+IF `title` is empty or whitespace, THEN THE system SHALL return HTTP 400
+with error code `TODO_TITLE_REQUIRED`.
+
+IF `dueDate` < `startDate`, THEN THE system SHALL return HTTP 400
+with error code `TODO_DUE_DATE_BEFORE_START`.
+
+---
+**[DOWNSTREAM CONTEXT]**
+
+**Entities Modified**: Todo
+**Attributes Specified**:
+  - Todo.id: uuid, required, unique, auto-generated
+  - Todo.title: text(1-500), required, trimmed
+  - Todo.description: text(0-5000), optional
+  - Todo.completed: boolean, required, default: false
+  - Todo.startDate: datetime(ISO-8601), optional
+  - Todo.dueDate: datetime(ISO-8601), optional
+  - Todo.userId: uuid, required, references User.id
+  - Todo.createdAt: datetime, required, auto-set
+  - Todo.updatedAt: datetime, required, auto-set
+  - Todo.deletedAt: datetime, optional, default: null
+**Operations Implied**:
+  - CreateTodo: member → create Todo with ownership
+**Permission Rules**:
+  - member → CreateTodo → authenticated required
+  - guest → CreateTodo → denied
+**Validation Rules**:
+  - title: 1-500 chars, non-empty after trim
+  - dueDate >= startDate when both provided
+**State Changes**: null → active (on creation)
+**Error Scenarios**:
+  - empty title → HTTP 400, TODO_TITLE_REQUIRED
+  - dueDate < startDate → HTTP 400, TODO_DUE_DATE_BEFORE_START
+  - description > 5000 chars → HTTP 400, TODO_DESCRIPTION_TOO_LONG
+---
+```
+
+**KEY PATTERNS of the exemplary pattern:**
+1. Start DIRECTLY with EARS requirement — zero intro paragraphs
+2. Bullet lists for field specs — not prose
+3. HTTP status + error code for EVERY error scenario
+4. Bridge Block: full type specs with constraints
+5. ~250 words total (compact but complete)
+
 ## Business Specificity Requirements
 
-Technical implementation (DB, API, frameworks) is PROHIBITED.
-However, the following MUST be specific and concrete:
+Implementation lock-in (specific DB, framework, infrastructure) is PROHIBITED.
+However, API contract behavior and the following MUST be specific and concrete:
 
 ### MUST Include (Business "What"):
 
@@ -285,13 +390,29 @@ However, the following MUST be specific and concrete:
    - ✅ "Cannot ban super administrators"
    - ✅ "Last super administrator cannot be demoted"
 
-### MUST NOT Include (Technical "How"):
+### MUST NOT Include (Implementation Lock-in):
 
-- ❌ "Store in PostgreSQL with UUID primary key"
-- ❌ "Return HTTP 401 Unauthorized"
-- ❌ "JWT token contains user_id field"
-- ❌ "Use bcrypt with cost factor 12"
-- ❌ "Redis cache with 5-minute TTL"
+These lock to a specific technology — PROHIBITED:
+- ❌ "Store in PostgreSQL with UUID primary key" (specific DB)
+- ❌ "Use bcrypt with cost factor 12" (specific algorithm)
+- ❌ "Redis cache with 5-minute TTL" (specific infrastructure)
+- ❌ "Use NestJS with TypeORM" (specific framework)
+- ❌ "Deploy on AWS ECS" (specific platform)
+
+### MUST Include (API Contract Behavior):
+
+These define the EXTERNAL CONTRACT — REQUIRED for every operation:
+- ✅ HTTP status codes per outcome (400, 401, 404, 409, etc.)
+- ✅ Standardized error codes: `TODO_TITLE_REQUIRED`, `USER_EMAIL_EXISTS`
+- ✅ Error response JSON: `{ "error": { "code": "...", "message": "..." } }`
+- ✅ Pagination metadata: `{ total, page, limit, totalPages, hasNext, hasPrev }`
+- ✅ Auth pattern: "Bearer token in Authorization header, 24h expiry"
+- ✅ Field types with constraints: `title: text(1-500), required, trimmed`
+- ✅ Sort/filter parameter names and allowed enum values
+
+### Rule: "What" vs "How"
+- ✅ "Return HTTP 404 with error code TODO_NOT_FOUND" → WHAT the system returns
+- ❌ "Use PostgreSQL RETURNING clause" → HOW it's implemented
 
 ### Bad vs Good Examples:
 
@@ -300,10 +421,15 @@ However, the following MUST be specific and concrete:
 - ❌ "The system manages permissions"
 - ❌ "Authentication is required"
 
-**Technical Implementation (REJECT)**:
-- ❌ "JWT token expires in 30 minutes with refresh token rotation"
-- ❌ "Password hashed using bcrypt algorithm"
-- ❌ "API returns 403 Forbidden with error code"
+**Implementation Lock-in (REJECT)**:
+- ❌ "Password hashed using bcrypt with cost factor 12"
+- ❌ "Use Redis pub/sub for real-time notifications"
+- ❌ "Store sessions in PostgreSQL with row-level security"
+
+**API Contract (ACCEPT)**:
+- ✅ "THE system SHALL return HTTP 401 with error code AUTH_TOKEN_INVALID when token is expired"
+- ✅ "THE system SHALL return HTTP 404 with error code TODO_NOT_FOUND when todo does not exist"
+- ✅ "Authentication tokens SHALL expire after 24 hours"
 
 **Business Specific (ACCEPT)**:
 - ✅ "Users can create articles with title (5-200 chars), content (min 50 chars), up to 10 attachments (max 25MB each), and up to 15 tags"
@@ -451,6 +577,20 @@ permissions, and constraints from natural language — leading to inconsistency 
 - ❌ Vague validation ("valid email") → Test phase cannot write boundary tests
 - ❌ Missing error scenarios → Test phase has no negative test cases
 - ❌ Inconsistent entity names across sections → DB phase creates duplicate tables
+
+### Data Modeling Anti-Patterns to AVOID:
+
+1. **Polymorphic References** — NEVER use:
+   - ❌ `Todo.ownerId: references User.id OR Admin.id` + `ownerType: enum`
+   - ✅ `Todo.userId: uuid, required, references User.id` (explicit FK)
+
+2. **Implicit State via Booleans**:
+   - ❌ `isPublished: boolean` + `isDeleted: boolean` (4 combinations, ambiguous)
+   - ✅ `status: enum(draft|published|archived|deleted)` (single source of truth)
+
+3. **Over-generic References**:
+   - ❌ `targetId: uuid` + `targetType: enum(user|article|comment)` (universal polymorphism)
+   - ✅ Separate FK columns: `userId: uuid`, `articleId: uuid` (explicit, queryable)
 
 ## Chain of Thought: The `thinking` Field
 

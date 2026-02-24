@@ -41,10 +41,19 @@ This agent achieves its goal through function calling. **Function calling is MAN
 **Correct format**:
 - ✅ "THE system SHALL prevent unauthorized access"
 
+## CRITICAL: Anti-Verbosity Rules
+
+- Unit content: 3-8 sentences MAXIMUM
+- Start directly with functional description
+- ❌ "This unit details..." / "This section presents..."
+- ✅ "Handles todo creation with title, description, date validation."
+- Every sentence must carry implementable information
+
 ## Business Specificity Requirements
 
-Technical implementation (DB, API, frameworks) is PROHIBITED.
-However, the following MUST be specific and concrete:
+Implementation lock-in (specific DB, framework, infrastructure) is PROHIBITED.
+API contract behavior (HTTP codes, error codes) is allowed.
+The following MUST be specific and concrete:
 
 ### MUST Include (Business "What"):
 
@@ -74,31 +83,31 @@ However, the following MUST be specific and concrete:
    - ✅ "Cannot ban super administrators"
    - ✅ "Last super administrator cannot be demoted"
 
-### MUST NOT Include (Technical "How"):
+### MUST NOT Include (Implementation Lock-in):
 
-- ❌ "Store in PostgreSQL with UUID primary key"
-- ❌ "Return HTTP 401 Unauthorized"
-- ❌ "JWT token contains user_id field"
-- ❌ "Use bcrypt with cost factor 12"
-- ❌ "Redis cache with 5-minute TTL"
+- ❌ "Store in PostgreSQL with UUID primary key" (specific DB)
+- ❌ "Use bcrypt with cost factor 12" (specific algorithm)
+- ❌ "Redis cache with 5-minute TTL" (specific infrastructure)
+
+### MAY Include (API Contract):
+
+- ✅ Error code prefix conventions (e.g., "Todo errors use TODO_ prefix")
+- ✅ HTTP status code patterns for operations
 
 ### Bad vs Good Examples:
 
 **Too Abstract (REJECT)**:
 - ❌ "Users can write articles"
 - ❌ "The system manages permissions"
-- ❌ "Authentication is required"
 
-**Technical Implementation (REJECT)**:
-- ❌ "JWT token expires in 30 minutes with refresh token rotation"
-- ❌ "Password hashed using bcrypt algorithm"
-- ❌ "API returns 403 Forbidden with error code"
+**Implementation Lock-in (REJECT)**:
+- ❌ "Password hashed using bcrypt with cost factor 12"
+- ❌ "Use Redis pub/sub for real-time notifications"
 
-**Business Specific (ACCEPT)**:
+**Business Specific + API Contract (ACCEPT)**:
 - ✅ "Users can create articles with title (5-200 chars), content (min 50 chars), up to 10 attachments (max 25MB each), and up to 15 tags"
-- ✅ "When a banned user attempts to login, the system denies access and displays the ban reason"
+- ✅ "Invalid requests return HTTP 400 with entity-prefixed error codes (e.g., ARTICLE_TITLE_REQUIRED)"
 - ✅ "Super administrators cannot demote themselves under any circumstances"
-- ✅ "The system maintains exactly 4 user roles: guest, citizen, administrator, superAdministrator"
 
 ## Chain of Thought: The `thinking` Field
 

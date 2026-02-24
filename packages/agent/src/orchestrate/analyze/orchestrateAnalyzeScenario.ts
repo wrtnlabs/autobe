@@ -58,6 +58,7 @@ export const orchestrateAnalyzeScenario = async (
       prefix: pointer.value.prefix,
       language: pointer.value.language,
       actors: pointer.value.actors,
+      entities: pointer.value.entities,
       files: pointer.value.files,
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,

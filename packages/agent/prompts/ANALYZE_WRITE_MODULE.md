@@ -118,13 +118,18 @@ However, the following MUST be specific and concrete:
    - ✅ "Cannot ban super administrators"
    - ✅ "Last super administrator cannot be demoted"
 
-### MUST NOT Include (Technical "How"):
+### MUST NOT Include (Implementation Lock-in):
 
-- ❌ "Store in PostgreSQL with UUID primary key"
-- ❌ "Return HTTP 401 Unauthorized"
-- ❌ "JWT token contains user_id field"
-- ❌ "Use bcrypt with cost factor 12"
-- ❌ "Redis cache with 5-minute TTL"
+- ❌ "Store in PostgreSQL with UUID primary key" (specific DB)
+- ❌ "Use bcrypt with cost factor 12" (specific algorithm)
+- ❌ "Redis cache with 5-minute TTL" (specific infrastructure)
+- ❌ "Use NestJS with TypeORM" (specific framework)
+
+### MAY Include (API Contract Summary):
+
+- ✅ HTTP status code patterns used in the module
+- ✅ Error code prefix conventions (e.g., "All todo errors use TODO_ prefix")
+- ✅ Auth pattern summary (e.g., "Bearer token, 24h session")
 
 ### Bad vs Good Examples:
 
@@ -133,16 +138,16 @@ However, the following MUST be specific and concrete:
 - ❌ "The system manages permissions"
 - ❌ "Authentication is required"
 
-**Technical Implementation (REJECT)**:
-- ❌ "JWT token expires in 30 minutes with refresh token rotation"
-- ❌ "Password hashed using bcrypt algorithm"
-- ❌ "API returns 403 Forbidden with error code"
+**Implementation Lock-in (REJECT)**:
+- ❌ "Password hashed using bcrypt with cost factor 12"
+- ❌ "Use Redis pub/sub for real-time notifications"
+- ❌ "Store sessions in PostgreSQL with row-level security"
 
-**Business Specific (ACCEPT)**:
+**Business Specific + API Contract (ACCEPT)**:
 - ✅ "Users can create articles with title (5-200 chars), content (min 50 chars), up to 10 attachments (max 25MB each), and up to 15 tags"
 - ✅ "When a banned user attempts to login, the system denies access and displays the ban reason"
 - ✅ "Super administrators cannot demote themselves under any circumstances"
-- ✅ "The system maintains exactly 4 user roles: guest, citizen, administrator, superAdministrator"
+- ✅ "All article operation errors use ARTICLE_ prefix (e.g., ARTICLE_NOT_FOUND, ARTICLE_TITLE_REQUIRED)"
 
 ## Chain of Thought: The `thinking` Field
 
@@ -257,7 +262,7 @@ Write a 2-3 sentence executive summary that includes:
 
 ## 4. Module Section Content Guidelines
 
-Each module section's `content` field should be **5-15 sentences** and include:
+Each module section's `content` field should be **5-10 sentences MAXIMUM, UNDER 150 words** and include:
 
 1. **Module Overview** (2-3 sentences): What this module covers and its role in the overall system
 2. **Primary Entities** (1-2 sentences): Entities that this module has primary ownership/responsibility for
@@ -332,6 +337,36 @@ Interface phase should expect article-related CRUD endpoints grouped under an ar
 - Security and Quality Attributes (payment security, PCI compliance)
 
 **IMPORTANT**: Do NOT create empty or padded modules. Each selected module must have substantial, unique content specific to this project. The downstream phases (Database, Interface, Test, Realize) depend on this structure for semantic parsing.
+
+### Alternative: Domain-Functional Split (PREFERRED for focused apps)
+
+**When to use**: Project has ≤ 3 actors AND ≤ 2 external integrations.
+
+Instead of generic ISO categories where all features go into a single "Capabilities" module, split modules by FUNCTIONAL DOMAIN where each module OWNS one functional domain completely.
+
+**TodoApp example:**
+1. Service Overview & Authentication
+2. Core Todo Functionality (Create, Read, Update, Toggle)
+3. Edit History Management
+4. Trash and Deletion Workflow
+5. Filtering, Sorting, and Pagination
+6. Privacy and Access Control
+
+**BBS example:**
+1. Service Overview & Authentication
+2. Article Management (lifecycle)
+3. Comment System
+4. Section Management
+5. User Ban and Moderation
+6. Search, Filtering, and Tagging
+
+**Key Difference:**
+- ISO Strategy: One big "Capabilities" module → all features stuffed in
+- Domain-Functional: Each module OWNS one functional domain completely
+
+**Selection Rule:**
+- ≤ 3 actors AND ≤ 2 external integrations → Domain-Functional Split
+- Otherwise → ISO 29148 Dynamic Selection
 
 ## EXCEPTION: TOC Document (00-toc.md) Structure
 

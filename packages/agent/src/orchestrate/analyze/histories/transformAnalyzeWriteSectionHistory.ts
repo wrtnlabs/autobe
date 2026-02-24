@@ -19,6 +19,7 @@ export const transformAnalyzeWriteSectionHistory = (
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    allUnitEvents: AutoBeAnalyzeWriteUnitEvent[];
     moduleIndex: number;
     unitIndex: number;
     feedback?: string;
@@ -48,6 +49,17 @@ export const transformAnalyzeWriteSectionHistory = (
         ## Language
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
+
+        ## AUTHORITATIVE Scope Reference
+
+        **Service Prefix**: ${props.scenario.prefix}
+        **Actors**: ${JSON.stringify(props.scenario.actors.map((a) => ({ name: a.name, kind: a.kind })))}
+        **Domain Entities**:
+        ${props.scenario.entities.map((e) => `- **${e.name}**: ${e.attributes.slice(0, 5).join(", ")}${e.relationships?.length ? ` | ${e.relationships.join(", ")}` : ""}`).join("\n")}
+
+        **CRITICAL**: You MUST NOT reference entities, actors, or features not listed above.
+        If actors are [guest, member], do NOT introduce "admin" or "moderator".
+        If entities are [Todo, User], do NOT introduce "Project" or "Label".
 
         ## Document Context
 
@@ -88,6 +100,20 @@ export const transformAnalyzeWriteSectionHistory = (
         You MUST create sections that address these keywords:
 
         ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+
+        ## Sibling Unit Summaries (do NOT duplicate this content)
+
+        ${props.allUnitEvents
+          .flatMap((unitEvt, mi) =>
+            unitEvt.unitSections
+              .map((unit, ui) => {
+                if (mi === props.moduleIndex && ui === props.unitIndex)
+                  return null;
+                return `- **Module ${mi + 1} > ${unit.title}**: ${unit.keywords.slice(0, 5).join(", ")}`;
+              })
+              .filter(Boolean),
+          )
+          .join("\n")}
 
         ## Your Task
 

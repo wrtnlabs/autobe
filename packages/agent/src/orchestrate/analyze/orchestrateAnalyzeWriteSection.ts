@@ -26,6 +26,7 @@ export const orchestrateAnalyzeWriteSection = async (
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    allUnitEvents: AutoBeAnalyzeWriteUnitEvent[];
     moduleIndex: number;
     unitIndex: number;
     progress: AutoBeProgressEventBase;
@@ -60,6 +61,7 @@ export const orchestrateAnalyzeWriteSection = async (
         file: props.file,
         moduleEvent: props.moduleEvent,
         unitEvent: props.unitEvent,
+        allUnitEvents: props.allUnitEvents,
         moduleIndex: props.moduleIndex,
         unitIndex: props.unitIndex,
         feedback: props.feedback,

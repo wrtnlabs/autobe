@@ -104,6 +104,31 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     language: string | null;
 
     /**
+     * Core domain entities with their key attributes and relationships.
+     *
+     * These serve as the AUTHORITATIVE entity list — all downstream document
+     * writers (module, unit, section) MUST reference only these entities. This
+     * prevents hallucination and ensures cross-file consistency.
+     *
+     * Each entity should include:
+     *
+     * - `name`: PascalCase entity name (e.g., "Todo", "User", "Comment")
+     * - `attributes`: Key attributes with type hints (e.g., "title: text(1-500),
+     *   required")
+     * - `relationships`: How this entity relates to others (e.g., "belongsTo User
+     *   via userId")
+     *
+     * Include ALL domain entities that will appear in the requirements documents.
+     * Do NOT include meta-entities (InterpretationLog, ScopeDecisionLog, etc.)
+     * that describe the requirements process rather than the production system.
+     */
+    entities: Array<{
+      name: string;
+      attributes: string[];
+      relationships?: string[];
+    }>;
+
+    /**
      * If the user has requested a specific number of pages, enter that number.
      * Otherwise, provide an appropriate number of documents needed to meet the
      * user's requirements. This number must always match the length of the

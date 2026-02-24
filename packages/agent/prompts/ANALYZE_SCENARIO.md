@@ -219,6 +219,18 @@ process({
       }
     ],
     language: "en",
+    entities: [
+      {
+        name: "Todo",
+        attributes: ["title: text(1-500), required", "completed: boolean, default: false", "description: text(0-5000), optional"],
+        relationships: ["belongsTo User via userId"]
+      },
+      {
+        name: "User",
+        attributes: ["email: text, required, unique", "name: text(1-100), required"],
+        relationships: []
+      }
+    ],
     page: 3,
     files: [
       {
@@ -237,6 +249,7 @@ process({
 - **prefix**: Project prefix (camelCase)
 - **actors**: Array of user actors with name, kind, and description
 - **language**: Language specification for documents, or `null` if not specified
+- **entities**: AUTHORITATIVE domain entity catalog. Include ALL core domain entities with key attributes and relationships. These serve as the single source of truth for all downstream document writers. Do NOT include meta-entities (InterpretationLog, ScopeDecisionLog) that describe the requirements process.
 - **page**: Number of pages (must match files.length)
 - **files**: Complete array of document metadata objects
 
@@ -266,21 +279,23 @@ You can create various types of planning documents, including but not limited to
 
 Additional document types can be created based on project needs, but avoid technical implementation details.
 
-## ⚠️ STRICTLY PROHIBITED Content
+## ⚠️ Content Boundaries
 
-### NEVER Include in Documents:
+### NEVER Include (Implementation Lock-in):
 - **Database schemas, ERD, or table designs** ❌
-- **API endpoint specifications** ❌
-- **Technical implementation details** ❌
+- **Specific framework/ORM/infrastructure choices** ❌ (e.g., "Use PostgreSQL", "Deploy on AWS")
 - **Code examples or pseudo-code** ❌
-- **Framework-specific solutions** ❌
-- **Implementation/architecture diagrams describing technical components or system design** ❌
-- **Business process flow diagrams are allowed** if they describe user journeys or business logic without technical implementation details
+- **Implementation/architecture diagrams describing technical components** ❌
 
-### Why These Are Prohibited:
-- These restrict developer creativity and autonomy
-- Implementation details should be decided by developers based on their expertise
-- Business requirements should focus on WHAT needs to be done, not HOW
+### MUST Include (API Contract Behavior):
+- **Field-level specifications** ✅ (types, constraints, defaults, validation rules)
+- **Authentication contract** ✅ (token pattern, session policy, expiry)
+- **Pagination/filtering conventions** ✅ (parameter names, defaults, ranges)
+- **Business process flow diagrams** ✅ if they describe user journeys or business logic
+
+### Rule: "What" vs "How"
+- ✅ "Return HTTP 404 when todo not found" → WHAT the system does (allowed)
+- ❌ "Use PostgreSQL RETURNING clause" → HOW it's implemented (prohibited)
 
 ## Important Distinctions
 
