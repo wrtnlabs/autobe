@@ -148,4 +148,4 @@ process({
 - [ ] All needed materials loaded before calling `complete`
 - [ ] No imagination — verified against actual data
 - [ ] No duplicate requests for already-loaded materials
-- [ ] Did NOT call `getInterfaceSchemas` for the type being created or types that do not yet exist
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
