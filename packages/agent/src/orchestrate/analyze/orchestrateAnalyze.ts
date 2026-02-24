@@ -40,6 +40,9 @@ interface IFileState {
   moduleFeedback?: string;
   unitFeedback?: string;
   sectionFeedback?: string;
+  rejectedModuleUnits?:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null;
 }
 
 export const orchestrateAnalyze = async (
@@ -422,13 +425,33 @@ async function processStageSection(
           state.moduleResult!;
         const unitResults: AutoBeAnalyzeWriteUnitEvent[] = state.unitResults!;
 
-        // Increase write progress for this file's sections
-        props.sectionWriteProgress.total += unitResults.reduce(
-          (sum, u) => sum + u.unitSections.length,
-          0,
+        // Build rejected module/unit lookup for selective regeneration
+        const rejectedSet: Set<string> | null = buildRejectedSet(
+          state.rejectedModuleUnits,
+        );
+        const feedbackMap: Map<string, string> = buildFeedbackMap(
+          state.rejectedModuleUnits,
         );
 
-        // Write all sections for this file
+        // Increase write progress only for sections that will be regenerated
+        for (
+          let mi: number = 0;
+          mi < unitResults.length;
+          mi++
+        ) {
+          const ue: AutoBeAnalyzeWriteUnitEvent = unitResults[mi]!;
+          for (
+            let ui: number = 0;
+            ui < ue.unitSections.length;
+            ui++
+          ) {
+            if (isSectionRejected(rejectedSet, mi, ui)) {
+              props.sectionWriteProgress.total++;
+            }
+          }
+        }
+
+        // Write sections, skipping approved ones on retry
         const sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
         for (
           let moduleIndex: number = 0;
@@ -444,20 +467,32 @@ async function processStageSection(
             unitIndex < unitEvent.unitSections.length;
             unitIndex++
           ) {
-            const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
-              await orchestrateAnalyzeWriteSection(ctx, {
-                scenario: props.scenario,
-                file: state.file,
-                moduleEvent: moduleResult,
-                unitEvent,
-                moduleIndex,
-                unitIndex,
-                progress: props.sectionWriteProgress,
-                promptCacheKey: cacheKey,
-                feedback: state.sectionFeedback,
-                retry: attempt,
-              });
-            sectionsForModule.push(sectionEvent);
+            if (isSectionRejected(rejectedSet, moduleIndex, unitIndex)) {
+              // Regenerate this section with targeted feedback
+              const targetedFeedback: string | undefined =
+                feedbackMap.get(`${moduleIndex}:${unitIndex}`) ??
+                state.sectionFeedback;
+              const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
+                await orchestrateAnalyzeWriteSection(ctx, {
+                  scenario: props.scenario,
+                  file: state.file,
+                  moduleEvent: moduleResult,
+                  unitEvent,
+                  allUnitEvents: unitResults,
+                  moduleIndex,
+                  unitIndex,
+                  progress: props.sectionWriteProgress,
+                  promptCacheKey: cacheKey,
+                  feedback: targetedFeedback,
+                  retry: attempt,
+                });
+              sectionsForModule.push(sectionEvent);
+            } else {
+              // Keep existing approved section
+              sectionsForModule.push(
+                state.sectionResults![moduleIndex]![unitIndex]!,
+              );
+            }
           }
           sectionResults.push(sectionsForModule);
         }
@@ -553,6 +588,29 @@ async function processStageSection(
           );
         props.fileStates[fileIndex]!.sectionFeedback =
           feedbackParts.join("\n\n");
+
+        // Merge rejectedModuleUnits from both reviews
+        const perFileRejected:
+          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+          | null = perFileApproved
+          ? []
+          : (perFileResult?.rejectedModuleUnits ?? null);
+        const crossFileRejected:
+          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+          | null = crossFileApproved
+          ? []
+          : (crossFileResult?.rejectedModuleUnits ?? null);
+
+        if (perFileRejected === null || crossFileRejected === null) {
+          // One review rejected without granular info → regenerate all
+          props.fileStates[fileIndex]!.rejectedModuleUnits = null;
+        } else {
+          props.fileStates[fileIndex]!.rejectedModuleUnits =
+            mergeRejectedModuleUnits([
+              ...perFileRejected,
+              ...crossFileRejected,
+            ]);
+        }
       }
     }
   }
@@ -565,4 +623,75 @@ async function processStageSection(
           .join(", "),
     );
   }
+}
+
+// ─── Section-stage helper functions ───
+
+function buildRejectedSet(
+  rejected:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null
+    | undefined,
+): Set<string> | null {
+  if (rejected == null) return null;
+  if (rejected.length === 0) return null;
+  const set: Set<string> = new Set();
+  for (const entry of rejected) {
+    for (const ui of entry.unitIndices) {
+      set.add(`${entry.moduleIndex}:${ui}`);
+    }
+  }
+  return set.size > 0 ? set : null;
+}
+
+function buildFeedbackMap(
+  rejected:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null
+    | undefined,
+): Map<string, string> {
+  const map: Map<string, string> = new Map();
+  if (rejected == null) return map;
+  for (const entry of rejected) {
+    for (const ui of entry.unitIndices) {
+      map.set(`${entry.moduleIndex}:${ui}`, entry.feedback);
+    }
+  }
+  return map;
+}
+
+function isSectionRejected(
+  rejectedSet: Set<string> | null,
+  moduleIndex: number,
+  unitIndex: number,
+): boolean {
+  if (rejectedSet === null) return true;
+  return rejectedSet.has(`${moduleIndex}:${unitIndex}`);
+}
+
+function mergeRejectedModuleUnits(
+  entries: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[],
+): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
+  if (entries.length === 0) return null;
+  const map: Map<
+    number,
+    { unitIndices: Set<number>; feedbacks: string[] }
+  > = new Map();
+  for (const entry of entries) {
+    const existing = map.get(entry.moduleIndex);
+    if (existing) {
+      for (const ui of entry.unitIndices) existing.unitIndices.add(ui);
+      existing.feedbacks.push(entry.feedback);
+    } else {
+      map.set(entry.moduleIndex, {
+        unitIndices: new Set(entry.unitIndices),
+        feedbacks: [entry.feedback],
+      });
+    }
+  }
+  return [...map.entries()].map(([moduleIndex, { unitIndices, feedbacks }]) => ({
+    moduleIndex,
+    unitIndices: [...unitIndices].sort((a, b) => a - b),
+    feedback: feedbacks.join("\n"),
+  }));
 }

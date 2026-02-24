@@ -100,6 +100,28 @@ export namespace IAutoBeAnalyzeSectionReviewApplication {
      * were made.
      */
     revisedSections: IRevisedModuleSections[] | null;
+
+    /**
+     * Specific module/unit pairs whose sections were rejected.
+     *
+     * When rejecting a file, identify EXACTLY which modules and units have
+     * problematic sections. Only these will be regenerated on retry.
+     *
+     * Set to null if all module/units need regeneration, or if approving.
+     */
+    rejectedModuleUnits: IRejectedModuleUnit[] | null;
+  }
+
+  /** Identifies specific module/unit pairs whose sections were rejected. */
+  export interface IRejectedModuleUnit {
+    /** Index of the module section. */
+    moduleIndex: number;
+
+    /** Indices of units within this module that need section regeneration. */
+    unitIndices: number[];
+
+    /** Specific feedback for this module/unit group's issues. */
+    feedback: string;
   }
 
   /** Structure for revised sections of a single module. */

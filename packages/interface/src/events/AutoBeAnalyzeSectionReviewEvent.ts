@@ -90,6 +90,27 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
      * made.
      */
     revisedSections: IRevisedModuleSections[] | null;
+
+    /**
+     * Specific module/unit pairs whose sections were rejected.
+     *
+     * When non-null, only these module/units need section regeneration on retry.
+     * When null or undefined, all module/units are considered rejected
+     * (backward-compatible fallback to regenerate all).
+     */
+    rejectedModuleUnits: IRejectedModuleUnit[] | null;
+  }
+
+  /** Identifies specific module/unit pairs whose sections were rejected. */
+  export interface IRejectedModuleUnit {
+    /** Index of the module section. */
+    moduleIndex: number;
+
+    /** Indices of units within this module that need section regeneration. */
+    unitIndices: number[];
+
+    /** Specific feedback for this module/unit group's issues. */
+    feedback: string;
   }
 
   /** Structure for revised sections of a single module. */

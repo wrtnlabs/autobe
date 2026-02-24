@@ -82,6 +82,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       fileResults: pointer.value.fileResults.map((fr) => ({
         ...fr,
         revisedSections: null,
+        rejectedModuleUnits: fr.rejectedModuleUnits ?? null,
       })),
       acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
