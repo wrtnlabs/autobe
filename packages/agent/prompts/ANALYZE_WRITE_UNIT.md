@@ -186,6 +186,33 @@ Your unit sections MUST:
 - 3-7 unit sections per module section is typical
 - Can vary based on complexity
 
+## EXCEPTION: TOC Document (00-toc.md) Units
+
+**When writing units for `00-toc.md`, keep them minimal:**
+
+- **1-2 unit sections per module** (not 3-7 as for regular documents)
+- Unit content: **2-3 sentences maximum**
+- Keywords: **2-3 keywords maximum** (just for structural reference)
+- NO detailed functional area decomposition
+- The purpose of TOC units is to provide **section headings for the TOC content**, not to decompose requirements
+
+### Example TOC Units:
+
+For "Document Index and Project Summary" module:
+- Unit: "Document Listing" — Lists all documents with descriptions
+- Unit: "Project Overview" — Brief project summary
+
+For "Interpretation, Assumptions, and Scope" module:
+- Unit: "Assumptions" — Categorized assumptions list
+- Unit: "Scope Boundaries" — In-scope and out-of-scope items
+
+For "Actor Summary" module:
+- Unit: "Actor Overview" — Actor table with name, kind, description
+
+For "Core Domain Model and Workflows Overview" module:
+- Unit: "Entity Summary" — Entity names with one-line descriptions
+- Unit: "Workflow Summary" — Workflow names with one-line summaries
+
 **Clear Boundaries**: No overlap between unit sections
 - Each functional area belongs to exactly one section
 - Dependencies between sections should be noted

@@ -30,6 +30,60 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER include frontend UI/UX specifications
 - ❌ NEVER ask for user confirmation
 
+## EXCEPTION: TOC Document (00-toc.md) Sections
+
+**When writing sections for `00-toc.md`, use a fundamentally different approach:**
+
+### TOC Section Rules:
+- **NO EARS-format requirements** — TOC does not define requirements
+- **NO [DOWNSTREAM CONTEXT] Bridge Blocks** — TOC is not consumed by downstream phases
+- **NO Mermaid diagrams**
+- **Plain, concise content** using tables and bullet lists
+- Each section: **50-100 words maximum**
+
+### TOC Section Content Style:
+
+Instead of EARS requirements, use:
+- **Tables** for document index, entity summaries, actor summaries
+- **Bullet lists** for assumptions, scope items, workflow summaries
+- **Brief prose** for interpretations and project overview
+
+### Example TOC Section — Document Listing:
+
+```
+| # | Filename | Description |
+|---|----------|-------------|
+| 01 | 01-service-overview.md | Service vision, goals, and market context |
+| 02 | 02-user-actors.md | User actor definitions, authentication, permissions |
+| 03 | 03-customer-requirements.md | Customer-facing features and workflows |
+```
+
+### Example TOC Section — Assumptions:
+
+```
+1. **Business Type**: B2C e-commerce marketplace
+2. **Target Users**: General consumers and sellers
+3. **Region/Currency**: Domestic / KRW
+4. **v1 Core Features**: Product catalog, cart, order, review
+5. **v1 Excluded**: Points/coupons, recommendations, CS automation
+6. **Operational Model**: Multi-seller platform
+7. **Payment Policy**: Card/simple payment (integration deferred)
+8. **Delivery Policy**: Domestic shipping (details deferred)
+```
+
+### Example TOC Section — Entity Summary:
+
+```
+| Entity | Description |
+|--------|-------------|
+| User | Platform user account with authentication credentials |
+| Product | Sellable item with name, description, price, and category |
+| Order | Customer purchase record with items, shipping, and payment status |
+| Review | Customer feedback on purchased products with star rating |
+```
+
+The TOC must remain a **lightweight navigation aid** (~150-200 lines total). All detailed specifications belong in the individual numbered documents.
+
 ## CRITICAL: English Only Requirement
 
 **ALL output MUST be written in English only.**

@@ -348,6 +348,36 @@ Create exactly **6 module sections** in this order:
 
 **IMPORTANT**: Do NOT deviate from this structure. The downstream phases (Database, Interface, Test, Realize) depend on this exact structure for semantic parsing.
 
+## EXCEPTION: TOC Document (00-toc.md) Structure
+
+**When the document filename is `00-toc.md` (Table of Contents), DO NOT use the ISO 29148 6-module structure above.**
+
+The TOC is a **navigation index + global context** document, NOT a requirements specification. It must be lightweight (~150-200 lines total).
+
+Instead, use this lightweight structure with **4 module sections**:
+
+1. **Document Index and Project Summary**
+   - purpose: "Provide a navigation index of all analysis documents with brief descriptions, and a concise project summary."
+   - content: List all analysis documents as a table (filename + one-line description). Include 2-3 sentence project overview.
+
+2. **Interpretation, Assumptions, and Scope**
+   - purpose: "Document the interpretation of user input, explicit assumptions (minimum 8), and v1 scope boundaries."
+   - content: Original user input interpretation, categorized assumptions, In-Scope/Out-of-Scope lists.
+
+3. **Actor Summary**
+   - purpose: "Provide a concise overview of all user actors, their kinds, and brief descriptions."
+   - content: Actor table with name, kind, and 1-2 sentence description. NO detailed authentication flows or permission matrices.
+
+4. **Core Domain Model and Workflows Overview**
+   - purpose: "Summarize the domain entities, key relationships, and primary business workflows at a high level."
+   - content: Entity names with one-line descriptions, key relationship summary, primary workflow names with one-line summaries. NO detailed attribute tables, state transition matrices, or operation inventories.
+
+### TOC Module Content Rules:
+- Each module content: **3-5 sentences maximum** (not 5-15 as for regular documents)
+- NO entity ownership declarations or downstream hints (TOC is not consumed by DB/Interface phases)
+- NO "Primary Entities" / "Referenced Entities" structure
+- The TOC serves as a **reference document** that points readers to detailed documents
+
 ## 6. Content Restrictions
 
 **INCLUDE** in module sections:

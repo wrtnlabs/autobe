@@ -977,6 +977,35 @@ List questions that the document content should answer:
 ## Content Direction
 All metadata properties should guide the creation of business-focused, natural language documentation. Avoid any metadata that suggests technical implementation details, database design, or API specifications.
 
+## TOC File Special Guidelines (00-toc.md)
+
+The TOC file serves as a **navigation index + global context** document, NOT a requirements specification.
+
+### TOC Metadata Must Follow:
+- `documentType`: "toc"
+- `outline`: ["Document Index", "Project Summary", "Interpretation and Assumptions", "Scope Definition", "Actor Summary", "Core Domain Model Summary", "Core Workflows Summary"]
+- `detailLevel`: "high-level overview"
+- `constraints`: ["Must NOT contain detailed EARS-format requirements", "Must NOT contain Mermaid diagrams", "Must serve as navigation index for all other documents", "Each document in the index must have a one-line description"]
+
+### TOC Content Scope:
+- ✅ Document listing with brief descriptions
+- ✅ Project overview (2-3 sentences)
+- ✅ Interpretation & Assumptions (mandatory 8+ items)
+- ✅ Scope Definition (In-Scope / Out-of-Scope lists)
+- ✅ Actor summary table
+- ✅ Entity names with one-line descriptions
+- ✅ Workflow names with one-line summaries
+- ❌ Detailed requirements (belong in individual documents)
+- ❌ EARS-format specifications
+- ❌ Mermaid diagrams
+- ❌ Permission matrices
+- ❌ Error handling specifications
+- ❌ Performance specifications
+
+### Target Length: 150-200 lines maximum
+
+The TOC is a **lightweight reference** that helps readers navigate to detailed content in other documents. It must NOT duplicate the content of those documents.
+
 # Diagram Syntax Rules (Business Flow Only)
 
 ## ⚠️ CRITICAL: Business Diagram Guidelines
