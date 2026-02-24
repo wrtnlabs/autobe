@@ -77,9 +77,6 @@ Follow these steps before every `getAnalysisFiles` call:
 
 Use only file names from the "NOT YET LOADED" list. Creating non-existent file names causes validation failures.
 
-### Request Strategy
-
-
 ### Example
 ```typescript
 // ✅ Correct - request only new, needed files
