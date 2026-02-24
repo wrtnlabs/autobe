@@ -74,6 +74,13 @@ export const transformAnalyzeWriteSectionHistory = (
         ${props.scenario.files
           .map((f, i) => `${i + 1}. ${f.filename} — ${f.documentType}`)
           .join("\n")}
+
+        ## TOC Summary-Only Rules (CRITICAL)
+
+        - DO NOT include requirements, constraints, limits, or error codes
+        - DO NOT use SHALL/SHOULD/MUST or IF/WHEN/THEN patterns
+        - Use short summaries and simple tables only
+        - Reference details by filename instead of restating them
         `
             : ""
         }

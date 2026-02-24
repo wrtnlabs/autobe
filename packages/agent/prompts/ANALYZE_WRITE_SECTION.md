@@ -52,6 +52,8 @@ Do NOT create entities describing the requirements process:
 - **Plain, concise content** using tables and bullet lists
 - Each section: **50-100 words maximum**
 - **Use ONLY the provided document list** — do NOT invent filenames or titles
+- **Summary-only** — do NOT include numbers, constraints, limits, error codes, or validation rules
+- **No requirement verbs** — avoid SHALL/SHOULD/MUST and IF/WHEN/THEN patterns
 
 ### TOC Section Content Style:
 
