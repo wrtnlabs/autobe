@@ -445,7 +445,6 @@ const orchestrateAnalysisSections = (
     else if (props.local.find((s) => s.id === sectionId) === undefined)
       props.local.push(section);
   }
-  // biome-ignore lint: conditional type narrowing not available at dispatch site
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
@@ -454,7 +453,9 @@ const orchestrateAnalysisSections = (
       : "analysisSections",
     source: props.source,
     source_id: props.source_id,
+    // biome-ignore lint/suspicious/noExplicitAny: conditional type narrowing not available at dispatch site
     existing: existing as any,
+    // biome-ignore lint/suspicious/noExplicitAny: conditional type narrowing not available at dispatch site
     requested: props.arguments.request.sectionIds as any,
     trial: props.trial,
     created_at: new Date().toISOString(),
