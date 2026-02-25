@@ -77,6 +77,7 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
+    input = repairMissingRequestType(input);
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
@@ -127,3 +128,43 @@ function createController(props: {
 }
 
 const SOURCE = "analyzeScenario" satisfies AutoBeEventSource;
+
+const repairMissingRequestType = (input: unknown): unknown => {
+  if (isRecord(input) === false) return input;
+  if (isRecord(input.request) === false) return input;
+
+  const request: Record<string, unknown> = input.request;
+  if (typeof request.type === "string" && request.type.length !== 0) return input;
+
+  if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
+    return {
+      ...input,
+      request: {
+        ...request,
+        type: "getPreviousAnalysisFiles",
+      },
+    };
+  }
+
+  if (
+    typeof request.reason === "string" &&
+    typeof request.prefix === "string" &&
+    Array.isArray(request.actors) &&
+    Array.isArray(request.entities) &&
+    Array.isArray(request.files) &&
+    typeof request.page === "number" &&
+    Object.prototype.hasOwnProperty.call(request, "language")
+  ) {
+    return {
+      ...input,
+      request: {
+        ...request,
+        type: "complete",
+      },
+    };
+  }
+  return input;
+};
+
+const isRecord = (input: unknown): input is Record<string, unknown> =>
+  typeof input === "object" && input !== null && Array.isArray(input) === false;

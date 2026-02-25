@@ -33,8 +33,13 @@ export const orchestratePreliminary = async <
   const executes: AgenticaExecuteHistory[] = props.histories.filter(
     (h) => h.type === "execute",
   );
-  if (executes.length === 0)
+  if (executes.length === 0) {
+    // Some vendors (notably certain Qwen/OpenRouter routes) occasionally return
+    // an empty turn where only the user message is recorded. Treat it as a
+    // transient no-op so the outer RAG loop can retry instead of failing fast.
+    if (props.histories.every((h) => h.type === "userMessage")) return;
     throw new Error("Failed to function calling from the preliminary step.");
+  }
 
   for (const exec of executes) {
     // ANALYSIS

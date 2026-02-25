@@ -20,9 +20,10 @@ export interface IParsedFunctionCall {
  * Extracts function calls from text content.
  *
  * Parsing strategy (in priority order):
- * 1. XML `<tool_call>` tags (Qwen3's primary pattern)
+ * 1. XML `<tool_call>` / `<function_call>` tags (Qwen-style patterns)
  * 2. Markdown code blocks
  * 3. Raw JSON objects in content
+ * 4. JavaScript-style invocations (e.g. `process({...})`)
  *
  * Only returns calls whose function name matches `availableToolNames`.
  *
@@ -49,6 +50,10 @@ export const parseTextFunctionCall = (
 
   // Strategy 3: Raw JSON objects/arrays
   results = parseRawJson(content, toolNameSet);
+  if (results.length > 0) return results;
+
+  // Strategy 4: JavaScript-style function invocations
+  results = parseFunctionInvocations(content, toolNameSet);
   return results;
 };
 
@@ -56,7 +61,8 @@ export const parseTextFunctionCall = (
 // Strategy 1: XML <tool_call> tags
 // ──────────────────────────────────────────────
 
-const XML_TOOL_CALL_RE = /<tool_call>\s*([\s\S]*?)\s*<\/tool_call>/g;
+const XML_TOOL_CALL_RE =
+  /<(?:tool_call|function_call)>\s*([\s\S]*?)\s*<\/(?:tool_call|function_call)>/g;
 
 const parseXmlToolCalls = (
   content: string,
@@ -66,8 +72,23 @@ const parseXmlToolCalls = (
   let match: RegExpExecArray | null;
 
   while ((match = XML_TOOL_CALL_RE.exec(content)) !== null) {
-    const parsed = tryParseCandidate(match[1]!, toolNames);
-    if (parsed) results.push(parsed);
+    const block = match[1]!.trim();
+
+    // JSON object / array inside XML
+    const arrayCalls = tryParseArray(block, toolNames);
+    if (arrayCalls.length > 0) {
+      results.push(...arrayCalls);
+      continue;
+    }
+    const parsed = tryParseCandidate(block, toolNames);
+    if (parsed) {
+      results.push(parsed);
+      continue;
+    }
+
+    // JS-style invocation inside XML
+    const invocationCalls = parseFunctionInvocations(block, toolNames);
+    if (invocationCalls.length > 0) results.push(...invocationCalls);
   }
   XML_TOOL_CALL_RE.lastIndex = 0;
 
@@ -96,7 +117,14 @@ const parseMarkdownCodeBlocks = (
 
     // Try as single call
     const parsed = tryParseCandidate(blockContent, toolNames);
-    if (parsed) results.push(parsed);
+    if (parsed) {
+      results.push(parsed);
+      continue;
+    }
+
+    // Try as JS invocation
+    const invocationCalls = parseFunctionInvocations(blockContent, toolNames);
+    if (invocationCalls.length > 0) results.push(...invocationCalls);
   }
   MARKDOWN_CODE_BLOCK_RE.lastIndex = 0;
 
@@ -124,6 +152,57 @@ const parseRawJson = (
     if (parsed) results.push(parsed);
   }
 
+  return results;
+};
+
+const parseFunctionInvocations = (
+  content: string,
+  toolNames: Set<string>,
+): IParsedFunctionCall[] => {
+  const results: IParsedFunctionCall[] = [];
+  const names = [...toolNames]
+    .map(escapeRegExp)
+    .sort((a, b) => b.length - a.length)
+    .join("|");
+  if (!names) return results;
+
+  // Matches e.g. process({...}) / process ( {...} )
+  const pattern = new RegExp(`\\b(${names})\\s*\\(`, "g");
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(content)) !== null) {
+    const name = match[1]!;
+    const openIndex = content.indexOf("(", match.index + name.length);
+    if (openIndex === -1) continue;
+    const closeIndex = findMatchingParen(content, openIndex);
+    if (closeIndex === -1) continue;
+
+    const inner = content.slice(openIndex + 1, closeIndex).trim();
+    if (!inner) continue;
+
+    // Common case: single object argument
+    const objectCandidates = extractJsonObjects(inner);
+    if (objectCandidates.length > 0) {
+      const candidate = objectCandidates[0]!;
+      if (candidate.trim().length > 0) {
+        results.push({
+          name,
+          arguments: candidate,
+        });
+        pattern.lastIndex = closeIndex + 1;
+        continue;
+      }
+    }
+
+    // If the entire inner text is valid JSON (rare but possible), use it directly.
+    try {
+      JSON.parse(inner);
+      results.push({ name, arguments: inner });
+      pattern.lastIndex = closeIndex + 1;
+      continue;
+    } catch {}
+
+    pattern.lastIndex = closeIndex + 1;
+  }
   return results;
 };
 
@@ -189,6 +268,32 @@ const normalizeToFunctionCall = (
   obj: Record<string, unknown>,
   toolNames: Set<string>,
 ): IParsedFunctionCall | null => {
+  // OpenAI-like envelope: { tool_calls: [{ function: { name, arguments } }] }
+  if (Array.isArray(obj.tool_calls)) {
+    for (const item of obj.tool_calls) {
+      if (typeof item === "object" && item !== null && !Array.isArray(item)) {
+        const parsed = normalizeToFunctionCall(
+          item as Record<string, unknown>,
+          toolNames,
+        );
+        if (parsed) return parsed;
+      }
+    }
+    return null;
+  }
+
+  // Envelope variant: { function_call: { name, arguments } }
+  if (
+    typeof obj.function_call === "object" &&
+    obj.function_call !== null &&
+    !Array.isArray(obj.function_call)
+  ) {
+    return normalizeToFunctionCall(
+      obj.function_call as Record<string, unknown>,
+      toolNames,
+    );
+  }
+
   // Unwrap OpenAI-style nesting: { function: { name, arguments } }
   if (
     typeof obj.function === "object" &&
@@ -255,6 +360,40 @@ const extractArguments = (obj: Record<string, unknown>): string => {
 
   return "{}";
 };
+
+const findMatchingParen = (text: string, openIndex: number): number => {
+  let depth = 0;
+  let inString = false;
+  let escape = false;
+
+  for (let i = openIndex; i < text.length; i++) {
+    const ch = text[i]!;
+
+    if (escape) {
+      escape = false;
+      continue;
+    }
+    if (ch === "\\") {
+      escape = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+
+    if (ch === "(") depth++;
+    else if (ch === ")") {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+};
+
+const escapeRegExp = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /**
  * Extracts complete JSON objects from text using brace-matching.
