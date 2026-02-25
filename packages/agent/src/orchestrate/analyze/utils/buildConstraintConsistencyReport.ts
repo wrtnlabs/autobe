@@ -140,3 +140,132 @@ const normalizeValue = (value: string): string =>
     .trim();
 
 const hasNumeric = (value: string): boolean => /\d/.test(value);
+
+// ─── Attribute Ownership Report ───
+
+type AttributeSource = {
+  filename: string;
+  sectionTitle: string;
+  specification: string;
+};
+
+type AttributeOwnership = {
+  key: string;
+  fullSpecs: AttributeSource[];
+};
+
+const CROSS_REFERENCE_PATTERN =
+  /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+
+export const buildAttributeOwnershipReport = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): string => {
+  const attributes: Map<string, AttributeOwnership> = new Map();
+  let totalAttributes: number = 0;
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const specs = extractAttributeSpecs(section.content);
+          for (const { key, specification } of specs) {
+            totalAttributes++;
+            if (!attributes.has(key)) {
+              attributes.set(key, { key, fullSpecs: [] });
+            }
+            attributes.get(key)!.fullSpecs.push({
+              filename: file.filename,
+              sectionTitle: section.title,
+              specification,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Find attributes with full specs in more than one file
+  const duplicates: AttributeOwnership[] = [...attributes.values()].filter(
+    (entry) => {
+      const uniqueFiles = new Set(entry.fullSpecs.map((s) => s.filename));
+      return uniqueFiles.size > 1;
+    },
+  );
+
+  if (duplicates.length === 0) {
+    return [
+      "No cross-file attribute duplication detected.",
+      `Scanned ${totalAttributes} attribute specifications from [DOWNSTREAM CONTEXT] blocks.`,
+    ].join("\n");
+  }
+
+  const lines: string[] = [
+    `Detected ${duplicates.length} cross-file attribute duplication(s).`,
+    `Scanned ${totalAttributes} attribute specifications from [DOWNSTREAM CONTEXT] blocks.`,
+    "",
+    "Duplicated Attributes:",
+  ];
+
+  for (const entry of duplicates) {
+    lines.push(`- ${entry.key}:`);
+    for (const source of entry.fullSpecs.slice(0, 6)) {
+      lines.push(
+        `  - Full spec in: ${source.filename} → "${source.sectionTitle}" (${source.specification})`,
+      );
+    }
+    lines.push(
+      `  → Should be fully specified in ONE file only. Other files should cross-reference.`,
+    );
+  }
+
+  return lines.join("\n");
+};
+
+const extractAttributeSpecs = (
+  content: string,
+): Array<{ key: string; specification: string }> => {
+  const results: Array<{ key: string; specification: string }> = [];
+  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+  for (const match of matches) {
+    const block = match[1] ?? "";
+    const lines = block.split("\n");
+    let inAttributes = false;
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line.startsWith("**Attributes Specified**")) {
+        inAttributes = true;
+        continue;
+      }
+      if (
+        line.startsWith("**") &&
+        !line.startsWith("**Attributes Specified**")
+      ) {
+        inAttributes = false;
+        continue;
+      }
+      if (!inAttributes || !line.startsWith("-")) continue;
+
+      const body = line.replace(/^-+\s*/, "");
+      const colonIndex = body.indexOf(":");
+      if (colonIndex < 0) continue;
+
+      const key = body.slice(0, colonIndex).trim();
+      const value = body.slice(colonIndex + 1).trim();
+
+      // Skip cross-references like "(defined in ...)" or "(see ...)"
+      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
+
+      // Skip "None" entries
+      if (/^none$/i.test(value)) continue;
+
+      // Only include entries with a dot (Entity.attribute format)
+      if (!key.includes(".")) continue;
+
+      results.push({ key, specification: value });
+    }
+  }
+  return results;
+};

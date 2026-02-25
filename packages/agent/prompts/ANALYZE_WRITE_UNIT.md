@@ -251,6 +251,24 @@ For "Core Domain Model and Workflows Overview" module:
 - Each functional area belongs to exactly one section
 - Dependencies between sections should be noted
 
+## CRITICAL: No Boilerplate Units
+
+Do NOT create units whose sole purpose is introduction, terminology, or navigation.
+
+### PROHIBITED Unit Patterns:
+- ❌ "Document Purpose and Scope" / "Specification Purpose"
+- ❌ "Terminology and Definitions" / "Glossary of Terms"
+- ❌ "Document Structure Overview" / "Section Organization"
+- ❌ "Intended Audience and Usage" / "Audience and Stakeholders"
+
+**Test**: "Will this unit produce EARS requirements with substantive Bridge Blocks (non-empty Entities Modified, Attributes Specified, Operations Implied)?"
+- NO → Merge its essential content into the first substantive unit as 1-2 context sentences
+- YES → Keep it
+
+### Exception: Introduction Module of 00-toc.md
+- TOC document may have descriptive units (no EARS expected)
+- Regular documents: every unit MUST lead to actionable section content
+
 ## 3. Section Content Guidelines
 
 Each unit section's `content` field should be **5-15 sentences** and include:

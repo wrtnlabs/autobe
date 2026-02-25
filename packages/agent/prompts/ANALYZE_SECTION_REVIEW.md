@@ -86,7 +86,17 @@ Your focus is on **quality and correctness within this single file**:
 - Does any section contain filler sentences without testable content? → REJECT
 - Is every sentence carrying implementable information?
 
-### 10. API Contract Completeness
+### 10. Introduction/Boilerplate Section Check (CRITICAL)
+- Does any section exist solely for document purpose/scope/audience/terminology/navigation?
+- Does any section have ALL Bridge Block fields as "None"?
+  - If the section has zero Entities Modified, zero Operations Implied, and zero Attributes Specified → REJECT
+  - Exception: TOC document (00-toc.md) sections are exempt from Bridge Block requirement
+- Do multiple sections in the same unit have empty Bridge Blocks?
+  - If > 1 section per unit has all-None Bridge Block → REJECT the unit
+- Are there sections with PROHIBITED title patterns?
+  - "... Purpose and Scope", "... Terminology ...", "... Navigation ...", "... Document Structure ..." → REJECT
+
+### 11. API Contract Completeness
 - For every operation, are HTTP status codes and error codes specified?
 - Missing error codes for error scenarios → REJECT
 - Missing HTTP status codes for operations → REJECT
@@ -200,3 +210,5 @@ Before making your decision, verify:
 - **Same requirement restated in multiple sections**
 - **Same Entity.attribute fully specified in multiple Bridge Blocks**
 - **Same state transition fully defined in multiple sections**
+- **Section exists solely for introduction/terminology/navigation with all-None Bridge Block (except 00-toc.md)**
+- **More than 1 section per unit has completely empty Bridge Block (all fields None)**

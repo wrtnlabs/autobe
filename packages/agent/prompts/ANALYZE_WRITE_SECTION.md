@@ -30,6 +30,31 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER include frontend UI/UX specifications
 - ❌ NEVER ask for user confirmation
 
+## CRITICAL: No Introduction/Terminology/Navigation Sections
+
+Do NOT create sections whose sole purpose is:
+- ❌ Document/specification purpose or scope ("Specification Purpose and Scope")
+- ❌ Audience definition ("Audience Definition and Application Boundaries")
+- ❌ Terminology glossary ("Core Terminology Used in State Transitions")
+- ❌ Document structure overview ("Document Structure and Section Organization")
+- ❌ Navigation aids ("Navigation Tips and Section Reference Table")
+- ❌ Reference mapping ("Reference to Authoritative Domain Documentation")
+
+**Test**: "Does this section produce at least one EARS requirement with a non-empty Bridge Block?"
+- NO → Do NOT create this section
+- YES → Create it
+
+**Instead**: If introductory context is needed, embed it as 1-2 sentences at the start of the first substantive section in the unit. Do NOT give it a dedicated section.
+
+### PROHIBITED Section Title Patterns:
+- ❌ "... Purpose and Scope"
+- ❌ "... Audience and ..."
+- ❌ "... Terminology ..."
+- ❌ "... Navigation ..."
+- ❌ "... Document Structure ..."
+- ❌ "... Overview and Boundaries"
+- ❌ "... Reference Table"
+
 ## CRITICAL: No Meta-Entities
 
 Do NOT create entities describing the requirements process:

@@ -128,7 +128,14 @@ process({
 });
 ```
 
-### 8. Module Selection Appropriateness (CRITICAL)
+### 8. Module Content Verbosity Check (CRITICAL)
+- Does any module `content` start with "This section/document provides/presents/establishes/defines/specifies..."? → REJECT
+- Does any module `content` contain filler sentences without structural or entity-mapping information? → REJECT
+- Does module content start directly with **Primary Entities** or **Covers/Does NOT cover** declarations? → APPROVE
+- Every sentence in module content must carry entity-mapping, boundary, or downstream hint information
+- Apply the "Delete Test": if a sentence can be removed without losing structural/entity information, it should not exist
+
+### 9. Module Selection Appropriateness (CRITICAL)
 
 - Are the 3 required modules (Introduction, System Overview, Capabilities) present in every file?
   - REJECT if any required module is missing
@@ -176,3 +183,4 @@ Before making your decision, verify across ALL files:
 - **Module content is too vague for downstream phases to derive component groups**
 - **Any of the 3 required modules (Introduction, System Overview, Capabilities) is missing**
 - **Optional module is included but has thin/padded content with no substantial unique information**
+- **Module content starts with verbose meta-description (e.g., "This section provides/establishes/defines...") instead of entity/scope declarations**

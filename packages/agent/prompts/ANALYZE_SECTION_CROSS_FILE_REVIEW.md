@@ -37,10 +37,17 @@ You receive ONLY section titles, keywords, and purposes from all files — NOT t
 - Are keyword styles uniform (e.g., all use "Entity.Operation" or all use "verb noun")?
 - Are abstraction levels comparable across files?
 
-### 4. Cross-File Content Deduplication
+### 4. Cross-File Content Deduplication (CRITICAL)
 - Across files, are the same requirements NOT duplicated?
 - Are section titles/keywords suggesting content overlap between files?
 - If two files appear to cover the same entity's attributes, flag for review
+
+### 4a. Cross-File Entity Attribute Deduplication (CRITICAL)
+- The **Attribute Ownership Report** below shows Entity.attribute definitions that appear in multiple files
+- If the same `Entity.attribute` is fully specified (with type + constraints) in MORE than one file → REJECT the file that should be referencing instead of re-defining
+- The file that OWNS the entity (declared in its module's **Primary Entities**) should keep the full specification
+- Other files should use cross-reference format: `Entity.attr: (defined in "filename → Section Name")`
+- This is critical: duplicate attribute definitions create downstream conflicts in DB schema generation
 
 ### 5. Structural Balance
 - Are files with similar scope given similar depth of coverage?
@@ -133,3 +140,5 @@ Before making your decision, verify across ALL files:
 - [ ] Naming conventions are consistent
 - [ ] No apparent content duplication between files
 - [ ] Structural depth is proportionate across files
+- [ ] No Entity.attribute is fully specified in multiple files (see Attribute Ownership Report)
+- [ ] Entity attributes are owned by the file whose module declares the entity as Primary

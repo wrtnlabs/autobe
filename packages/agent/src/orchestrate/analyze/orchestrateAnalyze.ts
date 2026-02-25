@@ -26,7 +26,10 @@ import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
-import { buildConstraintConsistencyReport } from "./utils/buildConstraintConsistencyReport";
+import {
+  buildConstraintConsistencyReport,
+  buildAttributeOwnershipReport,
+} from "./utils/buildConstraintConsistencyReport";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -557,13 +560,17 @@ async function processStageSection(
     );
 
     // Pass 2: Cross-file lightweight review (single call)
+    const filesWithSections = props.fileStates
+      .filter((state) => state.sectionResults !== null)
+      .map((state) => ({
+        file: state.file,
+        sectionEvents: state.sectionResults!,
+      }));
     const constraintReport: string = buildConstraintConsistencyReport({
-      files: props.fileStates
-        .filter((state) => state.sectionResults !== null)
-        .map((state) => ({
-          file: state.file,
-          sectionEvents: state.sectionResults!,
-        })),
+      files: filesWithSections,
+    });
+    const attributeOwnershipReport: string = buildAttributeOwnershipReport({
+      files: filesWithSections,
     });
     const crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent =
       await orchestrateAnalyzeSectionCrossFileReview(ctx, {
@@ -580,6 +587,7 @@ async function processStageSection(
             : "approved",
         })),
         constraintReport,
+        attributeOwnershipReport,
         progress: props.crossFileSectionReviewProgress,
         promptCacheKey,
         retry: attempt,

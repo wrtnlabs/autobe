@@ -43,6 +43,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       status: "approved" | "rewritten" | "new";
     }>;
     constraintReport: string;
+    attributeOwnershipReport: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
@@ -73,6 +74,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
         scenario: props.scenario,
         allFileSummaries: props.allFileSummaries,
         constraintReport: props.constraintReport,
+        attributeOwnershipReport: props.attributeOwnershipReport,
         preliminary,
       }),
     });

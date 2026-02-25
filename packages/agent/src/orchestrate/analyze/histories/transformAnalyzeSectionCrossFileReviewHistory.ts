@@ -32,6 +32,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
       status: "approved" | "rewritten" | "new";
     }>;
     constraintReport: string;
+    attributeOwnershipReport: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -105,6 +106,10 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
         ## Constraint Consistency Report (Numeric/Limit Conflicts)
 
         ${props.constraintReport}
+
+        ## Attribute Ownership Report (Cross-File Duplication)
+
+        ${props.attributeOwnershipReport}
 
         ## Cross-File Consistency Criteria
 
