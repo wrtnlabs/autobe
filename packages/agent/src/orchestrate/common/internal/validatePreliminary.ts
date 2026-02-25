@@ -118,13 +118,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
@@ -221,13 +215,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
@@ -342,14 +330,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !==
-              typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
@@ -452,13 +433,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !== typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
@@ -540,14 +515,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !==
-              typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
@@ -629,14 +597,7 @@ namespace PreliminaryApplicationValidator {
       errors.push({
         path: `$input.request`,
         value: input.request,
-        expected: controller
-          .getArgumentTypeNames()
-          .filter(
-            (k) =>
-              k !==
-              typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>(),
-          )
-          .join(" | "),
+        expected: controller.getArgumentTypeNames().join(" | "),
         description:
           AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
             "{{REQUEST_TYPE}}",
