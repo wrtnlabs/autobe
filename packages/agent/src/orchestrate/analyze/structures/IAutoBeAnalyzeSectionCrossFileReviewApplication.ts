@@ -101,6 +101,13 @@ export namespace IAutoBeAnalyzeSectionCrossFileReviewApplication {
     feedback: string;
 
     /**
+     * Structured review issues for targeted rewrites / patches.
+     *
+     * Optional for backward compatibility.
+     */
+    issues?: IReviewIssue[] | null;
+
+    /**
      * Specific module/unit pairs whose sections have cross-file consistency
      * issues.
      *
@@ -122,5 +129,21 @@ export namespace IAutoBeAnalyzeSectionCrossFileReviewApplication {
 
     /** Specific feedback for this module/unit group's issues. */
     feedback: string;
+
+    /**
+     * Structured issues scoped to this module/unit group.
+     *
+     * Optional for backward compatibility.
+     */
+    issues?: IReviewIssue[] | null;
+  }
+
+  export interface IReviewIssue {
+    ruleCode: string;
+    moduleIndex: number | null;
+    unitIndex: number | null;
+    sectionIndex?: number | null;
+    fixInstruction: string;
+    evidence?: string | null;
   }
 }

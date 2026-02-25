@@ -84,6 +84,14 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
     feedback: string;
 
     /**
+     * Structured review issues for deterministic retry handling.
+     *
+     * Optional for backward compatibility. When omitted, orchestrators may
+     * derive issues from free-form feedback and rejected module/unit metadata.
+     */
+    issues?: IReviewIssue[] | null;
+
+    /**
      * Revised sections for this file if modifications were made during review.
      *
      * Organized by module and unit indices. Set to `null` if no revisions were
@@ -111,6 +119,34 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
 
     /** Specific feedback for this module/unit group's issues. */
     feedback: string;
+
+    /**
+     * Structured issues scoped to this module/unit group.
+     *
+     * Optional for backward compatibility.
+     */
+    issues?: IReviewIssue[] | null;
+  }
+
+  /** Structured review issue for targeted rewrites / patches. */
+  export interface IReviewIssue {
+    /** Stable rule identifier (e.g., missing_bridge_block, non_ears_format). */
+    ruleCode: string;
+
+    /** Target module index, or null if file-level issue. */
+    moduleIndex: number | null;
+
+    /** Target unit index, or null if module/file-level issue. */
+    unitIndex: number | null;
+
+    /** Optional target section index for finer-grained guidance. */
+    sectionIndex?: number | null;
+
+    /** Concrete repair instruction to apply on the next retry. */
+    fixInstruction: string;
+
+    /** Optional supporting evidence snippet or summary. */
+    evidence?: string | null;
   }
 
   /** Structure for revised sections of a single module. */

@@ -131,14 +131,25 @@ const SOURCE = "analyzeScenario" satisfies AutoBeEventSource;
 
 const repairMissingRequestType = (input: unknown): unknown => {
   if (isRecord(input) === false) return input;
-  if (isRecord(input.request) === false) return input;
 
-  const request: Record<string, unknown> = input.request;
+  input = repairFlattenedRequestPayload(input);
+  if (isRecord(input) === false) return input;
+  const root: Record<string, unknown> = input;
+  if (isRecord(root.request) === false) return input;
+  const rawRequest: Record<string, unknown> = root.request;
+
+  const request: Record<string, unknown> = normalizeAnalyzeScenarioRequest(
+    rawRequest,
+  );
+  input = {
+    ...root,
+    request,
+  };
   if (typeof request.type === "string" && request.type.length !== 0) return input;
 
   if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
     return {
-      ...input,
+      ...root,
       request: {
         ...request,
         type: "getPreviousAnalysisFiles",
@@ -156,7 +167,7 @@ const repairMissingRequestType = (input: unknown): unknown => {
     Object.prototype.hasOwnProperty.call(request, "language")
   ) {
     return {
-      ...input,
+      ...root,
       request: {
         ...request,
         type: "complete",
@@ -164,6 +175,108 @@ const repairMissingRequestType = (input: unknown): unknown => {
     };
   }
   return input;
+};
+
+const repairFlattenedRequestPayload = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  if (isRecord(input.request)) return input;
+
+  const completeLike =
+    typeof input.type === "string" &&
+    input.type === "complete" &&
+    typeof input.reason === "string" &&
+    typeof input.prefix === "string";
+  if (completeLike) {
+    const {
+      thinking,
+      type,
+      reason,
+      prefix,
+      actors,
+      language,
+      entities,
+      page,
+      files,
+      ...rest
+    } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: {
+        type,
+        reason,
+        prefix,
+        actors,
+        language,
+        entities,
+        page,
+        files,
+      },
+    };
+  }
+
+  const previousLike =
+    typeof input.type === "string" &&
+    input.type === "getPreviousAnalysisFiles" &&
+    input.fileNames !== undefined;
+  if (previousLike) {
+    const { thinking, type, fileNames, ...rest } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: {
+        type,
+        fileNames,
+      },
+    };
+  }
+  return input;
+};
+
+const normalizeAnalyzeScenarioRequest = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  const output: Record<string, unknown> = { ...input };
+
+  if (typeof output.page === "string") {
+    const page: number = Number(output.page);
+    if (Number.isFinite(page)) output.page = page;
+  }
+
+  for (const key of ["actors", "entities", "files", "fileNames"] as const) {
+    if (typeof output[key] === "string") {
+      const parsed: unknown = parseLooseStructuredString(output[key]);
+      if (parsed !== undefined) output[key] = parsed;
+    }
+  }
+  return output;
+};
+
+const parseLooseStructuredString = (input: string): unknown => {
+  const text: string = input.trim();
+  if (text.length === 0) return undefined;
+  if (
+    (text.startsWith("[") === false && text.startsWith("{") === false) ||
+    (text.endsWith("]") === false && text.endsWith("}") === false)
+  )
+    return undefined;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    // qwen sometimes emits pseudo-JSON with single quotes
+    const normalized = text
+      .replace(/'/g, '"')
+      .replace(/\bNone\b/g, "null")
+      .replace(/\bTrue\b/g, "true")
+      .replace(/\bFalse\b/g, "false");
+    try {
+      return JSON.parse(normalized);
+    } catch {
+      return undefined;
+    }
+  }
 };
 
 const isRecord = (input: unknown): input is Record<string, unknown> =>

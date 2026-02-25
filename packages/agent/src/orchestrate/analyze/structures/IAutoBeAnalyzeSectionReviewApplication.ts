@@ -94,6 +94,13 @@ export namespace IAutoBeAnalyzeSectionReviewApplication {
     feedback: string;
 
     /**
+     * Structured review issues for targeted rewrites / patches.
+     *
+     * Optional for backward compatibility.
+     */
+    issues?: IReviewIssue[] | null;
+
+    /**
      * Revised sections for this file if modifications were made.
      *
      * Organized by moduleIndex and unitIndex. Set to `null` if no revisions
@@ -122,6 +129,22 @@ export namespace IAutoBeAnalyzeSectionReviewApplication {
 
     /** Specific feedback for this module/unit group's issues. */
     feedback: string;
+
+    /**
+     * Structured issues scoped to this module/unit group.
+     *
+     * Optional for backward compatibility.
+     */
+    issues?: IReviewIssue[] | null;
+  }
+
+  export interface IReviewIssue {
+    ruleCode: string;
+    moduleIndex: number | null;
+    unitIndex: number | null;
+    sectionIndex?: number | null;
+    fixInstruction: string;
+    evidence?: string | null;
   }
 
   /** Structure for revised sections of a single module. */

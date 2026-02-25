@@ -60,7 +60,14 @@ interface IFileState {
   rejectedModuleUnits?:
     | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
     | null;
+  sectionRetryCount?: number;
+  sectionStagnationCount?: number;
+  lastSectionContentSignature?: string;
+  lastSectionRejectionSignature?: string;
 }
+
+const ANALYZE_SECTION_FILE_MAX_RETRY = 3;
+const ANALYZE_SECTION_STAGNATION_MAX = 2;
 
 export const orchestrateAnalyze = async (
   ctx: AutoBeContext,
@@ -667,6 +674,7 @@ async function processStageSection(
     }
 
     for (const fileIndex of pendingArray) {
+      const state: IFileState = props.fileStates[fileIndex]!;
       const perFileEvent = perFileReviewResults.get(fileIndex);
       const perFileResult = perFileEvent?.fileResults[0];
       const crossFileResult = crossFileResultMap.get(fileIndex);
@@ -675,7 +683,7 @@ async function processStageSection(
       const crossFileApproved = crossFileResult?.approved ?? true;
 
       // Check if this file has programmatically-detected critical conflicts
-      const filename = props.fileStates[fileIndex]!.file.filename;
+      const filename = state.file.filename;
       const fileCriticalConflicts = fileConflictMap.get(filename) ?? [];
       const fileAttrDuplicates = fileAttributeDuplicateMap.get(filename) ?? [];
       const fileEmptyBridgeBlocks = emptyBridgeBlockMap.get(fileIndex) ?? [];
@@ -690,9 +698,20 @@ async function processStageSection(
       // 3. per-file approve + no critical conflict → approve (unchanged)
       const approved = perFileApproved && !hasCriticalConflict;
 
+      const structuredPerFileIssues = collectStructuredReviewIssues(
+        perFileResult,
+      );
+      const structuredCrossFileIssues = collectStructuredReviewIssues(
+        crossFileResult,
+      );
+      const programmaticIssues = buildProgrammaticSectionIssues({
+        fileCriticalConflicts,
+        fileAttrDuplicates,
+        fileEmptyBridgeBlocks,
+      });
+
       if (approved) {
         // Apply per-file revisions if provided
-        const state: IFileState = props.fileStates[fileIndex]!;
         if (perFileResult?.revisedSections) {
           state.sectionResults = AutoBeAnalyzeProgrammer.applySectionRevisions(
             state.sectionResults!,
@@ -704,30 +723,70 @@ async function processStageSection(
           state.sectionFeedback =
             `[Cross-file advisory] ${crossFileResult.feedback}`;
         }
+        state.sectionRetryCount = 0;
+        state.sectionStagnationCount = 0;
+        state.lastSectionContentSignature = undefined;
+        state.lastSectionRejectionSignature = undefined;
         pendingIndices.delete(fileIndex);
       } else if (!perFileApproved) {
         // Per-file rejected: store only the latest per-file feedback (no accumulation)
-        props.fileStates[fileIndex]!.sectionFeedback =
-          perFileResult?.feedback ?? "";
+        state.sectionFeedback = formatStructuredIssuesForRetry({
+          fallbackFeedback: perFileResult?.feedback ?? "",
+          issues: structuredPerFileIssues,
+        });
 
         // Use only per-file rejectedModuleUnits (no cross-file merge)
-        props.fileStates[fileIndex]!.rejectedModuleUnits =
-          perFileResult?.rejectedModuleUnits ?? null;
+        state.rejectedModuleUnits = normalizeRejectedModuleUnits(
+          perFileResult?.rejectedModuleUnits ?? null,
+          structuredPerFileIssues,
+        );
       } else {
         // Critical conflict rejected (per-file approved but programmatic violations exist)
         // Use cross-file rejectedModuleUnits for targeted patch if available
-        const allProgrammaticViolations = [
-          ...fileCriticalConflicts,
-          ...fileAttrDuplicates,
-          ...fileEmptyBridgeBlocks,
-        ];
-        props.fileStates[fileIndex]!.sectionFeedback =
-          `[Critical conflict] ${allProgrammaticViolations.join("; ")}` +
-          (crossFileResult?.feedback
-            ? `\n${crossFileResult.feedback}`
-            : "");
-        props.fileStates[fileIndex]!.rejectedModuleUnits =
-          crossFileResult?.rejectedModuleUnits ?? null;
+        state.sectionFeedback = formatStructuredIssuesForRetry({
+          fallbackFeedback:
+            `[Critical conflict] ${[
+              ...fileCriticalConflicts,
+              ...fileAttrDuplicates,
+              ...fileEmptyBridgeBlocks,
+            ].join("; ")}` +
+            (crossFileResult?.feedback ? `\n${crossFileResult.feedback}` : ""),
+          issues: [...programmaticIssues, ...structuredCrossFileIssues],
+        });
+        state.rejectedModuleUnits = normalizeRejectedModuleUnits(
+          crossFileResult?.rejectedModuleUnits ?? null,
+          [...programmaticIssues, ...structuredCrossFileIssues],
+        );
+      }
+
+      if (!approved) {
+        const contentSignature = buildSectionContentSignature(state);
+        const rejectionSignature = buildSectionRejectionSignature({
+          rejectedModuleUnits: state.rejectedModuleUnits ?? null,
+          feedback: state.sectionFeedback ?? "",
+        });
+        const isStagnant =
+          state.lastSectionContentSignature === contentSignature &&
+          state.lastSectionRejectionSignature === rejectionSignature;
+        state.sectionStagnationCount = isStagnant
+          ? (state.sectionStagnationCount ?? 0) + 1
+          : 0;
+        state.sectionRetryCount = (state.sectionRetryCount ?? 0) + 1;
+        state.lastSectionContentSignature = contentSignature;
+        state.lastSectionRejectionSignature = rejectionSignature;
+
+        if ((state.sectionRetryCount ?? 0) > ANALYZE_SECTION_FILE_MAX_RETRY) {
+          throw new Error(
+            `[orchestrateAnalyze] Section stage fail-fast (max retry exceeded: ${ANALYZE_SECTION_FILE_MAX_RETRY}) for file "${state.file.filename}"`,
+          );
+        }
+        if (
+          (state.sectionStagnationCount ?? 0) >= ANALYZE_SECTION_STAGNATION_MAX
+        ) {
+          throw new Error(
+            `[orchestrateAnalyze] Section stage fail-fast (stagnation detected ${state.sectionStagnationCount}x) for file "${state.file.filename}"`,
+          );
+        }
       }
     }
   }
@@ -771,7 +830,10 @@ function buildFeedbackMap(
   if (rejected == null) return map;
   for (const entry of rejected) {
     for (const ui of entry.unitIndices) {
-      map.set(`${entry.moduleIndex}:${ui}`, entry.feedback);
+      map.set(
+        `${entry.moduleIndex}:${ui}`,
+        formatRejectedModuleUnitFeedback(entry, ui),
+      );
     }
   }
   return map;
@@ -803,5 +865,206 @@ function filterValidFileResults<T extends { fileIndex: number }>(
       `[orchestrateAnalyze] ${stage}: invalid fileIndex ${fr.fileIndex} (valid: 0-${fileCount - 1})`,
     );
     return false;
+  });
+}
+
+function formatRejectedModuleUnitFeedback(
+  entry: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit,
+  unitIndex: number,
+): string {
+  const scopedIssues = (entry.issues ?? []).filter(
+    (issue) =>
+      issue.moduleIndex === entry.moduleIndex &&
+      (issue.unitIndex === null || issue.unitIndex === unitIndex),
+  );
+  if (scopedIssues.length === 0) return entry.feedback;
+  return [
+    entry.feedback,
+    ...scopedIssues.map(
+      (issue) =>
+        `- [${issue.ruleCode}] target=${formatIssueTarget(issue)} fix=${issue.fixInstruction}`,
+    ),
+  ].join("\n");
+}
+
+function collectStructuredReviewIssues(
+  result:
+    | {
+        feedback: string;
+        rejectedModuleUnits?: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null;
+        issues?: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] | null;
+      }
+    | undefined,
+): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
+  if (!result) return [];
+  const collected: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] = [];
+
+  for (const issue of result.issues ?? []) collected.push(issue);
+  for (const group of result.rejectedModuleUnits ?? []) {
+    for (const issue of group.issues ?? []) collected.push(issue);
+    if ((group.issues?.length ?? 0) === 0) {
+      for (const unitIndex of group.unitIndices) {
+        collected.push({
+          ruleCode: "section_review_reject",
+          moduleIndex: group.moduleIndex,
+          unitIndex,
+          fixInstruction: group.feedback || result.feedback || "Fix review issues.",
+          evidence: null,
+        });
+      }
+    }
+  }
+
+  if (collected.length === 0 && result.feedback.trim().length > 0) {
+    collected.push({
+      ruleCode: "section_review_reject",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction: result.feedback,
+      evidence: null,
+    });
+  }
+  return dedupeReviewIssues(collected);
+}
+
+function buildProgrammaticSectionIssues(props: {
+  fileCriticalConflicts: string[];
+  fileAttrDuplicates: string[];
+  fileEmptyBridgeBlocks: string[];
+}): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
+  return [
+    ...props.fileCriticalConflicts.map((detail) => ({
+      ruleCode: "cross_file_constraint_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Align conflicting constraints/values with other files and preserve one canonical value.",
+      evidence: detail,
+    })),
+    ...props.fileAttrDuplicates.map((detail) => ({
+      ruleCode: "cross_file_attribute_duplicate",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Remove duplicate attribute specifications across files and keep ownership in one file.",
+      evidence: detail,
+    })),
+    ...props.fileEmptyBridgeBlocks.map((detail) => ({
+      ruleCode: "empty_bridge_block",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Fill [DOWNSTREAM CONTEXT] Bridge Block with concrete entities, attributes, operations, permissions, and errors.",
+      evidence: detail,
+    })),
+  ];
+}
+
+function normalizeRejectedModuleUnits(
+  rejected:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null
+    | undefined,
+  fileIssues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
+  if (rejected == null) return null;
+  return rejected.map((entry) => ({
+    ...entry,
+    issues:
+      (entry.issues?.length ?? 0) > 0
+        ? dedupeReviewIssues(entry.issues ?? [])
+        : dedupeReviewIssues(
+            fileIssues.filter(
+              (issue) =>
+                issue.moduleIndex === entry.moduleIndex &&
+                (issue.unitIndex === null ||
+                  entry.unitIndices.includes(issue.unitIndex)),
+            ),
+          ),
+  }));
+}
+
+function formatStructuredIssuesForRetry(props: {
+  fallbackFeedback: string;
+  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[];
+}): string {
+  if (props.issues.length === 0) return props.fallbackFeedback;
+  const lines = props.issues.map(
+    (issue) =>
+      `- [${issue.ruleCode}] target=${formatIssueTarget(issue)} fix=${issue.fixInstruction}` +
+      (issue.evidence ? ` | evidence=${issue.evidence}` : ""),
+  );
+  return `${props.fallbackFeedback}\n\n[STRUCTURED REVIEW ISSUES]\n${lines.join("\n")}`.trim();
+}
+
+function formatIssueTarget(
+  issue: Pick<
+    AutoBeAnalyzeSectionReviewEvent.IReviewIssue,
+    "moduleIndex" | "unitIndex" | "sectionIndex"
+  >,
+): string {
+  const parts: string[] = [];
+  if (issue.moduleIndex !== null && issue.moduleIndex !== undefined)
+    parts.push(`m${issue.moduleIndex}`);
+  if (issue.unitIndex !== null && issue.unitIndex !== undefined)
+    parts.push(`u${issue.unitIndex}`);
+  if (issue.sectionIndex !== null && issue.sectionIndex !== undefined)
+    parts.push(`s${issue.sectionIndex}`);
+  return parts.length ? parts.join(".") : "file";
+}
+
+function dedupeReviewIssues(
+  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
+  const map = new Map<string, AutoBeAnalyzeSectionReviewEvent.IReviewIssue>();
+  for (const issue of issues) {
+    const key = [
+      issue.ruleCode,
+      issue.moduleIndex ?? "x",
+      issue.unitIndex ?? "x",
+      issue.sectionIndex ?? "x",
+      issue.fixInstruction,
+    ].join("|");
+    if (!map.has(key)) map.set(key, issue);
+  }
+  return [...map.values()];
+}
+
+function buildSectionContentSignature(state: IFileState): string {
+  if (!state.sectionResults) return "none";
+  return JSON.stringify(
+    state.sectionResults.map((moduleSections) =>
+      moduleSections.map((unit) =>
+        unit.sectionSections.map((section) => ({
+          title: section.title,
+          // content text included to detect no-progress rewrites
+          content: section.content,
+        })),
+      ),
+    ),
+  );
+}
+
+function buildSectionRejectionSignature(props: {
+  rejectedModuleUnits:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null
+    | undefined;
+  feedback: string;
+}): string {
+  return JSON.stringify({
+    rejectedModuleUnits: (props.rejectedModuleUnits ?? []).map((entry) => ({
+      moduleIndex: entry.moduleIndex,
+      unitIndices: [...entry.unitIndices].sort((a, b) => a - b),
+      feedback: entry.feedback,
+      issues: (entry.issues ?? []).map((issue) => ({
+        ruleCode: issue.ruleCode,
+        moduleIndex: issue.moduleIndex,
+        unitIndex: issue.unitIndex,
+        sectionIndex: issue.sectionIndex ?? null,
+        fixInstruction: issue.fixInstruction,
+      })),
+    })),
+    feedback: props.feedback,
   });
 }
