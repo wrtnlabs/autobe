@@ -477,10 +477,10 @@ async function processStageSection(
           mi < unitResults.length;
           mi++
         ) {
-          const ue: AutoBeAnalyzeWriteUnitEvent = unitResults[mi]!;
+          const unitEvent: AutoBeAnalyzeWriteUnitEvent = unitResults[mi]!;
           for (
             let ui: number = 0;
-            ui < ue.unitSections.length;
+            ui < unitEvent.unitSections.length;
             ui++
           ) {
             if (isSectionRejected(rejectedSet, mi, ui)) {
@@ -805,4 +805,3 @@ function filterValidFileResults<T extends { fileIndex: number }>(
     return false;
   });
 }
-
