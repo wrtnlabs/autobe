@@ -31,6 +31,8 @@ import {
   buildAttributeOwnershipReport,
   detectConstraintConflicts,
   buildFileConflictMap,
+  detectAttributeDuplicates,
+  buildFileAttributeDuplicateMap,
 } from "./utils/buildConstraintConsistencyReport";
 import {
   stripTocBridgeBlocks,
@@ -642,6 +644,13 @@ async function processStageSection(
     const fileConflictMap: Map<string, string[]> =
       buildFileConflictMap(criticalConflicts);
 
+    // Detect cross-file attribute duplication programmatically
+    const attributeDuplicates = detectAttributeDuplicates({
+      files: filesWithSections,
+    });
+    const fileAttributeDuplicateMap: Map<string, string[]> =
+      buildFileAttributeDuplicateMap(attributeDuplicates);
+
     // Detect empty Bridge Blocks programmatically
     const emptyBridgeBlockMap: Map<number, string[]> = new Map();
     for (const fileIndex of pendingArray) {
@@ -668,9 +677,11 @@ async function processStageSection(
       // Check if this file has programmatically-detected critical conflicts
       const filename = props.fileStates[fileIndex]!.file.filename;
       const fileCriticalConflicts = fileConflictMap.get(filename) ?? [];
+      const fileAttrDuplicates = fileAttributeDuplicateMap.get(filename) ?? [];
       const fileEmptyBridgeBlocks = emptyBridgeBlockMap.get(fileIndex) ?? [];
       const hasCriticalConflict =
         fileCriticalConflicts.length > 0 ||
+        fileAttrDuplicates.length > 0 ||
         fileEmptyBridgeBlocks.length > 0;
 
       // Decision logic:
@@ -707,6 +718,7 @@ async function processStageSection(
         // Use cross-file rejectedModuleUnits for targeted patch if available
         const allProgrammaticViolations = [
           ...fileCriticalConflicts,
+          ...fileAttrDuplicates,
           ...fileEmptyBridgeBlocks,
         ];
         props.fileStates[fileIndex]!.sectionFeedback =

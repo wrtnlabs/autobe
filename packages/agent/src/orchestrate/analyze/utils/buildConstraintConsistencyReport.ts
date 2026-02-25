@@ -316,6 +316,69 @@ export const buildAttributeOwnershipReport = (props: {
   return lines.join("\n");
 };
 
+// ─── Attribute Duplicate Detection (Structured) ───
+
+export interface IAttributeDuplicate {
+  key: string;
+  files: string[];
+}
+
+/**
+ * Detect cross-file attribute duplication as structured data.
+ *
+ * Returns an array of attributes that are fully specified (not cross-referenced)
+ * in more than one file. Used by the orchestrator for programmatic force-reject.
+ */
+export const detectAttributeDuplicates = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IAttributeDuplicate[] => {
+  const attributes: Map<string, Set<string>> = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const specs = extractAttributeSpecs(section.content);
+          for (const { key } of specs) {
+            if (!attributes.has(key)) attributes.set(key, new Set());
+            attributes.get(key)!.add(file.filename);
+          }
+        }
+      }
+    }
+  }
+
+  return [...attributes.entries()]
+    .filter(([, files]) => files.size > 1)
+    .map(([key, files]) => ({ key, files: [...files] }));
+};
+
+/**
+ * Build a map from filename → list of attribute duplication feedback strings.
+ */
+export const buildFileAttributeDuplicateMap = (
+  duplicates: IAttributeDuplicate[],
+): Map<string, string[]> => {
+  const map: Map<string, string[]> = new Map();
+
+  for (const dup of duplicates) {
+    const feedback =
+      `${dup.key} is fully specified in multiple files: [${dup.files.join(", ")}]. ` +
+      `Only ONE file should contain the full spec; others must use reference format: ` +
+      `"(defined in ...)"`;
+
+    for (const filename of dup.files) {
+      if (!map.has(filename)) map.set(filename, []);
+      map.get(filename)!.push(feedback);
+    }
+  }
+
+  return map;
+};
+
 const extractAttributeSpecs = (
   content: string,
 ): Array<{ key: string; specification: string }> => {
