@@ -26,11 +26,11 @@ export namespace ArchiveLogger {
       content.push(`  - progress: (${event.completed} of ${event.total})`);
     if (
       event.type === "analyzeWriteModule" ||
-      event.type === "analyzeWriteModuleReview" ||
+      event.type === "analyzeModuleReview" ||
       event.type === "analyzeWriteUnit" ||
-      event.type === "analyzeWriteAllUnitReview" ||
+      event.type === "analyzeUnitReview" ||
       event.type === "analyzeWriteSection" ||
-      event.type === "analyzeWriteAllSectionReview"
+      event.type === "analyzeSectionReview"
     )
       content.push(`  - retry: ${event.retry}`);
     if (typia.is<TokenUsageEvent>(event))

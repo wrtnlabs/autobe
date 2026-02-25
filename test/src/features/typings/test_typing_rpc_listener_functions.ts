@@ -2,7 +2,7 @@ import { AutoBeEvent, IAutoBeRpcListener } from "@autobe/interface";
 
 export const test_typing_rpc_listener_functions = () => {
   // biome-ignore lint: intended
-  let x: keyof IAutoBeRpcListener = "analyzeComplete" as any;
+  let x: Exclude<keyof IAutoBeRpcListener, "enable"> = "analyzeComplete" as any;
 
   // biome-ignore-start lint: intended
   let y: Exclude<

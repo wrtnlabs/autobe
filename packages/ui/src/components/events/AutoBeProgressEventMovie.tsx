@@ -175,9 +175,9 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Write Module",
           description: "Generating module section structure",
         };
-      case "analyzeWriteModuleReview":
+      case "analyzeModuleReview":
         return {
-          title: "Analyze Write Module Review",
+          title: "Analyze Module Review",
           description: "Reviewing module section structure",
         };
       case "analyzeWriteUnit":
@@ -185,9 +185,9 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Write Unit",
           description: "Generating unit section content",
         };
-      case "analyzeWriteUnitReview":
+      case "analyzeUnitReview":
         return {
-          title: "Analyze Write Unit Review",
+          title: "Analyze Unit Review",
           description: "Reviewing unit section content",
         };
       case "analyzeWriteSection":
@@ -195,20 +195,10 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Write Section",
           description: "Generating section details",
         };
-      case "analyzeWriteSectionReview":
+      case "analyzeSectionReview":
         return {
-          title: "Analyze Write Section Review",
+          title: "Analyze Section Review",
           description: "Reviewing section details",
-        };
-      case "analyzeWriteAllUnitReview":
-        return {
-          title: "Analyze Write All Units Review",
-          description: "Batch reviewing all unit sections",
-        };
-      case "analyzeWriteAllSectionReview":
-        return {
-          title: "Analyze Write All Section Review",
-          description: "Batch reviewing all section details",
         };
       default:
         event satisfies never;
