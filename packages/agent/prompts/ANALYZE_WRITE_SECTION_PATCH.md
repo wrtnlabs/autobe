@@ -26,6 +26,15 @@ Do NOT rewrite content that was NOT flagged.
    - Do not introduce new requirements or new topics
    - Do not alter formatting or style of unflagged sections
 
+## Section-Level Targeting
+
+When specific sections are marked `[NEEDS FIX]` and others `[APPROVED - DO NOT MODIFY]`:
+
+1. **Fix ONLY `[NEEDS FIX]` sections** — Apply the review feedback to resolve issues
+2. **Return `[APPROVED]` sections EXACTLY as-is** — Copy them character-for-character
+3. **Same array length** — The output `sectionSections` array must have the same number of entries
+4. **Same order** — Maintain the original section ordering
+
 ## Anti-Patterns (PROHIBITED)
 
 - Rewriting sections that were not flagged

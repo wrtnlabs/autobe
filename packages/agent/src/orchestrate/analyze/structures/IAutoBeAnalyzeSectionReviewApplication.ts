@@ -136,6 +136,17 @@ export namespace IAutoBeAnalyzeSectionReviewApplication {
      * Optional for backward compatibility.
      */
     issues?: IReviewIssue[] | null;
+
+    /**
+     * Per-unit mapping of specific section indices that need regeneration.
+     *
+     * Keys are unit indices (from `unitIndices`), values are arrays of
+     * section indices within that unit's `sectionSections[]` that failed review.
+     *
+     * When null/undefined or when a unitIndex is not present as a key,
+     * ALL sections for that unit are regenerated (backward-compatible fallback).
+     */
+    sectionIndicesPerUnit?: Record<number, number[]> | null;
   }
 
   export interface IReviewIssue {

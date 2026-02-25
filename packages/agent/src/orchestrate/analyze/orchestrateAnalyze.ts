@@ -610,7 +610,7 @@ async function processStageSection(
         const rejectedSet: Set<string> | null = buildRejectedSet(
           state.rejectedModuleUnits,
         );
-        const feedbackMap: Map<string, string> = buildFeedbackMap(
+        const feedbackMap: Map<string, ISectionAwareFeedback> = buildFeedbackMap(
           state.rejectedModuleUnits,
         );
 
@@ -650,13 +650,16 @@ async function processStageSection(
           ) {
             if (isSectionRejected(rejectedSet, moduleIndex, unitIndex)) {
               const sectionStart: number = Date.now();
-              analyzeDebug(
-                `section unit-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex}`,
-              );
               // Regenerate this section with targeted feedback
+              const targetedInfo: ISectionAwareFeedback | undefined =
+                feedbackMap.get(`${moduleIndex}:${unitIndex}`);
               const targetedFeedback: string | undefined =
-                feedbackMap.get(`${moduleIndex}:${unitIndex}`) ??
-                state.sectionFeedback;
+                targetedInfo?.feedback ?? state.sectionFeedback;
+              const targetedSectionIndices: number[] | null =
+                targetedInfo?.sectionIndices ?? null;
+              analyzeDebug(
+                `section unit-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} targetSections=${targetedSectionIndices ? `[${targetedSectionIndices.join(",")}]` : "all"}`,
+              );
               const previousSection: AutoBeAnalyzeWriteSectionEvent | undefined =
                 state.sectionResults?.[moduleIndex]?.[unitIndex];
               const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
@@ -675,6 +678,7 @@ async function processStageSection(
                       retry: attempt,
                       attributeRegistry,
                       scenarioEntityNames,
+                      sectionIndices: targetedSectionIndices,
                     })
                   : await orchestrateAnalyzeWriteSection(ctx, {
                       scenario: props.scenario,
@@ -903,6 +907,14 @@ async function processStageSection(
           perFileResult?.rejectedModuleUnits ?? null,
           structuredPerFileIssues,
         );
+        analyzeDebug(
+          `section reject file="${state.file.filename}" attempt=${attempt} perFileApproved=${perFileApproved} crossFileApproved=${crossFileApproved} critical=${hasCriticalConflict} targets=${formatRejectedModuleUnitsSummary(
+            state.rejectedModuleUnits,
+          )} issues=${formatReviewIssuesSummary(structuredPerFileIssues)} feedback=${truncateForDebug(
+            state.sectionFeedback ?? "",
+            500,
+          )}`,
+        );
       } else {
         // Critical conflict rejected (per-file approved but programmatic violations exist)
         // Use cross-file rejectedModuleUnits for targeted patch if available
@@ -920,6 +932,17 @@ async function processStageSection(
         state.rejectedModuleUnits = normalizeRejectedModuleUnits(
           crossFileResult?.rejectedModuleUnits ?? null,
           [...programmaticIssues, ...structuredCrossFileIssues],
+        );
+        analyzeDebug(
+          `section reject file="${state.file.filename}" attempt=${attempt} perFileApproved=${perFileApproved} crossFileApproved=${crossFileApproved} critical=${hasCriticalConflict} targets=${formatRejectedModuleUnitsSummary(
+            state.rejectedModuleUnits,
+          )} issues=${formatReviewIssuesSummary([
+            ...programmaticIssues,
+            ...structuredCrossFileIssues,
+          ])} feedback=${truncateForDebug(
+            state.sectionFeedback ?? "",
+            500,
+          )}`,
         );
       }
 
@@ -1006,20 +1029,25 @@ function buildRejectedSet(
   return set.size > 0 ? set : null;
 }
 
+interface ISectionAwareFeedback {
+  feedback: string;
+  sectionIndices: number[] | null;
+}
+
 function buildFeedbackMap(
   rejected:
     | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
     | null
     | undefined,
-): Map<string, string> {
-  const map: Map<string, string> = new Map();
+): Map<string, ISectionAwareFeedback> {
+  const map: Map<string, ISectionAwareFeedback> = new Map();
   if (rejected == null) return map;
   for (const entry of rejected) {
     for (const ui of entry.unitIndices) {
-      map.set(
-        `${entry.moduleIndex}:${ui}`,
-        formatRejectedModuleUnitFeedback(entry, ui),
-      );
+      map.set(`${entry.moduleIndex}:${ui}`, {
+        feedback: formatRejectedModuleUnitFeedback(entry, ui),
+        sectionIndices: entry.sectionIndicesPerUnit?.[ui] ?? null,
+      });
     }
   }
   return map;
@@ -1155,6 +1183,39 @@ function buildProgrammaticSectionIssues(props: {
   ];
 }
 
+function buildSectionIndicesPerUnit(
+  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+  moduleIndex: number,
+  unitIndices: number[],
+): Record<number, number[]> | null {
+  const map: Record<number, Set<number>> = {};
+  let hasSectionLevel = false;
+
+  for (const issue of issues) {
+    if (
+      issue.moduleIndex === moduleIndex &&
+      issue.unitIndex !== null &&
+      unitIndices.includes(issue.unitIndex) &&
+      issue.sectionIndex !== null &&
+      issue.sectionIndex !== undefined &&
+      Number.isInteger(issue.sectionIndex) &&
+      issue.sectionIndex >= 0
+    ) {
+      if (!map[issue.unitIndex]) map[issue.unitIndex] = new Set();
+      map[issue.unitIndex]!.add(issue.sectionIndex);
+      hasSectionLevel = true;
+    }
+  }
+
+  if (!hasSectionLevel) return null;
+
+  const result: Record<number, number[]> = {};
+  for (const [ui, sectionSet] of Object.entries(map)) {
+    result[Number(ui)] = [...sectionSet].sort((a, b) => a - b);
+  }
+  return result;
+}
+
 function normalizeRejectedModuleUnits(
   rejected:
     | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
@@ -1163,9 +1224,8 @@ function normalizeRejectedModuleUnits(
   fileIssues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
 ): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
   if (rejected == null) return null;
-  return rejected.map((entry) => ({
-    ...entry,
-    issues:
+  return rejected.map((entry) => {
+    const enrichedIssues =
       (entry.issues?.length ?? 0) > 0
         ? dedupeReviewIssues(entry.issues ?? [])
         : dedupeReviewIssues(
@@ -1175,8 +1235,22 @@ function normalizeRejectedModuleUnits(
                 (issue.unitIndex === null ||
                   entry.unitIndices.includes(issue.unitIndex)),
             ),
-          ),
-  }));
+          );
+
+    const sectionIndicesPerUnit =
+      entry.sectionIndicesPerUnit ??
+      buildSectionIndicesPerUnit(
+        enrichedIssues,
+        entry.moduleIndex,
+        entry.unitIndices,
+      );
+
+    return {
+      ...entry,
+      issues: enrichedIssues,
+      sectionIndicesPerUnit,
+    };
+  });
 }
 
 function formatStructuredIssuesForRetry(props: {
@@ -1334,4 +1408,41 @@ function buildSectionRejectionSignature(props: {
     })),
     feedback: props.feedback,
   });
+}
+
+function formatRejectedModuleUnitsSummary(
+  rejected:
+    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | null
+    | undefined,
+): string {
+  if (!rejected || rejected.length === 0) return "all-or-unknown";
+  return rejected
+    .slice(0, 6)
+    .map((entry) => {
+      const unitParts = entry.unitIndices.map((ui) => {
+        const sectionPart = entry.sectionIndicesPerUnit?.[ui];
+        return sectionPart
+          ? `u${ui}(s${sectionPart.join(",s")})`
+          : `u${ui}`;
+      });
+      return `m${entry.moduleIndex}:${unitParts.join(",") || "-"}`;
+    })
+    .join(" | ");
+}
+
+function formatReviewIssuesSummary(
+  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+): string {
+  if (issues.length === 0) return "none";
+  return issues
+    .slice(0, 8)
+    .map((issue) => `${issue.ruleCode}@${formatIssueTarget(issue)}`)
+    .join(", ");
+}
+
+function truncateForDebug(text: string, max: number): string {
+  const singleLine = text.replace(/\s+/g, " ").trim();
+  if (singleLine.length <= max) return singleLine;
+  return `${singleLine.slice(0, max)}...`;
 }

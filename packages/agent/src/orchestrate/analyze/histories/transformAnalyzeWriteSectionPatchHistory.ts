@@ -26,6 +26,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     feedback: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
     attributeRegistry?: string;
+    sectionIndices?: number[] | null;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
@@ -33,6 +34,45 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
   const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
     props.unitEvent.unitSections[props.unitIndex];
+
+  const hasSectionTargets =
+    props.sectionIndices != null && props.sectionIndices.length > 0;
+  const targetSet = hasSectionTargets
+    ? new Set(props.sectionIndices)
+    : null;
+
+  const previousOutputBlock = hasSectionTargets
+    ? `The following sections were generated. Sections marked [NEEDS FIX] must be corrected.
+Sections marked [APPROVED] must be returned EXACTLY as-is, character-for-character.
+
+${props.previousSectionEvent.sectionSections
+  .map(
+    (s, i) => `
+### Section ${i + 1}: ${s.title} ${targetSet!.has(i) ? "[NEEDS FIX]" : "[APPROVED - DO NOT MODIFY]"}
+
+${s.content}
+`,
+  )
+  .join("\n---\n")}`
+    : `The following sections were generated but REJECTED by review:
+
+${props.previousSectionEvent.sectionSections
+  .map(
+    (s, i) => `
+### Section ${i + 1}: ${s.title}
+
+${s.content}
+`,
+  )
+  .join("\n---\n")}`;
+
+  const taskBlock = hasSectionTargets
+    ? `Fix ONLY sections marked [NEEDS FIX] (section indices: ${props.sectionIndices!.map((i) => i + 1).join(", ")}).
+Return ALL sections (both fixed and unchanged) in the same sectionSections format.
+Sections marked [APPROVED] MUST be returned EXACTLY as they appear above -- do NOT modify them.`
+    : `Fix ONLY the issues identified above. Return ALL sections
+(both fixed and unchanged) in the same sectionSections format.
+Do NOT rewrite sections that were not flagged in the feedback.`;
 
   return {
     histories: [
@@ -63,19 +103,9 @@ export const transformAnalyzeWriteSectionPatchHistory = (
 
         **CRITICAL**: You MUST NOT reference entities, actors, or features not listed above.
 
-        ## Previous Output (REJECTED)
+        ## Previous Output
 
-        The following sections were generated but REJECTED by review:
-
-        ${props.previousSectionEvent.sectionSections
-          .map(
-            (s, i) => `
-        ### Section ${i + 1}: ${s.title}
-
-        ${s.content}
-        `,
-          )
-          .join("\n---\n")}
+        ${previousOutputBlock}
 
         ${props.attributeRegistry ? props.attributeRegistry : ""}
 
@@ -87,9 +117,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
 
         ## Your Task
 
-        Fix ONLY the issues identified above. Return ALL sections
-        (both fixed and unchanged) in the same sectionSections format.
-        Do NOT rewrite sections that were not flagged in the feedback.
+        ${taskBlock}
         `,
       },
     ],

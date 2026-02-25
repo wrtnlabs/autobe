@@ -38,6 +38,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
     retry: number;
     attributeRegistry?: string;
     scenarioEntityNames?: string[];
+    sectionIndices?: number[] | null;
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -73,16 +74,34 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
         feedback: props.feedback,
         preliminary,
         attributeRegistry: props.attributeRegistry,
+        sectionIndices: props.sectionIndices,
       }),
     });
     if (pointer.value === null) return out(result)(null);
+
+    // Section-level merge: preserve originals for non-targeted sections
+    let finalSectionSections = pointer.value.sectionSections;
+    if (
+      props.sectionIndices != null &&
+      props.sectionIndices.length > 0 &&
+      props.previousSectionEvent.sectionSections.length ===
+        pointer.value.sectionSections.length
+    ) {
+      const targetSet = new Set(props.sectionIndices);
+      finalSectionSections = pointer.value.sectionSections.map(
+        (section, idx) =>
+          targetSet.has(idx)
+            ? section
+            : props.previousSectionEvent.sectionSections[idx]!,
+      );
+    }
 
     const event: AutoBeAnalyzeWriteSectionEvent = {
       type: SOURCE,
       id: v7(),
       moduleIndex: pointer.value.moduleIndex,
       unitIndex: pointer.value.unitIndex,
-      sectionSections: pointer.value.sectionSections,
+      sectionSections: finalSectionSections,
       acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,
       metric: result.metric,
