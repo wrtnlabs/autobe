@@ -54,7 +54,6 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
-import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
@@ -151,7 +150,6 @@ export const createAutoBeContext = (props: {
               describe: false,
             },
             systemPrompt: {
-              common: () => getCommonPrompt(props.config),
               execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
               validate: (events) => getValidationErrorPrompt(events),
               jsonParseError: (event) =>
