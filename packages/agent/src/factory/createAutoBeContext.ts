@@ -339,6 +339,34 @@ export const createAutoBeContext = (props: {
                 return success(newHistories);
             }
           }
+          // Retry with explicit failure feedback
+          const functionNames: string =
+            next.controller.application.functions
+              .map((f) => f.name)
+              .join(", ");
+          for (
+            let retry = 0;
+            retry < AutoBeConfigConstant.FUNCTION_CALLING_RETRY - 1;
+            retry++
+          ) {
+            metric("consent");
+            const retryMessage: string =
+              `You failed to call any function. ` +
+              `You MUST call one of these functions immediately: ${functionNames}. ` +
+              `Do not explain anything. Just call the function right now.`;
+            const retryHistories: MicroAgenticaHistory[] =
+              await agent.conversate(retryMessage);
+            const retryTokenUsage: IAutoBeTokenUsageJson.IComponent =
+              AutoBeTokenUsageComponent.minus(
+                new AutoBeTokenUsageComponent(
+                  agent.getTokenUsage().toJSON().aggregate,
+                ),
+                new AutoBeTokenUsageComponent(tokenUsage),
+              );
+            consume(retryTokenUsage);
+            if (retryHistories.some((h) => h.type === "execute"))
+              return success(retryHistories);
+          }
           failure();
         }
         return success(result.histories);
