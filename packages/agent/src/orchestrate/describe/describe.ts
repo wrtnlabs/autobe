@@ -4,8 +4,8 @@ import {
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
-import { AutoBeContext } from "../context/AutoBeContext";
-import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { imageDescribe } from "./imageDescribe";
 
 export const describe = async (

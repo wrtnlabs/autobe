@@ -1,4 +1,4 @@
-import { imageDescribe } from "@autobe/agent/src/describe/imageDescribe";
+import { orchestrate } from "@agentica/core";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {
   AutoBeEvent,
@@ -56,7 +56,7 @@ export const validate_agent_describe_image = async (props: {
     }),
   );
 
-  const histories = await imageDescribe(agent.getContext(), {
+  const histories = await orchestrate.imageDescribe(agent.getContext(), {
     content: [
       ...imageContents,
       {

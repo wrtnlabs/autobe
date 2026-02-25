@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateInterfaceAuthorization } from "@autobe/agent/src/orchestrate/interface/orchestrateInterfaceAuthorization";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
@@ -12,9 +11,12 @@ export const validate_interface_authorization = async (props: {
   vendor: string;
 }): Promise<AutoBeInterfaceAuthorization[]> => {
   const authorizations: AutoBeInterfaceAuthorization[] =
-    await orchestrateInterfaceAuthorization(props.agent.getContext(), {
-      instruction: "",
-    });
+    await orchestrate.orchestrateInterfaceAuthorization(
+      props.agent.getContext(),
+      {
+        instruction: "",
+      },
+    );
   console.log(
     "authorizations",
     JSON.stringify(

@@ -1,4 +1,4 @@
-import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
+import { AutoBeState } from "@autobe/agent";
 import { predicateStateMessage } from "@autobe/agent/src/utils/predicateStateMessage";
 import { AutoBePhase } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";

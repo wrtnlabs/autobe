@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeWriteSectionReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteSectionReview";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
@@ -59,15 +58,18 @@ export const validate_analyze_write_section_review = async (props: {
   };
 
   const event: AutoBeAnalyzeWriteSectionReviewEvent =
-    await orchestrateAnalyzeWriteSectionReview(props.agent.getContext(), {
-      promptCacheKey: "",
-      scenario,
-      file,
-      moduleEvent,
-      unitEvent,
-      sectionEvent,
-      progress,
-    });
+    await orchestrate.orchestrateAnalyzeWriteSectionReview(
+      props.agent.getContext(),
+      {
+        promptCacheKey: "",
+        scenario,
+        file,
+        moduleEvent,
+        unitEvent,
+        sectionEvent,
+        progress,
+      },
+    );
 
   await AutoBeExampleStorage.save({
     vendor: props.vendor,

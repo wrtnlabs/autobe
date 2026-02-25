@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { AutoBeContext } from "@autobe/agent/src/context/AutoBeContext";
+import { AutoBeAgent, AutoBeContext } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import {

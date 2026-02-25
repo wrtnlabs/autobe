@@ -8,9 +8,9 @@ import {
 } from "@autobe/interface";
 import { v7 } from "uuid";
 
-import { AutoBeContext } from "../context/AutoBeContext";
-import { createAutoBeUserMessageContent } from "../factory/createAutoBeMessageContent";
-import { orchestrateImageDescribeDrafts } from "./image/orchestrateImageDescribeDraft";
+import { AutoBeContext } from "../../context/AutoBeContext";
+import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
+import { orchestrateImageDescribeDrafts } from "./orchestrateImageDescribeDraft";
 
 export const imageDescribe = async (
   ctx: AutoBeContext,

@@ -1,4 +1,6 @@
 export * from "./AutoBeAgent";
+export * from "./context/AutoBeContext";
+export * from "./context/AutoBeState";
 export * from "./context/AutoBeTokenUsage";
 export * from "./context/AutoBeTokenUsageComponent";
 

@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeScenario } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeScenario";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
@@ -27,7 +26,7 @@ export const validate_analyze_scenario = async (props: {
         created_at: new Date().toISOString(),
       });
     const event: AutoBeAssistantMessageEvent | AutoBeAnalyzeScenarioEvent =
-      await orchestrateAnalyzeScenario(props.agent.getContext());
+      await orchestrate.orchestrateAnalyzeScenario(props.agent.getContext());
     return event.type === "analyzeScenario" ? event : null;
   };
   const event: AutoBeAnalyzeScenarioEvent | null =

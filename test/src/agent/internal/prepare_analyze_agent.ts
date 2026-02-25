@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { describe } from "@autobe/agent/src/describe/describe";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import {
@@ -26,7 +25,7 @@ export const prepare_analyze_agent = async (props: {
     );
 
   agent.getHistories().push(
-    await describe(agent.getContext(), {
+    await orchestrate.describe(agent.getContext(), {
       content: await AutoBeExampleStorage.getUserMessage({
         project: props.project,
         phase: "analyze",

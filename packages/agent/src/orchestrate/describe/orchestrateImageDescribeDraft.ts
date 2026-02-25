@@ -19,8 +19,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
-import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";
+import { transformImageDescribeDraftHistories } from "./image/histories/transformImageDescribeDraftHistories";
+import { IAutoBeImageDescribeDraftApplication } from "./image/structures/IAutoBeImageDescribeDraftApplication";
 
 export const orchestrateImageDescribeDrafts = async (
   ctx: AutoBeContext,

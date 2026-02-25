@@ -1,5 +1,4 @@
-import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeWriteModule } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteModule";
+import { AutoBeAgent, orchestrate } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
@@ -32,7 +31,7 @@ export const validate_analyze_write_module = async (props: {
   };
 
   const event: AutoBeAnalyzeWriteModuleEvent =
-    await orchestrateAnalyzeWriteModule(props.agent.getContext(), {
+    await orchestrate.orchestrateAnalyzeWriteModule(props.agent.getContext(), {
       promptCacheKey: "",
       scenario,
       file,
