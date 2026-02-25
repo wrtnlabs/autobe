@@ -141,6 +141,98 @@ const normalizeValue = (value: string): string =>
 
 const hasNumeric = (value: string): boolean => /\d/.test(value);
 
+// ─── Structured Conflict Detection ───
+
+export interface IConstraintConflict {
+  key: string;
+  values: Array<{
+    display: string;
+    files: string[];
+  }>;
+}
+
+/**
+ * Detect numeric constraint conflicts across files as structured data.
+ *
+ * Returns an array of conflicts where the same constraint key has different
+ * normalized values across files. Used by the orchestrator to programmatically
+ * determine whether cross-file rejection should be authoritative.
+ */
+export const detectConstraintConflicts = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IConstraintConflict[] => {
+  const constraints: Map<string, ConstraintEntry> = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const pairs = extractConstraints(section.content);
+          for (const { key, value } of pairs) {
+            const normalized = normalizeValue(value);
+            if (!constraints.has(key)) {
+              constraints.set(key, { key, values: new Map() });
+            }
+            const entry = constraints.get(key)!;
+            if (!entry.values.has(normalized)) {
+              entry.values.set(normalized, {
+                normalized,
+                display: value.trim(),
+                sources: [],
+              });
+            }
+            entry.values.get(normalized)!.sources.push({
+              file,
+              sectionTitle: section.title,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return [...constraints.values()]
+    .filter((entry) => entry.values.size > 1)
+    .map((entry) => ({
+      key: entry.key,
+      values: [...entry.values.values()].map((v) => ({
+        display: v.display,
+        files: [...new Set(v.sources.map((s) => s.file.filename))],
+      })),
+    }));
+};
+
+/**
+ * Build a map from filename → list of conflict feedback strings.
+ *
+ * For each file that participates in at least one constraint conflict,
+ * generates human-readable feedback describing what conflicts exist.
+ */
+export const buildFileConflictMap = (
+  conflicts: IConstraintConflict[],
+): Map<string, string[]> => {
+  const map: Map<string, string[]> = new Map();
+
+  for (const conflict of conflicts) {
+    const allFiles = new Set(conflict.values.flatMap((v) => v.files));
+    const feedback =
+      `${conflict.key} has conflicting values: ` +
+      conflict.values
+        .map((v) => `"${v.display}" in [${v.files.join(", ")}]`)
+        .join(" vs ");
+
+    for (const filename of allFiles) {
+      if (!map.has(filename)) map.set(filename, []);
+      map.get(filename)!.push(feedback);
+    }
+  }
+
+  return map;
+};
+
 // ─── Attribute Ownership Report ───
 
 type AttributeSource = {

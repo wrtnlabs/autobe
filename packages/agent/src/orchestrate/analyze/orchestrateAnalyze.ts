@@ -29,6 +29,8 @@ import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
 import {
   buildConstraintConsistencyReport,
   buildAttributeOwnershipReport,
+  detectConstraintConflicts,
+  buildFileConflictMap,
 } from "./utils/buildConstraintConsistencyReport";
 
 /**
@@ -606,6 +608,13 @@ async function processStageSection(
     for (const fr of validCrossFileResults)
       crossFileResultMap.set(fr.fileIndex, fr);
 
+    // Detect critical conflicts programmatically
+    const criticalConflicts = detectConstraintConflicts({
+      files: filesWithSections,
+    });
+    const fileConflictMap: Map<string, string[]> =
+      buildFileConflictMap(criticalConflicts);
+
     for (const fileIndex of pendingArray) {
       const perFileEvent = perFileReviewResults.get(fileIndex);
       const perFileResult = perFileEvent?.fileResults[0];
@@ -614,8 +623,16 @@ async function processStageSection(
       const perFileApproved = perFileResult?.approved ?? true;
       const crossFileApproved = crossFileResult?.approved ?? true;
 
-      // Cross-file review is advisory-only: approve based on per-file only
-      const approved = perFileApproved;
+      // Check if this file has programmatically-detected critical conflicts
+      const filename = props.fileStates[fileIndex]!.file.filename;
+      const fileCriticalConflicts = fileConflictMap.get(filename) ?? [];
+      const hasCriticalConflict = fileCriticalConflicts.length > 0;
+
+      // Decision logic:
+      // 1. per-file reject → reject (unchanged)
+      // 2. per-file approve + critical conflict detected → reject (NEW: patch-first)
+      // 3. per-file approve + no critical conflict → approve (unchanged)
+      const approved = perFileApproved && !hasCriticalConflict;
 
       if (approved) {
         // Apply per-file revisions if provided
@@ -632,7 +649,7 @@ async function processStageSection(
             `[Cross-file advisory] ${crossFileResult.feedback}`;
         }
         pendingIndices.delete(fileIndex);
-      } else {
+      } else if (!perFileApproved) {
         // Per-file rejected: store only the latest per-file feedback (no accumulation)
         props.fileStates[fileIndex]!.sectionFeedback =
           perFileResult?.feedback ?? "";
@@ -640,6 +657,16 @@ async function processStageSection(
         // Use only per-file rejectedModuleUnits (no cross-file merge)
         props.fileStates[fileIndex]!.rejectedModuleUnits =
           perFileResult?.rejectedModuleUnits ?? null;
+      } else {
+        // Critical conflict rejected (per-file approved but constraint conflicts exist)
+        // Use cross-file rejectedModuleUnits for targeted patch if available
+        props.fileStates[fileIndex]!.sectionFeedback =
+          `[Critical conflict] ${fileCriticalConflicts.join("; ")}` +
+          (crossFileResult?.feedback
+            ? `\n${crossFileResult.feedback}`
+            : "");
+        props.fileStates[fileIndex]!.rejectedModuleUnits =
+          crossFileResult?.rejectedModuleUnits ?? null;
       }
     }
   }
