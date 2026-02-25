@@ -30,7 +30,7 @@ export const enum AutoBeConfigConstant {
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
    * rather than wasting resources.
    */
-  VALIDATION_RETRY = 5,
+  VALIDATION_RETRY = 8,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.
