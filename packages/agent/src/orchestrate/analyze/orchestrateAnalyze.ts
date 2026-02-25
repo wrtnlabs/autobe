@@ -26,6 +26,7 @@ import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
+import { buildConstraintConsistencyReport } from "./utils/buildConstraintConsistencyReport";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -546,6 +547,14 @@ async function processStageSection(
     );
 
     // Pass 2: Cross-file lightweight review (single call)
+    const constraintReport: string = buildConstraintConsistencyReport({
+      files: props.fileStates
+        .filter((state) => state.sectionResults !== null)
+        .map((state) => ({
+          file: state.file,
+          sectionEvents: state.sectionResults!,
+        })),
+    });
     const crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent =
       await orchestrateAnalyzeSectionCrossFileReview(ctx, {
         scenario: props.scenario,
@@ -560,6 +569,7 @@ async function processStageSection(
               : "rewritten"
             : "approved",
         })),
+        constraintReport,
         progress: props.crossFileSectionReviewProgress,
         promptCacheKey,
         retry: attempt,
@@ -580,7 +590,9 @@ async function processStageSection(
 
       const perFileApproved = perFileResult?.approved ?? true;
       const crossFileApproved = crossFileResult?.approved ?? true;
-      const approved = perFileApproved && crossFileApproved;
+
+      // Cross-file review is advisory-only: approve based on per-file only
+      const approved = perFileApproved;
 
       if (approved) {
         // Apply per-file revisions if provided
@@ -591,43 +603,20 @@ async function processStageSection(
             perFileResult,
           );
         }
+        // Pass cross-file feedback as advisory for next retry's context
+        if (!crossFileApproved && crossFileResult?.feedback) {
+          state.sectionFeedback =
+            `[Cross-file advisory] ${crossFileResult.feedback}`;
+        }
         pendingIndices.delete(fileIndex);
       } else {
-        // Combine feedback from both passes
-        const feedbackParts: string[] = [];
-        if (!perFileApproved && perFileResult?.feedback)
-          feedbackParts.push(
-            `[Per-file review] ${perFileResult.feedback}`,
-          );
-        if (!crossFileApproved && crossFileResult?.feedback)
-          feedbackParts.push(
-            `[Cross-file review] ${crossFileResult.feedback}`,
-          );
+        // Per-file rejected: store only the latest per-file feedback (no accumulation)
         props.fileStates[fileIndex]!.sectionFeedback =
-          feedbackParts.join("\n\n");
+          perFileResult?.feedback ?? "";
 
-        // Merge rejectedModuleUnits from both reviews
-        const perFileRejected:
-          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-          | null = perFileApproved
-          ? []
-          : (perFileResult?.rejectedModuleUnits ?? null);
-        const crossFileRejected:
-          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-          | null = crossFileApproved
-          ? []
-          : (crossFileResult?.rejectedModuleUnits ?? null);
-
-        if (perFileRejected === null || crossFileRejected === null) {
-          // One review rejected without granular info → regenerate all
-          props.fileStates[fileIndex]!.rejectedModuleUnits = null;
-        } else {
-          props.fileStates[fileIndex]!.rejectedModuleUnits =
-            mergeRejectedModuleUnits([
-              ...perFileRejected,
-              ...crossFileRejected,
-            ]);
-        }
+        // Use only per-file rejectedModuleUnits (no cross-file merge)
+        props.fileStates[fileIndex]!.rejectedModuleUnits =
+          perFileResult?.rejectedModuleUnits ?? null;
       }
     }
   }
@@ -686,29 +675,3 @@ function isSectionRejected(
   return rejectedSet.has(`${moduleIndex}:${unitIndex}`);
 }
 
-function mergeRejectedModuleUnits(
-  entries: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[],
-): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
-  if (entries.length === 0) return null;
-  const map: Map<
-    number,
-    { unitIndices: Set<number>; feedbacks: string[] }
-  > = new Map();
-  for (const entry of entries) {
-    const existing = map.get(entry.moduleIndex);
-    if (existing) {
-      for (const ui of entry.unitIndices) existing.unitIndices.add(ui);
-      existing.feedbacks.push(entry.feedback);
-    } else {
-      map.set(entry.moduleIndex, {
-        unitIndices: new Set(entry.unitIndices),
-        feedbacks: [entry.feedback],
-      });
-    }
-  }
-  return [...map.entries()].map(([moduleIndex, { unitIndices, feedbacks }]) => ({
-    moduleIndex,
-    unitIndices: [...unitIndices].sort((a, b) => a - b),
-    feedback: feedbacks.join("\n"),
-  }));
-}

@@ -31,6 +31,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
       sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
       status: "approved" | "rewritten" | "new";
     }>;
+    constraintReport: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -100,6 +101,10 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
         `,
           )
           .join("\n")}
+
+        ## Constraint Consistency Report (Numeric/Limit Conflicts)
+
+        ${props.constraintReport}
 
         ## Cross-File Consistency Criteria
 
