@@ -472,6 +472,10 @@ async function processStageSection(
     // Build scenario entity name list for invention validation (P0-B)
     const scenarioEntityNames = props.scenario.entities.map((e) => e.name);
 
+    // Collect per-file review results (populated inside write+review batch)
+    const perFileReviewResults: Map<number, AutoBeAnalyzeSectionReviewEvent> =
+      new Map();
+
     for (const sectionBatch of sectionFileBatches)
       await executeCachedBatch(
         ctx,
@@ -579,19 +583,7 @@ async function processStageSection(
           stripTocBridgeBlocks(state.sectionResults);
         }
 
-        return sectionResults;
-        }),
-        promptCacheKey,
-      );
-
-    // Pass 1: Per-file detailed review (parallel)
-    const perFileReviewResults: Map<number, AutoBeAnalyzeSectionReviewEvent> =
-      new Map();
-    for (const sectionBatch of sectionFileBatches)
-      await executeCachedBatch(
-        ctx,
-        sectionBatch.map((fileIndex) => async (cacheKey) => {
-        const state: IFileState = props.fileStates[fileIndex]!;
+        // Per-file review immediately after write (removes barrier)
         const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
           await orchestrateAnalyzeSectionReview(ctx, {
             scenario: props.scenario,
@@ -606,7 +598,8 @@ async function processStageSection(
             retry: attempt,
           });
         perFileReviewResults.set(fileIndex, reviewEvent);
-        return reviewEvent;
+
+        return sectionResults;
         }),
         promptCacheKey,
       );
