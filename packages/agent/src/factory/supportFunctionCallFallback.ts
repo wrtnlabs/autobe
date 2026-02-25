@@ -58,6 +58,9 @@ export const supportFunctionCallFallback = (
           continue;
         }
         patchCompletionIfNeeded(comp, body.tools);
+        if (isEmptyCompletion(comp)) {
+          continue;
+        }
       }
 
       return result;
