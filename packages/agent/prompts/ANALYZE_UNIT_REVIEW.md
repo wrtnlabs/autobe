@@ -12,6 +12,8 @@ This is a cross-file review step for Step 2 in a 3-step hierarchical generation 
 - If you approve a file: Its unit structure is finalized and section generation can begin
 - If you reject a file: Only that file's unit generation retries with your feedback
 
+**IMPORTANT: Be lenient. Prefer approving with advisory feedback over rejecting. Only reject for critical issues that would cause fundamental downstream problems.**
+
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
 ## Cross-File Review Focus
@@ -28,10 +30,11 @@ Unlike per-file reviews that check internal structure, your focus is on **consis
 - Are similar functional areas handled with consistent patterns?
 - Are cross-cutting concerns addressed consistently across files?
 
-### 2. Keyword Style Uniformity
+### 2. Keyword Style Uniformity (ADVISORY)
 - Are keywords formatted consistently across all files?
 - Are keyword specificity levels similar?
 - Are keyword counts comparable (3-8 per unit recommended)?
+- Flag inconsistencies in feedback but prefer approving
 
 ### 3. Depth Balance
 - Are unit section counts proportional to module scope across files?
@@ -48,47 +51,62 @@ Unlike per-file reviews that check internal structure, your focus is on **consis
 - Are quantity limits consistent throughout?
 - Are role names consistent throughout?
 
-### 6. Structured Keywords Quality (CRITICAL — Downstream RAG Quality Gate)
-- Do keywords follow the `{Entity}:{aspect}:{constraint}` structured format?
-  - REJECT vague keywords like "login", "search", "validation" — these are useless for RAG
-  - ACCEPT structured keywords like `User:authentication:email+password-login`, `Article:create:title(5-200)+body(50+)`
-- Does each unit section have at least **5 keywords**?
-  - REJECT units with fewer than 5 keywords — insufficient for Section step guidance
+### 6. Structured Keywords Quality (RECOMMENDED)
+- The `{Entity}:{aspect}:{constraint}` structured format is preferred for keywords
+  - Flag vague keywords like "login", "search", "validation" in feedback — recommend structured format
+  - But do NOT reject solely for keyword format
+- Does each unit section have at least **3 keywords**?
+  - REJECT units with fewer than 3 keywords — insufficient for Section step guidance
 - Do keywords cover the expected categories for their domain?
   - Entity-CRUD keywords for data operations
   - Entity-State keywords for stateful entities
   - Permission keywords for access-controlled operations
-  - Validation keywords for input constraints
-  - Error keywords for failure scenarios
-  - Relationship keywords for cross-entity references
+  - These are recommendations, not hard requirements
 
-### 7. Entity Coverage Completeness
-- Do all **Primary Entities** declared in the parent module's content appear in at least one unit's keywords?
-  - REJECT if a module declares "Primary Entities: Article, ArticleAttachment, ArticleTag" but no unit keyword references ArticleAttachment
+### 7. Entity Coverage Completeness (ADVISORY)
+- Do **Primary Entities** declared in the parent module's content appear in at least one unit's keywords?
+  - Flag missing entity coverage in feedback, but do not reject
 - Are entity names consistent between module content and unit keywords?
-  - REJECT if module says "Article" but keywords say "Post" or "article" (case-sensitive for entity names)
+  - Flag case mismatches in feedback (e.g., "Article" vs "article") as a recommendation
+
+### 8. Intra-File Deduplication Validation (ADVISORY)
+- Within each file, are unit sections across ALL modules free from content overlap?
+  - Only REJECT if two units substantially overlap (>50% of scope covers the same functional area)
+  - Minor cross-references between units are acceptable
+- Are keywords unique across all units within a file?
+  - Flag duplicate keywords in feedback
+  - Only REJECT if the same keyword appears in 3+ units within the same file
+- Are entity-operation pairs assigned to single units?
+  - Recommend single ownership in feedback, but do not reject for minor overlap
 
 ## Decision Guidelines
 
 **APPROVE a file** when:
 - Its functional decomposition matches the granularity of other files
-- Its keywords follow the same style and specificity as other files
+- Its keywords are reasonable (at least 3 per unit)
 - Its depth is proportional and balanced with other files
-- Its section boundaries follow consistent principles
+- No non-English text
+
+**APPROVE with feedback** when:
+- Keywords could use more structured format
+- Minor keyword duplication between units
+- Entity coverage could be improved
+- Some scope overlap between units
 
 **REJECT a file** when:
 - Its granularity significantly differs from other files
-- Its keywords are inconsistent in style or specificity
-- Its depth is disproportionate compared to other files
-- Its section boundaries follow different principles
+- Any unit has fewer than 3 keywords
+- Its depth is severely disproportionate compared to other files
 - It contains non-English text
+- Values contradict other files
+- Substantial scope overlap (>50%) between units within the same file
 
 ## Output Format
 
 **Type 1: All Files Approved**
 ```typescript
 process({
-  thinking: "All files have consistent functional decomposition, keyword styles, and balanced depth.",
+  thinking: "All files have consistent functional decomposition and reasonable keywords.",
   request: {
     type: "complete",
     fileResults: [
@@ -107,7 +125,7 @@ Only set `rejectedModules: null` if the entire file's unit structure is fundamen
 
 ```typescript
 process({
-  thinking: "File 1's Module 2 has inconsistent keyword style. File 2's Module 0 keywords too vague.",
+  thinking: "File 1's Module 2 has only 1 keyword per unit. File 2's Module 0 has severe scope overlap.",
   request: {
     type: "complete",
     fileResults: [
@@ -115,20 +133,19 @@ process({
       {
         fileIndex: 1,
         approved: false,
-        feedback: "Module 2 keywords too vague, Module 4 needs more unit decomposition.",
+        feedback: "Module 2 units have insufficient keywords.",
         revisedUnits: null,
         rejectedModules: [
-          { moduleIndex: 2, feedback: "Keywords like 'general', 'stuff' are too vague compared to specific keywords in other files. Use Entity:aspect:constraint format." },
-          { moduleIndex: 4, feedback: "Only 1 unit section while other comparable modules have 4-5. Break down into more specific functional groupings." }
+          { moduleIndex: 2, feedback: "Units have only 1-2 keywords each. Minimum 3 required per unit." }
         ]
       },
       {
         fileIndex: 2,
         approved: false,
-        feedback: "Module 0 keywords lack structured format.",
+        feedback: "Module 0 has substantial scope overlap between units.",
         revisedUnits: null,
         rejectedModules: [
-          { moduleIndex: 0, feedback: "Keywords like 'login', 'search' are too vague. Use Entity:aspect:constraint structured format." }
+          { moduleIndex: 0, feedback: "Units 'User Management' and 'Account Settings' overlap >50%. Consolidate or clarify boundaries." }
         ]
       }
     ]
@@ -172,46 +189,27 @@ process({
 });
 ```
 
-### 8. Intra-File Deduplication Validation (CRITICAL)
-
-- Within each file, are unit sections across ALL modules free from content overlap?
-  - REJECT if two units in the same file describe the same functional area (e.g., "User Authentication" in both Module 2 and Module 6)
-  - Exception: A unit may briefly cross-reference another unit's topic
-- Are keywords unique across all units within a file?
-  - REJECT if the same `{Entity}:{operation}` keyword appears in multiple units within the same file
-  - Example: `User:authentication:email+password` should appear in exactly one unit
-- Are entity-operation pairs assigned to single units?
-  - REJECT if "Order:create" is covered in both "Order Management" and "Checkout Flow" units — one must own it, the other references it
-
 ## Review Checklist
 
 Before making your decision, verify across ALL files:
 
 - [ ] ALL text is in English only
 - [ ] Functional decomposition granularity is consistent
-- [ ] Keywords follow same style and specificity
 - [ ] Unit section depths are balanced
-- [ ] Section boundaries use consistent principles
 - [ ] Values are consistent across all files
 - [ ] No prohibited content (schemas, APIs)
-- [ ] **Keywords follow `Entity:aspect:constraint` structured format**
-- [ ] **Minimum 5 keywords per unit section**
-- [ ] **All module-declared Primary Entities appear in unit keywords**
-- [ ] **Entity names are consistent between module content and unit keywords**
-- [ ] **No duplicate functional scope between units within the same file**
-- [ ] **No duplicate keywords across units within the same file**
-- [ ] **Each entity-operation pair assigned to exactly one unit per file**
+- [ ] **Minimum 3 keywords per unit section**
+- [ ] (Advisory) Keywords follow structured format
+- [ ] (Advisory) All module-declared Primary Entities appear in unit keywords
+- [ ] (Advisory) No duplicate keywords across units within the same file
+- [ ] (Advisory) Each entity-operation pair assigned to one unit per file
 
 ## Rejection Triggers
 
 **REJECT a file immediately if**:
 - Non-English text detected
 - Granularity is significantly different from other files
-- Keywords are too vague compared to other files (e.g., single words like "login", "search")
-- Unit count is disproportionate to scope
+- Any unit has fewer than 3 keywords
+- Unit count is severely disproportionate to scope
 - Values contradict other files
-- **Keywords do not follow structured `Entity:aspect:constraint` format**
-- **Any unit has fewer than 5 keywords**
-- **Module-declared Primary Entity is missing from all unit keywords**
-- **Same functional area appears in multiple units within a file (scope overlap)**
-- **Same keyword appears in multiple units within a file**
+- Substantial scope overlap (>50%) between units within the same file

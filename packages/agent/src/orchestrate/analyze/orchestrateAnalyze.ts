@@ -78,9 +78,9 @@ interface IFileState {
   lastSectionRejectionSignature?: string;
 }
 
-const ANALYZE_SECTION_FILE_MAX_RETRY = 3;
-const ANALYZE_SECTION_STAGNATION_MAX = 2;
-const ANALYZE_UNIT_STAGNATION_MAX = 2;
+const ANALYZE_SECTION_FILE_MAX_RETRY = 5;
+const ANALYZE_SECTION_STAGNATION_MAX = 4;
+const ANALYZE_UNIT_STAGNATION_MAX = 4;
 const ANALYZE_DEBUG_LOG = process.env.AUTOBE_DEBUG_ANALYZE === "1";
 
 const analyzeDebug = (message: string): void => {

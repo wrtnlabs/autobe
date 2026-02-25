@@ -12,6 +12,8 @@ This is a cross-file review step for Step 1 in a 3-step hierarchical generation 
 - If you approve a file: Its module structure is finalized
 - If you reject a file: Only that file's module generation retries with your feedback
 
+**IMPORTANT: Be lenient. Prefer approving with advisory feedback over rejecting. Only reject for critical structural issues.**
+
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
 ## Cross-File Review Focus
@@ -48,40 +50,60 @@ Unlike per-file reviews that check internal structure, your focus is on **consis
 - Are quantity limits consistent throughout?
 - Are role names consistent throughout?
 
-### 6. Entity Mapping Completeness (CRITICAL — Downstream Phase Quality Gate)
+### 6. Entity Mapping Completeness (RECOMMENDED)
 - Does every module's `content` field include **Primary Entities** and **Referenced Entities** declarations?
-  - REJECT if module content has no entity mapping — downstream phases cannot determine component groups
+  - If missing, provide feedback recommending entity mapping, but do not reject solely for this reason
 - Is each entity listed as **Primary** in exactly ONE module?
-  - REJECT if the same entity appears as Primary in multiple modules (ownership ambiguity)
-  - Exception: introductory/overview modules may have no Primary Entities
+  - Flag if the same entity appears as Primary in multiple modules — recommend clarification in feedback
+  - Only reject if this causes clear ambiguity that would block downstream phases
 - Does every module include **"Covers / Does NOT cover"** boundary declarations?
-  - REJECT if module boundary is implicit — downstream phases need explicit scope
+  - Recommend explicit boundaries in feedback if missing, but do not reject
 
-### 7. Downstream Consumability (CRITICAL)
+### 7. Downstream Consumability (ADVISORY)
 - Can the DB Phase determine **component groups** from module structure alone?
-  - Each module with Primary Entities should map to one or more DB component groups
-  - If module boundaries are too vague for grouping, REJECT
+  - If module boundaries are too vague for grouping, provide feedback recommending more specificity but approve
 - Can the Interface Phase determine **API controller/route grouping** from module entity lists?
-  - Each module's entity list should suggest a natural API controller structure
-  - If entity lists are missing or incomplete, REJECT
+  - If entity lists are missing or incomplete, note this in feedback as a recommendation
 - Are **"Downstream Hints"** present and reasonable?
-  - Modules should provide hints about expected DB component groups and API controllers
-  - REJECT if downstream hints are missing from functional modules (Module 4+)
+  - Recommend downstream hints in functional modules, but approve without them
+
+### 8. Module Content Verbosity Check (ADVISORY)
+- If module `content` starts with "This section/document provides/presents/establishes/defines/specifies...", provide feedback suggesting the content start with entity/scope declarations instead
+- If module content contains filler sentences, note in feedback
+- Do NOT reject for verbose writing patterns
+
+### 9. Module Selection Appropriateness
+- Are the 3 required modules (Introduction, System Overview, Capabilities) present in every file?
+  - REJECT if any required module is missing
+- Are optional modules justified by the project's actual needs?
+  - If an optional module has thin/padded content, provide feedback noting this but approve
+- Is module count proportional to project complexity?
+  - Flag disproportionate module counts in feedback but approve
 
 ## Decision Guidelines
 
 **APPROVE a file** when:
 - Its terminology matches other files
 - Its structure follows the same patterns as other files
-- Its scope is clearly bounded without overlap
+- Its scope is clearly bounded without significant overlap
 - Its naming conventions are consistent
+- Required modules are present
+
+**APPROVE with feedback** when:
+- Entity mapping is missing or incomplete
+- Boundary declarations are implicit
+- Downstream hints are missing
+- Verbose writing patterns detected
+- Module count slightly disproportionate
+- Optional modules have thin content
 
 **REJECT a file** when:
-- It uses different terminology for the same concepts
-- Its structure significantly differs from other files
-- Its scope overlaps with another file
-- Its naming conventions are inconsistent
+- It uses fundamentally different terminology from other files
+- Its structure is incompatible with other files' patterns
+- Its scope significantly overlaps with another file
+- Values contradict values in other files
 - It contains non-English text
+- Any of the 3 required modules (Introduction, System Overview, Capabilities) is missing
 
 ## Output Format
 
@@ -102,12 +124,12 @@ process({
 **Type 2: Some Files Rejected**
 ```typescript
 process({
-  thinking: "File 1 uses 'admin' while others use 'administrator'. File 2's structure is too shallow.",
+  thinking: "File 1 uses 'admin' while others use 'administrator'. File 2's scope overlaps with File 3.",
   request: {
     type: "complete",
     fileResults: [
       { fileIndex: 0, approved: true, feedback: "Consistent with overall structure.", revisedTitle: null, revisedSummary: null, revisedSections: null },
-      { fileIndex: 1, approved: false, feedback: "Terminology mismatch: uses 'admin' instead of 'administrator' used in other files. Section depth is shallower than other files.", revisedTitle: null, revisedSummary: null, revisedSections: null },
+      { fileIndex: 1, approved: false, feedback: "Terminology mismatch: uses 'admin' instead of 'administrator' used in other files.", revisedTitle: null, revisedSummary: null, revisedSections: null },
       { fileIndex: 2, approved: true, feedback: "Consistent with overall structure.", revisedTitle: null, revisedSummary: null, revisedSections: null }
     ]
   }
@@ -128,26 +150,6 @@ process({
 });
 ```
 
-### 8. Module Content Verbosity Check (CRITICAL)
-- Does any module `content` start with "This section/document provides/presents/establishes/defines/specifies..."? → REJECT
-- Does any module `content` contain filler sentences without structural or entity-mapping information? → REJECT
-- Does module content start directly with **Primary Entities** or **Covers/Does NOT cover** declarations? → APPROVE
-- Every sentence in module content must carry entity-mapping, boundary, or downstream hint information
-- Apply the "Delete Test": if a sentence can be removed without losing structural/entity information, it should not exist
-
-### 9. Module Selection Appropriateness (CRITICAL)
-
-- Are the 3 required modules (Introduction, System Overview, Capabilities) present in every file?
-  - REJECT if any required module is missing
-- Are optional modules justified by the project's actual needs?
-  - REJECT if an optional module is included but its content is thin/padded/generic
-  - A module with only 1-2 sentences of unique content does NOT warrant separate module status
-- Are omitted optional modules genuinely not needed?
-  - If a clearly relevant optional topic (e.g., Security for a multi-role system) is missing, REJECT
-- Is module count proportional to project complexity?
-  - A simple CRUD app should have 3-5 modules, not 8-10
-  - A complex enterprise system may warrant 7-10 modules
-
 ## Review Checklist
 
 Before making your decision, verify across ALL files:
@@ -159,15 +161,12 @@ Before making your decision, verify across ALL files:
 - [ ] Scope boundaries are clear and non-overlapping
 - [ ] Section title formats are consistent
 - [ ] Values are consistent across all files
-- [ ] **Every module has Primary Entities / Referenced Entities declarations**
-- [ ] **No entity is Primary in more than one module**
-- [ ] **Module boundaries include "Covers / Does NOT cover" declarations**
-- [ ] **Downstream Hints are present in functional modules**
-- [ ] **DB Phase can derive component groups from module structure**
-- [ ] **Interface Phase can derive API grouping from entity lists**
-- [ ] **3 required modules are present in every file**
-- [ ] **Optional modules are justified and not padded**
-- [ ] **Module count is proportional to project complexity**
+- [ ] 3 required modules are present in every file
+- [ ] (Advisory) Every module has Primary Entities / Referenced Entities declarations
+- [ ] (Advisory) No entity is Primary in more than one module
+- [ ] (Advisory) Module boundaries include "Covers / Does NOT cover" declarations
+- [ ] (Advisory) Downstream Hints are present in functional modules
+- [ ] (Advisory) Module count is proportional to project complexity
 
 ## Rejection Triggers
 
@@ -177,10 +176,4 @@ Before making your decision, verify across ALL files:
 - Structure is incompatible with other files' patterns
 - Scope significantly overlaps with another file
 - Values contradict values in other files
-- **Module content lacks Primary Entities / Referenced Entities declaration**
-- **Same entity is declared as Primary in multiple modules**
-- **Module boundary ("Covers / Does NOT cover") is missing**
-- **Module content is too vague for downstream phases to derive component groups**
-- **Any of the 3 required modules (Introduction, System Overview, Capabilities) is missing**
-- **Optional module is included but has thin/padded content with no substantial unique information**
-- **Module content starts with verbose meta-description (e.g., "This section provides/establishes/defines...") instead of entity/scope declarations**
+- Any of the 3 required modules (Introduction, System Overview, Capabilities) is missing
