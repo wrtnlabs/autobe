@@ -29,7 +29,6 @@ import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
-import { getCommonPrompt } from "./factory/getCommonPrompt";
 import { getValidationErrorPrompt } from "./factory/getValidationErrorPrompt";
 import { supportMistral } from "./factory/supportMistral";
 import { createAutoBeFacadeController } from "./orchestrate/facade/createAutoBeFacadeController";
@@ -171,7 +170,6 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
           describe: false,
         },
         systemPrompt: {
-          common: (config) => getCommonPrompt(config),
           execute: () => transformFacadeStateMessage(this.state_),
           validate: (events) => getValidationErrorPrompt(events),
           jsonParseError: (event) =>

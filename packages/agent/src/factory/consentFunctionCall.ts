@@ -17,7 +17,6 @@ import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
-import { getCommonPrompt } from "./getCommonPrompt";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
 
@@ -71,7 +70,6 @@ export const consentFunctionCall = async (props: {
         describe: false,
       },
       systemPrompt: {
-        common: () => getCommonPrompt(props.config),
         execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
         validate: (events) => getValidationErrorPrompt(events),
         jsonParseError: (event) =>
