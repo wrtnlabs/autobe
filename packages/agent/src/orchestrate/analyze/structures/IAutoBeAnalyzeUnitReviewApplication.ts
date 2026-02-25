@@ -98,6 +98,25 @@ export namespace IAutoBeAnalyzeUnitReviewApplication {
      * Indexed by moduleIndex. Set to `null` if no revisions were made.
      */
     revisedUnits: IRevisedModuleUnit[] | null;
+
+    /**
+     * Specific modules whose units were rejected.
+     *
+     * When rejecting a file, identify EXACTLY which modules have problematic
+     * unit sections. Only these modules will be regenerated on retry.
+     *
+     * Set to null if all modules need regeneration, or if approving.
+     */
+    rejectedModules: IRejectedModule[] | null;
+  }
+
+  /** Identifies a module whose unit sections were rejected. */
+  export interface IRejectedModule {
+    /** Index of the module section that needs unit regeneration. */
+    moduleIndex: number;
+
+    /** Specific feedback for this module's unit issues. */
+    feedback: string;
   }
 
   /** Structure for revised units of a single module section. */

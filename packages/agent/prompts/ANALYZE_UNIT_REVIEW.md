@@ -92,23 +92,67 @@ process({
   request: {
     type: "complete",
     fileResults: [
-      { fileIndex: 0, approved: true, feedback: "Consistent with all other files.", revisedUnits: null },
-      { fileIndex: 1, approved: true, feedback: "Consistent with all other files.", revisedUnits: null }
+      { fileIndex: 0, approved: true, feedback: "Consistent with all other files.", revisedUnits: null, rejectedModules: null },
+      { fileIndex: 1, approved: true, feedback: "Consistent with all other files.", revisedUnits: null, rejectedModules: null }
     ]
   }
 });
 ```
 
-**Type 2: Some Files Rejected**
+**Type 2: Some Files Rejected (with module-level granularity)**
+
+**IMPORTANT**: When rejecting a file, you MUST specify `rejectedModules` to identify EXACTLY which modules have problematic unit sections. This enables targeted regeneration instead of regenerating ALL modules in the file, saving significant time and tokens.
+
+Only set `rejectedModules: null` if the entire file's unit structure is fundamentally flawed across ALL modules (e.g., wrong decomposition strategy, pervasive style issues affecting every module).
+
 ```typescript
 process({
-  thinking: "File 1 has much coarser granularity than others. File 2's keywords are too vague.",
+  thinking: "File 1's Module 2 has inconsistent keyword style. File 2's Module 0 keywords too vague.",
   request: {
     type: "complete",
     fileResults: [
-      { fileIndex: 0, approved: true, feedback: "Good granularity and keyword quality.", revisedUnits: null },
-      { fileIndex: 1, approved: false, feedback: "Granularity is too coarse: only 2 units while other files average 5-6. Break down 'Core Features' into more specific units.", revisedUnits: null },
-      { fileIndex: 2, approved: false, feedback: "Keywords like 'general', 'stuff' are too vague compared to specific keywords in other files.", revisedUnits: null }
+      { fileIndex: 0, approved: true, feedback: "Good granularity and keyword quality.", revisedUnits: null, rejectedModules: null },
+      {
+        fileIndex: 1,
+        approved: false,
+        feedback: "Module 2 keywords too vague, Module 4 needs more unit decomposition.",
+        revisedUnits: null,
+        rejectedModules: [
+          { moduleIndex: 2, feedback: "Keywords like 'general', 'stuff' are too vague compared to specific keywords in other files. Use Entity:aspect:constraint format." },
+          { moduleIndex: 4, feedback: "Only 1 unit section while other comparable modules have 4-5. Break down into more specific functional groupings." }
+        ]
+      },
+      {
+        fileIndex: 2,
+        approved: false,
+        feedback: "Module 0 keywords lack structured format.",
+        revisedUnits: null,
+        rejectedModules: [
+          { moduleIndex: 0, feedback: "Keywords like 'login', 'search' are too vague. Use Entity:aspect:constraint structured format." }
+        ]
+      }
+    ]
+  }
+});
+```
+
+**Type 2b: File Rejected — Full Regeneration Fallback**
+
+Use `rejectedModules: null` only when ALL modules need regeneration:
+
+```typescript
+process({
+  thinking: "File 1 has pervasive granularity issues across all modules.",
+  request: {
+    type: "complete",
+    fileResults: [
+      {
+        fileIndex: 1,
+        approved: false,
+        feedback: "Granularity is too coarse across all modules. Every module has only 1-2 units while other files average 5-6.",
+        revisedUnits: null,
+        rejectedModules: null
+      }
     ]
   }
 });
@@ -121,8 +165,8 @@ process({
   request: {
     type: "complete",
     fileResults: [
-      { fileIndex: 0, approved: true, feedback: "Keywords adjusted for consistency.", revisedUnits: [{ moduleIndex: 0, unitSections: [...] }] },
-      { fileIndex: 1, approved: true, feedback: "Consistent.", revisedUnits: null }
+      { fileIndex: 0, approved: true, feedback: "Keywords adjusted for consistency.", revisedUnits: [{ moduleIndex: 0, unitSections: [...] }], rejectedModules: null },
+      { fileIndex: 1, approved: true, feedback: "Consistent.", revisedUnits: null, rejectedModules: null }
     ]
   }
 });

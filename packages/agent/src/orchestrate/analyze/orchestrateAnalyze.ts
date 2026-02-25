@@ -25,6 +25,7 @@ import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
+import { orchestrateAnalyzeWriteUnitPatch } from "./orchestrateAnalyzeWriteUnitPatch";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
 import {
   buildConstraintConsistencyReport,
@@ -57,6 +58,14 @@ interface IFileState {
   moduleFeedback?: string;
   unitFeedback?: string;
   sectionFeedback?: string;
+  // Unit-stage partial regeneration tracking
+  rejectedModuleIndicesForUnit?:
+    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
+    | null;
+  unitStagnationCount?: number;
+  lastUnitContentSignature?: string;
+  lastUnitRejectionSignature?: string;
+  // Section-stage partial regeneration tracking
   rejectedModuleUnits?:
     | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
     | null;
@@ -68,6 +77,13 @@ interface IFileState {
 
 const ANALYZE_SECTION_FILE_MAX_RETRY = 3;
 const ANALYZE_SECTION_STAGNATION_MAX = 2;
+const ANALYZE_UNIT_STAGNATION_MAX = 2;
+const ANALYZE_DEBUG_LOG = process.env.AUTOBE_DEBUG_ANALYZE === "1";
+
+const analyzeDebug = (message: string): void => {
+  if (!ANALYZE_DEBUG_LOG) return;
+  console.log(`[analyze-debug] ${new Date().toISOString()} ${message}`);
+};
 
 export const orchestrateAnalyze = async (
   ctx: AutoBeContext,
@@ -208,6 +224,11 @@ async function processStageModule(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY && pendingIndices.size > 0;
     attempt++
   ) {
+    analyzeDebug(
+      `section attempt=${attempt} pending=${[...pendingIndices]
+        .map((i) => props.fileStates[i]!.file.filename)
+        .join(",")}`,
+    );
     // Dynamically increase progress for retries
     if (attempt > 0) {
       props.moduleWriteProgress.total += pendingIndices.size;
@@ -311,6 +332,11 @@ async function processStageUnit(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY && pendingIndices.size > 0;
     attempt++
   ) {
+    analyzeDebug(
+      `unit attempt=${attempt} pending=${[...pendingIndices]
+        .map((i) => props.fileStates[i]!.file.filename)
+        .join(",")}`,
+    );
     // Dynamically increase review progress for retries
     if (attempt > 0) {
       props.crossFileUnitReviewProgress.total++;
@@ -326,37 +352,93 @@ async function processStageUnit(
         const state: IFileState = props.fileStates[fileIndex]!;
         const moduleResult: AutoBeAnalyzeWriteModuleEvent =
           state.moduleResult!;
+        analyzeDebug(
+          `unit file-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+        );
 
-        // Increase write progress for this file's units
-        props.unitWriteProgress.total += moduleResult.moduleSections.length;
+        // Build rejected module lookup for selective regeneration
+        const rejectedSet: Set<number> | null = buildUnitRejectedSet(
+          state.rejectedModuleIndicesForUnit,
+        );
+        const feedbackMap: Map<number, string> = buildUnitFeedbackMap(
+          state.rejectedModuleIndicesForUnit,
+        );
 
-        // Write all units for this file sequentially
+        // Increase write progress only for modules that will be regenerated
+        for (
+          let mi: number = 0;
+          mi < moduleResult.moduleSections.length;
+          mi++
+        ) {
+          if (isUnitRejected(rejectedSet, mi)) {
+            props.unitWriteProgress.total++;
+          }
+        }
+
+        // Write units, skipping approved ones on retry
         const unitResults: AutoBeAnalyzeWriteUnitEvent[] = [];
         for (
           let moduleIndex: number = 0;
           moduleIndex < moduleResult.moduleSections.length;
           moduleIndex++
         ) {
-          const unitEvent: AutoBeAnalyzeWriteUnitEvent =
-            await orchestrateAnalyzeWriteUnit(ctx, {
-              scenario: props.scenario,
-              file: state.file,
-              moduleEvent: moduleResult,
-              moduleIndex,
-              progress: props.unitWriteProgress,
-              promptCacheKey: cacheKey,
-              feedback: state.unitFeedback,
-              retry: attempt,
-            });
-          unitResults.push(unitEvent);
+          if (isUnitRejected(rejectedSet, moduleIndex)) {
+            // Regenerate this module's units with targeted feedback
+            const targetedFeedback: string | undefined =
+              feedbackMap.get(moduleIndex) ?? state.unitFeedback;
+            const previousUnit: AutoBeAnalyzeWriteUnitEvent | undefined =
+              state.unitResults?.[moduleIndex];
+
+            const unitStart: number = Date.now();
+            analyzeDebug(
+              `unit module-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} mode=${previousUnit && targetedFeedback?.trim() ? "patch" : "full"}`,
+            );
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent =
+              previousUnit && targetedFeedback?.trim()
+                ? await orchestrateAnalyzeWriteUnitPatch(ctx, {
+                    scenario: props.scenario,
+                    file: state.file,
+                    moduleEvent: moduleResult,
+                    moduleIndex,
+                    previousUnitEvent: previousUnit,
+                    feedback: targetedFeedback,
+                    progress: props.unitWriteProgress,
+                    promptCacheKey: cacheKey,
+                    retry: attempt,
+                  })
+                : await orchestrateAnalyzeWriteUnit(ctx, {
+                    scenario: props.scenario,
+                    file: state.file,
+                    moduleEvent: moduleResult,
+                    moduleIndex,
+                    progress: props.unitWriteProgress,
+                    promptCacheKey: cacheKey,
+                    feedback: targetedFeedback,
+                    retry: attempt,
+                  });
+            analyzeDebug(
+              `unit module-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitCount=${unitEvent.unitSections.length} elapsedMs=${Date.now() - unitStart}`,
+            );
+            unitResults.push(unitEvent);
+          } else {
+            // Keep existing approved module's unit result
+            analyzeDebug(
+              `unit module-skip attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} (approved)`,
+            );
+            unitResults.push(state.unitResults![moduleIndex]!);
+          }
         }
         state.unitResults = unitResults;
+        analyzeDebug(
+          `unit file-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+        );
         return unitResults;
       }),
       promptCacheKey,
     );
 
     // Cross-file review all units
+    analyzeDebug(`unit review-start attempt=${attempt}`);
     const reviewEvent: AutoBeAnalyzeUnitReviewEvent =
       await orchestrateAnalyzeUnitReview(ctx, {
         scenario: props.scenario,
@@ -374,6 +456,9 @@ async function processStageUnit(
         promptCacheKey,
         retry: attempt,
       });
+    analyzeDebug(
+      `unit review-done attempt=${attempt} results=${reviewEvent.fileResults.length}`,
+    );
 
     // Process per-file results
     const validUnitFileResults = filterValidFileResults(
@@ -390,10 +475,40 @@ async function processStageUnit(
             state.unitResults!,
             fileResult,
           );
+        // Clear unit tracking state
+        state.unitStagnationCount = 0;
+        state.lastUnitContentSignature = undefined;
+        state.lastUnitRejectionSignature = undefined;
+        state.rejectedModuleIndicesForUnit = undefined;
         pendingIndices.delete(fileResult.fileIndex);
       } else {
-        props.fileStates[fileResult.fileIndex]!.unitFeedback =
-          fileResult.feedback;
+        const state: IFileState = props.fileStates[fileResult.fileIndex]!;
+        state.unitFeedback = fileResult.feedback;
+        state.rejectedModuleIndicesForUnit =
+          fileResult.rejectedModules ?? null;
+
+        // Stagnation detection
+        const contentSignature = buildUnitContentSignature(state);
+        const rejectionSignature = buildUnitRejectionSignature({
+          rejectedModuleIndicesForUnit: state.rejectedModuleIndicesForUnit,
+          feedback: state.unitFeedback ?? "",
+        });
+        const isStagnant =
+          state.lastUnitContentSignature === contentSignature &&
+          state.lastUnitRejectionSignature === rejectionSignature;
+        state.unitStagnationCount = isStagnant
+          ? (state.unitStagnationCount ?? 0) + 1
+          : 0;
+        state.lastUnitContentSignature = contentSignature;
+        state.lastUnitRejectionSignature = rejectionSignature;
+
+        if (
+          (state.unitStagnationCount ?? 0) >= ANALYZE_UNIT_STAGNATION_MAX
+        ) {
+          throw new Error(
+            `[orchestrateAnalyze] Unit stage fail-fast (stagnation detected ${state.unitStagnationCount}x) for file "${state.file.filename}"`,
+          );
+        }
       }
     }
   }
@@ -484,6 +599,9 @@ async function processStageSection(
         const moduleResult: AutoBeAnalyzeWriteModuleEvent =
           state.moduleResult!;
         const unitResults: AutoBeAnalyzeWriteUnitEvent[] = state.unitResults!;
+        analyzeDebug(
+          `section file-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" batchSize=${sectionBatch.length}`,
+        );
 
         // Build rejected module/unit lookup for selective regeneration
         const rejectedSet: Set<string> | null = buildRejectedSet(
@@ -528,6 +646,10 @@ async function processStageSection(
             unitIndex++
           ) {
             if (isSectionRejected(rejectedSet, moduleIndex, unitIndex)) {
+              const sectionStart: number = Date.now();
+              analyzeDebug(
+                `section unit-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex}`,
+              );
               // Regenerate this section with targeted feedback
               const targetedFeedback: string | undefined =
                 feedbackMap.get(`${moduleIndex}:${unitIndex}`) ??
@@ -566,6 +688,9 @@ async function processStageSection(
                       attributeRegistry,
                       scenarioEntityNames,
                     });
+              analyzeDebug(
+                `section unit-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} sectionCount=${sectionEvent.sectionSections.length} elapsedMs=${Date.now() - sectionStart}`,
+              );
               sectionsForModule.push(sectionEvent);
             } else {
               // Keep existing approved section
@@ -582,8 +707,15 @@ async function processStageSection(
         if (state.file.filename === "00-toc.md") {
           stripTocBridgeBlocks(state.sectionResults);
         }
+        analyzeDebug(
+          `section file-write-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+        );
 
         // Per-file review immediately after write (removes barrier)
+        const reviewStart: number = Date.now();
+        analyzeDebug(
+          `section per-file-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+        );
         const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
           await orchestrateAnalyzeSectionReview(ctx, {
             scenario: props.scenario,
@@ -597,6 +729,9 @@ async function processStageSection(
             promptCacheKey: cacheKey,
             retry: attempt,
           });
+        analyzeDebug(
+          `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,
+        );
         perFileReviewResults.set(fileIndex, reviewEvent);
 
         return sectionResults;
@@ -605,6 +740,7 @@ async function processStageSection(
       );
 
     // Pass 2: Cross-file lightweight review (single call)
+    analyzeDebug(`section cross-file-review-start attempt=${attempt}`);
     const filesWithSections = props.fileStates
       .filter((state) => state.sectionResults !== null)
       .map((state) => ({
@@ -637,6 +773,9 @@ async function processStageSection(
         promptCacheKey,
         retry: attempt,
       });
+    analyzeDebug(
+      `section cross-file-review-done attempt=${attempt} results=${crossFileReviewEvent.fileResults.length}`,
+    );
 
     // Merge results from both passes
     const crossFileResultMap: Map<
@@ -1058,6 +1197,78 @@ function dedupeReviewIssues(
   }
   return [...map.values()];
 }
+
+// ─── Unit-stage partial regeneration helpers ───
+
+function buildUnitRejectedSet(
+  rejected:
+    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
+    | null
+    | undefined,
+): Set<number> | null {
+  if (rejected == null) return null;
+  if (rejected.length === 0) return null;
+  const set: Set<number> = new Set();
+  for (const entry of rejected) {
+    set.add(entry.moduleIndex);
+  }
+  return set.size > 0 ? set : null;
+}
+
+function buildUnitFeedbackMap(
+  rejected:
+    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
+    | null
+    | undefined,
+): Map<number, string> {
+  const map: Map<number, string> = new Map();
+  if (rejected == null) return map;
+  for (const entry of rejected) {
+    map.set(entry.moduleIndex, entry.feedback);
+  }
+  return map;
+}
+
+function isUnitRejected(
+  rejectedSet: Set<number> | null,
+  moduleIndex: number,
+): boolean {
+  if (rejectedSet === null) return true;
+  return rejectedSet.has(moduleIndex);
+}
+
+function buildUnitContentSignature(state: IFileState): string {
+  if (!state.unitResults) return "none";
+  return JSON.stringify(
+    state.unitResults.map((unitEvent) =>
+      unitEvent.unitSections.map((section) => ({
+        title: section.title,
+        content: section.content,
+        keywords: section.keywords,
+      })),
+    ),
+  );
+}
+
+function buildUnitRejectionSignature(props: {
+  rejectedModuleIndicesForUnit:
+    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
+    | null
+    | undefined;
+  feedback: string;
+}): string {
+  return JSON.stringify({
+    rejectedModules: (props.rejectedModuleIndicesForUnit ?? []).map(
+      (entry) => ({
+        moduleIndex: entry.moduleIndex,
+        feedback: entry.feedback,
+      }),
+    ),
+    feedback: props.feedback,
+  });
+}
+
+// ─── Section-stage helpers ───
 
 function buildSectionContentSignature(state: IFileState): string {
   if (!state.sectionResults) return "none";

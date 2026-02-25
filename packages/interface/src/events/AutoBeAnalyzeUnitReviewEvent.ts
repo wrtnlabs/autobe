@@ -89,6 +89,24 @@ export namespace AutoBeAnalyzeUnitReviewEvent {
      * that module. Set to `null` if no revisions were made.
      */
     revisedUnits: IRevisedModuleUnit[] | null;
+
+    /**
+     * Specific modules whose units were rejected.
+     *
+     * When non-null, only these modules need unit regeneration on retry.
+     * When null or undefined, all modules are considered rejected
+     * (backward-compatible fallback to regenerate all).
+     */
+    rejectedModules: IRejectedModule[] | null;
+  }
+
+  /** Identifies a specific module whose unit sections were rejected. */
+  export interface IRejectedModule {
+    /** Index of the module section that needs unit regeneration. */
+    moduleIndex: number;
+
+    /** Specific feedback for this module's unit issues. */
+    feedback: string;
   }
 
   /** Structure for revised units of a single module section. */
