@@ -20,38 +20,21 @@ Through this approach, [`AutoBE`](https://github.com/wrtnlabs/autobe) always gen
 
 ## Waterfall Compiler System
 ### Outline
-```mermaid
-flowchart
-subgraph "Backend Coding Agent"
-  coder("Facade Controller")
-end
-subgraph "Functional Agents"
-  coder --"Requirements Analysis"--> analyze("Analyze")
-  coder --"ERD"--> database("Database")
-  coder --"API Design"--> interface("Interface")
-  coder --"Test Codes" --> test("Test")
-  coder --"Main Program" --> realize("Realize")
-end
-subgraph "Compiler Feedback"
-  database --"validates" --> prismaCompiler("Prisma Compiler")
-  interface --"validates" --> openapiValidator("OpenAPI Validator")
-  test --"validates" --> tsCompiler("TypeScript Compiler")
-  realize --"validates" --> tsCompiler("TypeScript Compiler")
-end
-```
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/swdxic0h5l42o5i2cfy6.png)
 
 [`AutoBE`](https://github.com/wrtnlabs/autobe) generates backend applications through a compiler system based on the Waterfall model. The entire process consists of five sequential phases, each handled by dedicated agents.
 
-The **Facade Controller** orchestrates the entire process, while functional agents perform tasks in sequence. The **Analyze** agent analyzes user requirements to create detailed functional specifications, the **Database** agent designs the database schema based on these specifications, the **Interface** agent defines API interfaces, the **Test** agent generates E2E test code, and finally the **Realize** agent writes the actual API implementation code.
+The **Facade Controller** orchestrates the entire process, while functional agents perform tasks in sequence. The **Analyze** agent analyzes user requirements to create detailed functional specifications, the **Prisma** agent designs the database schema based on these specifications, the **Interface** agent defines API interfaces, the **Test** agent generates E2E test code, and finally the **Realize** agent writes the actual API implementation code.
 
-The output of each agent is validated through corresponding dedicated compilers. The Database agent's output is validated by our self-developed Prisma compiler, the Interface agent's output by the OpenAPI validator, and the TypeScript code from Test and Realize agents by the TypeScript compiler. This phase-by-phase validation system is the core mechanism that guarantees 100% compilation success.
+The output of each agent is validated through corresponding dedicated compilers. The Prisma agent's output is validated by our self-developed Prisma compiler, the Interface agent's output by the OpenAPI validator, and the TypeScript code from Test and Realize agents by the TypeScript compiler. This phase-by-phase validation system is the core mechanism that guarantees 100% compilation success.
 
 ### Prisma DB Schema Compiler
 A compiler for database design.
 
 - Compiler Structures
-  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)
-  - [`IAutoBeDatabaseValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/IAutoBeDatabaseValidation.ts)
+  - [`AutoBePrisma.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts)
+  - [`IAutoBePrismaValidation`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/IAutoBePrismaValidation.ts)
   - [`IValidation`](https://github.com/samchon/openapi/blob/master/src/structures/IValidation.ts)
 - Generation Result
   - Prisma Schema Files: https://github.com/wrtnlabs/autobe-example-bbs/tree/main/prisma/schema
@@ -59,9 +42,9 @@ A compiler for database design.
 
 [`AutoBE`](https://github.com/wrtnlabs/autobe) utilizes a self-developed DB compiler when designing databases.
 
-First, it creates an AST (Abstract Syntax Tree) structure called `AutoBeDatabase.IFile` through AI function calling (or structured output). Then it analyzes the data created by the AI to check for logical or type errors.
+First, it creates an AST (Abstract Syntax Tree) structure called `AutoBePrisma.IFile` through AI function calling (or structured output). Then it analyzes the data created by the AI to check for logical or type errors.
 
-If logical errors are found, these are returned to the AI in the form of `IAutoBeDatabaseValidation` with detailed reasons, guiding the AI to generate correct `AutoBeDatabase.IFile` data in the next function calling. Major logical error cases include:
+If logical errors are found, these are returned to the AI in the form of `IAutoBePrismaValidation` with detailed reasons, guiding the AI to generate correct `AutoBePrisma.IFile` data in the next function calling. Major logical error cases include:
 
 - **Duplication errors**: Duplicate definitions of filenames, model names, field names
 - **Circular references**: Cross-dependencies where two models reference each other as foreign keys
@@ -72,7 +55,7 @@ If logical errors are found, these are returned to the AI in the form of `IAutoB
 
 If type errors are found, these are also returned to the AI in the form of `IValidation`, guiding the AI to generate data with correct types.
 
-Finally, when `AutoBeDatabase.IFile` is correctly generated without any logical or type errors, it is converted to Prisma DB schema (code generation). Simultaneously, ERD (Entity Relationship Diagram) and documentation are also generated ([`prisma-markdown`](https://github.com/samchon/prisma-markdown)), helping users understand their DB design.
+Finally, when `AutoBePrisma.IFile` is correctly generated without any logical or type errors, it is converted to Prisma DB schema (code generation). Simultaneously, ERD (Entity Relationship Diagram) and documentation are also generated ([`prisma-markdown`](https://github.com/samchon/prisma-markdown)), helping users understand their DB design.
 
 The generated Prisma schema files include detailed descriptive comments for each table and field. These comments go beyond simple code documentation - they are directly utilized by `prisma-markdown` when generating ERDs and documentation, becoming core content of the database design documents. Therefore, developers can clearly understand the role of each table and field not only at the code level but also through visual ERD diagrams.
 
@@ -154,7 +137,7 @@ A compiler for AI function calling and validation feedback.
   - [`typia.llm.application<App, Model>()`](https://typia.io/docs/llm/application/): AI function calling
   - [`typia.llm.parameters<Params, Model>()`](https://typia.io/docs/llm/parameters/): AI structured output
 - AST Structures
-  - [`AutoBeDatabase.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts)
+  - [`AutoBePrisma.IFile`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts)
   - [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts)
   - [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)
 
@@ -168,29 +151,7 @@ Therefore, while it's generally recommended to avoid complex types and define th
 
 > Gemini does not support union types, making it unusable in [`AutoBE`](https://github.com/wrtnlabs/autobe).
 
-```mermaid
-flowchart
-  subgraph "OpenAPI Specification"
-    v20("Swagger v2.0") --upgrades--> emended[["OpenAPI v3.1 (emended)"]]
-    v30("OpenAPI v3.0") --upgrades--> emended
-    v31("OpenAPI v3.1") --emends--> emended
-  end
-  subgraph "OpenAPI Generator"
-    emended --normalizes--> migration[["Migration Schema"]]
-    migration --"Artificial Intelligence"--> lfc{{"<b><u>LLM Function Calling</u></b>"}}
-    lfc --"OpenAI"--> chatgpt("ChatGPT")
-    lfc --"Google"--> gemini("Gemini")
-    lfc --"Anthropic"--> claude("Claude")
-    lfc --"High-Flyer"--> deepseek("DeepSeek")
-    lfc --"Meta"--> llama("Llama")
-    chatgpt --"3.1"--> custom(["Custom JSON Schema"])
-    gemini --"3.0"--> custom(["Custom JSON Schema"])
-    claude --"3.1"--> standard(["Standard JSON Schema"])
-    deepseek --"3.1"--> standard
-    llama --"3.1"--> standard
-  end
-```
-
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jpfevz5ylmyap92f3t7v.png)
 To solve this problem, [`AutoBE`](https://github.com/wrtnlabs/autobe) team developers created [`typia`](https://github.com/samchon/typia), a TypeScript compiler plugin library that automatically generates AI function calling and structured output schemas from TypeScript source code, and integrated it into [`AutoBE`](https://github.com/wrtnlabs/autobe).
 
 When you specify the target type and AI model as shown below, [`typia`](https://github.com/samchon/typia) automatically creates AI function calling and structured output schemas. Additionally, when calling [`typia.llm.application<Class, Model>()`](https://typia.io/docs/llm/application), it also generates validator functions for type validation feedback for all methods within that class type.
@@ -223,56 +184,8 @@ Currently, we only support the TypeScript/NestJS/Prisma combination, but theoret
 However, language-specific expansion requires significant development investment. We must deeply understand each language's unique type system, compiler characteristics, and framework structures, and build validation systems that can guarantee [`AutoBE`](https://github.com/wrtnlabs/autobe)'s core value of "100% compilation success." Currently, we are focused on improving completeness within the TypeScript stack, and will consider supporting other languages based on user demand and project development direction in the future.
 
 ## Development Status and Roadmap
-```mermaid
-gantt
-  dateFormat YYYY-MM-DD
-  title AutoBE Roadmap for Beta Release
 
-  section Analyze Agent
-  Debate Enhancement: done,    2025-06-01,  7d
-  Prefix Rule:        done,    2025-06-12,  7d
-  Multimodal:         planned, 2025-07-02, 31d
-
-  section Database Agent
-  Compiler Development: done, 2025-06-01, 14d
-  Prohibition Rule:     done, 2025-06-08,  7d
-  SQLite Support:       done, 2025-06-16,  7d
-
-  section Interface Agent
-  Keyworded SDK:  done,    2025-06-01, 10d
-  Authorization:  done,    2025-06-19, 18d
-  Snapshot Logic: planned, 2025-06-23, 14d
-
-  section Test Agent
-  Scenario Agent:       done, 2025-06-01, 10d        
-  Coding Agent:         done, 2025-06-12, 14d
-  Compiler Feedback:    done, 2025-06-12, 14d
-  Function Calling:     done, 2025-06-18, 14d
-  Compiler Development: done, 2025-07-02, 60d
-
-  section Realize Agent
-  Planner Agent:      done,   2025-07-02, 30d
-  Coding Agent:       active, 2025-07-02, 30d
-  Compiler Feedback:  active, 2025-07-17, 15d
-  Function Calling:   active, 2025-07-17, 31d
-  Runtime Validation: active, 2025-08-01, 30d
-
-  section Complementation
-  Benchmark:     done,    2025-06-12, 50d
-  Demonstration: done,    2025-06-16, 14d
-  Documentation: done,    2025-06-16, 45d
-  Articles:      active,  2025-07-02, 61d
-  Review Agent:  planned, 2025-07-02, 45d
-  Maintenance:   active,  2025-08-01, 30d
-
-  section Ecosystem
-  Agentica Prerequisite:  active,  2025-06-18, 13d
-  WebSocket Streaming:    planned, 2025-07-02, 14d
-  History Manipulation:   planned, 2025-07-16, 30d
-  AI Chatbot Development: planned, 2025-07-16, 30d
-  Data Seeder Agent:      planned, 2025-08-01, 30d
-```
-
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/otd9fyuf2bhu8xx05afs.png)
 [`AutoBE`](https://github.com/wrtnlabs/autobe)'s current development stage is alpha version, with not all features completed yet.
 
 First, among the five phases that constitute the waterfall model, the realize agent is not yet completed. Therefore, while it's possible to generate requirements analysis reports, design DB and APIs, and write E2E test code for them through [`AutoBE`](https://github.com/wrtnlabs/autobe), it's not yet possible to actually implement API functions to complete applications. This realize agent is currently under development and is scheduled to be released with the beta release on August 31, 2025.
