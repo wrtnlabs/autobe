@@ -449,6 +449,13 @@ async function processStageSection(
 
     // Write sections for pending files in parallel
     const pendingArray: number[] = [...pendingIndices];
+    const sectionFileBatches: number[][] = chunkSectionFileIndices(
+      pendingArray,
+      computeSectionBatchSize({
+        attempt,
+        pendingCount: pendingArray.length,
+      }),
+    );
     const promptCacheKey: string = v7();
 
     // Build Attribute Canonical Registry from approved files
@@ -462,9 +469,13 @@ async function processStageSection(
       buildAttributeRegistry({ files: approvedFiles }),
     );
 
-    await executeCachedBatch(
-      ctx,
-      pendingArray.map((fileIndex) => async (cacheKey) => {
+    // Build scenario entity name list for invention validation (P0-B)
+    const scenarioEntityNames = props.scenario.entities.map((e) => e.name);
+
+    for (const sectionBatch of sectionFileBatches)
+      await executeCachedBatch(
+        ctx,
+        sectionBatch.map((fileIndex) => async (cacheKey) => {
         const state: IFileState = props.fileStates[fileIndex]!;
         const moduleResult: AutoBeAnalyzeWriteModuleEvent =
           state.moduleResult!;
@@ -534,6 +545,7 @@ async function processStageSection(
                       promptCacheKey: cacheKey,
                       retry: attempt,
                       attributeRegistry,
+                      scenarioEntityNames,
                     })
                   : await orchestrateAnalyzeWriteSection(ctx, {
                       scenario: props.scenario,
@@ -548,6 +560,7 @@ async function processStageSection(
                       feedback: targetedFeedback,
                       retry: attempt,
                       attributeRegistry,
+                      scenarioEntityNames,
                     });
               sectionsForModule.push(sectionEvent);
             } else {
@@ -567,16 +580,17 @@ async function processStageSection(
         }
 
         return sectionResults;
-      }),
-      promptCacheKey,
-    );
+        }),
+        promptCacheKey,
+      );
 
     // Pass 1: Per-file detailed review (parallel)
     const perFileReviewResults: Map<number, AutoBeAnalyzeSectionReviewEvent> =
       new Map();
-    await executeCachedBatch(
-      ctx,
-      pendingArray.map((fileIndex) => async (cacheKey) => {
+    for (const sectionBatch of sectionFileBatches)
+      await executeCachedBatch(
+        ctx,
+        sectionBatch.map((fileIndex) => async (cacheKey) => {
         const state: IFileState = props.fileStates[fileIndex]!;
         const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
           await orchestrateAnalyzeSectionReview(ctx, {
@@ -593,9 +607,9 @@ async function processStageSection(
           });
         perFileReviewResults.set(fileIndex, reviewEvent);
         return reviewEvent;
-      }),
-      promptCacheKey,
-    );
+        }),
+        promptCacheKey,
+      );
 
     // Pass 2: Cross-file lightweight review (single call)
     const filesWithSections = props.fileStates
@@ -802,6 +816,28 @@ async function processStageSection(
 }
 
 // ─── Section-stage helper functions ───
+
+function computeSectionBatchSize(props: {
+  attempt: number;
+  pendingCount: number;
+}): number {
+  if (props.pendingCount <= 2) return props.pendingCount;
+  if (props.attempt <= 0) return Math.min(4, props.pendingCount);
+  if (props.attempt === 1) return Math.min(2, props.pendingCount);
+  return 1;
+}
+
+function chunkSectionFileIndices(
+  indices: number[],
+  size: number,
+): number[][] {
+  if (indices.length === 0) return [];
+  if (size <= 0 || size >= indices.length) return [indices];
+  const chunks: number[][] = [];
+  for (let i = 0; i < indices.length; i += size)
+    chunks.push(indices.slice(i, i + size));
+  return chunks;
+}
 
 function buildRejectedSet(
   rejected:

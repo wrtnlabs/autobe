@@ -17,6 +17,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { detectTechLockin } from "./utils/buildHardValidators";
+import { detectInventedEntities } from "./utils/detectInventedEntities";
 import { transformAnalyzeWriteSectionHistory } from "./histories/transformAnalyzeWriteSectionHistory";
 import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 
@@ -35,6 +36,7 @@ export const orchestrateAnalyzeWriteSection = async (
     feedback?: string;
     retry: number;
     attributeRegistry?: string;
+    scenarioEntityNames?: string[];
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -55,6 +57,7 @@ export const orchestrateAnalyzeWriteSection = async (
       controller: createController({
         pointer,
         preliminary,
+        scenarioEntityNames: props.scenarioEntityNames,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -96,10 +99,12 @@ export const orchestrateAnalyzeWriteSection = async (
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteSectionApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
+  scenarioEntityNames?: string[];
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> => {
+    input = repairAnalyzeWriteSectionInput(input);
     const result: IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> =
       typia.validate<IAutoBeAnalyzeWriteSectionApplication.IProps>(input);
     if (result.success === false) return result;
@@ -138,6 +143,26 @@ function createController(props: {
         };
       }
 
+      // Validate no invented entities (P0-B)
+      if (props.scenarioEntityNames && props.scenarioEntityNames.length > 0) {
+        const inventionViolations = detectInventedEntities(
+          result.data.request.sectionSections,
+          props.scenarioEntityNames,
+        );
+        if (inventionViolations.length > 0) {
+          return {
+            success: false,
+            errors: inventionViolations.map((error) => ({
+              path: "$input.request.sectionSections",
+              expected:
+                `Only entities from scenario catalog: ${props.scenarioEntityNames!.join(", ")}`,
+              value: error,
+            })),
+            data: result.data,
+          };
+        }
+      }
+
       return result;
     }
 
@@ -167,3 +192,77 @@ function createController(props: {
 }
 
 const SOURCE = "analyzeWriteSection" satisfies AutoBeEventSource;
+
+const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
+  if (isRecord(input) === false) return input;
+  if (isRecord(input.request) === false) return input;
+
+  const request = { ...input.request } as Record<string, unknown>;
+  let changed = false;
+
+  if (request.type === "") {
+    request.type = "complete";
+    changed = true;
+  }
+
+  if (
+    request.sectionSections === undefined &&
+    Array.isArray(request.sections)
+  ) {
+    request.sectionSections = request.sections;
+    changed = true;
+  }
+
+  if (typeof request.moduleIndex === "string" && /^\d+$/.test(request.moduleIndex)) {
+    request.moduleIndex = Number(request.moduleIndex);
+    changed = true;
+  }
+  if (typeof request.unitIndex === "string" && /^\d+$/.test(request.unitIndex)) {
+    request.unitIndex = Number(request.unitIndex);
+    changed = true;
+  }
+
+  if (Array.isArray(request.sectionSections)) {
+    const sections = request.sectionSections;
+    const repaired = sections.map((section) => {
+      if (isRecord(section) === false) return section;
+      let localChanged = false;
+      const next = { ...section } as Record<string, unknown>;
+      if (typeof next.title === "string") {
+        const trimmed = next.title.trim();
+        if (trimmed !== next.title) {
+          next.title = trimmed;
+          localChanged = true;
+        }
+      }
+      if (typeof next.content === "string") {
+        const trimmed = next.content.trim();
+        if (trimmed !== next.content) {
+          next.content = trimmed;
+          localChanged = true;
+        }
+      }
+      if (
+        next.content === undefined &&
+        typeof next.body === "string"
+      ) {
+        next.content = next.body.trim();
+        localChanged = true;
+      }
+      return localChanged ? next : section;
+    });
+    if (repaired.some((v, i) => v !== sections[i])) {
+      request.sectionSections = repaired;
+      changed = true;
+    }
+  }
+
+  if (!changed) return input;
+  return {
+    ...input,
+    request,
+  };
+};
+
+const isRecord = (input: unknown): input is Record<string, unknown> =>
+  typeof input === "object" && input !== null && Array.isArray(input) === false;

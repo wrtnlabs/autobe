@@ -54,6 +54,15 @@ export const transformAnalyzeWriteSectionPatchHistory = (
         **Unit**: ${unitSection?.title ?? "Unknown"}
         **Purpose**: ${unitSection?.purpose ?? "Unknown"}
 
+        ## AUTHORITATIVE Scope Reference
+
+        **Service Prefix**: ${props.scenario.prefix}
+        **Actors**: ${JSON.stringify(props.scenario.actors.map((a) => ({ name: a.name, kind: a.kind })))}
+        **Domain Entities**:
+        ${props.scenario.entities.map((e) => `- **${e.name}**: ${e.attributes.slice(0, 5).join(", ")}${e.relationships?.length ? ` | ${e.relationships.join(", ")}` : ""}`).join("\n")}
+
+        **CRITICAL**: You MUST NOT reference entities, actors, or features not listed above.
+
         ## Previous Output (REJECTED)
 
         The following sections were generated but REJECTED by review:
