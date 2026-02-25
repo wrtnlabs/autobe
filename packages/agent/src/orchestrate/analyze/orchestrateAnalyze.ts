@@ -231,7 +231,12 @@ async function processStageModule(
       });
 
     // Process per-file results
-    for (const fileResult of reviewEvent.fileResults) {
+    const validModuleFileResults = filterValidFileResults(
+      reviewEvent.fileResults,
+      props.fileStates.length,
+      "Module review",
+    );
+    for (const fileResult of validModuleFileResults) {
       if (fileResult.approved) {
         // Apply revisions if provided
         const state: IFileState = props.fileStates[fileResult.fileIndex]!;
@@ -349,7 +354,12 @@ async function processStageUnit(
       });
 
     // Process per-file results
-    for (const fileResult of reviewEvent.fileResults) {
+    const validUnitFileResults = filterValidFileResults(
+      reviewEvent.fileResults,
+      props.fileStates.length,
+      "Unit review",
+    );
+    for (const fileResult of validUnitFileResults) {
       if (fileResult.approved) {
         // Apply revisions if provided
         const state: IFileState = props.fileStates[fileResult.fileIndex]!;
@@ -580,7 +590,12 @@ async function processStageSection(
       number,
       AutoBeAnalyzeSectionReviewEvent.IFileResult
     > = new Map();
-    for (const fr of crossFileReviewEvent.fileResults)
+    const validCrossFileResults = filterValidFileResults(
+      crossFileReviewEvent.fileResults,
+      props.fileStates.length,
+      "Section cross-file review",
+    );
+    for (const fr of validCrossFileResults)
       crossFileResultMap.set(fr.fileIndex, fr);
 
     for (const fileIndex of pendingArray) {
@@ -673,5 +688,25 @@ function isSectionRejected(
 ): boolean {
   if (rejectedSet === null) return true;
   return rejectedSet.has(`${moduleIndex}:${unitIndex}`);
+}
+
+function filterValidFileResults<T extends { fileIndex: number }>(
+  fileResults: T[],
+  fileCount: number,
+  stage: string,
+): T[] {
+  return fileResults.filter((fr) => {
+    if (
+      Number.isInteger(fr.fileIndex) &&
+      fr.fileIndex >= 0 &&
+      fr.fileIndex < fileCount
+    ) {
+      return true;
+    }
+    console.warn(
+      `[orchestrateAnalyze] ${stage}: invalid fileIndex ${fr.fileIndex} (valid: 0-${fileCount - 1})`,
+    );
+    return false;
+  });
 }
 
