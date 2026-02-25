@@ -34,6 +34,9 @@ import {
   buildFileConflictMap,
   detectAttributeDuplicates,
   buildFileAttributeDuplicateMap,
+  detectEnumConflicts,
+  buildFileEnumConflictMap,
+  buildEnumConsistencyReport,
 } from "./utils/buildConstraintConsistencyReport";
 import {
   stripTocBridgeBlocks,
@@ -753,6 +756,9 @@ async function processStageSection(
     const attributeOwnershipReport: string = buildAttributeOwnershipReport({
       files: filesWithSections,
     });
+    const enumConsistencyReport: string = buildEnumConsistencyReport({
+      files: filesWithSections,
+    });
     const crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent =
       await orchestrateAnalyzeSectionCrossFileReview(ctx, {
         scenario: props.scenario,
@@ -769,6 +775,7 @@ async function processStageSection(
         })),
         constraintReport,
         attributeOwnershipReport,
+        enumConsistencyReport,
         progress: props.crossFileSectionReviewProgress,
         promptCacheKey,
         retry: attempt,
@@ -819,6 +826,13 @@ async function processStageSection(
       }
     }
 
+    // Detect enum value conflicts programmatically
+    const enumConflicts = detectEnumConflicts({
+      files: filesWithSections,
+    });
+    const fileEnumConflictMap: Map<string, string[]> =
+      buildFileEnumConflictMap(enumConflicts);
+
     for (const fileIndex of pendingArray) {
       const state: IFileState = props.fileStates[fileIndex]!;
       const perFileEvent = perFileReviewResults.get(fileIndex);
@@ -833,10 +847,12 @@ async function processStageSection(
       const fileCriticalConflicts = fileConflictMap.get(filename) ?? [];
       const fileAttrDuplicates = fileAttributeDuplicateMap.get(filename) ?? [];
       const fileEmptyBridgeBlocks = emptyBridgeBlockMap.get(fileIndex) ?? [];
+      const fileEnumConflicts = fileEnumConflictMap.get(filename) ?? [];
       const hasCriticalConflict =
         fileCriticalConflicts.length > 0 ||
         fileAttrDuplicates.length > 0 ||
-        fileEmptyBridgeBlocks.length > 0;
+        fileEmptyBridgeBlocks.length > 0 ||
+        fileEnumConflicts.length > 0;
 
       // Decision logic:
       // 1. per-file reject → reject (unchanged)
@@ -854,6 +870,7 @@ async function processStageSection(
         fileCriticalConflicts,
         fileAttrDuplicates,
         fileEmptyBridgeBlocks,
+        fileEnumConflicts,
       });
 
       if (approved) {
@@ -895,6 +912,7 @@ async function processStageSection(
               ...fileCriticalConflicts,
               ...fileAttrDuplicates,
               ...fileEmptyBridgeBlocks,
+              ...fileEnumConflicts,
             ].join("; ")}` +
             (crossFileResult?.feedback ? `\n${crossFileResult.feedback}` : ""),
           issues: [...programmaticIssues, ...structuredCrossFileIssues],
@@ -1099,6 +1117,7 @@ function buildProgrammaticSectionIssues(props: {
   fileCriticalConflicts: string[];
   fileAttrDuplicates: string[];
   fileEmptyBridgeBlocks: string[];
+  fileEnumConflicts: string[];
 }): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
   return [
     ...props.fileCriticalConflicts.map((detail) => ({
@@ -1123,6 +1142,14 @@ function buildProgrammaticSectionIssues(props: {
       unitIndex: null,
       fixInstruction:
         "Fill [DOWNSTREAM CONTEXT] Bridge Block with concrete entities, attributes, operations, permissions, and errors.",
+      evidence: detail,
+    })),
+    ...props.fileEnumConflicts.map((detail) => ({
+      ruleCode: "cross_file_enum_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Align enum values with the canonical definition from the first file that specified this attribute. Use the exact same enum set.",
       evidence: detail,
     })),
   ];

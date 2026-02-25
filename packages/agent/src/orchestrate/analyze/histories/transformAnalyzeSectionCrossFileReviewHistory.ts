@@ -33,6 +33,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
     }>;
     constraintReport: string;
     attributeOwnershipReport: string;
+    enumConsistencyReport: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -89,8 +90,10 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
         Sections:
         ${sectionEvent.sectionSections
           .map(
-            (section) =>
-              `- **${section.title}**`,
+            (section) => {
+              const attrKeys = extractBridgeAttributeKeys(section.content);
+              return `- **${section.title}**${attrKeys ? ` [attrs: ${attrKeys}]` : ""}`;
+            },
           )
           .join("\n")}
         `;
@@ -111,6 +114,10 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
 
         ${props.attributeOwnershipReport}
 
+        ## Enum Consistency Report (Cross-File Value Conflicts)
+
+        ${props.enumConsistencyReport}
+
         ## Cross-File Consistency Criteria
 
         Please evaluate across ALL files:
@@ -125,4 +132,64 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
     userMessage:
       "Review ALL files' section metadata for cross-file consistency and provide per-file approved/rejected verdicts.",
   };
+};
+
+// ─── Internal helpers ───
+
+const DOWNSTREAM_CONTEXT_REGEX =
+  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
+
+const CROSS_REFERENCE_PATTERN =
+  /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+
+/**
+ * Extract Entity.attribute keys from Bridge Block content.
+ *
+ * Returns a compact comma-separated string of attribute keys (e.g.,
+ * "User.status, User.email, Todo.title") for lightweight cross-file
+ * visibility. Only keys are included — not full specifications — to
+ * minimize context size.
+ */
+const extractBridgeAttributeKeys = (content: string): string => {
+  const keys: string[] = [];
+  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+
+  for (const match of matches) {
+    const block = match[1] ?? "";
+    const lines = block.split("\n");
+    let inAttributes = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line.startsWith("**Attributes Specified**")) {
+        inAttributes = true;
+        continue;
+      }
+      if (
+        line.startsWith("**") &&
+        !line.startsWith("**Attributes Specified**")
+      ) {
+        inAttributes = false;
+        continue;
+      }
+      if (!inAttributes || !line.startsWith("-")) continue;
+
+      const body = line.replace(/^-+\s*/, "");
+      const colonIndex = body.indexOf(":");
+      if (colonIndex < 0) continue;
+
+      const key = body.slice(0, colonIndex).trim();
+      const value = body.slice(colonIndex + 1).trim();
+
+      // Skip cross-references and None
+      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
+      if (/^none$/i.test(value)) continue;
+      // Only Entity.attribute format
+      if (!key.includes(".")) continue;
+
+      keys.push(key);
+    }
+  }
+
+  return keys.join(", ");
 };

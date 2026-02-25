@@ -44,6 +44,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
     }>;
     constraintReport: string;
     attributeOwnershipReport: string;
+    enumConsistencyReport: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
@@ -75,6 +76,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
         allFileSummaries: props.allFileSummaries,
         constraintReport: props.constraintReport,
         attributeOwnershipReport: props.attributeOwnershipReport,
+        enumConsistencyReport: props.enumConsistencyReport,
         preliminary,
       }),
     });

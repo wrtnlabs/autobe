@@ -321,13 +321,21 @@ export const buildAttributeOwnershipReport = (props: {
 export interface IAttributeDuplicate {
   key: string;
   files: string[];
+  /** Whether the specifications differ across files (not just duplicated) */
+  hasValueConflict: boolean;
+  /** Different specification values when hasValueConflict is true */
+  values?: Array<{
+    specification: string;
+    files: string[];
+  }>;
 }
 
 /**
  * Detect cross-file attribute duplication as structured data.
  *
  * Returns an array of attributes that are fully specified (not cross-referenced)
- * in more than one file. Used by the orchestrator for programmatic force-reject.
+ * in more than one file. Additionally detects whether the specifications differ
+ * across files (value conflict) vs just being duplicated (same value).
  */
 export const detectAttributeDuplicates = (props: {
   files: Array<{
@@ -335,29 +343,65 @@ export const detectAttributeDuplicates = (props: {
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IAttributeDuplicate[] => {
-  const attributes: Map<string, Set<string>> = new Map();
+  // key → { filename → Set<normalized specification> }
+  const attributes: Map<
+    string,
+    Map<string, { normalized: string; display: string; files: Set<string> }>
+  > = new Map();
+  const allFilesByKey: Map<string, Set<string>> = new Map();
 
   for (const { file, sectionEvents } of props.files) {
     for (const sectionsForModule of sectionEvents) {
       for (const sectionEvent of sectionsForModule) {
         for (const section of sectionEvent.sectionSections) {
           const specs = extractAttributeSpecs(section.content);
-          for (const { key } of specs) {
-            if (!attributes.has(key)) attributes.set(key, new Set());
-            attributes.get(key)!.add(file.filename);
+          for (const { key, specification } of specs) {
+            if (!allFilesByKey.has(key)) allFilesByKey.set(key, new Set());
+            allFilesByKey.get(key)!.add(file.filename);
+
+            if (!attributes.has(key)) attributes.set(key, new Map());
+            const specMap = attributes.get(key)!;
+            const normalized = normalizeValue(specification);
+            if (!specMap.has(normalized)) {
+              specMap.set(normalized, {
+                normalized,
+                display: specification.trim(),
+                files: new Set(),
+              });
+            }
+            specMap.get(normalized)!.files.add(file.filename);
           }
         }
       }
     }
   }
 
-  return [...attributes.entries()]
+  return [...allFilesByKey.entries()]
     .filter(([, files]) => files.size > 1)
-    .map(([key, files]) => ({ key, files: [...files] }));
+    .map(([key, files]) => {
+      const specMap = attributes.get(key)!;
+      const hasValueConflict = specMap.size > 1;
+      return {
+        key,
+        files: [...files],
+        hasValueConflict,
+        ...(hasValueConflict
+          ? {
+              values: [...specMap.values()].map((v) => ({
+                specification: v.display,
+                files: [...v.files],
+              })),
+            }
+          : {}),
+      };
+    });
 };
 
 /**
  * Build a map from filename → list of attribute duplication feedback strings.
+ *
+ * Produces more specific feedback when value conflicts are detected (different
+ * specifications across files) vs simple duplication (same specification).
  */
 export const buildFileAttributeDuplicateMap = (
   duplicates: IAttributeDuplicate[],
@@ -365,10 +409,22 @@ export const buildFileAttributeDuplicateMap = (
   const map: Map<string, string[]> = new Map();
 
   for (const dup of duplicates) {
-    const feedback =
-      `${dup.key} is fully specified in multiple files: [${dup.files.join(", ")}]. ` +
-      `Only ONE file should contain the full spec; others must use reference format: ` +
-      `"(defined in ...)"`;
+    let feedback: string;
+    if (dup.hasValueConflict && dup.values) {
+      feedback =
+        `${dup.key} has conflicting specifications across files: ` +
+        dup.values
+          .map(
+            (v) => `"${v.specification}" in [${v.files.join(", ")}]`,
+          )
+          .join(" vs ") +
+        `. Align to ONE canonical definition.`;
+    } else {
+      feedback =
+        `${dup.key} is fully specified in multiple files: [${dup.files.join(", ")}]. ` +
+        `Only ONE file should contain the full spec; others must use reference format: ` +
+        `"(defined in ...)"`;
+    }
 
     for (const filename of dup.files) {
       if (!map.has(filename)) map.set(filename, []);
@@ -378,6 +434,267 @@ export const buildFileAttributeDuplicateMap = (
 
   return map;
 };
+
+// ─── Enum Conflict Detection ───
+
+const ENUM_PATTERN = /enum\s*[\(\[\{]([^)\]\}]+)[\)\]\}]/i;
+
+export interface IEnumConflict {
+  /** Entity.attribute key, e.g. "User.status" */
+  key: string;
+  /** Different enum value sets found across files */
+  values: Array<{
+    /** Normalized sorted enum set, e.g. "active|deleted" */
+    enumSet: string;
+    /** Original display text */
+    display: string;
+    /** Files where this set appears */
+    files: string[];
+  }>;
+}
+
+/**
+ * Extract enum specifications from Bridge Block content.
+ *
+ * Only extracts entries in `**Attributes Specified**` that contain an
+ * explicit `enum(...)` / `enum[...]` / `enum{...}` pattern.
+ * Cross-references and "None" entries are skipped.
+ */
+const extractEnumSpecs = (
+  content: string,
+): Array<{ key: string; enumSet: string; display: string }> => {
+  const results: Array<{ key: string; enumSet: string; display: string }> = [];
+  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+
+  for (const match of matches) {
+    const block = match[1] ?? "";
+    const lines = block.split("\n");
+    let inAttributes = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line.startsWith("**Attributes Specified**")) {
+        inAttributes = true;
+        continue;
+      }
+      if (
+        line.startsWith("**") &&
+        !line.startsWith("**Attributes Specified**")
+      ) {
+        inAttributes = false;
+        continue;
+      }
+      if (!inAttributes || !line.startsWith("-")) continue;
+
+      const body = line.replace(/^-+\s*/, "");
+      const colonIndex = body.indexOf(":");
+      if (colonIndex < 0) continue;
+
+      const key = body.slice(0, colonIndex).trim();
+      const value = body.slice(colonIndex + 1).trim();
+
+      // Skip cross-references
+      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
+      // Skip "None"
+      if (/^none$/i.test(value)) continue;
+      // Only Entity.attribute format
+      if (!key.includes(".")) continue;
+
+      // Extract enum pattern
+      const enumMatch = value.match(ENUM_PATTERN);
+      if (!enumMatch) continue;
+
+      const rawEnumValues = enumMatch[1]!;
+      // Normalize: lowercase, split by pipe/comma, sort, dedupe
+      const enumSet = [...new Set(
+        rawEnumValues
+          .split(/[|,]/)
+          .map((v) => v.trim().toLowerCase())
+          .filter((v) => v.length > 0),
+      )]
+        .sort()
+        .join("|");
+
+      results.push({ key, enumSet, display: value.trim() });
+    }
+  }
+
+  return results;
+};
+
+type EnumSource = {
+  file: AutoBeAnalyzeFile.Scenario;
+  sectionTitle: string;
+};
+
+type EnumValue = {
+  enumSet: string;
+  display: string;
+  sources: EnumSource[];
+};
+
+type EnumEntry = {
+  key: string;
+  values: Map<string, EnumValue>;
+};
+
+/**
+ * Detect enum value conflicts across files as structured data.
+ *
+ * Scans [DOWNSTREAM CONTEXT] Bridge Blocks for `enum(...)` patterns in
+ * **Attributes Specified** fields. When the same Entity.attribute has
+ * different enum value sets across files, it's reported as a conflict.
+ *
+ * Only matches explicit `enum(val1|val2|...)` syntax — no keyword heuristics.
+ */
+export const detectEnumConflicts = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IEnumConflict[] => {
+  const enums: Map<string, EnumEntry> = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const specs = extractEnumSpecs(section.content);
+          for (const { key, enumSet, display } of specs) {
+            if (!enums.has(key)) {
+              enums.set(key, { key, values: new Map() });
+            }
+            const entry = enums.get(key)!;
+            if (!entry.values.has(enumSet)) {
+              entry.values.set(enumSet, {
+                enumSet,
+                display,
+                sources: [],
+              });
+            }
+            entry.values.get(enumSet)!.sources.push({
+              file,
+              sectionTitle: section.title,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return [...enums.values()]
+    .filter((entry) => entry.values.size > 1)
+    .map((entry) => ({
+      key: entry.key,
+      values: [...entry.values.values()].map((v) => ({
+        enumSet: v.enumSet,
+        display: v.display,
+        files: [...new Set(v.sources.map((s) => s.file.filename))],
+      })),
+    }));
+};
+
+/**
+ * Build a map from filename → list of enum conflict feedback strings.
+ */
+export const buildFileEnumConflictMap = (
+  conflicts: IEnumConflict[],
+): Map<string, string[]> => {
+  const map: Map<string, string[]> = new Map();
+
+  for (const conflict of conflicts) {
+    const allFiles = new Set(conflict.values.flatMap((v) => v.files));
+    const feedback =
+      `${conflict.key} has conflicting enum values: ` +
+      conflict.values
+        .map((v) => `enum(${v.enumSet}) in [${v.files.join(", ")}]`)
+        .join(" vs ");
+
+    for (const filename of allFiles) {
+      if (!map.has(filename)) map.set(filename, []);
+      map.get(filename)!.push(feedback);
+    }
+  }
+
+  return map;
+};
+
+/**
+ * Build a human-readable enum consistency report for cross-file review.
+ *
+ * Parallel to `buildConstraintConsistencyReport` (numeric) — this one
+ * covers enum value conflicts.
+ */
+export const buildEnumConsistencyReport = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): string => {
+  let totalEnums: number = 0;
+  const enums: Map<string, EnumEntry> = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const specs = extractEnumSpecs(section.content);
+          for (const { key, enumSet, display } of specs) {
+            totalEnums++;
+            if (!enums.has(key)) {
+              enums.set(key, { key, values: new Map() });
+            }
+            const entry = enums.get(key)!;
+            if (!entry.values.has(enumSet)) {
+              entry.values.set(enumSet, {
+                enumSet,
+                display,
+                sources: [],
+              });
+            }
+            entry.values.get(enumSet)!.sources.push({
+              file,
+              sectionTitle: section.title,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  const conflicts = [...enums.values()].filter(
+    (entry) => entry.values.size > 1,
+  );
+
+  if (conflicts.length === 0) {
+    return [
+      "No enum value conflicts detected.",
+      `Scanned ${totalEnums} enum specifications from [DOWNSTREAM CONTEXT] blocks.`,
+    ].join("\n");
+  }
+
+  const lines: string[] = [
+    `Detected ${conflicts.length} enum value conflict(s).`,
+    `Scanned ${totalEnums} enum specifications from [DOWNSTREAM CONTEXT] blocks.`,
+    "",
+    "Enum Conflicts:",
+  ];
+
+  for (const entry of conflicts) {
+    lines.push(`- ${entry.key}:`);
+    for (const value of entry.values.values()) {
+      const sources = value.sources
+        .map((s) => `${s.file.filename} → ${s.sectionTitle}`)
+        .slice(0, 6)
+        .join("; ");
+      lines.push(`  - enum(${value.enumSet}) (e.g., ${sources})`);
+    }
+  }
+
+  return lines.join("\n");
+};
+
+// ─── Attribute Specs Extraction (shared) ───
 
 const extractAttributeSpecs = (
   content: string,
