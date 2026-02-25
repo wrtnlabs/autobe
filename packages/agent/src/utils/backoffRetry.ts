@@ -124,8 +124,10 @@ function isRetryError(
   }
 
   // 2) 5xx / server_error → Retry
+  //    Streaming errors from OpenRouter may have status: undefined but code: 502
   if (
     (typeof error?.status === "number" && error.status >= 500) ||
+    (typeof error?.code === "number" && error.code >= 500) ||
     error?.error?.type === "server_error"
   ) {
     return true;

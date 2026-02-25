@@ -25,6 +25,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     previousSectionEvent: AutoBeAnalyzeWriteSectionEvent;
     feedback: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
+    attributeRegistry?: string;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
@@ -66,6 +67,8 @@ export const transformAnalyzeWriteSectionPatchHistory = (
         `,
           )
           .join("\n---\n")}
+
+        ${props.attributeRegistry ? props.attributeRegistry : ""}
 
         ## Review Feedback
 

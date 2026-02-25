@@ -24,6 +24,7 @@ export const transformAnalyzeWriteSectionHistory = (
     unitIndex: number;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
+    attributeRegistry?: string;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
@@ -105,6 +106,8 @@ export const transformAnalyzeWriteSectionHistory = (
         If the parent section says "10MB file limit", you MUST use 10MB, not 25MB or 5MB.
         If the parent section says "5 attachments maximum", you MUST use 5, not 10.
         Any deviation will cause the review to REJECT your output.
+
+        ${props.attributeRegistry ? props.attributeRegistry : ""}
 
         ## CRITICAL: No Duplicate Content
 

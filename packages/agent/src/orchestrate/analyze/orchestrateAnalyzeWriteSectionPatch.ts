@@ -16,6 +16,7 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { detectTechLockin } from "./utils/buildHardValidators";
 import { transformAnalyzeWriteSectionPatchHistory } from "./histories/transformAnalyzeWriteSectionPatchHistory";
 import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 
@@ -33,6 +34,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
+    attributeRegistry?: string;
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -66,6 +68,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
         previousSectionEvent: props.previousSectionEvent,
         feedback: props.feedback,
         preliminary,
+        attributeRegistry: props.attributeRegistry,
       }),
     });
     if (pointer.value === null) return out(result)(null);
@@ -117,6 +120,24 @@ function createController(props: {
           data: result.data,
         };
       }
+
+      // Validate no technology lock-in
+      const techViolations = detectTechLockin(
+        result.data.request.sectionSections,
+      );
+      if (techViolations.length > 0) {
+        return {
+          success: false,
+          errors: techViolations.map((error) => ({
+            path: "$input.request.sectionSections",
+            expected:
+              "Technology-neutral content (no specific DB/framework/infrastructure names)",
+            value: error,
+          })),
+          data: result.data,
+        };
+      }
+
       return result;
     }
 

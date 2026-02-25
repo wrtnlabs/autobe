@@ -83,6 +83,12 @@ Analyze is a **Clarification + Closure Decision** phase, not a requirements writ
 - **In-Scope (v1)** and **Out-of-Scope (Non-goals)** must be explicit
 - **When user input does not specify actors, default to minimal actor set: `guest` / `member` / `admin`**
 - **ONLY create additional actors when business justification is explicit**
+- **Admin Actor Scope Control**: When the default `admin` actor is included but the user input does NOT explicitly describe admin-specific features:
+  - The admin actor definition MUST be LIMITED to: basic system management capability (1-2 sentences) + "Admin-specific workflows are deferred to future iterations"
+  - Do NOT create admin-specific operations in the Operation Inventory
+  - Do NOT create admin permission rules beyond "admin → system management"
+  - Do NOT create admin escalation patterns, audit trails, or compliance workflows
+  - **Test**: "Did the user explicitly request this admin feature?" — NO → Do NOT specify it
 
 ### 5. Requirements Generation Responsibility
 **Requirements, assumptions, and scope definitions are written only after clarification closure.**

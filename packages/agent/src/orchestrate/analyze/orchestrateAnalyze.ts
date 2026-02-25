@@ -32,6 +32,14 @@ import {
   detectConstraintConflicts,
   buildFileConflictMap,
 } from "./utils/buildConstraintConsistencyReport";
+import {
+  stripTocBridgeBlocks,
+  detectEmptyBridgeBlocks,
+} from "./utils/buildHardValidators";
+import {
+  buildAttributeRegistry,
+  formatRegistryForPrompt,
+} from "./utils/buildAttributeRegistry";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -434,6 +442,17 @@ async function processStageSection(
     const pendingArray: number[] = [...pendingIndices];
     const promptCacheKey: string = v7();
 
+    // Build Attribute Canonical Registry from approved files
+    const approvedFiles = props.fileStates
+      .filter((state, i) => !pendingIndices.has(i) && state.sectionResults)
+      .map((state) => ({
+        file: state.file,
+        sectionEvents: state.sectionResults!,
+      }));
+    const attributeRegistry = formatRegistryForPrompt(
+      buildAttributeRegistry({ files: approvedFiles }),
+    );
+
     await executeCachedBatch(
       ctx,
       pendingArray.map((fileIndex) => async (cacheKey) => {
@@ -505,6 +524,7 @@ async function processStageSection(
                       progress: props.sectionWriteProgress,
                       promptCacheKey: cacheKey,
                       retry: attempt,
+                      attributeRegistry,
                     })
                   : await orchestrateAnalyzeWriteSection(ctx, {
                       scenario: props.scenario,
@@ -518,6 +538,7 @@ async function processStageSection(
                       promptCacheKey: cacheKey,
                       feedback: targetedFeedback,
                       retry: attempt,
+                      attributeRegistry,
                     });
               sectionsForModule.push(sectionEvent);
             } else {
@@ -530,6 +551,12 @@ async function processStageSection(
           sectionResults.push(sectionsForModule);
         }
         state.sectionResults = sectionResults;
+
+        // Auto-strip [DOWNSTREAM CONTEXT] blocks from TOC file
+        if (state.file.filename === "00-toc.md") {
+          stripTocBridgeBlocks(state.sectionResults);
+        }
+
         return sectionResults;
       }),
       promptCacheKey,
@@ -615,6 +642,21 @@ async function processStageSection(
     const fileConflictMap: Map<string, string[]> =
       buildFileConflictMap(criticalConflicts);
 
+    // Detect empty Bridge Blocks programmatically
+    const emptyBridgeBlockMap: Map<number, string[]> = new Map();
+    for (const fileIndex of pendingArray) {
+      const state = props.fileStates[fileIndex]!;
+      if (state.sectionResults) {
+        const violations = detectEmptyBridgeBlocks(state.sectionResults);
+        if (violations.length > 0) {
+          emptyBridgeBlockMap.set(
+            fileIndex,
+            violations.map((v) => v.detail),
+          );
+        }
+      }
+    }
+
     for (const fileIndex of pendingArray) {
       const perFileEvent = perFileReviewResults.get(fileIndex);
       const perFileResult = perFileEvent?.fileResults[0];
@@ -626,7 +668,10 @@ async function processStageSection(
       // Check if this file has programmatically-detected critical conflicts
       const filename = props.fileStates[fileIndex]!.file.filename;
       const fileCriticalConflicts = fileConflictMap.get(filename) ?? [];
-      const hasCriticalConflict = fileCriticalConflicts.length > 0;
+      const fileEmptyBridgeBlocks = emptyBridgeBlockMap.get(fileIndex) ?? [];
+      const hasCriticalConflict =
+        fileCriticalConflicts.length > 0 ||
+        fileEmptyBridgeBlocks.length > 0;
 
       // Decision logic:
       // 1. per-file reject → reject (unchanged)
@@ -658,10 +703,14 @@ async function processStageSection(
         props.fileStates[fileIndex]!.rejectedModuleUnits =
           perFileResult?.rejectedModuleUnits ?? null;
       } else {
-        // Critical conflict rejected (per-file approved but constraint conflicts exist)
+        // Critical conflict rejected (per-file approved but programmatic violations exist)
         // Use cross-file rejectedModuleUnits for targeted patch if available
+        const allProgrammaticViolations = [
+          ...fileCriticalConflicts,
+          ...fileEmptyBridgeBlocks,
+        ];
         props.fileStates[fileIndex]!.sectionFeedback =
-          `[Critical conflict] ${fileCriticalConflicts.join("; ")}` +
+          `[Critical conflict] ${allProgrammaticViolations.join("; ")}` +
           (crossFileResult?.feedback
             ? `\n${crossFileResult.feedback}`
             : "");

@@ -19,6 +19,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
 import { supportMistral } from "../../factory/supportMistral";
 import { supportFunctionCallFallback } from "../../factory/supportFunctionCallFallback";
+import { supportQwen } from "../../factory/supportQwen";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
 import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";
@@ -120,6 +121,15 @@ async function process(
         : ctx.vendor.semaphore?.max(),
   });
   supportFunctionCallFallback(agent, {
+    api: ctx.vendor.api,
+    model: ctx.vendor.model,
+    options: ctx.vendor.options,
+    semaphore:
+      typeof ctx.vendor.semaphore === "number"
+        ? ctx.vendor.semaphore
+        : ctx.vendor.semaphore?.max(),
+  });
+  supportQwen(agent, {
     api: ctx.vendor.api,
     model: ctx.vendor.model,
     options: ctx.vendor.options,

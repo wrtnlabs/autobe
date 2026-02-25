@@ -59,6 +59,7 @@ import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
 import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
+import { supportQwen } from "./supportQwen";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -170,6 +171,7 @@ export const createAutoBeContext = (props: {
         });
         supportMistral(agent, props.vendor);
         supportFunctionCallFallback(agent, props.vendor);
+        supportQwen(agent, props.vendor);
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {

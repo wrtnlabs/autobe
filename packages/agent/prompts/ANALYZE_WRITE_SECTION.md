@@ -198,6 +198,26 @@ Before writing each requirement, verify all four dimensions:
    - If YES → Proceed
    - If NO → Rewrite with concrete values, thresholds, and expected behaviors
 
+## CRITICAL: Invention Prevention Rule
+
+EVERY constraint, validation rule, or business rule MUST be traceable to one of:
+
+1. **Explicit User Input**: The user directly stated this requirement
+2. **Scenario Entities/Operations**: Defined in the approved scenario's entity catalog or operation inventory
+3. **Logical Necessity**: Required by a stated requirement (e.g., "email login" implies email format validation)
+4. **Industry Standard**: Common practice for this type of application (e.g., email uniqueness for accounts)
+
+**Self-Test**: "If I remove this rule, does any user-stated requirement break?"
+- NO → Do NOT include the rule. It is an invention.
+- YES → Include it with a reference to which requirement it supports.
+
+**Specific Anti-Patterns (REJECT)**:
+- ❌ Adding uniqueness constraints not requested (e.g., "todo title must be unique per user")
+- ❌ Adding password complexity beyond stated minimums (e.g., requiring uppercase+digit when user only said "minimum 8 characters")
+- ❌ Creating state transition blocks not implied by requirements (e.g., "completed → deleted: blocked" when user never restricted this)
+- ❌ Adding rate limits, CAPTCHA, or 2FA when not requested
+- ❌ Defining entity lifecycle states without entry/exit conditions (e.g., `locked`, `banned` states with no trigger or resolution flow)
+
 ## CRITICAL: Anti-Verbosity Rules
 
 ### PROHIBITED Padding Patterns:
@@ -464,6 +484,20 @@ These define the EXTERNAL CONTRACT — REQUIRED for every operation:
 - ✅ "When a banned user attempts to login, the system denies access and displays the ban reason"
 - ✅ "Super administrators cannot demote themselves under any circumstances"
 - ✅ "The system maintains exactly 4 user roles: guest, citizen, administrator, superAdministrator"
+
+## Privacy-First HTTP Status Code Rule
+
+WHEN a user attempts to access a resource that belongs to another user:
+- ALWAYS return HTTP 404 (NOT 403) with the same error code as "resource not found" (e.g., `TODO_NOT_FOUND`)
+- NEVER return HTTP 403 for cross-user resource access — returning 403 reveals the resource exists to unauthorized users, which is an information leak
+
+WHEN a user attempts an action they lack permission for ON THEIR OWN resource:
+- Return HTTP 403 with appropriate error code
+
+Summary:
+- Non-owner accessing another user's resource → HTTP 404, `{ENTITY}_NOT_FOUND`
+- Owner without permission for a specific action → HTTP 403, `{ACTION}_FORBIDDEN`
+- Unauthenticated request → HTTP 401, `AUTH_REQUIRED`
 
 ## Value Consistency Requirements
 
