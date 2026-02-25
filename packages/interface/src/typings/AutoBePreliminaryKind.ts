@@ -38,12 +38,14 @@
  */
 export type AutoBePreliminaryKind =
   | "analysisFiles"
+  | "analysisSections"
   | "databaseSchemas"
   | "interfaceOperations"
   | "interfaceSchemas"
   | "realizeCollectors"
   | "realizeTransformers"
   | "previousAnalysisFiles"
+  | "previousAnalysisSections"
   | "previousDatabaseSchemas"
   | "previousInterfaceOperations"
   | "previousInterfaceSchemas";

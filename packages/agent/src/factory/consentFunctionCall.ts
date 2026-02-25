@@ -50,9 +50,6 @@ export const consentFunctionCall = async (props: {
       created_at: new Date().toISOString(),
     });
   if (props.assistantMessage.length === 0) {
-    console.warn(
-      `[ConsentFunctionCall] Empty assistant message in ${props.source} step. Model returned no response.`,
-    );
     const message: string = StringUtil.trim`
       You sent me an empty assistant message.
 

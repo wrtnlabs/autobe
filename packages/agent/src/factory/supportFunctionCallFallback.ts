@@ -38,14 +38,30 @@ export const supportFunctionCallFallback = (
     body: ICreateBody,
     options?: Record<string, unknown>,
   ): Promise<unknown> {
-    const result = await originalCreate(body, options);
+    for (let attempt = 0; attempt < UPSTREAM_ERROR_RETRY; attempt++) {
+      const result = await originalCreate(body, options);
 
-    // Only patch non-streaming responses that had tools defined
-    if (!body.stream && body.tools?.length) {
-      patchCompletionIfNeeded(result as ICompletion, body.tools);
+      // OpenRouter returns upstream errors (502, etc.) as HTTP 200 with error body
+      const maybeError = result as Record<string, unknown>;
+      if (
+        maybeError?.error &&
+        typeof maybeError.error === "object" &&
+        (maybeError.error as Record<string, unknown>)?.code
+      ) {
+        continue;
+      }
+
+      // Only patch non-streaming responses that had tools defined
+      if (!body.stream && body.tools?.length) {
+        patchCompletionIfNeeded(result as ICompletion, body.tools);
+      }
+
+      return result;
     }
 
-    return result;
+    throw new Error(
+      "OpenRouter upstream error: all retries exhausted",
+    );
   };
 
   completions[WRAPPED] = true;
@@ -75,6 +91,8 @@ interface ITool {
   type: string;
   function: { name: string };
 }
+
+const UPSTREAM_ERROR_RETRY = 15;
 
 interface ICompletion {
   choices?: IChoice[];
@@ -107,12 +125,19 @@ function patchCompletionIfNeeded(
     .map((t) => t.function.name);
 
   for (const choice of completion.choices ?? []) {
-    // Already has tool_calls — leave it alone
-    if (choice.message.tool_calls?.length) continue;
-    if (!choice.message.content?.trim()) continue;
+    // Filter out malformed tool_calls (missing function field)
+    if (choice.message.tool_calls?.length) {
+      choice.message.tool_calls = choice.message.tool_calls.filter(
+        (tc) => tc.function?.name,
+      );
+      if (choice.message.tool_calls.length) continue;
+    }
+
+    const content = choice.message.content?.trim();
+    if (!content) continue;
 
     const parsed: IParsedFunctionCall[] = parseTextFunctionCall(
-      choice.message.content,
+      content,
       toolNames,
     );
     if (parsed.length === 0) continue;

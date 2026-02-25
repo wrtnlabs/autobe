@@ -97,7 +97,7 @@ export const enum AutoBeConfigConstant {
    * latency and avoids long-running write/review loops while still allowing
    * meaningful automatic correction.
    */
-  ANALYZE_RETRY = 10,
+  ANALYZE_RETRY = 15,
 
   /**
    * Maximum consecutive error threshold for fast-fail during the Analyze

@@ -2,6 +2,7 @@
 import { AutoBeAnalyzeFile } from "@autobe/interface";
 import { createHash } from "node:crypto";
 
+import { IAnalysisSectionEntry } from "../orchestrate/common/structures/IAnalysisSectionEntry";
 import { EmbeddingProvider } from "./EmbeddingProvider";
 
 export interface RequirementSection {
@@ -716,4 +717,108 @@ export async function buildAnalysisContextFiles<
   // RagAnalysisFile extends the input type with 'reason' field
   // Cast is safe because RagAnalysisFile is a superset of IAnalyzeFileInput
   return result as unknown as T[];
+}
+
+/**
+ * Build analysis context at section granularity.
+ *
+ * Similar to {@link buildAnalysisContextFiles} but operates on
+ * `IAnalysisSectionEntry[]` instead of full analysis files. Each section
+ * entry is treated as an independent retrieval unit (~200-600 words),
+ * yielding much finer-grained context for downstream agents.
+ *
+ * @param embedder - Embedding provider for vector search (only used in TOPK)
+ * @param sections - Source section entries (from convertToSectionEntries)
+ * @param query - Query text for retrieval (only used in TOPK mode)
+ * @param mode - Analysis context mode (NONE/FULL/TOPK)
+ * @param options - Optional parameters for retrieval tuning
+ * @returns Filtered or full section entries based on mode
+ */
+export async function buildAnalysisContextSections(
+  embedder: EmbeddingProvider,
+  sections: IAnalysisSectionEntry[],
+  query: string,
+  mode: AnalysisContextMode,
+  options?: BuildAnalysisContextOptions,
+): Promise<IAnalysisSectionEntry[]> {
+  const log = options?.log ?? false;
+  const prefix = options?.logPrefix ? `[${options.logPrefix}]` : "";
+
+  const inputTotalChars = sections.reduce(
+    (sum, s) => sum + (s.content?.length ?? 0),
+    0,
+  );
+
+  if (mode === "NONE" || sections.length === 0) {
+    if (log) {
+      console.log(
+        `[RAG-SECTIONS]${prefix} mode=${mode} sections=0 chars=0 (skipped)`,
+      );
+    }
+    return [];
+  }
+
+  if (mode === "FULL") {
+    if (log) {
+      console.log(
+        `[RAG-SECTIONS]${prefix} mode=FULL sections=${sections.length} chars=${inputTotalChars} (pass-through)`,
+      );
+    }
+    return sections;
+  }
+
+  // TOPK mode: convert section entries to RequirementSection for retrieval
+  const reqSections: RequirementSection[] = sections.map((s) => ({
+    filename: s.filename as `${string}.md`,
+    heading: `### ${s.sectionTitle}`,
+    content: `[${s.unitTitle}] ${s.content}`,
+    index: s.id,
+    level: 3 as const,
+  }));
+
+  const { index, bm25 } = await buildVectorIndexHybrid(embedder, reqSections);
+
+  if (index.length === 0) {
+    if (log) {
+      console.log(
+        `[RAG-SECTIONS]${prefix} mode=TOPK sections=0 chars=0 (empty index)`,
+      );
+    }
+    return [];
+  }
+
+  const split = options?.splitCount ?? 1;
+  const kMin = options?.kMin ? Math.ceil(options.kMin / split) : undefined;
+  const kMax = options?.kMax ? Math.ceil(options.kMax / split) : undefined;
+
+  const hits = await retrieveTopKAdaptiveHybrid(
+    embedder,
+    query,
+    index,
+    bm25,
+    kMin,
+    kMax,
+  );
+
+  // Map hits back to section entries by index (set to s.id above)
+  const sectionMap = new Map(sections.map((s) => [s.id, s]));
+  const result = hits
+    .map((h) => sectionMap.get(h.section.index))
+    .filter((s): s is IAnalysisSectionEntry => s !== undefined);
+
+  if (log) {
+    const resultTotalChars = result.reduce(
+      (sum, s) => sum + (s.content?.length ?? 0),
+      0,
+    );
+    const reduction =
+      inputTotalChars > 0
+        ? ((1 - resultTotalChars / inputTotalChars) * 100).toFixed(1)
+        : "0";
+    console.log(
+      `[RAG-SECTIONS]${prefix} mode=TOPK sections=${result.length} chars=${resultTotalChars} reduction=${reduction}%`,
+    );
+  }
+
+  return result;
 }

@@ -1,6 +1,6 @@
 import {
-  // AgenticaJsonParseError,
-  // AgenticaValidationError,
+  AgenticaJsonParseError,
+  AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -380,9 +380,11 @@ export const createAutoBeContext = (props: {
           return (
             error instanceof APIError ||
             error instanceof BadRequestError ||
-            // error instanceof AgenticaJsonParseError ||
-            // error instanceof AgenticaValidationError ||
-            (error instanceof TypeError && error.message === "terminated") ||
+            error instanceof AgenticaJsonParseError ||
+            error instanceof AgenticaValidationError ||
+            error instanceof TypeError ||
+            (error instanceof Error &&
+              error.message.startsWith("OpenRouter upstream error")) ||
             (error instanceof Error &&
               OPENAI_API_ERROR_KEYS.get().every((key) =>
                 error.hasOwnProperty(key),
