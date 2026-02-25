@@ -38,7 +38,9 @@ export const supportFunctionCallFallback = (
     body: ICreateBody,
     options?: Record<string, unknown>,
   ): Promise<unknown> {
-    for (let attempt = 0; attempt < UPSTREAM_ERROR_RETRY; attempt++) {
+    const retryState = { upstream: 0, empty: 0, total: 0 };
+
+    while (retryState.total < TOTAL_RETRY_CAP) {
       const result = await originalCreate(body, options);
 
       // OpenRouter returns upstream errors (502, etc.) as HTTP 200 with error body
@@ -48,6 +50,14 @@ export const supportFunctionCallFallback = (
         typeof maybeError.error === "object" &&
         (maybeError.error as Record<string, unknown>)?.code
       ) {
+        const err = maybeError.error as Record<string, unknown>;
+        retryState.upstream++;
+        retryState.total++;
+        console.warn(
+          `[FunctionCallFallback] OpenRouter upstream error (${err.code}): ${err.message ?? "unknown"} — retry ${retryState.upstream}/${UPSTREAM_502_RETRY}`,
+        );
+        if (retryState.upstream >= UPSTREAM_502_RETRY) break;
+        await upstreamBackoffDelay(retryState.upstream - 1);
         continue;
       }
 
@@ -55,10 +65,27 @@ export const supportFunctionCallFallback = (
       if (!body.stream && body.tools?.length) {
         const comp = result as ICompletion;
         if (isEmptyCompletion(comp)) {
+          retryState.empty++;
+          retryState.total++;
+          console.warn(
+            `[FunctionCallFallback] Empty response from model — retry ${retryState.empty}/${EMPTY_RESPONSE_RETRY}`,
+          );
+          if (retryState.empty >= EMPTY_RESPONSE_RETRY) break;
+          await upstreamBackoffDelay(retryState.empty - 1);
           continue;
         }
         patchCompletionIfNeeded(comp, body.tools);
+        // Re-check after patching: malformed tool_calls may have been
+        // filtered out, leaving choices with no content and no valid
+        // tool_calls.
         if (isEmptyCompletion(comp)) {
+          retryState.empty++;
+          retryState.total++;
+          console.warn(
+            `[FunctionCallFallback] Completion became empty after filtering malformed tool_calls — retry ${retryState.empty}/${EMPTY_RESPONSE_RETRY}`,
+          );
+          if (retryState.empty >= EMPTY_RESPONSE_RETRY) break;
+          await upstreamBackoffDelay(retryState.empty - 1);
           continue;
         }
       }
@@ -67,7 +94,7 @@ export const supportFunctionCallFallback = (
     }
 
     throw new Error(
-      "OpenRouter upstream error: all retries exhausted",
+      `OpenRouter retries exhausted (upstream=${retryState.upstream}/${UPSTREAM_502_RETRY}, empty=${retryState.empty}/${EMPTY_RESPONSE_RETRY}, total=${retryState.total}/${TOTAL_RETRY_CAP})`,
     );
   };
 
@@ -99,7 +126,18 @@ interface ITool {
   function: { name: string };
 }
 
-const UPSTREAM_ERROR_RETRY = 15;
+const UPSTREAM_502_RETRY = 10;
+const EMPTY_RESPONSE_RETRY = 5;
+const TOTAL_RETRY_CAP = 12;
+
+const UPSTREAM_BASE_DELAY = 1_000;
+const UPSTREAM_MAX_DELAY = 15_000;
+
+function upstreamBackoffDelay(attempt: number): Promise<void> {
+  const delay = Math.min(UPSTREAM_BASE_DELAY * 2 ** attempt, UPSTREAM_MAX_DELAY);
+  const jittered = delay * (0.5 + Math.random() * 0.5);
+  return new Promise((resolve) => setTimeout(resolve, jittered));
+}
 
 interface ICompletion {
   choices?: IChoice[];

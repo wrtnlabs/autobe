@@ -377,6 +377,23 @@ export const createAutoBeContext = (props: {
         execute,
         AutoBeConfigConstant.API_ERROR_RETRY,
         (error) => {
+          // Context overflow and other permanent 400 errors should not be
+          // retried — the same payload will always produce the same failure.
+          if (error instanceof BadRequestError) {
+            const msg = String(
+              (error as Record<string, any>).error?.metadata?.raw ??
+                (error as Record<string, any>).error?.message ??
+                error.message ??
+                "",
+            );
+            const permanent = [
+              "Expected a valid JSON object",
+              "context_length_exceeded",
+              "maximum context length",
+              "request too large",
+            ];
+            if (permanent.some((p) => msg.includes(p))) return false;
+          }
           return (
             error instanceof APIError ||
             error instanceof BadRequestError ||
