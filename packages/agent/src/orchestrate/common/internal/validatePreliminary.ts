@@ -33,11 +33,13 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
     `getPrevious${string}`
   >;
   const func = PreliminaryApplicationValidator[type];
+  // biome-ignore-start lint: intended
   return func(
     controller as any,
     data as any,
     data.request.type.startsWith("getPrevious"),
   ) as any;
+  // biome-ignore-end lint: intended
 };
 
 namespace PreliminaryApplicationValidator {
@@ -129,7 +131,19 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetAnalysisFiles["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              Array.from(oldbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n"),
+            )
+            .replace(
+              "{{NEWBIE}}",
+              Array.from(newbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };
@@ -220,7 +234,19 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetDatabaseSchemas["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              Array.from(oldbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n"),
+            )
+            .replace(
+              "{{NEWBIE}}",
+              Array.from(newbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };
@@ -330,7 +356,26 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetInterfaceOperations["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              StringUtil.trim`
+                Path | Method
+                -----|-------
+                ${Array.from(oldbie.toJSON())
+                  .sort(AutoBeOpenApiEndpointComparator.compare)
+                  .map((o) => `${o.path} | ${o.method}`)
+                  .join("\n")}
+              `,
+            )
+            .replace(
+              "{{NEWBIE}}",
+              newbie
+                .toJSON()
+                .sort(AutoBeOpenApiEndpointComparator.compare)
+                .map((o) => `- ${o.method} ${o.path}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };
@@ -420,7 +465,19 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetInterfaceSchemas["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              Array.from(oldbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n"),
+            )
+            .replace(
+              "{{NEWBIE}}",
+              Array.from(newbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };
@@ -473,7 +530,7 @@ namespace PreliminaryApplicationValidator {
 
             ${
               newbie.size === 0
-                ? "All available collectors have already been requested."
+                ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_COLLECTOR_EXHAUSTED
                 : ""
             }
           `,
@@ -497,7 +554,19 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetRealizeCollectors["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              Array.from(oldbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n"),
+            )
+            .replace(
+              "{{NEWBIE}}",
+              Array.from(newbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };
@@ -550,7 +619,7 @@ namespace PreliminaryApplicationValidator {
 
             ${
               newbie.size === 0
-                ? "All available transformers have already been requested."
+                ? AutoBeSystemPromptConstant.PRELIMINARY_REALIZE_TRANSFORMER_EXHAUSTED
                 : ""
             }
           `,
@@ -574,7 +643,19 @@ namespace PreliminaryApplicationValidator {
             typia.misc.literals<
               IAutoBePreliminaryGetRealizeTransformers["type"]
             >()[0],
-          ),
+          )
+            .replace(
+              "{{OLDBIE}}",
+              Array.from(oldbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n"),
+            )
+            .replace(
+              "{{NEWBIE}}",
+              Array.from(newbie.keys())
+                .map((k) => `- ${k}`)
+                .join("\n") || "(none)",
+            ),
       });
     return finalize(input, errors);
   };

@@ -1,8 +1,14 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
-import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
-import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeAnalyzeWriteAllSectionReviewEvent } from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
+import { AutoBeAnalyzeWriteAllUnitReviewEvent } from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
+import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
+import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
+import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
+import { AutoBeAnalyzeWriteSectionReviewEvent } from "./AutoBeAnalyzeWriteSectionReviewEvent";
+import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
+import { AutoBeAnalyzeWriteUnitReviewEvent } from "./AutoBeAnalyzeWriteUnitReviewEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
@@ -105,9 +111,17 @@ export type AutoBeEvent =
   // ANALYZE
   | AutoBeAnalyzeStartEvent
   | AutoBeAnalyzeScenarioEvent
-  | AutoBeAnalyzeWriteEvent
-  | AutoBeAnalyzeReviewEvent
   | AutoBeAnalyzeCompleteEvent
+  // ANALYZE (Hierarchical Write V2 - Module/Unit/Section)
+  | AutoBeAnalyzeWriteModuleEvent
+  | AutoBeAnalyzeWriteModuleReviewEvent
+  | AutoBeAnalyzeWriteUnitEvent
+  | AutoBeAnalyzeWriteUnitReviewEvent
+  | AutoBeAnalyzeWriteSectionEvent
+  | AutoBeAnalyzeWriteSectionReviewEvent
+  // ANALYZE (Batch Review - All Units/Sections at once)
+  | AutoBeAnalyzeWriteAllUnitReviewEvent
+  | AutoBeAnalyzeWriteAllSectionReviewEvent
   // DATABASE
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent

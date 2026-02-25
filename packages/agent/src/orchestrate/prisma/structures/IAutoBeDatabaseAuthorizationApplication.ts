@@ -7,8 +7,8 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseAuthorizationApplication {
   /**
-   * Process authorization table design task for all actors or preliminary
-   * data requests.
+   * Process authorization table design task for all actors or preliminary data
+   * requests.
    *
    * Receives all actor definitions (name, kind, description for each) and
    * generates all authentication and authorization related tables for every
@@ -74,9 +74,9 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
    * Request to complete the authorization table design for all actors.
    *
    * Takes all actor definitions (name, kind, description for each) and
-   * generates all database tables required for every actor's authentication
-   * and authorization needs, including main actor tables, session tables, and
-   * any authentication support tables for each actor.
+   * generates all database tables required for every actor's authentication and
+   * authorization needs, including main actor tables, session tables, and any
+   * authentication support tables for each actor.
    *
    * This is about creating tables for ALL actors in a single call. Each actor
    * must have at minimum a main actor table and a session table.

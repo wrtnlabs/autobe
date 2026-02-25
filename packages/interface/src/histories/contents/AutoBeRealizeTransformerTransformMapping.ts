@@ -4,8 +4,9 @@
  * Documents how to transform Prisma payload data into each specific DTO
  * property in the transform() function. This structured approach ensures
  * complete DTO coverage by requiring explicit documentation for EVERY property
- * - including those requiring special transformations or computed from multiple
- * Prisma fields.
+ *
+ * - Including those requiring special transformations or computed from multiple
+ *   Prisma fields.
  *
  * **Purpose**:
  *

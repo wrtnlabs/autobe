@@ -81,7 +81,7 @@ export namespace AutoBeOpenApiTypeChecker {
       components: props.components,
       schema: props.schema,
       closure: (schema, accessor) => {
-        props.closure(schema as any, accessor);
+        props.closure(schema as AutoBeOpenApi.IJsonSchema, accessor);
       },
     });
 

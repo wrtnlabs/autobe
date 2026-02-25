@@ -3,9 +3,9 @@ import { AutoBeOpenApi } from "../../openapi";
 /**
  * Request to keep an endpoint unchanged.
  *
- * Use this to explicitly approve an endpoint that is correctly designed.
- * Every endpoint in the review list MUST have a corresponding revision -
- * use `keep` for endpoints that need no changes rather than omitting them.
+ * Use this to explicitly approve an endpoint that is correctly designed. Every
+ * endpoint in the review list MUST have a corresponding revision - use `keep`
+ * for endpoints that need no changes rather than omitting them.
  *
  * This explicit approval ensures:
  *

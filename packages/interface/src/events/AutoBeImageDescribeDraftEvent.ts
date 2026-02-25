@@ -14,8 +14,7 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  * contains the analysis results with structured documentation.
  */
 export interface AutoBeImageDescribeDraftEvent
-  extends AutoBeEventBase<"imageDescribeDraft">,
-    AutoBeProgressEventBase {
+  extends AutoBeEventBase<"imageDescribeDraft">, AutoBeProgressEventBase {
   /**
    * Raw observation of visual elements in the image.
    *

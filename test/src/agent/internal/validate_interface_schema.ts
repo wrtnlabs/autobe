@@ -102,7 +102,7 @@ export const validate_interface_schema = async (props: {
           databaseSchema: e.databaseSchema,
           specification: e.specification,
           description: e.description,
-          refines: e.refines,
+          revises: e.revises,
         }),
       ]),
     ),

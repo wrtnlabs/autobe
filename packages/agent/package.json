@@ -33,6 +33,7 @@
     "@autobe/utils": "workspace:^",
     "@prisma/internals": "catalog:prisma",
     "@samchon/openapi": "catalog:samchon",
+    "@huggingface/transformers": "^3.4.1",
     "openai": "catalog:libs",
     "pluralize": "^8.0.0",
     "tstl": "catalog:samchon",

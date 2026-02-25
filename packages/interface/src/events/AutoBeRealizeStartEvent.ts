@@ -18,8 +18,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeStartEvent
-  extends AutoBeEventBase<"realizeStart"> {
+export interface AutoBeRealizeStartEvent extends AutoBeEventBase<"realizeStart"> {
   /**
    * Reason why the Realize agent was activated through function calling.
    *

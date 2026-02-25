@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -16,7 +17,9 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
+import { getEmbedder } from "../../utils/getEmbedder";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
+import { buildAnalysisContextFiles } from "../../utils/vectorDB";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
@@ -73,13 +76,42 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+
+  const pathSegments = props.scenario.operation.path
+    .split("/")
+    .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
+  const queryText: string = [
+    "operation",
+    "write",
+    props.scenario.operation.method,
+    ...pathSegments,
+    props.scenario.functionName,
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "realizeOperationWrite" },
+  );
+
   const preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "realizeCollectors"
+    | "realizeTransformers"
   > = new AutoBePreliminaryController({
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
-    kinds: ["databaseSchemas", "realizeCollectors", "realizeTransformers"],
+    kinds: [
+      "analysisFiles",
+      "databaseSchemas",
+      "realizeCollectors",
+      "realizeTransformers",
+    ],
     state: ctx.state(),
     all: {
       realizeCollectors: props.collectors,
@@ -95,6 +127,7 @@ async function process(
           t.plan.dtoTypeName ===
           props.scenario.operation.responseBody?.typeName,
       ),
+      analysisFiles: ragAnalysisFiles,
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -167,7 +200,10 @@ function createController(props: {
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "realizeCollectors" | "realizeTransformers"
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "realizeCollectors"
+    | "realizeTransformers"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

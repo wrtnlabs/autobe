@@ -2,6 +2,7 @@ import {
   AutoBeDatabase,
   AutoBeInterfaceSchemaPropertyDepict,
   AutoBeInterfaceSchemaPropertyErase,
+  AutoBeInterfaceSchemaPropertyExclude,
   AutoBeInterfaceSchemaPropertyRefine,
   AutoBeInterfaceSchemaPropertyUpdate,
   AutoBeOpenApi,
@@ -11,7 +12,6 @@ import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
-import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
@@ -46,52 +46,14 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     path: string;
     errors: IValidation.IError[];
     everyModels: AutoBeDatabase.IModel[];
-    // special
+    // schema
     typeName: string;
     databaseSchema: string | null;
     schema: AutoBeOpenApi.IJsonSchema.IObject;
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    // refines
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }): void => {
-    // validate property key existence and schema correctness
-    props.refines.forEach((refine, i) => {
-      if (
-        refine.type !== "create" &&
-        props.schema.properties[refine.key] === undefined
-      )
-        props.errors.push({
-          path: `${props.path}.refines[${i}].key`,
-          expected: Object.keys(props.schema.properties)
-            .map((s) => JSON.stringify(s))
-            .join(" | "),
-          value: refine.key,
-          description: StringUtil.trim`
-          Property ${JSON.stringify(refine.key)} does not exist in schema.
-
-          To ${refine.type} a property, it must exist in the object type.
-        `,
-        });
-      if (refine.type === "create" || refine.type === "update")
-        AutoBeJsonSchemaValidator.validateSchema({
-          typeName: props.typeName,
-          schema: refine.schema,
-          operations: [],
-          path: `${props.path}.refines[${i}].schema`,
-          errors: props.errors,
-        });
-    });
-    for (const key of Object.keys(props.schema.properties))
-      if (props.refines.some((refine) => refine.key === key) === false)
-        props.errors.push({
-          path: `${props.path}.refines[]`,
-          value: undefined,
-          expected: `AutoBeInterfaceSchemaPropertyRefine (key: ${JSON.stringify(key)})`,
-          description: StringUtil.trim`
-            Missing refine for property ${JSON.stringify(key)}.
-
-            You MUST provide a refine for EVERY property in the object schema.
-          `,
-        });
-
     // validate database schema existence
     if (
       props.databaseSchema !== null &&
@@ -126,36 +88,42 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
           (except "AutoBeInterfaceSchemaPropertyErase" type) set to null.
         `,
       });
-    else
-      props.refines.forEach((refine, i) => {
-        AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
-          path: `${props.path}.refines[${i}]`,
-          errors: props.errors,
-          everyModels: props.everyModels,
-          model: props.databaseSchema
-            ? (props.everyModels.find((m) => m.name === props.databaseSchema) ??
-              null)
-            : null,
-          revise: refine,
-          originalDtoSchema: props.schema.properties[refine.key],
-          noModelDescription: StringUtil.trim`
-            You have defined "databaseSchemaProperty" property referencing 
-            a database schema property, but its parent schema (object type) 
-            does not reference any database schema.
 
-            To reference a database schema property, you have to configure
-            "IAutoBeInterfaceSchemaRefineApplication.IComplete.databaseSchema"
-            property with a valid database schema name.
+    // validate refines detaily
+    AutoBeInterfaceSchemaPropertyReviseProgrammer.validate({
+      // config
+      path: props.path,
+      errors: props.errors,
+      unionTypeName: typia.reflect.name<AutoBeInterfaceSchemaPropertyRefine>(),
+      noModelDescription: StringUtil.trim`
+        You have defined "databaseSchemaProperty" property referencing 
+        a database schema property, but its parent schema (object type) 
+        does not reference any database schema.
 
-            If not, set this "databaseSchemaProperty" property to null value
-            at the next time, and then depict what this property is for
-            in the "specification" property.
+        To reference a database schema property, you have to configure
+        "IAutoBeInterfaceSchemaRefineApplication.IComplete.databaseSchema"
+        property with a valid database schema name.
 
-            Note that, this is not a recommendation, 
-            but an instruction you must obey.
-          `,
-        });
-      });
+        If not, set this "databaseSchemaProperty" property to null value
+        at the next time, and then depict what this property is for
+        in the "specification" property.
+
+        Note that, this is not a recommendation, 
+        but an instruction you must obey.
+      `,
+      // database
+      everyModels: props.everyModels,
+      model:
+        props.databaseSchema !== null
+          ? (props.everyModels.find((m) => m.name === props.databaseSchema) ??
+            null)
+          : null,
+      // interface
+      typeName: props.typeName,
+      schema: props.schema,
+      revises: props.revises,
+      excludes: props.excludes,
+    });
   };
 
   export const execute = (props: {
@@ -163,7 +131,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
     databaseSchema: string | null;
     specification: string;
     description: string;
-    refines: AutoBeInterfaceSchemaPropertyRefine[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
   }): AutoBeOpenApi.IJsonSchemaDescriptive.IObject => {
     const result: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = {
       ...props.schema,
@@ -177,7 +145,7 @@ export namespace AutoBeInterfaceSchemaRefineProgrammer {
       if (result.required.includes(key) === false) result.required.push(key);
     };
 
-    for (const refine of props.refines)
+    for (const refine of props.revises)
       if (refine.type === "depict") {
         // Add documentation to existing property
         result.properties[refine.key] = {

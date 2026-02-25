@@ -19,8 +19,7 @@ import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeTestCompleteEvent
-  extends AutoBeCompleteEventBase<"testComplete"> {
+export interface AutoBeTestCompleteEvent extends AutoBeCompleteEventBase<"testComplete"> {
   /**
    * Generated e2e test files as key-value pairs representing the complete test
    * suite.

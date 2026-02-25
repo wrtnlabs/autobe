@@ -11,6 +11,7 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
@@ -29,7 +30,7 @@ export function orchestratePrismaCorrect(
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
-  return iterate(ctx, application, 15);
+  return iterate(ctx, application, AutoBeConfigConstant.DATABASE_CORRECT_RETRY);
 }
 
 async function iterate(

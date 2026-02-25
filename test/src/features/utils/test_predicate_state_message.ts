@@ -38,7 +38,10 @@ export const test_predicate_state_message = (): void => {
         previousTest: null,
         previousRealize: null,
       };
-      for (const key of array.slice(0, i + 1)) state[key] = { step: 0 } as any;
+      for (const key of array.slice(0, i + 1)) {
+        // biome-ignore lint: intended
+        state[key] = { step: 0 } as any;
+      }
       const message: string | null = predicateStateMessage(state, y);
       const expected: boolean = i >= j - 1;
       const actual: boolean = message === null;

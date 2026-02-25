@@ -1,3 +1,4 @@
+import { AutoBeInterfaceSchemaPropertyExclude } from "../histories/contents/AutoBeInterfaceSchemaPropertyExclude";
 import { AutoBeInterfaceSchemaPropertyRevise } from "../histories/contents/AutoBeInterfaceSchemaPropertyRevise";
 import { AutoBeOpenApi } from "../openapi/AutoBeOpenApi";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
@@ -95,6 +96,21 @@ export interface AutoBeInterfaceSchemaReviewEvent
    */
   review: string;
 
+  /**
+   * Database properties explicitly excluded from this DTO.
+   *
+   * Each entry declares a database property that intentionally does not appear
+   * in this DTO, along with the reason for exclusion (e.g., "aggregation
+   * relation", "internal field", "handled by separate endpoint").
+   */
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];
+
+  /**
+   * Property-level revisions applied during review.
+   *
+   * Every DTO property must appear exactly once. Every database property must
+   * be addressed either here (via `databaseSchemaProperty`) or in `excludes`.
+   */
   revises: AutoBeInterfaceSchemaPropertyRevise[];
 
   /**

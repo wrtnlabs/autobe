@@ -92,9 +92,10 @@ export interface AutoBeAnalyzeScenarioEvent
 
   /**
    * Language for document content. When specified by the user, this takes
-   * precedence over the locale setting for determining document language.
+   * precedence over the locale setting for determining document language. Set
+   * to `null` if not specified.
    */
-  language?: string;
+  language: string | null;
 
   /**
    * Array of document specifications to be generated in this scenario.

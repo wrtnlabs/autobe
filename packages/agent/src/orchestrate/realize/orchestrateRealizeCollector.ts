@@ -15,7 +15,7 @@ export async function orchestrateRealizeCollector(
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorFunction[]> {
   const plans: AutoBeRealizeCollectorPlan[] =
@@ -27,13 +27,15 @@ export async function orchestrateRealizeCollector(
       plans,
       progress: props.writeProgress,
     });
+  props.validateProgress.total += functions.length;
+
   functions = await orchestrateRealizeCollectorCorrectCasting(ctx, {
     functions,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   functions = await orchestrateRealizeCollectorCorrectOverall(ctx, {
     functions,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   return functions;
 }

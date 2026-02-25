@@ -1,5 +1,6 @@
 import {
   AutoBeProgressEventBase,
+  AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
@@ -12,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { forceRetry } from "../../../utils/forceRetry";
 import { IAutoBeCommonCorrectCastingApplication } from "../../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistory } from "../histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
@@ -48,6 +50,7 @@ export const orchestrateRealizeCorrectCasting = async <
     {
       functions: props.functions,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
   return predicate(
@@ -132,13 +135,15 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
               (d) => d.file === localFunction.location,
             );
           try {
-            return await process(ctx, {
-              programmer: props.programmer,
-              function: localFunction,
-              previousFailures: localPreviousFailures,
-              diagnostic: localDiagnostics,
-              progress: props.progress,
-            });
+            return await forceRetry(() =>
+              process(ctx, {
+                programmer: props.programmer,
+                function: localFunction,
+                previousFailures: localPreviousFailures,
+                diagnostic: localDiagnostics,
+                progress: props.progress,
+              }),
+            );
           } catch (error) {
             console.log("realizeCorrectCasting", localFunction.location, error);
             ++props.progress.completed;
@@ -167,6 +172,7 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
     {
       functions: allFunctionsForValidation,
       programmer: props.programmer,
+      progress: props.progress,
     },
   );
 
@@ -265,7 +271,6 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
       ],
     }),
   });
-  ++props.progress.completed;
 
   if (pointer.value === null)
     return {
@@ -294,9 +299,7 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
     step: ctx.state().analyze?.step ?? 0,
     metric,
     tokenUsage,
-    completed: props.progress.completed,
-    total: props.progress.total,
-  });
+  } satisfies AutoBeRealizeCorrectEvent);
   return {
     type: "success",
     function: {
@@ -370,11 +373,26 @@ const compileWithFiltering = async <
   props: {
     functions: RealizeFunction[];
     programmer: IProgrammer<RealizeFunction>;
+    progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeValidateEvent> => {
   const compiled: AutoBeRealizeValidateEvent = await compileRealizeFiles(ctx, {
     functions: props.functions,
     additional: props.programmer.additional(props.functions),
+    progress: (result) => {
+      if (result.type === "success")
+        props.progress.completed = props.functions.length;
+      else if (result.type === "failure")
+        props.progress.completed =
+          props.progress.total -
+          new Set(
+            result.diagnostics
+              .map((d) => d.file)
+              .filter((f) => f !== null)
+              .filter((x) => !!props.functions.find((y) => y.location === x)),
+          ).size;
+      return props.progress;
+    },
   });
   if (compiled.result.type !== "failure") {
     return compiled;

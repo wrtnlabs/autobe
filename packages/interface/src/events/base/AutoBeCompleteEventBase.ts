@@ -26,8 +26,9 @@ import { AutoBeEventBase } from "./AutoBeEventBase";
  *
  * @author Samchon
  */
-export interface AutoBeCompleteEventBase<Type extends `${AutoBePhase}Complete`>
-  extends AutoBeEventBase<Type> {
+export interface AutoBeCompleteEventBase<
+  Type extends `${AutoBePhase}Complete`,
+> extends AutoBeEventBase<Type> {
   /**
    * Final state machine step counter value for the phase.
    *

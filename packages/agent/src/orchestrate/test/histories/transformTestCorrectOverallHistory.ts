@@ -78,7 +78,6 @@ export const transformTestCorrectOverallHistory = async (
     }
   })();
 
-  // previous 히스토리의 첫 번째 시스템 프롬프트에 식별자 추가
   const previousHistories =
     previous?.histories
       .slice(0, -1)

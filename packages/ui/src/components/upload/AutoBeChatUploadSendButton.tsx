@@ -18,7 +18,7 @@ export const AutoBeChatUploadSendButton = (
   const baseStyles: React.CSSProperties = {
     padding: "6px",
     border: "none",
-    borderRadius: "50%", // 4px에서 50%로 변경하여 둥글게
+    borderRadius: "50%",
     backgroundColor: props.enabled ? "#1976d2" : "#e0e0e0",
     color: props.enabled ? "#ffffff" : "#9e9e9e",
     cursor: props.enabled ? "pointer" : "not-allowed",

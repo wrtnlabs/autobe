@@ -1,4 +1,7 @@
-import { AutoBeInterfaceSchemaPropertyRevise } from "@autobe/interface";
+import {
+  AutoBeInterfaceSchemaPropertyExclude,
+  AutoBeInterfaceSchemaPropertyRevise,
+} from "@autobe/interface";
 
 import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
@@ -86,10 +89,23 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     review: string;
 
     /**
-     * Property-level revisions to apply.
+     * Database properties explicitly excluded from this DTO.
      *
-     * You MUST provide a revise for EVERY property in the object schema. Use
-     * `keep` for properties that need no changes.
+     * Declare every database property that intentionally does not appear in
+     * this DTO. Together with `revises`, this must cover every database
+     * property — each one must appear in exactly one of the two arrays.
+     */
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+
+    /**
+     * Property-level revisions to apply to DTO properties.
+     *
+     * Every DTO property must appear exactly once with one of: `keep`,
+     * `update`, `depict`, `nullish`, `create`, or `erase` (depending on review
+     * type). Use `keep` for properties that need no changes.
+     *
+     * Database properties are addressed either here (via
+     * `databaseSchemaProperty`) or in `excludes`. No property can be omitted.
      */
     revises: Revise[];
   }

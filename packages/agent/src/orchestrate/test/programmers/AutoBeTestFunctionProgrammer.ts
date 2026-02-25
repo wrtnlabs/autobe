@@ -1,5 +1,6 @@
 import {
   AutoBeOpenApi,
+  AutoBeProgressEventBase,
   AutoBeTestFunction,
   AutoBeTestValidateEvent,
   IAutoBeCompiler,
@@ -12,6 +13,7 @@ export namespace AutoBeTestFunctionProgrammer {
     compiler: IAutoBeCompiler;
     document: AutoBeOpenApi.IDocument;
     function: Function;
+    progress: AutoBeProgressEventBase;
     files: Record<string, string>;
     step: number;
   }): Promise<AutoBeTestValidateEvent<Function>> {
@@ -55,7 +57,12 @@ export namespace AutoBeTestFunctionProgrammer {
       result,
       created_at: new Date().toISOString(),
       step: props.step,
-    };
+      completed:
+        result.type === "success"
+          ? ++props.progress.completed
+          : props.progress.completed,
+      total: props.progress.total,
+    } satisfies AutoBeTestValidateEvent<Function>;
   }
 
   export function writeImportStatements(

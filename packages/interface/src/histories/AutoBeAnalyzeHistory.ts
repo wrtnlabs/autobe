@@ -21,10 +21,9 @@ import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggreg
  * pipeline, ensuring that technical implementation accurately reflects business
  * intentions.
  *
- * @author Samchon
+ * @author Juntak
  */
-export interface AutoBeAnalyzeHistory
-  extends AutoBeAgentHistoryBase<"analyze"> {
+export interface AutoBeAnalyzeHistory extends AutoBeAgentHistoryBase<"analyze"> {
   /**
    * Iteration number of this requirements analysis report.
    *

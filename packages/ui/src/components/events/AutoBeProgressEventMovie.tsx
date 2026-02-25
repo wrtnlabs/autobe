@@ -39,16 +39,6 @@ interface IState {
 function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
   const content: Pick<IState, "title" | "description"> = (() => {
     switch (event.type) {
-      case "analyzeWrite":
-        return {
-          title: "Analyze Write",
-          description: "Analyzing requirements, and writing a report paper",
-        };
-      case "analyzeReview":
-        return {
-          title: "Analyze Review",
-          description: "Reviewing the analysis results",
-        };
       case "databaseComponent":
         return {
           title: "Database Components",
@@ -144,6 +134,11 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Test Write",
           description: "Writing E2E test functions",
         };
+      case "testValidate":
+        return {
+          title: "Test Validate",
+          description: "Validating E2E test results",
+        };
       case "realizePlan":
         return {
           title: "Realize Plan",
@@ -165,15 +160,55 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           description:
             "Running the E2E test operations to validate the API functions",
         };
-      case "realizeCorrect":
+      case "realizeValidate":
         return {
-          title: "Realize Correct",
-          description: "Correcting the API functions",
+          title: "Realize Validate",
+          description: "Correcting and Validating the API functions",
         };
       case "imageDescribeDraft":
         return {
           title: "Describe Image Draft",
           description: "Describing the image draft",
+        };
+      case "analyzeWriteModule":
+        return {
+          title: "Analyze Write Module",
+          description: "Generating module section structure",
+        };
+      case "analyzeWriteModuleReview":
+        return {
+          title: "Analyze Write Module Review",
+          description: "Reviewing module section structure",
+        };
+      case "analyzeWriteUnit":
+        return {
+          title: "Analyze Write Unit",
+          description: "Generating unit section content",
+        };
+      case "analyzeWriteUnitReview":
+        return {
+          title: "Analyze Write Unit Review",
+          description: "Reviewing unit section content",
+        };
+      case "analyzeWriteSection":
+        return {
+          title: "Analyze Write Section",
+          description: "Generating section details",
+        };
+      case "analyzeWriteSectionReview":
+        return {
+          title: "Analyze Write Section Review",
+          description: "Reviewing section details",
+        };
+      case "analyzeWriteAllUnitReview":
+        return {
+          title: "Analyze Write All Units Review",
+          description: "Batch reviewing all unit sections",
+        };
+      case "analyzeWriteAllSectionReview":
+        return {
+          title: "Analyze Write All Section Review",
+          description: "Batch reviewing all section details",
         };
       default:
         event satisfies never;

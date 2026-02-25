@@ -11,7 +11,6 @@ import { IPointer } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
 
-import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { divideArray } from "../../utils/divideArray";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
@@ -27,7 +26,7 @@ export async function orchestrateInterfaceSchemaRename(
     progress: AutoBeProgressEventBase;
     collection: AutoBeJsonSchemaCollection;
   },
-  capacity: number = AutoBeConfigConstant.INTERFACE_CAPACITY * 10,
+  capacity: number = 25,
 ): Promise<void> {
   const tableNames: string[] = ctx
     .state()

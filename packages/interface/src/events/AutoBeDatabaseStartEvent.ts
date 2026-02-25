@@ -5,9 +5,9 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * This event marks the initiation of the sophisticated three-tier compiler
  * infrastructure that transforms business requirements into validated database
- * architectures through AST manipulation. The Database agent start represents the
- * beginning of the foundational data layer development that will support all
- * subsequent application functionality.
+ * architectures through AST manipulation. The Database agent start represents
+ * the beginning of the foundational data layer development that will support
+ * all subsequent application functionality.
  *
  * The database design process that begins with this event will proceed through
  * component organization, schema creation, validation, and compilation to
@@ -40,9 +40,9 @@ export interface AutoBeDatabaseStartEvent extends AutoBeEventBase<"databaseStart
    * started for.
    *
    * Indicates which version of the requirements analysis this database design
-   * will reflect. This step number ensures that the Database agent works with the
-   * current requirements and helps track the evolution of database schemas as
-   * business requirements and data needs change.
+   * will reflect. This step number ensures that the Database agent works with
+   * the current requirements and helps track the evolution of database schemas
+   * as business requirements and data needs change.
    *
    * The step value enables proper synchronization between database design
    * activities and the underlying requirements, ensuring that the data

@@ -64,8 +64,10 @@ export const test_json_schema_fix_numeric_schema = () => {
       type: "integer",
       minimum: 1,
       maximum: 1,
-      description: "Version number",
-    } as any) as AutoBeOpenApi.IJsonSchema.IConstant;
+      ...{
+        description: "Version number",
+      },
+    }) as AutoBeOpenApi.IJsonSchema.IConstant;
   TestValidator.equals("description preserved", case6, {
     const: 1,
     description: "Version number",

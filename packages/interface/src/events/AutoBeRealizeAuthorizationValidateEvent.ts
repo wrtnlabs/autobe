@@ -13,8 +13,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  *
  * @author Michael
  */
-export interface AutoBeRealizeAuthorizationValidateEvent
-  extends AutoBeEventBase<"realizeAuthorizationValidate"> {
+export interface AutoBeRealizeAuthorizationValidateEvent extends AutoBeEventBase<"realizeAuthorizationValidate"> {
   /**
    * Authorization configuration being validated.
    *

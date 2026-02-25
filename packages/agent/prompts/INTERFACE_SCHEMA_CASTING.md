@@ -68,7 +68,14 @@ process({
 });
 ```
 
-Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`, and their `previous*` variants. Use batch requests. Never re-request loaded materials.
+Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`, and their `previous*` variants.
+
+- Use batch requests
+- Never re-request loaded materials
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
 
 ### IComplete Structure
 
@@ -137,3 +144,4 @@ process({
 - [ ] If REFINE: construction order followed (`databaseSchema` → `specification` → `description` → `schema`)
 - [ ] If KEEP: `casting` is `null`
 - [ ] Requested additional materials when evidence was weak before deciding
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist

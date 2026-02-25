@@ -1,6 +1,6 @@
 import {
-  AgenticaJsonParseError,
-  AgenticaValidationError,
+  // AgenticaJsonParseError,
+  // AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -38,7 +38,7 @@ import {
   StringUtil,
   TokenUsageComputer,
 } from "@autobe/utils";
-import { APIError } from "openai";
+import { APIError, BadRequestError } from "openai";
 import { Semaphore, Singleton } from "tstl";
 import typia from "typia";
 import { v7 } from "uuid";
@@ -54,7 +54,6 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
-import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportMistral } from "./supportMistral";
@@ -73,9 +72,9 @@ export const createAutoBeContext = (props: {
 }): AutoBeContext => {
   const config: Required<Omit<IAutoBeConfig, "backoffStrategy" | "timezone">> =
     {
-      retry: props.config.retry ?? AutoBeConfigConstant.RETRY,
+      retry: props.config.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
+      timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
     };
   const critical: Semaphore = new Semaphore(2);
   return {
@@ -112,9 +111,9 @@ export const createAutoBeContext = (props: {
       const metric = (key: keyof AutoBeFunctionCallingMetric): void => {
         const accumulate = (collection: AutoBeProcessAggregateCollection) => {
           ++collection.total.metric[key];
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
-          ++collection[next.source as "analyzeWrite"]!.metric[key];
+          ++collection[next.source as "analyzeWriteModule"]!.metric[key];
         };
         ++aggregate.metric[key];
         accumulate(props.aggregates);
@@ -125,10 +124,10 @@ export const createAutoBeContext = (props: {
           collection: AutoBeProcessAggregateCollection,
         ): void => {
           TokenUsageComputer.increment(collection.total.tokenUsage, tokenUsage);
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
           TokenUsageComputer.increment(
-            collection[next.source as "analyzeWrite"]!.tokenUsage,
+            collection[next.source as "analyzeWriteModule"]!.tokenUsage,
             tokenUsage,
           );
         };
@@ -151,7 +150,6 @@ export const createAutoBeContext = (props: {
               describe: false,
             },
             systemPrompt: {
-              common: () => getCommonPrompt(props.config),
               execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
               validate: (events) => getValidationErrorPrompt(events),
               jsonParseError: (event) =>
@@ -160,7 +158,7 @@ export const createAutoBeContext = (props: {
                   event.errorMessage,
                 ),
             },
-            retry: props.config?.retry ?? AutoBeConfigConstant.RETRY,
+            retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
             // stream: false,
             stream: next.enforceFunctionCall === false,
           } satisfies IMicroAgenticaConfig,
@@ -235,12 +233,12 @@ export const createAutoBeContext = (props: {
 
                 > You have to call function(s) of below to accomplish my request.
                 >
-                > Never hesitate the function calling. Never ask for me permission 
+                > Never hesitate the function calling. Never ask for me permission
                 > to execute the function. Never explain me your plan with waiting
                 > for my approval.
                 >
-                > I gave you every information for the function calling, so just 
-                > call it. I repeat that, never hesitate the function calling. 
+                > I gave you every information for the function calling, so just
+                > call it. I repeat that, never hesitate the function calling.
                 > Just do it without any explanation.
                 >
                 ${next.controller.application.functions
@@ -343,16 +341,20 @@ export const createAutoBeContext = (props: {
       };
       return await forceRetry(
         execute,
-        AutoBeConfigConstant.FUNCTION_CALLING_RETRY,
-        (error) =>
-          error instanceof APIError ||
-          error instanceof AgenticaJsonParseError ||
-          error instanceof AgenticaValidationError ||
-          (error instanceof TypeError && error.message === "terminated") ||
-          (error instanceof Error &&
-            OPENAI_API_ERROR_KEYS.get().every((key) =>
-              error.hasOwnProperty(key),
-            )),
+        AutoBeConfigConstant.API_ERROR_RETRY,
+        (error) => {
+          return (
+            error instanceof APIError ||
+            error instanceof BadRequestError ||
+            // error instanceof AgenticaJsonParseError ||
+            // error instanceof AgenticaValidationError ||
+            (error instanceof TypeError && error.message === "terminated") ||
+            (error instanceof Error &&
+              OPENAI_API_ERROR_KEYS.get().every((key) =>
+                error.hasOwnProperty(key),
+              ))
+          );
+        },
       );
     },
     getCurrentAggregates: (phase) => {
@@ -492,11 +494,11 @@ const createDispatch = (props: {
           completed_at: new Date().toISOString(),
         } satisfies AutoBeRealizeHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
+
     void props.dispatch(event).catch(() => {});
     return null as AutoBeContext.DispatchHistory<Event>;
   };
 };
-
 const transformAndDispatch = <
   Event extends
     | AutoBeAnalyzeCompleteEvent
@@ -512,6 +514,7 @@ const transformAndDispatch = <
   history: NonNullable<AutoBeContext.DispatchHistory<Event>>;
 }): NonNullable<AutoBeContext.DispatchHistory<Event>> => {
   props.histories().push(props.history);
+  // biome-ignore lint: intended
   props.state()[props.history.type] = props.history as any;
   void props.dispatch(props.event).catch(() => {});
   return props.history;

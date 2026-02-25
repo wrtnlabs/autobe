@@ -9,6 +9,6 @@ These transformer functions convert database query results into API response DTO
 - Check null vs undefined handling for optional fields
 - Identify neighbor dependencies between transformers for nested DTOs
 
-> **Note**: These transformers are already in your conversation history. Reference them directly without calling `process()` again for the same DTO type names.
+> **Note**: These transformers are already in your memory. Reference them directly without calling `process()` again for the same DTO type names.
 
 {{CONTENT}}

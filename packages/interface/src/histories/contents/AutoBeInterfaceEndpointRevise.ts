@@ -7,8 +7,8 @@ import { AutoBeInterfaceEndpointUpdate } from "./AutoBeInterfaceEndpointUpdate";
  * Endpoint revision operation type.
  *
  * Discriminated union representing all possible endpoint modifications during
- * the review phase. Review agents examine generated endpoints and must return
- * a revision for **every** endpoint in the provided list - no omissions allowed.
+ * the review phase. Review agents examine generated endpoints and must return a
+ * revision for **every** endpoint in the provided list - no omissions allowed.
  *
  * ## Available Operations
  *
@@ -21,8 +21,8 @@ import { AutoBeInterfaceEndpointUpdate } from "./AutoBeInterfaceEndpointUpdate";
  *
  * 1. Every endpoint in the review list MUST have a corresponding revision
  * 2. Use `keep` for endpoints that are correct - do NOT simply omit them
- * 3. The `endpoint` field in `keep`, `update`, and `erase` must exactly match
- *    an endpoint from the provided list (path + method)
+ * 3. The `endpoint` field in `keep`, `update`, and `erase` must exactly match an
+ *    endpoint from the provided list (path + method)
  *
  * @author Michael
  * @author Samchon

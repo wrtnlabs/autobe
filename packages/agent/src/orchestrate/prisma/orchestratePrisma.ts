@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeHistory,
   AutoBeAssistantMessageHistory,
   AutoBeDatabase,
   AutoBeDatabaseCompleteEvent,
@@ -57,7 +58,7 @@ export const orchestratePrisma = async (
   });
 
   // NORMALIZE PREFIX
-  const analyze = ctx.state().analyze;
+  const analyze: AutoBeAnalyzeHistory | null = ctx.state().analyze;
   if (analyze?.prefix) {
     analyze.prefix = NamingConvention.snake(analyze.prefix);
   }

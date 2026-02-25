@@ -198,28 +198,52 @@ function writeRelations(props: {
         props.model.plainIndexes.every((p) => p.fieldNames[0] !== f.name)
       );
     });
-  const contents: string[][] = [
-    props.model.foreignFields.map((foreign) =>
-      writeConstraint({
-        dbms: props.dbms,
-        model: props.model,
-        foreign,
-      }),
+
+  const print = (title: string, content: string[]): string[] => {
+    if (content.length === 0) return [];
+    return [
+      // title
+      "//----",
+      ...title.split("\n").map((l) => `// ${l}`),
+      "//----",
+      // main content
+      ...content,
+    ];
+  };
+  return ArrayUtil.paddle([
+    print(
+      StringUtil.trim`
+        BELONGED RELATIONS,
+          - format: (propertyKey targetModel constraint)
+      `,
+      props.model.foreignFields.map((foreign) =>
+        writeConstraint({
+          dbms: props.dbms,
+          model: props.model,
+          foreign,
+        }),
+      ),
     ),
-    hasRelationships.map((r) =>
-      [
-        r.oppositeName ?? r.mappingName ?? r.modelName, // for legacy histories
-        `${r.modelName}${r.unique ? "?" : "[]"}`,
-        ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
-      ].join(" "),
+    print(
+      StringUtil.trim`
+        HAS RELATIONS
+          - format: (propertyKey targetModel)
+      `,
+      hasRelationships.map((r) =>
+        [
+          r.oppositeName ?? r.mappingName ?? r.modelName, // for legacy histories
+          `${r.modelName}${r.unique ? "?" : "[]"}`,
+          ...(r.mappingName ? [`@relation("${r.mappingName}")`] : []),
+        ].join(" "),
+      ),
     ),
-    foreignIndexes.map((field) =>
-      writeForeignIndex({
-        model: props.model,
-        field,
-      }),
-    ),
-    [
+    print("INDEXES", [
+      ...foreignIndexes.map((field) =>
+        writeForeignIndex({
+          model: props.model,
+          field,
+        }),
+      ),
       ...props.model.uniqueIndexes.map((unique) =>
         writeUniqueIndex({
           model: props.model,
@@ -240,16 +264,8 @@ function writeRelations(props: {
             }),
           )
         : []),
-    ],
-  ];
-  if (contents.every((c) => c.length === 0)) return [];
-  return [
-    "//----",
-    "// RELATIONS",
-    "//----",
-    // paddled content
-    ...ArrayUtil.paddle(contents),
-  ];
+    ]),
+  ]);
 }
 
 function writeConstraint(props: {
@@ -344,7 +360,6 @@ function writeComment(content: string, length: number): string {
     .split("\n")
     .map((line) => line.trim())
     .map((line) => {
-      // 77자에서 "/// " 4자를 뺀 73자가 실제 컨텐츠 최대 길이
       if (line.length <= length - 4) return [line];
       const words: string[] = line.split(" ");
       const result: string[] = [];

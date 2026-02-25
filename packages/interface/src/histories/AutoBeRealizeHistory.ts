@@ -24,8 +24,7 @@ import { AutoBeRealizeFunction } from "./contents/AutoBeRealizeFunction";
  *
  * @author Samchon
  */
-export interface AutoBeRealizeHistory
-  extends AutoBeAgentHistoryBase<"realize"> {
+export interface AutoBeRealizeHistory extends AutoBeAgentHistoryBase<"realize"> {
   /**
    * Generated authentication and authorization decorators for actor-based
    * access control.

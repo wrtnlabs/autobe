@@ -15,7 +15,7 @@ export async function orchestrateRealizeTransformer(
   props: {
     planProgress: AutoBeProgressEventBase;
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeTransformerFunction[]> {
   const plans: AutoBeRealizeTransformerPlan[] =
@@ -27,13 +27,15 @@ export async function orchestrateRealizeTransformer(
       plans,
       progress: props.writeProgress,
     });
+  props.validateProgress.total += functions.length;
+
   functions = await orchestrateRealizeTransformerCorrectCasting(ctx, {
     functions,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   functions = await orchestrateRealizeTransformerCorrectOverall(ctx, {
     functions,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
   return functions;
 }

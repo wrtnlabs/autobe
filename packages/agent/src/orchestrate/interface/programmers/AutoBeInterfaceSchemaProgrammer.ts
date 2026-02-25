@@ -102,7 +102,9 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     )
       props.errors.push({
         path: `${props.path}.databaseSchema`,
-        expected: props.everyModels.map((m) => JSON.stringify(m.name)).join(" | "),
+        expected: props.everyModels
+          .map((m) => JSON.stringify(m.name))
+          .join(" | "),
         value: props.design.databaseSchema,
         description: StringUtil.trim`
           You set "databaseSchema" to ${JSON.stringify(props.design.databaseSchema)},

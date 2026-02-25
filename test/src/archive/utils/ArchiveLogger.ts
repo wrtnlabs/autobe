@@ -24,11 +24,21 @@ export namespace ArchiveLogger {
     //----
     if (typia.is<ProgressEvent>(event))
       content.push(`  - progress: (${event.completed} of ${event.total})`);
+    if (
+      event.type === "analyzeWriteModule" ||
+      event.type === "analyzeWriteModuleReview" ||
+      event.type === "analyzeWriteUnit" ||
+      event.type === "analyzeWriteAllUnitReview" ||
+      event.type === "analyzeWriteSection" ||
+      event.type === "analyzeWriteAllSectionReview"
+    )
+      content.push(`  - retry: ${event.retry}`);
     if (typia.is<TokenUsageEvent>(event))
       content.push(
         `  - token usage: (input: ${event.tokenUsage.input.total.toLocaleString()}, cached: ${event.tokenUsage.input.cached.toLocaleString()}, output: ${event.tokenUsage.output.total.toLocaleString()})`,
         `  - total token usage: (input: ${total.aggregate.input.total.toLocaleString()}, output: ${total.aggregate.output.total.toLocaleString()})`,
       );
+    // biome-ignore lint: intended
     if (typia.is<AutoBeAcquisitionEventBase<any>>(event))
       content.push(
         `  - acquisition:`,
@@ -282,11 +292,17 @@ export namespace ArchiveLogger {
       content.push(
         `  - typeName: ${event.typeName}`,
         `  - databaseSchema: ${event.databaseSchema} (${
+          // biome-ignore lint: intended
           (event.schema as any)["x-autobe-database-schema"] ?? "-"
         })`,
         `  - specification: ${JSON.stringify(event.specification)}`,
-        `  - refines:`,
-        ...event.refines.map(
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
+        `  - revises:`,
+        ...event.revises.map(
           (r) =>
             `    - ${r.key} (${r.type}): ${r.type === "erase" ? "erased" : `${r.databaseSchemaProperty} -> ${JSON.stringify(r.specification)}`}`,
         ),
@@ -295,6 +311,11 @@ export namespace ArchiveLogger {
       content.push(
         `  - kind: ${event.kind}`,
         `  - typeName: ${event.typeName}`,
+        `  - excludes:`,
+        ...event.excludes.map(
+          (e) =>
+            `    - ${e.databaseSchemaProperty}: ${JSON.stringify(e.reason)}`,
+        ),
         `  - revises: ${event.revises.length}`,
         ...event.revises.map(
           (r) =>

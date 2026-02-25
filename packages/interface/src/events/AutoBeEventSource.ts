@@ -1,6 +1,12 @@
-import { AutoBeAnalyzeReviewEvent } from "./AutoBeAnalyzeReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
-import { AutoBeAnalyzeWriteEvent } from "./AutoBeAnalyzeWriteEvent";
+import { AutoBeAnalyzeWriteAllSectionReviewEvent } from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
+import { AutoBeAnalyzeWriteAllUnitReviewEvent } from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
+import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
+import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
+import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
+import { AutoBeAnalyzeWriteSectionReviewEvent } from "./AutoBeAnalyzeWriteSectionReviewEvent";
+import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
+import { AutoBeAnalyzeWriteUnitReviewEvent } from "./AutoBeAnalyzeWriteUnitReviewEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
 import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
@@ -74,8 +80,16 @@ export type AutoBeEventSource =
   | AutoBeImageDescribeCompleteEvent["type"]
   // analyze
   | AutoBeAnalyzeScenarioEvent["type"]
-  | AutoBeAnalyzeWriteEvent["type"]
-  | AutoBeAnalyzeReviewEvent["type"]
+  // analyze (hierarchical write V2 - Module/Unit/Section)
+  | AutoBeAnalyzeWriteModuleEvent["type"]
+  | AutoBeAnalyzeWriteModuleReviewEvent["type"]
+  | AutoBeAnalyzeWriteUnitEvent["type"]
+  | AutoBeAnalyzeWriteUnitReviewEvent["type"]
+  | AutoBeAnalyzeWriteSectionEvent["type"]
+  | AutoBeAnalyzeWriteSectionReviewEvent["type"]
+  // analyze (batch review - All Units/Sections at once)
+  | AutoBeAnalyzeWriteAllUnitReviewEvent["type"]
+  | AutoBeAnalyzeWriteAllSectionReviewEvent["type"]
   // database
   | AutoBeDatabaseGroupEvent["type"]
   | AutoBeDatabaseGroupReviewEvent["type"]

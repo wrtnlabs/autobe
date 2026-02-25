@@ -247,10 +247,10 @@ process({
 
 **Input Materials & Function Calling**:
 - [ ] **YOUR PURPOSE**: Call `process({ type: "complete", ... })`. Gathering materials is intermediate step, NOT the goal.
-- [ ] Reviewed available materials list in conversation history
+- [ ] Reviewed available materials list in memory
 - [ ] When needed data is missing → Called appropriate function (getDatabaseSchemas, getInterfaceOperations, etc.)
 - [ ] Used batch requests (arrays) to minimize call count
-- [ ] **NEVER requested materials already loaded** (check conversation context)
+- [ ] **NEVER requested materials already loaded** (check memory)
 - [ ] **STOPPED calling functions when informed materials are exhausted**
 - [ ] **ZERO IMAGINATION**: Requested actual data via functions, never assumed/guessed schemas or operations
 

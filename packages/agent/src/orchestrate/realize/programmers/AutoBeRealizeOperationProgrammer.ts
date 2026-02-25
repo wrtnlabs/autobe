@@ -16,7 +16,8 @@ import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerPr
 export namespace AutoBeRealizeOperationProgrammer {
   /**
    * Check if the operation is a public auth operation (login, join, refresh).
-   * These operations must be publicly accessible and should not have auth decorators.
+   * These operations must be publicly accessible and should not have auth
+   * decorators.
    */
   export function isPublicAuthOperation(
     operation: AutoBeOpenApi.IOperation,
@@ -285,6 +286,13 @@ function writeTemplateCode(props: {
     return `${param.name}: ${writeParameterType(param.schema)}`;
   });
   functionParameters.push(...pathParameters);
+
+  // Add ip if required
+  if (
+    props.operation.requestBody?.typeName.endsWith(".ILogin") ||
+    props.operation.requestBody?.typeName.endsWith(".IJoin")
+  )
+    functionParameters.push("ip: string");
 
   // Add request body parameter if present
   if (props.operation.requestBody?.typeName) {

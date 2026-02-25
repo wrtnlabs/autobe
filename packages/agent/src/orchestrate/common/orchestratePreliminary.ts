@@ -182,6 +182,7 @@ export const orchestratePreliminary = async <
   TYPE CHECKERS
 ----------------------------------------------------------- */
 const isAnalysisFiles = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"analysisFiles"> =>
@@ -193,6 +194,7 @@ const isAnalysisFiles = (
   ] !== undefined;
 
 const isPreviousAnalysisFiles = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"previousAnalysisFiles"> =>
@@ -204,6 +206,7 @@ const isPreviousAnalysisFiles = (
   ] !== undefined;
 
 const isPrismaSchemas = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"databaseSchemas"> =>
@@ -215,6 +218,7 @@ const isPrismaSchemas = (
   ] !== undefined;
 
 const isPreviousPrismaSchemas = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"previousDatabaseSchemas"> =>
@@ -226,6 +230,7 @@ const isPreviousPrismaSchemas = (
   ] !== undefined;
 
 const isInterfaceOperations = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"interfaceOperations"> =>
@@ -237,6 +242,7 @@ const isInterfaceOperations = (
   ] !== undefined;
 
 const isPreviousInterfaceOperations = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"previousInterfaceOperations"> =>
@@ -248,6 +254,7 @@ const isPreviousInterfaceOperations = (
   ] !== undefined;
 
 const isInterfaceSchemas = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"interfaceSchemas"> =>
@@ -259,6 +266,7 @@ const isInterfaceSchemas = (
   ] !== undefined;
 
 const isPreviousInterfaceSchemas = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"previousInterfaceSchemas"> =>
@@ -270,6 +278,7 @@ const isPreviousInterfaceSchemas = (
   ] !== undefined;
 
 const isRealizeCollectors = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"realizeCollectors"> =>
@@ -281,6 +290,7 @@ const isRealizeCollectors = (
   ] !== undefined;
 
 const isRealizeTransformers = (
+  // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
   input: unknown,
 ): preliminary is AutoBePreliminaryController<"realizeTransformers"> =>

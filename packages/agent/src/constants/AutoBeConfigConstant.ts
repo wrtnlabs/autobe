@@ -24,49 +24,98 @@ export const enum AutoBeConfigConstant {
    * diagnostics) back to the AI for correction. This iterative feedback loop
    * transforms hallucinations into learning opportunities.
    *
-   * Value of 4 balances correction success rate against latency: most
-   * validation errors resolve within 2-3 attempts, while permanent issues
-   * (fundamentally misunderstood requirements) fail fast rather than wasting
-   * resources.
+   * Value of 5 provides sufficient attempts for complex validation scenarios
+   * while keeping latency reasonable. Most validation errors resolve within 2-3
+   * attempts, but complex schema corrections may need additional cycles.
+   * Permanent issues (fundamentally misunderstood requirements) still fail fast
+   * rather than wasting resources.
    */
-  RETRY = 5,
+  VALIDATION_RETRY = 8,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.
    *
    * Used by compiler/diagnostic passes that iteratively refine generated code
    * or AST based on compiler feedback (syntax errors, type errors, or invalid
-   * transformations). Unlike the general `RETRY` constant, this is scoped to
-   * compilation and code-fix phases where each iteration tends to be more
-   * expensive and has diminishing returns after a few attempts.
+   * transformations). Unlike the general `VALIDATION_RETRY` constant, this is
+   * scoped to compilation and code-fix phases where each iteration tends to be
+   * more expensive and has diminishing returns after a few attempts.
    *
-   * Value of 3 keeps compiler correction cycles shorter than general LLM
-   * interaction retries (which default to 5). Most compiler issues are either
-   * resolved within the first couple of passes or indicate a fundamental
-   * mismatch that won't benefit from further attempts. The lower limit reduces
-   * end-to-end latency and avoids long-running compile/fix loops while still
-   * allowing meaningful automatic correction.
+   * Value of 5 provides a reasonable number of correction cycles for general
+   * compiler issues. Most compiler issues are either resolved within the first
+   * couple of passes or indicate a fundamental mismatch that won't benefit from
+   * further attempts. For database schema corrections specifically, use
+   * `DATABASE_CORRECT_RETRY` which allows more iterations due to the cascading
+   * nature of schema errors.
    */
-  COMPILER_RETRY = 3,
+  COMPILER_RETRY = 4,
+
+  /**
+   * Retry attempts specifically for Prisma schema correction loops.
+   *
+   * Used by `orchestratePrismaCorrect` when iteratively fixing database schema
+   * compilation errors. Prisma schema correction is particularly challenging
+   * because errors often cascade (one fix reveals new errors) and require
+   * multiple passes to fully resolve complex relationship and constraint
+   * issues.
+   *
+   * Value of 20 is intentionally higher than `COMPILER_RETRY` because database
+   * schema corrections tend to be incremental - each iteration typically fixes
+   * one or two issues rather than resolving everything at once. The higher
+   * limit accommodates complex schemas with many inter-model relationships
+   * while still providing a reasonable bound to prevent infinite correction
+   * loops.
+   */
+  DATABASE_CORRECT_RETRY = 20,
 
   /**
    * Retry attempts for LLM function-calling execution flows.
    *
    * Applied when orchestrators invoke tools/functions through LLM
-   * function-calling interfaces (e.g., to resolve missing parameters,
-   * invalid argument shapes, or misaligned tool selections). Unlike the
-   * general `RETRY` constant (which also covers raw completion failures),
-   * this value is scoped to the tighter loop around function-call planning
-   * and argument repair.
+   * function-calling interfaces (e.g., to resolve missing parameters, invalid
+   * argument shapes, or misaligned tool selections). Unlike the general `RETRY`
+   * constant (which also covers raw completion failures), this value is scoped
+   * to the tighter loop around function-call planning and argument repair.
    *
-   * Value of 3 reflects the higher cost of each function-calling cycle
-   * (tool selection + argument generation + execution) compared to simple
+   * Value of 3 reflects the higher cost of each function-calling cycle (tool
+   * selection + argument generation + execution) compared to simple
    * completions. Empirically, most function-call issues are corrected within
    * 1–2 iterations once validation feedback is provided; additional attempts
    * beyond 3 rarely improve success rates but notably increase latency and
    * resource usage.
    */
   FUNCTION_CALLING_RETRY = 3,
+
+  /**
+   * Retry attempts for the Analyze Phase.
+   *
+   * Used when the Analyze Phase fails to write the module, unit, or section.
+   * Value of 3 keeps the Analyze Phase shorter than general LLM interaction
+   * retries (which default to 5). Most Analyze Phase issues are either resolved
+   * within the first couple of passes or indicate a fundamental mismatch that
+   * won't benefit from further attempts. The lower limit reduces end-to-end
+   * latency and avoids long-running write/review loops while still allowing
+   * meaningful automatic correction.
+   */
+  ANALYZE_RETRY = 3,
+
+  /**
+   * Maximum consecutive error threshold for fast-fail during the Analyze
+   * Phase's hierarchical file processing.
+   *
+   * Used by `processFileHierarchical` in `orchestrateAnalyze` to detect
+   * persistent failure patterns within a single file's Module → Unit → Section
+   * pipeline. When errors occur consecutively without any successful sub-task
+   * in between, the counter increments. If it reaches this threshold the entire
+   * file processing is aborted immediately, preventing further wasted LLM calls
+   * on a file that is unlikely to recover.
+   *
+   * Value of 5 allows transient failures (rate limits, occasional
+   * hallucinations) to be tolerated while catching truly broken scenarios
+   * (e.g., fundamentally invalid file structure, persistent API outages) before
+   * they consume excessive resources.
+   */
+  ANALYZE_CONSECUTIVE_ERROR = 5,
 
   /**
    * Batch count for parallel operation processing.
@@ -78,6 +127,7 @@ export const enum AutoBeConfigConstant {
    * parallelism but reduce cache hit rates.
    */
   INTERFACE_CAPACITY = 1,
+  API_ERROR_RETRY = 3,
 
   /**
    * Maximum iterations for RAG (Retrieval-Augmented Generation) loops.
@@ -91,14 +141,14 @@ export const enum AutoBeConfigConstant {
   RAG_LIMIT = 10,
 
   /**
-   * Default timeout for long-running operations in milliseconds (30 minutes).
+   * Default timeout for long-running operations in milliseconds (10 minutes).
    *
    * Prevents operations from hanging indefinitely when LLM APIs become
    * unresponsive. Value of 30 minutes accommodates complex generation tasks
    * (large projects with dozens of models/operations) while catching genuinely
    * stuck requests. Override via config for specialized scenarios.
    */
-  TIMEOUT = 30 * 60 * 1000,
+  TIMEOUT = 10 * 60 * 1000,
 
   /**
    * Default concurrency limit for parallel LLM API calls.

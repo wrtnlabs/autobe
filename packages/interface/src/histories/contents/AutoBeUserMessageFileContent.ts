@@ -9,8 +9,7 @@ import { AutoBeUserMessageContentBase } from "./AutoBeUserMessageContentBase";
  *
  * @author Samchon
  */
-export interface AutoBeUserMessageFileContent
-  extends AutoBeUserMessageContentBase<"file"> {
+export interface AutoBeUserMessageFileContent extends AutoBeUserMessageContentBase<"file"> {
   /**
    * File content data.
    *

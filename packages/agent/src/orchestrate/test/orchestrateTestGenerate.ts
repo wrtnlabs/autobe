@@ -24,13 +24,14 @@ export async function orchestrateTestGenerate(
     document: AutoBeOpenApi.IDocument;
     prepares: AutoBeTestPrepareFunction[];
     writeProgress: AutoBeProgressEventBase;
-    correctProgress: AutoBeProgressEventBase;
+    validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeTestGenerateFunction[]> {
   const compile = async (procedure: IAutoBeTestGenerateProcedure) =>
     AutoBeTestGenerateProgrammer.compile({
       compiler: await ctx.compiler(),
       step: ctx.state().analyze?.step ?? 0,
+      progress: props.validateProgress,
       procedure,
     });
   const replaceImportStatements = async (
@@ -51,6 +52,8 @@ export async function orchestrateTestGenerate(
       prepares: props.prepares,
       progress: props.writeProgress,
     });
+  props.validateProgress.total += procedures.length;
+
   procedures = await orchestrateTestCorrectCasting(ctx, {
     programmer: {
       compile,
@@ -58,17 +61,8 @@ export async function orchestrateTestGenerate(
       asynchronous: true,
     },
     procedures,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
   });
-  // procedures = await orchestrateTestCorrectRequest(ctx, {
-  //   programmer: {
-  //     compile,
-  //     replaceImportStatements,
-  //   },
-  //   instruction: props.instruction,
-  //   progress: props.correctProgress,
-  //   procedures,
-  // });
   procedures = await orchestrateTestCorrectOverall(ctx, {
     programmer: {
       compile,
@@ -76,7 +70,7 @@ export async function orchestrateTestGenerate(
       controller: (next) => createCorrectOverallController(next),
     },
     instruction: props.instruction,
-    progress: props.correctProgress,
+    progress: props.validateProgress,
     procedures,
     discard: false,
   });

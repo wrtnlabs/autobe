@@ -90,8 +90,8 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
     /**
      * Field-by-field mapping verification for complete coverage.
      *
-     * Review EVERY field and relation from the database schema to ensure correct
-     * handling. This systematic approach catches errors beyond what the
+     * Review EVERY field and relation from the database schema to ensure
+     * correct handling. This systematic approach catches errors beyond what the
      * compiler reports and prevents new issues.
      *
      * For each database schema member, document:

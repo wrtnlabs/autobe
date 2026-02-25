@@ -33,7 +33,7 @@ export const validate_test_generate = async (props: {
     completed: 0,
     total: prepares.length,
   };
-  const correctProgress: AutoBeProgressEventBase = {
+  const validateProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
@@ -44,7 +44,7 @@ export const validate_test_generate = async (props: {
       document,
       prepares,
       writeProgress,
-      correctProgress,
+      validateProgress,
     },
   );
 

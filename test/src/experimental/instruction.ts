@@ -143,7 +143,7 @@ const main = async (): Promise<void> => {
     if (execute !== undefined)
       console.log(
         execute.operation.name,
-        (execute.arguments as any).instruction?.length,
+        (execute.arguments.instruction as Array<unknown> | undefined)?.length,
         `(${new Date().getTime() - start.getTime()} ms)`,
       );
   }

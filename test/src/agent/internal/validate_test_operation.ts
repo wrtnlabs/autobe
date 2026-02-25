@@ -63,7 +63,7 @@ export const validate_test_operation = async (props: {
     completed: 0,
     total: scenarios.length,
   };
-  const correctProgress: AutoBeProgressEventBase = {
+  const validateProgress: AutoBeProgressEventBase = {
     completed: 0,
     total: 0,
   };
@@ -76,7 +76,7 @@ export const validate_test_operation = async (props: {
       prepares,
       generates,
       writeProgress,
-      correctProgress,
+      validateProgress,
     });
 
   const everyFunctions: AutoBeTestFunction[] = [

@@ -7,8 +7,8 @@ import { AutoBeTestPrepareMapping } from "@autobe/interface";
  * Guides the AI agent through analyzing compilation errors and generating
  * corrected prepare functions that generate realistic, constraint-compliant
  * test data for E2E testing. The correction process includes property mappings
- * as a Chain-of-Thought mechanism to ensure complete DTO coverage during
- * error resolution.
+ * as a Chain-of-Thought mechanism to ensure complete DTO coverage during error
+ * resolution.
  *
  * The correction follows a structured workflow: error analysis → property
  * mappings (CoT mechanism) → draft correction → review and refinement.
@@ -96,21 +96,20 @@ export namespace IAutoBeTestPrepareCorrectOverallApplication {
     /**
      * Step 3: Draft corrected TypeScript prepare function implementation.
      *
-     * AI generates the first corrected version of the prepare function based
-     * on error analysis, property mappings, and correction strategies. This
-     * draft addresses all identified compilation errors while preserving the
-     * original data generation logic and ensuring complete DTO coverage.
-     * The code is compilation-error-free and follows all established
-     * conventions.
+     * AI generates the first corrected version of the prepare function based on
+     * error analysis, property mappings, and correction strategies. This draft
+     * addresses all identified compilation errors while preserving the original
+     * data generation logic and ensuring complete DTO coverage. The code is
+     * compilation-error-free and follows all established conventions.
      *
      * The implementation incorporates lessons learned from error analysis and
      * strictly follows the property mappings to produce properly typed,
      * syntactically correct code that maintains the intended prepare function
-     * functionality. All type safety requirements and framework conventions
-     * are followed in this corrected implementation.
+     * functionality. All type safety requirements and framework conventions are
+     * followed in this corrected implementation.
      *
-     * Workflow: Error correction → Property mapping implementation →
-     * TypeScript implementation → Functional preservation
+     * Workflow: Error correction → Property mapping implementation → TypeScript
+     * implementation → Functional preservation
      *
      * DO: Resolve all compilation errors while maintaining original prepare
      * function intent and complete DTO coverage
@@ -145,8 +144,8 @@ export namespace IAutoBeTestPrepareCorrectOverallApplication {
      * AI performs a comprehensive review of the corrected draft implementation,
      * validating that all compilation errors have been resolved and that the
      * code maintains the original functionality with complete DTO coverage.
-     * This review examines both technical correctness and data generation
-     * logic preservation.
+     * This review examines both technical correctness and data generation logic
+     * preservation.
      *
      * The review process includes verification of TypeScript compilation
      * compatibility, property mapping completeness, constraint compliance,
@@ -156,10 +155,10 @@ export namespace IAutoBeTestPrepareCorrectOverallApplication {
      *
      * MUST systematically verify using these checklists:
      *
-     * 1. Schema Fidelity - Cross-check EVERY property name against the DTO
-     *    schema, verify all properties are generated, no fabricated properties
-     * 2. Type Safety - DeepPartial<> used (not Partial<>), proper typing,
-     *    correct nested handling
+     * 1. Schema Fidelity - Cross-check EVERY property name against the DTO schema,
+     *    verify all properties are generated, no fabricated properties
+     * 2. Type Safety - DeepPartial<> used (not Partial<>), proper typing, correct
+     *    nested handling
      * 3. Constraint Compliance - String lengths, number bounds, formats, enums
      * 4. Compilation Fix - All original compilation errors resolved
      *
@@ -171,18 +170,17 @@ export namespace IAutoBeTestPrepareCorrectOverallApplication {
     /**
      * Step 5: Final production-ready corrected prepare function code.
      *
-     * AI produces the final, polished version of the corrected prepare
-     * function code incorporating all review feedback and validation results.
-     * This code represents the completed error correction, guaranteed to
-     * compile successfully while preserving all original data generation
-     * functionality and complete DTO coverage. When the draft correction
-     * already perfectly resolves all issues with no problems found during
-     * review, this value can be null, indicating no further refinement was
-     * necessary.
+     * AI produces the final, polished version of the corrected prepare function
+     * code incorporating all review feedback and validation results. This code
+     * represents the completed error correction, guaranteed to compile
+     * successfully while preserving all original data generation functionality
+     * and complete DTO coverage. When the draft correction already perfectly
+     * resolves all issues with no problems found during review, this value can
+     * be null, indicating no further refinement was necessary.
      *
      * The final implementation resolves all compilation issues, maintains
-     * strict type safety, follows all established conventions, covers all
-     * DTO properties, and delivers a production-ready prepare function that
+     * strict type safety, follows all established conventions, covers all DTO
+     * properties, and delivers a production-ready prepare function that
      * accurately generates realistic test data. A null value signifies the
      * draft correction was already optimal and requires no modifications.
      *

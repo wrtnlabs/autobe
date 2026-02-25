@@ -51,9 +51,9 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getPreviousAnalysisFiles) or final scenario composition (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * (getPreviousAnalysisFiles) or final scenario composition (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
   }
@@ -98,9 +98,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
 
     /**
      * Language for document content. When specified by the user, this takes
-     * precedence over the locale setting for determining document language.
+     * precedence over the locale setting for determining document language. Set
+     * to `null` if not specified.
      */
-    language?: string;
+    language: string | null;
 
     /**
      * If the user has requested a specific number of pages, enter that number.

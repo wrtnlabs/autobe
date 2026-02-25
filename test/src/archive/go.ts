@@ -1,4 +1,5 @@
 import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
 import { AutoBeExampleBenchmark } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { AutoBePhase } from "@autobe/interface";
@@ -82,7 +83,7 @@ const main = async (): Promise<void> => {
               timeout:
                 TestGlobal.env.TIMEOUT && TestGlobal.env.TIMEOUT !== "NULL"
                   ? Number(TestGlobal.env.TIMEOUT)
-                  : null,
+                  : AutoBeConfigConstant.TIMEOUT,
             },
             compiler: (listener) => new AutoBeCompiler(listener),
             histories: next.histories,
@@ -107,7 +108,7 @@ const main = async (): Promise<void> => {
 };
 
 function setupExitHandlers() {
-  const logExit = (reason: string, details: any = {}) => {
+  const logExit = (reason: string, details: unknown = {}) => {
     const timestamp = new Date().toISOString();
     const stackTrace = new Error().stack;
 

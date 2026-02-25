@@ -23,8 +23,8 @@ export interface IAutoBeTokenUsageJson {
    * Provides a unified view of token consumption by combining data from all
    * processing phases in the vibe coding pipeline. This computed property
    * dynamically calculates the sum of all agent components (facade, analyze,
-   * database, interface, test, realize) whenever accessed, ensuring the aggregate
-   * always reflects the current state of token usage.
+   * database, interface, test, realize) whenever accessed, ensuring the
+   * aggregate always reflects the current state of token usage.
    *
    * The aggregation performs element-wise addition across all token metrics
    * (facade, analyze, database, interface, test, realize), including total
