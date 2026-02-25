@@ -35,15 +35,26 @@ export const executeCachedBatch = async <T>(
     (task, index) => new Pair(task, index),
   );
   const results: Pair<T, number>[] = [];
-  await Promise.all(
+  let aborted: boolean = false;
+  let firstError: unknown = null;
+  await Promise.allSettled(
     new Array(Math.min(semaphore, queue.length)).fill(0).map(async () => {
-      while (queue.length !== 0) {
+      while (queue.length !== 0 && !aborted) {
         const item: Pair<Task<T>, number> = queue.splice(0, 1)[0]!;
-        const result: T = await item.first(promptCacheKey!);
-        results.push(new Pair(result, item.second));
+        try {
+          const result: T = await item.first(promptCacheKey!);
+          if (!aborted) results.push(new Pair(result, item.second));
+        } catch (error) {
+          if (!aborted) {
+            aborted = true;
+            queue.length = 0;
+            firstError = error;
+          }
+        }
       }
     }),
   );
+  if (firstError !== null) throw firstError;
   return results.sort((x, y) => x.second - y.second).map((p) => p.first);
 };
 
