@@ -2,7 +2,7 @@
  * Shared low-level repair utilities used by multiple analyze-phase orchestrators.
  *
  * These helpers are intentionally free of orchestrator-specific knowledge:
- * they only deal with raw JSON/string normalisation.
+ * they only deal with raw JSON/string normalization.
  */
 
 /**

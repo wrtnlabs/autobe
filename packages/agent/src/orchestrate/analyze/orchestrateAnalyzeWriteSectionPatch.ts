@@ -389,12 +389,12 @@ const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
 
   if (isRecord(root.request) === false) return root;
 
-  // Gap 2 + 3 + 4 + 6: normalise the request record
+  // Gap 2 + 3 + 4 + 6: normalize the request record
   let request = normalizeWriteSectionRequest(
     repairRequestType(root.request as Record<string, unknown>),
   );
 
-  // Gap 5: normalise individual section items
+  // Gap 5: normalize individual section items
   if (Array.isArray(request.sectionSections)) {
     request = {
       ...request,
