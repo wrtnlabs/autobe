@@ -73,7 +73,7 @@ export const transformAnalyzeWriteSectionHistory = (
         ## AUTHORITATIVE Document List (TOC MUST use ONLY these filenames)
 
         ${props.scenario.files
-          .map((f, i) => `${i + 1}. ${f.filename} — ${f.documentType}`)
+          .map((f, i) => `${i + 1}. [${f.filename}](./${f.filename}) — ${f.documentType}`)
           .join("\n")}
 
         ## TOC Summary-Only Rules (CRITICAL)
@@ -82,6 +82,7 @@ export const transformAnalyzeWriteSectionHistory = (
         - DO NOT use SHALL/SHOULD/MUST or IF/WHEN/THEN patterns
         - Use short summaries and simple tables only
         - Reference details by filename instead of restating them
+        - EVERY filename reference MUST be a markdown hyperlink: [filename](./filename)
         `
             : ""
         }

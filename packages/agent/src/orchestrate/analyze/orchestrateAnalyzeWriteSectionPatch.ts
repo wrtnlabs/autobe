@@ -18,6 +18,7 @@ import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { detectTechLockin } from "./utils/buildHardValidators";
 import { detectInventedEntities } from "./utils/detectInventedEntities";
+import { isRecord, parseLooseStructuredString } from "./utils/repairUtils";
 import { transformAnalyzeWriteSectionPatchHistory } from "./histories/transformAnalyzeWriteSectionPatchHistory";
 import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 
@@ -193,71 +194,194 @@ function createController(props: {
 
 const SOURCE = "analyzeWriteSection" satisfies AutoBeEventSource;
 
-const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
-  if (isRecord(input) === false) return input;
-  if (isRecord(input.request) === false) return input;
+// ─────────────────────────────────────────────────────────────────────────────
+// REPAIR CHAIN
+// Each helper is pure: it returns the input unchanged when it has nothing to do.
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const request = { ...input.request } as Record<string, unknown>;
-  let changed = false;
+/**
+ * Gap 1 — Flattened payload: LLM emits top-level fields instead of
+ * `{ request: { type, moduleIndex, unitIndex, sectionSections } }`.
+ */
+const repairFlattenedPayload = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  if (isRecord(input.request)) return input;
 
-  if (request.type === "") {
-    request.type = "complete";
-    changed = true;
+  const hasSectionSections =
+    Array.isArray(input.sectionSections) || Array.isArray(input.sections);
+  const completeLike =
+    hasSectionSections &&
+    (input.type === "complete" ||
+      input.type === "" ||
+      input.type === undefined ||
+      input.type === null);
+
+  if (completeLike) {
+    const {
+      thinking,
+      type,
+      moduleIndex,
+      unitIndex,
+      sectionSections,
+      sections,
+      ...rest
+    } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: {
+        type: "complete",
+        moduleIndex,
+        unitIndex,
+        sectionSections: sectionSections ?? sections,
+      },
+    };
   }
+
+  const previousLike =
+    typeof input.type === "string" &&
+    input.type === "getPreviousAnalysisFiles" &&
+    input.fileNames !== undefined;
+  if (previousLike) {
+    const { thinking, type, fileNames, ...rest } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: { type, fileNames },
+    };
+  }
+
+  return input;
+};
+
+/**
+ * Gap 2 — Heuristic type detection: fills in missing/wrong `type` field.
+ */
+const repairRequestType = (
+  request: Record<string, unknown>,
+): Record<string, unknown> => {
+  const t = request.type;
+  if (t === "complete" || t === "getPreviousAnalysisFiles") return request;
+
   if (
-    request.sectionSections === undefined &&
+    Array.isArray(request.sectionSections) ||
     Array.isArray(request.sections)
   ) {
-    request.sectionSections = request.sections;
-    changed = true;
-  }
-  if (typeof request.moduleIndex === "string" && /^\d+$/.test(request.moduleIndex)) {
-    request.moduleIndex = Number(request.moduleIndex);
-    changed = true;
-  }
-  if (typeof request.unitIndex === "string" && /^\d+$/.test(request.unitIndex)) {
-    request.unitIndex = Number(request.unitIndex);
-    changed = true;
+    return { ...request, type: "complete" };
   }
 
-  if (Array.isArray(request.sectionSections)) {
-    const sections = request.sectionSections;
-    const repaired = sections.map((section) => {
-      if (isRecord(section) === false) return section;
-      let localChanged = false;
-      const next = { ...section } as Record<string, unknown>;
+  if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
+    return { ...request, type: "getPreviousAnalysisFiles" };
+  }
+
+  if (typeof t === "string" || t === null || t === undefined) {
+    return { ...request, type: "complete" };
+  }
+
+  return request;
+};
+
+/**
+ * Gaps 3, 4, 6 + existing string/alias repairs.
+ */
+const normalizeWriteSectionRequest = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  const output: Record<string, unknown> = { ...input };
+
+  if (typeof output.moduleIndex === "string") {
+    const n = Number(output.moduleIndex);
+    if (Number.isFinite(n)) output.moduleIndex = n;
+  }
+  if (typeof output.unitIndex === "string") {
+    const n = Number(output.unitIndex);
+    if (Number.isFinite(n)) output.unitIndex = n;
+  }
+
+  if (output.sectionSections === undefined && Array.isArray(output.sections)) {
+    output.sectionSections = output.sections;
+  }
+
+  // Gap 6: null → undefined
+  if (output.sectionSections === null) {
+    output.sectionSections = undefined;
+  }
+
+  // Gap 3 + 4: JSON-string sectionSections
+  if (typeof output.sectionSections === "string") {
+    const parsed = parseLooseStructuredString(output.sectionSections);
+    if (Array.isArray(parsed)) output.sectionSections = parsed;
+  }
+
+  return output;
+};
+
+/**
+ * Gap 5 + existing per-item repairs (trim, body→content alias).
+ */
+const normalizeSectionItems = (
+  sections: unknown[],
+): unknown[] => {
+  return sections.map((item): unknown => {
+    if (isRecord(item)) {
+      const next = { ...item };
+      let changed = false;
+
       if (typeof next.title === "string") {
         const trimmed = next.title.trim();
         if (trimmed !== next.title) {
           next.title = trimmed;
-          localChanged = true;
+          changed = true;
         }
       }
       if (typeof next.content === "string") {
         const trimmed = next.content.trim();
         if (trimmed !== next.content) {
           next.content = trimmed;
-          localChanged = true;
+          changed = true;
         }
       }
       if (next.content === undefined && typeof next.body === "string") {
-        next.content = next.body.trim();
-        localChanged = true;
+        next.content = (next.body as string).trim();
+        delete next.body;
+        changed = true;
       }
-      return localChanged ? next : section;
-    });
-    if (repaired.some((v, i) => v !== sections[i])) {
-      request.sectionSections = repaired;
-      changed = true;
+      return changed ? next : item;
     }
-  }
 
-  if (!changed) return input;
-  return {
-    ...input,
-    request,
-  };
+    // Gap 5: plain string → { title: "", content: string }
+    if (typeof item === "string") {
+      return { title: "", content: item.trim() };
+    }
+
+    return item;
+  });
 };
 
-const isRecord = (input: unknown): input is Record<string, unknown> =>
-  typeof input === "object" && input !== null && Array.isArray(input) === false;
+/**
+ * Master repair entry-point called from `validate()` before typia.validate.
+ */
+const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
+  if (isRecord(input) === false) return input;
+
+  // Gap 1: reconstruct { request: {...} } wrapper if missing
+  const root = repairFlattenedPayload(input);
+
+  if (isRecord(root.request) === false) return root;
+
+  // Gap 2 + 3 + 4 + 6: normalise the request record
+  let request = normalizeWriteSectionRequest(
+    repairRequestType(root.request as Record<string, unknown>),
+  );
+
+  // Gap 5: normalise individual section items
+  if (Array.isArray(request.sectionSections)) {
+    request = {
+      ...request,
+      sectionSections: normalizeSectionItems(request.sectionSections),
+    };
+  }
+
+  return { ...root, request };
+};

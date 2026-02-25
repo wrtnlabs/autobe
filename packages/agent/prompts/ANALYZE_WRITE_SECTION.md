@@ -77,6 +77,7 @@ Do NOT create entities describing the requirements process:
 - **Plain, concise content** using tables and bullet lists
 - Each section: **50-100 words maximum**
 - **Use ONLY the provided document list** — do NOT invent filenames or titles
+- **Hyperlink ALL file references** — every filename MUST use `[filename](./filename)` syntax
 - **Summary-only** — do NOT include numbers, constraints, limits, error codes, or validation rules
 - **No requirement verbs** — avoid SHALL/SHOULD/MUST and IF/WHEN/THEN patterns
 
@@ -90,11 +91,11 @@ Instead of EARS requirements, use:
 ### Example TOC Section — Document Listing:
 
 ```
-| # | Filename | Description |
+| # | Document | Description |
 |---|----------|-------------|
-| 01 | 01-service-overview.md | Service vision, goals, and market context |
-| 02 | 02-user-actors.md | User actor definitions, authentication, permissions |
-| 03 | 03-customer-requirements.md | Customer-facing features and workflows |
+| 01 | [01-service-overview.md](./01-service-overview.md) | Service vision, goals, and market context |
+| 02 | [02-user-actors.md](./02-user-actors.md) | User actor definitions, authentication, permissions |
+| 03 | [03-customer-requirements.md](./03-customer-requirements.md) | Customer-facing features and workflows |
 ```
 
 ### Example TOC Section — Assumptions:
@@ -665,6 +666,8 @@ permissions, and constraints from natural language — leading to inconsistency 
 ```
 
 ## Output Format
+
+**CRITICAL**: The `request` field is a REQUIRED wrapper object. Never place `type`, `moduleIndex`, `unitIndex`, or `sectionSections` at the top level. They MUST be nested inside `request: { ... }`.
 
 **Complete Section Section Generation**
 ```typescript

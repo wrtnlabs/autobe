@@ -415,7 +415,7 @@ Instead, use this lightweight structure with **4 module sections**:
 
 1. **Document Index and Project Summary**
    - purpose: "Provide a navigation index of all analysis documents with brief descriptions, and a concise project summary."
-   - content: List all analysis documents as a table (filename + one-line description). Include 2-3 sentence project overview.
+   - content: List all analysis documents as a table with hyperlinked filenames using `[filename](./filename)` syntax and one-line descriptions. Include 2-3 sentence project overview.
 
 2. **Interpretation, Assumptions, and Scope**
    - purpose: "Document the interpretation of user input, explicit assumptions (minimum 8), and v1 scope boundaries."
