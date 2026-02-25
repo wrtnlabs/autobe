@@ -182,19 +182,19 @@ export const validateSectionSectionContent = (
 };
 
 /**
- * Validate scenario file names for correct format. Expected format: 00_toc.md,
- * 01_xxx.md, 02_xxx.md, ...
+ * Validate scenario file names for correct format. Expected format: 00-toc.md,
+ * 01-xxx.md, 02-xxx.md, ...
  */
 export const validateScenarioFileNames = (
   files: Array<{ filename: string }>,
 ): { valid: boolean; errors: string[] } => {
   const allErrors: string[] = [];
-  const filenamePattern = /^\d{2}_[a-z][a-z0-9_]*\.md$/;
+  const filenamePattern = /^\d{2}-[a-z][a-z0-9-]*\.md$/;
 
-  // Check first file is 00_toc.md
-  if (files.length > 0 && files[0].filename !== "00_toc.md") {
+  // Check first file is 00-toc.md
+  if (files.length > 0 && files[0].filename !== "00-toc.md") {
     allErrors.push(
-      `First file must be "00_toc.md", got "${files[0].filename}"`,
+      `First file must be "00-toc.md", got "${files[0].filename}"`,
     );
   }
 
@@ -202,7 +202,7 @@ export const validateScenarioFileNames = (
   files.forEach((file, index) => {
     if (!filenamePattern.test(file.filename)) {
       allErrors.push(
-        `File ${index}: Invalid filename format "${file.filename}". Expected format: XX_name.md`,
+        `File ${index}: Invalid filename format "${file.filename}". Expected format: XX-name.md`,
       );
     }
   });
@@ -210,9 +210,9 @@ export const validateScenarioFileNames = (
   // Check sequential numbering
   files.forEach((file, index) => {
     const expectedPrefix = index.toString().padStart(2, "0");
-    if (!file.filename.startsWith(expectedPrefix + "_")) {
+    if (!file.filename.startsWith(expectedPrefix + "-")) {
       allErrors.push(
-        `File ${index}: Expected prefix "${expectedPrefix}_", got "${file.filename}"`,
+        `File ${index}: Expected prefix "${expectedPrefix}-", got "${file.filename}"`,
       );
     }
   });

@@ -78,6 +78,7 @@ function createController(props: {
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     input = repairMissingRequestType(input);
+    input = normalizeScenarioFileNames(input);
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
@@ -281,3 +282,49 @@ const parseLooseStructuredString = (input: string): unknown => {
 
 const isRecord = (input: unknown): input is Record<string, unknown> =>
   typeof input === "object" && input !== null && Array.isArray(input) === false;
+
+const normalizeScenarioFileNames = (input: unknown): unknown => {
+  if (isRecord(input) === false) return input;
+  if (isRecord(input.request) === false) return input;
+  const request = input.request;
+  if (request.type !== "complete") return input;
+  if (Array.isArray(request.files) === false) return input;
+
+  let changed = false;
+  const files = request.files.map((file, index) => {
+    if (isRecord(file) === false || typeof file.filename !== "string") return file;
+    const filename = normalizeScenarioFileName(file.filename, index);
+    if (filename === file.filename) return file;
+    changed = true;
+    return {
+      ...file,
+      filename,
+    };
+  });
+  if (!changed) return input;
+  return {
+    ...input,
+    request: {
+      ...request,
+      files,
+    },
+  };
+};
+
+const normalizeScenarioFileName = (filename: string, index: number): string => {
+  const trimmed = filename.trim();
+
+  // Common LLM variants for TOC
+  if (/^0*0[-_ ]?toc\.md$/i.test(trimmed)) return "00-toc.md";
+
+  const match = /^(\d{1,2})[-_ ]?(.*)\.md$/i.exec(trimmed);
+  if (!match) return trimmed;
+
+  const rest = (match[2] ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-+/g, "-");
+  const normalizedPrefix = index.toString().padStart(2, "0");
+  return `${normalizedPrefix}-${rest || "untitled"}.md`;
+};
