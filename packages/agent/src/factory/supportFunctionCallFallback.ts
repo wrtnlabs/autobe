@@ -51,9 +51,13 @@ export const supportFunctionCallFallback = (
         continue;
       }
 
-      // Only patch non-streaming responses that had tools defined
+      // Empty response: model returned nothing (no content, no tool_calls)
       if (!body.stream && body.tools?.length) {
-        patchCompletionIfNeeded(result as ICompletion, body.tools);
+        const comp = result as ICompletion;
+        if (isEmptyCompletion(comp)) {
+          continue;
+        }
+        patchCompletionIfNeeded(comp, body.tools);
       }
 
       return result;
@@ -109,6 +113,14 @@ interface IToolCall {
   id: string;
   type: "function";
   function: { name: string; arguments: string };
+}
+
+function isEmptyCompletion(completion: ICompletion): boolean {
+  const choices = completion.choices ?? [];
+  if (choices.length === 0) return true;
+  return choices.every(
+    (c) => !c.message.content?.trim() && !c.message.tool_calls?.length,
+  );
 }
 
 /**
