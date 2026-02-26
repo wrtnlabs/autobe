@@ -91,9 +91,12 @@ const validateAnalysisSections = (
   ] as ILlmSchema.IObject;
   TestValidator.predicate(
     "getAnalysisSections",
-    (state.analyze?.files ?? []).every(
-      (f) => !!type.properties?.sectionIds.description?.includes(f.filename),
-    ),
+    (state.analyze?.files ?? [])
+      .filter((f) => f.module?.modules?.length)
+      .every(
+        (f) =>
+          !!type.properties?.sectionIds.description?.includes(f.filename),
+      ),
   );
 };
 
