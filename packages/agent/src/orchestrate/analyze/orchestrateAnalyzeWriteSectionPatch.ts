@@ -366,6 +366,11 @@ const normalizeSectionItems = (
         delete next.body;
         changed = true;
       }
+      if (next.content === undefined && typeof next.description === "string") {
+        next.content = (next.description as string).trim();
+        delete next.description;
+        changed = true;
+      }
       return changed ? next : item;
     }
 

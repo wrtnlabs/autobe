@@ -17,6 +17,7 @@ import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteUnitPatchHistory } from "./histories/transformAnalyzeWriteUnitPatchHistory";
 import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
+import { repairAnalyzeWriteUnitInput } from "./orchestrateAnalyzeWriteUnit";
 
 export const orchestrateAnalyzeWriteUnitPatch = async (
   ctx: AutoBeContext,
@@ -90,6 +91,7 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> => {
+    input = repairAnalyzeWriteUnitInput(input);
     const result: IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> =
       typia.validate<IAutoBeAnalyzeWriteUnitApplication.IProps>(input);
     if (result.success === false) return result;
