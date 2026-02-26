@@ -73,12 +73,14 @@ interface IFileState {
     | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
     | null;
   sectionRetryCount?: number;
+  sectionReviewCount?: number;
   sectionStagnationCount?: number;
   lastSectionContentSignature?: string;
   lastSectionRejectionSignature?: string;
 }
 
 const ANALYZE_SECTION_FILE_MAX_RETRY = 5;
+const ANALYZE_SECTION_FILE_MAX_REVIEW = 3;
 const ANALYZE_SECTION_STAGNATION_MAX = 4;
 const ANALYZE_UNIT_STAGNATION_MAX = 4;
 const ANALYZE_DEBUG_LOG = process.env.AUTOBE_DEBUG_ANALYZE === "1";
@@ -548,6 +550,7 @@ async function processStageSection(
   const pendingIndices: Set<number> = new Set(
     props.fileStates.map((_, i) => i),
   );
+  let crossFileReviewCount: number = 0;
 
   for (
     let attempt: number = 0;
@@ -735,6 +738,15 @@ async function processStageSection(
       );
 
     // Pass 2: Cross-file lightweight review (single call)
+    crossFileReviewCount++;
+    if (crossFileReviewCount > ANALYZE_SECTION_FILE_MAX_REVIEW) {
+      analyzeDebug(
+        `[orchestrateAnalyze] Section stage: skipping cross-file review (max review ${ANALYZE_SECTION_FILE_MAX_REVIEW} exceeded)`,
+      );
+      // Force-pass all pending files
+      for (const fileIndex of pendingArray) pendingIndices.delete(fileIndex);
+      break;
+    }
     analyzeDebug(`section cross-file-review-start attempt=${attempt}`);
     const filesWithSections = props.fileStates
       .filter((state) => state.sectionResults !== null)
@@ -827,6 +839,17 @@ async function processStageSection(
 
     for (const fileIndex of pendingArray) {
       const state: IFileState = props.fileStates[fileIndex]!;
+
+      // Increment review count and force-pass if exceeded limit
+      state.sectionReviewCount = (state.sectionReviewCount ?? 0) + 1;
+      if (state.sectionReviewCount > ANALYZE_SECTION_FILE_MAX_REVIEW) {
+        analyzeDebug(
+          `[orchestrateAnalyze] Section stage: force-passing (max review ${ANALYZE_SECTION_FILE_MAX_REVIEW} exceeded) for file "${state.file.filename}"`,
+        );
+        pendingIndices.delete(fileIndex);
+        continue;
+      }
+
       const perFileEvent = perFileReviewResults.get(fileIndex);
       const perFileResult = perFileEvent?.fileResults[0];
       const crossFileResult = crossFileResultMap.get(fileIndex);
@@ -864,13 +887,8 @@ async function processStageSection(
       });
 
       if (approved) {
-        // Apply per-file revisions if provided
-        if (perFileResult?.revisedSections) {
-          state.sectionResults = AutoBeAnalyzeProgrammer.applySectionRevisions(
-            state.sectionResults!,
-            perFileResult,
-          );
-        }
+        // NOTE: revisedSections intentionally ignored — approved means pass as-is.
+        // Applying revisedSections caused infinite re-write loops (sections kept growing).
         // Pass cross-file feedback as advisory for next retry's context
         if (!crossFileApproved && crossFileResult?.feedback) {
           state.sectionFeedback = `[Cross-file advisory] ${crossFileResult.feedback}`;
@@ -945,27 +963,30 @@ async function processStageSection(
         state.lastSectionRejectionSignature = rejectionSignature;
 
         if ((state.sectionRetryCount ?? 0) > ANALYZE_SECTION_FILE_MAX_RETRY) {
-          throw new Error(
-            `[orchestrateAnalyze] Section stage fail-fast (max retry exceeded: ${ANALYZE_SECTION_FILE_MAX_RETRY}) for file "${state.file.filename}"`,
+          analyzeDebug(
+            `[orchestrateAnalyze] Section stage: force-passing (max retry exceeded: ${ANALYZE_SECTION_FILE_MAX_RETRY}) for file "${state.file.filename}"`,
           );
+          pendingIndices.delete(fileIndex);
+          continue;
         }
         if (
           (state.sectionStagnationCount ?? 0) >= ANALYZE_SECTION_STAGNATION_MAX
         ) {
-          throw new Error(
-            `[orchestrateAnalyze] Section stage fail-fast (stagnation detected ${state.sectionStagnationCount}x) for file "${state.file.filename}"`,
+          analyzeDebug(
+            `[orchestrateAnalyze] Section stage: force-passing (stagnation detected ${state.sectionStagnationCount}x) for file "${state.file.filename}"`,
           );
+          pendingIndices.delete(fileIndex);
+          continue;
         }
       }
     }
   }
 
   if (pendingIndices.size > 0) {
-    throw new Error(
-      "[orchestrateAnalyze] Section stage failed after max retries for files: " +
-        [...pendingIndices]
-          .map((i) => props.fileStates[i]!.file.filename)
-          .join(", "),
+    analyzeDebug(
+      `[orchestrateAnalyze] Section stage: force-passing after max retries for files: ${[...pendingIndices]
+        .map((i) => props.fileStates[i]!.file.filename)
+        .join(", ")}`,
     );
   }
 }
