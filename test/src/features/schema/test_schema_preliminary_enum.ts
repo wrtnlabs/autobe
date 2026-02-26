@@ -94,8 +94,7 @@ const validateAnalysisSections = (
     (state.analyze?.files ?? [])
       .filter((f) => f.module?.modules?.length)
       .every(
-        (f) =>
-          !!type.properties?.sectionIds.description?.includes(f.filename),
+        (f) => !!type.properties?.sectionIds.description?.includes(f.filename),
       ),
   );
 };
