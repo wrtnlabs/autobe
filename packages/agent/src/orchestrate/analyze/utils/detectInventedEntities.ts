@@ -1,12 +1,12 @@
 // ─── Invention Validator: Entity Catalog Enforcement ───
 
 /**
- * Detect entity references in section content that are NOT in the
- * authoritative scenario entity catalog.
+ * Detect entity references in section content that are NOT in the authoritative
+ * scenario entity catalog.
  *
- * Scans [DOWNSTREAM CONTEXT] Bridge Blocks for Entity.attribute references
- * (in "Attributes Specified", "Entities Modified" fields) and compares
- * against the scenario's entity list.
+ * Scans [DOWNSTREAM CONTEXT] Bridge Blocks for Entity.attribute references (in
+ * "Attributes Specified", "Entities Modified" fields) and compares against the
+ * scenario's entity list.
  *
  * Only checks within Bridge Blocks to avoid false positives from prose that
  * mentions entity names in natural language context.
@@ -67,13 +67,12 @@ const DOWNSTREAM_CONTEXT_REGEX =
  * Extract entity names from "**Entities Modified**" field.
  *
  * Matches patterns like:
+ *
  * - `**Entities Modified**: User, Todo`
  * - `**Entities Modified**: User (create), Todo (update)`
  */
 const extractEntitiesModified = (blockBody: string): string[] => {
-  const match = blockBody.match(
-    /\*\*Entities Modified\*\*:\s*(.+)/,
-  );
+  const match = blockBody.match(/\*\*Entities Modified\*\*:\s*(.+)/);
   if (!match) return [];
 
   const value = match[1]!.trim();
@@ -87,9 +86,11 @@ const extractEntitiesModified = (blockBody: string): string[] => {
 };
 
 /**
- * Extract entity names from Entity.attribute patterns in "Attributes Specified".
+ * Extract entity names from Entity.attribute patterns in "Attributes
+ * Specified".
  *
  * Matches patterns like:
+ *
  * - `- User.email: text(5-255), required`
  * - `- Todo.title: (defined in "Section Name")`
  */
@@ -104,10 +105,7 @@ const extractEntityFromAttributes = (blockBody: string): string[] => {
       inAttributes = true;
       continue;
     }
-    if (
-      line.startsWith("**") &&
-      !line.startsWith("**Attributes Specified**")
-    ) {
+    if (line.startsWith("**") && !line.startsWith("**Attributes Specified**")) {
       inAttributes = false;
       continue;
     }
@@ -127,7 +125,7 @@ const extractEntityFromAttributes = (blockBody: string): string[] => {
 };
 
 /**
- * PascalCase pattern — entity names start with uppercase and contain
- * only letters and digits.
+ * PascalCase pattern — entity names start with uppercase and contain only
+ * letters and digits.
  */
 const PASCAL_CASE_PATTERN = /^[A-Z][a-zA-Z0-9]*$/;

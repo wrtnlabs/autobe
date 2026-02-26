@@ -130,10 +130,10 @@ export interface AutoBeAnalyzeScenarioEvent
   /**
    * Core domain entities identified during scenario planning.
    *
-   * These entities serve as the AUTHORITATIVE entity catalog for all
-   * downstream document writers. Module, unit, and section writers MUST
-   * reference only entities defined here to prevent hallucination and
-   * ensure cross-file consistency.
+   * These entities serve as the AUTHORITATIVE entity catalog for all downstream
+   * document writers. Module, unit, and section writers MUST reference only
+   * entities defined here to prevent hallucination and ensure cross-file
+   * consistency.
    *
    * Each entity includes:
    *

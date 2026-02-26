@@ -1,8 +1,8 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -23,11 +23,12 @@ import { IAutoBeAnalyzeSectionReviewApplication } from "./structures/IAutoBeAnal
  * Orchestrate per-file review of section content for a SINGLE file.
  *
  * This function reviews one file's section content in a single LLM call,
- * validating EARS format, value consistency, prohibited content, bridge
- * block completeness, and intra-file deduplication.
+ * validating EARS format, value consistency, prohibited content, bridge block
+ * completeness, and intra-file deduplication.
  *
  * For cross-file consistency checks (terminology alignment, value consistency
- * across files, naming conventions), use orchestrateAnalyzeSectionCrossFileReview.
+ * across files, naming conventions), use
+ * orchestrateAnalyzeSectionCrossFileReview.
  */
 export const orchestrateAnalyzeSectionReview = async (
   ctx: AutoBeContext,

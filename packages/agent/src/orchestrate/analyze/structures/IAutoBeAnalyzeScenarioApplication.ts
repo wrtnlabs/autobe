@@ -118,9 +118,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - `relationships`: How this entity relates to others (e.g., "belongsTo User
      *   via userId")
      *
-     * Include ALL domain entities that will appear in the requirements documents.
-     * Do NOT include meta-entities (InterpretationLog, ScopeDecisionLog, etc.)
-     * that describe the requirements process rather than the production system.
+     * Include ALL domain entities that will appear in the requirements
+     * documents. Do NOT include meta-entities (InterpretationLog,
+     * ScopeDecisionLog, etc.) that describe the requirements process rather
+     * than the production system.
      */
     entities: Array<{
       name: string;

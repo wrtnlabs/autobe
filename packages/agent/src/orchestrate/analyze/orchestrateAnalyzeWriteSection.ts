@@ -16,11 +16,11 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { transformAnalyzeWriteSectionHistory } from "./histories/transformAnalyzeWriteSectionHistory";
+import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 import { detectTechLockin } from "./utils/buildHardValidators";
 import { detectInventedEntities } from "./utils/detectInventedEntities";
 import { isRecord, parseLooseStructuredString } from "./utils/repairUtils";
-import { transformAnalyzeWriteSectionHistory } from "./histories/transformAnalyzeWriteSectionHistory";
-import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
 
 export const orchestrateAnalyzeWriteSection = async (
   ctx: AutoBeContext,
@@ -155,8 +155,7 @@ function createController(props: {
             success: false,
             errors: inventionViolations.map((error) => ({
               path: "$input.request.sectionSections",
-              expected:
-                `Only entities from scenario catalog: ${props.scenarioEntityNames!.join(", ")}`,
+              expected: `Only entities from scenario catalog: ${props.scenarioEntityNames!.join(", ")}`,
               value: error,
             })),
             data: result.data,
@@ -200,8 +199,8 @@ const SOURCE = "analyzeWriteSection" satisfies AutoBeEventSource;
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Gap 1 — Flattened payload: LLM emits top-level fields instead of
- * `{ request: { type, moduleIndex, unitIndex, sectionSections } }`.
+ * Gap 1 — Flattened payload: LLM emits top-level fields instead of `{ request:
+ * { type, moduleIndex, unitIndex, sectionSections } }`.
  */
 const repairFlattenedPayload = (
   input: Record<string, unknown>,
@@ -255,9 +254,7 @@ const repairFlattenedPayload = (
   return input;
 };
 
-/**
- * Gap 2 — Heuristic type detection: fills in missing/wrong `type` field.
- */
+/** Gap 2 — Heuristic type detection: fills in missing/wrong `type` field. */
 const repairRequestType = (
   request: Record<string, unknown>,
 ): Record<string, unknown> => {
@@ -282,9 +279,7 @@ const repairRequestType = (
   return request;
 };
 
-/**
- * Gaps 3, 4, 6 + existing string/alias repairs.
- */
+/** Gaps 3, 4, 6 + existing string/alias repairs. */
 const normalizeWriteSectionRequest = (
   input: Record<string, unknown>,
 ): Record<string, unknown> => {
@@ -317,12 +312,8 @@ const normalizeWriteSectionRequest = (
   return output;
 };
 
-/**
- * Gap 5 + existing per-item repairs (trim, body→content alias).
- */
-const normalizeSectionItems = (
-  sections: unknown[],
-): unknown[] => {
+/** Gap 5 + existing per-item repairs (trim, body→content alias). */
+const normalizeSectionItems = (sections: unknown[]): unknown[] => {
   return sections.map((item): unknown => {
     if (isRecord(item)) {
       const next = { ...item };
@@ -364,9 +355,7 @@ const normalizeSectionItems = (
   });
 };
 
-/**
- * Master repair entry-point called from `validate()` before typia.validate.
- */
+/** Master repair entry-point called from `validate()` before typia.validate. */
 const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
   if (isRecord(input) === false) return input;
 

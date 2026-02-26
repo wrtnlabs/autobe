@@ -82,9 +82,7 @@ export const orchestratePreliminary = async <
         arguments: exec.arguments,
         previous: false,
       });
-    } else if (
-      isPreviousAnalysisSections(props.preliminary, exec.arguments)
-    ) {
+    } else if (isPreviousAnalysisSections(props.preliminary, exec.arguments)) {
       const ps: AutoBePreliminaryController<"previousAnalysisSections"> =
         props.preliminary;
       orchestrateAnalysisSections(ctx, {
@@ -448,9 +446,7 @@ const orchestrateAnalysisSections = (
   ctx.dispatch({
     type: "preliminary",
     id: v7(),
-    function: props.previous
-      ? "previousAnalysisSections"
-      : "analysisSections",
+    function: props.previous ? "previousAnalysisSections" : "analysisSections",
     source: props.source,
     source_id: props.source_id,
     // biome-ignore lint/suspicious/noExplicitAny: conditional type narrowing not available at dispatch site

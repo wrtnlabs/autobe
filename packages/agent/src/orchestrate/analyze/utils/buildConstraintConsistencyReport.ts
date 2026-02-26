@@ -246,8 +246,7 @@ type AttributeOwnership = {
   fullSpecs: AttributeSource[];
 };
 
-const CROSS_REFERENCE_PATTERN =
-  /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
 
 export const buildAttributeOwnershipReport = (props: {
   files: Array<{
@@ -333,9 +332,10 @@ export interface IAttributeDuplicate {
 /**
  * Detect cross-file attribute duplication as structured data.
  *
- * Returns an array of attributes that are fully specified (not cross-referenced)
- * in more than one file. Additionally detects whether the specifications differ
- * across files (value conflict) vs just being duplicated (same value).
+ * Returns an array of attributes that are fully specified (not
+ * cross-referenced) in more than one file. Additionally detects whether the
+ * specifications differ across files (value conflict) vs just being duplicated
+ * (same value).
  */
 export const detectAttributeDuplicates = (props: {
   files: Array<{
@@ -414,9 +414,7 @@ export const buildFileAttributeDuplicateMap = (
       feedback =
         `${dup.key} has conflicting specifications across files: ` +
         dup.values
-          .map(
-            (v) => `"${v.specification}" in [${v.files.join(", ")}]`,
-          )
+          .map((v) => `"${v.specification}" in [${v.files.join(", ")}]`)
           .join(" vs ") +
         `. Align to ONE canonical definition.`;
     } else {
@@ -456,9 +454,9 @@ export interface IEnumConflict {
 /**
  * Extract enum specifications from Bridge Block content.
  *
- * Only extracts entries in `**Attributes Specified**` that contain an
- * explicit `enum(...)` / `enum[...]` / `enum{...}` pattern.
- * Cross-references and "None" entries are skipped.
+ * Only extracts entries in `**Attributes Specified**` that contain an explicit
+ * `enum(...)` / `enum[...]` / `enum{...}` pattern. Cross-references and "None"
+ * entries are skipped.
  */
 const extractEnumSpecs = (
   content: string,
@@ -506,12 +504,14 @@ const extractEnumSpecs = (
 
       const rawEnumValues = enumMatch[1]!;
       // Normalize: lowercase, split by pipe/comma, sort, dedupe
-      const enumSet = [...new Set(
-        rawEnumValues
-          .split(/[|,]/)
-          .map((v) => v.trim().toLowerCase())
-          .filter((v) => v.length > 0),
-      )]
+      const enumSet = [
+        ...new Set(
+          rawEnumValues
+            .split(/[|,]/)
+            .map((v) => v.trim().toLowerCase())
+            .filter((v) => v.length > 0),
+        ),
+      ]
         .sort()
         .join("|");
 
@@ -542,8 +542,8 @@ type EnumEntry = {
  * Detect enum value conflicts across files as structured data.
  *
  * Scans [DOWNSTREAM CONTEXT] Bridge Blocks for `enum(...)` patterns in
- * **Attributes Specified** fields. When the same Entity.attribute has
- * different enum value sets across files, it's reported as a conflict.
+ * **Attributes Specified** fields. When the same Entity.attribute has different
+ * enum value sets across files, it's reported as a conflict.
  *
  * Only matches explicit `enum(val1|val2|...)` syntax — no keyword heuristics.
  */
@@ -594,9 +594,7 @@ export const detectEnumConflicts = (props: {
     }));
 };
 
-/**
- * Build a map from filename → list of enum conflict feedback strings.
- */
+/** Build a map from filename → list of enum conflict feedback strings. */
 export const buildFileEnumConflictMap = (
   conflicts: IEnumConflict[],
 ): Map<string, string[]> => {
@@ -622,8 +620,8 @@ export const buildFileEnumConflictMap = (
 /**
  * Build a human-readable enum consistency report for cross-file review.
  *
- * Parallel to `buildConstraintConsistencyReport` (numeric) — this one
- * covers enum value conflicts.
+ * Parallel to `buildConstraintConsistencyReport` (numeric) — this one covers
+ * enum value conflicts.
  */
 export const buildEnumConsistencyReport = (props: {
   files: Array<{

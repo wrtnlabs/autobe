@@ -5,12 +5,12 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 /**
  * Applies Qwen-specific API compatibility patches to MicroAgentica agent.
  *
- * Qwen models served through OpenRouter (often via Google infrastructure)
- * do not support streaming with function calling. Sending streaming requests
+ * Qwen models served through OpenRouter (often via Google infrastructure) do
+ * not support streaming with function calling. Sending streaming requests
  * causes upstream 502 errors ("Upstream error from Google: undefined").
  *
- * This function intercepts API requests and disables streaming entirely
- * for Qwen models, also removing the OpenAI-proprietary `stream_options`
+ * This function intercepts API requests and disables streaming entirely for
+ * Qwen models, also removing the OpenAI-proprietary `stream_options`
  * parameter.
  *
  * @param agent MicroAgentica instance to patch

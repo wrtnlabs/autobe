@@ -5,16 +5,17 @@ import { AutoBeAnalyzeDocumentValidation } from "./AutoBeAnalyzeDocumentValidati
 /**
  * Single final artifact of the Analyze Phase (Two-Layer structure).
  *
- * Downstream phases (Database/Interface/Test/Realize) receive this structure
- * as input and **consume it directly without document parsing**.
+ * Downstream phases (Database/Interface/Test/Realize) receive this structure as
+ * input and **consume it directly without document parsing**.
  *
  * ## Two-Layer Structure
  *
  * - **Evidence Layer** (`sections`): "Where did this requirement come from?"
+ *
  *   - Atomic evidence units decomposed from source markdown at H1-H3 level
  *   - All SRS items reference `sectionId` via `sourceSectionIds`
- *
  * - **Semantic Layer** (`srs`): "What should the system do?"
+ *
  *   - Based on ISO/IEC/IEEE 29148 + extension categories
  *   - Dynamically selected by LLM based on project characteristics
  *
@@ -29,8 +30,8 @@ export interface AutoBeAnalyzeDocument {
   /**
    * Evidence Layer: source section list.
    *
-   * Evidence data decomposed from source markdown at H1-H3 level.
-   * All Semantic Layer items reference `sectionId` from these sections.
+   * Evidence data decomposed from source markdown at H1-H3 level. All Semantic
+   * Layer items reference `sectionId` from these sections.
    */
   sections: AutoBeAnalyzeDocumentSection[];
 
@@ -38,8 +39,8 @@ export interface AutoBeAnalyzeDocument {
    * Semantic Layer: structured SRS data.
    *
    * A set of categories dynamically selected by the LLM based on project
-   * characteristics, from 6 standard ISO/IEC/IEEE 29148 sections + 4
-   * extension categories.
+   * characteristics, from 6 standard ISO/IEC/IEEE 29148 sections + 4 extension
+   * categories.
    */
   srs: AutoBeAnalyzeDocumentSrs;
 

@@ -218,18 +218,18 @@ export namespace AutoBeExampleArchiver {
       // CONVERSATE
       const go = async (
         c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
-          ): Promise<boolean> => {
-            try {
-              const result: AutoBeHistory[] = await agent.conversate(c);
-              const hasMeaningfulOutput: boolean = result.some(
-                (h) => h.type !== "userMessage",
-              );
-              return (
-                result.some((h) => h.type === props.phase) ||
-                (hasMeaningfulOutput &&
-                  result.every((h) => h.type !== "assistantMessage"))
-              );
-            } catch (error: unknown) {
+      ): Promise<boolean> => {
+        try {
+          const result: AutoBeHistory[] = await agent.conversate(c);
+          const hasMeaningfulOutput: boolean = result.some(
+            (h) => h.type !== "userMessage",
+          );
+          return (
+            result.some((h) => h.type === props.phase) ||
+            (hasMeaningfulOutput &&
+              result.every((h) => h.type !== "assistantMessage"))
+          );
+        } catch (error: unknown) {
           if (
             error instanceof Error &&
             error.message.includes("Failed to function calling")

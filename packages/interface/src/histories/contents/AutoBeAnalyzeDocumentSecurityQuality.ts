@@ -3,8 +3,8 @@ import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 /**
  * SRS Section 6: Security and Quality Attributes.
  *
- * Defines security requirements + quality attribute scenarios (QAS).
- * Enforces quality requirements into a verifiable structure.
+ * Defines security requirements + quality attribute scenarios (QAS). Enforces
+ * quality requirements into a verifiable structure.
  *
  * Optional category: selected for projects that explicitly need
  * security/quality requirements.

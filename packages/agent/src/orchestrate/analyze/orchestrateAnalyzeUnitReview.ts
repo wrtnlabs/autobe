@@ -1,8 +1,8 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
   AutoBeEventSource,
@@ -21,9 +21,9 @@ import { IAutoBeAnalyzeUnitReviewApplication } from "./structures/IAutoBeAnalyze
 /**
  * Orchestrate cross-file review of unit sections across ALL files.
  *
- * This function reviews all files' unit sections together in a single LLM
- * call, providing cross-file validation for functional decomposition
- * consistency, keyword style, and depth balance.
+ * This function reviews all files' unit sections together in a single LLM call,
+ * providing cross-file validation for functional decomposition consistency,
+ * keyword style, and depth balance.
  */
 export const orchestrateAnalyzeUnitReview = async (
   ctx: AutoBeContext,

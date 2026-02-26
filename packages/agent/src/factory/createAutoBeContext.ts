@@ -57,8 +57,8 @@ import { consentFunctionCall } from "./consentFunctionCall";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
-import { supportMistral } from "./supportMistral";
 import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
+import { supportMistral } from "./supportMistral";
 import { supportQwen } from "./supportQwen";
 
 export const createAutoBeContext = (props: {
@@ -342,10 +342,9 @@ export const createAutoBeContext = (props: {
             }
           }
           // Retry with explicit failure feedback
-          const functionNames: string =
-            next.controller.application.functions
-              .map((f) => f.name)
-              .join(", ");
+          const functionNames: string = next.controller.application.functions
+            .map((f) => f.name)
+            .join(", ");
           for (
             let retry = 0;
             retry < AutoBeConfigConstant.FUNCTION_CALLING_RETRY - 1;

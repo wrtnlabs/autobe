@@ -17,8 +17,8 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
-import { supportMistral } from "../../factory/supportMistral";
 import { supportFunctionCallFallback } from "../../factory/supportFunctionCallFallback";
+import { supportMistral } from "../../factory/supportMistral";
 import { supportQwen } from "../../factory/supportQwen";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";

@@ -11,9 +11,9 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";

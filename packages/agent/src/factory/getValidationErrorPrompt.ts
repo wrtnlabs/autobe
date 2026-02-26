@@ -42,8 +42,7 @@ const summarizeValidationFailure = (
     const key = `${error.path}::${error.expected}`;
     const prev = grouped.get(key);
     const sampleValue = JSON.stringify(error.value)?.slice(0, 160) ?? "null";
-    if (prev)
-      prev.count++;
+    if (prev) prev.count++;
     else
       grouped.set(key, {
         count: 1,

@@ -4,8 +4,8 @@ import { tags } from "typia";
  * Request to retrieve individual analysis sections by numeric ID.
  *
  * Instead of loading entire analysis files (~110-120KB each), this loads
- * specific ### sections (~200-600 words each) identified by integer IDs
- * from the section catalog.
+ * specific ### sections (~200-600 words each) identified by integer IDs from
+ * the section catalog.
  *
  * @author Juntak
  */
@@ -22,8 +22,8 @@ export interface IAutoBePreliminaryGetAnalysisSections {
   /**
    * List of section IDs to retrieve.
    *
-   * These are sequential integer IDs from the analysis sections catalog.
-   * Each ID maps to a specific ### section in the requirements documents.
+   * These are sequential integer IDs from the analysis sections catalog. Each
+   * ID maps to a specific ### section in the requirements documents.
    *
    * CRITICAL: DO NOT request the same section IDs that you have already
    * requested in previous calls.

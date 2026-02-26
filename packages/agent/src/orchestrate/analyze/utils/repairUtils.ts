@@ -1,14 +1,15 @@
 /**
- * Shared low-level repair utilities used by multiple analyze-phase orchestrators.
+ * Shared low-level repair utilities used by multiple analyze-phase
+ * orchestrators.
  *
- * These helpers are intentionally free of orchestrator-specific knowledge:
- * they only deal with raw JSON/string normalization.
+ * These helpers are intentionally free of orchestrator-specific knowledge: they
+ * only deal with raw JSON/string normalization.
  */
 
 /**
  * Parse a string that might be a JSON array or object emitted by models that
- * sometimes return a stringified payload instead of a real JS value.
- * Also handles Qwen / Python pseudo-JSON (single quotes, None, True, False).
+ * sometimes return a stringified payload instead of a real JS value. Also
+ * handles Qwen / Python pseudo-JSON (single quotes, None, True, False).
  *
  * Returns `undefined` when the string cannot be parsed, so callers can
  * distinguish "got nothing useful" from "got null".
@@ -40,9 +41,8 @@ export const parseLooseStructuredString = (input: string): unknown => {
 };
 
 /**
- * Type-guard: returns true when `input` is a plain object (not array, not null).
+ * Type-guard: returns true when `input` is a plain object (not array, not
+ * null).
  */
-export const isRecord = (
-  input: unknown,
-): input is Record<string, unknown> =>
+export const isRecord = (input: unknown): input is Record<string, unknown> =>
   typeof input === "object" && input !== null && Array.isArray(input) === false;

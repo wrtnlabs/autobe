@@ -143,8 +143,8 @@ const SOURCE = "analyzeWriteModule" satisfies AutoBeEventSource;
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Gap 1 — Flattened payload: LLM emits top-level fields instead of
- * `{ request: { type, title, summary, moduleSections } }`.
+ * Gap 1 — Flattened payload: LLM emits top-level fields instead of `{ request:
+ * { type, title, summary, moduleSections } }`.
  */
 const repairFlattenedPayload = (
   input: Record<string, unknown>,
@@ -161,8 +161,15 @@ const repairFlattenedPayload = (
       input.type === null);
 
   if (completeLike) {
-    const { thinking, type, title, summary, moduleSections, sections, ...rest } =
-      input;
+    const {
+      thinking,
+      type,
+      title,
+      summary,
+      moduleSections,
+      sections,
+      ...rest
+    } = input;
     return {
       ...rest,
       ...(thinking !== undefined ? { thinking } : {}),
@@ -191,9 +198,7 @@ const repairFlattenedPayload = (
   return input;
 };
 
-/**
- * Gap 2 — Heuristic type detection: fills in missing/wrong `type` field.
- */
+/** Gap 2 — Heuristic type detection: fills in missing/wrong `type` field. */
 const repairRequestType = (
   request: Record<string, unknown>,
 ): Record<string, unknown> => {
@@ -218,9 +223,7 @@ const repairRequestType = (
   return request;
 };
 
-/**
- * Gaps 3, 4, 6 — alias / null / stringified-array repairs.
- */
+/** Gaps 3, 4, 6 — alias / null / stringified-array repairs. */
 const normalizeWriteModuleRequest = (
   input: Record<string, unknown>,
 ): Record<string, unknown> => {
@@ -245,9 +248,7 @@ const normalizeWriteModuleRequest = (
   return output;
 };
 
-/**
- * Gap 5 + per-item repairs (trim, body/description→content alias).
- */
+/** Gap 5 + per-item repairs (trim, body/description→content alias). */
 const normalizeModuleSectionItems = (sections: unknown[]): unknown[] => {
   return sections.map((item): unknown => {
     if (isRecord(item)) {
@@ -285,9 +286,7 @@ const normalizeModuleSectionItems = (sections: unknown[]): unknown[] => {
   });
 };
 
-/**
- * Master repair entry-point called from `validate()` before typia.validate.
- */
+/** Master repair entry-point called from `validate()` before typia.validate. */
 const repairAnalyzeWriteModuleInput = (input: unknown): unknown => {
   if (isRecord(input) === false) return input;
 

@@ -24,7 +24,10 @@ export interface AutoBeAnalyzeDocumentDataDictionary {
       constraints: Array<{
         /** Constraint type */
         kind: "format" | "range" | "length" | "enum" | "required" | "unique";
-        /** Constraint value (e.g., "5-200", "RFC 5322", "active|inactive|deleted") */
+        /**
+         * Constraint value (e.g., "5-200", "RFC 5322",
+         * "active|inactive|deleted")
+         */
         value: string;
       }>;
       /** Validation rules (natural language description) */

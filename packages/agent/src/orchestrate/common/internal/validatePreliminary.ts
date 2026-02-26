@@ -9,10 +9,10 @@ import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryReques
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
@@ -223,8 +223,7 @@ namespace PreliminaryApplicationValidator {
           .getArgumentTypeNames()
           .filter(
             (k) =>
-              k !==
-              typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>(),
+              k !== typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>(),
           )
           .join(" | "),
         description:

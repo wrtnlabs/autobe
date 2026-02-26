@@ -723,9 +723,9 @@ export async function buildAnalysisContextFiles<
  * Build analysis context at section granularity.
  *
  * Similar to {@link buildAnalysisContextFiles} but operates on
- * `IAnalysisSectionEntry[]` instead of full analysis files. Each section
- * entry is treated as an independent retrieval unit (~200-600 words),
- * yielding much finer-grained context for downstream agents.
+ * `IAnalysisSectionEntry[]` instead of full analysis files. Each section entry
+ * is treated as an independent retrieval unit (~200-600 words), yielding much
+ * finer-grained context for downstream agents.
  *
  * @param embedder - Embedding provider for vector search (only used in TOPK)
  * @param sections - Source section entries (from convertToSectionEntries)

@@ -1,10 +1,10 @@
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
-  AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeModuleReviewEvent,
-  AutoBeAnalyzeUnitReviewEvent,
+  AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeSectionReviewEvent,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -16,11 +16,11 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
-import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeModuleReview } from "./orchestrateAnalyzeModuleReview";
-import { orchestrateAnalyzeUnitReview } from "./orchestrateAnalyzeUnitReview";
+import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
 import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionReview";
+import { orchestrateAnalyzeUnitReview } from "./orchestrateAnalyzeUnitReview";
 import { orchestrateAnalyzeWriteModule } from "./orchestrateAnalyzeWriteModule";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
@@ -28,24 +28,24 @@ import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import { orchestrateAnalyzeWriteUnitPatch } from "./orchestrateAnalyzeWriteUnitPatch";
 import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
 import {
-  buildConstraintConsistencyReport,
-  buildAttributeOwnershipReport,
-  detectConstraintConflicts,
-  buildFileConflictMap,
-  detectAttributeDuplicates,
-  buildFileAttributeDuplicateMap,
-  detectEnumConflicts,
-  buildFileEnumConflictMap,
-  buildEnumConsistencyReport,
-} from "./utils/buildConstraintConsistencyReport";
-import {
-  stripTocBridgeBlocks,
-  detectEmptyBridgeBlocks,
-} from "./utils/buildHardValidators";
-import {
   buildAttributeRegistry,
   formatRegistryForPrompt,
 } from "./utils/buildAttributeRegistry";
+import {
+  buildAttributeOwnershipReport,
+  buildConstraintConsistencyReport,
+  buildEnumConsistencyReport,
+  buildFileAttributeDuplicateMap,
+  buildFileConflictMap,
+  buildFileEnumConflictMap,
+  detectAttributeDuplicates,
+  detectConstraintConflicts,
+  detectEnumConflicts,
+} from "./utils/buildConstraintConsistencyReport";
+import {
+  detectEmptyBridgeBlocks,
+  stripTocBridgeBlocks,
+} from "./utils/buildHardValidators";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -286,11 +286,10 @@ async function processStageModule(
       if (fileResult.approved) {
         // Apply revisions if provided
         const state: IFileState = props.fileStates[fileResult.fileIndex]!;
-        state.moduleResult =
-          AutoBeAnalyzeProgrammer.applyModuleRevisions(
-            state.moduleResult!,
-            fileResult,
-          );
+        state.moduleResult = AutoBeAnalyzeProgrammer.applyModuleRevisions(
+          state.moduleResult!,
+          fileResult,
+        );
         pendingIndices.delete(fileResult.fileIndex);
       } else {
         props.fileStates[fileResult.fileIndex]!.moduleFeedback =
@@ -314,8 +313,8 @@ async function processStageModule(
 /**
  * Process the Unit stage for all files with cross-file review.
  *
- * Flow: Write units for pending files in parallel → Cross-file review all
- * files → Retry only rejected files (max 3 attempts).
+ * Flow: Write units for pending files in parallel → Cross-file review all files
+ * → Retry only rejected files (max 3 attempts).
  */
 async function processStageUnit(
   ctx: AutoBeContext,
@@ -353,8 +352,7 @@ async function processStageUnit(
       ctx,
       pendingArray.map((fileIndex) => async (cacheKey) => {
         const state: IFileState = props.fileStates[fileIndex]!;
-        const moduleResult: AutoBeAnalyzeWriteModuleEvent =
-          state.moduleResult!;
+        const moduleResult: AutoBeAnalyzeWriteModuleEvent = state.moduleResult!;
         analyzeDebug(
           `unit file-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
         );
@@ -473,11 +471,10 @@ async function processStageUnit(
       if (fileResult.approved) {
         // Apply revisions if provided
         const state: IFileState = props.fileStates[fileResult.fileIndex]!;
-        state.unitResults =
-          AutoBeAnalyzeProgrammer.applyUnitRevisions(
-            state.unitResults!,
-            fileResult,
-          );
+        state.unitResults = AutoBeAnalyzeProgrammer.applyUnitRevisions(
+          state.unitResults!,
+          fileResult,
+        );
         // Clear unit tracking state
         state.unitStagnationCount = 0;
         state.lastUnitContentSignature = undefined;
@@ -487,8 +484,7 @@ async function processStageUnit(
       } else {
         const state: IFileState = props.fileStates[fileResult.fileIndex]!;
         state.unitFeedback = fileResult.feedback;
-        state.rejectedModuleIndicesForUnit =
-          fileResult.rejectedModules ?? null;
+        state.rejectedModuleIndicesForUnit = fileResult.rejectedModules ?? null;
 
         // Stagnation detection
         const contentSignature = buildUnitContentSignature(state);
@@ -505,9 +501,7 @@ async function processStageUnit(
         state.lastUnitContentSignature = contentSignature;
         state.lastUnitRejectionSignature = rejectionSignature;
 
-        if (
-          (state.unitStagnationCount ?? 0) >= ANALYZE_UNIT_STAGNATION_MAX
-        ) {
+        if ((state.unitStagnationCount ?? 0) >= ANALYZE_UNIT_STAGNATION_MAX) {
           throw new Error(
             `[orchestrateAnalyze] Unit stage fail-fast (stagnation detected ${state.unitStagnationCount}x) for file "${state.file.filename}"`,
           );
@@ -532,11 +526,12 @@ async function processStageUnit(
  * Process the Section stage for all files with 2-pass review.
  *
  * Flow:
+ *
  * 1. Write sections for pending files in parallel
- * 2. Pass 1: Per-file detailed review (parallel) — validates EARS format,
- *    value consistency, bridge blocks, intra-file deduplication
- * 3. Pass 2: Cross-file lightweight review (single call) — validates
- *    terminology alignment, value consistency across files, naming conventions
+ * 2. Pass 1: Per-file detailed review (parallel) — validates EARS format, value
+ *    consistency, bridge blocks, intra-file deduplication
+ * 3. Pass 2: Cross-file lightweight review (single call) — validates terminology
+ *    alignment, value consistency across files, naming conventions
  * 4. Merge results from both passes — reject if either pass rejects
  * 5. Retry only rejected files (max 3 attempts)
  */
@@ -598,150 +593,143 @@ async function processStageSection(
       await executeCachedBatch(
         ctx,
         sectionBatch.map((fileIndex) => async (cacheKey) => {
-        const state: IFileState = props.fileStates[fileIndex]!;
-        const moduleResult: AutoBeAnalyzeWriteModuleEvent =
-          state.moduleResult!;
-        const unitResults: AutoBeAnalyzeWriteUnitEvent[] = state.unitResults!;
-        analyzeDebug(
-          `section file-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" batchSize=${sectionBatch.length}`,
-        );
+          const state: IFileState = props.fileStates[fileIndex]!;
+          const moduleResult: AutoBeAnalyzeWriteModuleEvent =
+            state.moduleResult!;
+          const unitResults: AutoBeAnalyzeWriteUnitEvent[] = state.unitResults!;
+          analyzeDebug(
+            `section file-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" batchSize=${sectionBatch.length}`,
+          );
 
-        // Build rejected module/unit lookup for selective regeneration
-        const rejectedSet: Set<string> | null = buildRejectedSet(
-          state.rejectedModuleUnits,
-        );
-        const feedbackMap: Map<string, ISectionAwareFeedback> = buildFeedbackMap(
-          state.rejectedModuleUnits,
-        );
+          // Build rejected module/unit lookup for selective regeneration
+          const rejectedSet: Set<string> | null = buildRejectedSet(
+            state.rejectedModuleUnits,
+          );
+          const feedbackMap: Map<string, ISectionAwareFeedback> =
+            buildFeedbackMap(state.rejectedModuleUnits);
 
-        // Increase write progress only for sections that will be regenerated
-        for (
-          let mi: number = 0;
-          mi < unitResults.length;
-          mi++
-        ) {
-          const unitEvent: AutoBeAnalyzeWriteUnitEvent = unitResults[mi]!;
-          for (
-            let ui: number = 0;
-            ui < unitEvent.unitSections.length;
-            ui++
-          ) {
-            if (isSectionRejected(rejectedSet, mi, ui)) {
-              props.sectionWriteProgress.total++;
+          // Increase write progress only for sections that will be regenerated
+          for (let mi: number = 0; mi < unitResults.length; mi++) {
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent = unitResults[mi]!;
+            for (let ui: number = 0; ui < unitEvent.unitSections.length; ui++) {
+              if (isSectionRejected(rejectedSet, mi, ui)) {
+                props.sectionWriteProgress.total++;
+              }
             }
           }
-        }
 
-        // Write sections, skipping approved ones on retry
-        const sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
-        for (
-          let moduleIndex: number = 0;
-          moduleIndex < unitResults.length;
-          moduleIndex++
-        ) {
-          const unitEvent: AutoBeAnalyzeWriteUnitEvent =
-            unitResults[moduleIndex]!;
-          const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
-
+          // Write sections, skipping approved ones on retry
+          const sectionResults: AutoBeAnalyzeWriteSectionEvent[][] = [];
           for (
-            let unitIndex: number = 0;
-            unitIndex < unitEvent.unitSections.length;
-            unitIndex++
+            let moduleIndex: number = 0;
+            moduleIndex < unitResults.length;
+            moduleIndex++
           ) {
-            if (isSectionRejected(rejectedSet, moduleIndex, unitIndex)) {
-              const sectionStart: number = Date.now();
-              // Regenerate this section with targeted feedback
-              const targetedInfo: ISectionAwareFeedback | undefined =
-                feedbackMap.get(`${moduleIndex}:${unitIndex}`);
-              const targetedFeedback: string | undefined =
-                targetedInfo?.feedback ?? state.sectionFeedback;
-              const targetedSectionIndices: number[] | null =
-                targetedInfo?.sectionIndices ?? null;
-              analyzeDebug(
-                `section unit-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} targetSections=${targetedSectionIndices ? `[${targetedSectionIndices.join(",")}]` : "all"}`,
-              );
-              const previousSection: AutoBeAnalyzeWriteSectionEvent | undefined =
-                state.sectionResults?.[moduleIndex]?.[unitIndex];
-              const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
-                previousSection && targetedFeedback?.trim()
-                  ? await orchestrateAnalyzeWriteSectionPatch(ctx, {
-                      scenario: props.scenario,
-                      file: state.file,
-                      moduleEvent: moduleResult,
-                      unitEvent,
-                      moduleIndex,
-                      unitIndex,
-                      previousSectionEvent: previousSection,
-                      feedback: targetedFeedback,
-                      progress: props.sectionWriteProgress,
-                      promptCacheKey: cacheKey,
-                      retry: attempt,
-                      attributeRegistry,
-                      scenarioEntityNames,
-                      sectionIndices: targetedSectionIndices,
-                    })
-                  : await orchestrateAnalyzeWriteSection(ctx, {
-                      scenario: props.scenario,
-                      file: state.file,
-                      moduleEvent: moduleResult,
-                      unitEvent,
-                      allUnitEvents: unitResults,
-                      moduleIndex,
-                      unitIndex,
-                      progress: props.sectionWriteProgress,
-                      promptCacheKey: cacheKey,
-                      feedback: targetedFeedback,
-                      retry: attempt,
-                      attributeRegistry,
-                      scenarioEntityNames,
-                    });
-              analyzeDebug(
-                `section unit-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} sectionCount=${sectionEvent.sectionSections.length} elapsedMs=${Date.now() - sectionStart}`,
-              );
-              sectionsForModule.push(sectionEvent);
-            } else {
-              // Keep existing approved section
-              sectionsForModule.push(
-                state.sectionResults![moduleIndex]![unitIndex]!,
-              );
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent =
+              unitResults[moduleIndex]!;
+            const sectionsForModule: AutoBeAnalyzeWriteSectionEvent[] = [];
+
+            for (
+              let unitIndex: number = 0;
+              unitIndex < unitEvent.unitSections.length;
+              unitIndex++
+            ) {
+              if (isSectionRejected(rejectedSet, moduleIndex, unitIndex)) {
+                const sectionStart: number = Date.now();
+                // Regenerate this section with targeted feedback
+                const targetedInfo: ISectionAwareFeedback | undefined =
+                  feedbackMap.get(`${moduleIndex}:${unitIndex}`);
+                const targetedFeedback: string | undefined =
+                  targetedInfo?.feedback ?? state.sectionFeedback;
+                const targetedSectionIndices: number[] | null =
+                  targetedInfo?.sectionIndices ?? null;
+                analyzeDebug(
+                  `section unit-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} targetSections=${targetedSectionIndices ? `[${targetedSectionIndices.join(",")}]` : "all"}`,
+                );
+                const previousSection:
+                  | AutoBeAnalyzeWriteSectionEvent
+                  | undefined =
+                  state.sectionResults?.[moduleIndex]?.[unitIndex];
+                const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
+                  previousSection && targetedFeedback?.trim()
+                    ? await orchestrateAnalyzeWriteSectionPatch(ctx, {
+                        scenario: props.scenario,
+                        file: state.file,
+                        moduleEvent: moduleResult,
+                        unitEvent,
+                        moduleIndex,
+                        unitIndex,
+                        previousSectionEvent: previousSection,
+                        feedback: targetedFeedback,
+                        progress: props.sectionWriteProgress,
+                        promptCacheKey: cacheKey,
+                        retry: attempt,
+                        attributeRegistry,
+                        scenarioEntityNames,
+                        sectionIndices: targetedSectionIndices,
+                      })
+                    : await orchestrateAnalyzeWriteSection(ctx, {
+                        scenario: props.scenario,
+                        file: state.file,
+                        moduleEvent: moduleResult,
+                        unitEvent,
+                        allUnitEvents: unitResults,
+                        moduleIndex,
+                        unitIndex,
+                        progress: props.sectionWriteProgress,
+                        promptCacheKey: cacheKey,
+                        feedback: targetedFeedback,
+                        retry: attempt,
+                        attributeRegistry,
+                        scenarioEntityNames,
+                      });
+                analyzeDebug(
+                  `section unit-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} sectionCount=${sectionEvent.sectionSections.length} elapsedMs=${Date.now() - sectionStart}`,
+                );
+                sectionsForModule.push(sectionEvent);
+              } else {
+                // Keep existing approved section
+                sectionsForModule.push(
+                  state.sectionResults![moduleIndex]![unitIndex]!,
+                );
+              }
             }
+            sectionResults.push(sectionsForModule);
           }
-          sectionResults.push(sectionsForModule);
-        }
-        state.sectionResults = sectionResults;
+          state.sectionResults = sectionResults;
 
-        // Auto-strip [DOWNSTREAM CONTEXT] blocks from TOC file
-        if (state.file.filename === "00-toc.md") {
-          stripTocBridgeBlocks(state.sectionResults);
-        }
-        analyzeDebug(
-          `section file-write-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
-        );
+          // Auto-strip [DOWNSTREAM CONTEXT] blocks from TOC file
+          if (state.file.filename === "00-toc.md") {
+            stripTocBridgeBlocks(state.sectionResults);
+          }
+          analyzeDebug(
+            `section file-write-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+          );
 
-        // Per-file review immediately after write (removes barrier)
-        const reviewStart: number = Date.now();
-        analyzeDebug(
-          `section per-file-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
-        );
-        const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
-          await orchestrateAnalyzeSectionReview(ctx, {
-            scenario: props.scenario,
-            fileIndex,
-            file: state.file,
-            moduleEvent: state.moduleResult!,
-            unitEvents: state.unitResults!,
-            sectionEvents: state.sectionResults!,
-            feedback: state.sectionFeedback,
-            progress: props.perFileSectionReviewProgress,
-            promptCacheKey: cacheKey,
-            retry: attempt,
-          });
-        analyzeDebug(
-          `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,
-        );
-        perFileReviewResults.set(fileIndex, reviewEvent);
+          // Per-file review immediately after write (removes barrier)
+          const reviewStart: number = Date.now();
+          analyzeDebug(
+            `section per-file-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+          );
+          const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
+            await orchestrateAnalyzeSectionReview(ctx, {
+              scenario: props.scenario,
+              fileIndex,
+              file: state.file,
+              moduleEvent: state.moduleResult!,
+              unitEvents: state.unitResults!,
+              sectionEvents: state.sectionResults!,
+              feedback: state.sectionFeedback,
+              progress: props.perFileSectionReviewProgress,
+              promptCacheKey: cacheKey,
+              retry: attempt,
+            });
+          analyzeDebug(
+            `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,
+          );
+          perFileReviewResults.set(fileIndex, reviewEvent);
 
-        return sectionResults;
+          return sectionResults;
         }),
         promptCacheKey,
       );
@@ -864,12 +852,10 @@ async function processStageSection(
       // 3. per-file approve + no critical conflict → approve (unchanged)
       const approved = perFileApproved && !hasCriticalConflict;
 
-      const structuredPerFileIssues = collectStructuredReviewIssues(
-        perFileResult,
-      );
-      const structuredCrossFileIssues = collectStructuredReviewIssues(
-        crossFileResult,
-      );
+      const structuredPerFileIssues =
+        collectStructuredReviewIssues(perFileResult);
+      const structuredCrossFileIssues =
+        collectStructuredReviewIssues(crossFileResult);
       const programmaticIssues = buildProgrammaticSectionIssues({
         fileCriticalConflicts,
         fileAttrDuplicates,
@@ -887,8 +873,7 @@ async function processStageSection(
         }
         // Pass cross-file feedback as advisory for next retry's context
         if (!crossFileApproved && crossFileResult?.feedback) {
-          state.sectionFeedback =
-            `[Cross-file advisory] ${crossFileResult.feedback}`;
+          state.sectionFeedback = `[Cross-file advisory] ${crossFileResult.feedback}`;
         }
         state.sectionRetryCount = 0;
         state.sectionStagnationCount = 0;
@@ -939,10 +924,7 @@ async function processStageSection(
           )} issues=${formatReviewIssuesSummary([
             ...programmaticIssues,
             ...structuredCrossFileIssues,
-          ])} feedback=${truncateForDebug(
-            state.sectionFeedback ?? "",
-            500,
-          )}`,
+          ])} feedback=${truncateForDebug(state.sectionFeedback ?? "", 500)}`,
         );
       }
 
@@ -1000,10 +982,7 @@ function computeSectionBatchSize(props: {
   return 1;
 }
 
-function chunkSectionFileIndices(
-  indices: number[],
-  size: number,
-): number[][] {
+function chunkSectionFileIndices(indices: number[], size: number): number[][] {
   if (indices.length === 0) return [];
   if (size <= 0 || size >= indices.length) return [indices];
   const chunks: number[][] = [];
@@ -1105,7 +1084,9 @@ function collectStructuredReviewIssues(
   result:
     | {
         feedback: string;
-        rejectedModuleUnits?: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null;
+        rejectedModuleUnits?:
+          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+          | null;
         issues?: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] | null;
       }
     | undefined,
@@ -1122,7 +1103,8 @@ function collectStructuredReviewIssues(
           ruleCode: "section_review_reject",
           moduleIndex: group.moduleIndex,
           unitIndex,
-          fixInstruction: group.feedback || result.feedback || "Fix review issues.",
+          fixInstruction:
+            group.feedback || result.feedback || "Fix review issues.",
           evidence: null,
         });
       }
@@ -1302,10 +1284,7 @@ function dedupeReviewIssues(
 // ─── Unit-stage partial regeneration helpers ───
 
 function buildUnitRejectedSet(
-  rejected:
-    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
-    | null
-    | undefined,
+  rejected: AutoBeAnalyzeUnitReviewEvent.IRejectedModule[] | null | undefined,
 ): Set<number> | null {
   if (rejected == null) return null;
   if (rejected.length === 0) return null;
@@ -1317,10 +1296,7 @@ function buildUnitRejectedSet(
 }
 
 function buildUnitFeedbackMap(
-  rejected:
-    | AutoBeAnalyzeUnitReviewEvent.IRejectedModule[]
-    | null
-    | undefined,
+  rejected: AutoBeAnalyzeUnitReviewEvent.IRejectedModule[] | null | undefined,
 ): Map<number, string> {
   const map: Map<number, string> = new Map();
   if (rejected == null) return map;
@@ -1422,9 +1398,7 @@ function formatRejectedModuleUnitsSummary(
     .map((entry) => {
       const unitParts = entry.unitIndices.map((ui) => {
         const sectionPart = entry.sectionIndicesPerUnit?.[ui];
-        return sectionPart
-          ? `u${ui}(s${sectionPart.join(",s")})`
-          : `u${ui}`;
+        return sectionPart ? `u${ui}(s${sectionPart.join(",s")})` : `u${ui}`;
       });
       return `m${entry.moduleIndex}:${unitParts.join(",") || "-"}`;
     })

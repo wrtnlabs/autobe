@@ -146,8 +146,8 @@ const SOURCE = "analyzeWriteUnit" satisfies AutoBeEventSource;
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Gap 1 — Flattened payload: LLM emits top-level fields instead of
- * `{ request: { type, moduleIndex, unitSections } }`.
+ * Gap 1 — Flattened payload: LLM emits top-level fields instead of `{ request:
+ * { type, moduleIndex, unitSections } }`.
  */
 const repairFlattenedPayload = (
   input: Record<string, unknown>,
@@ -193,19 +193,14 @@ const repairFlattenedPayload = (
   return input;
 };
 
-/**
- * Gap 2 — Heuristic type detection: fills in missing/wrong `type` field.
- */
+/** Gap 2 — Heuristic type detection: fills in missing/wrong `type` field. */
 const repairRequestType = (
   request: Record<string, unknown>,
 ): Record<string, unknown> => {
   const t = request.type;
   if (t === "complete" || t === "getPreviousAnalysisFiles") return request;
 
-  if (
-    Array.isArray(request.unitSections) ||
-    Array.isArray(request.sections)
-  ) {
+  if (Array.isArray(request.unitSections) || Array.isArray(request.sections)) {
     return { ...request, type: "complete" };
   }
 
@@ -220,9 +215,7 @@ const repairRequestType = (
   return request;
 };
 
-/**
- * Gaps 3, 4, 6 — numeric coercion, alias / null / stringified-array repairs.
- */
+/** Gaps 3, 4, 6 — numeric coercion, alias / null / stringified-array repairs. */
 const normalizeWriteUnitRequest = (
   input: Record<string, unknown>,
 ): Record<string, unknown> => {
@@ -254,7 +247,8 @@ const normalizeWriteUnitRequest = (
 };
 
 /**
- * Gap 5 + per-item repairs (trim, body/description→content alias, keywords normalization).
+ * Gap 5 + per-item repairs (trim, body/description→content alias, keywords
+ * normalization).
  */
 const normalizeUnitSectionItems = (sections: unknown[]): unknown[] => {
   return sections.map((item): unknown => {
@@ -319,9 +313,7 @@ const normalizeUnitSectionItems = (sections: unknown[]): unknown[] => {
   });
 };
 
-/**
- * Master repair entry-point called from `validate()` before typia.validate.
- */
+/** Master repair entry-point called from `validate()` before typia.validate. */
 export const repairAnalyzeWriteUnitInput = (input: unknown): unknown => {
   if (isRecord(input) === false) return input;
 

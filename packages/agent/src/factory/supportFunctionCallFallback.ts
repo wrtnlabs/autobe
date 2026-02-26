@@ -12,14 +12,14 @@ import {
  *
  * Some models return function calls as plain text/JSON in `message.content`
  * instead of the proper `tool_calls` field. This function wraps
- * `vendor.api.chat.completions.create` to intercept non-streaming responses
- * and parse text-based function calls into proper `tool_calls`.
+ * `vendor.api.chat.completions.create` to intercept non-streaming responses and
+ * parse text-based function calls into proper `tool_calls`.
  *
  * Without this patch, text-based function calls are treated as assistant
  * messages, causing `enforceFunctionCall` checks to fail.
  *
- * The wrapping is idempotent — calling this multiple times with the same
- * vendor will only wrap once (guarded by a Symbol).
+ * The wrapping is idempotent — calling this multiple times with the same vendor
+ * will only wrap once (guarded by a Symbol).
  *
  * @param agent MicroAgentica instance (unused, kept for signature consistency
  *   with supportMistral)
@@ -134,7 +134,10 @@ const UPSTREAM_BASE_DELAY = 1_000;
 const UPSTREAM_MAX_DELAY = 15_000;
 
 function upstreamBackoffDelay(attempt: number): Promise<void> {
-  const delay = Math.min(UPSTREAM_BASE_DELAY * 2 ** attempt, UPSTREAM_MAX_DELAY);
+  const delay = Math.min(
+    UPSTREAM_BASE_DELAY * 2 ** attempt,
+    UPSTREAM_MAX_DELAY,
+  );
   const jittered = delay * (0.5 + Math.random() * 0.5);
   return new Promise((resolve) => setTimeout(resolve, jittered));
 }
@@ -166,8 +169,8 @@ function isEmptyCompletion(completion: ICompletion): boolean {
 
 /**
  * Inspects each choice in the completion. If `tool_calls` is empty but
- * `content` contains text-based function calls, parse them and inject as
- * proper `tool_calls`.
+ * `content` contains text-based function calls, parse them and inject as proper
+ * `tool_calls`.
  */
 function patchCompletionIfNeeded(
   completion: ICompletion,

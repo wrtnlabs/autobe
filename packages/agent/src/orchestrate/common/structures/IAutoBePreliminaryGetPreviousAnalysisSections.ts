@@ -1,8 +1,8 @@
 import { tags } from "typia";
 
 /**
- * Request to retrieve individual analysis sections from previous iteration
- * by numeric ID.
+ * Request to retrieve individual analysis sections from previous iteration by
+ * numeric ID.
  *
  * Same as {@link IAutoBePreliminaryGetAnalysisSections} but for sections from
  * the previous generation cycle, enabling comparison and consistency checks.
@@ -13,8 +13,8 @@ export interface IAutoBePreliminaryGetPreviousAnalysisSections {
   /**
    * Type discriminator for the request.
    *
-   * Value "getPreviousAnalysisSections" indicates this is a preliminary
-   * data request for analysis sections from the previous iteration.
+   * Value "getPreviousAnalysisSections" indicates this is a preliminary data
+   * request for analysis sections from the previous iteration.
    */
   type: "getPreviousAnalysisSections";
 

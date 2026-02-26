@@ -15,10 +15,10 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
-import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";

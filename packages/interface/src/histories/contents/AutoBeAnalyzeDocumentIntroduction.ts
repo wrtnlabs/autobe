@@ -3,8 +3,8 @@ import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 /**
  * SRS Section 1: Introduction.
  *
- * Structures purpose, scope, audience, glossary, and references.
- * Used by downstream phases for terminology consistency and system scope
+ * Structures purpose, scope, audience, glossary, and references. Used by
+ * downstream phases for terminology consistency and system scope
  * determination.
  *
  * @author Juntak

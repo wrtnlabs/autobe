@@ -13,7 +13,9 @@ export const transformPrismaComponentsHistory = (
     prefix: string | null;
     instruction: string;
     preliminary: AutoBePreliminaryController<
-      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     >;
     group: AutoBeDatabaseGroup;
   },

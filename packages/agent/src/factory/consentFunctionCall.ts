@@ -19,8 +19,8 @@ import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { getCommonPrompt } from "./getCommonPrompt";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
-import { supportMistral } from "./supportMistral";
 import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
+import { supportMistral } from "./supportMistral";
 import { supportQwen } from "./supportQwen";
 
 /**

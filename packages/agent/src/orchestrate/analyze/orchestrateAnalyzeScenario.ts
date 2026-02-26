@@ -139,14 +139,14 @@ const repairMissingRequestType = (input: unknown): unknown => {
   if (isRecord(root.request) === false) return input;
   const rawRequest: Record<string, unknown> = root.request;
 
-  const request: Record<string, unknown> = normalizeAnalyzeScenarioRequest(
-    rawRequest,
-  );
+  const request: Record<string, unknown> =
+    normalizeAnalyzeScenarioRequest(rawRequest);
   input = {
     ...root,
     request,
   };
-  if (typeof request.type === "string" && request.type.length !== 0) return input;
+  if (typeof request.type === "string" && request.type.length !== 0)
+    return input;
 
   if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
     return {
@@ -292,7 +292,8 @@ const normalizeScenarioFileNames = (input: unknown): unknown => {
 
   let changed = false;
   const files = request.files.map((file, index) => {
-    if (isRecord(file) === false || typeof file.filename !== "string") return file;
+    if (isRecord(file) === false || typeof file.filename !== "string")
+      return file;
     const filename = normalizeScenarioFileName(file.filename, index);
     if (filename === file.filename) return file;
     changed = true;

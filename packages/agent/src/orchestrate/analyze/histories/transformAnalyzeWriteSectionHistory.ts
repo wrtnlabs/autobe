@@ -73,7 +73,10 @@ export const transformAnalyzeWriteSectionHistory = (
         ## AUTHORITATIVE Document List (TOC MUST use ONLY these filenames)
 
         ${props.scenario.files
-          .map((f, i) => `${i + 1}. [${f.filename}](./${f.filename}) — ${f.documentType}`)
+          .map(
+            (f, i) =>
+              `${i + 1}. [${f.filename}](./${f.filename}) — ${f.documentType}`,
+          )
           .join("\n")}
 
         ## TOC Summary-Only Rules (CRITICAL)

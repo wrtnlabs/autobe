@@ -3,9 +3,9 @@ import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 /**
  * SRS Section 4: System Capabilities and Functional Requirements.
  *
- * Capability → Use Case → Functional Requirement hierarchy.
- * The **core** artifact of the Analyze Phase, used as direct input for DB
- * schema and API design.
+ * Capability → Use Case → Functional Requirement hierarchy. The **core**
+ * artifact of the Analyze Phase, used as direct input for DB schema and API
+ * design.
  *
  * Required category: always included.
  *

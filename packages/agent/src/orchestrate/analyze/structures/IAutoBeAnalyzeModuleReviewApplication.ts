@@ -56,9 +56,9 @@ export namespace IAutoBeAnalyzeModuleReviewApplication {
     /**
      * Per-file review results.
      *
-     * Each entry contains the verdict for one file's module structure.
-     * Files that are consistent with the overall structure are approved;
-     * files that need adjustment are rejected with specific feedback.
+     * Each entry contains the verdict for one file's module structure. Files
+     * that are consistent with the overall structure are approved; files that
+     * need adjustment are rejected with specific feedback.
      */
     fileResults: IFileResult[];
   }
@@ -94,14 +94,10 @@ export namespace IAutoBeAnalyzeModuleReviewApplication {
      */
     feedback: string;
 
-    /**
-     * Revised title if modified during review. Set to `null` if no revision.
-     */
+    /** Revised title if modified during review. Set to `null` if no revision. */
     revisedTitle: string | null;
 
-    /**
-     * Revised summary if modified during review. Set to `null` if no revision.
-     */
+    /** Revised summary if modified during review. Set to `null` if no revision. */
     revisedSummary: string | null;
 
     /**

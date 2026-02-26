@@ -16,8 +16,8 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteUnitPatchHistory } from "./histories/transformAnalyzeWriteUnitPatchHistory";
-import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 import { repairAnalyzeWriteUnitInput } from "./orchestrateAnalyzeWriteUnit";
+import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 
 export const orchestrateAnalyzeWriteUnitPatch = async (
   ctx: AutoBeContext,

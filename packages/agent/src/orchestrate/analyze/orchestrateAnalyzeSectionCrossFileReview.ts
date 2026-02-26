@@ -1,8 +1,8 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeFile,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -24,9 +24,9 @@ import { IAutoBeAnalyzeSectionCrossFileReviewApplication } from "./structures/IA
  * files.
  *
  * This function reviews all files' section metadata (titles, keywords,
- * purposes) together in a single LLM call, providing cross-file validation
- * for terminology alignment, value consistency, naming conventions, and
- * content deduplication.
+ * purposes) together in a single LLM call, providing cross-file validation for
+ * terminology alignment, value consistency, naming conventions, and content
+ * deduplication.
  *
  * Unlike the per-file review which checks full content, this review only
  * receives lightweight metadata to stay within context limits.

@@ -93,9 +93,9 @@ export const enum AutoBeConfigConstant {
    * Value of 15 provides generous retries for the Analyze Phase, which often
    * needs multiple iterations due to the complexity of module/unit/section
    * decomposition. Most issues resolve within a few passes, but the higher
-   * limit accommodates complex files requiring many correction cycles.
-   * The limit still prevents indefinite loops while allowing meaningful
-   * automatic correction.
+   * limit accommodates complex files requiring many correction cycles. The
+   * limit still prevents indefinite loops while allowing meaningful automatic
+   * correction.
    */
   ANALYZE_RETRY = 15,
 

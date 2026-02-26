@@ -37,9 +37,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
 
   const hasSectionTargets =
     props.sectionIndices != null && props.sectionIndices.length > 0;
-  const targetSet = hasSectionTargets
-    ? new Set(props.sectionIndices)
-    : null;
+  const targetSet = hasSectionTargets ? new Set(props.sectionIndices) : null;
 
   const previousOutputBlock = hasSectionTargets
     ? `The following sections were generated. Sections marked [NEEDS FIX] must be corrected.

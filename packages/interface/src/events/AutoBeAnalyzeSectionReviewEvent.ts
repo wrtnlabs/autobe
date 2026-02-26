@@ -40,8 +40,8 @@ export interface AutoBeAnalyzeSectionReviewEvent
    * Per-file review results.
    *
    * Each entry contains the review verdict for a specific file's section
-   * content, including whether it was approved, feedback for improvement,
-   * and optional revisions.
+   * content, including whether it was approved, feedback for improvement, and
+   * optional revisions.
    */
   fileResults: AutoBeAnalyzeSectionReviewEvent.IFileResult[];
 
@@ -70,8 +70,8 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
     /**
      * Whether this file's section content passed the cross-file review.
      *
-     * If true, the file's sections are consistent with the overall content.
-     * If false, the file's sections must be regenerated with feedback.
+     * If true, the file's sections are consistent with the overall content. If
+     * false, the file's sections must be regenerated with feedback.
      */
     approved: boolean;
 
@@ -102,8 +102,8 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
     /**
      * Specific module/unit pairs whose sections were rejected.
      *
-     * When non-null, only these module/units need section regeneration on retry.
-     * When null or undefined, all module/units are considered rejected
+     * When non-null, only these module/units need section regeneration on
+     * retry. When null or undefined, all module/units are considered rejected
      * (backward-compatible fallback to regenerate all).
      */
     rejectedModuleUnits: IRejectedModuleUnit[] | null;
@@ -130,11 +130,11 @@ export namespace AutoBeAnalyzeSectionReviewEvent {
     /**
      * Per-unit mapping of specific section indices that need regeneration.
      *
-     * Keys are unit indices (from `unitIndices`), values are arrays of
-     * section indices within that unit's `sectionSections[]` that failed review.
+     * Keys are unit indices (from `unitIndices`), values are arrays of section
+     * indices within that unit's `sectionSections[]` that failed review.
      *
-     * When null/undefined or when a unitIndex is not present as a key,
-     * ALL sections for that unit are regenerated (backward-compatible fallback).
+     * When null/undefined or when a unitIndex is not present as a key, ALL
+     * sections for that unit are regenerated (backward-compatible fallback).
      */
     sectionIndicesPerUnit?: Record<number, number[]> | null;
   }

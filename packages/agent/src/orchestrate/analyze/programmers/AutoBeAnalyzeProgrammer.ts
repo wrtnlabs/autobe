@@ -1,10 +1,10 @@
 import {
-  AutoBeAnalyzeModuleReviewEvent,
-  AutoBeAnalyzeSectionReviewEvent,
-  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeModule,
+  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeSection,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeUnit,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,

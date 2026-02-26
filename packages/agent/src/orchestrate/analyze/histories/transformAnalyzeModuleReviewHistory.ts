@@ -12,7 +12,8 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 /**
- * Transform histories for cross-file review of module sections across ALL files.
+ * Transform histories for cross-file review of module sections across ALL
+ * files.
  *
  * This transformer provides context for reviewing all files' module structures
  * together, enabling cross-file validation for consistency and uniformity.

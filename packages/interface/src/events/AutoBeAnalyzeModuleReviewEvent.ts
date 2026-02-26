@@ -67,8 +67,8 @@ export namespace AutoBeAnalyzeModuleReviewEvent {
     /**
      * Whether this file's module structure passed the cross-file review.
      *
-     * If true, the file's module is consistent with the overall structure.
-     * If false, the file's module must be regenerated with feedback.
+     * If true, the file's module is consistent with the overall structure. If
+     * false, the file's module must be regenerated with feedback.
      */
     approved: boolean;
 
@@ -80,14 +80,10 @@ export namespace AutoBeAnalyzeModuleReviewEvent {
      */
     feedback: string;
 
-    /**
-     * Revised title if modified during review. Set to `null` if no revision.
-     */
+    /** Revised title if modified during review. Set to `null` if no revision. */
     revisedTitle: string | null;
 
-    /**
-     * Revised summary if modified during review. Set to `null` if no revision.
-     */
+    /** Revised summary if modified during review. Set to `null` if no revision. */
     revisedSummary: string | null;
 
     /**

@@ -1,7 +1,7 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeFile,
+  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeEventSource,

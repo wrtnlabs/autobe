@@ -13,8 +13,8 @@ export interface ITraceable {
   /**
    * List of `sectionId` references from the Evidence Layer.
    *
-   * Points to the source section(s) from which this item was derived.
-   * At least one is required.
+   * Points to the source section(s) from which this item was derived. At least
+   * one is required.
    */
   sourceSectionIds: string[];
 }

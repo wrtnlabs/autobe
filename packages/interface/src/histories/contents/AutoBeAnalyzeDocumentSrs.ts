@@ -23,9 +23,8 @@ export interface AutoBeAnalyzeDocumentSrs {
   /**
    * List of SRS category keys selected by the LLM.
    *
-   * Required categories (introduction, systemOverview, capabilities) are
-   * always included; optional categories are determined by project
-   * characteristics.
+   * Required categories (introduction, systemOverview, capabilities) are always
+   * included; optional categories are determined by project characteristics.
    */
   selectedCategories: AutoBeAnalyzeDocumentSrs.Category[];
 
@@ -72,8 +71,7 @@ export namespace AutoBeAnalyzeDocumentSrs {
   /**
    * Available SRS category keys.
    *
-   * Required 3: introduction, systemOverview, capabilities
-   * Optional 7: the rest
+   * Required 3: introduction, systemOverview, capabilities Optional 7: the rest
    */
   export type Category =
     | "introduction"

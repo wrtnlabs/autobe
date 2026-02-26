@@ -27,8 +27,7 @@ export interface IAttributeRegistryEntry {
 const DOWNSTREAM_CONTEXT_REGEX =
   /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
 
-const CROSS_REFERENCE_PATTERN =
-  /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
 
 /**
  * Build an Attribute Canonical Registry from completed file states.
@@ -37,8 +36,8 @@ const CROSS_REFERENCE_PATTERN =
  * extracts the first full specification for each Entity.attribute.
  * Cross-references (e.g., "(defined in ...)") are skipped.
  *
- * The registry follows "first writer wins" — the first file/section to
- * fully specify an attribute owns it.
+ * The registry follows "first writer wins" — the first file/section to fully
+ * specify an attribute owns it.
  */
 export const buildAttributeRegistry = (props: {
   files: Array<{
@@ -115,9 +114,7 @@ export const formatRegistryForPrompt = (
 
 // ─── Internal helpers ───
 
-function extractAttributeSpecs(
-  content: string,
-): Array<{
+function extractAttributeSpecs(content: string): Array<{
   key: string;
   entity: string;
   attribute: string;
@@ -142,7 +139,10 @@ function extractAttributeSpecs(
         inAttributes = true;
         continue;
       }
-      if (line.startsWith("**") && !line.startsWith("**Attributes Specified**")) {
+      if (
+        line.startsWith("**") &&
+        !line.startsWith("**Attributes Specified**")
+      ) {
         inAttributes = false;
         continue;
       }

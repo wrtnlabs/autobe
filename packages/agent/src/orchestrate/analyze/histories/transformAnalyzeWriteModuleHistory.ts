@@ -13,9 +13,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 /**
  * ISO/IEC/IEEE 29148:2018 SRS Structure — Dynamic Module Selection
  *
- * 3 required modules are always present; 7 optional modules are selected
- * by the LLM based on project characteristics. This aligns with the
- * semantic layer's AutoBeAnalyzeDocumentSrs.Category type.
+ * 3 required modules are always present; 7 optional modules are selected by the
+ * LLM based on project characteristics. This aligns with the semantic layer's
+ * AutoBeAnalyzeDocumentSrs.Category type.
  */
 const SRS_STRUCTURE = {
   required: [
@@ -117,8 +117,7 @@ const SRS_STRUCTURE = {
     {
       title: "Actor Permission Matrix",
       categoryKey: "actorPermissionMatrix",
-      purpose:
-        "Define per-actor permission mappings for all operations.",
+      purpose: "Define per-actor permission mappings for all operations.",
       includes: [
         "Role-based access control matrix",
         "Resource-level permission rules",

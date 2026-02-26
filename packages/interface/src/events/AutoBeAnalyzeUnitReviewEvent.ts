@@ -39,8 +39,8 @@ export interface AutoBeAnalyzeUnitReviewEvent
    * Per-file review results.
    *
    * Each entry contains the review verdict for a specific file's unit
-   * structure, including whether it was approved, feedback for improvement,
-   * and optional revisions.
+   * structure, including whether it was approved, feedback for improvement, and
+   * optional revisions.
    */
   fileResults: AutoBeAnalyzeUnitReviewEvent.IFileResult[];
 
@@ -69,8 +69,8 @@ export namespace AutoBeAnalyzeUnitReviewEvent {
     /**
      * Whether this file's unit structure passed the cross-file review.
      *
-     * If true, the file's units are consistent with the overall structure.
-     * If false, the file's units must be regenerated with feedback.
+     * If true, the file's units are consistent with the overall structure. If
+     * false, the file's units must be regenerated with feedback.
      */
     approved: boolean;
 
@@ -93,8 +93,8 @@ export namespace AutoBeAnalyzeUnitReviewEvent {
     /**
      * Specific modules whose units were rejected.
      *
-     * When non-null, only these modules need unit regeneration on retry.
-     * When null or undefined, all modules are considered rejected
+     * When non-null, only these modules need unit regeneration on retry. When
+     * null or undefined, all modules are considered rejected
      * (backward-compatible fallback to regenerate all).
      */
     rejectedModules: IRejectedModule[] | null;

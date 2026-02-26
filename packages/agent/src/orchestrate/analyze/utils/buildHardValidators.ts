@@ -10,9 +10,9 @@ const DOWNSTREAM_CONTEXT_REGEX =
 /**
  * Remove all [DOWNSTREAM CONTEXT] Bridge Blocks from TOC file sections.
  *
- * TOC (00-toc.md) is a navigation aid and MUST NOT contain Bridge Blocks.
- * This function mutates the section content in-place, stripping any
- * `**[DOWNSTREAM CONTEXT]**...---` blocks.
+ * TOC (00-toc.md) is a navigation aid and MUST NOT contain Bridge Blocks. This
+ * function mutates the section content in-place, stripping any `**[DOWNSTREAM
+ * CONTEXT]**...---` blocks.
  */
 export const stripTocBridgeBlocks = (
   sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
@@ -20,10 +20,7 @@ export const stripTocBridgeBlocks = (
   for (const sectionsForModule of sectionResults) {
     for (const sectionEvent of sectionsForModule) {
       for (const section of sectionEvent.sectionSections) {
-        section.content = section.content.replace(
-          DOWNSTREAM_CONTEXT_REGEX,
-          "",
-        );
+        section.content = section.content.replace(DOWNSTREAM_CONTEXT_REGEX, "");
       }
     }
   }

@@ -20,6 +20,7 @@ export interface IParsedFunctionCall {
  * Extracts function calls from text content.
  *
  * Parsing strategy (in priority order):
+ *
  * 1. XML `<tool_call>` / `<function_call>` tags (Qwen-style patterns)
  * 2. Markdown code blocks
  * 3. Raw JSON objects in content
@@ -94,7 +95,6 @@ const parseXmlToolCalls = (
 
   return results;
 };
-
 
 const MARKDOWN_CODE_BLOCK_RE = /```(?:json)?\s*\n([\s\S]*?)\n\s*```/g;
 
@@ -207,8 +207,8 @@ const parseFunctionInvocations = (
 };
 
 /**
- * Attempts to parse a JSON string as a function call candidate.
- * Handles field name normalization and OpenAI-style nesting.
+ * Attempts to parse a JSON string as a function call candidate. Handles field
+ * name normalization and OpenAI-style nesting.
  */
 const tryParseCandidate = (
   text: string,
@@ -221,14 +221,13 @@ const tryParseCandidate = (
     return null;
   }
 
-  if (typeof obj !== "object" || obj === null || Array.isArray(obj)) return null;
+  if (typeof obj !== "object" || obj === null || Array.isArray(obj))
+    return null;
 
   return normalizeToFunctionCall(obj, toolNames);
 };
 
-/**
- * Tries to parse a JSON array of function call candidates.
- */
+/** Tries to parse a JSON array of function call candidates. */
 const tryParseArray = (
   text: string,
   toolNames: Set<string>,
@@ -259,6 +258,7 @@ const tryParseArray = (
  * Normalizes a parsed JSON object into a function call.
  *
  * Handles:
+ *
  * - Direct fields: { name: "fn", arguments: {...} }
  * - OpenAI nesting: { function: { name: "fn", arguments: {...} } }
  * - Various field names: name/function/function_name/tool_name,
@@ -317,12 +317,7 @@ const normalizeToFunctionCall = (
 };
 
 const NAME_KEYS = ["name", "function", "function_name", "tool_name"] as const;
-const ARGS_KEYS = [
-  "arguments",
-  "parameters",
-  "params",
-  "input",
-] as const;
+const ARGS_KEYS = ["arguments", "parameters", "params", "input"] as const;
 
 const extractString = (
   obj: Record<string, unknown>,
@@ -396,8 +391,8 @@ const escapeRegExp = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /**
- * Extracts complete JSON objects from text using brace-matching.
- * Handles strings containing braces by tracking quote state.
+ * Extracts complete JSON objects from text using brace-matching. Handles
+ * strings containing braces by tracking quote state.
  */
 const extractJsonObjects = (text: string): string[] => {
   const results: string[] = [];

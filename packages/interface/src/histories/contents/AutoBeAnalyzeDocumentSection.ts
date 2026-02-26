@@ -1,9 +1,9 @@
 /**
  * Atomic unit of the Evidence Layer.
  *
- * Evidence data decomposed from source markdown at H1-H3 level.
- * All Semantic Layer items reference this `sectionId` via `sourceSectionIds`
- * to guarantee source traceability.
+ * Evidence data decomposed from source markdown at H1-H3 level. All Semantic
+ * Layer items reference this `sectionId` via `sourceSectionIds` to guarantee
+ * source traceability.
  *
  * @author Juntak
  */
@@ -13,9 +13,10 @@ export interface AutoBeAnalyzeDocumentSection {
    *
    * Format: `"{fileIndex}-{moduleIndex}-{unitIndex}-{sectionIndex}"`
    *
-   * - level 1 (Module): `"0-2"` (fileIndex=0, moduleIndex=2)
-   * - level 2 (Unit): `"0-2-1"` (fileIndex=0, moduleIndex=2, unitIndex=1)
-   * - level 3 (Section): `"0-2-1-3"` (fileIndex=0, moduleIndex=2, unitIndex=1, sectionIndex=3)
+   * - Level 1 (Module): `"0-2"` (fileIndex=0, moduleIndex=2)
+   * - Level 2 (Unit): `"0-2-1"` (fileIndex=0, moduleIndex=2, unitIndex=1)
+   * - Level 3 (Section): `"0-2-1-3"` (fileIndex=0, moduleIndex=2, unitIndex=1,
+   *   sectionIndex=3)
    */
   sectionId: string;
 

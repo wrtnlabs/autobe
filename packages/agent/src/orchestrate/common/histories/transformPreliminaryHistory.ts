@@ -24,8 +24,8 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeInterfaceSchemaProgrammer } from "../../interface/programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
-import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
 export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
@@ -229,8 +229,7 @@ namespace PreliminaryTransformer {
             controller: props.source,
             kind,
             arguments: {
-              thinking:
-                "analysis sections for detailed requirements' analyses",
+              thinking: "analysis sections for detailed requirements' analyses",
               request: {
                 type: props.previous
                   ? "getPreviousAnalysisSections"

@@ -17,8 +17,8 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
  * Transform histories for cross-file lightweight review of section metadata.
  *
  * This transformer provides ONLY section titles, keywords, and purposes from
- * ALL files — NOT full content. This keeps the input well within context
- * limits even with hundreds of sections.
+ * ALL files — NOT full content. This keeps the input well within context limits
+ * even with hundreds of sections.
  */
 export const transformAnalyzeSectionCrossFileReviewHistory = (
   _ctx: AutoBeContext,
@@ -74,8 +74,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
 
         ${sectionEvents
           .map((sectionsForModule, moduleIndex) => {
-            const moduleSection =
-              moduleEvent.moduleSections[moduleIndex];
+            const moduleSection = moduleEvent.moduleSections[moduleIndex];
             const unitEvent = unitEvents[moduleIndex];
             return `
         ### Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
@@ -89,12 +88,10 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
 
         Sections:
         ${sectionEvent.sectionSections
-          .map(
-            (section) => {
-              const attrKeys = extractBridgeAttributeKeys(section.content);
-              return `- **${section.title}**${attrKeys ? ` [attrs: ${attrKeys}]` : ""}`;
-            },
-          )
+          .map((section) => {
+            const attrKeys = extractBridgeAttributeKeys(section.content);
+            return `- **${section.title}**${attrKeys ? ` [attrs: ${attrKeys}]` : ""}`;
+          })
           .join("\n")}
         `;
           })
@@ -139,16 +136,14 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
 const DOWNSTREAM_CONTEXT_REGEX =
   /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
 
-const CROSS_REFERENCE_PATTERN =
-  /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
 
 /**
  * Extract Entity.attribute keys from Bridge Block content.
  *
  * Returns a compact comma-separated string of attribute keys (e.g.,
- * "User.status, User.email, Todo.title") for lightweight cross-file
- * visibility. Only keys are included — not full specifications — to
- * minimize context size.
+ * "User.status, User.email, Todo.title") for lightweight cross-file visibility.
+ * Only keys are included — not full specifications — to minimize context size.
  */
 const extractBridgeAttributeKeys = (content: string): string => {
   const keys: string[] = [];
