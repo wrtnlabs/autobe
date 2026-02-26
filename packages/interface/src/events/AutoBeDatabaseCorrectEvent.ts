@@ -27,9 +27,9 @@ export interface AutoBeDatabaseCorrectEvent
     AutoBeEventBase<"databaseCorrect">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
     > {
   /**

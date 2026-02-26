@@ -29,7 +29,7 @@ export interface AutoBeDatabaseComponentReviewEvent
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
     > {
   /**
    * Comprehensive review analysis of the component organization.

@@ -1,6 +1,6 @@
 import { AutoBeRealizeCollectorReference } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
@@ -64,7 +64,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * Determines which action to perform:
      *
      * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
-     * - "getAnalysisFiles": Retrieve analysis files for context
+     * - "getAnalysisSections": Retrieve analysis files for context
      * - "getInterfaceOperations": Retrieve operation specifications
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final collector plan
@@ -75,7 +75,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
     request:
       | IComplete
       | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas;
   }

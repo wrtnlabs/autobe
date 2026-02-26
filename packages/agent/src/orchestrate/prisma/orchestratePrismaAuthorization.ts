@@ -52,14 +52,14 @@ async function process(
   },
 ): Promise<AutoBeDatabaseComponent> {
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeDatabaseAuthorizationApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
@@ -117,7 +117,7 @@ async function process(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
   actors: AutoBeAnalyzeActor[];
   prefix: string | null;

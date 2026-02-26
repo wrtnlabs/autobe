@@ -20,9 +20,9 @@ interface IProgrammer {
   history(next: {
     group: AutoBeInterfaceGroup;
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     >;

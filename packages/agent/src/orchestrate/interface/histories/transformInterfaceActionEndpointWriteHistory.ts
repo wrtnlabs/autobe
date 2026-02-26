@@ -13,9 +13,9 @@ export const transformInterfaceActionEndpointWriteHistory = (props: {
   group: AutoBeInterfaceGroup;
   baseEndpoints: AutoBeOpenApi.IEndpoint[];
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

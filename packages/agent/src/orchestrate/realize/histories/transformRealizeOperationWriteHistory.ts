@@ -20,7 +20,7 @@ export const transformRealizeOperationWriteHistory = (props: {
   totalAuthorizations: AutoBeRealizeAuthorization[];
   dto: Record<string, string>;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"

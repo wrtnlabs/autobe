@@ -1,9 +1,9 @@
 import { AutoBeInterfaceGroup } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 
@@ -29,7 +29,7 @@ export namespace IAutoBeInterfaceGroupApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
+     * For preliminary requests (getAnalysisSections, getPreviousAnalysisSections,
      * getDatabaseSchemas, getPreviousDatabaseSchemas):
      *
      * - What critical information is missing that you don't already have?
@@ -52,16 +52,16 @@ export namespace IAutoBeInterfaceGroupApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
+     * (getAnalysisSections, getPreviousAnalysisSections, getDatabaseSchemas,
      * getPreviousDatabaseSchemas) or final group generation (complete). When
      * preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }

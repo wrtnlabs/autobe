@@ -84,11 +84,11 @@ async function process(
   },
 ): Promise<AutoBeOpenApi.IJsonSchema | null> {
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
@@ -97,8 +97,8 @@ async function process(
       typia.json.application<IAutoBeInterfaceSchemaCastingApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
       "interfaceOperations",
@@ -198,11 +198,11 @@ function createController(
     operations: AutoBeOpenApi.IOperation[];
     pointer: IPointer<IAutoBeInterfaceSchemaCastingApplication.IComplete | null>;
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
       | "previousInterfaceSchemas"

@@ -124,16 +124,16 @@ async function execute(
   failure: IAutoBeDatabaseValidation.IFailure,
 ): Promise<IExecutionResult> {
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
     ],
@@ -223,8 +223,8 @@ const getTableCount = (failure: IAutoBeDatabaseValidation.IFailure): number => {
 
 function createController(props: {
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "previousAnalysisFiles"
+    | "analysisSections"
+    | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;

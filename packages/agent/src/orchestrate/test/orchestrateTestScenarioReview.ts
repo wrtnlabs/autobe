@@ -101,11 +101,11 @@ async function process(
     ctx.state().interface?.authorizations ?? [];
 
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeTestScenarioReviewApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
+    kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
     state: ctx.state(),
   });
 
@@ -164,7 +164,7 @@ async function process(
  * The controller handles:
  *
  * - Validating review responses against TypeScript types
- * - Processing preliminary data requests (analysisFiles, interfaceOperations,
+ * - Processing preliminary data requests (analysisSections, interfaceOperations,
  *   interfaceSchemas)
  * - Capturing improved scenario in build callback
  *
@@ -181,7 +181,7 @@ function createController(props: {
   operation: AutoBeOpenApi.IOperation;
   authorizations: AutoBeInterfaceAuthorization[];
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
   build: (improved: AutoBeTestScenario | "erase" | null) => void;
 }): IAgenticaController.IClass {
@@ -194,7 +194,7 @@ function createController(props: {
     // Validation failed at type level
     if (result.success === false) return result;
 
-    // Preliminary request (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas)
+    // Preliminary request (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas)
     // Delegate validation to preliminary controller
     if (result.data.request.type !== "complete") {
       return props.preliminary.validate({
