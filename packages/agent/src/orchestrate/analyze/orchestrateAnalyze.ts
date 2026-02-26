@@ -984,7 +984,9 @@ async function processStageSection(
 
   if (pendingIndices.size > 0) {
     analyzeDebug(
-      `[orchestrateAnalyze] Section stage: force-passing after max retries for files: ${[...pendingIndices]
+      `[orchestrateAnalyze] Section stage: force-passing after max retries for files: ${[
+        ...pendingIndices,
+      ]
         .map((i) => props.fileStates[i]!.file.filename)
         .join(", ")}`,
     );
