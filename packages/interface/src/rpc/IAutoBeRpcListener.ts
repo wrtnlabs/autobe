@@ -1,15 +1,13 @@
 import {
   AutoBeAnalyzeCompleteEvent,
+  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteAllSectionReviewEvent,
-  AutoBeAnalyzeWriteAllUnitReviewEvent,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
-  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -181,17 +179,6 @@ export interface IAutoBeRpcListener {
   analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for module section review events (V2 hierarchical
-   * writing).
-   *
-   * Called when the module section structure is reviewed and validated before
-   * proceeding to unit section generation.
-   */
-  analyzeWriteModuleReview?(
-    event: AutoBeAnalyzeWriteModuleReviewEvent,
-  ): Promise<void>;
-
-  /**
    * Optional handler for unit section generation events (V2 hierarchical
    * writing).
    *
@@ -199,16 +186,6 @@ export interface IAutoBeRpcListener {
    * for a specific module section.
    */
   analyzeWriteUnit?(event: AutoBeAnalyzeWriteUnitEvent): Promise<void>;
-
-  /**
-   * Optional handler for unit section review events (V2 hierarchical writing).
-   *
-   * Called when the unit section content is reviewed and validated before
-   * proceeding to section section generation.
-   */
-  analyzeWriteUnitReview?(
-    event: AutoBeAnalyzeWriteUnitReviewEvent,
-  ): Promise<void>;
 
   /**
    * Optional handler for section section generation events (V2 hierarchical
@@ -220,34 +197,28 @@ export interface IAutoBeRpcListener {
   analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
 
   /**
-   * Optional handler for section review events (V2 hierarchical writing).
+   * Optional handler for module review progress events.
    *
-   * Called when the section content is reviewed for quality assurance before
-   * final document assembly.
+   * Called when the Analyze agent reviews generated module sections and reports
+   * review progress.
    */
-  analyzeWriteSectionReview?(
-    event: AutoBeAnalyzeWriteSectionReviewEvent,
-  ): Promise<void>;
+  analyzeModuleReview?(event: AutoBeAnalyzeModuleReviewEvent): Promise<void>;
 
   /**
-   * Optional handler for batch unit review events (V2 hierarchical writing).
+   * Optional handler for unit review progress events.
    *
-   * Called when ALL unit sections for a file are reviewed in a single LLM call,
-   * providing holistic validation of the entire file's unit structure.
+   * Called when the Analyze agent reviews generated unit sections and reports
+   * review progress.
    */
-  analyzeWriteAllUnitReview?(
-    event: AutoBeAnalyzeWriteAllUnitReviewEvent,
-  ): Promise<void>;
+  analyzeUnitReview?(event: AutoBeAnalyzeUnitReviewEvent): Promise<void>;
 
   /**
-   * Optional handler for batch section review events (V2 hierarchical writing).
+   * Optional handler for section review progress events.
    *
-   * Called when ALL section sections for a file are reviewed in a single LLM
-   * call, providing holistic validation of the entire file's detailed content.
+   * Called when the Analyze agent reviews generated detailed sections and
+   * reports review progress.
    */
-  analyzeWriteAllSectionReview?(
-    event: AutoBeAnalyzeWriteAllSectionReviewEvent,
-  ): Promise<void>;
+  analyzeSectionReview?(event: AutoBeAnalyzeSectionReviewEvent): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.

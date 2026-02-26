@@ -1,6 +1,6 @@
 import {
-  // AgenticaJsonParseError,
-  // AgenticaValidationError,
+  AgenticaJsonParseError,
+  AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -56,7 +56,9 @@ import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
+import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
+import { supportQwen } from "./supportQwen";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -166,6 +168,8 @@ export const createAutoBeContext = (props: {
           controllers: [next.controller],
         });
         supportMistral(agent, props.vendor);
+        supportFunctionCallFallback(agent, props.vendor);
+        supportQwen(agent, props.vendor);
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {
@@ -335,6 +339,33 @@ export const createAutoBeContext = (props: {
                 return success(newHistories);
             }
           }
+          // Retry with explicit failure feedback
+          const functionNames: string = next.controller.application.functions
+            .map((f) => f.name)
+            .join(", ");
+          for (
+            let retry = 0;
+            retry < AutoBeConfigConstant.FUNCTION_CALLING_RETRY - 1;
+            retry++
+          ) {
+            metric("consent");
+            const retryMessage: string =
+              `You failed to call any function. ` +
+              `You MUST call one of these functions immediately: ${functionNames}. ` +
+              `Do not explain anything. Just call the function right now.`;
+            const retryHistories: MicroAgenticaHistory[] =
+              await agent.conversate(retryMessage);
+            const retryTokenUsage: IAutoBeTokenUsageJson.IComponent =
+              AutoBeTokenUsageComponent.minus(
+                new AutoBeTokenUsageComponent(
+                  agent.getTokenUsage().toJSON().aggregate,
+                ),
+                new AutoBeTokenUsageComponent(tokenUsage),
+              );
+            consume(retryTokenUsage);
+            if (retryHistories.some((h) => h.type === "execute"))
+              return success(retryHistories);
+          }
           failure();
         }
         return success(result.histories);
@@ -343,12 +374,33 @@ export const createAutoBeContext = (props: {
         execute,
         AutoBeConfigConstant.API_ERROR_RETRY,
         (error) => {
+          // Context overflow and other permanent 400 errors should not be
+          // retried — the same payload will always produce the same failure.
+          if (error instanceof BadRequestError) {
+            const errBody = error as unknown as {
+              error?: { metadata?: { raw?: string }; message?: string };
+            };
+            const msg = String(
+              errBody.error?.metadata?.raw ??
+                errBody.error?.message ??
+                error.message ??
+                "",
+            );
+            const permanent = [
+              "context_length_exceeded",
+              "maximum context length",
+              "request too large",
+            ];
+            if (permanent.some((p) => msg.includes(p))) return false;
+          }
           return (
             error instanceof APIError ||
             error instanceof BadRequestError ||
-            // error instanceof AgenticaJsonParseError ||
-            // error instanceof AgenticaValidationError ||
-            (error instanceof TypeError && error.message === "terminated") ||
+            error instanceof AgenticaJsonParseError ||
+            error instanceof AgenticaValidationError ||
+            error instanceof TypeError ||
+            (error instanceof Error &&
+              error.message.startsWith("OpenRouter upstream error")) ||
             (error instanceof Error &&
               OPENAI_API_ERROR_KEYS.get().every((key) =>
                 error.hasOwnProperty(key),

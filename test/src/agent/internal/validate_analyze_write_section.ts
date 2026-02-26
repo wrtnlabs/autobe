@@ -56,6 +56,7 @@ export const validate_analyze_write_section = async (props: {
       file,
       moduleEvent,
       unitEvent,
+      allUnitEvents: [unitEvent],
       moduleIndex: 0,
       unitIndex: 0,
       progress,

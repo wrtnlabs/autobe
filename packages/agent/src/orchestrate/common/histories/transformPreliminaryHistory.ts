@@ -25,6 +25,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeInterfaceSchemaProgrammer } from "../../interface/programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
 export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
@@ -140,6 +141,100 @@ namespace PreliminaryTransformer {
                   ? "getPreviousAnalysisFiles"
                   : "getAnalysisFiles",
                 fileNames: props.local[kind].map((f) => f.filename),
+              },
+            },
+          }),
+          assistant,
+          system,
+        ];
+  };
+
+  export const analysisSections = (
+    props: IProps<"analysisSections" | "previousAnalysisSections">,
+  ): IMicroAgenticaHistoryJson[] => {
+    const kind: "analysisSections" | "previousAnalysisSections" = props.previous
+      ? "previousAnalysisSections"
+      : "analysisSections";
+    const oldbie: Map<number, IAnalysisSectionEntry> = new Map(
+      props.local[kind]
+        .map((s) => [s.id, s] as const)
+        .sort(([a], [b]) => a - b),
+    );
+    const newbie: IAnalysisSectionEntry[] = props.all[kind]
+      .filter((s) => oldbie.has(s.id) === false)
+      .sort((a, b) => a.id - b.id);
+
+    const analyze: AutoBeAnalyzeHistory | null = props.previous
+      ? props.state.previousAnalyze
+      : props.state.analyze;
+    const assistant: IAgenticaHistoryJson.IAssistantMessage =
+      createAssistantMessage({
+        prompt:
+          AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_LOADED.replace(
+            "{{PREFIX}}",
+            analyze?.prefix ?? "",
+          ).replace(
+            "{{ACTORS}}",
+            analyze?.actors ? toJsonBlock(analyze.actors) : "",
+          ),
+        previous:
+          AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
+        content: Array.from(oldbie.values())
+          .map(
+            (s) =>
+              `### [ID: ${s.id}] ${s.filename} > ${s.unitTitle} > ${s.sectionTitle}\n\n${s.content}`,
+          )
+          .join("\n\n---\n\n"),
+        replace: props.previous
+          ? { from: "getAnalysisSections", to: "getPreviousAnalysisSections" }
+          : null,
+      });
+    const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
+      prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION,
+      previous:
+        AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
+      available: StringUtil.trim`
+        ID | File | Unit | Section | Keywords
+        ---|------|------|---------|----------
+        ${newbie
+          .map((s) =>
+            [
+              s.id,
+              s.filename,
+              s.unitTitle,
+              s.sectionTitle,
+              s.keywords.join(", "),
+            ].join(" | "),
+          )
+          .join("\n")}
+      `,
+      loaded: Array.from(oldbie.values())
+        .map((s) => `- [${s.id}] ${s.sectionTitle}`)
+        .join("\n"),
+      exhausted:
+        newbie.length === 0
+          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_EXHAUSTED
+          : "",
+      replace: props.previous
+        ? {
+            from: "getAnalysisSections",
+            to: "getPreviousAnalysisSections",
+          }
+        : null,
+    });
+    return props.local[kind].length === 0
+      ? [assistant, system]
+      : [
+          createFunctionCallingMessage({
+            controller: props.source,
+            kind,
+            arguments: {
+              thinking: "analysis sections for detailed requirements' analyses",
+              request: {
+                type: props.previous
+                  ? "getPreviousAnalysisSections"
+                  : "getAnalysisSections",
+                sectionIds: props.local[kind].map((s) => s.id),
               },
             },
           }),

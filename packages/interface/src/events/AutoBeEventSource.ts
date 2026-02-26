@@ -1,12 +1,10 @@
+import { AutoBeAnalyzeModuleReviewEvent } from "./AutoBeAnalyzeModuleReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
-import { AutoBeAnalyzeWriteAllSectionReviewEvent } from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
-import { AutoBeAnalyzeWriteAllUnitReviewEvent } from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
+import { AutoBeAnalyzeSectionReviewEvent } from "./AutoBeAnalyzeSectionReviewEvent";
+import { AutoBeAnalyzeUnitReviewEvent } from "./AutoBeAnalyzeUnitReviewEvent";
 import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
-import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
 import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
-import { AutoBeAnalyzeWriteSectionReviewEvent } from "./AutoBeAnalyzeWriteSectionReviewEvent";
 import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
-import { AutoBeAnalyzeWriteUnitReviewEvent } from "./AutoBeAnalyzeWriteUnitReviewEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
 import { AutoBeDatabaseAuthorizationReviewEvent } from "./AutoBeDatabaseAuthorizationReviewEvent";
 import { AutoBeDatabaseComponentEvent } from "./AutoBeDatabaseComponentEvent";
@@ -82,14 +80,12 @@ export type AutoBeEventSource =
   | AutoBeAnalyzeScenarioEvent["type"]
   // analyze (hierarchical write V2 - Module/Unit/Section)
   | AutoBeAnalyzeWriteModuleEvent["type"]
-  | AutoBeAnalyzeWriteModuleReviewEvent["type"]
   | AutoBeAnalyzeWriteUnitEvent["type"]
-  | AutoBeAnalyzeWriteUnitReviewEvent["type"]
   | AutoBeAnalyzeWriteSectionEvent["type"]
-  | AutoBeAnalyzeWriteSectionReviewEvent["type"]
-  // analyze (batch review - All Units/Sections at once)
-  | AutoBeAnalyzeWriteAllUnitReviewEvent["type"]
-  | AutoBeAnalyzeWriteAllSectionReviewEvent["type"]
+  // analyze (review)
+  | AutoBeAnalyzeModuleReviewEvent["type"]
+  | AutoBeAnalyzeUnitReviewEvent["type"]
+  | AutoBeAnalyzeSectionReviewEvent["type"]
   // database
   | AutoBeDatabaseGroupEvent["type"]
   | AutoBeDatabaseGroupReviewEvent["type"]

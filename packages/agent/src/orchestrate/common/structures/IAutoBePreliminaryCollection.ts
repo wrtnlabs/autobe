@@ -6,6 +6,8 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 
+import { IAnalysisSectionEntry } from "./IAnalysisSectionEntry";
+
 /**
  * Complete data collection for preliminary RAG system.
  *
@@ -18,6 +20,9 @@ import {
 export interface IAutoBePreliminaryCollection {
   /** Requirements analysis files from ANALYZE phase. */
   analysisFiles: AutoBeAnalyzeFile[];
+
+  /** Individual ### sections from analysis files for fine-grained retrieval. */
+  analysisSections: IAnalysisSectionEntry[];
 
   /** Database models from DATABASE phase. */
   databaseSchemas: AutoBeDatabase.IModel[];
@@ -36,6 +41,9 @@ export interface IAutoBePreliminaryCollection {
 
   /** Analysis files from previous iteration (for complement). */
   previousAnalysisFiles: AutoBeAnalyzeFile[];
+
+  /** Analysis sections from previous iteration (for complement). */
+  previousAnalysisSections: IAnalysisSectionEntry[];
 
   /** Database schemas from previous iteration (for complement). */
   previousDatabaseSchemas: AutoBeDatabase.IModel[];

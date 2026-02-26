@@ -25,7 +25,9 @@ export interface AutoBeDatabaseComponentEvent
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Analysis of the component's scope and table requirements.

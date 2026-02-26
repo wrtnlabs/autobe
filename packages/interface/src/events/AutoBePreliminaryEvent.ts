@@ -75,7 +75,9 @@ export interface AutoBePreliminaryEvent<
    */
   existing: Function extends "interfaceOperations"
     ? AutoBeOpenApi.IEndpoint[]
-    : string[];
+    : Function extends "analysisSections" | "previousAnalysisSections"
+      ? number[]
+      : string[];
 
   /**
    * Items that the agent is requesting to create or work with.
@@ -91,7 +93,9 @@ export interface AutoBePreliminaryEvent<
    */
   requested: Function extends "interfaceOperations"
     ? AutoBeOpenApi.IEndpoint[]
-    : string[];
+    : Function extends "analysisSections" | "previousAnalysisSections"
+      ? number[]
+      : string[];
 
   /**
    * Retry attempt number for this preliminary validation.

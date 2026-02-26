@@ -7,10 +7,12 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
@@ -138,6 +140,105 @@ namespace PreliminaryApplicationValidator {
                 .map((k) => `- ${k}`)
                 .join("\n") || "(none)",
             ),
+      });
+    return finalize(input, errors);
+  };
+
+  export const getAnalysisSections = (
+    controller: AutoBePreliminaryController<
+      "analysisSections" | "previousAnalysisSections"
+    >,
+    input: IAutoBePreliminaryRequest<
+      "analysisSections" | "previousAnalysisSections"
+    >,
+    previous: boolean,
+  ): IValidation<
+    IAutoBePreliminaryRequest<"analysisSections" | "previousAnalysisSections">
+  > => {
+    const accessor: "analysisSections" | "previousAnalysisSections" = previous
+      ? "previousAnalysisSections"
+      : "analysisSections";
+    if (controller.getAll()[accessor] === undefined)
+      return nonExisting(controller, accessor, input);
+
+    const all: Set<number> = new Set(
+      controller.getAll()[accessor].map((s) => s.id),
+    );
+    const oldbie: Set<number> = new Set(
+      controller.getLocal()[accessor].map((s) => s.id),
+    );
+    const newbie: Set<number> = new Set(
+      controller
+        .getAll()
+        [accessor].filter((s) => oldbie.has(s.id) === false)
+        .map((s) => s.id),
+    );
+
+    const errors: IValidation.IError[] = [];
+    input.request.sectionIds.forEach((key, i) => {
+      if (all.has(key) === false)
+        errors.push({
+          path: `$input.request.sectionIds[${i}]`,
+          value: key,
+          expected: Array.from(newbie)
+            .sort((a, b) => a - b)
+            .map((x) => String(x))
+            .join(" | "),
+          description: StringUtil.trim`
+            You've requested a NON-EXISTING analysis section ID: ${key}
+
+            This section ID does NOT exist in the system. This is NOT a recommendation,
+            but an ABSOLUTE INSTRUCTION you MUST follow:
+
+            ⛔ NEVER request section ID ${key} again - it does not exist!
+            ⛔ NEVER assume or invent section IDs that are not in the catalog!
+            ⛔ You MUST choose ONLY from the available section IDs listed in the catalog!
+
+            Available analysis sections you can request:
+
+            ID | File | Unit | Section
+            ---|------|------|--------
+            ${controller
+              .getAll()
+              [accessor].filter((s) => newbie.has(s.id))
+              .sort((a, b) => a.id - b.id)
+              .map(
+                (s) =>
+                  `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle}`,
+              )
+              .join("\n")}
+
+            ${
+              newbie.size === 0
+                ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_EXHAUSTED.replace(
+                    "getAnalysisSections" satisfies IAutoBePreliminaryGetAnalysisSections["type"],
+                    previous
+                      ? ("getPreviousAnalysisSections" satisfies IAutoBePreliminaryGetPreviousAnalysisSections["type"])
+                      : ("getAnalysisSections" satisfies IAutoBePreliminaryGetAnalysisSections["type"]),
+                  )
+                : ""
+            }
+          `,
+        });
+    });
+    if (input.request.sectionIds.every((k) => oldbie.has(k)))
+      errors.push({
+        path: `$input.request`,
+        value: input.request,
+        expected: controller
+          .getArgumentTypeNames()
+          .filter(
+            (k) =>
+              k !== typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>(),
+          )
+          .join(" | "),
+        description:
+          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
+            "{{REQUEST_TYPE}}",
+            typia.misc.literals<
+              IAutoBePreliminaryGetAnalysisSections["type"]
+            >()[0],
+          ),
       });
     return finalize(input, errors);
   };

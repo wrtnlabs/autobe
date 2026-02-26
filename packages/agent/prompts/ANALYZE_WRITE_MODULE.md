@@ -28,17 +28,36 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER include database schemas, API specs, or implementation details
 - ❌ NEVER ask clarification questions - proceed with assumptions
 
-## CRITICAL: English Only Requirement
+## CRITICAL: Anti-Verbosity Rules
 
-**ALL output MUST be written in English only.**
+Module content: 5-10 sentences MAXIMUM, UNDER 150 words.
+Every sentence MUST carry structural or business information.
 
-- Do NOT use any other language characters (Chinese, Korean, Japanese, etc.)
-- Do NOT mix languages within the document
-- If you output non-English text, the entire document will be REJECTED
-- Technical terms may remain in their original form (e.g., "REST API")
+### PROHIBITED Padding Patterns:
 
-**Correct format**:
-- ✅ "THE system SHALL prevent unauthorized access"
+- ❌ "This section provides/presents/establishes/defines/specifies..."
+- ❌ "This document describes/details/outlines..."
+- ❌ "This area explains/focuses on/addresses..."
+- ❌ "Readers will understand/gain clarity on..."
+- ❌ "No detailed requirements are included here" (obvious -- omit)
+
+### REQUIRED Direct Style:
+
+- ✅ Start directly with the entity ownership and scope declaration
+- ✅ First line = **Primary Entities** declaration
+- ✅ Then **Referenced Entities**, **Covers / Does NOT cover**, downstream hints
+- ✅ No prose preamble before structured declarations
+
+### Good Example (ACCEPT):
+
+```
+content: "**Primary Entities**: Product, ProductCategory, CartItem, Order\n**Referenced Entities**: User (from Module 2)\n\n**Covers**: product CRUD, category management, cart operations, order lifecycle.\n**Does NOT cover**: user authentication (Module 6), payment internals (Module 3).\n\nPrimary actors: buyer, seller, admin. DB phase should expect product and order component groups."
+```
+
+### The "Delete Test":
+Read each sentence. "If I delete this, is any structural or entity-mapping information lost?"
+- NO → delete it
+- YES → keep it
 
 ## CRITICAL: Content Location Rules
 
@@ -54,27 +73,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 | Scope Definition | Introduction module ONLY | Reference only |
 | Stakeholder List | System Overview module ONLY | Reference only |
 
-### Rules for Other Modules (Module 02-06):
+### Rules for Non-Introduction Modules:
 
 1. **DO NOT restate** Introduction, System Overview, or Glossary content
 2. **Reference format**: "See Introduction for system scope definition"
 3. **Module-specific intro**: Maximum 2-3 sentences, specific to that module only
 4. **No redundant context**: Assume reader has read previous modules
-
-### Bad Example (REJECT - redundant):
-
-```markdown
-# External Interface Requirements
-
-## Introduction
-This document describes the external interface requirements for the Shopping Mall Platform.
-The Shopping Mall Platform is an e-commerce system that enables...
-[repeating system overview from Module 01]
-
-## Scope
-This section covers external interfaces including...
-[repeating scope from Introduction module]
-```
 
 ### Good Example (ACCEPT - concise):
 
@@ -92,77 +96,28 @@ However, the following MUST be specific and concrete:
 
 ### MUST Include (Business "What"):
 
-1. **Data Constraints**
-   - ✅ "Title must be 5-200 characters, content must be at least 50 characters"
-   - ✅ "Email must follow RFC 5322 format"
+1. **Data Constraints**: ✅ "Title must be 5-200 characters, content must be at least 50 characters"
+2. **Quantity Limits**: ✅ "Maximum 10 attachments per article, each up to 25MB"
+3. **Permission Rules**: ✅ "Only administrators can create sections"
+4. **State Transitions**: ✅ "Banned user → Cannot login, cannot post, read-only access"
+5. **Error Scenarios**: ✅ "When login fails 5 times → Temporarily lock account"
+6. **Edge Cases**: ✅ "Super administrator cannot demote themselves"
 
-2. **Quantity Limits**
-   - ✅ "Maximum 10 attachments per article, each up to 25MB"
-   - ✅ "Maximum 15 tags per article, each tag up to 30 characters"
+### MUST NOT Include (Implementation Lock-in):
 
-3. **Permission Rules**
-   - ✅ "Only administrators can create sections"
-   - ✅ "Only super administrators can promote administrators"
-   - ✅ "Users can only edit their own articles"
+- ❌ "Store in PostgreSQL with UUID primary key" (specific DB)
+- ❌ "Use bcrypt with cost factor 12" (specific algorithm)
+- ❌ "Redis cache with 5-minute TTL" (specific infrastructure)
 
-4. **State Transitions**
-   - ✅ "Banned user → Cannot login, cannot post, read-only access"
-   - ✅ "Deleted account → All articles marked deleted, email purged after 30 days"
+### MAY Include (API Contract Summary):
 
-5. **Error Scenarios**
-   - ✅ "When attempting to post to non-existent section → Reject with validation error"
-   - ✅ "When login fails 5 times → Temporarily lock account"
-
-6. **Edge Cases**
-   - ✅ "Super administrator cannot demote themselves"
-   - ✅ "Cannot ban super administrators"
-   - ✅ "Last super administrator cannot be demoted"
-
-### MUST NOT Include (Technical "How"):
-
-- ❌ "Store in PostgreSQL with UUID primary key"
-- ❌ "Return HTTP 401 Unauthorized"
-- ❌ "JWT token contains user_id field"
-- ❌ "Use bcrypt with cost factor 12"
-- ❌ "Redis cache with 5-minute TTL"
-
-### Bad vs Good Examples:
-
-**Too Abstract (REJECT)**:
-- ❌ "Users can write articles"
-- ❌ "The system manages permissions"
-- ❌ "Authentication is required"
-
-**Technical Implementation (REJECT)**:
-- ❌ "JWT token expires in 30 minutes with refresh token rotation"
-- ❌ "Password hashed using bcrypt algorithm"
-- ❌ "API returns 403 Forbidden with error code"
-
-**Business Specific (ACCEPT)**:
-- ✅ "Users can create articles with title (5-200 chars), content (min 50 chars), up to 10 attachments (max 25MB each), and up to 15 tags"
-- ✅ "When a banned user attempts to login, the system denies access and displays the ban reason"
-- ✅ "Super administrators cannot demote themselves under any circumstances"
-- ✅ "The system maintains exactly 4 user roles: guest, citizen, administrator, superAdministrator"
+- ✅ HTTP status code patterns used in the module
+- ✅ Error code prefix conventions (e.g., "All todo errors use TODO_ prefix")
+- ✅ Auth pattern summary (e.g., "Bearer token, 24h session")
 
 ## Chain of Thought: The `thinking` Field
 
-Before calling `process()`, fill the `thinking` field to reflect on your decision.
-
-**For preliminary requests**:
-```typescript
-{
-  thinking: "Need previous version for context comparison. Loading.",
-  request: { type: "getPreviousAnalysisFiles", fileNames: ["..."] }
-}
-```
-
-**For completion**:
-```typescript
-{
-  thinking: "Designed comprehensive module structure covering all business domains.",
-  request: { type: "complete", title: "...", summary: "...", moduleSections: [...] }
-}
-```
+Before calling `process()`, fill the `thinking` field reflecting your decision rationale.
 
 ## Output Format
 
@@ -170,10 +125,7 @@ Before calling `process()`, fill the `thinking` field to reflect on your decisio
 ```typescript
 process({
   thinking: "Need previous structure for comparison.",
-  request: {
-    type: "getPreviousAnalysisFiles",
-    fileNames: ["Previous_Document.md"]
-  }
+  request: { type: "getPreviousAnalysisFiles", fileNames: ["Previous_Document.md"] }
 });
 ```
 
@@ -184,37 +136,37 @@ process({
   request: {
     type: "complete",
     title: "E-Commerce Platform Software Requirements Specification",
-    summary: "This SRS defines the requirements for an e-commerce platform following ISO/IEC/IEEE 29148:2018...",
+    summary: "This SRS defines the complete business requirements for an e-commerce platform enabling product browsing, shopping cart management, order processing, and multi-vendor seller operations.",
     moduleSections: [
       {
         title: "Introduction",
         purpose: "Define the purpose, scope, audience, domain glossary, and external references of the system.",
-        content: "This section establishes the purpose and scope of the e-commerce platform..."
+        content: "**Primary Entities**: None (introductory module)\n**Referenced Entities**: All entities referenced at glossary level\n\n**Covers**: system purpose, scope definition, audience identification, domain glossary, document conventions, and external standard references.\n**Does NOT cover**: any functional requirements, capabilities, or constraints.\n\nPrimary audience: development team, QA team, project stakeholders."
       },
       {
         title: "System Overview",
         purpose: "Provide high-level system context including stakeholders, assumptions, and constraints.",
-        content: "This section provides the system context and identifies stakeholders..."
+        content: "**Primary Entities**: ActorRole (guest, buyer, seller, admin, superAdmin)\n**Referenced Entities**: None\n\n**Covers**: system context, actor/stakeholder identification with role hierarchy, operating environment assumptions, regulatory and business constraints.\n**Does NOT cover**: specific functional capabilities (Module 4), interface specifications (Module 3), or security implementation (Module 6).\n\nAll downstream modules reference the actor definitions established here. DB phase should expect a user/role component group."
       },
       {
         title: "External Interface Requirements",
         purpose: "Describe interfaces with external systems, databases, services, and protocols.",
-        content: "This section specifies external system integrations..."
+        content: "**Primary Entities**: PaymentTransaction, NotificationRecord, FileStorage\n**Referenced Entities**: Order (from Module 4), User (from Module 2)\n\n**Covers**: payment gateway integration, email/SMS notification dispatch, file upload/storage service, external search engine, third-party authentication providers.\n**Does NOT cover**: internal business logic (Module 4), security policies (Module 6).\n\nPrimary actors: system (automated integrations), admin (configuration). DB phase should expect payment and notification component groups."
       },
       {
         title: "System Capabilities and Functional Requirements",
-        purpose: "Define capabilities, use cases, and detailed functional requirements.",
-        content: "This section covers the primary business capabilities and use cases..."
+        purpose: "Define capabilities, use cases, and detailed functional requirements organized by business domain with entity ownership.",
+        content: "**Primary Entities**: Product, ProductCategory, CartItem, Order, OrderItem, OrderStatus, Review, SellerShop, BuyerProfile\n**Referenced Entities**: User/ActorRole (from Module 2), PaymentTransaction (from Module 3)\n\n**Covers**: product CRUD and catalog browsing, category management, shopping cart operations, order lifecycle, cancellation and refund, review and rating, seller shop management, buyer profile management.\n**Does NOT cover**: user authentication (Module 6), payment processing internals (Module 3), performance targets (Module 5).\n\nPrimary actors: buyer, seller, admin. DB phase should expect product, order, and review component groups."
       },
       {
         title: "Physical and Performance Characteristics",
         purpose: "Specify physical constraints and quantified performance requirements.",
-        content: "This section defines deployment and performance requirements..."
+        content: "**Primary Entities**: None (non-functional requirements)\n**Referenced Entities**: All entities (performance applies system-wide)\n\n**Covers**: response time SLOs, throughput requirements, availability targets, scalability expectations, data retention policies, storage capacity planning.\n**Does NOT cover**: specific functional behaviors (Module 4), security measures (Module 6)."
       },
       {
         title: "Security and Quality Attributes",
-        purpose: "Define security requirements and quality attribute scenarios.",
-        content: "This section specifies security and quality requirements..."
+        purpose: "Define security requirements, authentication/authorization, and quality attribute scenarios.",
+        content: "**Primary Entities**: UserCredential, Session, LoginAttempt, AuditLog, Permission\n**Referenced Entities**: User/ActorRole (from Module 2), all business entities (for authorization rules)\n\n**Covers**: user authentication, role-based authorization matrix, data encryption, audit logging, account security, privacy compliance, reliability/maintainability.\n**Does NOT cover**: business-specific CRUD operations (Module 4), external service integrations (Module 3).\n\nPrimary actors: all roles (authentication), admin/superAdmin (authorization management). DB phase should expect auth and audit component groups."
       }
     ]
   }
@@ -223,111 +175,84 @@ process({
 
 # Guidelines
 
-## 1. Document Title Requirements
+## 1. Document Title: Clear, descriptive, professional (e.g., "Shopping Mall Platform Business Requirements")
 
-- Clear and descriptive
-- Indicates the system or domain being specified
-- Professional tone
-- Example: "Shopping Mall Platform Business Requirements"
-
-## 2. Summary Requirements
-
-Write a 2-3 sentence executive summary that includes:
-- What system is being specified
-- Primary business objective
-- Scope indication (what's included/excluded)
+## 2. Summary: 2-3 sentence executive summary -- what system, primary objective, scope.
 
 ## 3. Module Section Design Principles
 
-**Coverage**: Ensure all aspects of the business domain are covered:
-- Business model and context
-- User actors and roles
-- Core functionalities
-- Business rules and policies
-- Non-functional requirements (if applicable)
-
-**Non-overlapping**: Each module section should have clear boundaries
-- No duplicate topics between sections
-- Clear responsibility for each domain area
-
-**Logical Flow**: Order sections logically:
-1. Context/Overview first
-2. Core features in the unit
-3. Constraints/Policies at the end
+- **Coverage**: Business model, actors/roles, core functionalities, business rules, non-functional requirements
+- **Non-overlapping**: Clear boundaries, no duplicate topics
+- **Logical Flow**: Context/Overview → Core features → Constraints/Policies
 
 ## 4. Module Section Content Guidelines
 
-Each module section's `content` field should:
-- Provide context for what the section covers
-- NOT include detailed requirements (save for Unit/Section steps)
-- Be 2-5 sentences maximum
-- Set the stage for the unit sections that will follow
+Each module section's `content` field: **5-10 sentences MAXIMUM, UNDER 150 words** including:
+1. **Primary Entities** (1-2 sentences) | 2. **Referenced Entities** (1-2 sentences) | 3. **Module Boundary** -- "Covers / Does NOT cover" (2-3 sentences) | 4. **Key Stakeholders** (1-2 sentences) | 5. **Downstream Hints** -- DB component groups, API clusters (2-3 sentences)
 
-## 5. ISO/IEC/IEEE 29148:2018 SRS Structure (MANDATORY)
+Entity mapping matters: DB Phase uses boundaries for component groups, Interface Phase uses entity lists for API grouping, Review Phase uses ownership to detect overlap.
 
-**CRITICAL**: Your module sections MUST follow the ISO/IEC/IEEE 29148:2018 standard structure exactly as provided in the context. The SRS structure will be provided in JSON format in the assistant message.
+Do NOT include: detailed requirements, EARS statements, database schemas, API specs.
 
-Create exactly **6 module sections** in this order:
+## 5. ISO/IEC/IEEE 29148:2018 SRS Structure -- Dynamic Module Selection (MANDATORY)
 
-1. **Introduction**
-   - Purpose statement (why this system exists)
-   - Scope (what is included and excluded)
-   - Target audience and reading guide
-   - Domain-specific glossary terms
-   - References to external documents or standards
+**CRITICAL**: Module sections follow the ISO/IEC/IEEE 29148:2018 standard with **dynamic category selection**. Available modules (required and optional) are provided as JSON in the assistant message.
 
-2. **System Overview**
-   - System context diagram description
-   - Stakeholder identification
-   - Key assumptions about the operating environment
-   - Known constraints (technical, business, regulatory)
+### Selection Rules:
 
-3. **External Interface Requirements**
-   - External system integrations
-   - Third-party service dependencies
-   - Data exchange formats and protocols
-   - API integration requirements (NOT internal API specs)
+1. **Always include all 3 required modules** (Introduction, System Overview, System Capabilities and Functional Requirements) in order.
+2. **Evaluate each optional module** against the project's actual needs — include ONLY if genuinely needed as a separate concern.
+3. **Minimum 3, Maximum 10 modules** per file.
+4. **Omitted modules are not lost** — address briefly relevant optional topics within the Capabilities module as a subsection.
+5. **Number selected modules sequentially** starting from 1.
 
-4. **System Capabilities and Functional Requirements**
-   - High-level system capabilities
-   - Use case descriptions with actors
-   - Functional requirements in EARS format
-   - Business rules and invariants
+### Selection Examples:
 
-5. **Physical and Performance Characteristics**
-   - Deployment environment requirements
-   - Hardware constraints
-   - Response time requirements
-   - Throughput and scalability requirements
-   - Availability targets
+**Simple TodoApp** (3-4 modules):
+- Introduction, System Overview, System Capabilities
+- Maybe: Security and Quality Attributes (if multi-user auth needed)
 
-6. **Security and Quality Attributes**
-   - Authentication and authorization requirements
-   - Data protection requirements
-   - Audit and logging requirements
-   - Reliability requirements
-   - Maintainability considerations
+**E-Commerce Platform** (7-8 modules):
+- Introduction, System Overview, External Interface Requirements, System Capabilities, Actor Permission Matrix, Workflow and State Machines, Security and Quality Attributes
 
-**IMPORTANT**: Do NOT deviate from this structure. The downstream phases (Database, Interface, Test, Realize) depend on this exact structure for semantic parsing.
+**IMPORTANT**: Do NOT create empty or padded modules. Each selected module must have substantial, unique content. Downstream phases depend on this structure for semantic parsing.
+
+### Alternative: Domain-Functional Split (PREFERRED for focused apps)
+
+**When to use**: Project has ≤ 3 actors AND ≤ 2 external integrations.
+
+Instead of generic ISO categories, split modules by FUNCTIONAL DOMAIN where each module OWNS one domain completely.
+
+**TodoApp example:**
+1. Service Overview & Authentication
+2. Core Todo Functionality
+3. Edit History Management
+4. Trash and Deletion Workflow
+5. Filtering, Sorting, and Pagination
+6. Privacy and Access Control
+
+**Selection Rule:**
+- ≤ 3 actors AND ≤ 2 external integrations → Domain-Functional Split
+- Otherwise → ISO 29148 Dynamic Selection
+
+## EXCEPTION: TOC Document (00-toc.md) Structure
+
+**When the document filename is `00-toc.md`, DO NOT use ISO 29148.** The TOC is a **navigation index + global context** (~150-200 lines total), NOT a requirements specification.
+
+Use **4 module sections**: (1) Document Index and Project Summary -- navigation table with `[filename](./filename)` links + 2-3 sentence overview; (2) Interpretation, Assumptions, and Scope -- user input interpretation, 8+ assumptions, In/Out-of-Scope; (3) Actor Summary -- actor table (name, kind, description), no auth flows; (4) Core Domain Model and Workflows Overview -- entity names with one-line descriptions, workflow summaries, no detailed attribute tables.
+
+**TOC rules**: 3-5 sentences per module, NO entity ownership declarations, NO downstream hints.
 
 ## 6. Content Restrictions
 
-**INCLUDE** in module sections:
-- Section titles (## level)
-- Brief purpose statements
-- Introductory content setting context
+**INCLUDE**: Section titles (## level), brief purpose statements, introductory content setting context.
 
-**DO NOT INCLUDE** in module sections:
-- Detailed requirements (### level)
-- EARS-formatted requirements
-- Mermaid diagrams
-- Database schemas or API specifications
-- Implementation details
+**DO NOT INCLUDE**: Detailed requirements (### level), EARS-formatted requirements, Mermaid diagrams, database schemas, API specifications, implementation details.
 
 ## 7. Language
 
 - **ALL output MUST be in English only** - no exceptions
 - Do NOT use Chinese, Korean, Japanese, or any non-English characters
-- Maintain professional, clear language
-- Avoid technical jargon - focus on business terminology
-- If the metadata specifies a different language, still write in English (translation will be handled separately)
+- If you output non-English text, the entire document will be REJECTED
+- Maintain professional, clear language; avoid technical jargon - focus on business terminology
+- If the metadata specifies a different language, still write in English

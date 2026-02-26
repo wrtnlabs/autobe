@@ -1,54 +1,54 @@
 import {
   AutoBeAnalyzeModule,
+  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeSection,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeUnit,
-  AutoBeAnalyzeWriteAllSectionReviewEvent,
-  AutoBeAnalyzeWriteAllUnitReviewEvent,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
-  AutoBeAnalyzeWriteModuleReviewEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 
 export namespace AutoBeAnalyzeProgrammer {
-  /** Apply module review revisions to the module event */
+  // Revision Application
+
+  /** Apply cross-file module review revisions to a single file's module event */
   export const applyModuleRevisions = (
     moduleEvent: AutoBeAnalyzeWriteModuleEvent,
-    reviewEvent: AutoBeAnalyzeWriteModuleReviewEvent,
+    fileResult: AutoBeAnalyzeModuleReviewEvent.IFileResult,
   ): AutoBeAnalyzeWriteModuleEvent => {
     return {
       ...moduleEvent,
-      title: reviewEvent.revisedTitle?.length
-        ? reviewEvent.revisedTitle
+      title: fileResult.revisedTitle?.length
+        ? fileResult.revisedTitle
         : moduleEvent.title,
-      summary: reviewEvent.revisedSummary?.length
-        ? reviewEvent.revisedSummary
+      summary: fileResult.revisedSummary?.length
+        ? fileResult.revisedSummary
         : moduleEvent.summary,
-      moduleSections: reviewEvent.revisedSections?.length
-        ? reviewEvent.revisedSections
+      moduleSections: fileResult.revisedSections?.length
+        ? fileResult.revisedSections
         : moduleEvent.moduleSections,
     };
   };
 
-  /** Apply batch unit review revisions to all unit events */
-  export const applyAllUnitRevisions = (
+  /** Apply cross-file unit review revisions to a single file's unit events */
+  export const applyUnitRevisions = (
     unitEvents: AutoBeAnalyzeWriteUnitEvent[],
-    reviewEvent: Pick<AutoBeAnalyzeWriteAllUnitReviewEvent, "revisedUnits">,
+    fileResult: AutoBeAnalyzeUnitReviewEvent.IFileResult,
   ): AutoBeAnalyzeWriteUnitEvent[] => {
-    if (!reviewEvent.revisedUnits) {
+    if (!fileResult.revisedUnits) {
       return unitEvents;
     }
 
-    // Create a map of revisions by moduleIndex
     const revisionsMap: Map<
       number,
       AutoBeAnalyzeWriteUnitEvent.IUnitSection[]
     > = new Map();
-    for (const revision of reviewEvent.revisedUnits) {
+    for (const revision of fileResult.revisedUnits) {
       revisionsMap.set(revision.moduleIndex, revision.unitSections);
     }
 
-    // Apply revisions where available
     return unitEvents.map((unitEvent, moduleIndex) => {
       const revisedSections:
         | AutoBeAnalyzeWriteUnitEvent.IUnitSection[]
@@ -60,24 +60,20 @@ export namespace AutoBeAnalyzeProgrammer {
     });
   };
 
-  /** Apply batch section review revisions to all section events */
-  export const applyAllSectionRevisions = (
+  /** Apply cross-file section review revisions to a single file's section events */
+  export const applySectionRevisions = (
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
-    reviewEvent: Pick<
-      AutoBeAnalyzeWriteAllSectionReviewEvent,
-      "revisedSections"
-    >,
+    fileResult: AutoBeAnalyzeSectionReviewEvent.IFileResult,
   ): AutoBeAnalyzeWriteSectionEvent[][] => {
-    if (!reviewEvent.revisedSections) {
+    if (!fileResult.revisedSections) {
       return sectionEvents;
     }
 
-    // Create a nested map of revisions by moduleIndex and unitIndex
     const revisionsMap: Map<
       number,
       Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>
     > = new Map();
-    for (const moduleRevision of reviewEvent.revisedSections) {
+    for (const moduleRevision of fileResult.revisedSections) {
       const unitMap: Map<
         number,
         AutoBeAnalyzeWriteSectionEvent.ISectionSection[]
@@ -88,7 +84,6 @@ export namespace AutoBeAnalyzeProgrammer {
       revisionsMap.set(moduleRevision.moduleIndex, unitMap);
     }
 
-    // Apply revisions where available
     return sectionEvents.map((sectionsForModule, moduleIndex) => {
       const unitMap:
         | Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>

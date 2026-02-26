@@ -1,11 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeWriteUnitReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteUnitReview";
+import { orchestrateAnalyzeUnitReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeUnitReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
-  AutoBeAnalyzeWriteUnitReviewEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
@@ -18,7 +18,7 @@ export const validate_analyze_write_unit_review = async (props: {
   agent: AutoBeAgent;
   vendor: string;
   project: AutoBeExampleProject;
-}): Promise<AutoBeAnalyzeWriteUnitReviewEvent> => {
+}): Promise<AutoBeAnalyzeUnitReviewEvent> => {
   const scenario: AutoBeAnalyzeScenarioEvent =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
@@ -49,14 +49,20 @@ export const validate_analyze_write_unit_review = async (props: {
     completed: 0,
   };
 
-  const event: AutoBeAnalyzeWriteUnitReviewEvent =
-    await orchestrateAnalyzeWriteUnitReview(props.agent.getContext(), {
+  const event: AutoBeAnalyzeUnitReviewEvent =
+    await orchestrateAnalyzeUnitReview(props.agent.getContext(), {
       promptCacheKey: "",
       scenario,
-      file,
-      moduleEvent,
-      unitEvent,
+      allFileUnits: [
+        {
+          file,
+          moduleEvent,
+          unitEvents: [unitEvent],
+          status: "new",
+        },
+      ],
       progress,
+      retry: 0,
     });
 
   await AutoBeExampleStorage.save({

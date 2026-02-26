@@ -105,15 +105,13 @@ These events are essential for building interactive interfaces, logging conversa
     />
   </Tabs.Tab>
   <Tabs.Tab>
-    <LocalSourceGroup
-      filename="@autobe/interface"
-      showLineNumbers
-      paths={[
-        "packages/interface/src/events/AutoBeAnalyzeWriteModuleReviewEvent.ts",
-        "packages/interface/src/events/AutoBeAnalyzeWriteUnitReviewEvent.ts",
-        "packages/interface/src/events/AutoBeAnalyzeWriteAllUnitReviewEvent.ts",
-        "packages/interface/src/events/AutoBeAnalyzeWriteSectionReviewEvent.ts",
-        "packages/interface/src/events/AutoBeAnalyzeWriteAllSectionReviewEvent.ts",
+      <LocalSourceGroup
+        filename="@autobe/interface"
+        showLineNumbers
+        paths={[
+        "packages/interface/src/events/AutoBeAnalyzeModuleReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeUnitReviewEvent.ts",
+        "packages/interface/src/events/AutoBeAnalyzeSectionReviewEvent.ts",
       ]}
     />
   </Tabs.Tab>
@@ -123,11 +121,11 @@ These events are essential for building interactive interfaces, logging conversa
 flowchart LR
   start[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeStartEvent.html" target="_blank"><u>Start</u></a>] --"plans"--> scenario[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeScenarioEvent.html" target="_blank"><u>Scenario</u></a>]
   scenario --"generates"--> module[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleEvent.html" target="_blank"><u>Module</u></a>]
-  module --"reviews"--> moduleReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleReviewEvent.html" target="_blank"><u>ModuleReview</u></a>]
+  module --"reviews"--> moduleReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeModuleReviewEvent.html" target="_blank"><u>ModuleReview</u></a>]
   moduleReview --"generates"--> unit[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitEvent.html" target="_blank"><u>Unit</u></a>]
-  unit --"reviews"--> unitReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllUnitReviewEvent.html" target="_blank"><u>UnitReview</u></a>]
+  unit --"reviews"--> unitReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeUnitReviewEvent.html" target="_blank"><u>UnitReview</u></a>]
   unitReview --"generates"--> section[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionEvent.html" target="_blank"><u>Section</u></a>]
-  section --"reviews"--> sectionReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllSectionReviewEvent.html" target="_blank"><u>SectionReview</u></a>]
+  section --"reviews"--> sectionReview[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeSectionReviewEvent.html" target="_blank"><u>SectionReview</u></a>]
   sectionReview --"finalize"--> complete[<a href="/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html" target="_blank"><u>Complete</u></a>]
   complete --"publishes"--> report(Report)
 ```
@@ -138,9 +136,9 @@ The [`AutoBeAnalyzeStartEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeS
 
 The writing phase follows a hierarchical "generate → review" pattern at three levels:
 
-1. **Module (#)**: [`AutoBeAnalyzeWriteModuleEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleEvent.html) generates the document's top-level structure (title, summary, module sections), reviewed by [`AutoBeAnalyzeWriteModuleReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleReviewEvent.html).
-2. **Unit (##)**: [`AutoBeAnalyzeWriteUnitEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitEvent.html) generates unit sections within each module, reviewed by [`AutoBeAnalyzeWriteUnitReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitReviewEvent.html) individually and [`AutoBeAnalyzeWriteAllUnitReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllUnitReviewEvent.html) as a batch across the entire file.
-3. **Section (###)**: [`AutoBeAnalyzeWriteSectionEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionEvent.html) generates detailed content within each unit, reviewed by [`AutoBeAnalyzeWriteSectionReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionReviewEvent.html) individually and [`AutoBeAnalyzeWriteAllSectionReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteAllSectionReviewEvent.html) as a batch across the entire file.
+1. **Module (#)**: [`AutoBeAnalyzeWriteModuleEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteModuleEvent.html) generates the document's top-level structure (title, summary, module sections), reviewed by [`AutoBeAnalyzeModuleReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeModuleReviewEvent.html).
+2. **Unit (##)**: [`AutoBeAnalyzeWriteUnitEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteUnitEvent.html) generates unit sections within each module, reviewed by [`AutoBeAnalyzeUnitReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeUnitReviewEvent.html).
+3. **Section (###)**: [`AutoBeAnalyzeWriteSectionEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeWriteSectionEvent.html) generates detailed content within each unit, reviewed by [`AutoBeAnalyzeSectionReviewEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeSectionReviewEvent.html).
 
 Each level must pass its review before the next level begins. If a review rejects the content, the generation is retried with feedback. Finally, [`AutoBeAnalyzeCompleteEvent`](/api/interfaces/_autobe_interface.AutoBeAnalyzeCompleteEvent.html) is fired when all documents are finalized. The report consists of multiple markdown documents, which are stored in the `files` property.
 

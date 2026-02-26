@@ -18,6 +18,9 @@ import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteSectionHistory } from "./histories/transformAnalyzeWriteSectionHistory";
 import { IAutoBeAnalyzeWriteSectionApplication } from "./structures/IAutoBeAnalyzeWriteSectionApplication";
+import { detectTechLockin } from "./utils/buildHardValidators";
+import { detectInventedEntities } from "./utils/detectInventedEntities";
+import { isRecord, parseLooseStructuredString } from "./utils/repairUtils";
 
 export const orchestrateAnalyzeWriteSection = async (
   ctx: AutoBeContext,
@@ -26,12 +29,17 @@ export const orchestrateAnalyzeWriteSection = async (
     file: AutoBeAnalyzeFile.Scenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    allUnitEvents: AutoBeAnalyzeWriteUnitEvent[];
     moduleIndex: number;
     unitIndex: number;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     feedback?: string;
     retry: number;
+    attributeRegistry?: string;
+    permissionRegistry?: string;
+    errorCodeRegistry?: string;
+    scenarioEntityNames?: string[];
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -52,6 +60,7 @@ export const orchestrateAnalyzeWriteSection = async (
       controller: createController({
         pointer,
         preliminary,
+        scenarioEntityNames: props.scenarioEntityNames,
       }),
       enforceFunctionCall: true,
       promptCacheKey: props.promptCacheKey,
@@ -60,10 +69,14 @@ export const orchestrateAnalyzeWriteSection = async (
         file: props.file,
         moduleEvent: props.moduleEvent,
         unitEvent: props.unitEvent,
+        allUnitEvents: props.allUnitEvents,
         moduleIndex: props.moduleIndex,
         unitIndex: props.unitIndex,
         feedback: props.feedback,
         preliminary,
+        attributeRegistry: props.attributeRegistry,
+        permissionRegistry: props.permissionRegistry,
+        errorCodeRegistry: props.errorCodeRegistry,
       }),
     });
     if (pointer.value === null) return out(result)(null);
@@ -91,10 +104,12 @@ export const orchestrateAnalyzeWriteSection = async (
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteSectionApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
+  scenarioEntityNames?: string[];
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> => {
+    input = repairAnalyzeWriteSectionInput(input);
     const result: IValidation<IAutoBeAnalyzeWriteSectionApplication.IProps> =
       typia.validate<IAutoBeAnalyzeWriteSectionApplication.IProps>(input);
     if (result.success === false) return result;
@@ -115,11 +130,48 @@ function createController(props: {
           data: result.data,
         };
       }
+
+      // Validate no technology lock-in
+      const techViolations = detectTechLockin(
+        result.data.request.sectionSections,
+      );
+      if (techViolations.length > 0) {
+        return {
+          success: false,
+          errors: techViolations.map((error) => ({
+            path: "$input.request.sectionSections",
+            expected:
+              "Technology-neutral content (no specific DB/framework/infrastructure names)",
+            value: error,
+          })),
+          data: result.data,
+        };
+      }
+
+      // Validate no invented entities (P0-B)
+      if (props.scenarioEntityNames && props.scenarioEntityNames.length > 0) {
+        const inventionViolations = detectInventedEntities(
+          result.data.request.sectionSections,
+          props.scenarioEntityNames,
+        );
+        if (inventionViolations.length > 0) {
+          return {
+            success: false,
+            errors: inventionViolations.map((error) => ({
+              path: "$input.request.sectionSections",
+              expected: `Only entities from scenario catalog: ${props.scenarioEntityNames!.join(", ")}`,
+              value: error,
+            })),
+            data: result.data,
+          };
+        }
+      }
+
       return result;
     }
 
     return props.preliminary.validate({
-      thinking: result.data.thinking,
+      thinking: result.data.thinking ?? "",
       request: result.data.request,
     });
   };
@@ -144,3 +196,190 @@ function createController(props: {
 }
 
 const SOURCE = "analyzeWriteSection" satisfies AutoBeEventSource;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// REPAIR CHAIN
+// Each helper is pure: it returns the input unchanged when it has nothing to do.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Gap 1 — Flattened payload: LLM emits top-level fields instead of `{ request:
+ * { type, moduleIndex, unitIndex, sectionSections } }`.
+ */
+const repairFlattenedPayload = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  if (isRecord(input.request)) return input;
+
+  const hasSectionSections =
+    Array.isArray(input.sectionSections) || Array.isArray(input.sections);
+  const completeLike =
+    hasSectionSections &&
+    (input.type === "complete" ||
+      input.type === "" ||
+      input.type === undefined ||
+      input.type === null);
+
+  if (completeLike) {
+    const {
+      thinking,
+      type,
+      moduleIndex,
+      unitIndex,
+      sectionSections,
+      sections,
+      ...rest
+    } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: {
+        type: "complete",
+        moduleIndex,
+        unitIndex,
+        sectionSections: sectionSections ?? sections,
+      },
+    };
+  }
+
+  const previousLike =
+    typeof input.type === "string" &&
+    input.type === "getPreviousAnalysisFiles" &&
+    input.fileNames !== undefined;
+  if (previousLike) {
+    const { thinking, type, fileNames, ...rest } = input;
+    return {
+      ...rest,
+      ...(thinking !== undefined ? { thinking } : {}),
+      request: { type, fileNames },
+    };
+  }
+
+  return input;
+};
+
+/** Gap 2 — Heuristic type detection: fills in missing/wrong `type` field. */
+const repairRequestType = (
+  request: Record<string, unknown>,
+): Record<string, unknown> => {
+  const t = request.type;
+  if (t === "complete" || t === "getPreviousAnalysisFiles") return request;
+
+  if (
+    Array.isArray(request.sectionSections) ||
+    Array.isArray(request.sections)
+  ) {
+    return { ...request, type: "complete" };
+  }
+
+  if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
+    return { ...request, type: "getPreviousAnalysisFiles" };
+  }
+
+  if (typeof t === "string" || t === null || t === undefined) {
+    return { ...request, type: "complete" };
+  }
+
+  return request;
+};
+
+/** Gaps 3, 4, 6 + existing string/alias repairs. */
+const normalizeWriteSectionRequest = (
+  input: Record<string, unknown>,
+): Record<string, unknown> => {
+  const output: Record<string, unknown> = { ...input };
+
+  if (typeof output.moduleIndex === "string") {
+    const n = Number(output.moduleIndex);
+    if (Number.isFinite(n)) output.moduleIndex = n;
+  }
+  if (typeof output.unitIndex === "string") {
+    const n = Number(output.unitIndex);
+    if (Number.isFinite(n)) output.unitIndex = n;
+  }
+
+  if (output.sectionSections === undefined && Array.isArray(output.sections)) {
+    output.sectionSections = output.sections;
+  }
+
+  // Gap 6: null → undefined
+  if (output.sectionSections === null) {
+    output.sectionSections = undefined;
+  }
+
+  // Gap 3 + 4: JSON-string sectionSections
+  if (typeof output.sectionSections === "string") {
+    const parsed = parseLooseStructuredString(output.sectionSections);
+    if (Array.isArray(parsed)) output.sectionSections = parsed;
+  }
+
+  return output;
+};
+
+/** Gap 5 + existing per-item repairs (trim, body→content alias). */
+const normalizeSectionItems = (sections: unknown[]): unknown[] => {
+  return sections.map((item): unknown => {
+    if (isRecord(item)) {
+      const next = { ...item };
+      let changed = false;
+
+      if (typeof next.title === "string") {
+        const trimmed = next.title.trim();
+        if (trimmed !== next.title) {
+          next.title = trimmed;
+          changed = true;
+        }
+      }
+      if (typeof next.content === "string") {
+        const trimmed = next.content.trim();
+        if (trimmed !== next.content) {
+          next.content = trimmed;
+          changed = true;
+        }
+      }
+      if (next.content === undefined && typeof next.body === "string") {
+        next.content = (next.body as string).trim();
+        delete next.body;
+        changed = true;
+      }
+      if (next.content === undefined && typeof next.description === "string") {
+        next.content = (next.description as string).trim();
+        delete next.description;
+        changed = true;
+      }
+      return changed ? next : item;
+    }
+
+    // Gap 5: plain string → { title: "", content: string }
+    if (typeof item === "string") {
+      return { title: "", content: item.trim() };
+    }
+
+    return item;
+  });
+};
+
+/** Master repair entry-point called from `validate()` before typia.validate. */
+const repairAnalyzeWriteSectionInput = (input: unknown): unknown => {
+  if (isRecord(input) === false) return input;
+
+  // Gap 1: reconstruct { request: {...} } wrapper if missing
+  const root = repairFlattenedPayload(input);
+
+  if (isRecord(root.request) === false) return root;
+
+  // Gap 2 + 3 + 4 + 6: normalize the request record
+  let request = normalizeWriteSectionRequest(
+    repairRequestType(root.request as Record<string, unknown>),
+  );
+
+  // Gap 5: normalize individual section items
+  if (Array.isArray(request.sectionSections)) {
+    request = {
+      ...request,
+      sectionSections: normalizeSectionItems(request.sectionSections),
+    };
+  }
+
+  return { ...root, request };
+};

@@ -90,14 +90,14 @@ export const enum AutoBeConfigConstant {
    * Retry attempts for the Analyze Phase.
    *
    * Used when the Analyze Phase fails to write the module, unit, or section.
-   * Value of 3 keeps the Analyze Phase shorter than general LLM interaction
-   * retries (which default to 5). Most Analyze Phase issues are either resolved
-   * within the first couple of passes or indicate a fundamental mismatch that
-   * won't benefit from further attempts. The lower limit reduces end-to-end
-   * latency and avoids long-running write/review loops while still allowing
-   * meaningful automatic correction.
+   * Value of 15 provides generous retries for the Analyze Phase, which often
+   * needs multiple iterations due to the complexity of module/unit/section
+   * decomposition. Most issues resolve within a few passes, but the higher
+   * limit accommodates complex files requiring many correction cycles. The
+   * limit still prevents indefinite loops while allowing meaningful automatic
+   * correction.
    */
-  ANALYZE_RETRY = 3,
+  ANALYZE_RETRY = 15,
 
   /**
    * Maximum consecutive error threshold for fast-fail during the Analyze

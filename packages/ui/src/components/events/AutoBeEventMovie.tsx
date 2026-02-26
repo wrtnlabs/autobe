@@ -61,13 +61,11 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
       return <AutoBeScenarioEventMovie event={back} />;
     // PROGRESS EVENTS
     case "analyzeWriteModule":
-    case "analyzeWriteModuleReview":
+    case "analyzeModuleReview":
     case "analyzeWriteUnit":
-    case "analyzeWriteUnitReview":
+    case "analyzeUnitReview":
     case "analyzeWriteSection":
-    case "analyzeWriteSectionReview":
-    case "analyzeWriteAllUnitReview":
-    case "analyzeWriteAllSectionReview":
+    case "analyzeSectionReview":
     case "interfaceEndpoint":
     case "interfaceEndpointReview":
     case "databaseComponent":
@@ -142,13 +140,11 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "consentFunctionCall":
     case "preliminary":
     case "analyzeWriteModule":
-    case "analyzeWriteModuleReview":
+    case "analyzeModuleReview":
     case "analyzeWriteUnit":
-    case "analyzeWriteUnitReview":
+    case "analyzeUnitReview":
     case "analyzeWriteSection":
-    case "analyzeWriteSectionReview":
-    case "analyzeWriteAllUnitReview":
-    case "analyzeWriteAllSectionReview":
+    case "analyzeSectionReview":
     case "testCorrect":
     case "realizeCorrect":
       return null;

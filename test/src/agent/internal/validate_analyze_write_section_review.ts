@@ -1,11 +1,11 @@
 import { AutoBeAgent } from "@autobe/agent";
-import { orchestrateAnalyzeWriteSectionReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeWriteSectionReview";
+import { orchestrateAnalyzeSectionReview } from "@autobe/agent/src/orchestrate/analyze/orchestrateAnalyzeSectionReview";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
-  AutoBeAnalyzeWriteSectionReviewEvent,
   AutoBeAnalyzeWriteUnitEvent,
   AutoBeExampleProject,
   AutoBeProgressEventBase,
@@ -20,7 +20,7 @@ export const validate_analyze_write_section_review = async (props: {
   agent: AutoBeAgent;
   vendor: string;
   project: AutoBeExampleProject;
-}): Promise<AutoBeAnalyzeWriteSectionReviewEvent> => {
+}): Promise<AutoBeAnalyzeSectionReviewEvent> => {
   const scenario: AutoBeAnalyzeScenarioEvent =
     (await AutoBeExampleStorage.load({
       vendor: props.vendor,
@@ -58,15 +58,17 @@ export const validate_analyze_write_section_review = async (props: {
     completed: 0,
   };
 
-  const event: AutoBeAnalyzeWriteSectionReviewEvent =
-    await orchestrateAnalyzeWriteSectionReview(props.agent.getContext(), {
+  const event: AutoBeAnalyzeSectionReviewEvent =
+    await orchestrateAnalyzeSectionReview(props.agent.getContext(), {
       promptCacheKey: "",
       scenario,
+      fileIndex: 0,
       file,
       moduleEvent,
-      unitEvent,
-      sectionEvent,
+      unitEvents: [unitEvent],
+      sectionEvents: [[sectionEvent]],
       progress,
+      retry: 0,
     });
 
   await AutoBeExampleStorage.save({

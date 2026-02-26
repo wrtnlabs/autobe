@@ -12,6 +12,22 @@ export * from "./AutoBeAnalyzeModule";
 export * from "./AutoBeAnalyzeSection";
 export * from "./AutoBeAnalyzeUnit";
 
+export * from "./AutoBeAnalyzeDocument";
+export * from "./AutoBeAnalyzeDocumentSection";
+export * from "./AutoBeAnalyzeDocumentSrs";
+export * from "./AutoBeAnalyzeDocumentTraceable";
+export * from "./AutoBeAnalyzeDocumentIntroduction";
+export * from "./AutoBeAnalyzeDocumentSystemOverview";
+export * from "./AutoBeAnalyzeDocumentExternalInterface";
+export * from "./AutoBeAnalyzeDocumentCapability";
+export * from "./AutoBeAnalyzeDocumentPhysicalPerformance";
+export * from "./AutoBeAnalyzeDocumentSecurityQuality";
+export * from "./AutoBeAnalyzeDocumentDomainModel";
+export * from "./AutoBeAnalyzeDocumentActorPermission";
+export * from "./AutoBeAnalyzeDocumentWorkflow";
+export * from "./AutoBeAnalyzeDocumentDataDictionary";
+export * from "./AutoBeAnalyzeDocumentValidation";
+
 export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";
 export * from "./AutoBeDatabaseComponentTableRevise";

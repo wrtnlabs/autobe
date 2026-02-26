@@ -128,6 +128,26 @@ export interface AutoBeAnalyzeScenarioEvent
   files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
 
   /**
+   * Core domain entities identified during scenario planning.
+   *
+   * These entities serve as the AUTHORITATIVE entity catalog for all downstream
+   * document writers. Module, unit, and section writers MUST reference only
+   * entities defined here to prevent hallucination and ensure cross-file
+   * consistency.
+   *
+   * Each entity includes:
+   *
+   * - `name`: PascalCase entity identifier (e.g., "Todo", "User")
+   * - `attributes`: Key attributes with type hints (e.g., "title: text(1-500)")
+   * - `relationships`: Optional relationships to other entities
+   */
+  entities: Array<{
+    name: string;
+    attributes: string[];
+    relationships?: string[];
+  }>;
+
+  /**
    * Current step number in the multi-event analysis scenario.
    *
    * This field tracks the progression through a series of related analyze

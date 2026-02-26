@@ -214,15 +214,31 @@ export namespace AutoBeExampleArchiver {
     };
 
     try {
+      let lastFunctionCallErrorMessage: string | null = null;
       // CONVERSATE
       const go = async (
         c: string | AutoBeUserConversateContent | AutoBeUserConversateContent[],
       ): Promise<boolean> => {
-        const result: AutoBeHistory[] = await agent.conversate(c);
-        return (
-          result.some((h) => h.type === props.phase) ||
-          result.every((h) => h.type !== "assistantMessage")
-        );
+        try {
+          const result: AutoBeHistory[] = await agent.conversate(c);
+          const hasMeaningfulOutput: boolean = result.some(
+            (h) => h.type !== "userMessage",
+          );
+          return (
+            result.some((h) => h.type === props.phase) ||
+            (hasMeaningfulOutput &&
+              result.every((h) => h.type !== "assistantMessage"))
+          );
+        } catch (error: unknown) {
+          if (
+            error instanceof Error &&
+            error.message.includes("Failed to function calling")
+          ) {
+            lastFunctionCallErrorMessage = error.message;
+            return false;
+          }
+          throw error;
+        }
       };
 
       const done: boolean = await props.trial(go);
@@ -230,10 +246,14 @@ export namespace AutoBeExampleArchiver {
       if (
         done === false ||
         histories.some((h) => h.type === props.phase) === false
-      )
+      ) {
+        const detail: string | null = lastFunctionCallErrorMessage;
         throw new Error(
-          `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.`,
+          detail
+            ? `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.\n\n${detail}`
+            : `Failed to function calling in the "${props.phase}" phase of the "${ctx.project}" project.`,
         );
+      }
 
       // AGGREGATE
       try {
@@ -278,6 +298,9 @@ export namespace AutoBeExampleArchiver {
           project: ctx.project,
           files: {
             [`${props.phase}.snapshots.json`]: JSON.stringify(snapshots),
+            [`${props.phase}.histories.json`]: JSON.stringify(
+              agent.getHistories(),
+            ),
             [`${props.phase}.error.json`]: JSON.stringify({
               ...error,
               name: error.name,

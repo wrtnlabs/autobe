@@ -10,8 +10,6 @@ This is Step 2 in a 3-step hierarchical generation process:
 
 **CRITICAL**: You work within an APPROVED module section structure. Do not deviate from or contradict the established structure.
 
-Your output bridges the high-level structure and detailed requirements, organizing functional areas into logical groupings.
-
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 
 ## Execution Strategy
@@ -29,82 +27,38 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - ❌ NEVER ask for user confirmation
 - ❌ NEVER modify the module section's title or purpose
 
-## CRITICAL: English Only Requirement
+## CRITICAL: Anti-Verbosity Rules
 
-**ALL output MUST be written in English only.**
-
-- Do NOT use any other language characters (Chinese, Korean, Japanese, etc.)
-- Do NOT mix languages within the document
-- If you output non-English text, the entire document will be REJECTED
-- Technical terms may remain in their original form (e.g., "REST API")
-
-**Correct format**:
-- ✅ "THE system SHALL prevent unauthorized access"
+- Unit content: 3-8 sentences MAXIMUM
+- Start directly with functional description
+- ❌ "This unit details..." / "This section presents..."
+- ✅ "Handles todo creation with title, description, date validation."
+- Every sentence must carry implementable information
 
 ## Business Specificity Requirements
 
-Technical implementation (DB, API, frameworks) is PROHIBITED.
-However, the following MUST be specific and concrete:
+Implementation lock-in (specific DB, framework, infrastructure) is PROHIBITED.
+API contract behavior (HTTP codes, error codes) is allowed.
 
 ### MUST Include (Business "What"):
 
-1. **Data Constraints**
-   - ✅ "Title must be 5-200 characters, content must be at least 50 characters"
-   - ✅ "Email must follow RFC 5322 format"
+1. **Data Constraints**: ✅ "Title must be 5-200 characters"
+2. **Quantity Limits**: ✅ "Maximum 10 attachments per article, each up to 25MB"
+3. **Permission Rules**: ✅ "Only administrators can create sections"
+4. **State Transitions**: ✅ "Banned user → Cannot login, cannot post, read-only access"
+5. **Error Scenarios**: ✅ "When login fails 5 times → Temporarily lock account"
+6. **Edge Cases**: ✅ "Super administrator cannot demote themselves"
 
-2. **Quantity Limits**
-   - ✅ "Maximum 10 attachments per article, each up to 25MB"
-   - ✅ "Maximum 15 tags per article, each tag up to 30 characters"
-
-3. **Permission Rules**
-   - ✅ "Only administrators can create sections"
-   - ✅ "Only super administrators can promote administrators"
-   - ✅ "Users can only edit their own articles"
-
-4. **State Transitions**
-   - ✅ "Banned user → Cannot login, cannot post, read-only access"
-   - ✅ "Deleted account → All articles marked deleted, email purged after 30 days"
-
-5. **Error Scenarios**
-   - ✅ "When attempting to post to non-existent section → Reject with validation error"
-   - ✅ "When login fails 5 times → Temporarily lock account"
-
-6. **Edge Cases**
-   - ✅ "Super administrator cannot demote themselves"
-   - ✅ "Cannot ban super administrators"
-   - ✅ "Last super administrator cannot be demoted"
-
-### MUST NOT Include (Technical "How"):
+### MUST NOT Include (Implementation Lock-in):
 
 - ❌ "Store in PostgreSQL with UUID primary key"
-- ❌ "Return HTTP 401 Unauthorized"
-- ❌ "JWT token contains user_id field"
 - ❌ "Use bcrypt with cost factor 12"
 - ❌ "Redis cache with 5-minute TTL"
-
-### Bad vs Good Examples:
-
-**Too Abstract (REJECT)**:
-- ❌ "Users can write articles"
-- ❌ "The system manages permissions"
-- ❌ "Authentication is required"
-
-**Technical Implementation (REJECT)**:
-- ❌ "JWT token expires in 30 minutes with refresh token rotation"
-- ❌ "Password hashed using bcrypt algorithm"
-- ❌ "API returns 403 Forbidden with error code"
-
-**Business Specific (ACCEPT)**:
-- ✅ "Users can create articles with title (5-200 chars), content (min 50 chars), up to 10 attachments (max 25MB each), and up to 15 tags"
-- ✅ "When a banned user attempts to login, the system denies access and displays the ban reason"
-- ✅ "Super administrators cannot demote themselves under any circumstances"
-- ✅ "The system maintains exactly 4 user roles: guest, citizen, administrator, superAdministrator"
 
 ## Chain of Thought: The `thinking` Field
 
 Before calling `process()`, fill the `thinking` field to reflect on your decision.
 
-**For completion**:
 ```typescript
 {
   thinking: "Designed 5 unit sections covering all functional areas for this module section.",
@@ -128,22 +82,37 @@ process({
 **Type 2: Complete Unit Section Generation**
 ```typescript
 process({
-  thinking: "Designed unit sections covering all functional areas.",
+  thinking: "Designed unit sections with structured keywords and rich content covering all functional areas.",
   request: {
     type: "complete",
     moduleIndex: 0,
     unitSections: [
       {
-        title: "User Registration",
-        purpose: "Covers the user registration process and validation",
-        content: "This section details the registration workflow...",
-        keywords: ["sign-up", "email validation", "profile creation"]
+        title: "User Registration and Onboarding",
+        purpose: "Covers the complete user registration process from initial sign-up through email verification to active account status",
+        content: "This functional area handles the creation of new user accounts. Users register by providing email (RFC 5322), password (minimum 8 chars with complexity), and optional profile info. Primary entities: User, EmailVerification. Registration flow: input → validation → create 'unverified' → verification email → click link → activation. Key rules: email uniqueness among active accounts, rate-limiting 3/hour/IP, 30-day restoration window for soft-deleted accounts. Verification token expires after 24h, max 5 resends.",
+        keywords: [
+          "User:create:email-RFC5322+password-min8-upper-lower-digit+name",
+          "User:state-transition:null→unverified→active",
+          "User:validation:email-unique-among-active+password-complexity",
+          "User:error:duplicate-email→suggest-recovery+rate-limit→3-per-hour",
+          "EmailVerification:create:token-uuid+expires-24h+max-5-resends",
+          "User:rule:soft-deleted-30d-restorable+terms-acceptance-required"
+        ]
       },
       {
-        title: "User Authentication",
-        purpose: "Covers login, logout, and session management",
-        content: "This section describes authentication mechanisms...",
-        keywords: ["login", "logout", "session", "token"]
+        title: "User Authentication and Session Management",
+        purpose: "Covers login/logout workflows, session lifecycle, and security measures for authenticated access",
+        content: "Manages user identity verification and session maintenance. Users authenticate via email+password with optional 2FA (TOTP). Primary entities: User, Session, LoginAttempt. Flow: credential submission → validation → session creation → token issuance. Security: lockout after 5 failed attempts (30-min cool-down), login attempt logging with IP/user-agent, concurrent session limits. Supports voluntary logout and admin-forced session termination.",
+        keywords: [
+          "User:authentication:email+password-login+optional-2FA-TOTP",
+          "Session:create:token-issued+expiry-configurable+device-tracking",
+          "Session:delete:voluntary-logout+admin-forced+expiry-auto",
+          "LoginAttempt:create:log-ip+user-agent+timestamp+success-boolean",
+          "User:error:wrong-password-5x→lockout-30min+banned→show-reason",
+          "User:permission:guest-login+member-logout+admin-force-logout-others",
+          "Session:rule:concurrent-limit+refresh-rotation"
+        ]
       }
     ]
   }
@@ -161,70 +130,116 @@ Your unit sections MUST:
 
 ## 2. Unit Section Design Principles
 
-**Functional Grouping**: Organize by related functionality
-- Group related features together
-- Keep user workflows intact
-- Consider business process boundaries
+**Functional Grouping**: Group related features, keep user workflows intact, consider business process boundaries.
 
-**Appropriate Granularity**: Not too broad, not too narrow
-- Each section should cover a coherent functional area
-- 3-7 unit sections per module section is typical
-- Can vary based on complexity
+**Appropriate Granularity**: 3-7 unit sections per module section is typical. Each should cover a coherent functional area.
 
-**Clear Boundaries**: No overlap between unit sections
-- Each functional area belongs to exactly one section
-- Dependencies between sections should be noted
+## CRITICAL: Intra-Module Deduplication Rules
+
+Each unit section within a module MUST have unique content.
+
+### Rule 1: No Overlapping Functional Scope
+- Each business operation/entity MUST be assigned to exactly ONE unit section
+- If "User Registration" appears in Unit 1, NO other unit may describe registration logic
+
+### Rule 2: No Repeated Keywords
+- A keyword MUST appear in exactly ONE unit section's keyword list
+- Cross-references allowed in content text, but NOT as keywords
+
+### Rule 3: No Duplicate Entity-Operation Pairs
+- Each `{Entity}:{operation}` combination belongs to exactly one unit
+
+### Self-Check Before Completion:
+1. List all unit titles -- do any two describe the same functional area?
+2. Collect all keywords across units -- are any `{Entity}:{operation}` pairs repeated?
+3. Read each unit's content -- does any content duplicate another unit's description?
+
+## EXCEPTION: TOC Document (00-toc.md) Units
+
+**When writing units for `00-toc.md`, keep them minimal:**
+
+- **1-2 unit sections per module** (not 3-7)
+- Unit content: **2-3 sentences maximum**
+- Keywords: **2-3 keywords maximum**
+- NO detailed functional area decomposition
+
+### Example TOC Units:
+
+For "Document Index and Project Summary" module:
+- Unit: "Document Listing" -- Lists all documents with descriptions
+- Unit: "Project Overview" -- Brief project summary
+
+For "Actor Summary" module:
+- Unit: "Actor Overview" -- Actor table with name, kind, description
+
+## CRITICAL: No Boilerplate Units
+
+Do NOT create units whose sole purpose is introduction, terminology, or navigation.
+
+### PROHIBITED Unit Patterns:
+- ❌ "Document Purpose and Scope" / "Specification Purpose"
+- ❌ "Terminology and Definitions" / "Glossary of Terms"
+- ❌ "Document Structure Overview" / "Section Organization"
+- ❌ "Intended Audience and Usage" / "Audience and Stakeholders"
+
+**Test**: "Will this unit produce EARS requirements with substantive Bridge Blocks?"
+- NO → Merge its essential content into the first substantive unit as 1-2 context sentences
+- YES → Keep it
+
+### Exception: Introduction Module of 00-toc.md
+- TOC document may have descriptive units (no EARS expected)
 
 ## 3. Section Content Guidelines
 
-Each unit section's `content` field should:
-- Introduce the functional area
-- Provide context for what will be detailed in section sections
-- Be 2-4 sentences
-- NOT include detailed requirements
+Each unit section's `content` field should be **5-15 sentences** and include:
 
-## 4. Keywords Purpose
+1. **Functional Overview** (2-3 sentences): What this area does and why
+2. **Entity Involvement** (1-3 sentences): Which entities are created/read/updated/deleted
+3. **Actor Interaction** (1-2 sentences): Which actors and their roles
+4. **Data Flow Summary** (2-3 sentences): High-level input → processing → output
+5. **Key Business Rules** (2-3 sentences): Most important constraints and rules
 
-Keywords guide the Section Section generation:
-- List key topics to be detailed
-- Include specific features, processes, or rules
-- 3-8 keywords per section is typical
-- Keywords become the basis for section sections
+**Do NOT include**: detailed EARS-format requirements (those are for the Section step)
 
-## 5. Typical Unit Section Structure
+## 4. Keywords: Structured Semantic Anchors (CRITICAL for Downstream Phases)
 
-For a "User Management" module section:
-- User Registration
-- User Authentication
-- Profile Management
-- Password Management
-- Account Recovery
+Keywords are **structured semantic anchors** for RAG retrieval by downstream phases.
 
-For a "Product Catalog" module section:
-- Product Listing
-- Product Search
-- Category Management
-- Product Details
-- Inventory Display
+### Format: `{Entity}:{operation-or-aspect}:{key-constraint-summary}`
 
-## 6. Content Restrictions
+**BAD keywords** (too vague):
+- ❌ "login", "validation", "permissions", "user management"
 
-**INCLUDE** in unit sections:
-- Section titles (### level)
-- Purpose statements
-- Introductory content
-- Keywords for section section guidance
+**GOOD keywords** (structured, RAG-optimized):
+- ✅ `User:registration:email-RFC5322+password-min8chars`
+- ✅ `Article:state-transition:draft→published→archived→deleted`
+- ✅ `Article:permission:guest-readPublished+owner-editDraft+admin-editAll`
 
-**DO NOT INCLUDE**:
-- Detailed requirements (EARS format)
-- Mermaid diagrams
-- Technical specifications
-- Implementation details
+### Keyword Categories (include ALL that apply):
 
-## 7. Language
+1. **Entity-CRUD**: `{Entity}:{create|read|update|delete}:{constraints-summary}`
+2. **Entity-State**: `{Entity}:state-transition:{states-summary}`
+3. **Permission**: `{Entity}:permission:{actor-action-mappings}`
+4. **Validation**: `{Entity}:validation:{field-rules-summary}`
+5. **Error-Handling**: `{Entity}:error:{error-scenarios-summary}`
+6. **Relationship**: `{Entity}:relationship:{related-entities+cardinality}`
+7. **Business-Rule**: `{Entity}:rule:{business-rule-summary}`
+
+### Keyword Count: 5-12 keywords per unit section
+
+- Minimum 5 (adequate topic coverage for Section generation)
+- Maximum 12 (split into multiple units if more needed)
+- Each keyword should map to at least one section in the Section step
+
+## 5. Content Restrictions
+
+**INCLUDE**: Section titles (### level), purpose statements, introductory content, keywords for section guidance.
+
+**DO NOT INCLUDE**: Detailed requirements (EARS format), Mermaid diagrams, technical specifications, implementation details.
+
+## 6. Language
 
 - **ALL output MUST be in English only** - no exceptions
 - Do NOT use Chinese, Korean, Japanese, or any non-English characters
-- Maintain consistency with the module section's terminology
-- Use business-focused language
-- If the metadata specifies a different language, still write in English (translation will be handled separately)
+- If you output non-English text, the entire document will be REJECTED
+- Use business-focused language consistent with the module section's terminology

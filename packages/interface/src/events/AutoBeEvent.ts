@@ -1,14 +1,12 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
+import { AutoBeAnalyzeModuleReviewEvent } from "./AutoBeAnalyzeModuleReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
+import { AutoBeAnalyzeSectionReviewEvent } from "./AutoBeAnalyzeSectionReviewEvent";
 import { AutoBeAnalyzeStartEvent } from "./AutoBeAnalyzeStartEvent";
-import { AutoBeAnalyzeWriteAllSectionReviewEvent } from "./AutoBeAnalyzeWriteAllSectionReviewEvent";
-import { AutoBeAnalyzeWriteAllUnitReviewEvent } from "./AutoBeAnalyzeWriteAllUnitReviewEvent";
+import { AutoBeAnalyzeUnitReviewEvent } from "./AutoBeAnalyzeUnitReviewEvent";
 import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
-import { AutoBeAnalyzeWriteModuleReviewEvent } from "./AutoBeAnalyzeWriteModuleReviewEvent";
 import { AutoBeAnalyzeWriteSectionEvent } from "./AutoBeAnalyzeWriteSectionEvent";
-import { AutoBeAnalyzeWriteSectionReviewEvent } from "./AutoBeAnalyzeWriteSectionReviewEvent";
 import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
-import { AutoBeAnalyzeWriteUnitReviewEvent } from "./AutoBeAnalyzeWriteUnitReviewEvent";
 import { AutoBeAssistantMessageEvent } from "./AutoBeAssistantMessageEvent";
 import { AutoBeConsentFunctionCallEvent } from "./AutoBeConsentFunctionCallEvent";
 import { AutoBeDatabaseAuthorizationEvent } from "./AutoBeDatabaseAuthorizationEvent";
@@ -114,14 +112,12 @@ export type AutoBeEvent =
   | AutoBeAnalyzeCompleteEvent
   // ANALYZE (Hierarchical Write V2 - Module/Unit/Section)
   | AutoBeAnalyzeWriteModuleEvent
-  | AutoBeAnalyzeWriteModuleReviewEvent
   | AutoBeAnalyzeWriteUnitEvent
-  | AutoBeAnalyzeWriteUnitReviewEvent
   | AutoBeAnalyzeWriteSectionEvent
-  | AutoBeAnalyzeWriteSectionReviewEvent
-  // ANALYZE (Batch Review - All Units/Sections at once)
-  | AutoBeAnalyzeWriteAllUnitReviewEvent
-  | AutoBeAnalyzeWriteAllSectionReviewEvent
+  // ANALYZE (Review)
+  | AutoBeAnalyzeModuleReviewEvent
+  | AutoBeAnalyzeUnitReviewEvent
+  | AutoBeAnalyzeSectionReviewEvent
   // DATABASE
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent

@@ -39,7 +39,7 @@ export namespace IAutoBeAnalyzeWriteSectionApplication {
      * - Are requirements specific and in EARS format where appropriate?
      * - Are Mermaid diagrams properly formatted?
      */
-    thinking: string;
+    thinking?: string | null;
 
     /** Type discriminator for the request. */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisFiles;
