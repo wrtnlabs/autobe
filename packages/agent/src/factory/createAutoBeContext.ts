@@ -380,14 +380,16 @@ export const createAutoBeContext = (props: {
           // Context overflow and other permanent 400 errors should not be
           // retried — the same payload will always produce the same failure.
           if (error instanceof BadRequestError) {
+            const errBody = error as unknown as {
+              error?: { metadata?: { raw?: string }; message?: string };
+            };
             const msg = String(
-              (error as Record<string, any>).error?.metadata?.raw ??
-                (error as Record<string, any>).error?.message ??
+              errBody.error?.metadata?.raw ??
+                errBody.error?.message ??
                 error.message ??
                 "",
             );
             const permanent = [
-              "Expected a valid JSON object",
               "context_length_exceeded",
               "maximum context length",
               "request too large",

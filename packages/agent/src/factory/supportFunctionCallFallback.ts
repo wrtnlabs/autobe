@@ -94,7 +94,7 @@ export const supportFunctionCallFallback = (
     }
 
     throw new Error(
-      `OpenRouter retries exhausted (upstream=${retryState.upstream}/${UPSTREAM_502_RETRY}, empty=${retryState.empty}/${EMPTY_RESPONSE_RETRY}, total=${retryState.total}/${TOTAL_RETRY_CAP})`,
+      `OpenRouter upstream error: retries exhausted (upstream=${retryState.upstream}/${UPSTREAM_502_RETRY}, empty=${retryState.empty}/${EMPTY_RESPONSE_RETRY}, total=${retryState.total}/${TOTAL_RETRY_CAP})`,
     );
   };
 
@@ -126,9 +126,9 @@ interface ITool {
   function: { name: string };
 }
 
-const UPSTREAM_502_RETRY = 10;
+const UPSTREAM_502_RETRY = 15;
 const EMPTY_RESPONSE_RETRY = 5;
-const TOTAL_RETRY_CAP = 12;
+const TOTAL_RETRY_CAP = 17;
 
 const UPSTREAM_BASE_DELAY = 1_000;
 const UPSTREAM_MAX_DELAY = 15_000;
