@@ -13,7 +13,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformAnalyzeWriteSectionHistory = (
-  _ctx: AutoBeContext,
+  ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
@@ -50,6 +50,21 @@ export const transformAnalyzeWriteSectionHistory = (
         ## Language
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
+
+        ## Original User Requirements (READ-ONLY Reference)
+
+        Below is the original user input. ALL your sections MUST be traceable to these requirements.
+        Do NOT invent features, constraints, or behaviors not stated or directly implied below.
+
+        ${ctx
+          .histories()
+          .filter((h) => h.type === "userMessage")
+          .flatMap((h) =>
+            h.type === "userMessage"
+              ? h.contents.filter((c) => c.type === "text").map((c) => c.text)
+              : [],
+          )
+          .join("\n\n---\n\n")}
 
         ## AUTHORITATIVE Scope Reference
 

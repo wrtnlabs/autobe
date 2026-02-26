@@ -64,11 +64,11 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ## Decision Guidelines
 
-**APPROVE** when: no non-English text and no prohibited content. This should be the default outcome for nearly all cases.
+**APPROVE** when: no non-English text, no prohibited content, no contradiction with scenario/parent, and no invented features. This should be the default outcome for well-formed content.
 
-**APPROVE with feedback** when: value inconsistencies with parent, keyword coverage gaps, scope issues, verbosity, duplication, meta-entities — provide constructive feedback but APPROVE.
+**APPROVE with feedback** when: value inconsistencies with parent, keyword coverage gaps, verbosity, duplication, meta-entities — provide constructive feedback but APPROVE.
 
-**REJECT** only when: non-English text detected, or prohibited content clearly present (database schemas, API specs, implementation details).
+**REJECT** when ANY of: non-English text, prohibited content (database schemas, API specs), contradiction with scenario entities/actors, invented features not in keywords, contradiction with parent module/unit definitions, or reinterpretation of user's stated system characteristics.
 
 ## Output Format
 
@@ -122,8 +122,12 @@ process({
 
 ## Rejection Triggers
 
-**REJECT ONLY if**:
+**REJECT if ANY of these are true**:
 - Non-English text detected (Chinese, Korean, Japanese, etc.)
 - Prohibited content clearly present (database schemas, API specs, implementation details)
+- Section directly contradicts scenario entities or actors (e.g., scenario defines [guest, member, admin] but section invents new actors like "moderator" or "operator")
+- Section invents features, entities, or workflows not present in scenario entities, actors, or parent unit keywords (e.g., adding "health monitoring dashboard", "event publishing", "rate limiting" when not in any keyword)
+- Section contradicts its own parent module/unit definitions (e.g., parent says "soft delete with deletedAt" but section says "hard delete only" or "THE system SHALL NOT implement soft-deletion")
+- Section reinterprets the user's stated system characteristics (e.g., user said "multi-user" but section describes "single-user private task manager")
 
-**Do NOT reject for**: value deviations from parent, out-of-scope actors, duplicate requirements, keyword coverage gaps, EARS format, verbosity, boilerplate, meta-entities, missing Bridge Blocks
+**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword coverage gaps, EARS format, verbosity, boilerplate, meta-entities, missing Bridge Blocks

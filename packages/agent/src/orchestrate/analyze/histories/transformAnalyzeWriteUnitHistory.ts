@@ -12,7 +12,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 
 export const transformAnalyzeWriteUnitHistory = (
-  _ctx: AutoBeContext,
+  ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
@@ -43,6 +43,21 @@ export const transformAnalyzeWriteUnitHistory = (
         ## Language
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
+
+        ## Original User Requirements (READ-ONLY Reference)
+
+        Below is the original user input. Your unit sections MUST cover features described below
+        that fall within this module's scope. Do NOT invent features not stated or directly implied.
+
+        ${ctx
+          .histories()
+          .filter((h) => h.type === "userMessage")
+          .flatMap((h) =>
+            h.type === "userMessage"
+              ? h.contents.filter((c) => c.type === "text").map((c) => c.text)
+              : [],
+          )
+          .join("\n\n---\n\n")}
 
         ## Document Context
 

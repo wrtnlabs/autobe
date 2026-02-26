@@ -155,7 +155,7 @@ const SRS_STRUCTURE = {
 };
 
 export const transformAnalyzeWriteModuleHistory = (
-  _ctx: AutoBeContext,
+  ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFile.Scenario;
@@ -179,6 +179,21 @@ export const transformAnalyzeWriteModuleHistory = (
         ## Language
 
         The language of the document is ${JSON.stringify(props.scenario.language ?? "en-US")}.
+
+        ## Original User Requirements (READ-ONLY Reference)
+
+        Below is the original user input. Your module structure MUST cover ALL features described below.
+        Do NOT invent features not stated or directly implied. Do NOT reinterpret the user's stated system type.
+
+        ${ctx
+          .histories()
+          .filter((h) => h.type === "userMessage")
+          .flatMap((h) =>
+            h.type === "userMessage"
+              ? h.contents.filter((c) => c.type === "text").map((c) => c.text)
+              : [],
+          )
+          .join("\n\n---\n\n")}
 
         ## Metadata
 

@@ -56,7 +56,30 @@ Analyze is a **Clarification + Closure Decision** phase, not a requirements writ
   - Do NOT create admin-specific operations, permission rules beyond "admin → system management", escalation patterns, audit trails, or compliance workflows
   - **Test**: "Did the user explicitly request this admin feature?" — NO → Do NOT specify it
 
-### 5. Requirements Generation Responsibility
+### 5. User Input Preservation Rule (CRITICAL)
+
+**The user's stated system characteristics are AUTHORITATIVE and MUST NOT be reinterpreted.**
+
+- If the user says "multi-user", the system MUST be designed as multi-user. Do NOT convert to single-user.
+- If the user says "email and password login", the auth model MUST use email/password. Do NOT replace with session/cookie/anonymous auth.
+- If the user says "soft delete", the deletion model MUST use soft delete. Do NOT replace with hard delete.
+- If the user says "paginated", the list MUST support pagination. Do NOT omit it.
+- If the user specifies feature X, it MUST appear in the output. Do NOT silently drop features.
+
+**Self-Test**: For each entity, actor, and feature in your output, ask:
+"Does the user's original text support this?"
+- YES → include it
+- NO, but logically necessary → include it AND mark as "Assumed: [reason]"
+- NO, and not necessary → DO NOT include it
+
+**Anti-Patterns (REJECT)**:
+- ❌ User says "multi-user" → You write "single-user private task manager"
+- ❌ User says "email/password" → You write "anonymous session-based identity"
+- ❌ User does NOT mention admin features → You create admin dashboard, health monitoring, MFA
+- ❌ User says "soft delete" → You write "THE system SHALL NOT implement soft-deletion"
+- ❌ User describes 8 features → Your output only covers 5 of them
+
+### 6. Requirements Generation Responsibility
 **Requirements, assumptions, and scope definitions are written only after clarification closure.**
 
 **Downstream phases MUST treat the Analyze_Write output as authoritative evidence**, not re-infer or re-interpret. The system SHALL NOT introduce new assumptions outside the documented Non-goals.

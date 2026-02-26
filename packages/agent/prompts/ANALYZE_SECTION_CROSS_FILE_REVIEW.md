@@ -57,11 +57,16 @@ You receive ONLY section titles, keywords, and purposes from all files -- NOT fu
 
 ## Decision Guidelines
 
-**APPROVE** when: content exists. This should be the default outcome for nearly all cases.
+**APPROVE** when: no non-English text, no direct contradictions between files, and no invented features outside scenario scope. This should be the default outcome for consistent content.
 
-**APPROVE with feedback** when: value contradictions, terminology differences, entity naming inconsistencies, scope violations, actor inconsistencies — provide constructive feedback but APPROVE.
+**APPROVE with feedback** when: terminology differences, entity naming inconsistencies, minor scope variations — provide constructive feedback but APPROVE.
 
-**REJECT** only when: non-English text detected (Chinese, Korean, Japanese, etc.).
+**REJECT** when ANY of these are true:
+- Non-English text detected (Chinese, Korean, Japanese, etc.)
+- Two files make directly contradictory claims about the same entity attribute (e.g., File A: "deletedAt timestamp for soft delete" vs File B: "SHALL NOT implement soft-deletion")
+- Two files use incompatible authentication models (e.g., File A: "email/password authentication" vs File B: "anonymous session-based identity")
+- A file references actors or features explicitly marked as out-of-scope in the TOC or scenario
+- A file invents features, entities, or operations not defined in the scenario entity catalog (e.g., adding "health monitoring", "event publishing", "admin dashboard" when not in scenario)
 
 ## Output Format
 

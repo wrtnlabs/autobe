@@ -999,9 +999,7 @@ function computeSectionBatchSize(props: {
   attempt: number;
   pendingCount: number;
 }): number {
-  if (props.pendingCount <= 2) return props.pendingCount;
-  if (props.attempt <= 0) return Math.min(8, props.pendingCount);
-  return Math.min(6, props.pendingCount);
+  return Math.min(8, props.pendingCount);
 }
 
 function chunkSectionFileIndices(indices: number[], size: number): number[][] {

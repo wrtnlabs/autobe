@@ -41,6 +41,15 @@ Do NOT create entities describing the requirements process (e.g., Interpretation
 
 **For `00-toc.md` sections**: NO EARS requirements, NO Bridge Blocks, NO Mermaid. Plain content only (tables/bullet lists), 50-100 words per section. Use ONLY provided document list (do NOT invent filenames). Hyperlink ALL files: `[filename](./filename)`. Summary-only — no constraints/limits/error codes. No SHALL/SHOULD/MUST verbs.
 
+**TOC Interpretation & Assumptions Rules (CRITICAL)**:
+When writing the "Interpretation & Assumptions" section in 00-toc.md:
+- The "Original User Input" MUST be a faithful summary, NOT a reinterpretation
+- The "Interpretation" MUST preserve the user's core terms (multi-user, single-user, etc.)
+- Assumptions MUST NOT contradict the user's explicit statements
+- If the user said "multi-user", do NOT assume "single-user" or "private/isolated"
+- If the user described specific features, do NOT exclude them from scope
+- If the user said "email and password", do NOT replace with anonymous/session auth
+
 ### Example TOC Section:
 
 ```
@@ -80,9 +89,10 @@ Use the same table/bullet style for Assumptions and Entity Summaries. TOC must r
 
 ## CRITICAL: Invention Prevention Rule
 
-EVERY constraint/validation/business rule MUST be traceable to: (1) **Explicit User Input**, (2) **Scenario Entities/Operations**, (3) **Logical Necessity** (e.g., "email login" implies email validation), or (4) **Industry Standard** (e.g., email uniqueness).
+EVERY constraint/validation/business rule MUST be traceable to: (1) **Explicit User Input** (check the "Original User Requirements" reference in the assistant context), (2) **Scenario Entities/Operations**, (3) **Logical Necessity** (e.g., "email login" implies email validation), or (4) **Industry Standard** (e.g., email uniqueness).
 
-**Self-Test**: "If I remove this rule, does any user-stated requirement break?" NO → invention, do NOT include.
+**Self-Test**: Check each requirement against the Original User Requirements section.
+"Did the user ask for this, or is it directly implied?" NO → DO NOT include it.
 
 **Specific Anti-Patterns (REJECT)**:
 - ❌ Adding uniqueness constraints not requested (e.g., "todo title must be unique per user")
@@ -90,6 +100,20 @@ EVERY constraint/validation/business rule MUST be traceable to: (1) **Explicit U
 - ❌ Creating state transition blocks not implied by requirements (e.g., "completed → deleted: blocked" when user never restricted this)
 - ❌ Adding rate limits, CAPTCHA, or 2FA when not requested
 - ❌ Defining entity lifecycle states without entry/exit conditions (e.g., `locked`, `banned` states with no trigger or resolution flow)
+
+**Common Hallucination Patterns (REJECT ALL)**:
+- ❌ Adding admin dashboards, health monitoring, or system metrics when user didn't request them
+- ❌ Adding event publishing, message queues, or webhooks when not requested
+- ❌ Adding optimistic locking, version timestamps, or concurrency control when not requested
+- ❌ Adding email verification flows when user only said "sign up with email and password"
+- ❌ Creating "silent fail" (no HTTP response) patterns — always return a proper HTTP response
+- ❌ Reinterpreting user's stated system type (e.g., "multi-user" → "single-user")
+- ❌ Contradicting the user's stated features (e.g., user says "soft delete" → you write "no soft delete")
+
+**Example-Content Separation Rule**:
+The examples in this prompt (rate limiting, 2FA, account restoration, etc.) demonstrate
+FORMAT and STRUCTURE only. Do NOT copy their specific features into your output unless
+the user's requirements explicitly include them.
 
 ## CRITICAL: Anti-Verbosity Rules
 
