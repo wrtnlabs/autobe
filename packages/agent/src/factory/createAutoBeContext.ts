@@ -54,7 +54,6 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
-import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
@@ -77,7 +76,7 @@ export const createAutoBeContext = (props: {
     {
       retry: props.config.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
+      timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
     };
   const critical: Semaphore = new Semaphore(2);
   return {
@@ -153,7 +152,6 @@ export const createAutoBeContext = (props: {
               describe: false,
             },
             systemPrompt: {
-              common: () => getCommonPrompt(props.config),
               execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
               validate: (events) => getValidationErrorPrompt(events),
               jsonParseError: (event) =>

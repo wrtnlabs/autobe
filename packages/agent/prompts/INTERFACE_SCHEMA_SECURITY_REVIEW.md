@@ -97,7 +97,14 @@ interface IComplete {
 }
 ```
 
-Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`.
+Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`.
+
+- Use batch requests
+- Never re-request loaded materials
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
 
 ## 6. Revision Reference
 
@@ -219,3 +226,4 @@ process({
 - [ ] `specification` present on every `create`/`update`
 - [ ] `depict` used only for wrong documentation on security fields
 - [ ] `nullish` used only for wrong nullability on security fields
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist

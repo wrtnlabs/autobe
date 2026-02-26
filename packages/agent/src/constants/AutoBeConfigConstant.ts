@@ -24,7 +24,7 @@ export const enum AutoBeConfigConstant {
    * diagnostics) back to the AI for correction. This iterative feedback loop
    * transforms hallucinations into learning opportunities.
    *
-   * Value of 8 provides sufficient attempts for complex validation scenarios
+   * Value of 5 provides sufficient attempts for complex validation scenarios
    * while keeping latency reasonable. Most validation errors resolve within 2-3
    * attempts, but complex schema corrections may need additional cycles.
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
@@ -141,14 +141,14 @@ export const enum AutoBeConfigConstant {
   RAG_LIMIT = 10,
 
   /**
-   * Default timeout for long-running operations in milliseconds (30 minutes).
+   * Default timeout for long-running operations in milliseconds (10 minutes).
    *
    * Prevents operations from hanging indefinitely when LLM APIs become
    * unresponsive. Value of 30 minutes accommodates complex generation tasks
    * (large projects with dozens of models/operations) while catching genuinely
    * stuck requests. Override via config for specialized scenarios.
    */
-  TIMEOUT = 30 * 60 * 1000,
+  TIMEOUT = 10 * 60 * 1000,
 
   /**
    * Default concurrency limit for parallel LLM API calls.

@@ -43,9 +43,12 @@ If your generated schema introduces new `$ref` to types that also don't exist, t
 | `getInterfaceSchemas` | Already-generated schemas (for pattern reference) |
 | `getPrevious*` variants | Previous version data (only during regeneration) |
 
-Use batch requests (arrays) for efficiency. NEVER re-request already loaded materials — empty array response means that type is exhausted and removed from available options.
-
-**`getInterfaceSchemas` returns ONLY existing schemas.** Missing schemas don't exist yet — that's why you're creating them. Use this to study patterns from similar existing types, NOT to fetch the type you're supposed to create.
+- Use batch requests (arrays) for efficiency
+- NEVER re-request already loaded materials — empty array = exhausted
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
 
 ## 3. Zero Imagination Policy
 
@@ -145,3 +148,4 @@ process({
 - [ ] All needed materials loaded before calling `complete`
 - [ ] No imagination — verified against actual data
 - [ ] No duplicate requests for already-loaded materials
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist
