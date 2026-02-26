@@ -18,16 +18,19 @@
   - **Stress-testing with weak local LLMs** (30B, 80B) to discover edge cases
   - **Killing the system prompt** — replacing prose instructions with strict function calling schemas and validation feedback
 - A 6.75% raw function calling success rate becomes 100% through validation feedback alone
+- With `GLM v5` (local LLM), we're back to 100% compilation success
 - AutoBe is no longer a one-shot prototype builder — it now supports incremental feature addition, removal, and modification on completed projects
 - Runtime success (E2E tests) has not recovered yet — that's next
 
 ## 1. The Original Success (And Its Hidden Problem)
 
-[`AutoBe`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language.
+We achieved 100% compilation success. Every generated application compiled without errors, every E2E test passed, every API returned correct results. By every metric, the system was perfect.
 
-You describe what you need in a chat interface, and AutoBe produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
+Then we threw it all away and rebuilt from scratch.
 
-Our key promise is a **100% compilation guarantee**. We achieved it once. Then we threw it all away and rebuilt from scratch. With `GLM v5` — a local LLM — we've clawed our way back to 100%. Smaller models aren't there yet. This is the story of why we broke it, and what it took to start recovering.
+[`AutoBe`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language. You describe what you need in a chat interface, and AutoBe produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
+
+With `GLM v5` — a local LLM — we've clawed our way back to 100%. Smaller models aren't there yet. This is the story of why we broke it, and what it took to start recovering.
 
 When we first built AutoBe, we looked at how Korean SI (System Integration) projects are developed — government SI, financial SI, healthcare SI.
 
