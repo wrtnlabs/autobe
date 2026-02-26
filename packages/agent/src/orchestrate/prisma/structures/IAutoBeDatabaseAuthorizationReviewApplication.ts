@@ -30,8 +30,8 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What authentication requirements do you need to analyze?
      * - Which actor types need to be verified?
@@ -47,9 +47,9 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisSections, etc.) to fetch requirements
-     * documents. Use complete to submit table revisions after thorough
-     * authentication requirements analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit table revisions after
+     * thorough authentication requirements analysis.
      */
     request:
       | IComplete

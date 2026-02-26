@@ -29,8 +29,9 @@ export namespace IAutoBeInterfaceGroupApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisSections, getPreviousAnalysisSections,
-     * getDatabaseSchemas, getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getDatabaseSchemas,
+     * getPreviousDatabaseSchemas):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?

@@ -46,10 +46,10 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getPreviousAnalysisSections, getPreviousDatabaseSchemas)
-     * or final schema generation (complete). When preliminary returns empty
-     * array, that type is removed from the union, physically preventing
-     * repeated calls.
+     * (getAnalysisSections, getPreviousAnalysisSections,
+     * getPreviousDatabaseSchemas) or final schema generation (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request:
       | IComplete

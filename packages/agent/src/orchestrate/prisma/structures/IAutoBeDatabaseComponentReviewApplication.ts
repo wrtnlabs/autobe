@@ -28,8 +28,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What requirements documents do you need to analyze this component?
      * - Which features in this domain need to be understood?
@@ -45,9 +45,9 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisSections, etc.) to fetch requirements
-     * documents. Use complete to submit table revisions after thorough
-     * requirements analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit table revisions after
+     * thorough requirements analysis.
      */
     request:
       | IComplete

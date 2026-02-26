@@ -26,7 +26,9 @@ export interface AutoBeDatabaseGroupReviewEvent
     AutoBeEventBase<"databaseGroupReview">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Comprehensive review analysis of the group organization.

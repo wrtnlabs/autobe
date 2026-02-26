@@ -26,7 +26,9 @@ export interface AutoBeDatabaseSchemaEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Strategic database design analysis and planning phase for the target table.

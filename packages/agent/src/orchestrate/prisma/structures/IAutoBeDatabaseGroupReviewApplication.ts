@@ -28,8 +28,8 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What business domains do you need to analyze?
      * - What requirements will help verify group coverage?
@@ -45,9 +45,9 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisSections, etc.) to fetch requirements
-     * documents. Use complete to submit group revisions after thorough domain
-     * coverage analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit group revisions after
+     * thorough domain coverage analysis.
      */
     request:
       | IComplete

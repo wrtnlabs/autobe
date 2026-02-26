@@ -11,7 +11,9 @@ export const transformPrismaGroupHistory = (
   props: {
     instruction: string;
     preliminary: AutoBePreliminaryController<
-      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     >;
   },
 ): IAutoBeOrchestrateHistory => {

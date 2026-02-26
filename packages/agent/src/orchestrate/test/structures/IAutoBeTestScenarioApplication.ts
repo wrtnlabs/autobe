@@ -48,8 +48,8 @@ export namespace IAutoBeTestScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas) or final
-     * test scenario generation (complete). When preliminary returns empty
+     * (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas) or
+     * final test scenario generation (complete). When preliminary returns empty
      * array, that type is removed from the union, physically preventing
      * repeated calls.
      */

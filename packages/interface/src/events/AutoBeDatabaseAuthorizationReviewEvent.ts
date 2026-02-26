@@ -28,7 +28,9 @@ export interface AutoBeDatabaseAuthorizationReviewEvent
     AutoBeEventBase<"databaseAuthorizationReview">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Comprehensive review analysis of the authorization component organization.
