@@ -77,7 +77,7 @@ export const transformAnalyzeUnitReviewHistory = (
         #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${section.title}
         **Purpose**: ${section.purpose}
         **Content**: ${section.content}
-        **Keywords**: ${section.keywords.join(", ")}
+        **Keywords**: ${(section.keywords ?? []).join(", ")}
         `,
           )
           .join("\n")}
