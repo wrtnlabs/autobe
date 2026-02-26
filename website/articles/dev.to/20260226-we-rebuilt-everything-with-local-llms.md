@@ -9,7 +9,7 @@
 - Github Repository: https://github.com/wrtnlabs/autobe
 - Generated Examples: https://github.com/wrtnlabs/autobe-examples
 
-[`AutoBE`](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates complete backend applications (TypeScript + NestJS + Prisma) from natural language.
+[`AutoBe`](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates complete backend applications (TypeScript + NestJS + Prisma) from natural language.
 
 - We adopted Korean SI methodology (no code reuse) and hit 100% compilation + near-100% runtime success
 - Real-world use exposed it as unmaintainable, so we rebuilt everything around modular code generation
@@ -18,16 +18,16 @@
   - **Stress-testing with weak local LLMs** (30B, 80B) to discover edge cases
   - **Killing the system prompt** — replacing prose instructions with strict function calling schemas and validation feedback
 - A 6.75% raw function calling success rate becomes 100% through validation feedback alone
-- AutoBE is no longer a one-shot prototype builder — it now supports incremental feature addition, removal, and modification on completed projects
+- AutoBe is no longer a one-shot prototype builder — it now supports incremental feature addition, removal, and modification on completed projects
 - Runtime success (E2E tests) has not recovered yet — that's next
 
 ## 1. The Original Success (And Its Hidden Problem)
 
-[`AutoBE`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language. You describe what you need in a chat interface, and AutoBE produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
+[`AutoBe`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language. You describe what you need in a chat interface, and AutoBe produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
 
 Our key promise is a **100% compilation guarantee**. We achieved it once. Then we threw it all away and rebuilt from scratch. With `GLM v5` — a local LLM — we've clawed our way back to 100%. Smaller models aren't there yet. This is the story of why we broke it, and what it took to start recovering.
 
-When we first built AutoBE, we looked at how Korean SI (System Integration) projects are developed — government SI, financial SI, healthcare SI. Their methodology is strict waterfall, and it enforces one distinctive principle: **each API function and test function must be developed completely independently**.
+When we first built AutoBe, we looked at how Korean SI (System Integration) projects are developed — government SI, financial SI, healthcare SI. Their methodology is strict waterfall, and it enforces one distinctive principle: **each API function and test function must be developed completely independently**.
 
 This means:
 - No shared utility functions
@@ -65,7 +65,7 @@ I once reviewed code written by bank developers. They had a function to format n
 
 ### 1.2. The Real-World Problem
 
-Then we tried to use AutoBE for actual commercial projects.
+Then we tried to use AutoBe for actual commercial projects.
 
 **Requirements changed.**
 
@@ -79,11 +79,36 @@ Simple request. But with 50 endpoints that handle record creation, we had to reg
 
 **It was hell.**
 
-We understood why SI development enforces these patterns. But we weren't building applications for 20-year maintenance cycles with teams of specialized maintainers. We were building prototypes to accelerate development — and our architecture made iteration painfully slow.
+But the deeper problem wasn't just the cost of changes — it was that AutoBe had no concept of maintenance at all. It was a **one-shot prototype builder**. You described what you wanted, it generated a complete application, and that was it. Want to add a notification system three weeks later? Start over. Want to remove the comment feature? Start over. Want to change how user permissions work? Start over.
+
+We had built an impressively thorough generation pipeline — requirements analysis, database design, API specification, E2E tests, implementation — but it produced disposable code. In the real world, software is never finished. Requirements evolve continuously. An AI agent that can't evolve with them is a toy, not a tool.
+
+We understood why SI development enforces these patterns. But we weren't building applications for 20-year maintenance cycles with teams of specialized maintainers. We needed an agent that could **grow with a project** — and our architecture made that fundamentally impossible.
+
+```mermaid
+flowchart
+subgraph "Backend Coding Agent"
+  coder("Facade Controller")
+end
+subgraph "Functional Agents"
+  coder --"Requirements Analysis"--> analyze("Analyze")
+  coder --"ERD"--> database("Database")
+  coder --"API Design"--> interface("Interface")
+  coder --"Test Codes" --> test("Test")
+  coder --"Main Program" --> realize("Realize")
+end
+subgraph "Compiler Feedback"
+  database --"validates" --> prismaCompiler("Prisma Compiler")
+  interface --"validates" --> openapiValidator("OpenAPI Validator")
+  interface --"generates" --> tsCompiler("TypeScript Compiler")
+  test --"validates" --> tsCompiler("TypeScript Compiler")
+  realize --"validates" --> tsCompiler("TypeScript Compiler")
+end
+```
 
 ## 2. The Decision: Embrace Modularity
 
-We made a radical choice: **rebuild AutoBE to generate modular, reusable code**.
+We made a radical choice: **rebuild AutoBe to generate modular, reusable code** — not just for cleaner output, but because modularity is the prerequisite for maintainability. If the generated code has stable module boundaries, then adding a feature means generating new modules and updating affected ones. Not starting over.
 
 ```mermaid
 flowchart TB
@@ -166,7 +191,7 @@ Now, when generating a `UserCollector`, the system retrieves only the relevant r
 
 ### 3.2. Stress-Testing with Intentionally Weak Models
 
-AutoBE's core philosophy is not about making smarter prompts or more sophisticated orchestration — it's about hardening the schemas and feedback loops that surround the LLM. The AI can hallucinate, misinterpret, or produce malformed output. Our job is to catch every failure mode and feed precise diagnostics back so the next attempt succeeds.
+AutoBe's core philosophy is not about making smarter prompts or more sophisticated orchestration — it's about hardening the schemas and feedback loops that surround the LLM. The AI can hallucinate, misinterpret, or produce malformed output. Our job is to catch every failure mode and feed precise diagnostics back so the next attempt succeeds.
 
 The question was: **how do you find edge cases you don't know exist?**
 
@@ -195,7 +220,7 @@ Instead, we moved the "prompting" into two places where ambiguity doesn't surviv
 
 **1. Function calling schemas** — strict type definitions with precise annotations on every type and property. A JSON Schema with a well-named field and a clear description is unambiguous in a way that natural language instructions never are.
 
-AutoBE defines dedicated AST types for every generation phase. The AI doesn't produce raw code — it fills in typed structures that our compilers convert to code:
+AutoBe defines dedicated AST types for every generation phase. The AI doesn't produce raw code — it fills in typed structures that our compilers convert to code:
 
 - [Database schema AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — Prisma models, fields, relations, indexes
 - [API specification AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI schemas, endpoints, DTOs
@@ -319,13 +344,19 @@ What used to take hours now takes minutes.
 
 ### 4.2. From Prototype Builder to Living Project
 
-This is the change that matters most, and we haven't talked about it enough.
+There's another result that doesn't show up in the benchmark table.
 
-The old AutoBE was a **fast prototype builder**. It did requirements analysis, database design, API specification, test generation, and implementation — all impressively thorough. But once the code was generated, that was it. There was no way to go back and say "add a notification system" or "remove the comment feature" or "change how permissions work." Every change meant regenerating from scratch.
+Remember the core problem from Section 1: the old AutoBe was a one-shot prototype builder. Generation was impressive, but the moment you needed to change anything, you started over. That made AutoBe a demo, not a development tool.
 
-With the modular architecture, AutoBE becomes a tool for **ongoing development**. You can take a completed project and incrementally add features, remove features, or modify existing behavior — without regenerating the entire codebase. The collectors and transformers form stable boundaries. When requirements evolve, only the affected modules are regenerated. The rest stays intact.
+With the modular architecture, that limitation is gone. AutoBe now supports **incremental development** on completed projects:
 
-This transforms AutoBE from a one-shot generator into something closer to an AI development partner that grows with your project.
+- **Add a feature**: "Add a notification system" → AutoBe generates new notification collectors, transformers, and operations. Existing user, article, and comment modules stay untouched.
+- **Remove a feature**: "Remove the comment system" → AutoBe removes comment-related modules and updates the operations that referenced them. Everything else remains intact.
+- **Modify behavior**: "Change permissions from role-based to attribute-based" → AutoBe regenerates the permission modules and the operations that depend on them. The rest of the codebase is unaffected.
+
+This is possible because collectors and transformers form **stable boundaries**. Each module has a well-defined interface. When requirements evolve, AutoBe identifies which modules are affected, regenerates only those, and validates that the updated modules still integrate correctly with the rest.
+
+The old AutoBe generated code. The new AutoBe **maintains** code. That's the difference between a toy and a tool.
 
 ## 5. Lessons Learned
 
@@ -363,7 +394,9 @@ We're not done. Current goals:
 
 The journey from 100% → 40% → and climbing back taught us something important: **the right architecture matters more than the right numbers**.
 
-We could have kept our original success rates. The code would compile. The tests would pass. But every requirement change would be painful, and our users would suffer.
+We could have kept our original success rates. The code would compile. The tests would pass. But every requirement change would be painful, and the generated code would remain disposable — use once, throw away, regenerate from scratch.
+
+The rebuild cost us months and a perfect scorecard. What it gave us was stronger schemas, model-agnostic validation loops, and an architecture where the agent can grow with a project instead of starting over every time.
 
 We're not at 100% across all models yet. But the gap is small, the trajectory is clear, and every fix we make to our schemas and validation logic closes it for every model at once. That's the power of building on types instead of prompts.
 
@@ -384,7 +417,7 @@ Even absurdly complex parameter structures — like an Abstract Syntax Tree with
 
 ---
 
-**About AutoBE**: AutoBE is an open-source AI agent developed by Wrtn Technologies that generates production-ready backend applications from natural language.
+**About AutoBe**: AutoBe is an open-source AI agent developed by Wrtn Technologies that generates production-ready backend applications from natural language.
 
 Through strict type schemas, compiler-driven validation, and modular code generation, we're pushing compilation success toward 100% across all models — while producing maintainable, production-ready code.
 
