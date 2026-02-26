@@ -6,7 +6,7 @@
 
 ![Z-AI GLM v5](https://autobe.dev/images/demonstrate/replay-z-ai-glm-5.png)
 
-- Github Repository: https://github.com/wrtnlabs/autobe
+- GitHub Repository: https://github.com/wrtnlabs/autobe
 - Generated Examples: https://github.com/wrtnlabs/autobe-examples
 
 [`AutoBe`](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates complete backend applications (TypeScript + NestJS + Prisma) from natural language.
