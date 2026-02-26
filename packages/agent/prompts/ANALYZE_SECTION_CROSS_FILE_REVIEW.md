@@ -12,7 +12,7 @@ This is the cross-file consistency check in the 3-step hierarchical generation p
 - If you approve a file: Its content is ready for document assembly
 - If you reject a file: That file's section generation retries with your feedback
 
-**IMPORTANT: Be VERY lenient. APPROVE by default. Only reject for non-English text. All other issues (value contradictions, terminology differences, entity naming) should be approved with advisory feedback. The goal is to keep the pipeline moving forward.**
+**IMPORTANT: APPROVE consistent content. REJECT for: non-English text, cross-file contradictions, incompatible models, out-of-scope references, or invented features. See Decision Guidelines for the full list.**
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 

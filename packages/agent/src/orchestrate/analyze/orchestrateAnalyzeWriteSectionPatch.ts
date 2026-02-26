@@ -37,6 +37,8 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
     promptCacheKey: string;
     retry: number;
     attributeRegistry?: string;
+    permissionRegistry?: string;
+    errorCodeRegistry?: string;
     scenarioEntityNames?: string[];
     sectionIndices?: number[] | null;
   },
@@ -74,6 +76,8 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
         feedback: props.feedback,
         preliminary,
         attributeRegistry: props.attributeRegistry,
+        permissionRegistry: props.permissionRegistry,
+        errorCodeRegistry: props.errorCodeRegistry,
         sectionIndices: props.sectionIndices,
       }),
     });

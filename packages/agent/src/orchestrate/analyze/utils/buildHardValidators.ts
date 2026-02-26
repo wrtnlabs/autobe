@@ -99,3 +99,39 @@ export interface IEmptyBridgeBlockViolation {
   sectionTitle: string;
   detail: string;
 }
+
+// ─── D) Oversized TOC Detection ───
+
+const TOC_MAX_LINES = 400;
+
+/**
+ * Detect if the TOC file's sections exceed the maximum line count.
+ *
+ * TOC (00-toc.md) should be a concise navigation aid, not a detailed
+ * requirements document. If the total line count across all sections exceeds
+ * `TOC_MAX_LINES`, returns a violation string.
+ *
+ * @returns Array of violation strings (empty = no violation)
+ */
+export const detectOversizedToc = (
+  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
+): string[] => {
+  let totalLines = 0;
+
+  for (const sectionsForModule of sectionResults) {
+    for (const sectionEvent of sectionsForModule) {
+      for (const section of sectionEvent.sectionSections) {
+        totalLines += section.content.split("\n").length;
+      }
+    }
+  }
+
+  if (totalLines > TOC_MAX_LINES) {
+    return [
+      `TOC exceeds ${TOC_MAX_LINES} lines (actual: ${totalLines}). ` +
+        `Remove detailed requirements, keep only navigation tables and brief summaries.`,
+    ];
+  }
+
+  return [];
+};

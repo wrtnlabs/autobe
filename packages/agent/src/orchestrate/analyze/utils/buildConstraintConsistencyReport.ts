@@ -692,6 +692,329 @@ export const buildEnumConsistencyReport = (props: {
   return lines.join("\n");
 };
 
+// ─── Permission Rule Conflict Detection ───
+
+export interface IPermissionConflict {
+  /** E.g. "admin → CreateTodo" */
+  actorOperation: string;
+  rules: Array<{
+    condition: string;
+    files: string[];
+  }>;
+}
+
+/**
+ * Extract permission rules from Bridge Block content.
+ *
+ * Parses `**Permission Rules**` entries in format: `- actor → operation →
+ * condition`
+ */
+const extractPermissionRules = (
+  content: string,
+): Array<{ actorOperation: string; condition: string }> => {
+  const results: Array<{ actorOperation: string; condition: string }> = [];
+  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+
+  for (const match of matches) {
+    const block = match[1] ?? "";
+    const lines = block.split("\n");
+    let inPermissions = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (line.startsWith("**Permission Rules**")) {
+        inPermissions = true;
+        continue;
+      }
+      if (line.startsWith("**") && !line.startsWith("**Permission Rules**")) {
+        inPermissions = false;
+        continue;
+      }
+      if (!inPermissions || !line.startsWith("-")) continue;
+
+      const body = line.replace(/^-+\s*/, "");
+      // Expected format: "actor → operation → condition"
+      // Split by arrow (→ or ->)
+      const parts = body.split(/\s*(?:→|->)\s*/);
+      if (parts.length < 3) continue;
+
+      const actor = parts[0]!.trim().toLowerCase();
+      const operation = parts[1]!.trim();
+      const condition = parts.slice(2).join(" → ").trim().toLowerCase();
+
+      if (!actor || !operation || !condition) continue;
+
+      results.push({
+        actorOperation: `${actor} → ${operation}`,
+        condition,
+      });
+    }
+  }
+
+  return results;
+};
+
+const DENIED_PATTERNS = /^(denied|blocked|forbidden|not allowed|prohibited)/i;
+const ALLOWED_PATTERNS =
+  /^(allowed|authenticated|always|yes|permitted|authorized|no authentication|owner)/i;
+
+/** Classify a permission condition as "denied", "allowed", or "other". */
+const classifyPermission = (
+  condition: string,
+): "denied" | "allowed" | "other" => {
+  if (DENIED_PATTERNS.test(condition)) return "denied";
+  if (ALLOWED_PATTERNS.test(condition)) return "allowed";
+  return "other";
+};
+
+/**
+ * Detect permission rule conflicts across files.
+ *
+ * A conflict occurs when the same `actor → operation` combination has
+ * contradictory conditions: one file says "denied/blocked" while another says
+ * "allowed/authenticated".
+ */
+export const detectPermissionConflicts = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IPermissionConflict[] => {
+  // actorOperation → condition → Set<filename>
+  const ruleMap: Map<string, Map<string, Set<string>>> = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const rules = extractPermissionRules(section.content);
+          for (const { actorOperation, condition } of rules) {
+            if (!ruleMap.has(actorOperation))
+              ruleMap.set(actorOperation, new Map());
+            const condMap = ruleMap.get(actorOperation)!;
+            if (!condMap.has(condition)) condMap.set(condition, new Set());
+            condMap.get(condition)!.add(file.filename);
+          }
+        }
+      }
+    }
+  }
+
+  const conflicts: IPermissionConflict[] = [];
+
+  for (const [actorOperation, condMap] of ruleMap) {
+    if (condMap.size < 2) continue;
+
+    // Check if there's a true contradiction (denied vs allowed)
+    const entries = [...condMap.entries()];
+    const classifications = entries.map(([cond, files]) => ({
+      condition: cond,
+      classification: classifyPermission(cond),
+      files: [...files],
+    }));
+
+    const hasDenied = classifications.some(
+      (c) => c.classification === "denied",
+    );
+    const hasAllowed = classifications.some(
+      (c) => c.classification === "allowed",
+    );
+
+    if (hasDenied && hasAllowed) {
+      conflicts.push({
+        actorOperation,
+        rules: classifications.map((c) => ({
+          condition: c.condition,
+          files: c.files,
+        })),
+      });
+    }
+  }
+
+  return conflicts;
+};
+
+/** Build a map from filename → list of permission conflict feedback strings. */
+export const buildFilePermissionConflictMap = (
+  conflicts: IPermissionConflict[],
+): Map<string, string[]> => {
+  const map: Map<string, string[]> = new Map();
+
+  for (const conflict of conflicts) {
+    const allFiles = new Set(conflict.rules.flatMap((r) => r.files));
+    const feedback =
+      `Permission conflict for "${conflict.actorOperation}": ` +
+      conflict.rules
+        .map((r) => `"${r.condition}" in [${r.files.join(", ")}]`)
+        .join(" vs ");
+
+    for (const filename of allFiles) {
+      if (!map.has(filename)) map.set(filename, []);
+      map.get(filename)!.push(feedback);
+    }
+  }
+
+  return map;
+};
+
+// ─── State Field Conflict Detection ───
+
+export interface IStateFieldConflict {
+  entity: string;
+  conflictType: string;
+  fields: Array<{
+    fieldName: string;
+    specification: string;
+    files: string[];
+  }>;
+}
+
+/**
+ * Detect state field conflicts across files.
+ *
+ * Known contradiction patterns:
+ *
+ * 1. Same entity has both `deletedAt` (datetime) and `isDeleted` (boolean)
+ * 2. Same entity has `status` (enum) and semantically equivalent `is*` booleans
+ */
+export const detectStateFieldConflicts = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IStateFieldConflict[] => {
+  // entity → { fieldName → { specification, files } }
+  const entityFields: Map<
+    string,
+    Map<string, { specification: string; files: Set<string> }>
+  > = new Map();
+
+  for (const { file, sectionEvents } of props.files) {
+    for (const sectionsForModule of sectionEvents) {
+      for (const sectionEvent of sectionsForModule) {
+        for (const section of sectionEvent.sectionSections) {
+          const specs = extractAttributeSpecs(section.content);
+          for (const { key, specification } of specs) {
+            const dotIndex = key.indexOf(".");
+            if (dotIndex < 0) continue;
+            const entity = key.slice(0, dotIndex);
+            const field = key.slice(dotIndex + 1).toLowerCase();
+
+            if (!entityFields.has(entity)) entityFields.set(entity, new Map());
+            const fields = entityFields.get(entity)!;
+            if (!fields.has(field))
+              fields.set(field, { specification, files: new Set() });
+            fields.get(field)!.files.add(file.filename);
+          }
+        }
+      }
+    }
+  }
+
+  const conflicts: IStateFieldConflict[] = [];
+
+  for (const [entity, fields] of entityFields) {
+    const fieldNames = [...fields.keys()];
+
+    // Pattern 1: deletedAt + isDeleted on same entity
+    const hasDeletedAt = fieldNames.some(
+      (f) => f === "deletedat" || f === "deleted_at",
+    );
+    const hasIsDeleted = fieldNames.some(
+      (f) => f === "isdeleted" || f === "is_deleted",
+    );
+
+    if (hasDeletedAt && hasIsDeleted) {
+      const deletedAtField =
+        fields.get("deletedat") ?? fields.get("deleted_at");
+      const isDeletedField =
+        fields.get("isdeleted") ?? fields.get("is_deleted");
+
+      if (deletedAtField && isDeletedField) {
+        conflicts.push({
+          entity,
+          conflictType: "deletedAt vs isDeleted",
+          fields: [
+            {
+              fieldName: "deletedAt",
+              specification: deletedAtField.specification,
+              files: [...deletedAtField.files],
+            },
+            {
+              fieldName: "isDeleted",
+              specification: isDeletedField.specification,
+              files: [...isDeletedField.files],
+            },
+          ],
+        });
+      }
+    }
+
+    // Pattern 2: status (enum) + is* booleans that overlap semantically
+    const statusField = fields.get("status");
+    if (statusField && /enum/i.test(statusField.specification)) {
+      const isBooleans = fieldNames.filter(
+        (f) =>
+          f.startsWith("is") && /boolean/i.test(fields.get(f)!.specification),
+      );
+
+      // Check if any is* boolean is semantically covered by the status enum
+      for (const boolField of isBooleans) {
+        // Extract the concept: isDeleted → deleted, isPublished → published
+        const concept = boolField.slice(2).toLowerCase();
+        if (statusField.specification.toLowerCase().includes(concept)) {
+          const boolEntry = fields.get(boolField)!;
+          conflicts.push({
+            entity,
+            conflictType: `status enum includes "${concept}" but separate is${concept.charAt(0).toUpperCase() + concept.slice(1)} boolean also exists`,
+            fields: [
+              {
+                fieldName: "status",
+                specification: statusField.specification,
+                files: [...statusField.files],
+              },
+              {
+                fieldName: boolField,
+                specification: boolEntry.specification,
+                files: [...boolEntry.files],
+              },
+            ],
+          });
+        }
+      }
+    }
+  }
+
+  return conflicts;
+};
+
+/** Build a map from filename → list of state field conflict feedback strings. */
+export const buildFileStateFieldConflictMap = (
+  conflicts: IStateFieldConflict[],
+): Map<string, string[]> => {
+  const map: Map<string, string[]> = new Map();
+
+  for (const conflict of conflicts) {
+    const allFiles = new Set(conflict.fields.flatMap((f) => f.files));
+    const feedback =
+      `State field conflict for "${conflict.entity}": ${conflict.conflictType}. ` +
+      conflict.fields
+        .map(
+          (f) =>
+            `"${f.fieldName}: ${f.specification}" in [${f.files.join(", ")}]`,
+        )
+        .join(" vs ") +
+      `. Use ONE canonical approach.`;
+
+    for (const filename of allFiles) {
+      if (!map.has(filename)) map.set(filename, []);
+      map.get(filename)!.push(feedback);
+    }
+  }
+
+  return map;
+};
+
 // ─── Attribute Specs Extraction (shared) ───
 
 const extractAttributeSpecs = (

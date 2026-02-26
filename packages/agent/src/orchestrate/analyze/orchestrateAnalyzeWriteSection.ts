@@ -37,6 +37,8 @@ export const orchestrateAnalyzeWriteSection = async (
     feedback?: string;
     retry: number;
     attributeRegistry?: string;
+    permissionRegistry?: string;
+    errorCodeRegistry?: string;
     scenarioEntityNames?: string[];
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
@@ -73,6 +75,8 @@ export const orchestrateAnalyzeWriteSection = async (
         feedback: props.feedback,
         preliminary,
         attributeRegistry: props.attributeRegistry,
+        permissionRegistry: props.permissionRegistry,
+        errorCodeRegistry: props.errorCodeRegistry,
       }),
     });
     if (pointer.value === null) return out(result)(null);

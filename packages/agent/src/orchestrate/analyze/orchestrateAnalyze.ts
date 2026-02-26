@@ -38,14 +38,29 @@ import {
   buildFileAttributeDuplicateMap,
   buildFileConflictMap,
   buildFileEnumConflictMap,
+  buildFilePermissionConflictMap,
+  buildFileStateFieldConflictMap,
   detectAttributeDuplicates,
   detectConstraintConflicts,
   detectEnumConflicts,
+  detectPermissionConflicts,
+  detectStateFieldConflicts,
 } from "./utils/buildConstraintConsistencyReport";
 import {
+  buildErrorCodeRegistry,
+  buildFileErrorCodeConflictMap,
+  detectErrorCodeConflicts,
+  formatErrorCodeRegistryForPrompt,
+} from "./utils/buildErrorCodeRegistry";
+import {
   detectEmptyBridgeBlocks,
+  detectOversizedToc,
   stripTocBridgeBlocks,
 } from "./utils/buildHardValidators";
+import {
+  buildPermissionRegistry,
+  formatPermissionRegistryForPrompt,
+} from "./utils/buildPermissionRegistry";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -574,7 +589,7 @@ async function processStageSection(
     );
     const promptCacheKey: string = v7();
 
-    // Build Attribute Canonical Registry from approved files
+    // Build Canonical Registries from approved files
     const approvedFiles = props.fileStates
       .filter((state, i) => !pendingIndices.has(i) && state.sectionResults)
       .map((state) => ({
@@ -583,6 +598,12 @@ async function processStageSection(
       }));
     const attributeRegistry = formatRegistryForPrompt(
       buildAttributeRegistry({ files: approvedFiles }),
+    );
+    const permissionRegistry = formatPermissionRegistryForPrompt(
+      buildPermissionRegistry({ files: approvedFiles }),
+    );
+    const errorCodeRegistry = formatErrorCodeRegistryForPrompt(
+      buildErrorCodeRegistry({ files: approvedFiles }),
     );
 
     // Build scenario entity name list for invention validation (P0-B)
@@ -668,6 +689,8 @@ async function processStageSection(
                         promptCacheKey: cacheKey,
                         retry: attempt,
                         attributeRegistry,
+                        permissionRegistry,
+                        errorCodeRegistry,
                         scenarioEntityNames,
                         sectionIndices: targetedSectionIndices,
                       })
@@ -684,6 +707,8 @@ async function processStageSection(
                         feedback: targetedFeedback,
                         retry: attempt,
                         attributeRegistry,
+                        permissionRegistry,
+                        errorCodeRegistry,
                         scenarioEntityNames,
                       });
                 analyzeDebug(
@@ -837,6 +862,39 @@ async function processStageSection(
     const fileEnumConflictMap: Map<string, string[]> =
       buildFileEnumConflictMap(enumConflicts);
 
+    // Detect permission rule conflicts programmatically
+    const permissionConflicts = detectPermissionConflicts({
+      files: filesWithSections,
+    });
+    const filePermissionConflictMap: Map<string, string[]> =
+      buildFilePermissionConflictMap(permissionConflicts);
+
+    // Detect state field conflicts programmatically
+    const stateFieldConflicts = detectStateFieldConflicts({
+      files: filesWithSections,
+    });
+    const fileStateFieldConflictMap: Map<string, string[]> =
+      buildFileStateFieldConflictMap(stateFieldConflicts);
+
+    // Detect error code conflicts programmatically
+    const errorCodeConflicts = detectErrorCodeConflicts({
+      files: filesWithSections,
+    });
+    const fileErrorCodeConflictMap: Map<string, string[]> =
+      buildFileErrorCodeConflictMap(errorCodeConflicts);
+
+    // Detect oversized TOC programmatically
+    const oversizedTocMap: Map<number, string[]> = new Map();
+    for (const fileIndex of pendingArray) {
+      const state = props.fileStates[fileIndex]!;
+      if (state.file.filename === "00-toc.md" && state.sectionResults) {
+        const violations = detectOversizedToc(state.sectionResults);
+        if (violations.length > 0) {
+          oversizedTocMap.set(fileIndex, violations);
+        }
+      }
+    }
+
     for (const fileIndex of pendingArray) {
       const state: IFileState = props.fileStates[fileIndex]!;
 
@@ -863,11 +921,22 @@ async function processStageSection(
       const fileAttrDuplicates = fileAttributeDuplicateMap.get(filename) ?? [];
       const fileEmptyBridgeBlocks = emptyBridgeBlockMap.get(fileIndex) ?? [];
       const fileEnumConflicts = fileEnumConflictMap.get(filename) ?? [];
+      const filePermissionConflicts =
+        filePermissionConflictMap.get(filename) ?? [];
+      const fileStateFieldConflicts =
+        fileStateFieldConflictMap.get(filename) ?? [];
+      const fileErrorCodeConflicts =
+        fileErrorCodeConflictMap.get(filename) ?? [];
+      const fileOversizedToc = oversizedTocMap.get(fileIndex) ?? [];
       const hasCriticalConflict =
         fileCriticalConflicts.length > 0 ||
         fileAttrDuplicates.length > 0 ||
         fileEmptyBridgeBlocks.length > 0 ||
-        fileEnumConflicts.length > 0;
+        fileEnumConflicts.length > 0 ||
+        filePermissionConflicts.length > 0 ||
+        fileStateFieldConflicts.length > 0 ||
+        fileErrorCodeConflicts.length > 0 ||
+        fileOversizedToc.length > 0;
 
       // Decision logic:
       // 1. per-file reject → reject (unchanged)
@@ -884,6 +953,10 @@ async function processStageSection(
         fileAttrDuplicates,
         fileEmptyBridgeBlocks,
         fileEnumConflicts,
+        filePermissionConflicts,
+        fileStateFieldConflicts,
+        fileErrorCodeConflicts,
+        fileOversizedToc,
       });
 
       if (approved) {
@@ -1148,6 +1221,10 @@ function buildProgrammaticSectionIssues(props: {
   fileAttrDuplicates: string[];
   fileEmptyBridgeBlocks: string[];
   fileEnumConflicts: string[];
+  filePermissionConflicts: string[];
+  fileStateFieldConflicts: string[];
+  fileErrorCodeConflicts: string[];
+  fileOversizedToc: string[];
 }): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
   return [
     ...props.fileCriticalConflicts.map((detail) => ({
@@ -1180,6 +1257,38 @@ function buildProgrammaticSectionIssues(props: {
       unitIndex: null,
       fixInstruction:
         "Align enum values with the canonical definition from the first file that specified this attribute. Use the exact same enum set.",
+      evidence: detail,
+    })),
+    ...props.filePermissionConflicts.map((detail) => ({
+      ruleCode: "cross_file_permission_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Align permission rules with the canonical definition. If the first file says 'denied', all files must say 'denied' for the same actor→operation.",
+      evidence: detail,
+    })),
+    ...props.fileStateFieldConflicts.map((detail) => ({
+      ruleCode: "cross_file_state_field_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Use ONE canonical approach for state fields. If other files use 'deletedAt: datetime', do NOT use 'isDeleted: boolean'. Pick one and align.",
+      evidence: detail,
+    })),
+    ...props.fileErrorCodeConflicts.map((detail) => ({
+      ruleCode: "cross_file_error_code_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "Use the canonical error code defined in the first file. Do NOT invent alternative error codes for the same condition.",
+      evidence: detail,
+    })),
+    ...props.fileOversizedToc.map((detail) => ({
+      ruleCode: "oversized_toc",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "TOC must be a concise navigation aid. Remove detailed requirements, keep only navigation tables and brief summaries.",
       evidence: detail,
     })),
   ];

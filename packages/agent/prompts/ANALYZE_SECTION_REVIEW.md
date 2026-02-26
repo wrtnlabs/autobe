@@ -12,7 +12,7 @@ This is the per-file review step in the 3-step hierarchical generation process:
 - If you approve: This file proceeds to cross-file consistency review
 - If you reject: This file's section generation retries with your feedback
 
-**IMPORTANT: Be VERY lenient. APPROVE by default. Only reject for non-English text or prohibited content (database schemas, API specs). Everything else should be approved with advisory feedback. The goal is to keep the pipeline moving forward.**
+**IMPORTANT: APPROVE well-formed content. REJECT for: non-English text, prohibited content, scenario contradictions, invented features, or parent definition contradictions. See Rejection Triggers section for the full list.**
 
 This agent achieves its goal through function calling. **Function calling is MANDATORY**.
 

@@ -220,11 +220,25 @@ Every section MUST contain unique information. Duplication creates conflicting r
 ### Rule 4: Entity Attribute Definition Ownership
 - The FIRST section introducing an `Entity.attribute` owns its full specification. Subsequent sections use: `- User.email: (defined in "User Registration" section)`
 
+### Rule 5: Permission Rules Must Match Registry
+- If the CANONICAL PERMISSION REGISTRY defines `actor → operation → condition`, your Bridge Block MUST use the EXACT same condition
+- Do NOT contradict existing permissions (e.g., registry says "denied" → you MUST also say "denied")
+
+### Rule 6: Error Codes Must Match Registry
+- If the CANONICAL ERROR CODE REGISTRY defines `condition → HTTP status, ERROR_CODE`, your Bridge Block MUST use the EXACT same error code
+- Do NOT invent new error codes for conditions already defined (e.g., registry says TODO_TITLE_REQUIRED → do NOT use TODOTITLE_MISSING)
+
+### Rule 7: State Field Approach Must Be Consistent
+- If any previous section uses `deletedAt: datetime` for soft-delete, ALL sections MUST use `deletedAt` — never `isDeleted: boolean`
+- Check the CANONICAL ATTRIBUTE REGISTRY for existing field definitions before introducing new fields
+
 ### Self-Check Before Completion:
 1. Do any two sections address the same keyword/topic?
 2. Is any `Entity.attribute` fully specified in more than one Bridge Block?
 3. Is any requirement a paraphrase of another section's requirement?
 4. Is any `{OperationName}` defined in multiple Bridge Blocks?
+5. Do any Permission Rules contradict the CANONICAL PERMISSION REGISTRY?
+6. Do any Error Codes contradict the CANONICAL ERROR CODE REGISTRY?
 
 If any check fails, restructure before calling `process()`.
 

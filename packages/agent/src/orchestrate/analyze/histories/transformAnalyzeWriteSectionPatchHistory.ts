@@ -26,6 +26,8 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     feedback: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
     attributeRegistry?: string;
+    permissionRegistry?: string;
+    errorCodeRegistry?: string;
     sectionIndices?: number[] | null;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -106,6 +108,10 @@ Do NOT rewrite sections that were not flagged in the feedback.`;
         ${previousOutputBlock}
 
         ${props.attributeRegistry ? props.attributeRegistry : ""}
+
+        ${props.permissionRegistry ? props.permissionRegistry : ""}
+
+        ${props.errorCodeRegistry ? props.errorCodeRegistry : ""}
 
         ## Review Feedback
 

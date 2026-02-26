@@ -25,6 +25,8 @@ export const transformAnalyzeWriteSectionHistory = (
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
     attributeRegistry?: string;
+    permissionRegistry?: string;
+    errorCodeRegistry?: string;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
@@ -127,6 +129,10 @@ export const transformAnalyzeWriteSectionHistory = (
         Any deviation will cause the review to REJECT your output.
 
         ${props.attributeRegistry ? props.attributeRegistry : ""}
+
+        ${props.permissionRegistry ? props.permissionRegistry : ""}
+
+        ${props.errorCodeRegistry ? props.errorCodeRegistry : ""}
 
         ## CRITICAL: No Duplicate Content
 
