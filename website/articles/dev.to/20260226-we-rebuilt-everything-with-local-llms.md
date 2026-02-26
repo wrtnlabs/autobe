@@ -2,18 +2,30 @@
 [AutoBe] We Built an AI That Writes Full Backend Apps — Then Broke Its 100% Success Rate on Purpose with Weak Local LLMs
 -->
 
-## Preface
+## TL;DR
+
+![Z-AI GLM v5](https://autobe.dev/images/demonstrate/replay-z-ai-glm-5.png)
 
 - Github Repository: https://github.com/wrtnlabs/autobe
 - Generated Examples: https://github.com/wrtnlabs/autobe-examples
 
-[`AutoBE`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language.
+[`AutoBE`](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates complete backend applications (TypeScript + NestJS + Prisma) from natural language.
 
-You describe what you need in a chat interface, and AutoBE produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
-
-Our key promise is a **100% compilation guarantee**. We achieved it once. Then we threw it all away and rebuilt from scratch. This is the story of why we did it, and how we clawed our way back to 100%.
+- We adopted Korean SI methodology (no code reuse) and hit 100% compilation + near-100% runtime success
+- Real-world use exposed it as unmaintainable, so we rebuilt everything around modular code generation
+- Success rate cratered to 40% — we clawed it back by:
+  - **RAG optimization** for context management
+  - **Stress-testing with weak local LLMs** (30B, 80B) to discover edge cases
+  - **Killing the system prompt** — replacing prose instructions with strict function calling schemas and validation feedback
+- A 6.75% raw function calling success rate becomes 100% through validation feedback alone
+- AutoBE is no longer a one-shot prototype builder — it now supports incremental feature addition, removal, and modification on completed projects
+- Runtime success (E2E tests) has not recovered yet — that's next
 
 ## 1. The Original Success (And Its Hidden Problem)
+
+[`AutoBE`](https://github.com/wrtnlabs/autobe) is an open-source AI agent, developed by [Wrtn Technologies](https://wrtn.io), that generates production-ready backend applications from natural language. You describe what you need in a chat interface, and AutoBE produces a complete TypeScript + NestJS + Prisma codebase — database schema, API specification, E2E tests, and fully typed implementation code.
+
+Our key promise is a **100% compilation guarantee**. We achieved it once. Then we threw it all away and rebuilt from scratch. With `GLM v5` — a local LLM — we've clawed our way back to 100%. Smaller models aren't there yet. This is the story of why we broke it, and what it took to start recovering.
 
 When we first built AutoBE, we looked at how Korean SI (System Integration) projects are developed — government SI, financial SI, healthcare SI. Their methodology is strict waterfall, and it enforces one distinctive principle: **each API function and test function must be developed completely independently**.
 
@@ -21,8 +33,6 @@ This means:
 - No shared utility functions
 - No code reuse between API endpoints
 - Every operation is self-contained
-
-We considered this the most orthodox, battle-tested approach to backend development — and adopted it wholesale. And it worked. We achieved **100% compilation success** and **near-100% runtime success** — meaning not only did every generated application compile without errors, but the E2E tests actually passed and the APIs returned correct results.
 
 ```mermaid
 flowchart LR
@@ -32,6 +42,8 @@ flowchart LR
     API3["PUT /users/:id"] --> Impl3["Complete Implementation C"]
   end
 ```
+
+We considered this the most orthodox, battle-tested approach to backend development — and adopted it wholesale. And it worked. We achieved **100% compilation success** and **near-100% runtime success** — meaning not only did every generated application compile without errors, but the E2E tests actually passed and the APIs returned correct results.
 
 Each API had its own complete implementation. No dependencies. No shared code. The AI generated each function in isolation, and the compiler validated them independently.
 
@@ -129,7 +141,7 @@ The first breakthrough was realizing our AI agents were drowning in context. Wit
 - The OpenAPI specification
 - Business requirements
 
-Passing all of this in every prompt was token-expensive and noisy. The AI couldn't find the relevant information in the sea of context.
+Passing all of this in every prompt was noisy. The AI couldn't find the relevant information in the sea of context.
 
 We implemented a hybrid RAG system:
 
@@ -150,7 +162,7 @@ const relevantSections = await hybridSearch(
 );
 ```
 
-Now, when generating a `UserCollector`, the system retrieves only the relevant requirement sections — not the entire 100-page specification. Token usage dropped by 90%. More importantly, AI output quality improved because it could focus on what matters.
+Now, when generating a `UserCollector`, the system retrieves only the relevant requirement sections — not the entire 100-page specification. AI output quality improved because it could focus on what matters.
 
 ### 3.2. Stress-Testing with Intentionally Weak Models
 
@@ -175,12 +187,94 @@ This is also why local LLMs matter for cost reasons: discovering these edge case
 
 We made a counterintuitive decision: **minimize the system prompt to almost nothing**.
 
-Most AI agent projects pour effort into elaborate system prompts — long, detailed instructions telling the model exactly how to behave. We went the opposite direction. To build an agent that works consistently across different LLMs, we stripped the system prompt down to bare essentials: only the minimum rules and principles, stated with maximum clarity and brevity. No verbose explanations. No prohibition lists.
+Most AI agent projects pour effort into elaborate system prompts — long, detailed instructions telling the model exactly how to behave. Inevitably, this leads to prohibition rules: "do NOT generate utility functions," "NEVER use `any` type," "do NOT create circular dependencies." The problem is that prohibition rules often backfire. When you tell a language model "do not do X," you're placing X front and center in its attention. The model now has to represent the forbidden pattern to avoid it — and in practice, this increases the probability of producing exactly what you prohibited. It's the "don't think of a pink elephant" problem, baked into token prediction.
 
-Instead, we moved the "prompting" into two places where ambiguity doesn't survive:
+We went the opposite direction. To build an agent that works consistently across different LLMs, we stripped the system prompt down to bare essentials: only the minimum rules and principles, stated with maximum clarity and brevity. No verbose explanations. No prohibition lists.
 
-1. **Function calling schemas**: Strict type definitions with precise annotations on every type and property. A JSON Schema with a well-named field and a clear description is unambiguous in a way that natural language instructions never are.
-2. **Validation feedback messages**: When the compiler catches an error, the diagnostic message itself becomes the guide. Each message is crafted to tell the model exactly what went wrong and what the correct form looks like.
+Instead, we moved the "prompting" into two places where ambiguity doesn't survive — and where prohibition rules simply aren't needed:
+
+**1. Function calling schemas** — strict type definitions with precise annotations on every type and property. A JSON Schema with a well-named field and a clear description is unambiguous in a way that natural language instructions never are.
+
+AutoBE defines dedicated AST types for every generation phase. The AI doesn't produce raw code — it fills in typed structures that our compilers convert to code:
+
+- [Database schema AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — Prisma models, fields, relations, indexes
+- [API specification AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI schemas, endpoints, DTOs
+- [Test function AST](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — E2E test expressions, assertions, random generators
+
+```typescript
+// DTO types: the AI defines request/response schemas from a closed set of AST nodes
+export namespace AutoBeOpenApi {
+  export type IJsonSchema =
+    | IJsonSchema.IConstant
+    | IJsonSchema.IBoolean
+    | IJsonSchema.IInteger
+    | IJsonSchema.INumber
+    | IJsonSchema.IString
+    | IJsonSchema.IArray
+    | IJsonSchema.IObject
+    | IJsonSchema.IReference
+    | IJsonSchema.IOneOf
+    | IJsonSchema.INull;
+}
+
+// Test functions: 30+ expression types forming a complete test DSL
+export namespace AutoBeTest {
+  export type IExpression =
+    | IBooleanLiteral   | INumericLiteral    | IStringLiteral
+    | IArrayLiteralExpression   | IObjectLiteralExpression
+    | ICallExpression   | IArrowFunction     | IBinaryExpression
+    | IArrayMapExpression       | IArrayFilterExpression
+    | IFormatRandom     | IPatternRandom     | IIntegerRandom
+    | IEqualPredicate   | IConditionalPredicate
+    | ...  // 30+ variants in total
+}
+```
+
+Every variant is a discriminated union with annotated properties. The model can't produce an invalid shape — the type system physically prevents it, and validation catches anything that slips through.
+
+And here's what an actual function calling interface looks like — this is the schema refinement agent's complete contract ([source](https://github.com/wrtnlabs/autobe/blob/main/packages/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaRefineApplication.ts)):
+
+```typescript
+export interface IAutoBeInterfaceSchemaRefineApplication {
+  process(props: IProps): void;
+}
+export namespace IAutoBeInterfaceSchemaRefineApplication {
+  export interface IProps {
+    thinking: string;
+    request:
+      | IComplete
+      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryGetInterfaceOperations
+      | IAutoBePreliminaryGetInterfaceSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousDatabaseSchemas
+      | IAutoBePreliminaryGetPreviousInterfaceOperations
+      | IAutoBePreliminaryGetPreviousInterfaceSchemas;
+  }
+  export interface IComplete {
+    type: "complete";
+    review: string;
+    databaseSchema: string | null;
+    specification: string;
+    description: string;
+    excludes: AutoBeInterfaceSchemaPropertyExclude[];
+    revises: AutoBeInterfaceSchemaPropertyRefine[];
+  }
+}
+```
+
+One function. One discriminated union for `request`. The model either gathers context (preliminary requests) or completes the task — no other path exists. When a preliminary request returns an empty array, that variant is physically removed from the union, making duplicate requests impossible at the type level.
+
+**2. Validation feedback messages** — when the compiler catches an error, the diagnostic message itself becomes the guide. Each message is crafted to tell the model exactly what went wrong and what the correct form looks like.
+
+To put this in perspective: `qwen3-coder-next`'s raw function calling success rate for the `interface-schema-refine` agent — the one shown above — is just **15%** on a Reddit-scale project. For a shopping mall backend, where the project is larger and more complex, that drops to **6.75%**. That means roughly 93 out of 100 function calls produce invalid output.
+
+Yet the interface phase finishes with **100% success**. Every single DTO schema is generated correctly. Validation feedback turns a 6.75% raw success rate into 100% — not 92%, not 96%, but 100%. Every failed call gets a structured diagnostic — exact file, exact field, exact problem — and the model corrects itself on the next attempt. This is the loop we hardened by stress-testing with local LLMs: every edge case we discovered became a more precise feedback message, and every more precise message pushed the correction rate higher.
+
+![Qwen3-Coder-Next](https://autobe.dev/images/demonstrate/replay-qwen-qwen3-coder-next.png)
+
+> Qwen3-Coder-Next's function calling success rate for constructing DTO schema drops as low as **6.75%**. Yet validation feedback turns that abysmal 6.75% into a **100% completion** rate.
 
 You could say the system prompt didn't disappear — it migrated from free-form text into schemas and feedback loops.
 
@@ -200,6 +294,8 @@ After months of work, here's where we stand — local LLMs only. Every model pas
 `qwen/qwen3-next-80b-a3b-instruct`    | 🟡 95  | 🟡 94  | 🔴 88   | 🟡 91
 `qwen/qwen3-30b-a3b-thinking`         | 🟡 96  | 🟡 90  | 🔴 71   | 🔴 79
 
+To be honest: **runtime success has not recovered yet.** The original architecture achieved near-100% E2E test pass rates. With the new modular architecture, we're not there. Compilation is a necessary condition, not a sufficient one — code that compiles doesn't guarantee correct business logic. Runtime recovery is our next frontier.
+
 But more importantly, the generated code is now **maintainable**:
 
 ```typescript
@@ -211,15 +307,7 @@ But more importantly, the generated code is now **maintainable**:
 // After: Modify 1 file
 ```
 
-### 4.1. Token Efficiency Comparison
-
-| Metric | Old Architecture | New Architecture |
-|--------|-----------------|------------------|
-| Tokens per API endpoint | ~8,000 | ~2,500 |
-| Context window usage | 85% | 40% |
-| Regeneration on change | Full endpoint | Module only |
-
-### 4.2. Developer Experience
+### 4.1. Developer Experience
 
 The real win is iteration speed. When a client says "add `created_by` to all records":
 
@@ -228,6 +316,16 @@ The real win is iteration speed. When a client says "add `created_by` to all rec
 3. Validate with cached TypeScript compilation
 
 What used to take hours now takes minutes.
+
+### 4.2. From Prototype Builder to Living Project
+
+This is the change that matters most, and we haven't talked about it enough.
+
+The old AutoBE was a **fast prototype builder**. It did requirements analysis, database design, API specification, test generation, and implementation — all impressively thorough. But once the code was generated, that was it. There was no way to go back and say "add a notification system" or "remove the comment feature" or "change how permissions work." Every change meant regenerating from scratch.
+
+With the modular architecture, AutoBE becomes a tool for **ongoing development**. You can take a completed project and incrementally add features, remove features, or modify existing behavior — without regenerating the entire codebase. The collectors and transformers form stable boundaries. When requirements evolve, only the affected modules are regenerated. The rest stays intact.
+
+This transforms AutoBE from a one-shot generator into something closer to an AI development partner that grows with your project.
 
 ## 5. Lessons Learned
 
@@ -257,7 +355,7 @@ The short-term cost of modularity (40% success rate, months of rebuilding) was h
 
 We're not done. Current goals:
 
-- **100% runtime success**: Compilation success doesn't guarantee business logic correctness. We're at ~80% test pass rate, targeting 100% by end of 2026.
+- **100% runtime success**: Compilation success doesn't guarantee business logic correctness. Runtime recovery is our top priority.
 - **Multi-language support**: The modular architecture makes this feasible. Collectors and transformers can compile to different target languages.
 - **Incremental regeneration**: Only regenerate modules affected by requirement changes, not the entire codebase.
 
@@ -270,6 +368,19 @@ We could have kept our original success rates. The code would compile. The tests
 We're not at 100% across all models yet. But the gap is small, the trajectory is clear, and every fix we make to our schemas and validation logic closes it for every model at once. That's the power of building on types instead of prompts.
 
 Sometimes you have to break what works to build what's actually useful.
+
+### Coming Next
+
+Remember that 6.75% raw success rate that became 100%? You might be wondering: how exactly does validation feedback pull that off? How do you design function calling schemas for structures as complex as a compiler's AST? It's not magic — and it's not limited to our stack.
+
+Here's what we've learned and what we'll break down in the next article:
+
+- **Function calling schemas are model-neutral.** Because they're structured and formalized, you don't need to write different versions for different models. One schema works everywhere.
+- **AI understands types better than prose.** A structured schema is inherently unambiguous. Models parse it more reliably than any system prompt we've ever written.
+- **Types make validation possible.** Once output has a defined shape, you can validate it — and when the AI makes a mistake, you can tell it exactly what went wrong. The error recovery rate is on a completely different level from plain orchestration, where a wrong answer just stays wrong.
+- **No more prohibition rules.** Text-based orchestration inevitably leads to "do NOT do X" instructions — which ironically make the model more likely to do X. With schemas and validation, you define what's valid. Everything else is simply rejected and corrected. The problem disappears.
+
+Even absurdly complex parameter structures — like an Abstract Syntax Tree with 30+ node types — can be handled through function calling and structured output. In the next article, we'll show you step by step how to build these validation feedback loops. We'll make it practical enough that you can apply it to your own AI agents.
 
 ---
 
