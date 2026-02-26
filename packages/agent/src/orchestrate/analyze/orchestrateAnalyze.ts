@@ -983,6 +983,13 @@ async function processStageSection(
           perFileResult?.rejectedModuleUnits ?? null,
           structuredPerFileIssues,
         );
+        // Fallback: infer targets from issues to avoid full-file rewrite
+        if (state.rejectedModuleUnits === null) {
+          state.rejectedModuleUnits = inferRejectedModuleUnitsFromIssues(
+            structuredPerFileIssues,
+            state.unitResults!,
+          );
+        }
         analyzeDebug(
           `section reject file="${state.file.filename}" attempt=${attempt} perFileApproved=${perFileApproved} crossFileApproved=${crossFileApproved} critical=${hasCriticalConflict} targets=${formatRejectedModuleUnitsSummary(
             state.rejectedModuleUnits,
@@ -1009,6 +1016,13 @@ async function processStageSection(
           crossFileResult?.rejectedModuleUnits ?? null,
           [...programmaticIssues, ...structuredCrossFileIssues],
         );
+        // Fallback: infer targets from issues to avoid full-file rewrite
+        if (state.rejectedModuleUnits === null) {
+          state.rejectedModuleUnits = inferRejectedModuleUnitsFromIssues(
+            [...programmaticIssues, ...structuredCrossFileIssues],
+            state.unitResults!,
+          );
+        }
         analyzeDebug(
           `section reject file="${state.file.filename}" attempt=${attempt} perFileApproved=${perFileApproved} crossFileApproved=${crossFileApproved} critical=${hasCriticalConflict} targets=${formatRejectedModuleUnitsSummary(
             state.rejectedModuleUnits,
@@ -1362,6 +1376,69 @@ function normalizeRejectedModuleUnits(
       sectionIndicesPerUnit,
     };
   });
+}
+
+/**
+ * Infer rejectedModuleUnits from structured issues when the LLM review didn't
+ * provide explicit rejection targets. This prevents full-file rewrites when
+ * only specific module/unit pairs have issues.
+ */
+function inferRejectedModuleUnitsFromIssues(
+  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+  unitResults: AutoBeAnalyzeWriteUnitEvent[],
+): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
+  const moduleUnitMap = new Map<number, Set<number>>();
+  let hasTargetedIssue = false;
+
+  for (const issue of issues) {
+    if (issue.moduleIndex !== null && issue.moduleIndex !== undefined) {
+      hasTargetedIssue = true;
+      if (!moduleUnitMap.has(issue.moduleIndex)) {
+        moduleUnitMap.set(issue.moduleIndex, new Set());
+      }
+      if (issue.unitIndex !== null && issue.unitIndex !== undefined) {
+        moduleUnitMap.get(issue.moduleIndex)!.add(issue.unitIndex);
+      }
+    }
+  }
+
+  if (!hasTargetedIssue) return null;
+
+  const result: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] = [];
+  for (const [moduleIndex, unitIndexSet] of moduleUnitMap) {
+    // If no specific units targeted, include all units for this module
+    let unitIndices: number[];
+    if (unitIndexSet.size === 0) {
+      const unitEvent = unitResults[moduleIndex];
+      unitIndices = unitEvent
+        ? Array.from({ length: unitEvent.unitSections.length }, (_, i) => i)
+        : [];
+    } else {
+      unitIndices = [...unitIndexSet].sort((a, b) => a - b);
+    }
+
+    const moduleIssues = dedupeReviewIssues(
+      issues.filter(
+        (i) =>
+          i.moduleIndex === moduleIndex &&
+          (i.unitIndex === null || unitIndices.includes(i.unitIndex)),
+      ),
+    );
+
+    result.push({
+      moduleIndex,
+      unitIndices,
+      feedback: moduleIssues.map((i) => i.fixInstruction).join("; "),
+      issues: moduleIssues,
+      sectionIndicesPerUnit: buildSectionIndicesPerUnit(
+        moduleIssues,
+        moduleIndex,
+        unitIndices,
+      ),
+    });
+  }
+
+  return result.length > 0 ? result : null;
 }
 
 function formatStructuredIssuesForRetry(props: {
