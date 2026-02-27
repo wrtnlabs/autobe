@@ -1,5 +1,5 @@
 <!--
-[AutoBe] LLMs Doesn't Need to Be Accurate. They Need to Be Correctable.
+[AutoBe] LLMs Don't Need to Be Accurate. They Need to Be Correctable.
 -->
 
 **How typed schemas and validation feedback took AutoBe from 6.75% to 100% — and why this changes everything about building AI agents.**
