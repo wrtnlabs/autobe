@@ -12,6 +12,7 @@ export interface RuntimeResult {
   error?: string;
 }
 
+/** AutoBE generated project structure */
 export interface AutoBEProjectStructure {
   /** Project root path */
   rootPath: string;
@@ -31,6 +32,7 @@ export interface AutoBEProjectStructure {
   testDir?: string;
 }
 
+/** Project dependencies information */
 export interface ProjectDependencies {
   /** Package.json path */
   packageJsonPath?: string;
@@ -40,6 +42,7 @@ export interface ProjectDependencies {
   devDependencies: Record<string, string>;
 }
 
+/** Discovered source files */
 export interface SourceFiles {
   /** All TypeScript files */
   typescript: string[];
@@ -55,6 +58,7 @@ export interface SourceFiles {
   prismaSchemas: string[];
 }
 
+/** Evaluation context Contains all information needed for evaluation */
 export interface EvaluationContext {
   /** Project structure */
   project: AutoBEProjectStructure;
@@ -71,9 +75,10 @@ export interface EvaluationContext {
   /** Runtime evaluation result */
   runtimeResult?: RuntimeResult;
   /** Evaluation options */
-  options?: EvaluationOptions; // ← 이게 핵심, 위에꺼랑 달라요
+  options?: EvaluationOptions;
 }
 
+/** Evaluation input */
 export interface EvaluationInput {
   /** Target project path */
   inputPath: string;
@@ -83,6 +88,7 @@ export interface EvaluationInput {
   options?: EvaluationOptions;
 }
 
+/** Evaluation options */
 export interface EvaluationOptions {
   /** Run specific phases only */
   phases?: string[];
