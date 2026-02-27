@@ -18,6 +18,7 @@ MODE="${1:-scoring}"
 PASSED=0
 FAILED=0
 TOTAL=0
+TOTAL_COUNT=$((${#MODELS[@]} * ${#PROJECTS[@]}))
 
 for MODEL in "${MODELS[@]}"; do
   MODEL_NAME="${MODEL%%:*}"
@@ -33,7 +34,6 @@ for MODEL in "${MODELS[@]}"; do
       continue
     fi
 
-    TOTAL_COUNT=$((${#MODELS[@]} * ${#PROJECTS[@]}))
     echo "[$TOTAL/$TOTAL_COUNT] $MODEL_NAME / $PROJECT ($MODE)"
 
     ARGS="-i $INPUT -o $OUTPUT"

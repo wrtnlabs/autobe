@@ -8,4 +8,11 @@ export { runBbsScenarios } from "./bbs.scenarios";
 export { runRedditScenarios } from "./reddit.scenarios";
 export { runShoppingScenarios } from "./shopping.scenarios";
 export { runTodoScenarios } from "./todo.scenarios";
-export type { ScenarioResult } from "./todo.scenarios";
+export type { ScenarioResult } from "./scenario-helpers";
+export {
+  randomEmail,
+  randomPassword,
+  randomUsername,
+  pass,
+  fail,
+} from "./scenario-helpers";

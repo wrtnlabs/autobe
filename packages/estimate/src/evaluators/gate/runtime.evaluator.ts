@@ -5,7 +5,7 @@ import * as path from "path";
 import type { EvaluationContext, Issue } from "../../types";
 import { createIssue } from "../../types";
 import { GateEvaluator } from "../base";
-import { GoldenSetEvaluator } from "../golden";
+import { type GoldenProject, GoldenSetEvaluator } from "../golden";
 
 const HEALTH_CHECK_TIMEOUT_MS = 60000;
 const HEALTH_CHECK_INTERVAL_MS = 2000;
@@ -95,10 +95,10 @@ export class RuntimeEvaluator extends GateEvaluator {
         const goldenEvaluator = new GoldenSetEvaluator();
         const goldenResult = await goldenEvaluator.evaluate(
           context,
-          context.options.project as any,
+          context.options.project as GoldenProject,
           apiPort,
         );
-        (context as any).goldenResult = goldenResult;
+        context.goldenResult = goldenResult;
       }
 
       const testResults = await this.runTests(rootPath);

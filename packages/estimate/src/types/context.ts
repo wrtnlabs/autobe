@@ -74,6 +74,8 @@ export interface EvaluationContext {
   eslintConfigPath?: string;
   /** Runtime evaluation result */
   runtimeResult?: RuntimeResult;
+  /** Golden Set result (populated by RuntimeEvaluator when server is up) */
+  goldenResult?: import("./score").PhaseResult;
   /** Evaluation options */
   options?: EvaluationOptions;
 }

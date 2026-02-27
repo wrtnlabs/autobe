@@ -1,28 +1,20 @@
-import { RouteInfo, findEndpoint } from "./url-resolver";
 import { HttpRunner } from "./http-runner";
+import {
+  type ScenarioResult,
+  fail,
+  pass,
+  randomEmail,
+  randomPassword,
+} from "./scenario-helpers";
+import { type RouteInfo, findEndpoint } from "./url-resolver";
 
-export interface ScenarioResult {
-  id: number;
-  name: string;
-  passed: boolean;
-  reason?: string;
-}
-
-function randomEmail() {
-  return `test_${Date.now()}_${Math.random().toString(36).slice(2)}@test.com`;
-}
-
-function randomPassword() {
-  return `Pass${Math.random().toString(36).slice(2)}1!`;
-}
+export type { ScenarioResult };
 
 export async function runTodoScenarios(
   routes: RouteInfo[],
   http: HttpRunner,
 ): Promise<ScenarioResult[]> {
   const results: ScenarioResult[] = [];
-  const pass = (id: number, name: string): ScenarioResult => ({ id, name, passed: true });
-  const fail = (id: number, name: string, reason: string): ScenarioResult => ({ id, name, passed: false, reason });
 
   const email = randomEmail();
   const password = randomPassword();

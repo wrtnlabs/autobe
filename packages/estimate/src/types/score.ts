@@ -147,6 +147,7 @@ export interface EvaluationResult {
     testCoverage: PhaseResult;
     logicCompleteness: PhaseResult;
     apiCompleteness: PhaseResult;
+    goldenSet?: PhaseResult;
   };
 
   // Reference info (no score impact)

@@ -1,22 +1,18 @@
-import { RouteInfo, findEndpoint } from "./url-resolver";
 import { HttpRunner } from "./http-runner";
-import { ScenarioResult } from "./todo.scenarios";
-
-function randomEmail() {
-  return `test_${Date.now()}_${Math.random().toString(36).slice(2)}@test.com`;
-}
-
-function randomPassword() {
-  return `Pass${Math.random().toString(36).slice(2)}1!`;
-}
+import {
+  type ScenarioResult,
+  fail,
+  pass,
+  randomEmail,
+  randomPassword,
+} from "./scenario-helpers";
+import { type RouteInfo, findEndpoint } from "./url-resolver";
 
 export async function runBbsScenarios(
   routes: RouteInfo[],
   http: HttpRunner,
 ): Promise<ScenarioResult[]> {
   const results: ScenarioResult[] = [];
-  const pass = (id: number, name: string): ScenarioResult => ({ id, name, passed: true });
-  const fail = (id: number, name: string, reason: string): ScenarioResult => ({ id, name, passed: false, reason });
 
   const email = randomEmail();
   const password = randomPassword();

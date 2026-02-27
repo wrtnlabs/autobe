@@ -152,14 +152,13 @@ export class EvaluationPipeline {
       ...Object.fromEntries(
         phaseStrategies.map((s, i) => [s.key, phaseResults[i]]),
       ),
-    } as { gate: PhaseResult } & Record<PhaseKey, PhaseResult>;
+    } as { gate: PhaseResult; goldenSet?: PhaseResult } & Record<PhaseKey, PhaseResult>;
 
     // ── Golden Set ───────────────────────────────────────
     if (input.options?.golden && input.options?.project) {
-      const goldenResult = (this.context as any).goldenResult;
+      const goldenResult = this.context.goldenResult;
       if (goldenResult) {
-        (phases as any).goldenSet = goldenResult;
-        // Record golden set as a span too
+        phases.goldenSet = goldenResult;
         if (trace) {
           const goldenSpan = startPhaseSpan(trace, "goldenSet", {
             project: input.options.project,
@@ -167,7 +166,6 @@ export class EvaluationPipeline {
           endPhaseSpan(goldenSpan, goldenResult);
         }
       } else if (trace) {
-        // Golden was requested but no result — mark as skipped
         const goldenSpan = startPhaseSpan(trace, "goldenSet", {
           project: input.options.project,
         });
