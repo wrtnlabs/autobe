@@ -23,7 +23,11 @@ export namespace AutoBeExampleBenchmark {
       phases?: AutoBePhase[];
       imagePath?: string;
       progress: (state: IAutoBeExampleBenchmarkState) => void;
-      on?: (event: AutoBeEvent, agent: IAutoBeAgent) => void;
+      on?: (
+        event: AutoBeEvent,
+        agent: IAutoBeAgent,
+        context: { vendor: string; project: AutoBeExampleProject },
+      ) => void;
     },
   ): Promise<void> => {
     const state: IAutoBeExampleBenchmarkState = {
@@ -65,7 +69,11 @@ export namespace AutoBeExampleBenchmark {
       vendorState: IAutoBeExampleBenchmarkState.IOfVendor;
       phases?: AutoBePhase[];
       report: () => void;
-      on?: (event: AutoBeEvent, agent: IAutoBeAgent) => void;
+      on?: (
+        event: AutoBeEvent,
+        agent: IAutoBeAgent,
+        context: { vendor: string; project: AutoBeExampleProject },
+      ) => void;
     },
   ): Promise<void> => {
     for (const project of props.vendorState.projects)
@@ -87,7 +95,11 @@ export namespace AutoBeExampleBenchmark {
       imagePath?: string;
       phases?: AutoBePhase[];
       report: () => void;
-      on?: (event: AutoBeEvent, agent: IAutoBeAgent) => void;
+      on?: (
+        event: AutoBeEvent,
+        agent: IAutoBeAgent,
+        context: { vendor: string; project: AutoBeExampleProject },
+      ) => void;
     },
   ): Promise<void> => {
     props.projectState.started_at = new Date();
@@ -122,7 +134,11 @@ export namespace AutoBeExampleBenchmark {
             )
               phaseState.snapshot = s;
             props.report();
-            if (props.on) props.on(s.event, agent);
+            if (props.on)
+              props.on(s.event, agent, {
+                vendor: props.vendor,
+                project: props.projectState.name,
+              });
           },
         });
         phaseState.success = success;

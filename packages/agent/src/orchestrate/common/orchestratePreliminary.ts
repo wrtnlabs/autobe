@@ -16,6 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "./AutoBePreliminaryController";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { IAutoBePreliminaryRequest } from "./structures/AutoBePreliminaryRequest";
+import { IAnalysisSectionEntry } from "./structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "./structures/IAutoBePreliminaryCollection";
 
 export const orchestratePreliminary = async <
@@ -33,8 +34,13 @@ export const orchestratePreliminary = async <
   const executes: AgenticaExecuteHistory[] = props.histories.filter(
     (h) => h.type === "execute",
   );
-  if (executes.length === 0)
+  if (executes.length === 0) {
+    // Some vendors (notably certain Qwen/OpenRouter routes) occasionally return
+    // an empty turn where only the user message is recorded. Treat it as a
+    // transient no-op so the outer RAG loop can retry instead of failing fast.
+    if (props.histories.every((h) => h.type === "userMessage")) return;
     throw new Error("Failed to function calling from the preliminary step.");
+  }
 
   for (const exec of executes) {
     // ANALYSIS
@@ -59,6 +65,32 @@ export const orchestratePreliminary = async <
         trial: props.trial,
         all: pa.getAll().previousAnalysisFiles,
         local: pa.getLocal().previousAnalysisFiles,
+        arguments: exec.arguments,
+        previous: true,
+      });
+    }
+    // ANALYSIS SECTIONS
+    else if (isAnalysisSections(props.preliminary, exec.arguments)) {
+      const ps: AutoBePreliminaryController<"analysisSections"> =
+        props.preliminary;
+      orchestrateAnalysisSections(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: ps.getAll().analysisSections,
+        local: ps.getLocal().analysisSections,
+        arguments: exec.arguments,
+        previous: false,
+      });
+    } else if (isPreviousAnalysisSections(props.preliminary, exec.arguments)) {
+      const ps: AutoBePreliminaryController<"previousAnalysisSections"> =
+        props.preliminary;
+      orchestrateAnalysisSections(ctx, {
+        source: props.source,
+        source_id: props.source_id,
+        trial: props.trial,
+        all: ps.getAll().previousAnalysisSections,
+        local: ps.getLocal().previousAnalysisSections,
         arguments: exec.arguments,
         previous: true,
       });
@@ -205,6 +237,30 @@ const isPreviousAnalysisFiles = (
     >()[0]
   ] !== undefined;
 
+const isAnalysisSections = (
+  // biome-ignore lint: intended
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"analysisSections"> =>
+  typia.is<IAutoBePreliminaryRequest<"analysisSections">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "analysisSections">
+    >()[0]
+  ] !== undefined;
+
+const isPreviousAnalysisSections = (
+  // biome-ignore lint: intended
+  preliminary: AutoBePreliminaryController<any>,
+  input: unknown,
+): preliminary is AutoBePreliminaryController<"previousAnalysisSections"> =>
+  typia.is<IAutoBePreliminaryRequest<"previousAnalysisSections">>(input) &&
+  preliminary.getAll()[
+    typia.misc.literals<
+      Extract<keyof IAutoBePreliminaryCollection, "previousAnalysisSections">
+    >()[0]
+  ] !== undefined;
+
 const isPrismaSchemas = (
   // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
@@ -347,6 +403,56 @@ const orchestrateAnalyzeFiles = (
     source_id: props.source_id,
     existing,
     requested: props.arguments.request.fileNames,
+    trial: props.trial,
+    created_at: new Date().toISOString(),
+  });
+};
+
+const orchestrateAnalysisSections = (
+  ctx: AutoBeContext,
+  props: {
+    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
+    source_id: string;
+    trial: number;
+    all: IAnalysisSectionEntry[];
+    local: IAnalysisSectionEntry[];
+    arguments: unknown;
+    previous: boolean;
+  },
+): void => {
+  if (props.previous) {
+    if (
+      false ===
+      typia.is<IAutoBePreliminaryRequest<"previousAnalysisSections">>(
+        props.arguments,
+      )
+    )
+      return;
+  } else if (
+    false ===
+    typia.is<IAutoBePreliminaryRequest<"analysisSections">>(props.arguments)
+  )
+    return;
+
+  const existing: number[] = props.local.map((s) => s.id);
+  for (const sectionId of props.arguments.request.sectionIds) {
+    const section: IAnalysisSectionEntry | undefined = props.all.find(
+      (s) => s.id === sectionId,
+    );
+    if (section === undefined) continue;
+    else if (props.local.find((s) => s.id === sectionId) === undefined)
+      props.local.push(section);
+  }
+  ctx.dispatch({
+    type: "preliminary",
+    id: v7(),
+    function: props.previous ? "previousAnalysisSections" : "analysisSections",
+    source: props.source,
+    source_id: props.source_id,
+    // biome-ignore lint/suspicious/noExplicitAny: conditional type narrowing not available at dispatch site
+    existing: existing as any,
+    // biome-ignore lint/suspicious/noExplicitAny: conditional type narrowing not available at dispatch site
+    requested: props.arguments.request.sectionIds as any,
     trial: props.trial,
     created_at: new Date().toISOString(),
   });

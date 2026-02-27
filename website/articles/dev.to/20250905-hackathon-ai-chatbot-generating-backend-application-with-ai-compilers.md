@@ -1,0 +1,201 @@
+
+## 1. Overview
+
+![](https://autobe.dev/images/hackathon/Poster.png)
+
+**Wrtn Technologies is hosting the 1st AutoBE Hackathon.**
+
+### Hackathon Information
+
+**Event Details**
+- **Participants**: Maximum 70 people  
+- **Registration Period**: September 5 - 11, 2025  
+- **Registration Form**: [Google Forms](https://forms.gle/8meMGEgKHTiQTrCT7)
+- **Event Schedule**: September 12 - 14, 2025 (64 hours)  
+  - **Start**: September 12, 08:00:00 (PDT, UTC-7)  
+  - **End**: September 14, 23:59:59 (PDT, UTC-7)  
+- **Winners Announcement**: September 17, 2025  
+- **Total Prize Pool**: $6,400  
+  - **Grand Prize (1 person)**: $2,000
+  - **Excellence Award (1 person)**: $1,000 
+  - **Participation Prize**: $50 for all who submit detailed reviews for both models
+- **NO API COST BARRIERS TO PARTICIPATION**: Each participant will receive token usage credits worth **$350**
+
+
+##### Backend Without Humans, Closer Than You Think?
+AutoBE is a no-code AI platform that turns natural language into backend applications. It analyzes requirements, designs schemas and APIs, writes tests, and implements code.
+
+This Hackathon challenges experienced backend developers to evaluate whether AutoBE’s output is truly production-ready. Assess its code quality, scalability, and performance, compare it with your own practices, and suggest improvements.
+
+Your insights will be essential in proving whether AutoBE is a genuinely useful tool!
+
+## 2. What is AutoBE?
+**AutoBE is an AI-based no-code platform for generating production-grade backend applications from natural language.**
+
+- GitHub Repository: https://github.com/wrtnlabs/autobe
+- Guide Documents: https://autobe.dev/docs
+
+**Key Innovation**
+
+AutoBE uses a **Compiler-in-the-Loop** approach to ensure generated code compiles and runs, addressing limitations of existing AI tools.
+
+**Core Achievement**
+
+Achieves a **100% build success rate** (based on OpenAI GPT-4.1) for backend applications.
+
+### 2.1. How It Works 
+
+![](https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fswdxic0h5l42o5i2cfy6.png)
+
+AutoBE follows a 5-stage process with specialized AI agents and real-time compiler validation:
+
+1. **Analyze Agent**: Interprets natural language requirements, defines user roles, and clarifies ambiguities.
+2. **Prisma Agent**: Designs type-safe database schemas using Prisma ORM, validated by the Prisma compiler.
+3. **Interface Agent**: Creates RESTful APIs with OpenAPI 3.1 documentation, validated by an AutoBE-specific compiler.
+4. **Test Agent**: Writes E2E test code for normal, edge, and error cases, validated by the test runner.
+5. **Realize Agent**: Implements NestJS-based backend code with features like dependency injection, validated by TypeScript and NestJS compilers.
+
+### 2.2. Technical Features
+
+AutoBE’s AI-specific compilers validate syntax, logic, and functionality in real-time, providing detailed feedback to AI for code correction. These compilers are optimized for Prisma, OpenAPI, and test domains, ensuring consistency via structured AST-based code generation. The tech stack includes TypeScript, NestJS, Prisma ORM, and PostgreSQL/SQLite.
+
+You can check each compiler's AST structure on GitHub:
+- **Prisma Compiler**: [`AutoBePrisma.IApplication`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/prisma/AutoBePrisma.ts)
+- **Interface Compiler**: [`AutoBeOpenApi.IDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) 
+- **Test Compiler**: [`AutoBeTest.IFunction`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts)
+
+### 2.3. Live Demonstration
+
+See AutoBE in action with fully functional backend applications:
+
+{% youtube V-_v2NJHCCk %}
+
+**Example Applications**
+
+- [Discussion Board](https://github.com/wrtnlabs/autobe-example-bbs)
+- [To Do List](https://github.com/wrtnlabs/autobe-example-todo)
+- [Reddit Community](https://github.com/wrtnlabs/autobe-example-reddit)
+- [E-Commerce Platform](https://github.com/wrtnlabs/autobe-example-shopping)
+
+**How Simple Is It?**
+
+Create a discussion board with five natural language commands, generating a deployable backend in ~70 minutes.
+
+> [!TIP] 
+> **For Hackathon Participants**
+> Please provide detailed requirements for better results. Avoid vague prompts like "do everything."
+
+## 3. Eligibility
+
+**Who We're Looking For**
+
+- **Experience**: Developers or those majoring in related fields
+- **Tech Stack**: Experience with Node.js, Java, Python, or similar frameworks.
+- **Database Skills**: Relational database design beyond CRUD.
+- **API Knowledge**: RESTful API design experience.
+- **English Proficiency**: Conversational and technical reading skills.
+- **Technical Setup**: Laptop with Node.js, Git, and a code editor.
+
+## 4. How to Participate
+
+### 4.1. Registration
+
+Apply via [Google Forms](https://forms.gle/8meMGEgKHTiQTrCT7). Limited to 70 participants, first-come, first-served, by September 10, 2025.
+
+### 4.2. Account Issuance
+
+On September 12, participants will receive AutoBE access credentials and usage guides via email.
+
+### 4.3. Hackathon Process
+
+ During the hackerthon on September 12–14,  Participants log into the AutoBE platform with provided accounts and generate two backend applications using `openai/gpt-4.1-mini` and `openai/gpt-4.1` with different themes. Record conversations, results, and issues.
+
+### 4.4. Submission
+
+Submit two separate reviews for each application by September 14, 2025, to [GitHub Discussions](https://github.com/wrtnlabs/autobe/discussions/categories/hackathon-20250912). Provide detailed, specific feedback. Further details will be provided via email.
+
+## 5. Provided AI Models
+
+### 5.1. `openai/gpt-4.1-mini`
+![](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1-mini.png?v=2)
+
+This model offers a cost-effective balance for generating small to medium backend applications (~20 tables, 150 API endpoints). It performs well for web services like community boards, blogs, or project management tools, supporting CRUD operations, user authentication, permission management, and file uploads. Its strengths are in requirements analysis and API design, producing clear specifications and clean, RESTful API structures, making it ideal for project initialization.
+
+However, it may produce logical errors in complex business logic or fail to fully resolve compilation issues in E2E test code due to its lightweight design. We provide this model first to demonstrate the role of model capacity in code generation and to manage hackathon costs, as more powerful models are expensive. Developers often use it for initial setups, refining output with tools like Claude Code or GitHub Copilot for a cost-efficient workflow.
+
+### 5.2. `openai/gpt-4.1`
+![](https://autobe.dev/images/demonstrate/replay-openai-gpt4.1.png)
+
+> Available after completing `openai/gpt-4.1-mini` review
+
+This is the most advanced model, optimized for enterprise-grade backend applications (>500 APIs, 1,000 test scenarios). It excels at understanding complex requirements, inferring implicit needs, and implementing advanced features like real-time notifications, complex permissions, transaction processing, and caching. AutoBE achieves a 100% build success rate with this model, producing production-ready code with no compilation errors.
+
+Generating an e-commerce platform costs ~$300–400 (150M tokens), so access is restricted to manage expenses. Completing the `gpt-4.1-mini` review unlocks free access, providing insight into how model capacity impacts code quality. This ensures participants can explore its full potential without cost concerns.
+
+### 5.3. `qwen/qwen3-235b-a22b`
+![](https://autobe.dev/images/demonstrate/replay-qwen3-235b-a22b.png)
+
+> Optional - Just for Fun!
+
+This model is NOT required for the hackathon. It’s included purely for fun and for those curious about local LLM performance!
+
+This lightweight, open-source model runs on laptop-level resources and is included to explore local LLM performance. It’s suitable for small apps (5–10 tables, 20 APIs) like todo lists or simple accounting tools, handling basic CRUD operations and straightforward logic. However, it struggles with complex requirements and often fails to resolve compilation errors, leading to process interruptions. This model offers a fun way to compare open-source and commercial models, highlighting their performance gap.
+
+## 6. Evaluation Criteria
+
+### 6.1. Requirements Analysis
+- **Accuracy**: Are requirements clearly understood and prioritized?
+- **User Personas**: Are roles and permissions logical?
+- **Non-functional Needs**: Are performance, security, and scalability covered?
+- **Document Quality**: Is it clear and detailed for development?
+
+### 6.2. Database Design
+- **Production-Readiness**: Are table relationships logical, without issues?
+- **Normalization**: Is it balanced for integrity and performance?
+- **Keys & Indexing**: Are keys and indexes set for efficiency?
+- **Details**: Are naming, data types, and scalability appropriate?
+
+### 6.3. API Design
+- **RESTful Compliance**: Are methods, URIs, and status codes correct?
+- **Consistency**: Are endpoints and formats unified?
+- **Documentation**: Are OpenAPI specs clear with examples?
+- **Security**: Is authentication and data protection adequate?
+
+### 6.4. Test Code
+- **Validation**: Does it test business logic effectively?
+- **Completeness**: Are normal, edge, and exception cases included?
+- **Quality**: Are tests clear, independent, and easy to debug?
+
+### 6.5. Implementation Code
+- **Quality**: Is it readable, modular, and SOLID-compliant?
+- **Architecture**: Is it extensible with clear layer separation?
+- **Performance**: Are queries efficient, avoiding N+1 issues?
+- **Security & Types**: Are vulnerabilities absent and types used well?
+
+### 6.6. Overall Review Writing Guide
+- **AutoBE Assessment**: Strengths, weaknesses, and suitable projects?
+- **Impact**: Saves time? Code quality level? Maintainable?
+- **Improvements**: Specific areas and priorities for enhancement.
+- **Further instructions regarding the Review Writing Guide will be provided via email.**
+
+## 7. Prizes and Benefits
+
+- **Grand Prize (1 person)**: $2,000 for the best review.
+- **Excellence Award (1 person)**: $1,000 for the second-best review.
+- **Participation Prize**: $50 for all who submit detailed reviews for both models.
+- **Exclusions**: AI-generated, perfunctory, or plagiarized reviews.
+- **Judging**: By AutoBE team and experts, announced September 17, 2025.
+
+## 8. Disclaimer
+
+### 8.1. Beta Limitations
+
+AutoBE is in beta and may have inefficiencies or errors. These are not bugs but part of its development stage.
+
+### 8.2. Code Usage
+
+Generated code isn’t recommended for production without review and audit. Wrtn Technologies isn’t liable for issues.
+
+### 8.3. Open Source
+
+Reviews and generated code are public on GitHub Discussions. Avoid sensitive information in conversations or projects.

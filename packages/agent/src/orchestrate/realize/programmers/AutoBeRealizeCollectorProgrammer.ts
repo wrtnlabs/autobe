@@ -77,7 +77,7 @@ export namespace AutoBeRealizeCollectorProgrammer {
             .map(
               (fk) =>
                 ({
-                  member: fk.relation.mappingName ?? om.name,
+                  member: fk.relation.oppositeName,
                   kind: fk.unique ? "hasOne" : "hasMany",
                   nullable: null,
                 }) satisfies AutoBeRealizeCollectorMapping.Metadata,

@@ -5,23 +5,11 @@ import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 
 /**
- * Executes task list with prompt caching optimization and semaphore-controlled
- * parallelization.
+ * Executes task list with semaphore-controlled parallelization.
  *
- * This is the core performance optimization pattern in AutoBE: first task runs
- * sequentially to establish prompt cache, then remaining tasks execute in
- * parallel with the same cache key, dramatically reducing token costs and
- * latency. The semaphore limits concurrency to prevent overwhelming LLM APIs.
- *
- * For example, generating 100 API operations: first operation takes 30s and
- * costs full token price, but the remaining 99 operations run in parallel
- * (respecting semaphore limit) and benefit from 90% cost reduction via cached
- * system prompts. Total time: ~35s instead of 50 minutes, cost: ~10% of
- * uncached price.
- *
- * Without this pattern, AutoBE would be economically and temporally infeasible
- * for real-world applications with dozens of database models and API
- * endpoints.
+ * All tasks are dispatched immediately into a worker pool, with concurrency
+ * limited by the semaphore to prevent overwhelming LLM APIs. Results are
+ * returned in original order.
  *
  * @param ctx Execution context providing vendor semaphore configuration
  * @param taskList List of async tasks to execute, each receiving cache key
@@ -36,7 +24,6 @@ export const executeCachedBatch = async <T>(
   if (taskList.length === 0) return [];
 
   promptCacheKey ??= v7();
-  const first: T = await taskList[0]!(promptCacheKey);
   const semaphore: number =
     typeof ctx === "number"
       ? ctx
@@ -44,23 +31,31 @@ export const executeCachedBatch = async <T>(
         ? ctx.vendor.semaphore.max()
         : (ctx.vendor.semaphore ?? AutoBeConfigConstant.SEMAPHORE);
 
-  const remained: Array<Pair<Task<T>, number>> = taskList
-    .slice(1)
-    .map((task, index) => new Pair(task, index));
-  const tail: Pair<T, number>[] = [];
-  await Promise.all(
-    new Array(semaphore).fill(0).map(async () => {
-      while (remained.length !== 0) {
-        const batch: Pair<Task<T>, number> = remained.splice(0, 1)[0]!;
-        const result: T = await batch.first(promptCacheKey!);
-        tail.push(new Pair(result, batch.second));
+  const queue: Array<Pair<Task<T>, number>> = taskList.map(
+    (task, index) => new Pair(task, index),
+  );
+  const results: Pair<T, number>[] = [];
+  let aborted: boolean = false;
+  let firstError: unknown = null;
+  await Promise.allSettled(
+    new Array(Math.min(semaphore, queue.length)).fill(0).map(async () => {
+      while (queue.length !== 0 && !aborted) {
+        const item: Pair<Task<T>, number> = queue.splice(0, 1)[0]!;
+        try {
+          const result: T = await item.first(promptCacheKey!);
+          if (!aborted) results.push(new Pair(result, item.second));
+        } catch (error) {
+          if (!aborted) {
+            aborted = true;
+            queue.length = 0;
+            firstError = error;
+          }
+        }
       }
     }),
   );
-  return [
-    first,
-    ...tail.sort((x, y) => x.second - y.second).map((p) => p.first),
-  ];
+  if (firstError !== null) throw firstError;
+  return results.sort((x, y) => x.second - y.second).map((p) => p.first);
 };
 
 /**

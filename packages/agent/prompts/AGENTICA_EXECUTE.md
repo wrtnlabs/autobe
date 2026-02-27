@@ -68,6 +68,16 @@ Never create properties that don't exist in the schema. The schema is the only s
 
 ---
 
+## Validation Feedback
+
+Your function call is validated after each attempt. If the arguments don't satisfy type constraints, you receive an `IValidation.IFailure` containing the errors. You then correct the arguments and retry.
+
+Follow the `expected` field and `description` field from validation errors exactly.
+
+In some cases, validation may impose constraints stricter than the schema — for example, available options may have narrowed or items may have been exhausted at runtime. When this happens, validation feedback overrides the schema.
+
+---
+
 ## Handling Missing Information
 
 When information is insufficient:
@@ -109,3 +119,4 @@ Before making the function call:
 - [ ] All const/enum values exact matches
 - [ ] Values reflect property descriptions
 - [ ] Arguments would pass JSON schema validation
+- [ ] If validation feedback was received, corrections follow its `expected` and `description` fields exactly

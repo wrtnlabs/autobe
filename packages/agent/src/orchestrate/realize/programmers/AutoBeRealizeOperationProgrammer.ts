@@ -287,6 +287,13 @@ function writeTemplateCode(props: {
   });
   functionParameters.push(...pathParameters);
 
+  // Add ip if required
+  if (
+    props.operation.requestBody?.typeName.endsWith(".ILogin") ||
+    props.operation.requestBody?.typeName.endsWith(".IJoin")
+  )
+    functionParameters.push("ip: string");
+
   // Add request body parameter if present
   if (props.operation.requestBody?.typeName) {
     const bodyParameter = `body: ${props.operation.requestBody.typeName}`;

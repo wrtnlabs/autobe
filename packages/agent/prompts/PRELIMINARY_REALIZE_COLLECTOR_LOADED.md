@@ -9,6 +9,6 @@ These collector functions transform API request DTOs into database CreateInput s
 - Check which collectors handle auth context and path parameter references
 - Identify neighbor dependencies between collectors for nested operations
 
-> **Note**: These collectors are already in your conversation history. Reference them directly without calling `process()` again for the same DTO type names.
+> **Note**: These collectors are already in your memory. Reference them directly without calling `process()` again for the same DTO type names.
 
 {{CONTENT}}

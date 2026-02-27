@@ -13,7 +13,7 @@
     "archive:benchmark": "pnpm run build:prompt && node -r ts-node/register --max-old-space-size=16000 src/archive/benchmark.ts",
     "archive:go": "pnpm run build:prompt && node -r ts-node/register --max-old-space-size=8000 src/archive/go.ts",
     "archive:failures": "ts-node src/archive/failures.ts > failures.log",
-    "archive:commit": "ts-node src/archive/commit.ts",
+    "archive:commit": "node -r ts-node/register --max-old-space-size=8000 src/archive/commit.ts",
     "archive:local": "ts-node src/archive/local.ts",
     "archive:publish": "ts-node src/archive/publish.ts",
     "test:instruction": "pnpm run build:prompt && ts-node src/experimental/instruction.ts"

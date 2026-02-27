@@ -1,35 +1,7 @@
-/**
- * Interface representing a planning document file structure used by the Analyze
- * Agent in the AutoBE system.
- *
- * This interface defines the complete metadata and content structure for
- * documentation generated during the requirements analysis phase. The Analyze
- * Agent uses this structure to create comprehensive planning documents that
- * serve as blueprints for backend developers implementing the system.
- *
- * The documents created using this interface follow a waterfall model approach,
- * where each document builds upon previous ones to form a complete
- * specification before any code is written. These documents are designed to
- * remove all ambiguity and provide developers with actionable, specific
- * requirements.
- *
- * Key characteristics:
- *
- * - Single-pass document creation (no iterations or revisions)
- * - Production-ready specifications on first write
- * - Backend-focused content (no frontend UI/UX requirements)
- * - Minimum 2,000 characters for standard docs, 5,000-30,000+ for technical
- * - Uses EARS (Easy Approach to Requirements Syntax) format
- * - Includes comprehensive API specifications (40-50+ endpoints for complex
- *   systems)
- * - Complete database schemas and business logic
- *
- * @author Kakasoo
- * @since 0.1.0
- * @see IAutoBeAnalyzeWriteApplication - The application interface that uses this structure
- * @see AutoBeAnalyzeScenarioEvent - Event structure for multi-document scenarios
- * @see AutoBeAnalyzeActor - User actor definitions used in authentication planning
- */
+import { AutoBeAnalyzeDocument } from "./AutoBeAnalyzeDocument";
+import { AutoBeAnalyzeModule } from "./AutoBeAnalyzeModule";
+
+/** Planning document structure for the Analyze phase. */
 export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
   /**
    * Markdown file content. Only write the content of the file. Do not include
@@ -50,6 +22,37 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * outside the document content.
    */
   content: string;
+
+  /**
+   * Structured representation of the document's hierarchical content.
+   *
+   * This property preserves the three-level hierarchy (Module → Unit → Section)
+   * that would otherwise be lost when content is assembled into a flat markdown
+   * string. By maintaining this structure, the system enables:
+   *
+   * - Partial modification of specific sections without full regeneration
+   * - Structural search and filtering of document content
+   * - Hierarchical UI representation with collapsible sections
+   * - Easier debugging by tracking which module/unit/section has issues
+   *
+   * The `content` property contains the assembled markdown for compatibility,
+   * while this `module` property provides programmatic access to the
+   * structure.
+   */
+  module: AutoBeAnalyzeModule;
+
+  /**
+   * Two-layer structured document data.
+   *
+   * Composed of Evidence Layer (source references) + Semantic Layer (structured
+   * SRS data). Machine-consumable structure that downstream phases
+   * (Database/Interface/Test/Realize) can consume directly without markdown
+   * parsing.
+   *
+   * `content` and `module` are kept for backward compatibility; new downstream
+   * consumers should use this `document` field directly.
+   */
+  document?: AutoBeAnalyzeDocument;
 }
 export namespace AutoBeAnalyzeFile {
   export interface Scenario {

@@ -4,7 +4,7 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
-# qwen/qwen3-coder-next (0.07)
+# qwen/qwen3-coder-next (0.12) -> working
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-qwen3-coder-next.bbs.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
@@ -22,12 +22,6 @@ pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > ar
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
 
-# qwen/qwen3-coder:exacto (0.22) -> not working
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project todo > archive.qwen-qwen3-coder.todo.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project bbs > archive.qwen-qwen3-coder.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project reddit > archive.qwen-qwen3-coder.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-coder:exacto --project shopping > archive.qwen-qwen3-coder.shopping.log
-
 ######################################################
 # KIMI
 ######################################################
@@ -40,11 +34,11 @@ pnpm run archive:go --vendor moonshotai/kimi-k2.5 --project shopping > archive.m
 ######################################################
 # GLM
 ######################################################
-# z-ai/glm-4.7 (0.4) -> not working
-pnpm run archive:go --vendor z-ai/glm-4.7 --project todo > archive.z-ai-glm-4.7.todo.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project bbs > archive.z-ai-glm-4.7.bbs.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project reddit > archive.z-ai-glm-4.7.reddit.log
-pnpm run archive:go --vendor z-ai/glm-4.7 --project shopping > archive.z-ai-glm-4.7.shopping.log
+# z-ai/glm-5 (0.95) -> working
+pnpm run archive:go --vendor z-ai/glm-5 --project todo > archive.z-ai-glm-5.todo.log
+pnpm run archive:go --vendor z-ai/glm-5 --project bbs > archive.z-ai-glm-5.bbs.log
+pnpm run archive:go --vendor z-ai/glm-5 --project reddit > archive.z-ai-glm-5.reddit.log
+pnpm run archive:go --vendor z-ai/glm-5 --project shopping > archive.z-ai-glm-5.shopping.log
 
 ######################################################
 # DEEPSEEK

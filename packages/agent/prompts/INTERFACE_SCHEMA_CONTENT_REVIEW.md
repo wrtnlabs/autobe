@@ -66,7 +66,14 @@ interface IComplete {
 
 **Flow**: Gather context → Compare DB fields against DTO → Call `complete` with exclusions and revisions.
 
-Available preliminary requests (max 8 calls): `getAnalysisFiles`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`. Use batch requests. Never re-request loaded materials.
+Available preliminary requests (max 8 calls): `getAnalysisFiles`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`.
+
+- Use batch requests
+- Never re-request loaded materials
+- `getInterfaceSchemas` only returns existing schemas
+  - NEVER request a type you intend to newly create via `$ref` — it does not exist yet
+  - If the call fails with "non-existing", the failure is correct — do not retry
+  - Another agent creates missing `$ref` targets later
 
 ## 4. Database to OpenAPI Type Mapping
 
@@ -218,3 +225,4 @@ process({
 - [ ] Correct `required` value by DTO type
 - [ ] `specification` present on every `create`/`update`
 - [ ] Load database schema first, never assume fields exist
+- [ ] Did NOT call `getInterfaceSchemas` for types that do not yet exist

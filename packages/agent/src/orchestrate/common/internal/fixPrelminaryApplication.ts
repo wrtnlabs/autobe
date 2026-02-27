@@ -16,11 +16,14 @@ import typia from "typia";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
+import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
@@ -73,6 +76,11 @@ export const fixPreliminaryApplication = <
         eraseMetadata("getPreviousAnalysisFiles");
         eraseKind(kind);
       }
+    } else if (kind === "previousAnalysisSections") {
+      if (props.state.previousAnalyze === null) {
+        eraseMetadata("getPreviousAnalysisSections");
+        eraseKind(kind);
+      }
     } else if (kind === "previousDatabaseSchemas") {
       if (props.state.previousDatabase === null) {
         eraseMetadata("getPreviousDatabaseSchemas");
@@ -102,6 +110,7 @@ export const fixPreliminaryApplication = <
     if (
       props.enumerable === false &&
       accessor !== "analysisFiles" &&
+      accessor !== "analysisSections" &&
       accessor !== "databaseSchemas"
     )
       continue;
@@ -174,6 +183,42 @@ namespace ApplicationFixer {
           .map((f) => `- ${f.filename}`)
           .join("\n")}
         `,
+    );
+  };
+
+  export const analysisSections = (props: {
+    $defs: Record<string, ILlmSchema>;
+    controller: AutoBePreliminaryController<
+      "analysisSections" | "previousAnalysisSections"
+    >;
+    previous: boolean;
+  }): void => {
+    const sections: IAnalysisSectionEntry[] =
+      props.controller.getAll()[
+        props.previous ? "previousAnalysisSections" : "analysisSections"
+      ];
+    if (sections.length === 0) return;
+
+    const type: ILlmSchema.IObject = props.$defs[
+      props.previous
+        ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisSections>()
+        : typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>()
+    ] as ILlmSchema.IObject;
+    if (type === undefined) return;
+    describe(
+      type.properties.sectionIds,
+      StringUtil.trim`
+        Here is the catalog of analysis sections available for retrieval:
+
+        ID | File | Unit | Section | Keywords
+        ---|------|------|---------|----------
+        ${sections
+          .map(
+            (s) =>
+              `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle} | ${s.keywords.join(", ")}`,
+          )
+          .join("\n")}
+      `,
     );
   };
 

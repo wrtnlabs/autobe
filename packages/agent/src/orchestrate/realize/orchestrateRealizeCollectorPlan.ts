@@ -1,4 +1,5 @@
 import {
+  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
@@ -13,8 +14,10 @@ import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
+import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformRealizeCollectorPlanHistory } from "./histories/transformRealizeCollectorPlanHistory";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
@@ -70,15 +73,42 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
+  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+
+  const queryText: string = [
+    "collector",
+    "plan",
+    "dto",
+    "prisma",
+    props.dtoTypeName,
+  ].join(" ");
+
+  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
+    getEmbedder(),
+    analyzeFiles,
+    queryText,
+    "TOPK",
+    { log: false, logPrefix: "realizeCollectorPlan" },
+  );
+
   const preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "interfaceSchemas"
+    | "interfaceOperations"
   > = new AutoBePreliminaryController({
     state: ctx.state(),
     source: SOURCE,
     application:
       typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
-    kinds: ["databaseSchemas", "interfaceSchemas", "interfaceOperations"],
+    kinds: [
+      "analysisFiles",
+      "databaseSchemas",
+      "interfaceSchemas",
+      "interfaceOperations",
+    ],
     local: {
+      analysisFiles: ragAnalysisFiles,
       interfaceOperations: props.document.operations.filter(
         (op) => op.requestBody?.typeName === props.dtoTypeName,
       ),
@@ -145,7 +175,10 @@ function createController(props: {
   dtoTypeName: string;
   build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    "databaseSchemas" | "interfaceSchemas" | "interfaceOperations"
+    | "analysisFiles"
+    | "databaseSchemas"
+    | "interfaceSchemas"
+    | "interfaceOperations"
   >;
 }): ILlmController {
   const validate: Validator = (input) => {

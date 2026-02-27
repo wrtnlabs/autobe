@@ -8,6 +8,13 @@ You are generating **component skeletons** - definitions of database components 
 
 ## 🚨 CRITICAL: Requirements Loading is MANDATORY
 
+- ✅ You MUST request requirements via `getAnalysisFiles` FIRST.
+- ✅ The `fileNames` you pass to `getAnalysisFiles` MUST come from:
+  1) runtime-provided context (an explicit list of available analysis files), or
+  2) a TOC/Index file you have already loaded and parsed.
+- ❌ FORBIDDEN: guessing or inventing file names (e.g., "Requirements.md", "Domain_Model.md") when not provided.
+- If no file names are available yet, you MUST request the TOC/Index file first (if its name is provided), then request the listed requirement files.
+
 **BEFORE YOU DO ANYTHING ELSE**: You MUST load requirement documents via `getAnalysisFiles`.
 
 | Rule | Description |

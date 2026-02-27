@@ -49,22 +49,42 @@ export class AutoBeListener {
 
       // ANALYZE
       analyzeStart: async (event) => {
-        this.dict_.delete("analyzeWrite");
-        this.dict_.delete("analyzeReview");
+        this.dict_.delete("analyzeWriteModule");
+        this.dict_.delete("analyzeModuleReview");
+        this.dict_.delete("analyzeWriteUnit");
+        this.dict_.delete("analyzeUnitReview");
+        this.dict_.delete("analyzeWriteSection");
+        this.dict_.delete("analyzeSectionReview");
         this.insert(event);
       },
       analyzeScenario: async (event) => {
         this.accumulate(event);
       },
-      analyzeWrite: async (event) => {
+      analyzeWriteModule: async (event) => {
         this.accumulate(event);
       },
-      analyzeReview: async (event) => {
+      analyzeModuleReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteUnit: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeUnitReview: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeWriteSection: async (event) => {
+        this.accumulate(event);
+      },
+      analyzeSectionReview: async (event) => {
         this.accumulate(event);
       },
       analyzeComplete: async (event) => {
-        this.dict_.delete("analyzeWrite");
-        this.dict_.delete("analyzeReview");
+        this.dict_.delete("analyzeWriteModule");
+        this.dict_.delete("analyzeModuleReview");
+        this.dict_.delete("analyzeWriteUnit");
+        this.dict_.delete("analyzeUnitReview");
+        this.dict_.delete("analyzeWriteSection");
+        this.dict_.delete("analyzeSectionReview");
         this.state_.setAnalyze(event);
         this.insert(event);
       },

@@ -1,9 +1,13 @@
 import {
   AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeReviewEvent,
+  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeWriteEvent,
+  AutoBeAnalyzeUnitReviewEvent,
+  AutoBeAnalyzeWriteModuleEvent,
+  AutoBeAnalyzeWriteSectionEvent,
+  AutoBeAnalyzeWriteUnitEvent,
   AutoBeAssistantMessageEvent,
   AutoBeDatabaseAuthorizationEvent,
   AutoBeDatabaseAuthorizationReviewEvent,
@@ -166,22 +170,55 @@ export interface IAutoBeRpcListener {
   analyzeScenario?(event: AutoBeAnalyzeScenarioEvent): Promise<void>;
 
   /**
-   * Optional handler for requirements analysis writing progress events.
+   * Optional handler for module section generation events (V2 hierarchical
+   * writing).
    *
-   * Called during the writing phase as analysis documents are being created,
-   * allowing client applications to display real-time progress and provide
-   * visibility into the document generation process.
+   * Called when the hierarchical writing agent generates module section
+   * structure including document title, summary, and module section outlines.
    */
-  analyzeWrite?(event: AutoBeAnalyzeWriteEvent): Promise<void>;
+  analyzeWriteModule?(event: AutoBeAnalyzeWriteModuleEvent): Promise<void>;
 
   /**
-   * Optional handler for requirements analysis review events.
+   * Optional handler for unit section generation events (V2 hierarchical
+   * writing).
    *
-   * Called during the review and amendment phase, enabling client applications
-   * to show that requirements are being refined and improved based on feedback
-   * and additional analysis.
+   * Called when the hierarchical writing agent generates unit section content
+   * for a specific module section.
    */
-  analyzeReview?(event: AutoBeAnalyzeReviewEvent): Promise<void>;
+  analyzeWriteUnit?(event: AutoBeAnalyzeWriteUnitEvent): Promise<void>;
+
+  /**
+   * Optional handler for section section generation events (V2 hierarchical
+   * writing).
+   *
+   * Called when the hierarchical writing agent generates detailed section
+   * content with EARS-formatted requirements.
+   */
+  analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
+
+  /**
+   * Optional handler for module review progress events.
+   *
+   * Called when the Analyze agent reviews generated module sections and reports
+   * review progress.
+   */
+  analyzeModuleReview?(event: AutoBeAnalyzeModuleReviewEvent): Promise<void>;
+
+  /**
+   * Optional handler for unit review progress events.
+   *
+   * Called when the Analyze agent reviews generated unit sections and reports
+   * review progress.
+   */
+  analyzeUnitReview?(event: AutoBeAnalyzeUnitReviewEvent): Promise<void>;
+
+  /**
+   * Optional handler for section review progress events.
+   *
+   * Called when the Analyze agent reviews generated detailed sections and
+   * reports review progress.
+   */
+  analyzeSectionReview?(event: AutoBeAnalyzeSectionReviewEvent): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.

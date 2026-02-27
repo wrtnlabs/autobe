@@ -1,6 +1,6 @@
 import {
-  // AgenticaJsonParseError,
-  // AgenticaValidationError,
+  AgenticaJsonParseError,
+  AgenticaValidationError,
   IMicroAgenticaConfig,
   MicroAgentica,
   MicroAgenticaHistory,
@@ -54,10 +54,11 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
-import { getCommonPrompt } from "./getCommonPrompt";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
+import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
+import { supportQwen } from "./supportQwen";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
@@ -75,7 +76,7 @@ export const createAutoBeContext = (props: {
     {
       retry: props.config.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       locale: props.config.locale ?? "en-US",
-      timeout: props.config.timeout ?? null,
+      timeout: props.config.timeout ?? AutoBeConfigConstant.TIMEOUT,
     };
   const critical: Semaphore = new Semaphore(2);
   return {
@@ -112,9 +113,9 @@ export const createAutoBeContext = (props: {
       const metric = (key: keyof AutoBeFunctionCallingMetric): void => {
         const accumulate = (collection: AutoBeProcessAggregateCollection) => {
           ++collection.total.metric[key];
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
-          ++collection[next.source as "analyzeWrite"]!.metric[key];
+          ++collection[next.source as "analyzeWriteModule"]!.metric[key];
         };
         ++aggregate.metric[key];
         accumulate(props.aggregates);
@@ -125,10 +126,10 @@ export const createAutoBeContext = (props: {
           collection: AutoBeProcessAggregateCollection,
         ): void => {
           TokenUsageComputer.increment(collection.total.tokenUsage, tokenUsage);
-          collection[next.source as "analyzeWrite"] ??=
+          collection[next.source as "analyzeWriteModule"] ??=
             AutoBeProcessAggregateFactory.createAggregate();
           TokenUsageComputer.increment(
-            collection[next.source as "analyzeWrite"]!.tokenUsage,
+            collection[next.source as "analyzeWriteModule"]!.tokenUsage,
             tokenUsage,
           );
         };
@@ -151,7 +152,6 @@ export const createAutoBeContext = (props: {
               describe: false,
             },
             systemPrompt: {
-              common: () => getCommonPrompt(props.config),
               execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
               validate: (events) => getValidationErrorPrompt(events),
               jsonParseError: (event) =>
@@ -168,6 +168,8 @@ export const createAutoBeContext = (props: {
           controllers: [next.controller],
         });
         supportMistral(agent, props.vendor);
+        supportFunctionCallFallback(agent, props.vendor);
+        supportQwen(agent, props.vendor);
 
         // ADD EVENT LISTENERS
         agent.on("request", async (event): Promise<void> => {
@@ -235,12 +237,12 @@ export const createAutoBeContext = (props: {
 
                 > You have to call function(s) of below to accomplish my request.
                 >
-                > Never hesitate the function calling. Never ask for me permission 
+                > Never hesitate the function calling. Never ask for me permission
                 > to execute the function. Never explain me your plan with waiting
                 > for my approval.
                 >
-                > I gave you every information for the function calling, so just 
-                > call it. I repeat that, never hesitate the function calling. 
+                > I gave you every information for the function calling, so just
+                > call it. I repeat that, never hesitate the function calling.
                 > Just do it without any explanation.
                 >
                 ${next.controller.application.functions
@@ -337,6 +339,33 @@ export const createAutoBeContext = (props: {
                 return success(newHistories);
             }
           }
+          // Retry with explicit failure feedback
+          const functionNames: string = next.controller.application.functions
+            .map((f) => f.name)
+            .join(", ");
+          for (
+            let retry = 0;
+            retry < AutoBeConfigConstant.FUNCTION_CALLING_RETRY - 1;
+            retry++
+          ) {
+            metric("consent");
+            const retryMessage: string =
+              `You failed to call any function. ` +
+              `You MUST call one of these functions immediately: ${functionNames}. ` +
+              `Do not explain anything. Just call the function right now.`;
+            const retryHistories: MicroAgenticaHistory[] =
+              await agent.conversate(retryMessage);
+            const retryTokenUsage: IAutoBeTokenUsageJson.IComponent =
+              AutoBeTokenUsageComponent.minus(
+                new AutoBeTokenUsageComponent(
+                  agent.getTokenUsage().toJSON().aggregate,
+                ),
+                new AutoBeTokenUsageComponent(tokenUsage),
+              );
+            consume(retryTokenUsage);
+            if (retryHistories.some((h) => h.type === "execute"))
+              return success(retryHistories);
+          }
           failure();
         }
         return success(result.histories);
@@ -345,12 +374,33 @@ export const createAutoBeContext = (props: {
         execute,
         AutoBeConfigConstant.API_ERROR_RETRY,
         (error) => {
+          // Context overflow and other permanent 400 errors should not be
+          // retried — the same payload will always produce the same failure.
+          if (error instanceof BadRequestError) {
+            const errBody = error as unknown as {
+              error?: { metadata?: { raw?: string }; message?: string };
+            };
+            const msg = String(
+              errBody.error?.metadata?.raw ??
+                errBody.error?.message ??
+                error.message ??
+                "",
+            );
+            const permanent = [
+              "context_length_exceeded",
+              "maximum context length",
+              "request too large",
+            ];
+            if (permanent.some((p) => msg.includes(p))) return false;
+          }
           return (
             error instanceof APIError ||
             error instanceof BadRequestError ||
-            // error instanceof AgenticaJsonParseError ||
-            // error instanceof AgenticaValidationError ||
-            (error instanceof TypeError && error.message === "terminated") ||
+            error instanceof AgenticaJsonParseError ||
+            error instanceof AgenticaValidationError ||
+            error instanceof TypeError ||
+            (error instanceof Error &&
+              error.message.startsWith("OpenRouter upstream error")) ||
             (error instanceof Error &&
               OPENAI_API_ERROR_KEYS.get().every((key) =>
                 error.hasOwnProperty(key),
@@ -496,11 +546,11 @@ const createDispatch = (props: {
           completed_at: new Date().toISOString(),
         } satisfies AutoBeRealizeHistory,
       }) as AutoBeContext.DispatchHistory<Event>;
+
     void props.dispatch(event).catch(() => {});
     return null as AutoBeContext.DispatchHistory<Event>;
   };
 };
-
 const transformAndDispatch = <
   Event extends
     | AutoBeAnalyzeCompleteEvent

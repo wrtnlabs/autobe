@@ -1,5 +1,6 @@
 import {
   AutoBeProgressEventBase,
+  AutoBeRealizeCorrectEvent,
   AutoBeRealizeFunction,
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
@@ -12,6 +13,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { executeCachedBatch } from "../../../utils/executeCachedBatch";
+import { forceRetry } from "../../../utils/forceRetry";
 import { IAutoBeCommonCorrectCastingApplication } from "../../common/structures/IAutoBeCommonCorrectCastingApplication";
 import { transformRealizeCorrectCastingHistory } from "../histories/transformRealizeCorrectCastingHistory";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
@@ -133,13 +135,15 @@ const correct = async <RealizeFunction extends AutoBeRealizeFunction>(
               (d) => d.file === localFunction.location,
             );
           try {
-            return await process(ctx, {
-              programmer: props.programmer,
-              function: localFunction,
-              previousFailures: localPreviousFailures,
-              diagnostic: localDiagnostics,
-              progress: props.progress,
-            });
+            return await forceRetry(() =>
+              process(ctx, {
+                programmer: props.programmer,
+                function: localFunction,
+                previousFailures: localPreviousFailures,
+                diagnostic: localDiagnostics,
+                progress: props.progress,
+              }),
+            );
           } catch (error) {
             console.log("realizeCorrectCasting", localFunction.location, error);
             ++props.progress.completed;
@@ -295,9 +299,7 @@ const process = async <RealizeFunction extends AutoBeRealizeFunction>(
     step: ctx.state().analyze?.step ?? 0,
     metric,
     tokenUsage,
-    completed: props.progress.completed,
-    total: props.progress.total,
-  });
+  } satisfies AutoBeRealizeCorrectEvent);
   return {
     type: "success",
     function: {
@@ -382,7 +384,7 @@ const compileWithFiltering = async <
         props.progress.completed = props.functions.length;
       else if (result.type === "failure")
         props.progress.completed =
-          props.progress.completed -
+          props.progress.total -
           new Set(
             result.diagnostics
               .map((d) => d.file)

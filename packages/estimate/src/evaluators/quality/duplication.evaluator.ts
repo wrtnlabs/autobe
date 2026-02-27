@@ -1,13 +1,14 @@
-import * as fs from 'fs';
-import * as crypto from 'crypto';
-import { BaseEvaluator } from '../base';
-import type { EvaluationContext, PhaseResult, Issue } from '../../types';
-import { createIssue } from '../../types';
+import * as crypto from "crypto";
+import * as fs from "fs";
+
+import type { EvaluationContext, Issue, PhaseResult } from "../../types";
+import { createIssue } from "../../types";
+import { BaseEvaluator } from "../base";
 
 export class DuplicationEvaluator extends BaseEvaluator {
-  readonly name = 'DuplicationEvaluator';
-  readonly phase = 'quality' as const;
-  readonly description = 'Detects duplicate code blocks';
+  readonly name = "DuplicationEvaluator";
+  readonly phase = "quality" as const;
+  readonly description = "Detects duplicate code blocks";
 
   private readonly MIN_LINES = 10;
   private readonly MIN_CHARS = 100;
@@ -26,12 +27,12 @@ export class DuplicationEvaluator extends BaseEvaluator {
     const fileContents = await Promise.all(
       filesToCheck.map(async (filePath) => {
         try {
-          const content = await fs.promises.readFile(filePath, 'utf-8');
+          const content = await fs.promises.readFile(filePath, "utf-8");
           return { filePath, content };
         } catch {
           return null;
         }
-      })
+      }),
     );
 
     // Collect blocks from all files
@@ -47,20 +48,22 @@ export class DuplicationEvaluator extends BaseEvaluator {
     for (const [hash, locations] of codeBlocks) {
       if (locations.length > 1 && !reportedHashes.has(hash)) {
         reportedHashes.add(hash);
-        issues.push(createIssue({
-          severity: 'warning',
-          category: 'duplication',
-          code: 'D001',
-          message: `Duplicate code block found in ${locations.length} locations`,
-          location: locations[0],
-        }));
+        issues.push(
+          createIssue({
+            severity: "warning",
+            category: "duplication",
+            code: "D001",
+            message: `Duplicate code block found in ${locations.length} locations`,
+            location: locations[0],
+          }),
+        );
       }
     }
 
     const score = this.calculateScore(issues);
 
     return {
-      phase: 'quality',
+      phase: "quality",
       passed: true,
       score,
       maxScore: 100,
@@ -77,32 +80,32 @@ export class DuplicationEvaluator extends BaseEvaluator {
   private collectBlocks(
     filePath: string,
     content: string,
-    codeBlocks: Map<string, { file: string; line: number }[]>
+    codeBlocks: Map<string, { file: string; line: number }[]>,
   ): void {
-    const lines = content.split('\n');
+    const lines = content.split("\n");
 
     for (let i = 0; i <= lines.length - this.MIN_LINES; i++) {
       const block = lines
         .slice(i, i + this.MIN_LINES)
-        .map(line => line.trim())
-        .filter(line => {
+        .map((line) => line.trim())
+        .filter((line) => {
           return (
             line.length > 0 &&
-            !line.startsWith('//') &&
-            !line.startsWith('*') &&
-            !line.startsWith('/*') &&
-            !line.startsWith('import ') &&
-            !line.startsWith('export ')
+            !line.startsWith("//") &&
+            !line.startsWith("*") &&
+            !line.startsWith("/*") &&
+            !line.startsWith("import ") &&
+            !line.startsWith("export ")
           );
         })
-        .join('\n');
+        .join("\n");
 
       if (block.length < this.MIN_CHARS) continue;
-      
-      const codeChars = block.replace(/[{}\[\]();,\s]/g, '');
+
+      const codeChars = block.replace(/[{}\[\]();,\s]/g, "");
       if (codeChars.length < 30) continue;
 
-      const hash = crypto.createHash('md5').update(block).digest('hex');
+      const hash = crypto.createHash("md5").update(block).digest("hex");
 
       if (!codeBlocks.has(hash)) {
         codeBlocks.set(hash, []);

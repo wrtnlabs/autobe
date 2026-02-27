@@ -24,7 +24,7 @@ export const enum AutoBeConfigConstant {
    * diagnostics) back to the AI for correction. This iterative feedback loop
    * transforms hallucinations into learning opportunities.
    *
-   * Value of 8 provides sufficient attempts for complex validation scenarios
+   * Value of 5 provides sufficient attempts for complex validation scenarios
    * while keeping latency reasonable. Most validation errors resolve within 2-3
    * attempts, but complex schema corrections may need additional cycles.
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
@@ -84,6 +84,49 @@ export const enum AutoBeConfigConstant {
    * beyond 3 rarely improve success rates but notably increase latency and
    * resource usage.
    */
+  FUNCTION_CALLING_RETRY = 3,
+
+  /**
+   * Retry attempts for the Analyze Phase.
+   *
+   * Used when the Analyze Phase fails to write the module, unit, or section.
+   * Value of 15 provides generous retries for the Analyze Phase, which often
+   * needs multiple iterations due to the complexity of module/unit/section
+   * decomposition. Most issues resolve within a few passes, but the higher
+   * limit accommodates complex files requiring many correction cycles. The
+   * limit still prevents indefinite loops while allowing meaningful automatic
+   * correction.
+   */
+  ANALYZE_RETRY = 15,
+
+  /**
+   * Maximum consecutive error threshold for fast-fail during the Analyze
+   * Phase's hierarchical file processing.
+   *
+   * Used by `processFileHierarchical` in `orchestrateAnalyze` to detect
+   * persistent failure patterns within a single file's Module → Unit → Section
+   * pipeline. When errors occur consecutively without any successful sub-task
+   * in between, the counter increments. If it reaches this threshold the entire
+   * file processing is aborted immediately, preventing further wasted LLM calls
+   * on a file that is unlikely to recover.
+   *
+   * Value of 5 allows transient failures (rate limits, occasional
+   * hallucinations) to be tolerated while catching truly broken scenarios
+   * (e.g., fundamentally invalid file structure, persistent API outages) before
+   * they consume excessive resources.
+   */
+  ANALYZE_CONSECUTIVE_ERROR = 5,
+
+  /**
+   * Batch count for parallel operation processing.
+   *
+   * Controls how many batches `divideArray` creates when splitting large
+   * operation lists for concurrent processing. Value of 2 provides optimal
+   * balance: parallelizes work to reduce latency while keeping batch sizes
+   * large enough for effective prompt caching. Higher values increase
+   * parallelism but reduce cache hit rates.
+   */
+  INTERFACE_CAPACITY = 1,
   API_ERROR_RETRY = 3,
 
   /**
@@ -98,14 +141,14 @@ export const enum AutoBeConfigConstant {
   RAG_LIMIT = 10,
 
   /**
-   * Default timeout for long-running operations in milliseconds (30 minutes).
+   * Default timeout for long-running operations in milliseconds (10 minutes).
    *
    * Prevents operations from hanging indefinitely when LLM APIs become
    * unresponsive. Value of 30 minutes accommodates complex generation tasks
    * (large projects with dozens of models/operations) while catching genuinely
    * stuck requests. Override via config for specialized scenarios.
    */
-  TIMEOUT = 30 * 60 * 1000,
+  TIMEOUT = 10 * 60 * 1000,
 
   /**
    * Default concurrency limit for parallel LLM API calls.

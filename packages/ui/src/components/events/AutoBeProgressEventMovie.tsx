@@ -39,16 +39,6 @@ interface IState {
 function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
   const content: Pick<IState, "title" | "description"> = (() => {
     switch (event.type) {
-      case "analyzeWrite":
-        return {
-          title: "Analyze Write",
-          description: "Analyzing requirements, and writing a report paper",
-        };
-      case "analyzeReview":
-        return {
-          title: "Analyze Review",
-          description: "Reviewing the analysis results",
-        };
       case "databaseComponent":
         return {
           title: "Database Components",
@@ -179,6 +169,36 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
         return {
           title: "Describe Image Draft",
           description: "Describing the image draft",
+        };
+      case "analyzeWriteModule":
+        return {
+          title: "Analyze Write Module",
+          description: "Generating module section structure",
+        };
+      case "analyzeModuleReview":
+        return {
+          title: "Analyze Module Review",
+          description: "Reviewing module section structure",
+        };
+      case "analyzeWriteUnit":
+        return {
+          title: "Analyze Write Unit",
+          description: "Generating unit section content",
+        };
+      case "analyzeUnitReview":
+        return {
+          title: "Analyze Unit Review",
+          description: "Reviewing unit section content",
+        };
+      case "analyzeWriteSection":
+        return {
+          title: "Analyze Write Section",
+          description: "Generating section details",
+        };
+      case "analyzeSectionReview":
+        return {
+          title: "Analyze Section Review",
+          description: "Reviewing section details",
         };
       default:
         event satisfies never;

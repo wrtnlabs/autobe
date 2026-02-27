@@ -236,6 +236,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     for (const kind of this.kinds)
       if (kind === "analysisFiles")
         acquisition.analysisFiles = local.analysisFiles.map((f) => f.filename);
+      else if (kind === "analysisSections")
+        acquisition.analysisSections = local.analysisSections.map((s) => s.id);
       else if (kind === "databaseSchemas")
         acquisition.databaseSchemas = local.databaseSchemas.map((s) => s.name);
       else if (kind === "interfaceOperations")
@@ -259,6 +261,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         acquisition.previousAnalysisFiles = local.previousAnalysisFiles.map(
           (f) => f.filename,
         );
+      else if (kind === "previousAnalysisSections")
+        acquisition.previousAnalysisSections =
+          local.previousAnalysisSections.map((s) => s.id);
       else if (kind === "previousDatabaseSchemas")
         acquisition.previousDatabaseSchemas = local.previousDatabaseSchemas.map(
           (s) => s.name,

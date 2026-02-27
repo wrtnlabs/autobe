@@ -24,7 +24,6 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
     const payloadPattern = /import\s+{\s*\w*Payload\s*}\s+from\s+[^;]+;/g;
     const payloadReplacement = `import { ${actorCapitalized}Payload } from "../../decorators/payload/${actorCapitalized}Payload";`;
 
-    // 각 패턴을 순차적으로 적용
     updatedContent = updatedContent.replace(
       nestjsCommonPattern,
       nestjsCommonReplacement,
@@ -50,13 +49,9 @@ export namespace AutoBeRealizeAuthorizationReplaceImport {
 
     const actorLowercase = actor.toLowerCase();
 
-    // ~Authorize로 끝나는 import 구문을 특정 경로로 변경하는 정규표현식
     const authorizePattern = /import\s+{\s*\w*Authorize\s*}\s+from\s+[^;]+;/g;
-
-    // role을 기반으로 동적으로 replacement 생성
     const authorizeReplacement = `import { ${actorLowercase}Authorize } from "../providers/authorize/${actorLowercase}Authorize";`;
 
-    // 패턴 적용
     updatedContent = updatedContent.replace(
       authorizePattern,
       authorizeReplacement,

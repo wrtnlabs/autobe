@@ -1,11 +1,7 @@
-/**
- * Supported LLM providers
- */
-export type LLMProvider = 'openrouter';
+/** Supported LLM providers */
+export type LLMProvider = "openrouter";
 
-/**
- * Agent configuration
- */
+/** Agent configuration */
 export interface AgentConfig {
   provider: LLMProvider;
   apiKey: string;
@@ -13,11 +9,9 @@ export interface AgentConfig {
   maxTokens?: number;
 }
 
-/**
- * Agent evaluation issue
- */
+/** Agent evaluation issue */
 export interface AgentIssue {
-  severity: 'critical' | 'warning' | 'suggestion';
+  severity: "critical" | "warning" | "suggestion";
   type: string;
   file: string;
   line?: number;
@@ -25,9 +19,7 @@ export interface AgentIssue {
   suggestion?: string;
 }
 
-/**
- * Agent evaluation result
- */
+/** Agent evaluation result */
 export interface AgentResult {
   agent: string;
   provider: LLMProvider;
@@ -42,7 +34,5 @@ export interface AgentResult {
   };
 }
 
-/**
- * Default model
- */
-export const DEFAULT_MODEL = 'qwen/qwen3-next-80b-a3b-instruct';
+/** Default model */
+export const DEFAULT_MODEL = "qwen/qwen3-next-80b-a3b-instruct";

@@ -360,7 +360,6 @@ function writeComment(content: string, length: number): string {
     .split("\n")
     .map((line) => line.trim())
     .map((line) => {
-      // 77자에서 "/// " 4자를 뺀 73자가 실제 컨텐츠 최대 길이
       if (line.length <= length - 4) return [line];
       const words: string[] = line.split(" ");
       const result: string[] = [];
