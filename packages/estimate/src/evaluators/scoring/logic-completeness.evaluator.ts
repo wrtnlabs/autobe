@@ -45,6 +45,21 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
       code: "LOGIC007",
       message: "notImplemented() call found",
     },
+    {
+      pattern: /return\s+null\s*as\s+any/gi,
+      code: "LOGIC010",
+      message: "Suspicious null cast to any — likely incomplete implementation",
+    },
+    {
+      pattern: /Promise\.resolve\s*\(\s*(?:null|undefined|\{\}|\[\])\s*\)/gi,
+      code: "LOGIC011",
+      message: "Stub async return — Promise resolves with empty value",
+    },
+    {
+      pattern: /console\.log\s*\(.*(?:debug|test|temp|check)\b/gi,
+      code: "LOGIC012",
+      message: "Debug console.log left in production code",
+    },
   ];
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
@@ -190,7 +205,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
   ): void {
     // Match methods whose body is just `return {};` or `return [];` or `return null;`
     const stubReturnPattern =
-      /(?:async\s+)?(?:\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{\s*return\s+(?:\{\}|\[\]|null|undefined)\s*;?\s*\}/g;
+      /(?:async\s+)?(?:\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{\s*return\s+(?:\{\}|\[\]|null|undefined|0|false|''|"")\s*;?\s*\}/g;
     let match;
     while ((match = stubReturnPattern.exec(content)) !== null) {
       const line = content.substring(0, match.index).split("\n").length;

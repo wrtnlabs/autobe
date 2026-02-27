@@ -1,7 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import type { EvaluationContext, Issue, PhaseResult } from "../../types";
+import type {
+  EvaluationContext,
+  Issue,
+  PhaseResult,
+  RuntimeTestResult,
+} from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
@@ -14,14 +19,22 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     const issues: Issue[] = [];
     const startTime = performance.now();
 
+    if (
+      context.runtimeResult?.serverStarted &&
+      context.runtimeResult.testResults
+    ) {
+      return this.evaluateFromRuntime(
+        context.runtimeResult.testResults,
+        startTime,
+      );
+    }
+
     const testCount = context.files.tests.length;
     const controllerCount = context.files.controllers.length;
     const providerCount = context.files.providers.length;
 
-    // Calculate expected tests (at least 1 test per controller)
     const expectedMinTests = controllerCount;
 
-    // Calculate coverage ratio
     const coverageRatio =
       expectedMinTests > 0
         ? Math.min(testCount / expectedMinTests, 1)
@@ -29,7 +42,6 @@ export class TestCoverageEvaluator extends BaseEvaluator {
           ? 1
           : 0;
 
-    // Analyze test quality
     const quality = this.analyzeTestQuality(context.files.tests, issues);
 
     const score = this.computeCoverageScore(
@@ -40,7 +52,6 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       issues,
     );
 
-    // Extract controller names and check which have tests
     const controllerNames = context.files.controllers.map((f) => {
       const basename = path.basename(f, ".ts");
       return basename.replace("Controller", "").toLowerCase();
@@ -79,6 +90,8 @@ export class TestCoverageEvaluator extends BaseEvaluator {
         actualCoverage,
         stubTests: quality.stubCount,
         assertionTests: quality.withAssertions,
+        runtimeVerified: false,
+        note: "Static analysis only - runt with docker-compose for runtime verification",
       },
     };
   }
@@ -94,7 +107,6 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       try {
         const content = fs.readFileSync(filePath, "utf-8");
 
-        // Check for actual assertions
         const hasAssertions =
           /\b(expect|assert|should|toBe|toEqual|toThrow|toHaveBeenCalled|strictEqual)\s*\(/i.test(
             content,
@@ -105,7 +117,6 @@ export class TestCoverageEvaluator extends BaseEvaluator {
             content,
           );
 
-        // Check for stub patterns
         const isStub =
           /(?:\/\/\s*TODO|throw new Error\(["']not implemented["']\)|pending\(\)|skip\()/i.test(
             content,
@@ -117,7 +128,6 @@ export class TestCoverageEvaluator extends BaseEvaluator {
           stubCount++;
         }
       } catch {
-        // Can't read file, count as stub
         stubCount++;
       }
     }
@@ -162,10 +172,8 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       return 0;
     }
 
-    // Base score from coverage ratio (max 40)
     let score = Math.round(coverageRatio * 40);
 
-    // Test quantity bonus (max 30)
     if (testCount >= controllerCount * 3) {
       score += 30;
     } else if (testCount >= controllerCount * 2) {
@@ -174,10 +182,8 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       score += 10;
     }
 
-    // Test quality bonus (max 30) — based on assertion ratio
     score += Math.round(quality.qualityRatio * 30);
 
-    // Check for missing coverage
     if (testCount < controllerCount) {
       issues.push(
         createIssue({
@@ -189,6 +195,45 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    return Math.min(100, score);
+    return Math.min(80, Math.round(score * 0.85));
+  }
+
+  private evaluateFromRuntime(
+    testResults: RuntimeTestResult,
+    startTime: number,
+  ): PhaseResult {
+    const { passed, failed, total, durationMs } = testResults;
+    const passRate = total > 0 ? passed / total : 0;
+    const score = Math.round(passRate * 100);
+    const issues: Issue[] = [];
+
+    if (failed > 0) {
+      issues.push(
+        createIssue({
+          severity: "warning",
+          category: "test",
+          code: "TEST004",
+          message: `${failed}/${total} e2e tests failed`,
+        }),
+      );
+    }
+
+    return {
+      phase: "testCoverage",
+      passed: true,
+      score,
+      maxScore: 100,
+      weightedScore: score * 0.2,
+      issues,
+      durationMs: Math.round(performance.now() - startTime),
+      metrics: {
+        source: "runtime",
+        testsPassed: passed,
+        testsFailed: failed,
+        testsTotal: total,
+        testDurationMs: durationMs,
+        passRate: Math.round(passRate * 100),
+      },
+    };
   }
 }

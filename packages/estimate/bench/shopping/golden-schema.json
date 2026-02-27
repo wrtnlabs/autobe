@@ -1,0 +1,102 @@
+{
+  "project": "shopping",
+  "description": "E-Commerce Shopping Mall Platform",
+  "entities": [
+    {
+      "name": "customer",
+      "required_fields": ["id", "email", "password", "created_at"],
+      "optional_fields": ["deleted_at", "banned_at"]
+    },
+    {
+      "name": "customer_profile",
+      "required_fields": ["id", "customer_id", "display_name"],
+      "optional_fields": ["phone_number"]
+    },
+    {
+      "name": "customer_address",
+      "required_fields": ["id", "customer_id", "recipient_name", "phone_number", "street", "city", "state", "postal_code", "country", "is_default"]
+    },
+    {
+      "name": "seller",
+      "required_fields": ["id", "email", "password", "status", "created_at"],
+      "optional_fields": ["deleted_at", "banned_at", "suspended_at"]
+    },
+    {
+      "name": "seller_profile_snapshot",
+      "required_fields": ["id", "seller_id", "shop_name", "created_at"],
+      "optional_fields": ["description", "logo_url"]
+    },
+    {
+      "name": "category",
+      "required_fields": ["id", "name", "description"],
+      "optional_fields": ["parent_id"]
+    },
+    {
+      "name": "product",
+      "required_fields": ["id", "seller_id", "category_id", "name", "description", "base_price", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "product_snapshot",
+      "required_fields": ["id", "product_id", "name", "description", "base_price", "created_at"]
+    },
+    {
+      "name": "product_variant",
+      "required_fields": ["id", "product_id", "sku", "price", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "product_variant_snapshot",
+      "required_fields": ["id", "variant_id", "sku", "price", "created_at"]
+    },
+    {
+      "name": "inventory_record",
+      "required_fields": ["id", "variant_id", "quantity", "reason", "created_at"]
+    },
+    {
+      "name": "wishlist",
+      "required_fields": ["id", "customer_id", "product_id", "created_at"]
+    },
+    {
+      "name": "cart_item",
+      "required_fields": ["id", "customer_id", "variant_id", "quantity"]
+    },
+    {
+      "name": "order",
+      "required_fields": ["id", "customer_id", "address_snapshot", "created_at"]
+    },
+    {
+      "name": "order_item",
+      "required_fields": ["id", "order_id", "variant_id", "quantity", "status", "product_snapshot_id", "seller_snapshot_id"]
+    },
+    {
+      "name": "shipment",
+      "required_fields": ["id", "seller_id", "carrier", "tracking_number", "created_at"]
+    },
+    {
+      "name": "cancellation_request",
+      "required_fields": ["id", "order_item_id", "reason", "status", "created_at"]
+    },
+    {
+      "name": "refund_request",
+      "required_fields": ["id", "order_item_id", "reason", "status", "created_at"]
+    },
+    {
+      "name": "review",
+      "required_fields": ["id", "customer_id", "order_item_id", "rating", "created_at"],
+      "optional_fields": ["content", "deleted_at"]
+    },
+    {
+      "name": "review_snapshot",
+      "required_fields": ["id", "review_id", "rating", "content", "created_at"]
+    },
+    {
+      "name": "admin",
+      "required_fields": ["id", "user_id", "grade", "created_at"]
+    },
+    {
+      "name": "admin_request",
+      "required_fields": ["id", "user_id", "reason", "status", "created_at"]
+    }
+  ]
+}

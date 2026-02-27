@@ -36,6 +36,7 @@ export class LLMClient {
       model: this.model,
       max_tokens: this.maxTokens,
       temperature: 0,
+      seed: 42,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },

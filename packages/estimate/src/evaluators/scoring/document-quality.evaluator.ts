@@ -123,27 +123,31 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     issues: Issue[],
   ): number {
     if (contents.size === 0) return 0;
-
     let score = 0;
 
-    let filesWithHeaders = 0;
+    // Header quality - require more headers for full score
+    let filesWithRichHeaders = 0;
     for (const [, content] of contents) {
       const headerCount = (content.match(/^#{1,3}\s+\S/gm) || []).length;
-      if (headerCount >= 2) filesWithHeaders++;
+      if (headerCount >= 5) filesWithRichHeaders++;
+      else if (headerCount >= 2) filesWithRichHeaders += 0.5;
     }
-    const headerRatio = filesWithHeaders / contents.size;
+    const headerRatio = filesWithRichHeaders / contents.size;
     score += Math.round(headerRatio * 10);
 
+    // Requirement coverage - require more keywords for full score
     const requirementPatterns =
       /\b(shall|must|should|endpoint|api|database|schema|model|entity|table|column|field|interface|controller|provider|service|authentication|authorization)\b/gi;
-    let filesWithRequirements = 0;
+    let filesWithRichRequirements = 0;
     for (const [, content] of contents) {
       const matches = content.match(requirementPatterns) || [];
-      if (matches.length >= 5) filesWithRequirements++;
+      if (matches.length >= 20) filesWithRichRequirements++;
+      else if (matches.length >= 10) filesWithRichRequirements += 0.5;
     }
-    const reqRatio = filesWithRequirements / contents.size;
+    const reqRatio = filesWithRichRequirements / contents.size;
     score += Math.round(reqRatio * 10);
 
+    // Boilerplate penalty
     const boilerplatePatterns =
       /\b(lorem ipsum|placeholder|todo|tbd|coming soon|work in progress)\b/gi;
     let boilerplateFiles = 0;
@@ -153,7 +157,6 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       }
       boilerplatePatterns.lastIndex = 0;
     }
-
     if (boilerplateFiles > 0) {
       issues.push(
         createIssue({
@@ -165,8 +168,19 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       );
     }
 
-    const realContentRatio = (contents.size - boilerplateFiles) / contents.size;
-    score += Math.round(realContentRatio * 5);
+    // Real content ratio - penalize boilerplate more heavily
+    const boilerplateRatio = boilerplateFiles / contents.size;
+    score += Math.round((1 - boilerplateRatio) * 5);
+
+    // Content depth bonus - average word count per file
+    let totalWords = 0;
+    for (const [, content] of contents) {
+      totalWords += content.split(/\s+/).length;
+    }
+    const avgWords = totalWords / contents.size;
+    if (avgWords >= 500) score += 5;
+    else if (avgWords >= 200) score += 3;
+    else if (avgWords >= 100) score += 1;
 
     return score;
   }

@@ -28,4 +28,6 @@ export type {
   AutoBEProjectStructure,
   ProjectDependencies,
   SourceFiles,
+  RuntimeResult,
+  RuntimeTestResult,
 } from "./context";

@@ -1,123 +1,99 @@
-/**
- * AutoBE generated project structure
- */
+export interface RuntimeTestResult {
+  passed: number;
+  failed: number;
+  total: number;
+  durationMs: number;
+}
+
+export interface RuntimeResult {
+  serverStarted: boolean;
+  healthCheckUrl?: string;
+  testResults?: RuntimeTestResult;
+  error?: string;
+}
+
 export interface AutoBEProjectStructure {
   /** Project root path */
   rootPath: string;
-
-  /** docs/analysis/ folder (requirements analysis) */
+  /** Docs/analysis/ folder (requirements analysis) */
   analysisDir?: string;
-
-  /** docs/ERD.md */
+  /** Docs/ERD.md */
   erdPath?: string;
-
-  /** prisma/schema/ */
+  /** Prisma/schema/ */
   prismaSchemaDir?: string;
-
-  /** src/api/structures/ (DTO) */
+  /** Src/api/structures/ (DTO) */
   structuresDir?: string;
-
-  /** src/controllers/ */
+  /** Src/controllers/ */
   controllersDir?: string;
-
-  /** src/providers/ */
+  /** Src/providers/ */
   providersDir?: string;
-
-  /** test/features/api/ */
+  /** Test/features/api/ */
   testDir?: string;
 }
 
-/**
- * Project dependencies information
- */
 export interface ProjectDependencies {
-  /** package.json path */
+  /** Package.json path */
   packageJsonPath?: string;
-
-  /** dependencies */
+  /** Dependencies */
   dependencies: Record<string, string>;
-
-  /** devDependencies */
+  /** DevDependencies */
   devDependencies: Record<string, string>;
 }
 
-/**
- * Discovered source files
- */
 export interface SourceFiles {
   /** All TypeScript files */
   typescript: string[];
-
   /** Controller files */
   controllers: string[];
-
   /** Provider files */
   providers: string[];
-
   /** DTO/structure files */
   structures: string[];
-
   /** Test files */
   tests: string[];
-
   /** Prisma schema files */
   prismaSchemas: string[];
 }
 
-/**
- * Evaluation context
- * Contains all information needed for evaluation
- */
 export interface EvaluationContext {
   /** Project structure */
   project: AutoBEProjectStructure;
-
   /** Dependency information */
   dependencies: ProjectDependencies;
-
   /** Source files */
   files: SourceFiles;
-
   /** Requirements document content (parsed from docs/analysis/) */
   requirements?: string[];
-
-  /** tsconfig.json path */
+  /** Tsconfig.json path */
   tsconfigPath?: string;
-
   /** ESLint config path */
   eslintConfigPath?: string;
+  /** Runtime evaluation result */
+  runtimeResult?: RuntimeResult;
+  /** Evaluation options */
+  options?: EvaluationOptions; // ← 이게 핵심, 위에꺼랑 달라요
 }
 
-/**
- * Evaluation input
- */
 export interface EvaluationInput {
   /** Target project path */
   inputPath: string;
-
   /** Output directory */
   outputPath: string;
-
   /** Evaluation options */
   options?: EvaluationOptions;
 }
 
-/**
- * Evaluation options
- */
 export interface EvaluationOptions {
   /** Run specific phases only */
   phases?: string[];
-
   /** Verbose logging */
   verbose?: boolean;
-
   /** Continue even if gate fails */
   continueOnGateFailure?: boolean;
-
   /** Run tests */
   runTests?: boolean;
-
+  golden?: boolean;
+  project?: string;
   /** Minimum passing score */
   minScore?: number;
 }
