@@ -253,7 +253,7 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     adjustedScore = Math.round(phasesPortion + agentPortion);
 
     // Cap score if agents found too many critical issues
-    const totalAgentCritical = agentResults.reduce(
+    const _totalAgentCritical = agentResults.reduce(
       (sum, r) =>
         sum +
         r.issues.filter((i: { severity: string }) => i.severity === "critical")

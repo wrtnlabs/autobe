@@ -1,1 +1,0 @@
-{"version":3,"file":"reddit.scenarios.d.ts","sourceRoot":"","sources":["../../../src/evaluators/golden/reddit.scenarios.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAgB,MAAM,gBAAgB,CAAC;AACzD,OAAO,EAAE,UAAU,EAAE,MAAM,eAAe,CAAC;AAC3C,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAclD,wBAAsB,kBAAkB,CACtC,MAAM,EAAE,SAAS,EAAE,EACnB,IAAI,EAAE,UAAU,GACf,OAAO,CAAC,cAAc,EAAE,CAAC,CAuP3B"}

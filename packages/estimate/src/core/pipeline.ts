@@ -1,6 +1,5 @@
 import * as path from "path";
 
-import { GoldenSetEvaluator } from "../evaluators/golden";
 import {
   PrismaEvaluator,
   RuntimeEvaluator,

@@ -2,7 +2,7 @@ const DEFAULT_PORT = 37001;
 
 export interface HttpResponse {
   status: number;
-  body: any;
+  body: unknown;
   ok: boolean;
 }
 
@@ -17,16 +17,16 @@ export class HttpRunner {
   setToken(token: string) { this.token = token; }
   clearToken() { this.token = null; }
 
-  async post(url: string, body?: any, useToken = false): Promise<HttpResponse> {
+  async post(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
     return this.request("POST", url, body, useToken);
   }
   async get(url: string, useToken = false): Promise<HttpResponse> {
     return this.request("GET", url, undefined, useToken);
   }
-  async patch(url: string, body?: any, useToken = false): Promise<HttpResponse> {
+  async patch(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
     return this.request("PATCH", url, body, useToken);
   }
-  async put(url: string, body?: any, useToken = false): Promise<HttpResponse> {
+  async put(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
     return this.request("PUT", url, body, useToken);
   }
   async delete(url: string, useToken = false): Promise<HttpResponse> {
@@ -41,7 +41,7 @@ export class HttpRunner {
     return url;
   }
 
-  private async request(method: string, url: string, body?: any, useToken = false): Promise<HttpResponse> {
+  private async request(method: string, url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
     const headers: Record<string, string> = { "Content-Type": "application/json" };
     if (useToken && this.token) headers["Authorization"] = `Bearer ${this.token}`;
     try {
@@ -50,7 +50,7 @@ export class HttpRunner {
         headers,
         body: body ? JSON.stringify(body) : undefined,
       });
-      let responseBody: any = null;
+      let responseBody: unknown = null;
       const text = await res.text();
       try { responseBody = JSON.parse(text); } catch { responseBody = text; }
       return { status: res.status, body: responseBody, ok: res.status >= 200 && res.status < 300 };

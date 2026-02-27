@@ -1,1 +1,0 @@
-{"version":3,"file":"bbs.scenarios.d.ts","sourceRoot":"","sources":["../../../src/evaluators/golden/bbs.scenarios.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAgB,MAAM,gBAAgB,CAAC;AACzD,OAAO,EAAE,UAAU,EAAE,MAAM,eAAe,CAAC;AAC3C,OAAO,EAAE,cAAc,EAAE,MAAM,kBAAkB,CAAC;AAUlD,wBAAsB,eAAe,CACnC,MAAM,EAAE,SAAS,EAAE,EACnB,IAAI,EAAE,UAAU,GACf,OAAO,CAAC,cAAc,EAAE,CAAC,CAwM3B"}
