@@ -1,4 +1,7 @@
-# [AutoBe] We Built an AI That Writes Full Backend Apps — Then Broke Its 100% Success Rate on Purpose with Weak Local LLMs
+
+<!--
+[AutoBe] We Built an AI That Writes Full Backend Apps — Then Broke Its 100% Success Rate on Purpose with Weak Local LLMs
+-->
 
 ## TL;DR
 
@@ -11,9 +14,9 @@
 - Back to 100% with GLM v5, other local models climbing
 
 Links:
+- Full Article: https://autobe.dev/articles/autobe-entirely-remade-with-weak-local-llms.html
 - GitHub: https://github.com/wrtnlabs/autobe
 - Examples: https://github.com/wrtnlabs/autobe-examples
-- Full Article: https://dev.to/samchon/autobe-we-built-an-ai-that-writes-full-backend-apps-then-broke-its-100-success-rate-on-purpose-5757
 
 ---
 
