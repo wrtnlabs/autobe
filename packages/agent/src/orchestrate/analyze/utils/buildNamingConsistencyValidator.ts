@@ -2,8 +2,8 @@
  * Validates naming consistency across files by comparing backtick references
  * against canonical entity/field names from 02-domain-model YAML blocks.
  *
- * Only backtick-enclosed references (`Entity.field`) are checked.
- * Prose mentions of the same text are ignored to prevent false positives.
+ * Only backtick-enclosed references (`Entity.field`) are checked. Prose
+ * mentions of the same text are ignored to prevent false positives.
  */
 
 export interface INamingViolation {
@@ -16,8 +16,8 @@ export interface INamingViolation {
 }
 
 /**
- * Extract backtick-enclosed Entity.field references from content.
- * Returns unique references as `{ entity, field? }` pairs.
+ * Extract backtick-enclosed Entity.field references from content. Returns
+ * unique references as `{ entity, field? }` pairs.
  */
 export const extractBacktickReferences = (
   content: string,
@@ -36,9 +36,7 @@ export const extractBacktickReferences = (
   return refs;
 };
 
-/**
- * Validate naming consistency for a single section.
- */
+/** Validate naming consistency for a single section. */
 export const validateNamingConsistency = (
   canonicalNames: ICanonicalNames,
   fileIndex: number,
@@ -94,18 +92,14 @@ export interface ICanonicalNames {
   fields: Map<string, string[]>;
 }
 
-/**
- * Case-insensitive entity name match.
- */
+/** Case-insensitive entity name match. */
 const findCanonicalEntity = (
   entities: string[],
   candidate: string,
 ): string | undefined =>
   entities.find((e) => e.toLowerCase() === candidate.toLowerCase());
 
-/**
- * Case-insensitive field name match.
- */
+/** Case-insensitive field name match. */
 const findCanonicalField = (
   fields: string[],
   candidate: string,

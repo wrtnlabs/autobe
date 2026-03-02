@@ -34,8 +34,7 @@ export const transformAnalyzeWriteUnitHistory = (
   const fileIndex = expandedTemplate.findIndex(
     (t) => t.filename === props.file.filename,
   );
-  const fileTemplate =
-    fileIndex >= 0 ? expandedTemplate[fileIndex] : undefined;
+  const fileTemplate = fileIndex >= 0 ? expandedTemplate[fileIndex] : undefined;
   const moduleTemplate = fileTemplate?.modules[props.moduleIndex];
   const expandedUnits = moduleTemplate
     ? FixedAnalyzeTemplate.expandUnits(

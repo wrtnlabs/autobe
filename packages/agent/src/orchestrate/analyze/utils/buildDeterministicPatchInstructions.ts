@@ -1,11 +1,12 @@
-import { IScopeViolation } from "./buildScopeValidator";
 import { INamingViolation } from "./buildNamingConsistencyValidator";
+import { IScopeViolation } from "./buildScopeValidator";
 
 /**
  * Generates deterministic (LLM-free) patch instructions from mechanical
  * violations detected during cross-file validation.
  *
  * These violations have unambiguous fixes that don't require LLM judgment:
+ *
  * - Undefined references → add to canonical or remove from referencing file
  * - Naming mismatches → rename to canonical form
  * - Scope violations → move content to correct file
@@ -27,9 +28,7 @@ export interface IMechanicalViolation {
   suggestion: string;
 }
 
-/**
- * Convert scope violations into mechanical violations.
- */
+/** Convert scope violations into mechanical violations. */
 export const fromScopeViolations = (
   violations: IScopeViolation[],
 ): IMechanicalViolation[] =>
@@ -41,9 +40,7 @@ export const fromScopeViolations = (
     suggestion: v.suggestion,
   }));
 
-/**
- * Convert naming violations into mechanical violations.
- */
+/** Convert naming violations into mechanical violations. */
 export const fromNamingViolations = (
   violations: INamingViolation[],
 ): IMechanicalViolation[] =>
@@ -58,8 +55,8 @@ export const fromNamingViolations = (
 /**
  * Build deterministic patch instruction strings grouped by file index.
  *
- * Each instruction is a human-readable string that can be passed directly
- * to the section patch orchestrator without LLM interpretation.
+ * Each instruction is a human-readable string that can be passed directly to
+ * the section patch orchestrator without LLM interpretation.
  */
 export const buildDeterministicPatchInstructions = (
   violations: IMechanicalViolation[],
@@ -75,9 +72,7 @@ export const buildDeterministicPatchInstructions = (
   return result;
 };
 
-/**
- * Format a single violation into a patch instruction string.
- */
+/** Format a single violation into a patch instruction string. */
 const formatInstruction = (v: IMechanicalViolation): string => {
   const prefix = INSTRUCTION_PREFIX[v.type];
   return `[${prefix}] Section "${v.sectionTitle}": ${v.detail}\n  → ${v.suggestion}`;
@@ -92,9 +87,7 @@ const INSTRUCTION_PREFIX: Record<IMechanicalViolation["type"], string> = {
   "yaml-parse-error": "YAML_ERROR",
 };
 
-/**
- * Format all patch instructions as a single string for logging/debugging.
- */
+/** Format all patch instructions as a single string for logging/debugging. */
 export const formatAllInstructions = (
   instructions: Map<number, string[]>,
 ): string => {

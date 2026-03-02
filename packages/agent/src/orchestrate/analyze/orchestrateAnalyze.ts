@@ -39,9 +39,7 @@ import {
   buildFileErrorCodeConflictMap,
   detectErrorCodeConflicts,
 } from "./utils/buildErrorCodeRegistry";
-import {
-  detectOversizedToc,
-} from "./utils/buildHardValidators";
+import { detectOversizedToc } from "./utils/buildHardValidators";
 import {
   buildFileProseConflictMap,
   detectProseConstraintConflicts,
@@ -192,8 +190,8 @@ export const orchestrateAnalyze = async (
 /**
  * Generate module structure deterministically from FixedAnalyzeTemplate.
  *
- * No LLM calls needed — module titles, purposes, and structure are all
- * derived from the fixed 6-file SRS template.
+ * No LLM calls needed — module titles, purposes, and structure are all derived
+ * from the fixed 6-file SRS template.
  */
 function processStageModuleDeterministic(
   ctx: AutoBeContext,
@@ -254,8 +252,9 @@ function processStageModuleDeterministic(
  * Process the Unit stage for all files.
  *
  * Fixed-strategy modules get deterministic unit generation (no LLM).
- * Dynamic-strategy modules (perEntity/perActor/perEntityGroup) use LLM.
- * No cross-file unit review — Hard Validators at section stage handle consistency.
+ * Dynamic-strategy modules (perEntity/perActor/perEntityGroup) use LLM. No
+ * cross-file unit review — Hard Validators at section stage handle
+ * consistency.
  */
 async function processStageUnit(
   ctx: AutoBeContext,
@@ -337,9 +336,7 @@ async function processStageUnit(
   );
 }
 
-/**
- * Build a deterministic AutoBeAnalyzeWriteUnitEvent for fixed-strategy modules.
- */
+/** Build a deterministic AutoBeAnalyzeWriteUnitEvent for fixed-strategy modules. */
 function buildDeterministicUnitEvent(
   ctx: AutoBeContext,
   props: {
@@ -679,8 +676,7 @@ async function processStageSection(
           `Constraint conflict: ${c.key} — ${c.values.map((v) => `"${v.display}" in [${v.files.join(", ")}]`).join(" vs ")}`,
       ),
       ...attributeDuplicates.map(
-        (d) =>
-          `Attribute duplication: ${d.key} in [${d.files.join(", ")}]`,
+        (d) => `Attribute duplication: ${d.key} in [${d.files.join(", ")}]`,
       ),
       ...enumConflicts.map(
         (c) =>
@@ -708,24 +704,27 @@ async function processStageSection(
     analyzeDebug(`section cross-file-review-start attempt=${attempt}`);
     let crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent | null = null;
     try {
-      crossFileReviewEvent = await orchestrateAnalyzeSectionCrossFileReview(ctx, {
-        scenario: props.scenario,
-        allFileSummaries: props.fileStates.map((state, fileIndex) => ({
-          file: state.file,
-          moduleEvent: state.moduleResult!,
-          unitEvents: state.unitResults!,
-          sectionEvents: state.sectionResults!,
-          status: pendingIndices.has(fileIndex)
-            ? attempt === 0
-              ? "new"
-              : "rewritten"
-            : "approved",
-        })),
-        mechanicalViolationSummary,
-        progress: props.crossFileSectionReviewProgress,
-        promptCacheKey,
-        retry: attempt,
-      });
+      crossFileReviewEvent = await orchestrateAnalyzeSectionCrossFileReview(
+        ctx,
+        {
+          scenario: props.scenario,
+          allFileSummaries: props.fileStates.map((state, fileIndex) => ({
+            file: state.file,
+            moduleEvent: state.moduleResult!,
+            unitEvents: state.unitResults!,
+            sectionEvents: state.sectionResults!,
+            status: pendingIndices.has(fileIndex)
+              ? attempt === 0
+                ? "new"
+                : "rewritten"
+              : "approved",
+          })),
+          mechanicalViolationSummary,
+          progress: props.crossFileSectionReviewProgress,
+          promptCacheKey,
+          retry: attempt,
+        },
+      );
     } catch (e) {
       if (e instanceof AutoBeTimeoutError) {
         analyzeDebug(
@@ -785,8 +784,7 @@ async function processStageSection(
       const fileErrorCodeConflicts =
         fileErrorCodeConflictMap.get(filename) ?? [];
       const fileOversizedToc = oversizedTocMap.get(fileIndex) ?? [];
-      const fileProseConflicts =
-        fileProseConflictMap.get(filename) ?? [];
+      const fileProseConflicts = fileProseConflictMap.get(filename) ?? [];
       const fileYamlRootKeyMismatches =
         fileYamlRootKeyMismatchMap.get(filename) ?? [];
       const hasCriticalConflict =

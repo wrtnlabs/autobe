@@ -130,8 +130,8 @@ export interface AutoBeAnalyzeScenarioEvent
   /**
    * High-level project features that activate conditional modules.
    *
-   * Each feature adds specialized modules to the SRS files beyond
-   * the base REST CRUD structure. Empty array means standard REST-only.
+   * Each feature adds specialized modules to the SRS files beyond the base REST
+   * CRUD structure. Empty array means standard REST-only.
    */
   features: Array<{
     id: string;

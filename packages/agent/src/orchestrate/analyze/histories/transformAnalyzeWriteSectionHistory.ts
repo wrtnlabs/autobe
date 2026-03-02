@@ -42,10 +42,12 @@ export const transformAnalyzeWriteSectionHistory = (
   );
 
   // Build scope summary for all 6 files
-  const fileScopeSummary = expandedTemplate.map(
-    (t) =>
-      `- **${t.filename}**: ${t.description}${t.filename === props.file.filename ? " ← **YOU ARE HERE**" : ""}`,
-  ).join("\n");
+  const fileScopeSummary = expandedTemplate
+    .map(
+      (t) =>
+        `- **${t.filename}**: ${t.description}${t.filename === props.file.filename ? " ← **YOU ARE HERE**" : ""}`,
+    )
+    .join("\n");
 
   // Build canonical source declaration
   const canonicalSourceDeclaration =
@@ -108,12 +110,16 @@ export const transformAnalyzeWriteSectionHistory = (
 
         ${canonicalSourceDeclaration}
 
-        ${fileTemplate?.yamlSpecs?.length ? `
+        ${
+          fileTemplate?.yamlSpecs?.length
+            ? `
         ### YAML Spec Block Required
 
         This file is a **canonical source** file. Sections in this file MUST include
         structured YAML code blocks for machine-parseable data. See the prompt for format details.
-        ` : ""}
+        `
+            : ""
+        }
 
         ## Document Context
 

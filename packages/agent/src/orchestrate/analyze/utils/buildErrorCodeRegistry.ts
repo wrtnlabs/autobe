@@ -29,9 +29,7 @@ export interface IErrorCodeReference {
   sectionTitle: string;
 }
 
-/**
- * Result of comparing canonical error code definitions to backtick references.
- */
+/** Result of comparing canonical error code definitions to backtick references. */
 export interface IErrorCodeValidationResult {
   /** All canonical error codes from 04-business-rules YAML blocks */
   canonical: IErrorCodeRegistryEntry[];
@@ -40,7 +38,11 @@ export interface IErrorCodeValidationResult {
   /** References that don't match any canonical definition */
   undefinedReferences: IErrorCodeReference[];
   /** YAML parse errors */
-  parseErrors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+  parseErrors: Array<{
+    fileIndex: number;
+    sectionTitle: string;
+    error: string;
+  }>;
 }
 
 export interface IErrorCodeConflict {
@@ -62,6 +64,7 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
  * Extract canonical error codes from 04-business-rules YAML spec blocks.
  *
  * Expects YAML blocks with structure:
+ *
  * ```yaml
  * errors:
  *   - code: TODO_NOT_FOUND
@@ -126,9 +129,7 @@ const extractCanonicalErrorCodes = (
 /** Match backtick `UPPER_SNAKE_CASE` patterns (error codes) */
 const BACKTICK_ERROR_CODE_REGEX = /`([A-Z][A-Z0-9_]+)`/g;
 
-/**
- * Extract backtick `ERROR_CODE` references from section content.
- */
+/** Extract backtick `ERROR_CODE` references from section content. */
 const extractBacktickErrorCodeReferences = (
   fileIndex: number,
   sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
@@ -206,10 +207,7 @@ export const validateErrorCodes = (props: {
     const filename = props.files[i]!.file.filename;
     if (filename === "03-functional-requirements.md") {
       references.push(
-        ...extractBacktickErrorCodeReferences(
-          i,
-          props.files[i]!.sectionEvents,
-        ),
+        ...extractBacktickErrorCodeReferences(i, props.files[i]!.sectionEvents),
       );
     }
   }
@@ -255,8 +253,7 @@ export const detectErrorCodeConflicts = (props: {
                 for (const err of parsed.errors) {
                   if (!err || typeof err.code !== "string") continue;
                   const code = err.code;
-                  const http =
-                    typeof err.http === "number" ? err.http : 400;
+                  const http = typeof err.http === "number" ? err.http : 400;
                   if (!codeMap.has(code)) codeMap.set(code, new Map());
                   const httpMap = codeMap.get(code)!;
                   if (!httpMap.has(http)) httpMap.set(http, new Set());
@@ -295,10 +292,7 @@ export const buildFileErrorCodeConflictMap = (
     const feedback =
       `Error code conflict for "${conflict.conditionKey}": ` +
       conflict.codes
-        .map(
-          (c) =>
-            `HTTP ${c.httpStatus} in [${c.files.join(", ")}]`,
-        )
+        .map((c) => `HTTP ${c.httpStatus} in [${c.files.join(", ")}]`)
         .join(" vs ") +
       `. Use ONE canonical HTTP status.`;
 

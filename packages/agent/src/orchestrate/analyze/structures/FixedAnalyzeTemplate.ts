@@ -3,10 +3,10 @@ import { AutoBeAnalyzeFile } from "@autobe/interface";
 /**
  * Fixed 6-category SRS document structure template.
  *
- * Defines the authoritative structure for all analysis documents.
- * LLM is no longer responsible for deciding file count, file names,
- * or module/unit layout. Instead, it focuses solely on content generation
- * within this fixed skeleton.
+ * Defines the authoritative structure for all analysis documents. LLM is no
+ * longer responsible for deciding file count, file names, or module/unit
+ * layout. Instead, it focuses solely on content generation within this fixed
+ * skeleton.
  *
  * Hierarchy: Category (file) → Module (#) → Unit (##) → Section (###)
  *
@@ -101,7 +101,10 @@ export namespace FixedAnalyzeTemplate {
     id: FeatureId;
     /** Provider names for external-integration (e.g., ["stripe", "sendgrid"]) */
     providers?: string[];
-    /** Job names for background-processing (e.g., ["emailQueue", "reportGeneration"]) */
+    /**
+     * Job names for background-processing (e.g., ["emailQueue",
+     * "reportGeneration"])
+     */
     jobs?: string[];
   }
 
@@ -136,8 +139,7 @@ export namespace FixedAnalyzeTemplate {
         {
           index: 0,
           title: "Project Summary",
-          purpose:
-            "High-level vision, goals, and scope of the project.",
+          purpose: "High-level vision, goals, and scope of the project.",
           unitStrategy: {
             type: "fixed",
             units: [
@@ -205,8 +207,7 @@ export namespace FixedAnalyzeTemplate {
         {
           index: 2,
           title: "Glossary and Assumptions",
-          purpose:
-            "Domain terminology definitions and project assumptions.",
+          purpose: "Domain terminology definitions and project assumptions.",
           unitStrategy: {
             type: "fixed",
             units: [
@@ -305,13 +306,7 @@ export namespace FixedAnalyzeTemplate {
                 titlePattern: "Session and Token Policy",
                 purposePattern:
                   "Define session duration, token refresh, and expiration policies.",
-                keywords: [
-                  "session",
-                  "token",
-                  "refresh",
-                  "expiration",
-                  "jwt",
-                ],
+                keywords: ["session", "token", "refresh", "expiration", "jwt"],
               },
             ],
           },
@@ -727,8 +722,7 @@ export namespace FixedAnalyzeTemplate {
         {
           index: 2,
           title: "Data Integrity and Storage",
-          purpose:
-            "Data integrity constraints and storage requirements.",
+          purpose: "Data integrity constraints and storage requirements.",
           unitStrategy: {
             type: "fixed",
             units: [
@@ -932,7 +926,8 @@ export namespace FixedAnalyzeTemplate {
         module: {
           index: 101,
           title: "Job Failure Policies",
-          purpose: "Failure handling and dead-letter queue policies for background jobs.",
+          purpose:
+            "Failure handling and dead-letter queue policies for background jobs.",
           unitStrategy: {
             type: "fixed",
             units: [
@@ -1033,8 +1028,7 @@ export namespace FixedAnalyzeTemplate {
         module: {
           index: 103,
           title: "Storage Capacity",
-          purpose:
-            "Storage capacity planning and CDN requirements.",
+          purpose: "Storage capacity planning and CDN requirements.",
           unitStrategy: {
             type: "fixed",
             units: [
@@ -1042,12 +1036,7 @@ export namespace FixedAnalyzeTemplate {
                 titlePattern: "Storage Capacity Requirements",
                 purposePattern:
                   "Define storage tier requirements, CDN policies, bandwidth limits, and capacity planning for file storage infrastructure.",
-                keywords: [
-                  "storage-capacity",
-                  "cdn",
-                  "bandwidth",
-                  "tier",
-                ],
+                keywords: ["storage-capacity", "cdn", "bandwidth", "tier"],
               },
             ],
           },
@@ -1061,8 +1050,8 @@ export namespace FixedAnalyzeTemplate {
   // ─────────────────────────────────────────────
 
   /**
-   * Expand a module's unit strategy into concrete unit templates
-   * based on the domain's entities and actors.
+   * Expand a module's unit strategy into concrete unit templates based on the
+   * domain's entities and actors.
    */
   export const expandUnits = (
     module: IModuleTemplate,
@@ -1143,10 +1132,9 @@ export namespace FixedAnalyzeTemplate {
       const extras = extraModules.get(fileTemplate.categoryId);
       if (!extras || extras.length === 0) return fileTemplate;
 
-      const mergedModules = [
-        ...fileTemplate.modules,
-        ...extras,
-      ].map((m, i) => ({ ...m, index: i }));
+      const mergedModules = [...fileTemplate.modules, ...extras].map(
+        (m, i) => ({ ...m, index: i }),
+      );
 
       return { ...fileTemplate, modules: mergedModules };
     });
@@ -1154,8 +1142,8 @@ export namespace FixedAnalyzeTemplate {
 
   /**
    * Generate AutoBeAnalyzeFile.Scenario objects from the fixed template,
-   * optionally expanded with conditional modules based on features.
-   * Called after LLM returns actors/entities/features in the scenario phase.
+   * optionally expanded with conditional modules based on features. Called
+   * after LLM returns actors/entities/features in the scenario phase.
    */
   export const buildScenarioFiles = (
     _prefix: string,
@@ -1174,12 +1162,8 @@ export namespace FixedAnalyzeTemplate {
       ],
     }));
 
-  /**
-   * Deterministically generate the Document Map unit content for 00-toc.
-   */
-  export const buildDocumentMapContent = (
-    files: IFileTemplate[],
-  ): string => {
+  /** Deterministically generate the Document Map unit content for 00-toc. */
+  export const buildDocumentMapContent = (files: IFileTemplate[]): string => {
     const rows = files
       .map(
         (f) =>
@@ -1189,9 +1173,7 @@ export namespace FixedAnalyzeTemplate {
     return `| File | Role | Downstream |\n|------|------|------------|\n${rows}`;
   };
 
-  /**
-   * Deterministically generate the Canonical Source Declaration unit content.
-   */
+  /** Deterministically generate the Canonical Source Declaration unit content. */
   export const buildCanonicalSourceContent = (): string => {
     const header = `Other files MUST reference canonical definitions using the backtick format below.\nPlain-text mentions of the same terms are NOT treated as references.\n`;
     const table = [

@@ -31,9 +31,7 @@ export interface IPermissionReference {
   sectionTitle: string;
 }
 
-/**
- * Result of comparing canonical permission definitions to backtick references.
- */
+/** Result of comparing canonical permission definitions to backtick references. */
 export interface IPermissionValidationResult {
   /** All canonical permissions from 01-actors-and-auth YAML blocks */
   canonical: IPermissionRegistryEntry[];
@@ -42,7 +40,11 @@ export interface IPermissionValidationResult {
   /** References where the action is not in the canonical allowed list */
   unauthorizedReferences: IPermissionReference[];
   /** YAML parse errors */
-  parseErrors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+  parseErrors: Array<{
+    fileIndex: number;
+    sectionTitle: string;
+    error: string;
+  }>;
 }
 
 // ─── YAML Block Extraction ───
@@ -53,6 +55,7 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
  * Extract canonical permission entries from 01-actors-and-auth YAML blocks.
  *
  * Expects YAML blocks with structure:
+ *
  * ```yaml
  * permissions:
  *   - actor: member
@@ -122,9 +125,7 @@ const extractCanonicalPermissions = (
 /** Match backtick `actor:resource:action` patterns */
 const BACKTICK_PERMISSION_REGEX = /`(\w+):(\w+):(\w[\w-]*)`/g;
 
-/**
- * Extract backtick `actor:resource:action` references from section content.
- */
+/** Extract backtick `actor:resource:action` references from section content. */
 const extractBacktickPermissionReferences = (
   fileIndex: number,
   sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],

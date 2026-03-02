@@ -102,14 +102,18 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
           )
           .join("\n")}
 
-        ${props.mechanicalViolationSummary ? `
+        ${
+          props.mechanicalViolationSummary
+            ? `
         ## Mechanical Validation Results (Already Addressed Separately)
 
         The following mechanical issues have been detected and will be patched separately.
         You do NOT need to flag these — focus only on semantic/logical consistency:
 
         ${props.mechanicalViolationSummary}
-        ` : ""}
+        `
+            : ""
+        }
 
         ## Cross-File Semantic Consistency Criteria
 
@@ -136,7 +140,8 @@ const BACKTICK_ENTITY_FIELD_REGEX = /`(\w+\.\w+)`/g;
  * Extract Entity.attribute keys from YAML spec blocks and backtick references.
  *
  * Returns a compact comma-separated string of attribute keys (e.g.,
- * "User.status, User.email, Todo.title") for lightweight cross-file visibility.
+ * "User.status, User.email, Todo.title") for lightweight cross-file
+ * visibility.
  */
 const extractYamlAttributeKeys = (content: string): string => {
   const keys: Set<string> = new Set();

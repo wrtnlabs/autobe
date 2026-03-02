@@ -15,8 +15,8 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
-import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 import { FixedAnalyzeTemplate } from "./structures/FixedAnalyzeTemplate";
+import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
@@ -263,4 +263,3 @@ const parseLooseStructuredString = (input: string): unknown => {
 
 const isRecord = (input: unknown): input is Record<string, unknown> =>
   typeof input === "object" && input !== null && Array.isArray(input) === false;
-

@@ -3,9 +3,9 @@ import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
 /**
  * Validates that a section's content stays within its file's scope.
  *
- * Each file in the fixed 6-file SRS structure has forbidden patterns —
- * content that belongs in another file. This validator detects scope
- * violations so they can be fed back as patch instructions.
+ * Each file in the fixed 6-file SRS structure has forbidden patterns — content
+ * that belongs in another file. This validator detects scope violations so they
+ * can be fed back as patch instructions.
  */
 
 export interface IScopeViolation {
@@ -17,9 +17,7 @@ export interface IScopeViolation {
   suggestion: string;
 }
 
-/**
- * Check a single section's content against the file's forbidden patterns.
- */
+/** Check a single section's content against the file's forbidden patterns. */
 export const validateFileScope = (
   fileTemplate: FixedAnalyzeTemplate.IFileTemplate,
   fileIndex: number,
@@ -48,9 +46,7 @@ export const validateFileScope = (
   return violations;
 };
 
-/**
- * Check all sections across all files.
- */
+/** Check all sections across all files. */
 export const validateAllFileScopes = (
   files: Array<{
     template: FixedAnalyzeTemplate.IFileTemplate;
@@ -74,9 +70,7 @@ export const validateAllFileScopes = (
   return violations;
 };
 
-/**
- * Map forbidden patterns back to the file that should own the content.
- */
+/** Map forbidden patterns back to the file that should own the content. */
 const PATTERN_OWNER_MAP: Array<{
   test: (source: string) => boolean;
   owner: string;

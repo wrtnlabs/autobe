@@ -57,9 +57,9 @@ export namespace IAutoBeAnalyzeScenarioApplication {
   /**
    * Request to compose project structure with actors and entities.
    *
-   * The document file structure is fixed as 6-file SRS template.
-   * LLM only determines actors, entities, prefix, and language.
-   * Files are generated programmatically from FixedAnalyzeTemplate.
+   * The document file structure is fixed as 6-file SRS template. LLM only
+   * determines actors, entities, prefix, and language. Files are generated
+   * programmatically from FixedAnalyzeTemplate.
    */
   export interface IComplete {
     /**
@@ -129,12 +129,12 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     /**
      * High-level project features that activate conditional modules.
      *
-     * Selected from a FIXED catalog — the LLM must NOT invent features
-     * outside the predefined list. Each feature activates additional
-     * modules in the appropriate SRS files.
+     * Selected from a FIXED catalog — the LLM must NOT invent features outside
+     * the predefined list. Each feature activates additional modules in the
+     * appropriate SRS files.
      *
-     * If the project has no special features beyond REST CRUD, return
-     * an empty array.
+     * If the project has no special features beyond REST CRUD, return an empty
+     * array.
      */
     features: FixedAnalyzeTemplate.IFeature[];
   }

@@ -222,9 +222,7 @@ export const detectConstraintConflicts = (props: {
     }));
 };
 
-/**
- * Build a map from filename → list of conflict feedback strings.
- */
+/** Build a map from filename → list of conflict feedback strings. */
 export const buildFileConflictMap = (
   conflicts: IConstraintConflict[],
 ): Map<string, string[]> => {
@@ -447,8 +445,8 @@ export interface IPermissionConflict {
 /**
  * Detect permission rule conflicts from YAML spec blocks.
  *
- * A conflict occurs when one YAML block allows an action but another
- * doesn't include it for the same actor+resource.
+ * A conflict occurs when one YAML block allows an action but another doesn't
+ * include it for the same actor+resource.
  */
 export const detectPermissionConflicts = (props: {
   files: Array<{
@@ -523,6 +521,7 @@ export interface IStateFieldConflict {
  * Detect state field conflicts from YAML spec blocks.
  *
  * Known contradiction patterns:
+ *
  * 1. Same entity has both `deletedAt` (datetime) and `isDeleted` (boolean)
  * 2. Same entity has `status` (enum) and semantically equivalent `is*` booleans
  */
@@ -604,8 +603,7 @@ export const detectStateFieldConflicts = (props: {
     if (statusField && /enum/i.test(statusField.specification)) {
       const isBooleans = fieldNames.filter(
         (f) =>
-          f.startsWith("is") &&
-          /boolean/i.test(fields.get(f)!.specification),
+          f.startsWith("is") && /boolean/i.test(fields.get(f)!.specification),
       );
 
       for (const boolField of isBooleans) {
@@ -712,9 +710,7 @@ const extractAttributeSpecs = (
   return results;
 };
 
-/**
- * Extract enum specs from YAML attribute blocks.
- */
+/** Extract enum specs from YAML attribute blocks. */
 const extractEnumSpecs = (
   content: string,
 ): Array<{ key: string; enumSet: string; display: string }> => {
@@ -768,9 +764,7 @@ const extractEnumSpecs = (
   return results;
 };
 
-/**
- * Extract permission rules from YAML spec blocks.
- */
+/** Extract permission rules from YAML spec blocks. */
 const extractPermissionRulesFromYaml = (
   content: string,
 ): Array<{ actor: string; resource: string; actions: string[] }> => {

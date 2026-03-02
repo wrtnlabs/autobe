@@ -25,7 +25,8 @@ type FileSectionInput = Array<{
 const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
 
 /**
- * Build a map: filename → expected YAML root keys from the template's yamlSpecs.
+ * Build a map: filename → expected YAML root keys from the template's
+ * yamlSpecs.
  */
 function buildExpectedRootKeys(): Map<string, string[]> {
   const map: Map<string, string[]> = new Map();
@@ -33,7 +34,9 @@ function buildExpectedRootKeys(): Map<string, string[]> {
     if (fileTemplate.yamlSpecs && fileTemplate.yamlSpecs.length > 0) {
       map.set(
         fileTemplate.filename,
-        fileTemplate.yamlSpecs.map((s: FixedAnalyzeTemplate.IYamlSpecDefinition) => s.rootKey),
+        fileTemplate.yamlSpecs.map(
+          (s: FixedAnalyzeTemplate.IYamlSpecDefinition) => s.rootKey,
+        ),
       );
     }
   }
@@ -43,11 +46,11 @@ function buildExpectedRootKeys(): Map<string, string[]> {
 // ─── Main Detection ───
 
 /**
- * Detect YAML blocks in canonical files where the root key doesn't match
- * the expected key from the template's yamlSpecs.
+ * Detect YAML blocks in canonical files where the root key doesn't match the
+ * expected key from the template's yamlSpecs.
  *
- * Catches typos like `enity:` instead of `entity:`, `error:` instead of `errors:`, etc.
- * Only checks files that have yamlSpecs defined (01, 02, 04).
+ * Catches typos like `enity:` instead of `entity:`, `error:` instead of
+ * `errors:`, etc. Only checks files that have yamlSpecs defined (01, 02, 04).
  */
 export const detectYamlRootKeyMismatches = (props: {
   files: FileSectionInput;
@@ -94,9 +97,7 @@ export const detectYamlRootKeyMismatches = (props: {
   return mismatches;
 };
 
-/**
- * Build a map from filename → list of YAML root key mismatch feedback strings.
- */
+/** Build a map from filename → list of YAML root key mismatch feedback strings. */
 export const buildFileYamlRootKeyMismatchMap = (
   mismatches: IYamlRootKeyMismatch[],
 ): Map<string, string[]> => {

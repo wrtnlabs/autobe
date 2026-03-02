@@ -32,9 +32,7 @@ export interface IAttributeReference {
   sectionTitle: string;
 }
 
-/**
- * Result of comparing canonical attribute definitions to backtick references.
- */
+/** Result of comparing canonical attribute definitions to backtick references. */
 export interface IAttributeValidationResult {
   /** All canonical attributes extracted from 02-domain-model YAML blocks */
   canonical: IAttributeRegistryEntry[];
@@ -43,7 +41,11 @@ export interface IAttributeValidationResult {
   /** References that don't match any canonical definition */
   undefinedReferences: IAttributeReference[];
   /** YAML parse errors encountered */
-  parseErrors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+  parseErrors: Array<{
+    fileIndex: number;
+    sectionTitle: string;
+    error: string;
+  }>;
 }
 
 // ─── YAML Block Extraction ───
@@ -54,6 +56,7 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
  * Extract canonical attribute entries from 02-domain-model YAML spec blocks.
  *
  * Expects YAML blocks with structure:
+ *
  * ```yaml
  * entity: Todo
  * attributes:
@@ -121,9 +124,7 @@ const extractCanonicalAttributes = (
 /** Match backtick `Entity.field` patterns (PascalCase entity, camelCase field) */
 const BACKTICK_ENTITY_FIELD_REGEX = /`(\w+)\.(\w+)`/g;
 
-/**
- * Extract backtick `Entity.field` references from section content.
- */
+/** Extract backtick `Entity.field` references from section content. */
 const extractBacktickReferences = (
   fileIndex: number,
   sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
