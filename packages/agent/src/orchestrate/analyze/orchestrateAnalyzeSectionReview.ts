@@ -85,6 +85,7 @@ export const orchestrateAnalyzeSectionReview = async (
       fileResults: pointer.value.fileResults.map((fr) => ({
         ...fr,
         fileIndex: props.fileIndex,
+        rejectedModuleUnits: fr.rejectedModuleUnits ?? null,
       })),
       acquisition: preliminary.getAcquisition(),
       tokenUsage: result.tokenUsage,

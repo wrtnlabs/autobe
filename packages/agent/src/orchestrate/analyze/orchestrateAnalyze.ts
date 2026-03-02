@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
@@ -550,8 +551,9 @@ async function processStageSection(
           analyzeDebug(
             `section per-file-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
           );
-          const reviewEvent: AutoBeAnalyzeSectionReviewEvent =
-            await orchestrateAnalyzeSectionReview(ctx, {
+          let reviewEvent: AutoBeAnalyzeSectionReviewEvent | null = null;
+          try {
+            reviewEvent = await orchestrateAnalyzeSectionReview(ctx, {
               scenario: props.scenario,
               fileIndex,
               file: state.file,
@@ -563,6 +565,15 @@ async function processStageSection(
               promptCacheKey: cacheKey,
               retry: attempt,
             });
+          } catch (e) {
+            if (e instanceof AutoBeTimeoutError) {
+              analyzeDebug(
+                `section per-file-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
+              );
+              return sectionResults;
+            }
+            throw e;
+          }
           analyzeDebug(
             `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,
           );
@@ -675,8 +686,9 @@ async function processStageSection(
 
     // Pass 2b: Cross-file semantic LLM review (with mechanical violations excluded)
     analyzeDebug(`section cross-file-review-start attempt=${attempt}`);
-    const crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent =
-      await orchestrateAnalyzeSectionCrossFileReview(ctx, {
+    let crossFileReviewEvent: AutoBeAnalyzeSectionReviewEvent | null = null;
+    try {
+      crossFileReviewEvent = await orchestrateAnalyzeSectionCrossFileReview(ctx, {
         scenario: props.scenario,
         allFileSummaries: props.fileStates.map((state, fileIndex) => ({
           file: state.file,
@@ -694,6 +706,16 @@ async function processStageSection(
         promptCacheKey,
         retry: attempt,
       });
+    } catch (e) {
+      if (e instanceof AutoBeTimeoutError) {
+        analyzeDebug(
+          `section cross-file-review-timeout attempt=${attempt} — force-passing all pending files`,
+        );
+        for (const fileIndex of pendingArray) pendingIndices.delete(fileIndex);
+        break;
+      }
+      throw e;
+    }
     analyzeDebug(
       `section cross-file-review-done attempt=${attempt} results=${crossFileReviewEvent.fileResults.length}`,
     );
