@@ -36,9 +36,6 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
-    attributeRegistry?: string;
-    permissionRegistry?: string;
-    errorCodeRegistry?: string;
     scenarioEntityNames?: string[];
     sectionIndices?: number[] | null;
   },
@@ -75,9 +72,6 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
         previousSectionEvent: props.previousSectionEvent,
         feedback: props.feedback,
         preliminary,
-        attributeRegistry: props.attributeRegistry,
-        permissionRegistry: props.permissionRegistry,
-        errorCodeRegistry: props.errorCodeRegistry,
         sectionIndices: props.sectionIndices,
       }),
     });

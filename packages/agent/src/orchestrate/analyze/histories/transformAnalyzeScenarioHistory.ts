@@ -24,11 +24,13 @@ export const transformAnalyzeScenarioHistory = (
   ],
   userMessage: StringUtil.trim`
     You are in the Analyze Scenario stage, which comes BEFORE Analyze Write.
-    Your job is to design the document list and user actors, not to write any documents.
+    Your job is to identify actors, entities, and project characteristics — NOT to write documents.
 
-    Design a complete list of documents and user actors for this project.
-    Define user actors that can authenticate via API and create appropriate documentation files.
-    You must respect the number of documents specified by the user.
+    The document structure is fixed as 6 SRS files (00-overview through 05-non-functional).
+    You do NOT decide file names, file count, or document structure.
+
+    Identify the project prefix, user actors, core domain entities, and language.
+    Define user actors that can authenticate via API.
     Note that the user's locale is in ${ctx.locale}.
   `,
 });
