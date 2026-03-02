@@ -28,11 +28,14 @@ export const transformAnalyzeWriteUnitHistory = (
     | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
 
   // Find the matching file template and expand units for this module
-  const fileIndex = FixedAnalyzeTemplate.TEMPLATE.findIndex(
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
+  const fileIndex = expandedTemplate.findIndex(
     (t) => t.filename === props.file.filename,
   );
   const fileTemplate =
-    fileIndex >= 0 ? FixedAnalyzeTemplate.TEMPLATE[fileIndex] : undefined;
+    fileIndex >= 0 ? expandedTemplate[fileIndex] : undefined;
   const moduleTemplate = fileTemplate?.modules[props.moduleIndex];
   const expandedUnits = moduleTemplate
     ? FixedAnalyzeTemplate.expandUnits(

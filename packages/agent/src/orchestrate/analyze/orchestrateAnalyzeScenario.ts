@@ -52,6 +52,7 @@ export const orchestrateAnalyzeScenario = async (
       } satisfies AutoBeAssistantMessageHistory);
     else if (pointer.value === null) return out(result)(null);
 
+    const features = pointer.value.features ?? [];
     const event: AutoBeAnalyzeScenarioEvent = {
       type: SOURCE,
       id: v7(),
@@ -59,8 +60,14 @@ export const orchestrateAnalyzeScenario = async (
       language: pointer.value.language,
       actors: pointer.value.actors,
       entities: pointer.value.entities,
+      features: features.map((f) => ({
+        id: f.id,
+        ...(f.providers ? { providers: f.providers } : {}),
+        ...(f.jobs ? { jobs: f.jobs } : {}),
+      })),
       files: FixedAnalyzeTemplate.buildScenarioFiles(
         pointer.value.prefix,
+        features,
       ) as AutoBeAnalyzeScenarioEvent["files"],
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,
@@ -178,6 +185,7 @@ const repairFlattenedRequestPayload = (
       actors,
       language,
       entities,
+      features,
       ...rest
     } = input;
     return {
@@ -190,6 +198,7 @@ const repairFlattenedRequestPayload = (
         actors,
         language,
         entities,
+        features,
       },
     };
   }
@@ -217,7 +226,7 @@ const normalizeAnalyzeScenarioRequest = (
 ): Record<string, unknown> => {
   const output: Record<string, unknown> = { ...input };
 
-  for (const key of ["actors", "entities", "fileNames"] as const) {
+  for (const key of ["actors", "entities", "features", "fileNames"] as const) {
     if (typeof output[key] === "string") {
       const parsed: unknown = parseLooseStructuredString(output[key]);
       if (parsed !== undefined) output[key] = parsed;

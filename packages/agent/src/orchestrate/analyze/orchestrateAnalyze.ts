@@ -203,8 +203,11 @@ function processStageModuleDeterministic(
     moduleWriteProgress: AutoBeProgressEventBase;
   },
 ): void {
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
   for (const [i, state] of props.fileStates.entries()) {
-    const template = FixedAnalyzeTemplate.TEMPLATE[i]!;
+    const template = expandedTemplate[i]!;
     const moduleEvent: AutoBeAnalyzeWriteModuleEvent = {
       type: "analyzeWriteModule",
       id: v7(),
@@ -263,10 +266,13 @@ async function processStageUnit(
   },
 ): Promise<void> {
   const promptCacheKey: string = v7();
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
 
   // Count total units needed for progress tracking
   for (const [fileIndex, state] of props.fileStates.entries()) {
-    const template = FixedAnalyzeTemplate.TEMPLATE[fileIndex]!;
+    const template = expandedTemplate[fileIndex]!;
     props.unitWriteProgress.total += template.modules.length;
     void state; // used below
   }
@@ -275,7 +281,7 @@ async function processStageUnit(
     ctx,
     props.fileStates.map((state, fileIndex) => async (cacheKey) => {
       const moduleResult: AutoBeAnalyzeWriteModuleEvent = state.moduleResult!;
-      const template = FixedAnalyzeTemplate.TEMPLATE[fileIndex]!;
+      const template = expandedTemplate[fileIndex]!;
       analyzeDebug(
         `unit file-start fileIndex=${fileIndex} file="${state.file.filename}"`,
       );

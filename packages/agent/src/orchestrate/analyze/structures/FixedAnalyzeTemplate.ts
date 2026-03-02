@@ -88,6 +88,24 @@ export namespace FixedAnalyzeTemplate {
   }
 
   // ─────────────────────────────────────────────
+  // Feature types (conditional module activation)
+  // ─────────────────────────────────────────────
+
+  export type FeatureId =
+    | "real-time"
+    | "external-integration"
+    | "background-processing"
+    | "file-storage";
+
+  export interface IFeature {
+    id: FeatureId;
+    /** Provider names for external-integration (e.g., ["stripe", "sendgrid"]) */
+    providers?: string[];
+    /** Job names for background-processing (e.g., ["emailQueue", "reportGeneration"]) */
+    jobs?: string[];
+  }
+
+  // ─────────────────────────────────────────────
   // Canonical source mapping
   // ─────────────────────────────────────────────
 
@@ -746,6 +764,299 @@ export namespace FixedAnalyzeTemplate {
   ];
 
   // ─────────────────────────────────────────────
+  // Conditional modules (activated by features)
+  // ─────────────────────────────────────────────
+
+  export const CONDITIONAL_MODULES: Record<
+    FeatureId,
+    Array<{ targetCategory: CategoryId; module: IModuleTemplate }>
+  > = {
+    "real-time": [
+      {
+        targetCategory: "03-functional-requirements",
+        module: {
+          index: 100, // appended after base modules
+          title: "Real-time Events",
+          purpose:
+            "WebSocket/SSE event definitions and subscription specifications.",
+          unitStrategy: {
+            type: "perEntity",
+            unitTemplate: {
+              titlePattern: "{name} Events",
+              purposePattern:
+                "Define real-time events for {name} entity changes, including event payload and subscription rules.",
+              keywords: [
+                "websocket",
+                "sse",
+                "event",
+                "subscription",
+                "real-time",
+              ],
+            },
+          },
+        },
+      },
+      {
+        targetCategory: "05-non-functional",
+        module: {
+          index: 100,
+          title: "Real-time Communication",
+          purpose:
+            "WebSocket/SSE connection policies and performance requirements.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "WebSocket Security and Performance",
+                purposePattern:
+                  "Define connection limits, heartbeat intervals, reconnection policies, and security requirements for real-time communication.",
+                keywords: [
+                  "websocket-security",
+                  "connection-limit",
+                  "heartbeat",
+                  "reconnection",
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ],
+    "external-integration": [
+      {
+        targetCategory: "03-functional-requirements",
+        module: {
+          index: 101,
+          title: "External Integrations",
+          purpose:
+            "Third-party API contracts, webhook handlers, and integration specifications.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Integration Contracts",
+                purposePattern:
+                  "Define external API dependencies, authentication methods, request/response formats, and error handling for third-party integrations.",
+                keywords: [
+                  "integration",
+                  "third-party",
+                  "webhook",
+                  "oauth-provider",
+                  "payment",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "04-business-rules",
+        module: {
+          index: 100,
+          title: "Integration Error Handling",
+          purpose:
+            "Error handling and retry policies for external integrations.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Integration Failure Policies",
+                purposePattern:
+                  "Define retry strategies, circuit breaker policies, fallback behavior, and error escalation for external service failures.",
+                keywords: [
+                  "retry",
+                  "circuit-breaker",
+                  "fallback",
+                  "integration-error",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "05-non-functional",
+        module: {
+          index: 101,
+          title: "External Dependency SLOs",
+          purpose:
+            "Service level objectives for external dependency availability.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "External Dependency SLOs",
+                purposePattern:
+                  "Define availability expectations, timeout thresholds, and degradation policies for external service dependencies.",
+                keywords: [
+                  "dependency-slo",
+                  "timeout",
+                  "degradation",
+                  "external-availability",
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ],
+    "background-processing": [
+      {
+        targetCategory: "03-functional-requirements",
+        module: {
+          index: 102,
+          title: "Background Processing",
+          purpose:
+            "Asynchronous job definitions, queue specifications, and scheduled task configurations.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Job Specifications",
+                purposePattern:
+                  "Define background jobs, queue configurations, retry policies, and scheduling rules for asynchronous processing.",
+                keywords: [
+                  "background-job",
+                  "queue",
+                  "cron",
+                  "async",
+                  "scheduled-task",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "04-business-rules",
+        module: {
+          index: 101,
+          title: "Job Failure Policies",
+          purpose: "Failure handling and dead-letter queue policies for background jobs.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Job Failure and Recovery",
+                purposePattern:
+                  "Define retry limits, dead-letter queue handling, failure notification, and manual recovery procedures for background jobs.",
+                keywords: [
+                  "dead-letter",
+                  "job-failure",
+                  "retry-limit",
+                  "recovery",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "05-non-functional",
+        module: {
+          index: 102,
+          title: "Queue Performance",
+          purpose:
+            "Performance requirements for message queues and background processing.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Queue Performance SLOs",
+                purposePattern:
+                  "Define queue throughput targets, processing latency limits, and backpressure thresholds for background job infrastructure.",
+                keywords: [
+                  "queue-throughput",
+                  "processing-latency",
+                  "backpressure",
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ],
+    "file-storage": [
+      {
+        targetCategory: "03-functional-requirements",
+        module: {
+          index: 103,
+          title: "File Storage",
+          purpose:
+            "File upload endpoints, media processing, and storage specifications.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "File Upload and Management",
+                purposePattern:
+                  "Define file upload endpoints, supported formats, size limits, processing pipelines, and access control for stored files.",
+                keywords: [
+                  "file-upload",
+                  "media",
+                  "storage",
+                  "s3",
+                  "attachment",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "04-business-rules",
+        module: {
+          index: 102,
+          title: "File Validation Rules",
+          purpose:
+            "Validation rules and policies for file uploads and storage.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "File Validation and Policies",
+                purposePattern:
+                  "Define file type restrictions, virus scanning requirements, content validation, and retention policies for uploaded files.",
+                keywords: [
+                  "file-validation",
+                  "virus-scan",
+                  "content-type",
+                  "retention",
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        targetCategory: "05-non-functional",
+        module: {
+          index: 103,
+          title: "Storage Capacity",
+          purpose:
+            "Storage capacity planning and CDN requirements.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Storage Capacity Requirements",
+                purposePattern:
+                  "Define storage tier requirements, CDN policies, bandwidth limits, and capacity planning for file storage infrastructure.",
+                keywords: [
+                  "storage-capacity",
+                  "cdn",
+                  "bandwidth",
+                  "tier",
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ],
+  };
+
+  // ─────────────────────────────────────────────
   // Helper functions
   // ─────────────────────────────────────────────
 
@@ -806,13 +1117,51 @@ export namespace FixedAnalyzeTemplate {
   };
 
   /**
-   * Generate AutoBeAnalyzeFile.Scenario objects from the fixed template.
-   * Called after LLM returns actors/entities in the scenario phase.
+   * Build an expanded template by merging base TEMPLATE with conditional
+   * modules activated by the given features.
+   *
+   * Module indices are renumbered sequentially per file after merging.
+   */
+  export const buildExpandedTemplate = (
+    features: IFeature[],
+  ): IFileTemplate[] => {
+    if (features.length === 0) return TEMPLATE;
+
+    const activeFeatureIds = new Set(features.map((f) => f.id));
+    const extraModules = new Map<CategoryId, IModuleTemplate[]>();
+
+    for (const featureId of activeFeatureIds) {
+      const conditionals = CONDITIONAL_MODULES[featureId];
+      for (const { targetCategory, module } of conditionals) {
+        const existing = extraModules.get(targetCategory) ?? [];
+        existing.push(module);
+        extraModules.set(targetCategory, existing);
+      }
+    }
+
+    return TEMPLATE.map((fileTemplate) => {
+      const extras = extraModules.get(fileTemplate.categoryId);
+      if (!extras || extras.length === 0) return fileTemplate;
+
+      const mergedModules = [
+        ...fileTemplate.modules,
+        ...extras,
+      ].map((m, i) => ({ ...m, index: i }));
+
+      return { ...fileTemplate, modules: mergedModules };
+    });
+  };
+
+  /**
+   * Generate AutoBeAnalyzeFile.Scenario objects from the fixed template,
+   * optionally expanded with conditional modules based on features.
+   * Called after LLM returns actors/entities/features in the scenario phase.
    */
   export const buildScenarioFiles = (
     _prefix: string,
+    features: IFeature[] = [],
   ): AutoBeAnalyzeFile.Scenario[] =>
-    TEMPLATE.map((t) => ({
+    buildExpandedTemplate(features).map((t) => ({
       reason: `Fixed SRS structure: ${t.description}`,
       filename: t.filename,
       documentType: t.documentType,

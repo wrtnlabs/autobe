@@ -1,6 +1,7 @@
 import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { FixedAnalyzeTemplate } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
@@ -124,5 +125,17 @@ export namespace IAutoBeAnalyzeScenarioApplication {
       attributes: string[];
       relationships?: string[];
     }>;
+
+    /**
+     * High-level project features that activate conditional modules.
+     *
+     * Selected from a FIXED catalog — the LLM must NOT invent features
+     * outside the predefined list. Each feature activates additional
+     * modules in the appropriate SRS files.
+     *
+     * If the project has no special features beyond REST CRUD, return
+     * an empty array.
+     */
+    features: FixedAnalyzeTemplate.IFeature[];
   }
 }

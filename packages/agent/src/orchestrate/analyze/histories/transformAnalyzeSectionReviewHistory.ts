@@ -94,7 +94,7 @@ export const transformAnalyzeSectionReviewHistory = (
         ## File Scope
 
         **File**: ${props.file.filename}
-        **Scope**: ${FixedAnalyzeTemplate.TEMPLATE.find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
+        **Scope**: ${FixedAnalyzeTemplate.buildExpandedTemplate((props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[]).find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
 
         ## Per-File Review Criteria
 

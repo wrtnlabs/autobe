@@ -33,13 +33,16 @@ export const transformAnalyzeWriteSectionHistory = (
   const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
     props.unitEvent.unitSections[props.unitIndex];
 
-  // Find the file template for scope context
-  const fileTemplate = FixedAnalyzeTemplate.TEMPLATE.find(
+  // Find the file template for scope context (using expanded template for conditional modules)
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
+  const fileTemplate = expandedTemplate.find(
     (t) => t.filename === props.file.filename,
   );
 
   // Build scope summary for all 6 files
-  const fileScopeSummary = FixedAnalyzeTemplate.TEMPLATE.map(
+  const fileScopeSummary = expandedTemplate.map(
     (t) =>
       `- **${t.filename}**: ${t.description}${t.filename === props.file.filename ? " ← **YOU ARE HERE**" : ""}`,
   ).join("\n");
