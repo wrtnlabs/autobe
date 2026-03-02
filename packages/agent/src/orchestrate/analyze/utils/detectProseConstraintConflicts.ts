@@ -26,13 +26,7 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n[\s\S]*?```/g;
 const CANONICAL_FILENAME = "02-domain-model.md";
 
 /**
- * Regex to find backtick-wrapped Entity.attribute references.
- * Matches patterns like `User.bio`, `Article.title`, `Comment.content`.
- */
-const BACKTICK_REF_REGEX = /`([A-Z][a-zA-Z]*\.[a-zA-Z]+)`/g;
-
-/**
- * Numeric constraint patterns found near backtick references in prose.
+ * Numeric constraint patterns found in prose text.
  * Matches: "300 characters", "1-50 characters", "1–150 characters",
  * "up to 2000 characters", "maximum 500 chars", "minimum 8 characters",
  * "exceeds 300 characters", "at least 1 character", "at most 200 characters".
@@ -45,6 +39,12 @@ const NUMERIC_PATTERNS: RegExp[] = [
   // Plain: "N characters" (when preceded by constraint-like context)
   /(?:limited to|restricted to|capped at|allow(?:s|ed)?)\s+(\d+)\s*(?:characters|chars?|unicode characters)/gi,
 ];
+
+// ─── Helpers ───
+
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
 // ─── Canonical Registry ───
 
@@ -94,6 +94,24 @@ function buildCanonicalNumericRegistry(
 }
 
 /**
+ * Build a reverse index: attribute name → list of Entity.attribute keys.
+ * e.g., "bio" → ["User.bio"], "title" → ["Article.title", "Todo.title"]
+ */
+function buildAttributeNameIndex(
+  registry: Map<string, number[]>,
+): Map<string, string[]> {
+  const index: Map<string, string[]> = new Map();
+  for (const key of registry.keys()) {
+    const dotIdx = key.indexOf(".");
+    if (dotIdx < 0) continue;
+    const attrName = key.slice(dotIdx + 1);
+    if (!index.has(attrName)) index.set(attrName, []);
+    index.get(attrName)!.push(key);
+  }
+  return index;
+}
+
+/**
  * Extract all integer numbers from a constraint string.
  * "1-50, required" → [1, 50]
  * "optional, maximum 2000 characters, may be null" → [2000]
@@ -108,7 +126,7 @@ function extractAllNumbers(value: string): number[] {
   return [...nums];
 }
 
-// ─── Prose Constraint Extraction ───
+// ─── Prose Constraint Extraction (Value-Driven) ───
 
 interface IProseMention {
   entityAttr: string;
@@ -117,38 +135,62 @@ interface IProseMention {
 }
 
 /**
- * Extract constraint mentions from prose text (YAML blocks already stripped).
+ * Value-driven prose constraint extraction.
  *
- * Finds backtick references like `User.bio` and looks for numeric constraint
- * patterns within proximity (same line or nearby lines).
+ * Instead of finding backtick references first, this approach:
+ * 1. Finds lines with numeric constraint patterns ("N characters", etc.)
+ * 2. Checks if any canonical attribute name appears on that line
+ * 3. Compares the numbers against canonical values
+ *
+ * This catches all patterns regardless of backtick usage:
+ * - `User.bio`: 0-300 characters
+ * - `bio` (0-500 chars)
+ * - bio text limited to 300 characters
+ * - | bio | 0-300 chars |
  */
-function extractProseConstraintMentions(proseContent: string): IProseMention[] {
+function extractProseConstraintMentions(
+  proseContent: string,
+  attrNameIndex: Map<string, string[]>,
+  registry: Map<string, number[]>,
+): IProseMention[] {
   const results: IProseMention[] = [];
   const lines = proseContent.split("\n");
 
-  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx]!;
-    const refMatches = [...line.matchAll(BACKTICK_REF_REGEX)];
-    if (refMatches.length === 0) continue;
+  for (const line of lines) {
+    // Step 1: Extract constraint-like numbers from this line
+    const numbers = extractConstraintNumbers(line);
+    if (numbers.length === 0) continue;
 
-    // Build a context window: current line + 2 lines after
-    const contextLines = lines
-      .slice(lineIdx, Math.min(lineIdx + 3, lines.length))
-      .join("\n");
+    // Step 2: Check if any canonical attribute name appears on this line
+    for (const [attrName, entityAttrs] of attrNameIndex) {
+      const attrPattern = new RegExp(
+        `\\b${escapeRegExp(attrName)}\\b`,
+        "i",
+      );
+      if (!attrPattern.test(line)) continue;
 
-    for (const refMatch of refMatches) {
-      const entityAttr = refMatch[1]!;
-      const numbers = extractConstraintNumbers(contextLines);
-      if (numbers.length === 0) continue;
+      // Step 3: Union all canonical values for all possible Entity.attr matches
+      const allCanonical: Set<number> = new Set();
+      for (const ea of entityAttrs) {
+        const vals = registry.get(ea);
+        if (vals) for (const v of vals) allCanonical.add(v);
+      }
+
+      // Step 4: Find numbers that don't match any canonical value
+      const conflicting = numbers.filter(
+        (n) => !allCanonical.has(n) && n !== 0,
+      );
+      if (conflicting.length === 0) continue;
+
       results.push({
-        entityAttr,
+        entityAttr: entityAttrs[0]!,
         numbers,
         context: line.trim().slice(0, 200),
       });
     }
   }
 
-  // Deduplicate: same entityAttr + same numbers from multiple lines → keep first
+  // Deduplicate: same entityAttr + same numbers → keep first
   const seen: Map<string, IProseMention> = new Map();
   for (const mention of results) {
     const key = `${mention.entityAttr}:${mention.numbers.sort((a, b) => a - b).join(",")}`;
@@ -166,11 +208,9 @@ function extractConstraintNumbers(text: string): number[] {
   const numbers: Set<number> = new Set();
 
   for (const pattern of NUMERIC_PATTERNS) {
-    // Reset lastIndex for global regexes
     pattern.lastIndex = 0;
     const matches = text.matchAll(pattern);
     for (const m of matches) {
-      // Group 1 is always present, group 2 exists for range patterns
       if (m[1]) {
         const n = parseInt(m[1], 10);
         if (!isNaN(n)) numbers.add(n);
@@ -191,9 +231,9 @@ function extractConstraintNumbers(text: string): number[] {
  * Detect prose-level constraint value conflicts between non-canonical files
  * and the canonical 02-domain-model.
  *
- * Scans prose text (outside YAML blocks) in non-canonical files for
- * backtick Entity.attribute references with numeric values that differ
- * from the canonical YAML definition.
+ * Uses a value-driven approach: builds a reverse index of canonical attribute
+ * names, then scans prose text for those names near numeric constraint patterns.
+ * Catches all patterns regardless of backtick usage.
  */
 export const detectProseConstraintConflicts = (props: {
   files: FileSectionInput;
@@ -206,6 +246,8 @@ export const detectProseConstraintConflicts = (props: {
 
   const registry = buildCanonicalNumericRegistry(canonicalFile);
   if (registry.size === 0) return [];
+
+  const attrNameIndex = buildAttributeNameIndex(registry);
 
   const conflicts: IProseConstraintConflict[] = [];
 
@@ -222,7 +264,11 @@ export const detectProseConstraintConflicts = (props: {
             "",
           );
 
-          const mentions = extractProseConstraintMentions(proseContent);
+          const mentions = extractProseConstraintMentions(
+            proseContent,
+            attrNameIndex,
+            registry,
+          );
 
           for (const mention of mentions) {
             const canonicalValues = registry.get(mention.entityAttr);
