@@ -23,10 +23,11 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - File A says "email/password authentication" but File B says "anonymous session"
 - **REJECT if two files make directly contradictory claims**
 
-### 2. Terminology Alignment (ADVISORY — except query parameter names)
+### 2. Terminology Alignment (ADVISORY — except query parameter names and error codes)
 - Same concepts should use identical terms across files
 - Flag differences in feedback, do NOT reject
-- **EXCEPTION**: Query parameter names (e.g., sortBy, sortDir, cursor, limit, page) used in 03-functional-requirements MUST exactly match the names defined in 04-business-rules. Mismatched parameter names (e.g., `sortOrder` in 03 vs `sortDir` in 04) → REJECT the non-canonical file (03).
+- **EXCEPTION 1**: Query parameter names (e.g., sortBy, sortDir, cursor, limit, page) used in 03-functional-requirements MUST exactly match the names defined in 04-business-rules. Mismatched parameter names (e.g., `sortOrder` in 03 vs `sortDir` in 04) → REJECT the non-canonical file (03).
+- **EXCEPTION 2**: Error code names used in any file MUST exactly match the canonical names defined in 04-business-rules' YAML error catalog. If 03 uses `USER_EMAIL_DUPLICATE` but 04 defines `USER_EMAIL_ALREADY_EXISTS`, REJECT the file using the wrong name.
 
 ### 3. Value Consistency (REJECT for numeric conflicts)
 - IF two files state different numeric values for the same constraint (e.g., "bio max 500" in 02 vs "bio max 300" in 04), REJECT the non-canonical file
@@ -61,6 +62,7 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - A file invents features or entities not defined in the scenario
 - Two files state different numeric values for the same entity attribute constraint (REJECT the non-canonical file)
 - Query parameter names in 03-functional-requirements do not match those defined in 04-business-rules (REJECT 03)
+- Error code names in any file do not match the canonical names in 04-business-rules' YAML error catalog (REJECT the non-canonical file)
 
 ## Output Format
 

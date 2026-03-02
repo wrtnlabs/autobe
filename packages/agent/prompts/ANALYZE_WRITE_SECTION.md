@@ -46,7 +46,7 @@ Each SRS file has a fixed scope. Your sections MUST stay within the scope of the
 | 00-toc | Project summary, scope, glossary, assumptions | EARS requirements, entity attributes |
 | 01-actors-and-auth | Actors, permissions, authentication, sessions | Entity attribute tables, API endpoints |
 | 02-domain-model | Entity definitions, relationships, enums, state machines | API endpoints, request/response schemas |
-| 03-functional-requirements | CRUD operations, action endpoints, request/response; **MUST include HTTP method and URL path for every operation** (e.g., `POST /users`, `GET /todos/{id}`, `PATCH /todos/{id}`) | Entity attribute definitions, error catalogs |
+| 03-functional-requirements | CRUD operations, action endpoints, **authentication endpoints (login, token refresh, logout)**, request/response; **MUST include HTTP method and URL path for every operation** (e.g., `POST /users`, `GET /todos/{id}`, `POST /auth/login`) | Entity attribute definitions, error catalogs |
 | 04-business-rules | Data isolation, business rules, filtering, error catalog | Entity attribute definitions, API endpoints |
 | 05-non-functional | Performance, security, data integrity | Functional requirements (CRUD details) |
 
@@ -59,6 +59,35 @@ Certain data types are **canonically defined** in specific files. Other files MU
 - **Permissions** → Canonical in 01-actors-and-auth
 - **Filtering, sorting, and pagination rules** → Canonical in 04-business-rules
   (includes: pagination strategy [page-based vs cursor-based], query parameter names [sortBy, sortDir, cursor, limit, etc.], default values, allowed values)
+
+### Authentication Endpoint Rules (03-functional-requirements)
+
+File 01-actors-and-auth defines authentication **flows** (registration, login, session policy).
+File 03-functional-requirements MUST define the corresponding **API endpoints** with HTTP method + URL path.
+
+**Required authentication endpoints in 03** (if the scenario includes user authentication):
+- Registration endpoint (e.g., `POST /auth/register` or `POST /users`) — request body, response with tokens, error codes
+- Login endpoint (e.g., `POST /auth/login`) — request body, response with tokens, error codes
+- Token refresh endpoint (e.g., `POST /auth/refresh`) — if refresh tokens are defined in 01
+- Logout endpoint (e.g., `POST /auth/logout`) — if session invalidation is described in 01
+
+Each authentication endpoint MUST include:
+1. HTTP method and URL path
+2. Request body schema (fields, types, required/optional)
+3. Success response schema (including token fields if applicable)
+4. Error conditions with error codes referencing 04-business-rules
+
+**Self-Test**: "Does 01-actors-and-auth describe an authentication flow? → 03 MUST have a matching endpoint definition."
+
+### Soft-Delete Companion Endpoints (03-functional-requirements)
+
+IF an entity supports soft-delete (has a `deletedAt` nullable timestamp in 02-domain-model),
+THEN 03-functional-requirements MUST define ALL of the following endpoints for that entity:
+- **Trash list endpoint** (e.g., `GET /todos/trash`) — list soft-deleted items with pagination
+- **Restore endpoint** (e.g., `POST /todos/{id}/restore`) — restore from trash
+- **Permanent delete endpoint** (e.g., `DELETE /todos/{id}/permanent`) — permanently remove
+
+**Self-Test**: "Does 02-domain-model define `deletedAt` for this entity? → 03 MUST have trash list, restore, and permanent delete endpoints."
 
 ### YAML Spec Block Rules (Canonical Files Only)
 
@@ -107,6 +136,32 @@ permissions:
 ```
 ````
 
+**02-domain-model — Index Definition YAML** (in Relationship Map or Cascading sections):
+````
+```yaml
+indexes:
+  - entity: Todo
+    fields: [userId, deletedAt]
+    type: composite
+    purpose: "Efficient per-user active/trash todo listing"
+  - entity: Todo
+    fields: [userId, createdAt]
+    type: composite
+    purpose: "Sorted todo listing by creation date"
+  - entity: User
+    fields: [email]
+    type: unique
+    purpose: "Email uniqueness and login lookup"
+```
+````
+
+Index definitions MUST cover:
+- Every foreign key field (e.g., `Todo.userId`, `TodoEditHistory.todoId`)
+- Fields used in filtering (e.g., `deletedAt` for soft-delete separation)
+- Fields used in sorting (e.g., `createdAt`, `startDate`, `dueDate`)
+- Unique constraint fields (e.g., `User.email`)
+- Composite indexes for common query patterns (e.g., `[userId, deletedAt]` for per-user listing)
+
 ### Backtick Reference Rules (Non-Canonical Files)
 
 When referencing data defined in canonical files, you MUST use backtick format:
@@ -116,6 +171,16 @@ When referencing data defined in canonical files, you MUST use backtick format:
 - Permission references: `` `member:Todo:create` ``
 
 Only backtick-wrapped references are recognized for cross-file validation. Plain-text mentions are ignored.
+
+**CRITICAL: Error Code Name Accuracy**
+
+When referencing error codes in 03-functional-requirements, you MUST use the **exact error code name** defined in 04-business-rules' YAML error catalog. Do NOT invent alternative names.
+
+- If 04-business-rules defines `USER_EMAIL_ALREADY_EXISTS`, use exactly `USER_EMAIL_ALREADY_EXISTS` in 03
+- Do NOT substitute with `USER_EMAIL_DUPLICATE`, `EMAIL_ALREADY_EXISTS`, or any variation
+- If you need an error code that doesn't exist in 04 yet, use a placeholder `{ENTITY}_{CONDITION}` pattern and note that it must be added to 04's error catalog
+
+**Self-Test**: "Is every error code I used in this section defined word-for-word in 04-business-rules?" NO → Fix the code name or flag it for 04 to add.
 
 ### Non-Canonical File Constraint Rules (CRITICAL)
 
@@ -244,6 +309,28 @@ with error code `TODO_DUE_DATE_BEFORE_START`.
 ```
 
 **KEY PATTERNS**: Start directly with EARS requirement, bullet lists for field specs, HTTP status + error code for every error, ~200 words total.
+
+## Response Structure Rules
+
+**03-functional-requirements** MUST define response schemas for every endpoint:
+- Success response: list ALL returned fields with types
+- For list endpoints: reference the pagination response wrapper defined in 04
+
+**04-business-rules** MUST define these shared response structures:
+
+1. **Error response structure** — the standard JSON envelope for all errors:
+```
+THE system SHALL return all errors in the following JSON structure:
+{ "code": "<ERROR_CODE>", "message": "<human-readable description>" }
+```
+
+2. **Pagination response wrapper** — the standard list response format:
+```
+THE system SHALL return all paginated list responses in the following structure:
+{ "data": [...], "pagination": { "nextCursor": "<opaque-string>|null", "hasMore": <boolean> } }
+```
+
+**Self-Test**: "Does every endpoint in 03 specify what the response body looks like?" NO → Add field list.
 
 ## Privacy-First HTTP Status Code Rule
 

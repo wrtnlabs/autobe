@@ -49,10 +49,15 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 5. YAML Spec Block Validation (for canonical files 01/02/04)
 - Canonical files SHOULD contain YAML code blocks for structured data
-- 02-domain-model: entity attribute YAML blocks
+- 02-domain-model: entity attribute YAML blocks and index definition YAML blocks
 - 04-business-rules: error code YAML blocks
 - 01-actors-and-auth: permission YAML blocks
 - **Advisory**: Flag missing YAML blocks but do NOT reject
+
+### 5b. Error Code Reference Accuracy (for 03-functional-requirements)
+- Error codes referenced in 03 MUST use the exact canonical names from 04-business-rules' YAML error catalog
+- If a section uses an error code name not defined in 04's error catalog, flag in feedback
+- **REJECT** if the section invents error code names that clearly deviate from the naming pattern used in 04 (e.g., using `EMAIL_DUPLICATE` when 04 defines `USER_EMAIL_ALREADY_EXISTS`)
 
 ### 6. Intra-File Content Deduplication (ADVISORY)
 - Minor overlap or paraphrased references are acceptable

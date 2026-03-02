@@ -343,6 +343,11 @@ export namespace FixedAnalyzeTemplate {
           moduleIndex: 0,
           registryType: "entity-attributes",
         },
+        {
+          rootKey: "indexes",
+          moduleIndex: 1,
+          registryType: "entity-attributes",
+        },
       ],
       modules: [
         {
@@ -397,6 +402,9 @@ export namespace FixedAnalyzeTemplate {
                   "on-delete",
                   "on-update",
                   "orphan",
+                  "index",
+                  "composite-index",
+                  "unique-index",
                 ],
               },
             ],
@@ -478,7 +486,7 @@ export namespace FixedAnalyzeTemplate {
           index: 1,
           title: "Action Endpoints",
           purpose:
-            "Non-CRUD action endpoints grouped by domain concern.",
+            "Non-CRUD action endpoints grouped by domain concern, including authentication endpoints (login, token refresh, logout).",
           unitStrategy: {
             type: "perEntityGroup",
             unitTemplate: {
@@ -491,6 +499,10 @@ export namespace FixedAnalyzeTemplate {
                 "workflow",
                 "operation",
                 "trigger",
+                "login",
+                "logout",
+                "refresh",
+                "authentication",
               ],
             },
           },
