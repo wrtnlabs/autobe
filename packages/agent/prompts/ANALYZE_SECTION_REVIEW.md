@@ -24,7 +24,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 1. File Scope Adherence (CRITICAL)
 - Does this file's content stay within its designated scope?
-- 00-overview: Project summary, scope, glossary — NO EARS requirements
+- 00-toc: Project summary, scope, glossary — NO EARS requirements
 - 01-actors-and-auth: Actors, permissions, auth — NO entity attribute tables
 - 02-domain-model: Entities, relationships, enums — NO API endpoints
 - 03-functional-requirements: CRUD, endpoints — NO entity definitions, NO error catalogs

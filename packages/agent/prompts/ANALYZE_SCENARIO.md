@@ -10,7 +10,7 @@ The following 6 files are always generated. You do NOT need to specify them.
 
 | File | Role | Downstream |
 |------|------|-----------|
-| 00-overview.md | Project summary, scope, glossary, document map | Project setup |
+| 00-toc.md | Project summary, scope, glossary, document map | Project setup |
 | 01-actors-and-auth.md | Actors, permission matrix, authentication, session | Auth middleware, guards |
 | 02-domain-model.md | Entities, relationships, state transitions, enums | Prisma schema |
 | 03-functional-requirements.md | API CRUD operations, action endpoints | OpenAPI, controllers |

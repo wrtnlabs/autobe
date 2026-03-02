@@ -18,7 +18,7 @@ export namespace FixedAnalyzeTemplate {
   // ─────────────────────────────────────────────
 
   export type CategoryId =
-    | "00-overview"
+    | "00-toc"
     | "01-actors-and-auth"
     | "02-domain-model"
     | "03-functional-requirements"
@@ -102,11 +102,11 @@ export namespace FixedAnalyzeTemplate {
   // ─────────────────────────────────────────────
 
   export const TEMPLATE: IFileTemplate[] = [
-    // ── 00-overview ──
+    // ── 00-toc ──
     {
-      categoryId: "00-overview",
-      fileId: "00-overview",
-      filename: "00-overview.md",
+      categoryId: "00-toc",
+      fileId: "00-toc",
+      filename: "00-toc.md",
       documentType: "overview",
       description: "Project summary, scope, glossary, and assumptions",
       downstreamPhase: "project-setup",
@@ -814,7 +814,7 @@ export namespace FixedAnalyzeTemplate {
     }));
 
   /**
-   * Deterministically generate the Document Map unit content for 00-overview.
+   * Deterministically generate the Document Map unit content for 00-toc.
    */
   export const buildDocumentMapContent = (
     files: IFileTemplate[],

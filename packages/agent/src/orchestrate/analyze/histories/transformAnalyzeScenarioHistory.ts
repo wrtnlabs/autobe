@@ -26,7 +26,7 @@ export const transformAnalyzeScenarioHistory = (
     You are in the Analyze Scenario stage, which comes BEFORE Analyze Write.
     Your job is to identify actors, entities, and project characteristics — NOT to write documents.
 
-    The document structure is fixed as 6 SRS files (00-overview through 05-non-functional).
+    The document structure is fixed as 6 SRS files (00-toc through 05-non-functional).
     You do NOT decide file names, file count, or document structure.
 
     Identify the project prefix, user actors, core domain entities, and language.

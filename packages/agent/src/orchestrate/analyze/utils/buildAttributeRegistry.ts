@@ -193,7 +193,7 @@ export const validateAttributes = (props: {
     const filename = props.files[i]!.file.filename;
     // Skip canonical files for entity definitions (00/01/02)
     if (
-      filename === "00-overview.md" ||
+      filename === "00-toc.md" ||
       filename === "01-actors-and-auth.md" ||
       filename === "02-domain-model.md"
     )

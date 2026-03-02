@@ -43,7 +43,7 @@ Each SRS file has a fixed scope. Your sections MUST stay within the scope of the
 
 | File | Scope | MUST NOT contain |
 |------|-------|------------------|
-| 00-overview | Project summary, scope, glossary, assumptions | EARS requirements, entity attributes |
+| 00-toc | Project summary, scope, glossary, assumptions | EARS requirements, entity attributes |
 | 01-actors-and-auth | Actors, permissions, authentication, sessions | Entity attribute tables, API endpoints |
 | 02-domain-model | Entity definitions, relationships, enums, state machines | API endpoints, request/response schemas |
 | 03-functional-requirements | CRUD operations, action endpoints, request/response | Entity attribute definitions, error catalogs |
@@ -130,11 +130,11 @@ When writing sections for non-canonical files (00, 03, 05), you MUST NOT restate
 
 **Self-Test**: "Am I writing a concrete number, format rule, or uniqueness rule in a non-canonical file?" YES → Replace with backtick reference to canonical source.
 
-## EXCEPTION: 00-overview Sections
+## EXCEPTION: 00-toc Sections
 
-**For 00-overview sections**: NO EARS requirements, NO Mermaid. Plain content only (tables/bullet lists). Use summary language — no constraints/limits/error codes. No SHALL/SHOULD/MUST verbs.
+**For 00-toc sections**: NO EARS requirements, NO Mermaid. Plain content only (tables/bullet lists). Use summary language — no constraints/limits/error codes. No SHALL/SHOULD/MUST verbs.
 
-**00-overview Interpretation & Assumptions Rules (CRITICAL)**:
+**00-toc Interpretation & Assumptions Rules (CRITICAL)**:
 - The "Original User Input" MUST be a faithful summary, NOT a reinterpretation
 - The "Interpretation" MUST preserve the user's core terms
 - Assumptions MUST NOT contradict the user's explicit statements
@@ -202,7 +202,7 @@ The examples in this prompt demonstrate FORMAT and STRUCTURE only. Do NOT copy t
 - Filler sentences without testable content
 
 ### Word Budget & Content Rules:
-- **Regular**: 150-500 words | **Complex**: 300-800 words | **00-overview**: 50-100 words
+- **Regular**: 150-500 words | **Complex**: 300-800 words | **00-toc**: 50-100 words
 - 3-15 requirements per section, RFC2119 keywords (MUST/SHALL/SHOULD/MAY)
 - NO verbose narrative; NO redundant requirements
 - **Delete Test**: "If I delete this, is implementable info lost?" NO → delete it

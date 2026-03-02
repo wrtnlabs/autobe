@@ -58,7 +58,7 @@ const OVERVIEW_MAX_LINES = 400;
 /**
  * Detect if the overview file's sections exceed the maximum line count.
  *
- * 00-overview.md should be a concise project summary and navigation aid, not a
+ * 00-toc.md should be a concise project summary and navigation aid, not a
  * detailed requirements document. If the total line count across all sections
  * exceeds `OVERVIEW_MAX_LINES`, returns a violation string.
  *

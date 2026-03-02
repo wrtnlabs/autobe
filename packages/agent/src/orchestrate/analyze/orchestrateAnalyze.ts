@@ -648,7 +648,7 @@ async function processStageSection(
     const oversizedTocMap: Map<number, string[]> = new Map();
     for (const fileIndex of pendingArray) {
       const state = props.fileStates[fileIndex]!;
-      if (state.file.filename === "00-overview.md" && state.sectionResults) {
+      if (state.file.filename === "00-toc.md" && state.sectionResults) {
         const violations = detectOversizedToc(state.sectionResults);
         if (violations.length > 0) {
           oversizedTocMap.set(fileIndex, violations);
