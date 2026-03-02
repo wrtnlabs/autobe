@@ -81,6 +81,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Invented features not in keywords
 - Contradiction with parent module/unit definitions
 - Reinterpretation of user's stated system characteristics
+- Intra-file behavioral contradiction (two sections in this file state opposite behaviors for the same flow)
 
 ## Output Format
 
@@ -133,5 +134,6 @@ process({
 - Section invents features, entities, or workflows not present in scenario
 - Section contradicts its own parent module/unit definitions
 - Section reinterprets the user's stated system characteristics
+- Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")
 
 **Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-entities, missing YAML blocks

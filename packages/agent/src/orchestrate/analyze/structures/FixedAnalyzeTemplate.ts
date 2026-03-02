@@ -444,7 +444,7 @@ export namespace FixedAnalyzeTemplate {
       filename: "03-functional-requirements.md",
       documentType: "functional-requirements",
       description:
-        "API endpoints, per-entity CRUD operations, request/response specifications",
+        "REST API endpoints with HTTP method and URL path (e.g., POST /users, GET /todos/{id}), per-entity CRUD operations, request/response specifications",
       downstreamPhase: "openapi-controllers",
       forbiddenPatterns: [
         /\b(?:CREATE\s+)?(?:UNIQUE\s+)?INDEX\b/i, // Index defs → 02

@@ -23,9 +23,10 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - File A says "email/password authentication" but File B says "anonymous session"
 - **REJECT if two files make directly contradictory claims**
 
-### 2. Terminology Alignment (ADVISORY)
+### 2. Terminology Alignment (ADVISORY — except query parameter names)
 - Same concepts should use identical terms across files
 - Flag differences in feedback, do NOT reject
+- **EXCEPTION**: Query parameter names (e.g., sortBy, sortDir, cursor, limit, page) used in 03-functional-requirements MUST exactly match the names defined in 04-business-rules. Mismatched parameter names (e.g., `sortOrder` in 03 vs `sortDir` in 04) → REJECT the non-canonical file (03).
 
 ### 3. Value Consistency (REJECT for numeric conflicts)
 - IF two files state different numeric values for the same constraint (e.g., "bio max 500" in 02 vs "bio max 300" in 04), REJECT the non-canonical file
@@ -59,6 +60,7 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - A file references actors or features explicitly marked as out-of-scope
 - A file invents features or entities not defined in the scenario
 - Two files state different numeric values for the same entity attribute constraint (REJECT the non-canonical file)
+- Query parameter names in 03-functional-requirements do not match those defined in 04-business-rules (REJECT 03)
 
 ## Output Format
 
