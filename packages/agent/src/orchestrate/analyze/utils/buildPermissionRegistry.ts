@@ -2,152 +2,241 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
+import YAML from "yaml";
 
-// ─── Permission Canonical Registry ───
+// ─── YAML-based Permission Canonical Registry ───
 
 /**
- * A single entry in the Permission Canonical Registry.
- *
- * Tracks the first full specification of an actor→operation→condition rule,
- * enabling downstream section writes to reference rather than redefine.
+ * A single canonical permission entry extracted from a YAML spec block in
+ * 01-actors-and-auth.
  */
 export interface IPermissionRegistryEntry {
-  /** E.g. "admin" */
+  /** Actor name, e.g. "member" */
   actor: string;
-  /** E.g. "CreateTodo" */
-  operation: string;
-  /** E.g. "authenticated required" or "denied" */
-  condition: string;
-  /** Which file defined it */
-  definedInFile: string;
-  /** Which section defined it */
-  definedInSection: string;
+  /** Resource name, e.g. "Todo" */
+  resource: string;
+  /** Allowed actions, e.g. ["create", "read-own", "update-own", "delete-own"] */
+  actions: string[];
 }
 
-const DOWNSTREAM_CONTEXT_REGEX =
-  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
+/**
+ * A reference to a permission found via backtick `actor:resource:action`
+ * pattern.
+ */
+export interface IPermissionReference {
+  actor: string;
+  resource: string;
+  action: string;
+  fileIndex: number;
+  sectionTitle: string;
+}
 
 /**
- * Extract permission rules from a single Bridge Block content string.
- *
- * Parses `**Permission Rules**` entries in format: `- actor → operation →
- * condition`
+ * Result of comparing canonical permission definitions to backtick references.
  */
-const extractPermissionRules = (
-  content: string,
-): Array<{ actor: string; operation: string; condition: string }> => {
-  const results: Array<{
-    actor: string;
-    operation: string;
-    condition: string;
+export interface IPermissionValidationResult {
+  /** All canonical permissions from 01-actors-and-auth YAML blocks */
+  canonical: IPermissionRegistryEntry[];
+  /** All backtick permission references in other files */
+  references: IPermissionReference[];
+  /** References where the action is not in the canonical allowed list */
+  unauthorizedReferences: IPermissionReference[];
+  /** YAML parse errors */
+  parseErrors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+}
+
+// ─── YAML Block Extraction ───
+
+const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
+
+/**
+ * Extract canonical permission entries from 01-actors-and-auth YAML blocks.
+ *
+ * Expects YAML blocks with structure:
+ * ```yaml
+ * permissions:
+ *   - actor: member
+ *     resource: Todo
+ *     actions: [create, read-own, update-own, delete-own]
+ * ```
+ */
+const extractCanonicalPermissions = (
+  fileIndex: number,
+  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
+): {
+  entries: IPermissionRegistryEntry[];
+  errors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+} => {
+  const entries: IPermissionRegistryEntry[] = [];
+  const errors: Array<{
+    fileIndex: number;
+    sectionTitle: string;
+    error: string;
   }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
 
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inPermissions = false;
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Permission Rules**")) {
-        inPermissions = true;
-        continue;
-      }
-      if (line.startsWith("**") && !line.startsWith("**Permission Rules**")) {
-        inPermissions = false;
-        continue;
-      }
-      if (!inPermissions || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      const parts = body.split(/\s*(?:→|->)\s*/);
-      if (parts.length < 3) continue;
-
-      const actor = parts[0]!.trim();
-      const operation = parts[1]!.trim();
-      const condition = parts.slice(2).join(" → ").trim();
-
-      if (!actor || !operation || !condition) continue;
-
-      results.push({ actor, operation, condition });
-    }
-  }
-
-  return results;
-};
-
-/**
- * Build a Permission Canonical Registry from completed file states.
- *
- * Scans all DOWNSTREAM CONTEXT Bridge Blocks across completed files and
- * extracts the first permission rule for each actor→operation pair. The
- * registry follows "first writer wins".
- */
-export const buildPermissionRegistry = (props: {
-  files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-  }>;
-}): IPermissionRegistryEntry[] => {
-  const registry: Map<string, IPermissionRegistryEntry> = new Map();
-
-  for (const { file, sectionEvents } of props.files) {
-    for (const sectionsForModule of sectionEvents) {
-      for (const sectionEvent of sectionsForModule) {
-        for (const section of sectionEvent.sectionSections) {
-          const rules = extractPermissionRules(section.content);
-          for (const { actor, operation, condition } of rules) {
-            const key = `${actor.toLowerCase()} → ${operation}`;
-            if (!registry.has(key)) {
-              registry.set(key, {
-                actor,
-                operation,
-                condition,
-                definedInFile: file.filename,
-                definedInSection: section.title,
-              });
+  for (const sectionsForModule of sectionEvents) {
+    for (const sectionEvent of sectionsForModule) {
+      for (const section of sectionEvent.sectionSections) {
+        const yamlMatches = section.content.matchAll(YAML_CODE_BLOCK_REGEX);
+        for (const match of yamlMatches) {
+          const yamlContent = match[1] ?? "";
+          try {
+            const parsed = YAML.parse(yamlContent);
+            if (
+              parsed &&
+              typeof parsed === "object" &&
+              Array.isArray(parsed.permissions)
+            ) {
+              for (const perm of parsed.permissions) {
+                if (
+                  perm &&
+                  typeof perm.actor === "string" &&
+                  typeof perm.resource === "string" &&
+                  Array.isArray(perm.actions)
+                ) {
+                  entries.push({
+                    actor: perm.actor,
+                    resource: perm.resource,
+                    actions: perm.actions.map(String),
+                  });
+                }
+              }
             }
+          } catch (e) {
+            errors.push({
+              fileIndex,
+              sectionTitle: section.title,
+              error: `YAML parse error: ${e instanceof Error ? e.message : String(e)}`,
+            });
           }
         }
       }
     }
   }
 
-  return [...registry.values()];
+  return { entries, errors };
 };
 
-/** Format the permission registry as a prompt-injectable text block. */
-export const formatPermissionRegistryForPrompt = (
-  registry: IPermissionRegistryEntry[],
-): string => {
-  if (registry.length === 0) {
-    return "";
+// ─── Backtick Reference Extraction ───
+
+/** Match backtick `actor:resource:action` patterns */
+const BACKTICK_PERMISSION_REGEX = /`(\w+):(\w+):(\w[\w-]*)`/g;
+
+/**
+ * Extract backtick `actor:resource:action` references from section content.
+ */
+const extractBacktickPermissionReferences = (
+  fileIndex: number,
+  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
+): IPermissionReference[] => {
+  const refs: IPermissionReference[] = [];
+
+  for (const sectionsForModule of sectionEvents) {
+    for (const sectionEvent of sectionsForModule) {
+      for (const section of sectionEvent.sectionSections) {
+        const matches = section.content.matchAll(BACKTICK_PERMISSION_REGEX);
+        for (const match of matches) {
+          refs.push({
+            actor: match[1]!,
+            resource: match[2]!,
+            action: match[3]!,
+            fileIndex,
+            sectionTitle: section.title,
+          });
+        }
+      }
+    }
   }
 
-  const lines: string[] = [
-    "## CANONICAL PERMISSION REGISTRY (READ-ONLY — do NOT contradict)",
-    "",
-    "The following permission rules are already defined in other sections.",
-    "Your Bridge Block MUST use the EXACT same condition for these actor→operation pairs:",
-    "",
-  ];
+  return refs;
+};
 
-  // Group by operation for readability
-  const byOperation: Map<string, IPermissionRegistryEntry[]> = new Map();
-  for (const entry of registry) {
-    if (!byOperation.has(entry.operation)) byOperation.set(entry.operation, []);
-    byOperation.get(entry.operation)!.push(entry);
+// ─── Main Validation Function ───
+
+/**
+ * Validate permission references across files using YAML canonical definitions.
+ *
+ * 1. Extracts canonical permissions from 01-actors-and-auth YAML blocks
+ * 2. Extracts backtick `actor:resource:action` references from 03/04
+ * 3. Reports unauthorized references (action not in canonical allowed list)
+ */
+export const validatePermissions = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IPermissionValidationResult => {
+  let canonical: IPermissionRegistryEntry[] = [];
+  const parseErrors: IPermissionValidationResult["parseErrors"] = [];
+
+  // Extract canonical from 01-actors-and-auth
+  const actorsAuthIndex = props.files.findIndex(
+    (f) => f.file.filename === "01-actors-and-auth.md",
+  );
+
+  if (actorsAuthIndex >= 0) {
+    const result = extractCanonicalPermissions(
+      actorsAuthIndex,
+      props.files[actorsAuthIndex]!.sectionEvents,
+    );
+    canonical = result.entries;
+    parseErrors.push(...result.errors);
   }
 
-  for (const [operation, entries] of byOperation) {
-    lines.push(`**${operation}**:`);
-    for (const entry of entries) {
-      lines.push(
-        `  - ${entry.actor} → ${entry.operation} → ${entry.condition} (defined in "${entry.definedInSection}" of ${entry.definedInFile})`,
+  // Build canonical lookup: "actor:resource" → Set<action>
+  const canonicalMap = new Map<string, Set<string>>();
+  for (const entry of canonical) {
+    const key = `${entry.actor.toLowerCase()}:${entry.resource}`;
+    if (!canonicalMap.has(key)) canonicalMap.set(key, new Set());
+    for (const action of entry.actions) {
+      canonicalMap.get(key)!.add(action.toLowerCase());
+    }
+  }
+
+  // Extract references from 03/04
+  const references: IPermissionReference[] = [];
+  for (let i = 0; i < props.files.length; i++) {
+    const filename = props.files[i]!.file.filename;
+    if (
+      filename === "03-functional-requirements.md" ||
+      filename === "04-business-rules.md"
+    ) {
+      references.push(
+        ...extractBacktickPermissionReferences(
+          i,
+          props.files[i]!.sectionEvents,
+        ),
       );
     }
   }
 
-  return lines.join("\n");
+  // Find unauthorized references
+  const unauthorizedReferences = references.filter((ref) => {
+    const key = `${ref.actor.toLowerCase()}:${ref.resource}`;
+    const allowedActions = canonicalMap.get(key);
+    if (!allowedActions) return true; // actor:resource not defined at all
+    return !allowedActions.has(ref.action.toLowerCase());
+  });
+
+  return { canonical, references, unauthorizedReferences, parseErrors };
+};
+
+// ─── Legacy exports (kept for backward compatibility) ───
+
+/** @deprecated Bridge block registry removed. Use validatePermissions() instead. */
+export const buildPermissionRegistry = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IPermissionRegistryEntry[] => {
+  const result = validatePermissions(props);
+  return result.canonical;
+};
+
+/** @deprecated Bridge block injection removed. */
+export const formatPermissionRegistryForPrompt = (
+  _registry: IPermissionRegistryEntry[],
+): string => {
+  return "";
 };

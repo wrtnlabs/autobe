@@ -2,173 +2,231 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
+import YAML from "yaml";
 
-// ─── Attribute Canonical Registry ───
+// ─── YAML-based Attribute Canonical Registry ───
 
 /**
- * A single entry in the Attribute Canonical Registry.
- *
- * Tracks the first full specification of an Entity.attribute across all files,
- * enabling downstream section writes to reference rather than re-define.
+ * A single canonical attribute entry extracted from a YAML spec block in
+ * 02-domain-model.
  */
 export interface IAttributeRegistryEntry {
-  /** Entity name, e.g. "User" */
+  /** Entity name, e.g. "Todo" */
   entity: string;
-  /** Attribute name, e.g. "email" */
+  /** Attribute name, e.g. "title" */
   attribute: string;
-  /** Full specification, e.g. "text(5-255), required, unique, RFC 5322" */
-  fullSpec: string;
-  /** Which file defined it, e.g. "05-core-domain-model.md" */
-  definedInFile: string;
-  /** Which section defined it, e.g. "User Registration" */
-  definedInSection: string;
+  /** Type, e.g. "text" */
+  type: string;
+  /** Constraints, e.g. "1-500, required" */
+  constraints: string;
 }
 
-const DOWNSTREAM_CONTEXT_REGEX =
-  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
-
-const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+/**
+ * A reference to an Entity.field found via backtick pattern in non-canonical
+ * files (03/04/05).
+ */
+export interface IAttributeReference {
+  entity: string;
+  field: string;
+  fileIndex: number;
+  sectionTitle: string;
+}
 
 /**
- * Build an Attribute Canonical Registry from completed file states.
- *
- * Scans all DOWNSTREAM CONTEXT Bridge Blocks across completed files and
- * extracts the first full specification for each Entity.attribute.
- * Cross-references (e.g., "(defined in ...)") are skipped.
- *
- * The registry follows "first writer wins" — the first file/section to fully
- * specify an attribute owns it.
+ * Result of comparing canonical attribute definitions to backtick references.
  */
-export const buildAttributeRegistry = (props: {
-  files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-  }>;
-}): IAttributeRegistryEntry[] => {
-  const registry: Map<string, IAttributeRegistryEntry> = new Map();
+export interface IAttributeValidationResult {
+  /** All canonical attributes extracted from 02-domain-model YAML blocks */
+  canonical: IAttributeRegistryEntry[];
+  /** All backtick references found in non-canonical files */
+  references: IAttributeReference[];
+  /** References that don't match any canonical definition */
+  undefinedReferences: IAttributeReference[];
+  /** YAML parse errors encountered */
+  parseErrors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+}
 
-  for (const { file, sectionEvents } of props.files) {
-    for (const sectionsForModule of sectionEvents) {
-      for (const sectionEvent of sectionsForModule) {
-        for (const section of sectionEvent.sectionSections) {
-          const specs = extractAttributeSpecs(section.content);
-          for (const { key, entity, attribute, specification } of specs) {
-            if (!registry.has(key)) {
-              registry.set(key, {
-                entity,
-                attribute,
-                fullSpec: specification,
-                definedInFile: file.filename,
-                definedInSection: section.title,
-              });
+// ─── YAML Block Extraction ───
+
+const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
+
+/**
+ * Extract canonical attribute entries from 02-domain-model YAML spec blocks.
+ *
+ * Expects YAML blocks with structure:
+ * ```yaml
+ * entity: Todo
+ * attributes:
+ *   - name: title
+ *     type: text
+ *     constraints: "1-500, required"
+ * ```
+ */
+const extractCanonicalAttributes = (
+  fileIndex: number,
+  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
+): {
+  entries: IAttributeRegistryEntry[];
+  errors: Array<{ fileIndex: number; sectionTitle: string; error: string }>;
+} => {
+  const entries: IAttributeRegistryEntry[] = [];
+  const errors: Array<{
+    fileIndex: number;
+    sectionTitle: string;
+    error: string;
+  }> = [];
+
+  for (const sectionsForModule of sectionEvents) {
+    for (const sectionEvent of sectionsForModule) {
+      for (const section of sectionEvent.sectionSections) {
+        const yamlMatches = section.content.matchAll(YAML_CODE_BLOCK_REGEX);
+        for (const match of yamlMatches) {
+          const yamlContent = match[1] ?? "";
+          try {
+            const parsed = YAML.parse(yamlContent);
+            if (
+              parsed &&
+              typeof parsed === "object" &&
+              typeof parsed.entity === "string" &&
+              Array.isArray(parsed.attributes)
+            ) {
+              for (const attr of parsed.attributes) {
+                if (attr && typeof attr.name === "string") {
+                  entries.push({
+                    entity: parsed.entity,
+                    attribute: attr.name,
+                    type: String(attr.type ?? ""),
+                    constraints: String(attr.constraints ?? ""),
+                  });
+                }
+              }
             }
+          } catch (e) {
+            errors.push({
+              fileIndex,
+              sectionTitle: section.title,
+              error: `YAML parse error: ${e instanceof Error ? e.message : String(e)}`,
+            });
           }
         }
       }
     }
   }
 
-  return [...registry.values()];
+  return { entries, errors };
 };
+
+// ─── Backtick Reference Extraction ───
+
+/** Match backtick `Entity.field` patterns (PascalCase entity, camelCase field) */
+const BACKTICK_ENTITY_FIELD_REGEX = /`(\w+)\.(\w+)`/g;
 
 /**
- * Format the registry as a prompt-injectable text block.
- *
- * Produces a concise summary that tells the LLM which attributes are already
- * defined and where, so it can use reference format instead of re-defining.
+ * Extract backtick `Entity.field` references from section content.
  */
-export const formatRegistryForPrompt = (
-  registry: IAttributeRegistryEntry[],
-): string => {
-  if (registry.length === 0) {
-    return "";
-  }
+const extractBacktickReferences = (
+  fileIndex: number,
+  sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
+): IAttributeReference[] => {
+  const refs: IAttributeReference[] = [];
 
-  const lines: string[] = [
-    "## CANONICAL ATTRIBUTE REGISTRY (READ-ONLY — do NOT redefine)",
-    "",
-    "The following Entity.attribute specifications are already defined in other sections.",
-    "In your [DOWNSTREAM CONTEXT] Bridge Block, use ONLY the reference format for these:",
-    '`- Entity.attribute: (defined in "Section Name")`',
-    "",
-  ];
-
-  // Group by entity for readability
-  const byEntity: Map<string, IAttributeRegistryEntry[]> = new Map();
-  for (const entry of registry) {
-    if (!byEntity.has(entry.entity)) byEntity.set(entry.entity, []);
-    byEntity.get(entry.entity)!.push(entry);
-  }
-
-  for (const [entity, entries] of byEntity) {
-    lines.push(`**${entity}**:`);
-    for (const entry of entries) {
-      lines.push(
-        `  - ${entity}.${entry.attribute}: ${entry.fullSpec} (defined in "${entry.definedInSection}" of ${entry.definedInFile})`,
-      );
+  for (const sectionsForModule of sectionEvents) {
+    for (const sectionEvent of sectionsForModule) {
+      for (const section of sectionEvent.sectionSections) {
+        const matches = section.content.matchAll(BACKTICK_ENTITY_FIELD_REGEX);
+        for (const match of matches) {
+          refs.push({
+            entity: match[1]!,
+            field: match[2]!,
+            fileIndex,
+            sectionTitle: section.title,
+          });
+        }
+      }
     }
   }
 
-  return lines.join("\n");
+  return refs;
 };
 
-// ─── Internal helpers ───
+// ─── Main Validation Function ───
 
-function extractAttributeSpecs(content: string): Array<{
-  key: string;
-  entity: string;
-  attribute: string;
-  specification: string;
-}> {
-  const results: Array<{
-    key: string;
-    entity: string;
-    attribute: string;
-    specification: string;
-  }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+/**
+ * Validate attribute references across files using YAML canonical definitions.
+ *
+ * 1. Extracts canonical attributes from 02-domain-model YAML spec blocks
+ * 2. Extracts backtick `Entity.field` references from other files
+ * 3. Compares references against canonical definitions
+ * 4. Reports undefined references (referenced but not in canonical)
+ */
+export const validateAttributes = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IAttributeValidationResult => {
+  // Step 1: Extract canonical attributes from 02-domain-model
+  let canonical: IAttributeRegistryEntry[] = [];
+  const parseErrors: IAttributeValidationResult["parseErrors"] = [];
 
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inAttributes = false;
+  const domainModelIndex = props.files.findIndex(
+    (f) => f.file.filename === "02-domain-model.md",
+  );
 
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Attributes Specified**")) {
-        inAttributes = true;
-        continue;
-      }
-      if (
-        line.startsWith("**") &&
-        !line.startsWith("**Attributes Specified**")
-      ) {
-        inAttributes = false;
-        continue;
-      }
-      if (!inAttributes || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      const colonIndex = body.indexOf(":");
-      if (colonIndex < 0) continue;
-
-      const key = body.slice(0, colonIndex).trim();
-      const value = body.slice(colonIndex + 1).trim();
-
-      // Skip cross-references
-      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
-      // Skip "None"
-      if (/^none$/i.test(value)) continue;
-      // Only Entity.attribute format
-      if (!key.includes(".")) continue;
-
-      const dotIndex = key.indexOf(".");
-      const entity = key.slice(0, dotIndex);
-      const attribute = key.slice(dotIndex + 1);
-
-      results.push({ key, entity, attribute, specification: value });
-    }
+  if (domainModelIndex >= 0) {
+    const result = extractCanonicalAttributes(
+      domainModelIndex,
+      props.files[domainModelIndex]!.sectionEvents,
+    );
+    canonical = result.entries;
+    parseErrors.push(...result.errors);
   }
 
-  return results;
-}
+  // Step 2: Build canonical lookup set
+  const canonicalSet = new Set(
+    canonical.map((e) => `${e.entity}.${e.attribute}`),
+  );
+
+  // Step 3: Extract backtick references from non-canonical files (03/04/05)
+  const references: IAttributeReference[] = [];
+  for (let i = 0; i < props.files.length; i++) {
+    const filename = props.files[i]!.file.filename;
+    // Skip canonical files for entity definitions (00/01/02)
+    if (
+      filename === "00-overview.md" ||
+      filename === "01-actors-and-auth.md" ||
+      filename === "02-domain-model.md"
+    )
+      continue;
+    references.push(
+      ...extractBacktickReferences(i, props.files[i]!.sectionEvents),
+    );
+  }
+
+  // Step 4: Find undefined references
+  const undefinedReferences = references.filter(
+    (ref) => !canonicalSet.has(`${ref.entity}.${ref.field}`),
+  );
+
+  return { canonical, references, undefinedReferences, parseErrors };
+};
+
+// ─── Legacy exports (kept for backward compatibility, will be no-ops) ───
+
+/** @deprecated Bridge block parsing removed. Use validateAttributes() instead. */
+export const buildAttributeRegistry = (props: {
+  files: Array<{
+    file: AutoBeAnalyzeFile.Scenario;
+    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+  }>;
+}): IAttributeRegistryEntry[] => {
+  const result = validateAttributes(props);
+  return result.canonical;
+};
+
+/** @deprecated Bridge block injection removed. */
+export const formatRegistryForPrompt = (
+  _registry: IAttributeRegistryEntry[],
+): string => {
+  return "";
+};
