@@ -2,7 +2,7 @@ const DEFAULT_PORT = 37001;
 
 export interface HttpResponse {
   status: number;
-  body: unknown;
+  body: any;
   ok: boolean;
 }
 
@@ -50,7 +50,7 @@ export class HttpRunner {
         headers,
         body: body ? JSON.stringify(body) : undefined,
       });
-      let responseBody: unknown = null;
+      let responseBody: any = null;
       const text = await res.text();
       try { responseBody = JSON.parse(text); } catch { responseBody = text; }
       return { status: res.status, body: responseBody, ok: res.status >= 200 && res.status < 300 };
