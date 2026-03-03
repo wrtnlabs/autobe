@@ -223,6 +223,20 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
+    // Low mapping ratio penalty: below 50%, linearly reduce score
+    if (counts.mappingRatio < 0.5 && counts.controllerCount > 0) {
+      const penalty = Math.round(((0.5 - counts.mappingRatio) / 0.5) * 40);
+      score = Math.max(0, score - penalty);
+      issues.push(
+        createIssue({
+          severity: "critical",
+          category: "requirements",
+          code: "REQ006",
+          message: `Low controller-provider mapping ratio: ${Math.round(counts.mappingRatio * 100)}% — ${Math.round((1 - counts.mappingRatio) * 100)}% of API endpoints have no business logic`,
+        }),
+      );
+    }
+
     return Math.min(100, score);
   }
 }

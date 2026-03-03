@@ -27,5 +27,17 @@
 	},
 	"assist": {
 		"enabled": false
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["packages/estimate/src/evaluators/golden/**"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		}
+	]
 }

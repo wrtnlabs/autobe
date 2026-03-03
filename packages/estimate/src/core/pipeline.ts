@@ -1,5 +1,8 @@
+import * as path from "path";
+
 import {
   PrismaEvaluator,
+  RuntimeEvaluator,
   SyntaxEvaluator,
   TypeEvaluator,
 } from "../evaluators/gate";
@@ -17,6 +20,13 @@ import {
   RequirementsCoverageEvaluator,
   TestCoverageEvaluator,
 } from "../evaluators/scoring";
+import {
+  createEvalTrace,
+  endPhaseSpan,
+  recordScores,
+  setActiveTrace,
+  startPhaseSpan,
+} from "../telemetry";
 import type {
   EvaluationContext,
   EvaluationInput,
@@ -30,6 +40,7 @@ import {
   GATE_PENALTY_PER_PERCENT,
   PHASE_WEIGHTS,
   createEmptyPhaseResult,
+  createIssue,
   generateExplanation,
   scoreToGrade,
 } from "../types";
@@ -83,6 +94,7 @@ export class EvaluationPipeline {
     const startTime = performance.now();
     this.log("Building evaluation context...");
     this.context = await buildContext(input.inputPath);
+    this.context.options = input.options;
 
     this.log(`Found ${this.context.files.typescript.length} TypeScript files`);
     this.log(`  - Controllers: ${this.context.files.controllers.length}`);
@@ -91,8 +103,21 @@ export class EvaluationPipeline {
     this.log(`  - Tests: ${this.context.files.tests.length}`);
     this.log(`  - Prisma: ${this.context.files.prismaSchemas.length}`);
 
+    // Langfuse trace (null if not configured)
+    const trace = createEvalTrace({
+      model: path.basename(path.dirname(input.inputPath)),
+      project: input.options?.project || path.basename(input.inputPath),
+      inputPath: input.inputPath,
+    });
+    setActiveTrace(trace);
+
+    // ── Gate ──────────────────────────────────────────────
     this.log("\n[Gate] Running basic validation...");
-    const gateResult = await this.runGate(this.context);
+    const gateSpan = trace
+      ? startPhaseSpan(trace, "gate", { runTests: !!input.options?.runTests })
+      : null;
+    const gateResult = await this.runGate(this.context, input);
+    if (gateSpan) endPhaseSpan(gateSpan, gateResult);
 
     if (!gateResult.passed && !input.options?.continueOnGateFailure) {
       this.log("Gate failed, stopping evaluation");
@@ -100,18 +125,28 @@ export class EvaluationPipeline {
         phaseStrategies.map((s) => [s.key, createEmptyPhaseResult(s.key)]),
       ) as Record<PhaseKey, PhaseResult>;
 
-      return this.buildResult(
+      const result = this.buildResult(
         input,
         this.context,
         { gate: gateResult, ...emptyPhases },
         this.createEmptyReference(),
         startTime,
       );
+      if (trace) recordScores(trace, result);
+      return result;
     }
 
+    // ── Scoring phases ───────────────────────────────────
     this.log("\n[Scoring] Running evaluation phases...");
     const phaseResults = await Promise.all(
-      phaseStrategies.map((strategy) => this.runPhase(this.context!, strategy)),
+      phaseStrategies.map(async (strategy) => {
+        const span = trace
+          ? startPhaseSpan(trace, strategy.key, { label: strategy.label })
+          : null;
+        const result = await this.runPhase(this.context!, strategy);
+        if (span) endPhaseSpan(span, result);
+        return result;
+      }),
     );
 
     const phases = {
@@ -119,29 +154,70 @@ export class EvaluationPipeline {
       ...Object.fromEntries(
         phaseStrategies.map((s, i) => [s.key, phaseResults[i]]),
       ),
-    } as { gate: PhaseResult } & Record<PhaseKey, PhaseResult>;
+    } as { gate: PhaseResult; goldenSet?: PhaseResult } & Record<
+      PhaseKey,
+      PhaseResult
+    >;
 
+    // ── Golden Set ───────────────────────────────────────
+    if (input.options?.golden && input.options?.project) {
+      const goldenResult = this.context.goldenResult;
+      if (goldenResult) {
+        phases.goldenSet = goldenResult;
+        if (trace) {
+          const goldenSpan = startPhaseSpan(trace, "goldenSet", {
+            project: input.options.project,
+          });
+          endPhaseSpan(goldenSpan, goldenResult);
+        }
+      } else if (trace) {
+        const goldenSpan = startPhaseSpan(trace, "goldenSet", {
+          project: input.options.project,
+        });
+        goldenSpan.end({ output: { skipped: true } });
+      }
+    }
+
+    // ── Reference info ───────────────────────────────────
     this.log("\n[Reference] Collecting code quality metrics...");
     const reference = await this.collectReferenceInfo(this.context);
 
-    return this.buildResult(input, this.context, phases, reference, startTime);
+    const result = this.buildResult(
+      input,
+      this.context,
+      phases,
+      reference,
+      startTime,
+    );
+
+    // Record all scores on trace
+    if (trace) recordScores(trace, result);
+
+    return result;
   }
 
-  private async runGate(context: EvaluationContext): Promise<PhaseResult> {
+  private async runGate(
+    context: EvaluationContext,
+    input: EvaluationInput,
+  ): Promise<PhaseResult> {
     const issues: Issue[] = [];
     const startTime = performance.now();
 
     if (context.files.typescript.length === 0) {
-      return {
-        phase: "gate",
-        passed: true,
-        score: 100,
-        maxScore: 100,
-        weightedScore: 100,
-        issues: [],
-        durationMs: Math.round(performance.now() - startTime),
-        metrics: { skipped: true, reason: "No TypeScript files found" },
-      };
+      return this.createGateFailure(
+        [
+          createIssue({
+            code: "GATE001",
+            severity: "critical",
+            category: "syntax",
+            message:
+              "No TypeScript files found in src/ — pipeline may not have generated code",
+          }),
+        ],
+        "no-source",
+        startTime,
+        { reason: "No TypeScript files found" },
+      );
     }
 
     // Syntax check
@@ -205,6 +281,23 @@ export class EvaluationPipeline {
     this.log("  - Validating Prisma schema...");
     const prismaResult = await new PrismaEvaluator().evaluate(context);
     issues.push(...prismaResult.issues);
+
+    // Runtime check
+    this.log("  - Starting server and running e2e tests...");
+    if (input.options?.runTests) {
+      const runtimeResult = await new RuntimeEvaluator().evaluate(context);
+      issues.push(...runtimeResult.issues);
+
+      if (runtimeResult.metrics?.skipped) {
+        this.log("  - Runtime skipped (docker-compose.yml not found)");
+      }
+
+      if (!runtimeResult.passed) {
+        return this.createGateFailure(issues, "runtime", startTime, {
+          serverStarted: false,
+        });
+      }
+    }
 
     // Final gate score combines syntax + type penalties
     const typePenalty = Math.min(

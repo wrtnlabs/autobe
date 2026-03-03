@@ -11,6 +11,7 @@ import {
 } from "./agents";
 import { EvaluationPipeline } from "./core/pipeline";
 import { generateJsonReport, generateMarkdownReport } from "./reporters";
+import { flushLangfuse } from "./telemetry";
 import type {
   EvaluationContext,
   EvaluationInput,
@@ -33,6 +34,9 @@ export interface CLIOptions {
   provider?: LLMProvider;
   apiKey?: string;
   autoFix?: boolean;
+  runTests?: boolean;
+  golden?: boolean;
+  project?: string;
 }
 
 export function createProgram(): Command {
@@ -58,6 +62,12 @@ export function createProgram(): Command {
     )
     .option("--api-key <key>", "API key for LLM provider")
     .option("--auto-fix", "Auto-fix simple issues after evaluation", false)
+    .option("--run-tests", "Start Docker server and run e2e tests", false)
+    .option("--golden", "Run Golden Set evaluation", false)
+    .option(
+      "--project <project>",
+      "Project type for Golden Set (todo|bbs|reddit|shopping)",
+    )
     .action(async (options) => {
       await runCLI(options);
     });
@@ -133,6 +143,9 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     outputPath,
     options: {
       continueOnGateFailure: options.continueOnGateFailure,
+      runTests: options.runTests,
+      golden: options.golden,
+      project: options.project,
     },
   };
 
@@ -243,18 +256,15 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     adjustedScore = Math.round(phasesPortion + agentPortion);
 
     // Cap score if agents found too many critical issues
-    const totalAgentCritical = agentResults.reduce(
+    const _totalAgentCritical = agentResults.reduce(
       (sum, r) =>
         sum +
         r.issues.filter((i: { severity: string }) => i.severity === "critical")
           .length,
       0,
     );
-    if (totalAgentCritical >= 20) adjustedScore = Math.min(adjustedScore, 60);
-    else if (totalAgentCritical >= 10)
-      adjustedScore = Math.min(adjustedScore, 70);
-    else if (totalAgentCritical >= 5)
-      adjustedScore = Math.min(adjustedScore, 80);
+    // No hard cap — let weighted average reflect real quality
+    if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 60);
   }
 
   const fullResult = {
@@ -295,6 +305,9 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   p.log.success("Reports generated:");
   p.log.info(`  • ${mdPath}`);
   p.log.info(`  • ${jsonPath}`);
+
+  // Flush Langfuse telemetry before exit
+  await flushLangfuse();
 
   p.outro(
     `Final Score: ${fullResult.totalScore}/100 (Grade: ${fullResult.grade})`,

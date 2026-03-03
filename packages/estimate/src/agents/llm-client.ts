@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 
+import { getActiveTrace } from "../telemetry";
 import { AgentConfig, DEFAULT_MODEL } from "./types";
 
 /** LLM API response */
@@ -32,22 +33,40 @@ export class LLMClient {
   }
 
   async chat(systemPrompt: string, userPrompt: string): Promise<LLMResponse> {
+    const trace = getActiveTrace();
+    const generation = trace?.generation({
+      name: "llm-chat",
+      model: this.model,
+      input: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      modelParameters: { temperature: 0, maxTokens: this.maxTokens },
+    });
+
     const response = await this.client.chat.completions.create({
       model: this.model,
       max_tokens: this.maxTokens,
       temperature: 0,
+      seed: 42,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
     });
 
+    const content = response.choices[0]?.message?.content || "";
+    const inputTokens = response.usage?.prompt_tokens || 0;
+    const outputTokens = response.usage?.completion_tokens || 0;
+
+    generation?.end({
+      output: content,
+      usage: { input: inputTokens, output: outputTokens },
+    });
+
     return {
-      content: response.choices[0]?.message?.content || "",
-      tokensUsed: {
-        input: response.usage?.prompt_tokens || 0,
-        output: response.usage?.completion_tokens || 0,
-      },
+      content,
+      tokensUsed: { input: inputTokens, output: outputTokens },
     };
   }
 

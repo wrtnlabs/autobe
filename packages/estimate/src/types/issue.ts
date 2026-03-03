@@ -28,7 +28,8 @@ export type IssueCategory =
   // New scoring categories
   | "documentation"
   | "api"
-  | "completeness";
+  | "completeness"
+  | "runtime";
 
 /** Source location */
 export interface SourceLocation {

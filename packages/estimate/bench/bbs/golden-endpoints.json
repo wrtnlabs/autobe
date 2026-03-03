@@ -1,0 +1,31 @@
+{
+  "project": "bbs",
+  "endpoints": [
+    { "method": "POST", "path": "/auth/join", "description": "Sign up" },
+    { "method": "POST", "path": "/auth/login", "description": "Login" },
+    { "method": "DELETE", "path": "/auth/leave", "description": "Delete account" },
+    { "method": "PATCH", "path": "/users/password", "description": "Change password" },
+    { "method": "GET", "path": "/users/:id/profile", "description": "Get user profile" },
+    { "method": "PATCH", "path": "/users/profile", "description": "Update profile" },
+    { "method": "GET", "path": "/sections", "description": "List sections" },
+    { "method": "POST", "path": "/sections", "description": "Create section (admin)" },
+    { "method": "PATCH", "path": "/sections/:id", "description": "Edit section (admin)" },
+    { "method": "DELETE", "path": "/sections/:id", "description": "Delete section (admin)" },
+    { "method": "GET", "path": "/sections/:id/articles", "description": "List articles in section" },
+    { "method": "POST", "path": "/articles", "description": "Create article" },
+    { "method": "GET", "path": "/articles/:id", "description": "Get article detail" },
+    { "method": "PATCH", "path": "/articles/:id", "description": "Edit article" },
+    { "method": "DELETE", "path": "/articles/:id", "description": "Delete article" },
+    { "method": "GET", "path": "/articles/search", "description": "Search articles" },
+    { "method": "POST", "path": "/articles/:id/comments", "description": "Write comment" },
+    { "method": "PATCH", "path": "/articles/:id/comments/:commentId", "description": "Edit comment" },
+    { "method": "DELETE", "path": "/articles/:id/comments/:commentId", "description": "Delete comment" },
+    { "method": "POST", "path": "/admin/requests", "description": "Submit admin request" },
+    { "method": "GET", "path": "/admin/requests", "description": "List admin requests (super admin)" },
+    { "method": "PATCH", "path": "/admin/requests/:id", "description": "Approve/reject request" },
+    { "method": "PATCH", "path": "/admin/users/:id/grade", "description": "Promote/demote admin" },
+    { "method": "POST", "path": "/admin/users/:id/ban", "description": "Ban user" },
+    { "method": "DELETE", "path": "/admin/users/:id/ban", "description": "Unban user" },
+    { "method": "GET", "path": "/admin/users/banned", "description": "List banned users" }
+  ]
+}

@@ -342,6 +342,13 @@ export class TypeEvaluator extends GateEvaluator {
       "  export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };",
       "  export type InputJsonValue = string | number | boolean | null | InputJsonValue[] | { [key: string]: InputJsonValue };",
       "",
+      "  // Value exports for runtime usage",
+      "  export const QueryMode: { default: string; insensitive: string };",
+      "  export const SortOrder: { asc: string; desc: string };",
+      "  export class PrismaClientKnownRequestError extends Error { code: string; meta?: Record<string, unknown>; }",
+      "  export class PrismaClientUnknownRequestError extends Error {}",
+      "  export class PrismaClientValidationError extends Error {}",
+      "",
     );
 
     // Per-model utility types
