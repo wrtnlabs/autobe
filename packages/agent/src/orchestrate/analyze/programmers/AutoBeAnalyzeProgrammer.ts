@@ -96,22 +96,24 @@ export namespace AutoBeAnalyzeProgrammer {
     unitEvents: AutoBeAnalyzeWriteUnitEvent[],
     sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
   ): AutoBeAnalyzeModule => {
-    const modules: AutoBeAnalyzeModule.IModule[] = [];
+    const firstModuleSection = moduleEvent.moduleSections[0];
+    if (!firstModuleSection) {
+      return { title: "", purpose: "", content: "", units: [] };
+    }
+
+    // Collect all units across all module sections into a single module
+    const allUnits: AutoBeAnalyzeUnit[] = [];
 
     for (
       let moduleIndex: number = 0;
       moduleIndex < moduleEvent.moduleSections.length;
       moduleIndex++
     ) {
-      const moduleSection: AutoBeAnalyzeWriteModuleEvent.IModuleSection =
-        moduleEvent.moduleSections[moduleIndex]!;
       const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
         unitEvents[moduleIndex];
       const sectionEventsForModule:
         | AutoBeAnalyzeWriteSectionEvent[]
         | undefined = sectionResults[moduleIndex];
-
-      const units: AutoBeAnalyzeUnit[] = [];
 
       if (unitEvent) {
         for (
@@ -130,7 +132,7 @@ export namespace AutoBeAnalyzeProgrammer {
               content: s.content,
             })) ?? [];
 
-          units.push({
+          allUnits.push({
             title: unitSection.title,
             purpose: unitSection.purpose,
             content: unitSection.content,
@@ -139,19 +141,13 @@ export namespace AutoBeAnalyzeProgrammer {
           });
         }
       }
-
-      modules.push({
-        title: moduleSection.title,
-        purpose: moduleSection.purpose,
-        content: moduleSection.content,
-        units,
-      });
     }
 
     return {
-      title: moduleEvent.title,
-      summary: moduleEvent.summary,
-      modules,
+      title: firstModuleSection.title,
+      purpose: firstModuleSection.purpose,
+      content: firstModuleSection.content,
+      units: allUnits,
     };
   };
 }

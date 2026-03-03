@@ -201,6 +201,8 @@ export const orchestrateAnalyze = async (
   // === ASSEMBLE ===
   const files: AutoBeAnalyzeFile[] = fileStates.map((state) => ({
     ...state.file,
+    title: state.moduleResult!.title,
+    summary: state.moduleResult!.summary,
     content: AutoBeAnalyzeProgrammer.assembleContent(
       state.moduleResult!,
       state.unitResults!,
@@ -211,6 +213,7 @@ export const orchestrateAnalyze = async (
       state.unitResults!,
       state.sectionResults!,
     ),
+    document: null,
   }));
 
   // Complete the analysis

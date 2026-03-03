@@ -16,8 +16,13 @@ import { AutoBeAnalyzeUnit } from "./AutoBeAnalyzeUnit";
  * The structure mirrors the three-level hierarchy used during generation:
  * Module (#) → Unit (##) → Section (###)
  *
+ * **Note on structure**: This interface was originally a document-level wrapper
+ * holding `title`, `summary`, and a `modules[]` array. It has since been
+ * simplified to represent a single module directly, with `title`, `purpose`,
+ * `content`, and `units[]`. The document-level metadata (`title`, `summary`)
+ * now lives in {@link AutoBeAnalyzeFile} instead.
+ *
  * @author Juntak
- * @todo 바뀐 구조에 대한 설명
  */
 export interface AutoBeAnalyzeModule {
   /** Title of the module (# level heading). */

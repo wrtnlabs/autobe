@@ -55,7 +55,12 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * while this `module` property provides programmatic access to the
    * structure.
    *
-   * @todo 바뀐 구조에 대한 설명
+   * **Note on structure**: `AutoBeAnalyzeModule` previously served as a
+   * document-level wrapper (with its own `title`, `summary`, and a nested
+   * `modules` array). It was restructured so that document metadata (`title`,
+   * `summary`) lives directly on `AutoBeAnalyzeFile`, while
+   * `AutoBeAnalyzeModule` now represents a single module containing `title`,
+   * `purpose`, `content`, and `units`.
    */
   module: AutoBeAnalyzeModule;
 
@@ -70,7 +75,11 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * `content` and `module` are kept for backward compatibility; new downstream
    * consumers should use this `document` field directly.
    *
-   * @todo 언제 document가 없는지 대강 설명
+   * This field is `null` when the Two-Layer extraction pipeline has not been
+   * executed for this file. Currently, the analyze orchestrator only populates
+   * `content` and `module`; the Two-Layer structure (Evidence + Semantic) is
+   * produced by a separate downstream step. Files created before this feature
+   * was introduced will also have `document` set to `null`.
    */
   document: AutoBeAnalyzeDocument | null;
 }
