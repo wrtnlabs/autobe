@@ -307,9 +307,42 @@ with error code `TODO_TITLE_REQUIRED`.
 
 IF `dueDate` < `startDate`, THEN THE system SHALL return HTTP 400
 with error code `TODO_DUE_DATE_BEFORE_START`.
+
+**Request Example**
+```json
+{
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread",
+  "startDate": "2025-01-15T09:00:00Z",
+  "dueDate": "2025-01-15T18:00:00Z"
+}
 ```
 
-**KEY PATTERNS**: Start directly with EARS requirement, bullet lists for field specs, HTTP status + error code for every error. Target 300-600 words per section — include error paths, edge cases, and concurrent operation scenarios.
+**Success Response Example (HTTP 201)**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "title": "Buy groceries",
+  "description": "Milk, eggs, bread",
+  "completed": false,
+  "startDate": "2025-01-15T09:00:00Z",
+  "dueDate": "2025-01-15T18:00:00Z",
+  "createdAt": "2025-01-15T08:30:00Z",
+  "updatedAt": "2025-01-15T08:30:00Z",
+  "deletedAt": null
+}
+```
+
+**Error Response Example (HTTP 400)**
+```json
+{
+  "code": "TODO_TITLE_REQUIRED",
+  "message": "Title must not be empty or whitespace."
+}
+```
+```
+
+**KEY PATTERNS**: Start directly with EARS requirement, bullet lists for field specs, HTTP status + error code for every error, JSON request/response examples for every endpoint. Target 300-600 words per section — include error paths, edge cases, and concurrent operation scenarios.
 
 ## Response Structure Rules
 
@@ -332,6 +365,71 @@ THE system SHALL return all paginated list responses in the following structure:
 ```
 
 **Self-Test**: "Does every endpoint in 03 specify what the response body looks like?" NO → Add field list.
+
+## JSON Example Requirements (03-functional-requirements, 04-business-rules)
+
+Every API endpoint in **03-functional-requirements** MUST include concrete JSON examples for request and response bodies. JSON examples eliminate developer interpretation differences and serve as executable contract documentation.
+
+### Rules:
+
+1. **Each endpoint** in 03-functional-requirements MUST include at minimum:
+   - One **Request Body Example** (for POST/PATCH/PUT endpoints)
+   - One **Success Response Example** with realistic field values
+   - One **Error Response Example** showing the standard error envelope
+
+2. **04-business-rules** MUST include JSON examples for:
+   - The **error response envelope** structure
+   - The **pagination response wrapper** structure
+
+3. JSON examples MUST use realistic placeholder values (not "string" or "value"):
+   - Use `"user@example.com"` not `"<email>"`
+   - Use `"550e8400-e29b-41d4-a716-446655440000"` or `"uuid-..."` for IDs
+   - Use `"2025-01-15T09:30:00Z"` for timestamps
+   - Use `"My First Todo"` for titles
+
+4. JSON examples MUST NOT duplicate the field-type table — they complement it.
+
+### Format (FOLLOW THIS EXACTLY):
+
+````
+**Request Example**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass1",
+  "displayName": "Jane Doe"
+}
+```
+
+**Success Response Example — HTTP 201**
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "user@example.com",
+  "displayName": "Jane Doe",
+  "createdAt": "2025-01-15T09:30:00Z"
+}
+```
+
+**Error Response Example — HTTP 409**
+
+```json
+{
+  "code": "USER_EMAIL_ALREADY_EXISTS",
+  "message": "An account with this email address already exists."
+}
+```
+````
+
+### Scope Restrictions:
+
+- **03-functional-requirements**: JSON examples for every endpoint (request + success + error)
+- **04-business-rules**: JSON examples for error envelope and pagination wrapper only
+- **00-toc, 01-actors-and-auth, 02-domain-model, 05-non-functional**: NO JSON examples
+
+**Self-Test**: "Does this endpoint section in 03 have at least one request JSON and one response JSON example?" NO → Add them.
 
 ## Privacy-First HTTP Status Code Rule
 
@@ -495,6 +593,8 @@ THE system SHALL enforce the following state transitions for Article:
 
 ## 3. Mermaid Diagram Rules
 
+### Flowchart (State Transitions, Decision Flows)
+
 Labels must use double quotes (`A["User Login"]`), no spaces between brackets/quotes, arrow syntax `-->`, LR orientation.
 
 ```mermaid
@@ -504,6 +604,46 @@ flowchart LR
     C -->|"Yes"| D["Process"]
     C -->|"No"| E["Show Error"]
 ```
+
+### Sequence Diagram (Multi-Step Interactions)
+
+Use `sequenceDiagram` for any flow involving **3 or more sequential steps** between actors/systems.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    participant DB as Database
+
+    C->>+S: POST /auth/register
+    S->>S: Validate input
+    S->>+DB: Check email uniqueness
+    DB-->>-S: Result
+    alt Email exists
+        S-->>C: 409 USER_EMAIL_ALREADY_EXISTS
+    else Email available
+        S->>+DB: Create user (unverified)
+        DB-->>-S: User created
+        S->>S: Generate verification token
+        S-->>-C: 201 Created
+    end
+```
+
+### When to Use Which Diagram
+
+| Diagram Type | Use When | Applicable Files |
+|-------------|----------|-----------------|
+| `flowchart LR` | State transitions, decision trees, validation flows | 02-domain-model, 04-business-rules |
+| `sequenceDiagram` | Multi-step API flows, auth flows, cascade operations | 01-actors-and-auth, 03-functional-requirements |
+
+### File-Specific Guidance
+
+- **01-actors-and-auth**: MUST include sequence diagrams for authentication flows (registration → verification → login → token refresh → logout)
+- **03-functional-requirements**: MUST include sequence diagrams for multi-step API operations (e.g., cascade delete, soft-delete → restore → permanent-delete, batch operations)
+- **02-domain-model**: Use flowcharts for entity state transitions
+- **04-business-rules**: Use flowcharts for validation decision trees
+
+**Self-Test**: "Does this section describe 3+ sequential steps between actors/systems?" → YES → include a `sequenceDiagram`
 
 ## 4. Section Content Guidelines
 
