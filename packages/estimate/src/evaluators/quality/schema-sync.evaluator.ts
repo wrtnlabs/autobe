@@ -9,8 +9,8 @@ import { BaseEvaluator } from "../base";
  * Detects empty interfaces/types in structure (DTO) files.
  *
  * Empty structures like `export type IJoin = {}` indicate that the
- * OpenAPI-to-TypeScript pipeline failed to populate interface properties.
- * This causes downstream TS2353 errors when code tries to use those types.
+ * OpenAPI-to-TypeScript pipeline failed to populate interface properties. This
+ * causes downstream TS2353 errors when code tries to use those types.
  */
 export class SchemaSyncEvaluator extends BaseEvaluator {
   readonly name = "SchemaSyncEvaluator";

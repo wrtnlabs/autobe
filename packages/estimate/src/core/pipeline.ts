@@ -407,10 +407,8 @@ export class EvaluationPipeline {
         issues: resultMap.security.issues,
       },
       schemaSync: {
-        totalTypes:
-          (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
-        emptyTypes:
-          (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
+        totalTypes: (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
+        emptyTypes: (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
         issues: resultMap.schemaSync.issues,
       },
     };
