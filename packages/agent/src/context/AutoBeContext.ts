@@ -97,6 +97,7 @@ export namespace AutoBeContext {
     enforceFunctionCall: boolean;
     userMessage: string;
     promptCacheKey?: string;
+    retry?: number;
   }
   export interface IResult {
     histories: MicroAgenticaHistory[];

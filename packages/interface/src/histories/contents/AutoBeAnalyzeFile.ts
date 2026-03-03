@@ -58,15 +58,19 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * - **Evidence Layer** (`sections`): flat mirror of `module` hierarchy with
    *   `sectionId`s for traceability.
    * - **Semantic Layer** (`srs`): SRS categories extracted from this file's
-   *   content. Each file holds only the categories relevant to it (e.g.,
-   *   `00-toc.md` → `introduction` + `systemOverview`, `02-domain-model.md` →
-   *   `domainModel` + `dataDictionary`). Every traceable item references back
-   *   to the Evidence Layer via `sourceSectionIds`.
-   * - **Validation**: structural completeness checks.
+   *   content via LLM. Every traceable item references back to the Evidence
+   *   Layer via `sourceSectionIds`.
+   *
+   * `null` when:
+   *
+   * - The file is a TOC (`00-toc.md`) — no substantive requirements to extract.
+   * - LLM-based SRS extraction failed after
+   *   {@link AutoBeConfigConstant.DOCUMENT_RETRY} attempts — the pipeline
+   *   continues without blocking.
    *
    * New downstream consumers should prefer this field over `content`/`module`.
    */
-  document: AutoBeAnalyzeDocument;
+  document: AutoBeAnalyzeDocument | null;
 }
 export namespace AutoBeAnalyzeFile {
   export interface Scenario {

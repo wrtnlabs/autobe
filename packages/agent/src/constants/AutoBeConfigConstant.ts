@@ -84,6 +84,14 @@ export const enum AutoBeConfigConstant {
    * beyond 3 rarely improve success rates but notably increase latency and
    * resource usage.
    */
+  /**
+   * Retry attempts for Two-Layer document extraction (Evidence + Semantic
+   * Layer). Lower than the general validation retry because document extraction
+   * is optional — a failed extraction simply sets `document: null` on the file
+   * rather than blocking the pipeline.
+   */
+  DOCUMENT_RETRY = 2,
+
   FUNCTION_CALLING_RETRY = 3,
 
   /**
