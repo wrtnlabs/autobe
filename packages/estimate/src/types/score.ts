@@ -131,6 +131,11 @@ export interface ReferenceInfo {
     totalIssues: number;
     issues: Issue[];
   };
+  schemaSync: {
+    totalTypes: number;
+    emptyTypes: number;
+    issues: Issue[];
+  };
 }
 
 /** Final evaluation result */
@@ -174,6 +179,7 @@ export interface EvaluationResult {
     warning?: { amount: number; ratio: string };
     duplication?: { amount: number; blocks: number };
     jsdoc?: { amount: number; missing: number; ratio: string };
+    schemaSync?: { amount: number; emptyTypes: number };
   };
   agentEvaluations?: AgentResult[];
 }
