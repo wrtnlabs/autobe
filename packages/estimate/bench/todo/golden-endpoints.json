@@ -1,0 +1,21 @@
+{
+  "project": "todo",
+  "endpoints": [
+    { "method": "POST", "path": "/auth/join", "description": "Sign up" },
+    { "method": "POST", "path": "/auth/login", "description": "Login" },
+    { "method": "DELETE", "path": "/auth/leave", "description": "Delete account" },
+    { "method": "GET", "path": "/users/profile", "description": "Get my profile" },
+    { "method": "PATCH", "path": "/users/profile", "description": "Update display name" },
+    { "method": "PATCH", "path": "/users/password", "description": "Change password" },
+    { "method": "GET", "path": "/users/todos", "description": "List todos (paginated, filterable, sortable)" },
+    { "method": "POST", "path": "/users/todos", "description": "Create todo" },
+    { "method": "GET", "path": "/users/todos/:id", "description": "Get todo detail" },
+    { "method": "PATCH", "path": "/users/todos/:id", "description": "Edit todo" },
+    { "method": "DELETE", "path": "/users/todos/:id", "description": "Soft delete todo" },
+    { "method": "PATCH", "path": "/users/todos/:id/complete", "description": "Toggle completion" },
+    { "method": "GET", "path": "/users/todos/:id/histories", "description": "Get edit history" },
+    { "method": "GET", "path": "/users/trash", "description": "List trash (paginated)" },
+    { "method": "PATCH", "path": "/users/trash/:id/restore", "description": "Restore from trash" },
+    { "method": "DELETE", "path": "/users/trash/:id", "description": "Permanently delete" }
+  ]
+}

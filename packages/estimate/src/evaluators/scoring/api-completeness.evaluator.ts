@@ -195,9 +195,12 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                 const delegatesToProvider =
                   /this\.\w*(provider|service|repository|usecase)/i.test(
                     bodyText,
-                  ) || /this\.\w+\.\w+\s*\(/i.test(bodyText);
+                  ) ||
+                  /this\.\w+\.\w+\s*\(/i.test(bodyText) ||
+                  /return\s+.*this\./i.test(bodyText) ||
+                  /await\s+this\./i.test(bodyText);
 
-                if (!delegatesToProvider) {
+                if (!delegatesToProvider && !hasRealLogic) {
                   noProviderEndpoints++;
                 }
               }

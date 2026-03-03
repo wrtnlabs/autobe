@@ -22,11 +22,13 @@
     "@autobe/interface": "workspace:*",
     "@autobe/utils": "workspace:*",
     "@clack/prompts": "^0.7.0",
-    "commander": "^12.0.0",
-    "typescript": "^5.3.0",
     "chalk": "^4.1.2",
+    "commander": "^12.0.0",
+    "dotenv": "^16.5.0",
     "glob": "^11.0.0",
-    "openai": "^4.0.0"
+    "langfuse": "^3.38.6",
+    "openai": "^4.0.0",
+    "typescript": "^5.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

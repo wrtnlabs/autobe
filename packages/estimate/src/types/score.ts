@@ -31,7 +31,8 @@ export type Phase =
   | "functionality"
   | "quality"
   | "safety"
-  | "llmSpecific";
+  | "llmSpecific"
+  | "goldenSet";
 
 /** New phase weights (total = 100%) */
 export const PHASE_WEIGHTS: Record<Phase, number> = {
@@ -53,6 +54,7 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   quality: 0,
   safety: 0,
   llmSpecific: 0,
+  goldenSet: 0,
 };
 
 /** Phase display names */
@@ -74,6 +76,7 @@ export const PHASE_NAMES: Record<Phase, string> = {
   quality: "Quality",
   safety: "Safety",
   llmSpecific: "LLM Specific",
+  goldenSet: "Golden Set",
 };
 
 /** Issue summary for a phase */
@@ -144,6 +147,7 @@ export interface EvaluationResult {
     testCoverage: PhaseResult;
     logicCompleteness: PhaseResult;
     apiCompleteness: PhaseResult;
+    goldenSet?: PhaseResult;
   };
 
   // Reference info (no score impact)

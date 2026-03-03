@@ -1,0 +1,50 @@
+{
+  "project": "bbs",
+  "description": "Economic/Political Discussion Board",
+  "entities": [
+    {
+      "name": "user",
+      "required_fields": ["id", "email", "password", "created_at"],
+      "optional_fields": ["deleted_at", "banned_at"]
+    },
+    {
+      "name": "user_profile",
+      "required_fields": ["id", "user_id", "display_name"],
+      "optional_fields": ["bio"]
+    },
+    {
+      "name": "section",
+      "required_fields": ["id", "name", "description"]
+    },
+    {
+      "name": "article",
+      "required_fields": ["id", "user_id", "section_id", "title", "content", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "article_tag",
+      "required_fields": ["id", "article_id", "tag"]
+    },
+    {
+      "name": "article_attachment",
+      "required_fields": ["id", "article_id", "file_url", "type"]
+    },
+    {
+      "name": "comment",
+      "required_fields": ["id", "article_id", "user_id", "content", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "admin",
+      "required_fields": ["id", "user_id", "grade", "created_at"]
+    },
+    {
+      "name": "admin_request",
+      "required_fields": ["id", "user_id", "reason", "status", "created_at"]
+    },
+    {
+      "name": "ban",
+      "required_fields": ["id", "user_id", "reason", "created_at"]
+    }
+  ]
+}

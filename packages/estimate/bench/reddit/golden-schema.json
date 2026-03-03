@@ -1,0 +1,56 @@
+{
+  "project": "reddit",
+  "description": "Reddit-like Community Platform",
+  "entities": [
+    {
+      "name": "user",
+      "required_fields": ["id", "email", "password", "username", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "user_profile",
+      "required_fields": ["id", "user_id", "display_name", "karma"],
+      "optional_fields": ["bio", "avatar_url"]
+    },
+    {
+      "name": "community",
+      "required_fields": ["id", "owner_id", "name", "description", "created_at"],
+      "optional_fields": ["icon_url"]
+    },
+    {
+      "name": "community_subscription",
+      "required_fields": ["id", "user_id", "community_id", "created_at"]
+    },
+    {
+      "name": "community_moderator",
+      "required_fields": ["id", "user_id", "community_id", "created_at"]
+    },
+    {
+      "name": "community_ban",
+      "required_fields": ["id", "user_id", "community_id", "reason", "created_at"]
+    },
+    {
+      "name": "post",
+      "required_fields": ["id", "user_id", "community_id", "title", "type", "created_at"],
+      "optional_fields": ["content", "url", "image_url", "deleted_at"]
+    },
+    {
+      "name": "post_vote",
+      "required_fields": ["id", "user_id", "post_id", "value"]
+    },
+    {
+      "name": "comment",
+      "required_fields": ["id", "user_id", "post_id", "content", "created_at"],
+      "optional_fields": ["parent_id", "deleted_at"]
+    },
+    {
+      "name": "comment_vote",
+      "required_fields": ["id", "user_id", "comment_id", "value"]
+    },
+    {
+      "name": "report",
+      "required_fields": ["id", "user_id", "reason", "status", "created_at"],
+      "optional_fields": ["post_id", "comment_id"]
+    }
+  ]
+}

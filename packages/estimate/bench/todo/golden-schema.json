@@ -1,0 +1,26 @@
+{
+  "project": "todo",
+  "description": "Multi-User Todo Application",
+  "entities": [
+    {
+      "name": "user",
+      "required_fields": ["id", "email", "password", "created_at"],
+      "optional_fields": ["deleted_at"]
+    },
+    {
+      "name": "user_profile",
+      "required_fields": ["id", "user_id", "display_name"],
+      "optional_fields": []
+    },
+    {
+      "name": "todo",
+      "required_fields": ["id", "user_id", "title", "is_completed", "is_deleted", "created_at"],
+      "optional_fields": ["description", "start_date", "due_date", "deleted_at"]
+    },
+    {
+      "name": "todo_edit_history",
+      "required_fields": ["id", "todo_id", "edited_at"],
+      "optional_fields": ["title", "description", "start_date", "due_date"]
+    }
+  ]
+}

@@ -126,9 +126,28 @@ ${phaseRows}
 }
 
 function renderDetailedResults(result: ExtendedResult): string {
-  const gateSection = result.phases.gate.passed
-    ? "✅ All basic validations passed."
-    : `❌ Gate validation failed.\n\n**Issues:**\n${result.phases.gate.issues.map((i) => `- [${i.code}] ${i.message}`).join("\n")}`;
+  const gateIssues = result.phases.gate.issues;
+  const gateCritical = gateIssues.filter((i) => i.severity === "critical");
+  const gateWarning = gateIssues.filter((i) => i.severity === "warning");
+  const gateSuggestion = gateIssues.filter((i) => i.severity === "suggestion");
+
+  let gateSection: string;
+  if (!result.phases.gate.passed) {
+    gateSection = `❌ Gate validation failed.\n\n**Issues:**\n${gateIssues.map((i) => `- [${i.code}] ${i.message}`).join("\n")}`;
+  } else if (gateIssues.length === 0) {
+    gateSection = "✅ All basic validations passed.";
+  } else {
+    gateSection = `✅ Gate passed with ${gateIssues.length} issue(s) (${gateCritical.length} critical, ${gateWarning.length} warnings, ${gateSuggestion.length} suggestions)`;
+    const gateNonSuggestions = gateIssues.filter(
+      (i) => i.severity !== "suggestion",
+    );
+    if (gateNonSuggestions.length > 0) {
+      gateSection += `\n\n${renderIssuesTable(gateNonSuggestions)}`;
+    }
+    if (gateSuggestion.length > 0) {
+      gateSection += `\n\n${renderGroupedIssues(gateSuggestion, "Gate Suggestions")}`;
+    }
+  }
 
   const phaseSections = SCORING_PHASES.map((phase) =>
     renderPhaseDetail(phase, result.phases[phase]),
@@ -379,6 +398,21 @@ function renderSummary(result: ExtendedResult): string {
     }
   }
 
+  const criticalDetail =
+    result.criticalIssues.length > 0
+      ? `\n${renderGroupedIssues(result.criticalIssues, "Critical Issues")}`
+      : "";
+
+  const warningDetail =
+    result.warnings.length > 0
+      ? `\n${renderGroupedIssues(result.warnings, "Warnings")}`
+      : "";
+
+  const suggestionDetail =
+    result.suggestions.length > 0
+      ? `\n${renderGroupedIssues(result.suggestions, "Suggestions")}`
+      : "";
+
   return `
 ## Summary
 
@@ -389,6 +423,66 @@ function renderSummary(result: ExtendedResult): string {
 | Warnings | ${result.summary.warningCount} |
 | Suggestions | ${result.summary.suggestionCount} |
 ${penaltyRows}
+${criticalDetail}
+${warningDetail}
+${suggestionDetail}
+`.trim();
+}
+
+/** Group issues by code and render as a markdown table (top N) */
+function renderGroupedIssues(
+  issues: Issue[],
+  title: string,
+  maxRows: number = 10,
+): string {
+  const grouped = new Map<
+    string,
+    { message: string; severity: string; count: number; files: string[] }
+  >();
+
+  for (const issue of issues) {
+    const existing = grouped.get(issue.code);
+    const file = issue.location
+      ? `${path.basename(issue.location.file)}:${issue.location.line || "?"}`
+      : "-";
+
+    if (existing) {
+      existing.count++;
+      if (!existing.files.includes(file) && existing.files.length < 3) {
+        existing.files.push(file);
+      }
+    } else {
+      grouped.set(issue.code, {
+        message: issue.message,
+        severity: issue.severity,
+        count: 1,
+        files: [file],
+      });
+    }
+  }
+
+  const sorted = [...grouped.entries()].sort((a, b) => b[1].count - a[1].count);
+  const display = sorted.slice(0, maxRows);
+
+  const rows = display
+    .map(([code, info]) => {
+      const severity = getSeverityEmoji(info.severity);
+      const files = info.files.join(", ");
+      return `| ${severity} | ${code} | ${info.count} | ${info.message} | ${files} |`;
+    })
+    .join("\n");
+
+  const moreRow =
+    sorted.length > maxRows
+      ? `\n| ... | ... | ... | *${sorted.length - maxRows} more issue types* | ... |`
+      : "";
+
+  return `
+### ${title} (${issues.length} total)
+
+| Severity | Code | Count | Message | Example Locations |
+|----------|------|-------|---------|-------------------|
+${rows}${moreRow}
 `.trim();
 }
 
