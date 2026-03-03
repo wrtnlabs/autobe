@@ -36,6 +36,7 @@ import type {
   ReferenceInfo,
 } from "../types";
 import {
+  createIssue,
   GATE_ERROR_THRESHOLD,
   GATE_PENALTY_PER_PERCENT,
   PHASE_WEIGHTS,
@@ -205,13 +206,13 @@ export class EvaluationPipeline {
     if (context.files.typescript.length === 0) {
       return this.createGateFailure(
         [
-          {
+          createIssue({
             code: "GATE001",
             severity: "critical",
+            category: "syntax",
             message:
               "No TypeScript files found in src/ — pipeline may not have generated code",
-            phase: "gate",
-          },
+          }),
         ],
         "no-source",
         startTime,
