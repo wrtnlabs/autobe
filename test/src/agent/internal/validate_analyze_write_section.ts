@@ -11,7 +11,6 @@ import {
 } from "@autobe/interface";
 
 import { validate_analyze_scenario } from "./validate_analyze_scenario";
-import { validate_analyze_write_module } from "./validate_analyze_write_module";
 import { validate_analyze_write_unit } from "./validate_analyze_write_unit";
 
 export const validate_analyze_write_section = async (props: {
@@ -26,12 +25,16 @@ export const validate_analyze_write_section = async (props: {
       file: "analyze.scenario.json",
     })) ?? (await validate_analyze_scenario(props));
 
-  const moduleEvent: AutoBeAnalyzeWriteModuleEvent =
-    (await AutoBeExampleStorage.load({
+  const moduleEvent: AutoBeAnalyzeWriteModuleEvent | null =
+    await AutoBeExampleStorage.load({
       vendor: props.vendor,
       project: props.project,
       file: "analyze.write_module.json",
-    })) ?? (await validate_analyze_write_module(props));
+    });
+  if (!moduleEvent)
+    throw new Error(
+      "analyze.write_module.json not found. Run the full analyze test first.",
+    );
 
   const unitEvent: AutoBeAnalyzeWriteUnitEvent =
     (await AutoBeExampleStorage.load({
