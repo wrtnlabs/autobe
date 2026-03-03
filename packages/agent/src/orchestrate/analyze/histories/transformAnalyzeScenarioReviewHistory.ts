@@ -10,6 +10,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
  * Transform histories for scenario review.
  *
  * Provides the reviewer with:
+ *
  * 1. The user's original requirements (conversation history)
  * 2. The scenario output to validate against
  */

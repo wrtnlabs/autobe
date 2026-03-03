@@ -12,47 +12,37 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * @author Juntak
  */
 export interface AutoBeAnalyzeScenarioReviewEvent
-  extends
-    AutoBeEventBase<"analyzeScenarioReview">,
-    AutoBeAggregateEventBase {
+  extends AutoBeEventBase<"analyzeScenarioReview">, AutoBeAggregateEventBase {
   /**
    * Whether the scenario passed the review.
    *
-   * If true, the scenario is accepted and downstream stages proceed.
-   * If false, the scenario must be regenerated with feedback.
+   * If true, the scenario is accepted and downstream stages proceed. If false,
+   * the scenario must be regenerated with feedback.
    */
   approved: boolean;
 
   /**
    * Detailed review feedback.
    *
-   * When rejected, contains specific issues and recommendations.
-   * When approved, may contain minor observations.
+   * When rejected, contains specific issues and recommendations. When approved,
+   * may contain minor observations.
    */
   feedback: string;
 
-  /**
-   * Structured review issues for targeted scenario regeneration.
-   */
+  /** Structured review issues for targeted scenario regeneration. */
   issues: AutoBeAnalyzeScenarioReviewEvent.IScenarioReviewIssue[];
 
-  /**
-   * Current step number in the analysis state machine.
-   */
+  /** Current step number in the analysis state machine. */
   step: number;
 
-  /**
-   * Retry attempt number (0-based).
-   */
+  /** Retry attempt number (0-based). */
   retry: number;
 }
 
 export namespace AutoBeAnalyzeScenarioReviewEvent {
   /** Structured issue identified during scenario review. */
   export interface IScenarioReviewIssue {
-    /**
-     * Issue category for programmatic handling.
-     */
+    /** Issue category for programmatic handling. */
     category:
       | "missing_entity"
       | "hallucinated_entity"

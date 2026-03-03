@@ -141,9 +141,7 @@ export const orchestrateAnalyze = async (
       break;
     }
 
-    analyzeDebug(
-      `Scenario rejected (attempt ${attempt}): ${review.feedback}`,
-    );
+    analyzeDebug(`Scenario rejected (attempt ${attempt}): ${review.feedback}`);
     scenarioFeedback = review.feedback;
   }
 

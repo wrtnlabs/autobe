@@ -14,8 +14,8 @@ import { transformAnalyzeScenarioReviewHistory } from "./histories/transformAnal
 import { IAutoBeAnalyzeScenarioReviewApplication } from "./structures/IAutoBeAnalyzeScenarioReviewApplication";
 
 /**
- * Orchestrate scenario review: validate scenario output against user's
- * original requirements.
+ * Orchestrate scenario review: validate scenario output against user's original
+ * requirements.
  *
  * Checks entity coverage, hallucination, actor classification, relationship
  * completeness, and feature identification accuracy in a single LLM call.

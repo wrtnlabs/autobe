@@ -10,8 +10,8 @@ export interface IScenarioValidationResult {
 /**
  * Validate scenario output for structural soundness before LLM review.
  *
- * Checks minimum entity count, actor completeness, relationship integrity,
- * and cross-reference consistency. Zero token cost — purely programmatic.
+ * Checks minimum entity count, actor completeness, relationship integrity, and
+ * cross-reference consistency. Zero token cost — purely programmatic.
  */
 export const validateScenarioBasics = (props: {
   prefix: string;
@@ -61,9 +61,7 @@ export const validateScenarioBasics = (props: {
   }
 
   // 6. Cross-reference: relationship targets must exist in entities list
-  const entityNames = new Set(
-    props.entities.map((e) => e.name.toLowerCase()),
-  );
+  const entityNames = new Set(props.entities.map((e) => e.name.toLowerCase()));
   for (const entity of props.entities) {
     for (const rel of entity.relationships ?? []) {
       const refNames = extractRelationshipTargets(rel);
@@ -83,6 +81,7 @@ export const validateScenarioBasics = (props: {
  * Extract entity names referenced in a relationship string.
  *
  * Handles patterns like:
+ *
  * - "belongsTo User via userId"
  * - "hasMany Todo"
  * - "manyToMany Tag through TodoTag"

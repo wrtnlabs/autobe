@@ -9,8 +9,8 @@ export interface IAutoBeAnalyzeScenarioReviewApplication {
   /**
    * Process scenario review task.
    *
-   * Reviews the scenario output and provides an approved/rejected verdict
-   * with structured feedback.
+   * Reviews the scenario output and provides an approved/rejected verdict with
+   * structured feedback.
    *
    * @param props Request containing the review result
    */
@@ -36,9 +36,7 @@ export namespace IAutoBeAnalyzeScenarioReviewApplication {
     request: IComplete;
   }
 
-  /**
-   * Request to complete the scenario review.
-   */
+  /** Request to complete the scenario review. */
   export interface IComplete {
     /** Type discriminator for the request. */
     type: "complete";
@@ -46,16 +44,16 @@ export namespace IAutoBeAnalyzeScenarioReviewApplication {
     /**
      * Whether the scenario passed review.
      *
-     * Set to true if all review criteria pass.
-     * Set to false if any criterion fails.
+     * Set to true if all review criteria pass. Set to false if any criterion
+     * fails.
      */
     approved: boolean;
 
     /**
      * Detailed review feedback.
      *
-     * When rejecting: describe each issue clearly so the scenario generator
-     * can fix them on the next attempt.
+     * When rejecting: describe each issue clearly so the scenario generator can
+     * fix them on the next attempt.
      *
      * When approving: may include minor observations.
      */
@@ -75,10 +73,14 @@ export namespace IAutoBeAnalyzeScenarioReviewApplication {
      * Issue category.
      *
      * - "missing_entity": User mentioned a concept but no entity exists for it
-     * - "hallucinated_entity": Entity exists but user never mentioned or implied it
-     * - "actor_misclassification": Actor's kind doesn't match identity boundary test
-     * - "incomplete_relationship": Entity relationships are missing or one-directional
-     * - "missing_feature": User mentioned a capability but feature is not activated
+     * - "hallucinated_entity": Entity exists but user never mentioned or implied
+     *   it
+     * - "actor_misclassification": Actor's kind doesn't match identity boundary
+     *   test
+     * - "incomplete_relationship": Entity relationships are missing or
+     *   one-directional
+     * - "missing_feature": User mentioned a capability but feature is not
+     *   activated
      * - "hallucinated_feature": Feature is activated but user never requested it
      */
     category:
