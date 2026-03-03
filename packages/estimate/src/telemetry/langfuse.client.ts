@@ -3,6 +3,7 @@ import type { LangfuseTraceClient, LangfuseSpanClient } from "langfuse";
 import type { PhaseResult, EvaluationResult } from "../types";
 
 let client: Langfuse | null = null;
+let activeTrace: LangfuseTraceClient | null = null;
 
 export function getLangfuse(): Langfuse | null {
   if (!process.env.LANGFUSE_PUBLIC_KEY || !process.env.LANGFUSE_SECRET_KEY) {
@@ -82,6 +83,18 @@ export function endPhaseSpan(
 /**
  * Record all scores on a trace: total + per-dimension.
  */
+/**
+ * Set the active trace for automatic generation tracking.
+ * LLMClient uses this to attach generations to the current trace.
+ */
+export function setActiveTrace(trace: LangfuseTraceClient | null): void {
+  activeTrace = trace;
+}
+
+export function getActiveTrace(): LangfuseTraceClient | null {
+  return activeTrace;
+}
+
 export function recordScores(
   trace: LangfuseTraceClient,
   result: EvaluationResult,

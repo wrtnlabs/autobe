@@ -25,6 +25,7 @@ import {
   startPhaseSpan,
   endPhaseSpan,
   recordScores,
+  setActiveTrace,
 } from "../telemetry";
 import type {
   EvaluationContext,
@@ -107,6 +108,7 @@ export class EvaluationPipeline {
       project: input.options?.project || path.basename(input.inputPath),
       inputPath: input.inputPath,
     });
+    setActiveTrace(trace);
 
     // ── Gate ──────────────────────────────────────────────
     this.log("\n[Gate] Running basic validation...");

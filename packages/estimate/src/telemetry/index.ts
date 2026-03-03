@@ -5,4 +5,6 @@ export {
   startPhaseSpan,
   endPhaseSpan,
   recordScores,
+  setActiveTrace,
+  getActiveTrace,
 } from "./langfuse.client";
