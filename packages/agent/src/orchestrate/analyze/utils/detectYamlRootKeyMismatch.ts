@@ -49,6 +49,7 @@ function buildExpectedRootKeys(): Map<string, string[]> {
  * Detect YAML blocks in canonical files where the root key doesn't match the
  * expected key from the template's yamlSpecs.
  *
+ * // typos: ignore-next-line
  * Catches typos like `enity:` instead of `entity:`, `error:` instead of
  * `errors:`, etc. Only checks files that have yamlSpecs defined (01, 02, 04).
  */
@@ -107,6 +108,7 @@ export const buildFileYamlRootKeyMismatchMap = (
     const feedback =
       `YAML root key mismatch in "${m.sectionTitle}": ` +
       `expected root key "${m.expectedRootKey}" but found [${m.actualKeys.join(", ")}]. ` +
+      // typos: ignore-next-line
       `Check for typos (e.g., "enity" instead of "entity"). ` +
       `Fix the YAML root key to match the expected format.`;
 
