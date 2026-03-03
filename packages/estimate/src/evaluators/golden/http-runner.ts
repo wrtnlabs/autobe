@@ -14,19 +14,35 @@ export class HttpRunner {
     this.baseUrl = `http://localhost:${port}`;
   }
 
-  setToken(token: string) { this.token = token; }
-  clearToken() { this.token = null; }
+  setToken(token: string) {
+    this.token = token;
+  }
+  clearToken() {
+    this.token = null;
+  }
 
-  async post(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
+  async post(
+    url: string,
+    body?: unknown,
+    useToken = false,
+  ): Promise<HttpResponse> {
     return this.request("POST", url, body, useToken);
   }
   async get(url: string, useToken = false): Promise<HttpResponse> {
     return this.request("GET", url, undefined, useToken);
   }
-  async patch(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
+  async patch(
+    url: string,
+    body?: unknown,
+    useToken = false,
+  ): Promise<HttpResponse> {
     return this.request("PATCH", url, body, useToken);
   }
-  async put(url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
+  async put(
+    url: string,
+    body?: unknown,
+    useToken = false,
+  ): Promise<HttpResponse> {
     return this.request("PUT", url, body, useToken);
   }
   async delete(url: string, useToken = false): Promise<HttpResponse> {
@@ -41,9 +57,17 @@ export class HttpRunner {
     return url;
   }
 
-  private async request(method: string, url: string, body?: unknown, useToken = false): Promise<HttpResponse> {
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (useToken && this.token) headers["Authorization"] = `Bearer ${this.token}`;
+  private async request(
+    method: string,
+    url: string,
+    body?: unknown,
+    useToken = false,
+  ): Promise<HttpResponse> {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (useToken && this.token)
+      headers["Authorization"] = `Bearer ${this.token}`;
     try {
       const res = await fetch(`${this.baseUrl}${url}`, {
         method,
@@ -52,8 +76,16 @@ export class HttpRunner {
       });
       let responseBody: any = null;
       const text = await res.text();
-      try { responseBody = JSON.parse(text); } catch { responseBody = text; }
-      return { status: res.status, body: responseBody, ok: res.status >= 200 && res.status < 300 };
+      try {
+        responseBody = JSON.parse(text);
+      } catch {
+        responseBody = text;
+      }
+      return {
+        status: res.status,
+        body: responseBody,
+        ok: res.status >= 200 && res.status < 300,
+      };
     } catch {
       return { status: 0, body: null, ok: false };
     }

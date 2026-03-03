@@ -64,7 +64,10 @@ export function createProgram(): Command {
     .option("--auto-fix", "Auto-fix simple issues after evaluation", false)
     .option("--run-tests", "Start Docker server and run e2e tests", false)
     .option("--golden", "Run Golden Set evaluation", false)
-    .option("--project <project>", "Project type for Golden Set (todo|bbs|reddit|shopping)")
+    .option(
+      "--project <project>",
+      "Project type for Golden Set (todo|bbs|reddit|shopping)",
+    )
     .action(async (options) => {
       await runCLI(options);
     });

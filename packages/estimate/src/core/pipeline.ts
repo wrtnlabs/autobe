@@ -22,10 +22,10 @@ import {
 } from "../evaluators/scoring";
 import {
   createEvalTrace,
-  startPhaseSpan,
   endPhaseSpan,
   recordScores,
   setActiveTrace,
+  startPhaseSpan,
 } from "../telemetry";
 import type {
   EvaluationContext,
@@ -153,7 +153,10 @@ export class EvaluationPipeline {
       ...Object.fromEntries(
         phaseStrategies.map((s, i) => [s.key, phaseResults[i]]),
       ),
-    } as { gate: PhaseResult; goldenSet?: PhaseResult } & Record<PhaseKey, PhaseResult>;
+    } as { gate: PhaseResult; goldenSet?: PhaseResult } & Record<
+      PhaseKey,
+      PhaseResult
+    >;
 
     // ── Golden Set ───────────────────────────────────────
     if (input.options?.golden && input.options?.project) {

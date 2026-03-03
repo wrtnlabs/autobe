@@ -1,6 +1,7 @@
 import { Langfuse } from "langfuse";
-import type { LangfuseTraceClient, LangfuseSpanClient } from "langfuse";
-import type { PhaseResult, EvaluationResult } from "../types";
+import type { LangfuseSpanClient, LangfuseTraceClient } from "langfuse";
+
+import type { EvaluationResult, PhaseResult } from "../types";
 
 let client: Langfuse | null = null;
 let activeTrace: LangfuseTraceClient | null = null;
@@ -26,8 +27,8 @@ export async function flushLangfuse(): Promise<void> {
 }
 
 /**
- * Create a trace for one evaluation run.
- * Returns null if Langfuse is not configured.
+ * Create a trace for one evaluation run. Returns null if Langfuse is not
+ * configured.
  */
 export function createEvalTrace(meta: {
   model: string;
@@ -48,9 +49,7 @@ export function createEvalTrace(meta: {
   });
 }
 
-/**
- * Create a span for one evaluation phase (gate, scoring, golden set, etc.)
- */
+/** Create a span for one evaluation phase (gate, scoring, golden set, etc.) */
 export function startPhaseSpan(
   trace: LangfuseTraceClient,
   phaseName: string,
@@ -62,9 +61,7 @@ export function startPhaseSpan(
   });
 }
 
-/**
- * End a phase span with its result.
- */
+/** End a phase span with its result. */
 export function endPhaseSpan(
   span: LangfuseSpanClient,
   result: PhaseResult,
@@ -80,12 +77,10 @@ export function endPhaseSpan(
   });
 }
 
+/** Record all scores on a trace: total + per-dimension. */
 /**
- * Record all scores on a trace: total + per-dimension.
- */
-/**
- * Set the active trace for automatic generation tracking.
- * LLMClient uses this to attach generations to the current trace.
+ * Set the active trace for automatic generation tracking. LLMClient uses this
+ * to attach generations to the current trace.
  */
 export function setActiveTrace(trace: LangfuseTraceClient | null): void {
   activeTrace = trace;

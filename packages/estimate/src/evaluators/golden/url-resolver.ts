@@ -26,7 +26,8 @@ export function buildRouteMap(rootPath: string): RouteInfo[] {
     if (!controllerMatch) continue;
 
     const basePath = controllerMatch[1];
-    const routeRegex = /@TypedRoute\.(Get|Post|Patch|Put|Delete)\((?:"([^"]*)")?\)/g;
+    const routeRegex =
+      /@TypedRoute\.(Get|Post|Patch|Put|Delete)\((?:"([^"]*)")?\)/g;
     let match;
 
     while ((match = routeRegex.exec(content)) !== null) {
@@ -52,8 +53,14 @@ export function findEndpoint(
 
   const candidates = routes.filter((r) => {
     if (method && r.method !== method.toUpperCase()) return false;
-    if (mustContain && !r.fullPath.toLowerCase().includes(mustContain.toLowerCase())) return false;
-    return pathKeywords.some((kw) => r.fullPath.toLowerCase().includes(kw.toLowerCase()));
+    if (
+      mustContain &&
+      !r.fullPath.toLowerCase().includes(mustContain.toLowerCase())
+    )
+      return false;
+    return pathKeywords.some((kw) =>
+      r.fullPath.toLowerCase().includes(kw.toLowerCase()),
+    );
   });
 
   if (candidates.length === 0) return null;
