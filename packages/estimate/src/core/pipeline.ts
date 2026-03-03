@@ -203,16 +203,20 @@ export class EvaluationPipeline {
     const startTime = performance.now();
 
     if (context.files.typescript.length === 0) {
-      return {
-        phase: "gate",
-        passed: true,
-        score: 100,
-        maxScore: 100,
-        weightedScore: 100,
-        issues: [],
-        durationMs: Math.round(performance.now() - startTime),
-        metrics: { skipped: true, reason: "No TypeScript files found" },
-      };
+      return this.createGateFailure(
+        [
+          {
+            code: "GATE001",
+            severity: "critical",
+            message:
+              "No TypeScript files found in src/ — pipeline may not have generated code",
+            phase: "gate",
+          },
+        ],
+        "no-source",
+        startTime,
+        { reason: "No TypeScript files found" },
+      );
     }
 
     // Syntax check
