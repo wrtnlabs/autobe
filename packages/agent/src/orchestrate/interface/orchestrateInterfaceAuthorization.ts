@@ -61,8 +61,8 @@ async function process(
 ): Promise<AutoBeInterfaceAuthorizationEvent> {
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "previousAnalysisFiles"
+    | "analysisSections"
+    | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
@@ -70,8 +70,8 @@ async function process(
       typia.json.application<IAutoBeInterfaceAuthorizationApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
     ],
@@ -130,8 +130,8 @@ function createController(props: {
   prefix: string | null;
   actor: AutoBeAnalyzeActor;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "previousAnalysisFiles"
+    | "analysisSections"
+    | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;

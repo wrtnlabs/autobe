@@ -1,6 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaPropertyRevise,
@@ -14,10 +13,12 @@ import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { AutoBeDatabaseModelProgrammer } from "../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { transformInterfaceSchemaReviewHistory } from "./histories/transformInterfaceSchemaReviewHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
@@ -115,7 +116,9 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchemaDescriptive.IObject> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
 
   const schemaNames = [props.typeName];
   const opSummaries = props.reviewOperations
@@ -123,20 +126,21 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     .join("\n");
   const queryText: string = `${schemaNames.join(", ")}\n${opSummaries}\n${props.instruction}`;
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "interfaceSchemaReview" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "interfaceSchemaReview" },
+    );
 
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
@@ -144,8 +148,8 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     application: config.jsonSchema(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "databaseSchemas",
       "previousDatabaseSchemas",
       "interfaceOperations",
@@ -163,7 +167,7 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       interfaceOperations: props.reviewOperations,
       interfaceSchemas: { [props.typeName]: props.reviewSchema },
       databaseSchemas: (() => {
@@ -248,11 +252,11 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       IAutoBeInterfaceSchemaReviewApplication.IComplete<Revise> | null | false
     >;
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
       | "previousInterfaceSchemas"

@@ -1,6 +1,5 @@
 import {
   AutoBeAnalyzeActor,
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
@@ -16,9 +15,11 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { IAutoBeInterfaceEndpointWriteApplication } from "./structures/IAutoBeInterfaceEndpointWriteApplication";
 
@@ -27,9 +28,9 @@ interface IProgrammer {
   history(next: {
     group: AutoBeInterfaceGroup;
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     >;
@@ -52,7 +53,9 @@ export const orchestrateInterfaceEndpointWrite = async (
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
   const start: Date = new Date();
 
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
   const queryText: string = [
     "interface",
     "endpoint",
@@ -60,13 +63,14 @@ export const orchestrateInterfaceEndpointWrite = async (
     ...props.group.databaseSchemas,
   ].join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "interfaceEndpointWrite" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "interfaceEndpointWrite" },
+    );
 
   const databaseSchemas: Map<string, AutoBeDatabase.IModel> = new Map(
     ctx
@@ -75,25 +79,25 @@ export const orchestrateInterfaceEndpointWrite = async (
       .map((m) => [m.name, m]),
   );
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeInterfaceEndpointWriteApplication>(),
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     source: SOURCE,
     state: ctx.state(),
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       databaseSchemas: props.group.databaseSchemas
         .map((key) => databaseSchemas.get(key))
         .filter((m) => m !== undefined),
@@ -165,9 +169,9 @@ export const orchestrateInterfaceEndpointWrite = async (
 const createController = (props: {
   actors: AutoBeAnalyzeActor[];
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

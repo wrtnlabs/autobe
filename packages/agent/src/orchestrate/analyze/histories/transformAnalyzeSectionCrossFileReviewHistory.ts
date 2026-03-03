@@ -7,6 +7,7 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
+import YAML from "yaml";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../../context/AutoBeContext";
@@ -31,9 +32,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
       sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
       status: "approved" | "rewritten" | "new";
     }>;
-    constraintReport: string;
-    attributeOwnershipReport: string;
-    enumConsistencyReport: string;
+    mechanicalViolationSummary?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -89,7 +88,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
         Sections:
         ${sectionEvent.sectionSections
           .map((section) => {
-            const attrKeys = extractBridgeAttributeKeys(section.content);
+            const attrKeys = extractYamlAttributeKeys(section.content);
             return `- **${section.title}**${attrKeys ? ` [attrs: ${attrKeys}]` : ""}`;
           })
           .join("\n")}
@@ -103,26 +102,27 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
           )
           .join("\n")}
 
-        ## Constraint Consistency Report (Numeric/Limit Conflicts)
+        ${
+          props.mechanicalViolationSummary
+            ? `
+        ## Mechanical Validation Results (Already Addressed Separately)
 
-        ${props.constraintReport}
+        The following mechanical issues have been detected and will be patched separately.
+        You do NOT need to flag these — focus only on semantic/logical consistency:
 
-        ## Attribute Ownership Report (Cross-File Duplication)
+        ${props.mechanicalViolationSummary}
+        `
+            : ""
+        }
 
-        ${props.attributeOwnershipReport}
+        ## Cross-File Semantic Consistency Criteria
 
-        ## Enum Consistency Report (Cross-File Value Conflicts)
-
-        ${props.enumConsistencyReport}
-
-        ## Cross-File Consistency Criteria
-
-        Please evaluate across ALL files:
-        1. Are values and constraints consistent across all files?
+        Focus ONLY on issues requiring human-like judgment:
+        1. Are there logical contradictions between files?
         2. Is terminology aligned (same concepts = same terms)?
-        3. Are naming conventions consistent?
-        4. Is there content duplication between files?
-        5. Is structural depth proportionate across files?
+        3. Are authentication/authorization models compatible across files?
+        4. Are there features described in one file that conflict with another?
+        5. Do any files invent features not in the scenario?
       `,
       },
     ],
@@ -133,58 +133,47 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
 
 // ─── Internal helpers ───
 
-const DOWNSTREAM_CONTEXT_REGEX =
-  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
-
-const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
+const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
+const BACKTICK_ENTITY_FIELD_REGEX = /`(\w+\.\w+)`/g;
 
 /**
- * Extract Entity.attribute keys from Bridge Block content.
+ * Extract Entity.attribute keys from YAML spec blocks and backtick references.
  *
  * Returns a compact comma-separated string of attribute keys (e.g.,
- * "User.status, User.email, Todo.title") for lightweight cross-file visibility.
- * Only keys are included — not full specifications — to minimize context size.
+ * "User.status, User.email, Todo.title") for lightweight cross-file
+ * visibility.
  */
-const extractBridgeAttributeKeys = (content: string): string => {
-  const keys: string[] = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
+const extractYamlAttributeKeys = (content: string): string => {
+  const keys: Set<string> = new Set();
 
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inAttributes = false;
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Attributes Specified**")) {
-        inAttributes = true;
-        continue;
-      }
+  // Extract from YAML spec blocks
+  const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
+  for (const match of yamlMatches) {
+    const yamlContent = match[1] ?? "";
+    try {
+      const parsed = YAML.parse(yamlContent);
       if (
-        line.startsWith("**") &&
-        !line.startsWith("**Attributes Specified**")
+        parsed &&
+        typeof parsed === "object" &&
+        typeof parsed.entity === "string" &&
+        Array.isArray(parsed.attributes)
       ) {
-        inAttributes = false;
-        continue;
+        for (const attr of parsed.attributes) {
+          if (attr && typeof attr.name === "string") {
+            keys.add(`${parsed.entity}.${attr.name}`);
+          }
+        }
       }
-      if (!inAttributes || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      const colonIndex = body.indexOf(":");
-      if (colonIndex < 0) continue;
-
-      const key = body.slice(0, colonIndex).trim();
-      const value = body.slice(colonIndex + 1).trim();
-
-      // Skip cross-references and None
-      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
-      if (/^none$/i.test(value)) continue;
-      // Only Entity.attribute format
-      if (!key.includes(".")) continue;
-
-      keys.push(key);
+    } catch {
+      // skip parse errors
     }
   }
 
-  return keys.join(", ");
+  // Extract from backtick `Entity.field` references
+  const backtickMatches = content.matchAll(BACKTICK_ENTITY_FIELD_REGEX);
+  for (const match of backtickMatches) {
+    keys.add(match[1]!);
+  }
+
+  return [...keys].join(", ");
 };

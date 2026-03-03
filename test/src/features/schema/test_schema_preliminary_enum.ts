@@ -1,7 +1,7 @@
 import { AutoBeAgent } from "@autobe/agent";
 import { AutoBeState } from "@autobe/agent/src/context/AutoBeState";
 import { AutoBePreliminaryController } from "@autobe/agent/src/orchestrate/common/AutoBePreliminaryController";
-import { IAutoBePreliminaryGetAnalysisFiles } from "@autobe/agent/src/orchestrate/common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "@autobe/agent/src/orchestrate/common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "@autobe/agent/src/orchestrate/common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "@autobe/agent/src/orchestrate/common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "@autobe/agent/src/orchestrate/common/structures/IAutoBePreliminaryGetInterfaceSchemas";
@@ -44,11 +44,11 @@ export const test_schema_preliminary_enum = async () => {
       IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
     >();
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
@@ -59,11 +59,11 @@ export const test_schema_preliminary_enum = async () => {
       >(),
     source: "interfaceSchemaReview",
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
@@ -76,24 +76,26 @@ export const test_schema_preliminary_enum = async () => {
   const $defs: Record<string, ILlmSchema> = application.functions.find(
     (f) => f.name === "process",
   )!.parameters.$defs;
-  validateAnalysisFiles(state, $defs);
+  validateAnalysisSections(state, $defs);
   validateDatabaseSchemas(state, $defs);
   validateInterfaceOperations(state, $defs);
   validateInterfaceSchemas(state, $defs);
 };
 
-const validateAnalysisFiles = (
+const validateAnalysisSections = (
   state: AutoBeState,
   $defs: Record<string, ILlmSchema>,
 ): void => {
   const type: ILlmSchema.IObject = $defs[
-    typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
+    typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>()
   ] as ILlmSchema.IObject;
   TestValidator.predicate(
-    "getAnalysisFiles",
-    (state.analyze?.files ?? []).every(
-      (f) => !!type.properties?.fileNames.description?.includes(f.filename),
-    ),
+    "getAnalysisSections",
+    (state.analyze?.files ?? [])
+      .filter((f) => f.module?.modules?.length)
+      .every(
+        (f) => !!type.properties?.sectionIds.description?.includes(f.filename),
+      ),
   );
 };
 

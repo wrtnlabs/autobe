@@ -128,6 +128,18 @@ export interface AutoBeAnalyzeScenarioEvent
   files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
 
   /**
+   * High-level project features that activate conditional modules.
+   *
+   * Each feature adds specialized modules to the SRS files beyond the base REST
+   * CRUD structure. Empty array means standard REST-only.
+   */
+  features: Array<{
+    id: string;
+    providers?: string[];
+    jobs?: string[];
+  }>;
+
+  /**
    * Core domain entities identified during scenario planning.
    *
    * These entities serve as the AUTHORITATIVE entity catalog for all downstream

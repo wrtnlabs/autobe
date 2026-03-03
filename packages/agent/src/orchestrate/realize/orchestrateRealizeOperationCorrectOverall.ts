@@ -73,7 +73,7 @@ export const orchestrateRealizeOperationCorrectOverall = async (
           application:
             typia.json.application<IAutoBeRealizeOperationCorrectApplication>(),
           kinds: [
-            "analysisFiles",
+            "analysisSections",
             "databaseSchemas",
             "realizeCollectors",
             "realizeTransformers",

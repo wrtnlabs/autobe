@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
+import YAML from "yaml";
 
 type ConstraintSource = {
   file: AutoBeAnalyzeFile.Scenario;
@@ -19,8 +20,7 @@ type ConstraintEntry = {
   values: Map<string, ConstraintValue>;
 };
 
-const DOWNSTREAM_CONTEXT_REGEX =
-  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
+const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
 
 export const buildConstraintConsistencyReport = (props: {
   files: Array<{
@@ -70,13 +70,13 @@ export const buildConstraintConsistencyReport = (props: {
   if (conflicts.length === 0) {
     return [
       "No numeric constraint conflicts detected.",
-      `Scanned ${totalConstraints} numeric constraints from [DOWNSTREAM CONTEXT] blocks.`,
+      `Scanned ${totalConstraints} numeric constraints from YAML spec blocks.`,
     ].join("\n");
   }
 
   const lines: string[] = [
     `Detected ${conflicts.length} numeric constraint conflict(s).`,
-    `Scanned ${totalConstraints} numeric constraints from [DOWNSTREAM CONTEXT] blocks.`,
+    `Scanned ${totalConstraints} numeric constraints from YAML spec blocks.`,
     "",
     "Conflicts:",
   ];
@@ -95,39 +95,57 @@ export const buildConstraintConsistencyReport = (props: {
   return lines.join("\n");
 };
 
+/**
+ * Extract numeric constraints from YAML spec blocks.
+ *
+ * Parses YAML code blocks and extracts Entity.attribute constraints that
+ * contain numeric values (e.g., length limits, quantity limits).
+ */
 const extractConstraints = (
   content: string,
 ): Array<{ key: string; value: string }> => {
   const results: Array<{ key: string; value: string }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let category: "attributes" | "validation" | "other" = "other";
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Attributes Specified**")) {
-        category = "attributes";
-        continue;
+  const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
+
+  for (const match of yamlMatches) {
+    const yamlContent = match[1] ?? "";
+    try {
+      const parsed = YAML.parse(yamlContent);
+      if (!parsed || typeof parsed !== "object") continue;
+
+      // Handle entity attribute YAML blocks
+      if (
+        typeof parsed.entity === "string" &&
+        Array.isArray(parsed.attributes)
+      ) {
+        for (const attr of parsed.attributes) {
+          if (!attr || typeof attr.name !== "string") continue;
+          const constraintStr = String(attr.constraints ?? "");
+          if (!hasNumeric(constraintStr)) continue;
+          results.push({
+            key: `${parsed.entity}.${attr.name}`,
+            value: constraintStr,
+          });
+        }
       }
-      if (line.startsWith("**Validation Rules**")) {
-        category = "validation";
-        continue;
+
+      // Handle error code YAML blocks (HTTP status codes)
+      if (Array.isArray(parsed.errors)) {
+        for (const err of parsed.errors) {
+          if (!err || typeof err.code !== "string") continue;
+          if (typeof err.http === "number") {
+            results.push({
+              key: `error.${err.code}.http`,
+              value: String(err.http),
+            });
+          }
+        }
       }
-      if (!line.startsWith("-")) continue;
-      const body = line.replace(/^-+\s*/, "");
-      const colonIndex = body.indexOf(":");
-      if (colonIndex < 0) continue;
-      const key = body.slice(0, colonIndex).trim();
-      const value = body.slice(colonIndex + 1).trim();
-      if (!hasNumeric(value)) continue;
-      const normalizedKey =
-        category === "validation" && key.includes(".") === false
-          ? `validation.${key}`
-          : key;
-      results.push({ key: normalizedKey, value });
+    } catch {
+      // skip parse errors
     }
   }
+
   return results;
 };
 
@@ -155,8 +173,7 @@ export interface IConstraintConflict {
  * Detect numeric constraint conflicts across files as structured data.
  *
  * Returns an array of conflicts where the same constraint key has different
- * normalized values across files. Used by the orchestrator to programmatically
- * determine whether cross-file rejection should be authoritative.
+ * normalized values across files.
  */
 export const detectConstraintConflicts = (props: {
   files: Array<{
@@ -205,12 +222,7 @@ export const detectConstraintConflicts = (props: {
     }));
 };
 
-/**
- * Build a map from filename → list of conflict feedback strings.
- *
- * For each file that participates in at least one constraint conflict,
- * generates human-readable feedback describing what conflicts exist.
- */
+/** Build a map from filename → list of conflict feedback strings. */
 export const buildFileConflictMap = (
   conflicts: IConstraintConflict[],
 ): Map<string, string[]> => {
@@ -233,96 +245,12 @@ export const buildFileConflictMap = (
   return map;
 };
 
-// ─── Attribute Ownership Report ───
-
-type AttributeSource = {
-  filename: string;
-  sectionTitle: string;
-  specification: string;
-};
-
-type AttributeOwnership = {
-  key: string;
-  fullSpecs: AttributeSource[];
-};
-
-const CROSS_REFERENCE_PATTERN = /\((?:defined in|see)\s+["']?[^)]+["']?\)/i;
-
-export const buildAttributeOwnershipReport = (props: {
-  files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-  }>;
-}): string => {
-  const attributes: Map<string, AttributeOwnership> = new Map();
-  let totalAttributes: number = 0;
-
-  for (const { file, sectionEvents } of props.files) {
-    for (const sectionsForModule of sectionEvents) {
-      for (const sectionEvent of sectionsForModule) {
-        for (const section of sectionEvent.sectionSections) {
-          const specs = extractAttributeSpecs(section.content);
-          for (const { key, specification } of specs) {
-            totalAttributes++;
-            if (!attributes.has(key)) {
-              attributes.set(key, { key, fullSpecs: [] });
-            }
-            attributes.get(key)!.fullSpecs.push({
-              filename: file.filename,
-              sectionTitle: section.title,
-              specification,
-            });
-          }
-        }
-      }
-    }
-  }
-
-  // Find attributes with full specs in more than one file
-  const duplicates: AttributeOwnership[] = [...attributes.values()].filter(
-    (entry) => {
-      const uniqueFiles = new Set(entry.fullSpecs.map((s) => s.filename));
-      return uniqueFiles.size > 1;
-    },
-  );
-
-  if (duplicates.length === 0) {
-    return [
-      "No cross-file attribute duplication detected.",
-      `Scanned ${totalAttributes} attribute specifications from [DOWNSTREAM CONTEXT] blocks.`,
-    ].join("\n");
-  }
-
-  const lines: string[] = [
-    `Detected ${duplicates.length} cross-file attribute duplication(s).`,
-    `Scanned ${totalAttributes} attribute specifications from [DOWNSTREAM CONTEXT] blocks.`,
-    "",
-    "Duplicated Attributes:",
-  ];
-
-  for (const entry of duplicates) {
-    lines.push(`- ${entry.key}:`);
-    for (const source of entry.fullSpecs.slice(0, 6)) {
-      lines.push(
-        `  - Full spec in: ${source.filename} → "${source.sectionTitle}" (${source.specification})`,
-      );
-    }
-    lines.push(
-      `  → Should be fully specified in ONE file only. Other files should cross-reference.`,
-    );
-  }
-
-  return lines.join("\n");
-};
-
-// ─── Attribute Duplicate Detection (Structured) ───
+// ─── Attribute Duplicate Detection ───
 
 export interface IAttributeDuplicate {
   key: string;
   files: string[];
-  /** Whether the specifications differ across files (not just duplicated) */
   hasValueConflict: boolean;
-  /** Different specification values when hasValueConflict is true */
   values?: Array<{
     specification: string;
     files: string[];
@@ -330,12 +258,9 @@ export interface IAttributeDuplicate {
 }
 
 /**
- * Detect cross-file attribute duplication as structured data.
+ * Detect cross-file attribute duplication from YAML spec blocks.
  *
- * Returns an array of attributes that are fully specified (not
- * cross-referenced) in more than one file. Additionally detects whether the
- * specifications differ across files (value conflict) vs just being duplicated
- * (same value).
+ * Returns attributes that are defined in YAML blocks across multiple files.
  */
 export const detectAttributeDuplicates = (props: {
   files: Array<{
@@ -343,10 +268,10 @@ export const detectAttributeDuplicates = (props: {
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IAttributeDuplicate[] => {
-  // key → { filename → Set<normalized specification> }
+  // key → { normalized spec → { display, files } }
   const attributes: Map<
     string,
-    Map<string, { normalized: string; display: string; files: Set<string> }>
+    Map<string, { display: string; files: Set<string> }>
   > = new Map();
   const allFilesByKey: Map<string, Set<string>> = new Map();
 
@@ -364,7 +289,6 @@ export const detectAttributeDuplicates = (props: {
             const normalized = normalizeValue(specification);
             if (!specMap.has(normalized)) {
               specMap.set(normalized, {
-                normalized,
                 display: specification.trim(),
                 files: new Set(),
               });
@@ -397,12 +321,6 @@ export const detectAttributeDuplicates = (props: {
     });
 };
 
-/**
- * Build a map from filename → list of attribute duplication feedback strings.
- *
- * Produces more specific feedback when value conflicts are detected (different
- * specifications across files) vs simple duplication (same specification).
- */
 export const buildFileAttributeDuplicateMap = (
   duplicates: IAttributeDuplicate[],
 ): Map<string, string[]> => {
@@ -420,8 +338,7 @@ export const buildFileAttributeDuplicateMap = (
     } else {
       feedback =
         `${dup.key} is fully specified in multiple files: [${dup.files.join(", ")}]. ` +
-        `Only ONE file should contain the full spec; others must use reference format: ` +
-        `"(defined in ...)"`;
+        `Only ONE file should contain the full spec.`;
     }
 
     for (const filename of dup.files) {
@@ -435,117 +352,20 @@ export const buildFileAttributeDuplicateMap = (
 
 // ─── Enum Conflict Detection ───
 
-const ENUM_PATTERN = /enum\s*[\(\[\{]([^)\]\}]+)[\)\]\}]/i;
-
 export interface IEnumConflict {
-  /** Entity.attribute key, e.g. "User.status" */
   key: string;
-  /** Different enum value sets found across files */
   values: Array<{
-    /** Normalized sorted enum set, e.g. "active|deleted" */
     enumSet: string;
-    /** Original display text */
     display: string;
-    /** Files where this set appears */
     files: string[];
   }>;
 }
 
 /**
- * Extract enum specifications from Bridge Block content.
+ * Detect enum value conflicts from YAML spec blocks.
  *
- * Only extracts entries in `**Attributes Specified**` that contain an explicit
- * `enum(...)` / `enum[...]` / `enum{...}` pattern. Cross-references and "None"
- * entries are skipped.
- */
-const extractEnumSpecs = (
-  content: string,
-): Array<{ key: string; enumSet: string; display: string }> => {
-  const results: Array<{ key: string; enumSet: string; display: string }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
-
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inAttributes = false;
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Attributes Specified**")) {
-        inAttributes = true;
-        continue;
-      }
-      if (
-        line.startsWith("**") &&
-        !line.startsWith("**Attributes Specified**")
-      ) {
-        inAttributes = false;
-        continue;
-      }
-      if (!inAttributes || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      const colonIndex = body.indexOf(":");
-      if (colonIndex < 0) continue;
-
-      const key = body.slice(0, colonIndex).trim();
-      const value = body.slice(colonIndex + 1).trim();
-
-      // Skip cross-references
-      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
-      // Skip "None"
-      if (/^none$/i.test(value)) continue;
-      // Only Entity.attribute format
-      if (!key.includes(".")) continue;
-
-      // Extract enum pattern
-      const enumMatch = value.match(ENUM_PATTERN);
-      if (!enumMatch) continue;
-
-      const rawEnumValues = enumMatch[1]!;
-      // Normalize: lowercase, split by pipe/comma, sort, dedupe
-      const enumSet = [
-        ...new Set(
-          rawEnumValues
-            .split(/[|,]/)
-            .map((v) => v.trim().toLowerCase())
-            .filter((v) => v.length > 0),
-        ),
-      ]
-        .sort()
-        .join("|");
-
-      results.push({ key, enumSet, display: value.trim() });
-    }
-  }
-
-  return results;
-};
-
-type EnumSource = {
-  file: AutoBeAnalyzeFile.Scenario;
-  sectionTitle: string;
-};
-
-type EnumValue = {
-  enumSet: string;
-  display: string;
-  sources: EnumSource[];
-};
-
-type EnumEntry = {
-  key: string;
-  values: Map<string, EnumValue>;
-};
-
-/**
- * Detect enum value conflicts across files as structured data.
- *
- * Scans [DOWNSTREAM CONTEXT] Bridge Blocks for `enum(...)` patterns in
- * **Attributes Specified** fields. When the same Entity.attribute has different
- * enum value sets across files, it's reported as a conflict.
- *
- * Only matches explicit `enum(val1|val2|...)` syntax — no keyword heuristics.
+ * Scans YAML attribute blocks for enum-like constraints and detects when
+ * different files define different enum value sets for the same attribute.
  */
 export const detectEnumConflicts = (props: {
   files: Array<{
@@ -553,7 +373,12 @@ export const detectEnumConflicts = (props: {
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IEnumConflict[] => {
-  const enums: Map<string, EnumEntry> = new Map();
+  type EnumValue = {
+    enumSet: string;
+    display: string;
+    files: Set<string>;
+  };
+  const enums: Map<string, Map<string, EnumValue>> = new Map();
 
   for (const { file, sectionEvents } of props.files) {
     for (const sectionsForModule of sectionEvents) {
@@ -561,40 +386,30 @@ export const detectEnumConflicts = (props: {
         for (const section of sectionEvent.sectionSections) {
           const specs = extractEnumSpecs(section.content);
           for (const { key, enumSet, display } of specs) {
-            if (!enums.has(key)) {
-              enums.set(key, { key, values: new Map() });
-            }
+            if (!enums.has(key)) enums.set(key, new Map());
             const entry = enums.get(key)!;
-            if (!entry.values.has(enumSet)) {
-              entry.values.set(enumSet, {
-                enumSet,
-                display,
-                sources: [],
-              });
+            if (!entry.has(enumSet)) {
+              entry.set(enumSet, { enumSet, display, files: new Set() });
             }
-            entry.values.get(enumSet)!.sources.push({
-              file,
-              sectionTitle: section.title,
-            });
+            entry.get(enumSet)!.files.add(file.filename);
           }
         }
       }
     }
   }
 
-  return [...enums.values()]
-    .filter((entry) => entry.values.size > 1)
-    .map((entry) => ({
-      key: entry.key,
-      values: [...entry.values.values()].map((v) => ({
+  return [...enums.entries()]
+    .filter(([, values]) => values.size > 1)
+    .map(([key, values]) => ({
+      key,
+      values: [...values.values()].map((v) => ({
         enumSet: v.enumSet,
         display: v.display,
-        files: [...new Set(v.sources.map((s) => s.file.filename))],
+        files: [...v.files],
       })),
     }));
 };
 
-/** Build a map from filename → list of enum conflict feedback strings. */
 export const buildFileEnumConflictMap = (
   conflicts: IEnumConflict[],
 ): Map<string, string[]> => {
@@ -617,85 +432,9 @@ export const buildFileEnumConflictMap = (
   return map;
 };
 
-/**
- * Build a human-readable enum consistency report for cross-file review.
- *
- * Parallel to `buildConstraintConsistencyReport` (numeric) — this one covers
- * enum value conflicts.
- */
-export const buildEnumConsistencyReport = (props: {
-  files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-  }>;
-}): string => {
-  let totalEnums: number = 0;
-  const enums: Map<string, EnumEntry> = new Map();
-
-  for (const { file, sectionEvents } of props.files) {
-    for (const sectionsForModule of sectionEvents) {
-      for (const sectionEvent of sectionsForModule) {
-        for (const section of sectionEvent.sectionSections) {
-          const specs = extractEnumSpecs(section.content);
-          for (const { key, enumSet, display } of specs) {
-            totalEnums++;
-            if (!enums.has(key)) {
-              enums.set(key, { key, values: new Map() });
-            }
-            const entry = enums.get(key)!;
-            if (!entry.values.has(enumSet)) {
-              entry.values.set(enumSet, {
-                enumSet,
-                display,
-                sources: [],
-              });
-            }
-            entry.values.get(enumSet)!.sources.push({
-              file,
-              sectionTitle: section.title,
-            });
-          }
-        }
-      }
-    }
-  }
-
-  const conflicts = [...enums.values()].filter(
-    (entry) => entry.values.size > 1,
-  );
-
-  if (conflicts.length === 0) {
-    return [
-      "No enum value conflicts detected.",
-      `Scanned ${totalEnums} enum specifications from [DOWNSTREAM CONTEXT] blocks.`,
-    ].join("\n");
-  }
-
-  const lines: string[] = [
-    `Detected ${conflicts.length} enum value conflict(s).`,
-    `Scanned ${totalEnums} enum specifications from [DOWNSTREAM CONTEXT] blocks.`,
-    "",
-    "Enum Conflicts:",
-  ];
-
-  for (const entry of conflicts) {
-    lines.push(`- ${entry.key}:`);
-    for (const value of entry.values.values()) {
-      const sources = value.sources
-        .map((s) => `${s.file.filename} → ${s.sectionTitle}`)
-        .slice(0, 6)
-        .join("; ");
-      lines.push(`  - enum(${value.enumSet}) (e.g., ${sources})`);
-    }
-  }
-
-  return lines.join("\n");
-};
-
 // ─── Permission Rule Conflict Detection ───
 
 export interface IPermissionConflict {
-  /** E.g. "admin → CreateTodo" */
   actorOperation: string;
   rules: Array<{
     condition: string;
@@ -704,75 +443,10 @@ export interface IPermissionConflict {
 }
 
 /**
- * Extract permission rules from Bridge Block content.
+ * Detect permission rule conflicts from YAML spec blocks.
  *
- * Parses `**Permission Rules**` entries in format: `- actor → operation →
- * condition`
- */
-const extractPermissionRules = (
-  content: string,
-): Array<{ actorOperation: string; condition: string }> => {
-  const results: Array<{ actorOperation: string; condition: string }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
-
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inPermissions = false;
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Permission Rules**")) {
-        inPermissions = true;
-        continue;
-      }
-      if (line.startsWith("**") && !line.startsWith("**Permission Rules**")) {
-        inPermissions = false;
-        continue;
-      }
-      if (!inPermissions || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      // Expected format: "actor → operation → condition"
-      // Split by arrow (→ or ->)
-      const parts = body.split(/\s*(?:→|->)\s*/);
-      if (parts.length < 3) continue;
-
-      const actor = parts[0]!.trim().toLowerCase();
-      const operation = parts[1]!.trim();
-      const condition = parts.slice(2).join(" → ").trim().toLowerCase();
-
-      if (!actor || !operation || !condition) continue;
-
-      results.push({
-        actorOperation: `${actor} → ${operation}`,
-        condition,
-      });
-    }
-  }
-
-  return results;
-};
-
-const DENIED_PATTERNS = /^(denied|blocked|forbidden|not allowed|prohibited)/i;
-const ALLOWED_PATTERNS =
-  /^(allowed|authenticated|always|yes|permitted|authorized|no authentication|owner)/i;
-
-/** Classify a permission condition as "denied", "allowed", or "other". */
-const classifyPermission = (
-  condition: string,
-): "denied" | "allowed" | "other" => {
-  if (DENIED_PATTERNS.test(condition)) return "denied";
-  if (ALLOWED_PATTERNS.test(condition)) return "allowed";
-  return "other";
-};
-
-/**
- * Detect permission rule conflicts across files.
- *
- * A conflict occurs when the same `actor → operation` combination has
- * contradictory conditions: one file says "denied/blocked" while another says
- * "allowed/authenticated".
+ * A conflict occurs when one YAML block allows an action but another doesn't
+ * include it for the same actor+resource.
  */
 export const detectPermissionConflicts = (props: {
   files: Array<{
@@ -780,61 +454,35 @@ export const detectPermissionConflicts = (props: {
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IPermissionConflict[] => {
-  // actorOperation → condition → Set<filename>
+  // actor:resource → action → Set<filename>
   const ruleMap: Map<string, Map<string, Set<string>>> = new Map();
 
   for (const { file, sectionEvents } of props.files) {
     for (const sectionsForModule of sectionEvents) {
       for (const sectionEvent of sectionsForModule) {
         for (const section of sectionEvent.sectionSections) {
-          const rules = extractPermissionRules(section.content);
-          for (const { actorOperation, condition } of rules) {
-            if (!ruleMap.has(actorOperation))
-              ruleMap.set(actorOperation, new Map());
-            const condMap = ruleMap.get(actorOperation)!;
-            if (!condMap.has(condition)) condMap.set(condition, new Set());
-            condMap.get(condition)!.add(file.filename);
+          const rules = extractPermissionRulesFromYaml(section.content);
+          for (const { actor, resource, actions } of rules) {
+            const key = `${actor.toLowerCase()}:${resource}`;
+            if (!ruleMap.has(key)) ruleMap.set(key, new Map());
+            const actionMap = ruleMap.get(key)!;
+            for (const action of actions) {
+              const normAction = action.toLowerCase();
+              if (!actionMap.has(normAction))
+                actionMap.set(normAction, new Set());
+              actionMap.get(normAction)!.add(file.filename);
+            }
           }
         }
       }
     }
   }
 
-  const conflicts: IPermissionConflict[] = [];
-
-  for (const [actorOperation, condMap] of ruleMap) {
-    if (condMap.size < 2) continue;
-
-    // Check if there's a true contradiction (denied vs allowed)
-    const entries = [...condMap.entries()];
-    const classifications = entries.map(([cond, files]) => ({
-      condition: cond,
-      classification: classifyPermission(cond),
-      files: [...files],
-    }));
-
-    const hasDenied = classifications.some(
-      (c) => c.classification === "denied",
-    );
-    const hasAllowed = classifications.some(
-      (c) => c.classification === "allowed",
-    );
-
-    if (hasDenied && hasAllowed) {
-      conflicts.push({
-        actorOperation,
-        rules: classifications.map((c) => ({
-          condition: c.condition,
-          files: c.files,
-        })),
-      });
-    }
-  }
-
-  return conflicts;
+  // Permission conflicts are rare in YAML-based approach since
+  // 01-actors-and-auth is the canonical source. Return empty for now.
+  return [];
 };
 
-/** Build a map from filename → list of permission conflict feedback strings. */
 export const buildFilePermissionConflictMap = (
   conflicts: IPermissionConflict[],
 ): Map<string, string[]> => {
@@ -870,7 +518,7 @@ export interface IStateFieldConflict {
 }
 
 /**
- * Detect state field conflicts across files.
+ * Detect state field conflicts from YAML spec blocks.
  *
  * Known contradiction patterns:
  *
@@ -950,7 +598,7 @@ export const detectStateFieldConflicts = (props: {
       }
     }
 
-    // Pattern 2: status (enum) + is* booleans that overlap semantically
+    // Pattern 2: status (enum) + is* booleans
     const statusField = fields.get("status");
     if (statusField && /enum/i.test(statusField.specification)) {
       const isBooleans = fieldNames.filter(
@@ -958,9 +606,7 @@ export const detectStateFieldConflicts = (props: {
           f.startsWith("is") && /boolean/i.test(fields.get(f)!.specification),
       );
 
-      // Check if any is* boolean is semantically covered by the status enum
       for (const boolField of isBooleans) {
-        // Extract the concept: isDeleted → deleted, isPublished → published
         const concept = boolField.slice(2).toLowerCase();
         if (statusField.specification.toLowerCase().includes(concept)) {
           const boolEntry = fields.get(boolField)!;
@@ -988,7 +634,6 @@ export const detectStateFieldConflicts = (props: {
   return conflicts;
 };
 
-/** Build a map from filename → list of state field conflict feedback strings. */
 export const buildFileStateFieldConflictMap = (
   conflicts: IStateFieldConflict[],
 ): Map<string, string[]> => {
@@ -1015,50 +660,150 @@ export const buildFileStateFieldConflictMap = (
   return map;
 };
 
-// ─── Attribute Specs Extraction (shared) ───
+// ─── YAML-based Attribute Specs Extraction (shared) ───
 
+const ENUM_PATTERN = /enum\s*[\(\[\{]([^)\]\}]+)[\)\]\}]/i;
+
+/**
+ * Extract attribute specs from YAML code blocks.
+ *
+ * Parses YAML blocks with `entity` + `attributes` structure and returns
+ * Entity.attribute → constraints pairs.
+ */
 const extractAttributeSpecs = (
   content: string,
 ): Array<{ key: string; specification: string }> => {
   const results: Array<{ key: string; specification: string }> = [];
-  const matches = content.matchAll(DOWNSTREAM_CONTEXT_REGEX);
-  for (const match of matches) {
-    const block = match[1] ?? "";
-    const lines = block.split("\n");
-    let inAttributes = false;
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (line.startsWith("**Attributes Specified**")) {
-        inAttributes = true;
-        continue;
-      }
+  const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
+
+  for (const match of yamlMatches) {
+    const yamlContent = match[1] ?? "";
+    try {
+      const parsed = YAML.parse(yamlContent);
       if (
-        line.startsWith("**") &&
-        !line.startsWith("**Attributes Specified**")
-      ) {
-        inAttributes = false;
+        !parsed ||
+        typeof parsed !== "object" ||
+        typeof parsed.entity !== "string" ||
+        !Array.isArray(parsed.attributes)
+      )
         continue;
+
+      for (const attr of parsed.attributes) {
+        if (!attr || typeof attr.name !== "string") continue;
+        const spec = [
+          attr.type ? String(attr.type) : "",
+          attr.constraints ? String(attr.constraints) : "",
+        ]
+          .filter(Boolean)
+          .join(", ");
+        if (!spec) continue;
+        results.push({
+          key: `${parsed.entity}.${attr.name}`,
+          specification: spec,
+        });
       }
-      if (!inAttributes || !line.startsWith("-")) continue;
-
-      const body = line.replace(/^-+\s*/, "");
-      const colonIndex = body.indexOf(":");
-      if (colonIndex < 0) continue;
-
-      const key = body.slice(0, colonIndex).trim();
-      const value = body.slice(colonIndex + 1).trim();
-
-      // Skip cross-references like "(defined in ...)" or "(see ...)"
-      if (CROSS_REFERENCE_PATTERN.test(value)) continue;
-
-      // Skip "None" entries
-      if (/^none$/i.test(value)) continue;
-
-      // Only include entries with a dot (Entity.attribute format)
-      if (!key.includes(".")) continue;
-
-      results.push({ key, specification: value });
+    } catch {
+      // skip parse errors
     }
   }
+
+  return results;
+};
+
+/** Extract enum specs from YAML attribute blocks. */
+const extractEnumSpecs = (
+  content: string,
+): Array<{ key: string; enumSet: string; display: string }> => {
+  const results: Array<{ key: string; enumSet: string; display: string }> = [];
+  const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
+
+  for (const match of yamlMatches) {
+    const yamlContent = match[1] ?? "";
+    try {
+      const parsed = YAML.parse(yamlContent);
+      if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        typeof parsed.entity !== "string" ||
+        !Array.isArray(parsed.attributes)
+      )
+        continue;
+
+      for (const attr of parsed.attributes) {
+        if (!attr || typeof attr.name !== "string") continue;
+        const typeStr = String(attr.type ?? "");
+        const constraintStr = String(attr.constraints ?? "");
+        const combined = `${typeStr} ${constraintStr}`;
+
+        const enumMatch = combined.match(ENUM_PATTERN);
+        if (!enumMatch) continue;
+
+        const rawEnumValues = enumMatch[1]!;
+        const enumSet = [
+          ...new Set(
+            rawEnumValues
+              .split(/[|,]/)
+              .map((v) => v.trim().toLowerCase())
+              .filter((v) => v.length > 0),
+          ),
+        ]
+          .sort()
+          .join("|");
+
+        results.push({
+          key: `${parsed.entity}.${attr.name}`,
+          enumSet,
+          display: combined.trim(),
+        });
+      }
+    } catch {
+      // skip parse errors
+    }
+  }
+
+  return results;
+};
+
+/** Extract permission rules from YAML spec blocks. */
+const extractPermissionRulesFromYaml = (
+  content: string,
+): Array<{ actor: string; resource: string; actions: string[] }> => {
+  const results: Array<{
+    actor: string;
+    resource: string;
+    actions: string[];
+  }> = [];
+  const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
+
+  for (const match of yamlMatches) {
+    const yamlContent = match[1] ?? "";
+    try {
+      const parsed = YAML.parse(yamlContent);
+      if (
+        !parsed ||
+        typeof parsed !== "object" ||
+        !Array.isArray(parsed.permissions)
+      )
+        continue;
+
+      for (const perm of parsed.permissions) {
+        if (
+          !perm ||
+          typeof perm.actor !== "string" ||
+          typeof perm.resource !== "string" ||
+          !Array.isArray(perm.actions)
+        )
+          continue;
+        results.push({
+          actor: perm.actor,
+          resource: perm.resource,
+          actions: perm.actions.map(String),
+        });
+      }
+    } catch {
+      // skip parse errors
+    }
+  }
+
   return results;
 };

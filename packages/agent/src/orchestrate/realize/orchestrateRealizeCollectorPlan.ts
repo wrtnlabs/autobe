@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceHistory,
   AutoBeOpenApi,
@@ -14,11 +13,13 @@ import typia from "typia";
 import { v4 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformRealizeCollectorPlanHistory } from "./histories/transformRealizeCollectorPlanHistory";
 import { AutoBeRealizeCollectorProgrammer } from "./programmers/AutoBeRealizeCollectorProgrammer";
 import { IAutoBeRealizeCollectorPlanApplication } from "./structures/IAutoBeRealizeCollectorPlanApplication";
@@ -73,7 +74,9 @@ async function process(
     progress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeCollectorPlan[]> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
 
   const queryText: string = [
     "collector",
@@ -83,16 +86,17 @@ async function process(
     props.dtoTypeName,
   ].join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "realizeCollectorPlan" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "realizeCollectorPlan" },
+    );
 
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"
@@ -102,13 +106,13 @@ async function process(
     application:
       typia.json.application<IAutoBeRealizeCollectorPlanApplication>(),
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "interfaceSchemas",
       "interfaceOperations",
     ],
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       interfaceOperations: props.document.operations.filter(
         (op) => op.requestBody?.typeName === props.dtoTypeName,
       ),
@@ -175,7 +179,7 @@ function createController(props: {
   dtoTypeName: string;
   build: (next: IAutoBeRealizeCollectorPlanApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceSchemas"
     | "interfaceOperations"

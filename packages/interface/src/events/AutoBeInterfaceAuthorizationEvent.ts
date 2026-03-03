@@ -31,8 +31,8 @@ export interface AutoBeInterfaceAuthorizationEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      | "analysisFiles"
-      | "previousAnalysisFiles"
+      | "analysisSections"
+      | "previousAnalysisSections"
       | "databaseSchemas"
       | "previousDatabaseSchemas"
     > {

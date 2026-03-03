@@ -116,7 +116,7 @@ export namespace IAutoBeAnalyzeSectionReviewApplication {
      *
      * Set to null if all module/units need regeneration, or if approving.
      */
-    rejectedModuleUnits: IRejectedModuleUnit[] | null;
+    rejectedModuleUnits?: IRejectedModuleUnit[] | null;
   }
 
   /** Identifies specific module/unit pairs whose sections were rejected. */

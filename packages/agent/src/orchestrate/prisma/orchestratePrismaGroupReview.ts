@@ -24,14 +24,14 @@ export async function orchestratePrismaGroupReview(
 ): Promise<AutoBeDatabaseGroup[]> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeDatabaseGroupReviewApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
@@ -84,7 +84,7 @@ export async function orchestratePrismaGroupReview(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseGroupReviewApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
   groups: AutoBeDatabaseGroup[];
 }): IAgenticaController.IClass {

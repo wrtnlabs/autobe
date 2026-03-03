@@ -11,7 +11,9 @@ export const transformPrismaGroupHistory = (
   props: {
     instruction: string;
     preliminary: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     >;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -54,10 +56,10 @@ export const transformPrismaGroupHistory = (
       ## Your Task: Organize Database Components into Logical Groups
 
       **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via 
-      \`getAnalysisFiles\` to identify all business domains.
+      \`getAnalysisSections\` to identify all business domains.
 
       **MANDATORY STEPS**:
-      1. **FIRST**: Call \`getAnalysisFiles\` to load requirement documents
+      1. **FIRST**: Call \`getAnalysisSections\` to load requirement documents
          - NEVER skip this step - Requirements are the ONLY valid source for domain identification
       2. **THEN**: Analyze the LOADED requirements to identify all business domains and entities
       3. **FINALLY**: Generate complete component groups covering ALL domains found in requirements
@@ -68,7 +70,7 @@ export const transformPrismaGroupHistory = (
       - ❌ NEVER work from assumptions, imagination, or "typical patterns"
       - ❌ NEVER skip loading requirements under any circumstances
 
-      Begin by calling \`getAnalysisFiles\` to load the requirement documents you need to analyze.
+      Begin by calling \`getAnalysisSections\` to load the requirement documents you need to analyze.
     `,
   };
 };

@@ -1,32 +1,6 @@
 import { AutoBeAnalyzeWriteSectionEvent } from "@autobe/interface";
 
-// ─── DOWNSTREAM CONTEXT regex (reuse same pattern as buildConstraintConsistencyReport) ───
-
-const DOWNSTREAM_CONTEXT_REGEX =
-  /\*\*\[DOWNSTREAM CONTEXT\]\*\*([\s\S]*?)\n---/g;
-
-// ─── A) TOC Bridge Block Auto-Strip ───
-
-/**
- * Remove all [DOWNSTREAM CONTEXT] Bridge Blocks from TOC file sections.
- *
- * TOC (00-toc.md) is a navigation aid and MUST NOT contain Bridge Blocks. This
- * function mutates the section content in-place, stripping any `**[DOWNSTREAM
- * CONTEXT]**...---` blocks.
- */
-export const stripTocBridgeBlocks = (
-  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
-): void => {
-  for (const sectionsForModule of sectionResults) {
-    for (const sectionEvent of sectionsForModule) {
-      for (const section of sectionEvent.sectionSections) {
-        section.content = section.content.replace(DOWNSTREAM_CONTEXT_REGEX, "");
-      }
-    }
-  }
-};
-
-// ─── B) Technology Lock-in Detection ───
+// ─── A) Technology Lock-in Detection ───
 
 /**
  * Prohibited technology-specific keywords.
@@ -77,39 +51,16 @@ export const detectTechLockin = (
   return violations;
 };
 
-// ─── C) Empty Bridge Block Detection (disabled) ───
+// ─── B) Oversized Overview Detection ───
+
+const OVERVIEW_MAX_LINES = 600;
 
 /**
- * Detect sections with completely empty Bridge Blocks.
+ * Detect if the overview file's sections exceed the maximum line count.
  *
- * Currently disabled — always returns empty array. Bridge Blocks are now
- * advisory rather than mandatory.
- *
- * @returns Always returns empty array
- */
-export const detectEmptyBridgeBlocks = (
-  _sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
-): IEmptyBridgeBlockViolation[] => {
-  return [];
-};
-
-export interface IEmptyBridgeBlockViolation {
-  moduleIndex: number;
-  unitIndex: number;
-  sectionTitle: string;
-  detail: string;
-}
-
-// ─── D) Oversized TOC Detection ───
-
-const TOC_MAX_LINES = 400;
-
-/**
- * Detect if the TOC file's sections exceed the maximum line count.
- *
- * TOC (00-toc.md) should be a concise navigation aid, not a detailed
- * requirements document. If the total line count across all sections exceeds
- * `TOC_MAX_LINES`, returns a violation string.
+ * 00-toc.md should be a concise project summary and navigation aid, not a
+ * detailed requirements document. If the total line count across all sections
+ * exceeds `OVERVIEW_MAX_LINES`, returns a violation string.
  *
  * @returns Array of violation strings (empty = no violation)
  */
@@ -126,9 +77,9 @@ export const detectOversizedToc = (
     }
   }
 
-  if (totalLines > TOC_MAX_LINES) {
+  if (totalLines > OVERVIEW_MAX_LINES) {
     return [
-      `TOC exceeds ${TOC_MAX_LINES} lines (actual: ${totalLines}). ` +
+      `Overview exceeds ${OVERVIEW_MAX_LINES} lines (actual: ${totalLines}). ` +
         `Remove detailed requirements, keep only navigation tables and brief summaries.`,
     ];
   }

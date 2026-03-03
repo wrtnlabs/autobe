@@ -24,7 +24,7 @@ export function transformRealizeOperationCorrectHistory(props: {
   dto: Record<string, string>;
   failures: IAutoBeRealizeFunctionFailure<AutoBeRealizeOperationFunction>[];
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"

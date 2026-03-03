@@ -32,9 +32,9 @@ export interface AutoBeInterfaceGroupEvent
     AutoBeEventBase<"interfaceGroup">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     > {

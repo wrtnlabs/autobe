@@ -82,18 +82,18 @@ async function step(
 ): Promise<AutoBeDatabaseSchemaReviewEvent> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application:
       typia.json.application<IAutoBeDatabaseSchemaReviewApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
@@ -157,8 +157,8 @@ async function step(
 
 function createController(props: {
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
-    | "previousAnalysisFiles"
+    | "analysisSections"
+    | "previousAnalysisSections"
     | "databaseSchemas"
     | "previousDatabaseSchemas"
   >;

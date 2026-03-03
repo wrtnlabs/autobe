@@ -26,11 +26,11 @@ export interface AutoBeInterfaceSchemaComplementEvent
     AutoBeAggregateEventBase,
     AutoBeProgressEventBase,
     AutoBeAcquisitionEventBase<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"

@@ -17,7 +17,7 @@ export const transformPrismaSchemaHistory = (props: {
   design: AutoBeDatabaseComponentTableDesign;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
 }): IAutoBeOrchestrateHistory => {
   const children: string[] = [props.component, ...props.otherComponents]

@@ -29,7 +29,7 @@ export function transformTestScenarioReviewHistory(props: {
   instruction: string;
   scenario: AutoBeTestScenario;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
 }): IAutoBeOrchestrateHistory {
   const document: AutoBeOpenApi.IDocument | undefined =

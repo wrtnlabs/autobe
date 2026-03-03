@@ -1,7 +1,7 @@
 import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseAuthorizationReviewApplication {
@@ -15,7 +15,7 @@ export interface IAutoBeDatabaseAuthorizationReviewApplication {
    * (guest/member/admin), and you must verify that each actor has its required
    * tables.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
+   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
    * what authentication features are required, then systematically verify that
    * EVERY actor has main actor table + session table, and apply corrections.
    *
@@ -30,8 +30,8 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What authentication requirements do you need to analyze?
      * - Which actor types need to be verified?
@@ -47,14 +47,14 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
-     * documents. Use complete to submit table revisions after thorough
-     * authentication requirements analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit table revisions after
+     * thorough authentication requirements analysis.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 

@@ -50,7 +50,7 @@ Here's an example conversation script that guides AutoBE to create an "Economic/
 4. **Testing**: "Make the e2e test functions."
 5. **Implementation**: "Implement API functions."
 
-![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-openai-gpt-4.1.png)
+![Compilation Success Dashboard](https://autobe.dev/images/demonstrate/replay-z-ai-glm-5.png)
 
 > The playground includes a replay feature at http://localhost:5713/replay/index.html where you can view chat sessions from the AutoBE development team's testing and benchmarks.
 

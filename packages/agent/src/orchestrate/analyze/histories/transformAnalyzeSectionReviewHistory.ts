@@ -12,6 +12,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
 
 /**
  * Transform histories for per-file review of section content.
@@ -90,15 +91,30 @@ export const transformAnalyzeSectionReviewHistory = (
           })
           .join("\n")}
 
+        ## File Scope
+
+        **File**: ${props.file.filename}
+        **Scope**: ${FixedAnalyzeTemplate.buildExpandedTemplate((props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[]).find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
+
+        ## Authorized Scenario Reference
+
+        **Entities**: ${props.scenario.entities.map((e) => e.name).join(", ")}
+        **Actors**: ${props.scenario.actors.map((a) => `${a.name}(${a.kind})`).join(", ")}
+        **Features**: ${(props.scenario.features ?? []).map((f) => f.id).join(", ") || "None"}
+
+        Reject if content references entities, actors, or features NOT in this list.
+
         ## Per-File Review Criteria
 
         Please evaluate this file's section content:
-        1. Is EARS format correct and consistent within this file?
-        2. Are values consistent with parent module/unit definitions?
-        3. Is there any prohibited content?
-        4. Does every section have a complete [DOWNSTREAM CONTEXT] Bridge Block?
-        5. Are Bridge Block attributes properly specified with type + constraints?
+        1. Is ALL text in English only?
+        2. Does content stay within this file's designated scope?
+        3. Are values consistent with parent module/unit definitions?
+        4. Is there any prohibited content (schemas, API specs, implementation details)?
+        5. Is EARS format correct and consistent?
         6. Is there no duplicate content within this file?
+        7. (For canonical files 01/02/04) Are YAML spec blocks present?
+        8. Does content ONLY reference entities, actors, and features from the Authorized Scenario Reference above?
         ${
           props.feedback
             ? `

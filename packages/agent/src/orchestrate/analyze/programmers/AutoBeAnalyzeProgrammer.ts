@@ -1,109 +1,13 @@
 import {
   AutoBeAnalyzeModule,
-  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeSection,
-  AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeUnit,
-  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
 
 export namespace AutoBeAnalyzeProgrammer {
-  // Revision Application
-
-  /** Apply cross-file module review revisions to a single file's module event */
-  export const applyModuleRevisions = (
-    moduleEvent: AutoBeAnalyzeWriteModuleEvent,
-    fileResult: AutoBeAnalyzeModuleReviewEvent.IFileResult,
-  ): AutoBeAnalyzeWriteModuleEvent => {
-    return {
-      ...moduleEvent,
-      title: fileResult.revisedTitle?.length
-        ? fileResult.revisedTitle
-        : moduleEvent.title,
-      summary: fileResult.revisedSummary?.length
-        ? fileResult.revisedSummary
-        : moduleEvent.summary,
-      moduleSections: fileResult.revisedSections?.length
-        ? fileResult.revisedSections
-        : moduleEvent.moduleSections,
-    };
-  };
-
-  /** Apply cross-file unit review revisions to a single file's unit events */
-  export const applyUnitRevisions = (
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[],
-    fileResult: AutoBeAnalyzeUnitReviewEvent.IFileResult,
-  ): AutoBeAnalyzeWriteUnitEvent[] => {
-    if (!fileResult.revisedUnits) {
-      return unitEvents;
-    }
-
-    const revisionsMap: Map<
-      number,
-      AutoBeAnalyzeWriteUnitEvent.IUnitSection[]
-    > = new Map();
-    for (const revision of fileResult.revisedUnits) {
-      revisionsMap.set(revision.moduleIndex, revision.unitSections);
-    }
-
-    return unitEvents.map((unitEvent, moduleIndex) => {
-      const revisedSections:
-        | AutoBeAnalyzeWriteUnitEvent.IUnitSection[]
-        | undefined = revisionsMap.get(moduleIndex);
-      if (revisedSections) {
-        return { ...unitEvent, unitSections: revisedSections };
-      }
-      return unitEvent;
-    });
-  };
-
-  /** Apply cross-file section review revisions to a single file's section events */
-  export const applySectionRevisions = (
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][],
-    fileResult: AutoBeAnalyzeSectionReviewEvent.IFileResult,
-  ): AutoBeAnalyzeWriteSectionEvent[][] => {
-    if (!fileResult.revisedSections) {
-      return sectionEvents;
-    }
-
-    const revisionsMap: Map<
-      number,
-      Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>
-    > = new Map();
-    for (const moduleRevision of fileResult.revisedSections) {
-      const unitMap: Map<
-        number,
-        AutoBeAnalyzeWriteSectionEvent.ISectionSection[]
-      > = new Map();
-      for (const unitRevision of moduleRevision.units) {
-        unitMap.set(unitRevision.unitIndex, unitRevision.sectionSections);
-      }
-      revisionsMap.set(moduleRevision.moduleIndex, unitMap);
-    }
-
-    return sectionEvents.map((sectionsForModule, moduleIndex) => {
-      const unitMap:
-        | Map<number, AutoBeAnalyzeWriteSectionEvent.ISectionSection[]>
-        | undefined = revisionsMap.get(moduleIndex);
-      if (!unitMap) {
-        return sectionsForModule;
-      }
-
-      return sectionsForModule.map((sectionEvent, unitIndex) => {
-        const revisedSections:
-          | AutoBeAnalyzeWriteSectionEvent.ISectionSection[]
-          | undefined = unitMap.get(unitIndex);
-        if (revisedSections) {
-          return { ...sectionEvent, sectionSections: revisedSections };
-        }
-        return sectionEvent;
-      });
-    });
-  };
-
   // ============================================
   // Content Assembly
   // ============================================

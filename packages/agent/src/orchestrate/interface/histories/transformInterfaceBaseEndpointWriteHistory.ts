@@ -12,9 +12,9 @@ export const transformInterfaceBaseEndpointWriteHistory = (props: {
   state: AutoBeState;
   group: AutoBeInterfaceGroup;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

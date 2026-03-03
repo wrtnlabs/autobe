@@ -1,6 +1,6 @@
 import { AutoBeTestScenario } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 
@@ -26,7 +26,7 @@ export namespace IAutoBeTestScenarioApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -48,14 +48,14 @@ export namespace IAutoBeTestScenarioApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getInterfaceOperations, getInterfaceSchemas) or final
-     * test scenario generation (complete). When preliminary returns empty
+     * (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas) or
+     * final test scenario generation (complete). When preliminary returns empty
      * array, that type is removed from the union, physically preventing
      * repeated calls.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas;
   }

@@ -3,11 +3,11 @@ import {
   AutoBeInterfaceSchemaPropertyRefine,
 } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
@@ -49,7 +49,7 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -71,18 +71,18 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getDatabaseSchemas, getInterfaceOperations,
+     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations,
      * getInterfaceSchemas) or final schema refinement (complete). When
      * preliminary returns empty array, that type is removed from the union,
      * physically preventing repeated calls.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
       | IAutoBePreliminaryGetInterfaceSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
