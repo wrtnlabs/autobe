@@ -36,11 +36,11 @@ import type {
   ReferenceInfo,
 } from "../types";
 import {
-  createIssue,
   GATE_ERROR_THRESHOLD,
   GATE_PENALTY_PER_PERCENT,
   PHASE_WEIGHTS,
   createEmptyPhaseResult,
+  createIssue,
   generateExplanation,
   scoreToGrade,
 } from "../types";
