@@ -4,6 +4,22 @@ import { AutoBeAnalyzeModule } from "./AutoBeAnalyzeModule";
 /** Planning document structure for the Analyze phase. */
 export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
   /**
+   * Document title (bold text, not a heading).
+   *
+   * The main title of the requirements document that appears at the top of the
+   * generated markdown file.
+   */
+  title: string;
+
+  /**
+   * Executive summary of the document.
+   *
+   * A concise overview (2-3 sentences) describing the purpose and scope of the
+   * requirements document.
+   */
+  summary: string;
+
+  /**
    * Markdown file content. Only write the content of the file. Do not include
    * any questions. This should contain only the contents of the file. Do not
    * write down any questions or appreciation. For example, remove a sentence
@@ -38,6 +54,8 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    * The `content` property contains the assembled markdown for compatibility,
    * while this `module` property provides programmatic access to the
    * structure.
+   *
+   * @todo 바뀐 구조에 대한 설명
    */
   module: AutoBeAnalyzeModule;
 
@@ -51,8 +69,10 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFile.Scenario {
    *
    * `content` and `module` are kept for backward compatibility; new downstream
    * consumers should use this `document` field directly.
+   *
+   * @todo 언제 document가 없는지 대강 설명
    */
-  document?: AutoBeAnalyzeDocument;
+  document: AutoBeAnalyzeDocument | null;
 }
 export namespace AutoBeAnalyzeFile {
   export interface Scenario {

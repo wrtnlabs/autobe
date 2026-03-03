@@ -17,60 +17,32 @@ import { AutoBeAnalyzeUnit } from "./AutoBeAnalyzeUnit";
  * Module (#) → Unit (##) → Section (###)
  *
  * @author Juntak
+ * @todo 바뀐 구조에 대한 설명
  */
 export interface AutoBeAnalyzeModule {
-  /**
-   * Document title (bold text, not a heading).
-   *
-   * The main title of the requirements document that appears at the top of the
-   * generated markdown file.
-   */
+  /** Title of the module (# level heading). */
   title: string;
 
   /**
-   * Executive summary of the document.
+   * Purpose statement explaining what this module covers.
    *
-   * A concise overview (2-3 sentences) describing the purpose and scope of the
-   * requirements document.
+   * A brief description (1-2 sentences) of the module's role in the overall
+   * document structure.
    */
-  summary: string;
+  purpose: string;
 
   /**
-   * Array of modules (# level) in the document.
+   * Introductory content for the module.
    *
-   * Each module represents a major chapter or topic area in the requirements
-   * document, containing its own hierarchy of units and sections.
+   * Content that appears after the module heading, before any unit sections.
    */
-  modules: AutoBeAnalyzeModule.IModule[];
-}
+  content: string;
 
-export namespace AutoBeAnalyzeModule {
-  /** Structure representing a single module (# level) in the document. */
-  export interface IModule {
-    /** Title of the module (# level heading). */
-    title: string;
-
-    /**
-     * Purpose statement explaining what this module covers.
-     *
-     * A brief description (1-2 sentences) of the module's role in the overall
-     * document structure.
-     */
-    purpose: string;
-
-    /**
-     * Introductory content for the module.
-     *
-     * Content that appears after the module heading, before any unit sections.
-     */
-    content: string;
-
-    /**
-     * Array of units (## level) within this module.
-     *
-     * Units represent functional groupings within a module, each containing
-     * detailed section content.
-     */
-    units: AutoBeAnalyzeUnit[];
-  }
+  /**
+   * Array of units (## level) within this module.
+   *
+   * Units represent functional groupings within a module, each containing
+   * detailed section content.
+   */
+  units: AutoBeAnalyzeUnit[];
 }
