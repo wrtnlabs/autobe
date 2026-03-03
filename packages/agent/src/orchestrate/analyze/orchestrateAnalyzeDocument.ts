@@ -28,6 +28,7 @@ export const orchestrateAnalyzeDocument = async (
     categoryId: string;
     content: string;
     sections: AutoBeAnalyzeDocumentSection[];
+    retry?: number;
   },
 ): Promise<AutoBeAnalyzeDocumentEvent> => {
   const start: Date = new Date();
@@ -38,6 +39,7 @@ export const orchestrateAnalyzeDocument = async (
     source: SOURCE,
     controller: createController({ pointer }),
     enforceFunctionCall: true,
+    retry: props.retry,
     ...transformAnalyzeDocumentHistory({
       fileIndex: props.fileIndex,
       filename: props.filename,

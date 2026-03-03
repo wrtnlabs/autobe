@@ -214,29 +214,40 @@ export const orchestrateAnalyze = async (
       state.sectionResults!,
     );
 
-    // Evidence Layer: programmatic conversion from module/unit/section tree
-    const sections = AutoBeAnalyzeProgrammer.assembleEvidence(
-      fileIndex,
-      state.moduleResult!,
-      state.unitResults!,
-      state.sectionResults!,
-    );
+    let document: AutoBeAnalyzeFile["document"] = null;
+    // TOC file has no substantive requirements — skip document extraction
+    const isToc = state.file.filename === "00-toc.md";
+    if (!isToc) {
+      try {
+        // Evidence Layer: programmatic conversion from module/unit/section tree
+        const sections = AutoBeAnalyzeProgrammer.assembleEvidence(
+          fileIndex,
+          state.moduleResult!,
+          state.unitResults!,
+          state.sectionResults!,
+        );
 
-    // Semantic Layer: LLM-based SRS extraction
-    const categoryId = state.file.filename.replace(/\.md$/, "");
-    const documentEvent = await orchestrateAnalyzeDocument(ctx, {
-      fileIndex,
-      filename: state.file.filename,
-      categoryId,
-      content,
-      sections,
-    });
+        // Semantic Layer: LLM-based SRS extraction (lower retry to save tokens)
+        const categoryId = state.file.filename.replace(/\.md$/, "");
+        const documentEvent = await orchestrateAnalyzeDocument(ctx, {
+          fileIndex,
+          filename: state.file.filename,
+          categoryId,
+          content,
+          sections,
+          retry: AutoBeConfigConstant.DOCUMENT_RETRY,
+        });
 
-    // Assemble the complete Two-Layer document
-    const document = AutoBeAnalyzeProgrammer.assembleDocument(
-      sections,
-      documentEvent.srs,
-    );
+        // Assemble the complete Two-Layer document
+        document = AutoBeAnalyzeProgrammer.assembleDocument(
+          sections,
+          documentEvent.srs,
+        );
+      } catch {
+        // Document extraction is best-effort; null fallback is acceptable
+        document = null;
+      }
+    }
 
     files.push({
       ...state.file,

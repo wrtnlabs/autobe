@@ -160,7 +160,10 @@ export const createAutoBeContext = (props: {
                   event.errorMessage,
                 ),
             },
-            retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
+            retry:
+              next.retry ??
+              props.config?.retry ??
+              AutoBeConfigConstant.VALIDATION_RETRY,
             // stream: false,
             stream: next.enforceFunctionCall === false,
           } satisfies IMicroAgenticaConfig,
