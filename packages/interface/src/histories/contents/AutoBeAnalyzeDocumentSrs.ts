@@ -13,11 +13,11 @@ import { AutoBeAnalyzeDocumentWorkflow } from "./AutoBeAnalyzeDocumentWorkflow";
  * Semantic Layer: composite structure of 29148-based SRS sections.
  *
  * Each `AutoBeAnalyzeFile` holds its own per-file SRS with only the categories
- * relevant to that file's content. `selectedCategories` tracks which
- * categories are populated. All categories are optional at the per-file level;
- * the three project-level required categories (`introduction`,
- * `systemOverview`, `capabilities`) must exist across the full set of files
- * but need not all appear in every single file.
+ * relevant to that file's content. `selectedCategories` tracks which categories
+ * are populated. All categories are optional at the per-file level; the three
+ * project-level required categories (`introduction`, `systemOverview`,
+ * `capabilities`) must exist across the full set of files but need not all
+ * appear in every single file.
  *
  * @author Juntak
  */

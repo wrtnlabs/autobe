@@ -146,6 +146,7 @@ export function AutoBeEventMovie<Event extends AutoBeEvent>(
     case "analyzeWriteSection":
     case "analyzeSectionReview":
     case "analyzeScenarioReview":
+    case "analyzeDocument":
     case "testCorrect":
     case "realizeCorrect":
       return null;

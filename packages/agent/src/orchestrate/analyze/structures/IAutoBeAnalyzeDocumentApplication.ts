@@ -4,8 +4,8 @@ import { AutoBeAnalyzeDocumentSrs } from "@autobe/interface";
  * Application interface for the Analyze Document agent.
  *
  * This agent extracts the Semantic Layer (structured SRS data) from a single
- * analysis file's content. Given the file's assembled markdown and its
- * Evidence Layer sections, it produces the appropriate SRS categories with
+ * analysis file's content. Given the file's assembled markdown and its Evidence
+ * Layer sections, it produces the appropriate SRS categories with
  * `sourceSectionIds` traceability.
  */
 export interface IAutoBeAnalyzeDocumentApplication {
@@ -42,12 +42,12 @@ export namespace IAutoBeAnalyzeDocumentApplication {
     /**
      * The extracted SRS data.
      *
-     * Only populate categories that are relevant to this file's content.
-     * The `selectedCategories` array must list exactly the categories that
-     * have data populated.
+     * Only populate categories that are relevant to this file's content. The
+     * `selectedCategories` array must list exactly the categories that have
+     * data populated.
      *
-     * Every traceable item (those with `sourceSectionIds`) must reference
-     * at least one valid sectionId from the Evidence Layer provided in the
+     * Every traceable item (those with `sourceSectionIds`) must reference at
+     * least one valid sectionId from the Evidence Layer provided in the
      * context.
      */
     srs: AutoBeAnalyzeDocumentSrs;

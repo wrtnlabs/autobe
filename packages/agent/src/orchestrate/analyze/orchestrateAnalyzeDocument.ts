@@ -17,8 +17,8 @@ import { IAutoBeAnalyzeDocumentApplication } from "./structures/IAutoBeAnalyzeDo
  * Orchestrate Semantic Layer extraction for a single analysis file.
  *
  * Given the file's assembled markdown content and its Evidence Layer sections,
- * this orchestrator makes an LLM call to extract structured SRS categories
- * with `sourceSectionIds` traceability.
+ * this orchestrator makes an LLM call to extract structured SRS categories with
+ * `sourceSectionIds` traceability.
  */
 export const orchestrateAnalyzeDocument = async (
   ctx: AutoBeContext,

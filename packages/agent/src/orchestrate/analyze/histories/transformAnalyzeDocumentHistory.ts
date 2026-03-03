@@ -9,6 +9,7 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
  * agent.
  *
  * Provides the LLM with:
+ *
  * 1. System prompt for SRS extraction
  * 2. The file's assembled markdown content
  * 3. The Evidence Layer sections with sectionIds for traceability

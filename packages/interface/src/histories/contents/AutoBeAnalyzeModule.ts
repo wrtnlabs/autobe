@@ -3,12 +3,12 @@ import { AutoBeAnalyzeUnit } from "./AutoBeAnalyzeUnit";
 /**
  * Structured module-level content of an analysis document.
  *
- * Represents a single module in the three-level hierarchy:
- * **Module (#) → Unit (##) → Section (###)**.
+ * Represents a single module in the three-level hierarchy: **Module (#) → Unit
+ * (##) → Section (###)**.
  *
  * This tree is walked programmatically to produce the Evidence Layer
- * (`AutoBeAnalyzeDocument.sections`), where each node receives a
- * `sectionId` that the Semantic Layer references via `sourceSectionIds`.
+ * (`AutoBeAnalyzeDocument.sections`), where each node receives a `sectionId`
+ * that the Semantic Layer references via `sourceSectionIds`.
  *
  * Document-level metadata (`title`, `summary`) lives on
  * {@link AutoBeAnalyzeFile}, not here.

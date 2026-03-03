@@ -247,6 +247,7 @@ export namespace AutoBeAnalyzeProgrammer {
    * Validate the per-file document structure.
    *
    * Checks:
+   *
    * - Every traceable SRS item has at least one `sourceSectionIds` entry
    * - All referenced `sourceSectionIds` exist in the Evidence Layer
    * - Only categories listed in `selectedCategories` have data
@@ -264,15 +265,10 @@ export namespace AutoBeAnalyzeProgrammer {
       sourceSectionIds: string[];
     }> = [];
 
-    const collectTraceable = (
-      obj: unknown,
-      path: string,
-    ): void => {
+    const collectTraceable = (obj: unknown, path: string): void => {
       if (obj == null || typeof obj !== "object") return;
       const record = obj as Record<string, unknown>;
-      if (
-        Array.isArray(record["sourceSectionIds"])
-      ) {
+      if (Array.isArray(record["sourceSectionIds"])) {
         traceableItems.push({
           path,
           sourceSectionIds: record["sourceSectionIds"] as string[],
