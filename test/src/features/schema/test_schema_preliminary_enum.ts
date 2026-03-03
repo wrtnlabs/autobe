@@ -92,7 +92,7 @@ const validateAnalysisSections = (
   TestValidator.predicate(
     "getAnalysisSections",
     (state.analyze?.files ?? [])
-      .filter((f) => f.module?.modules?.length)
+      .filter((f) => f.module?.units?.length)
       .every(
         (f) => !!type.properties?.sectionIds.description?.includes(f.filename),
       ),
