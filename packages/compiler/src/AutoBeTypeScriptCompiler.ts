@@ -7,7 +7,7 @@ import nestiaCoreTransform from "@nestia/core/lib/transform";
 import { EmbedEsLint } from "embed-eslint";
 import { Pair } from "tstl";
 // import { Pair } from "tstl";
-import ts from "typescript";
+import * as ts from "typescript";
 import typiaTransform from "typia/lib/transform";
 
 import NestJSExternal from "./raw/nestjs.json";
