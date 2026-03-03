@@ -1,9 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeInterfaceAuthorizationApplication {
@@ -28,7 +28,7 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -50,16 +50,16 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getDatabaseSchemas,
+     * (getAnalysisSections, getPreviousAnalysisSections, getDatabaseSchemas,
      * getPreviousDatabaseSchemas) or final authorization operations generation
      * (complete). When preliminary returns empty array, that type is removed
      * from the union, physically preventing repeated calls.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 

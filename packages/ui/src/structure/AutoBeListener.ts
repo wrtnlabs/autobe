@@ -78,6 +78,9 @@ export class AutoBeListener {
       analyzeSectionReview: async (event) => {
         this.accumulate(event);
       },
+      analyzeScenarioReview: async (event) => {
+        this.accumulate(event);
+      },
       analyzeComplete: async (event) => {
         this.dict_.delete("analyzeWriteModule");
         this.dict_.delete("analyzeModuleReview");

@@ -1,6 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceSchemaComplementEvent,
@@ -15,10 +14,12 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformInterfaceSchemaComplementHistory } from "./histories/transformInterfaceSchemaComplementHistory";
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { IAutoBeInterfaceSchemaComplementApplication } from "./structures/IAutoBeInterfaceSchemaComplementApplication";
@@ -76,7 +77,9 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IJsonSchema> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
   const relatedOp = props.document.operations.find(
     (o) =>
       o.requestBody?.typeName === props.typeName ||
@@ -93,20 +96,21 @@ Ops: ${opHint || "N/A"}
 Task: ${task}
 `.trim();
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "interfaceComplement" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "interfaceComplement" },
+    );
 
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
@@ -115,11 +119,11 @@ Task: ${task}
       typia.json.application<IAutoBeInterfaceSchemaComplementApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
@@ -134,7 +138,7 @@ Task: ${task}
       interfaceSchemas: props.document.components.schemas,
     },
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       interfaceOperations: props.document.operations.filter((o) => {
         const predicate = (key: string | undefined): boolean => {
           if (key === undefined) return false;
@@ -215,11 +219,11 @@ function createController(
     typeName: string;
     operations: AutoBeOpenApi.IOperation[];
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceSchemas"
       | "previousInterfaceOperations"

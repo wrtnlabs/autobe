@@ -2,6 +2,7 @@ import {
   AutoBeAnalyzeCompleteEvent,
   AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeScenarioReviewEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeStartEvent,
   AutoBeAnalyzeUnitReviewEvent,
@@ -219,6 +220,16 @@ export interface IAutoBeRpcListener {
    * reports review progress.
    */
   analyzeSectionReview?(event: AutoBeAnalyzeSectionReviewEvent): Promise<void>;
+
+  /**
+   * Optional handler for scenario review progress events.
+   *
+   * Called when the Analyze agent reviews the generated scenario and reports
+   * review progress.
+   */
+  analyzeScenarioReview?(
+    event: AutoBeAnalyzeScenarioReviewEvent,
+  ): Promise<void>;
 
   /**
    * Mandatory handler for requirements analysis completion events.

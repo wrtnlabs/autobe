@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -15,12 +14,14 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
@@ -76,7 +77,9 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
 
   const pathSegments = props.scenario.operation.path
     .split("/")
@@ -89,16 +92,17 @@ async function process(
     props.scenario.functionName,
   ].join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "realizeOperationWrite" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "realizeOperationWrite" },
+    );
 
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"
@@ -107,7 +111,7 @@ async function process(
     application:
       typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "realizeCollectors",
       "realizeTransformers",
@@ -127,7 +131,7 @@ async function process(
           t.plan.dtoTypeName ===
           props.scenario.operation.responseBody?.typeName,
       ),
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -200,7 +204,7 @@ function createController(props: {
   functionName: string;
   build: (next: IAutoBeRealizeOperationWriteApplication.IComplete) => void;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "realizeCollectors"
     | "realizeTransformers"

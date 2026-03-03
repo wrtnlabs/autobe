@@ -10,6 +10,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
 
 export const transformAnalyzeWriteUnitHistory = (
   ctx: AutoBeContext,
@@ -25,6 +26,23 @@ export const transformAnalyzeWriteUnitHistory = (
   const moduleSection:
     | AutoBeAnalyzeWriteModuleEvent.IModuleSection
     | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
+
+  // Find the matching file template and expand units for this module
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
+  const fileIndex = expandedTemplate.findIndex(
+    (t) => t.filename === props.file.filename,
+  );
+  const fileTemplate = fileIndex >= 0 ? expandedTemplate[fileIndex] : undefined;
+  const moduleTemplate = fileTemplate?.modules[props.moduleIndex];
+  const expandedUnits = moduleTemplate
+    ? FixedAnalyzeTemplate.expandUnits(
+        moduleTemplate,
+        props.scenario.entities,
+        props.scenario.actors,
+      )
+    : [];
 
   return {
     histories: [
@@ -63,6 +81,8 @@ export const transformAnalyzeWriteUnitHistory = (
 
         **Document Title**: ${props.moduleEvent.title}
         **Document Summary**: ${props.moduleEvent.summary}
+        **File**: ${props.file.filename}
+        **File Scope**: ${fileTemplate?.description ?? props.file.reason}
 
         ## Domain Entities Reference
 
@@ -83,31 +103,41 @@ export const transformAnalyzeWriteUnitHistory = (
           )
           .join("\n")}
 
-        ## Your Task: Create Unit Sections for Module Section ${props.moduleIndex + 1}
-
-        You need to create unit sections (### level) for this module section:
+        ## Your Task: Write Content for Module Section ${props.moduleIndex + 1}
 
         **Module Section**: ${moduleSection?.title ?? "Unknown"}
         **Module Index**: ${props.moduleIndex}
         **Purpose**: ${moduleSection?.purpose ?? "Unknown"}
-        **Content**: ${moduleSection?.content ?? "Unknown"}
+
+        ### Pre-defined Unit Sections (FIXED — do NOT change titles or purposes)
+
+        The following unit sections are pre-defined by the template. You MUST write
+        \`content\` (8-20 sentences) and \`keywords\` (7-18 structured anchors) for EACH unit below.
+        Do NOT add, remove, or rename any units.
+
+        ${expandedUnits
+          .map(
+            (unit, index) => `
+        **Unit ${index + 1}**: ${unit.titlePattern}
+        - **Purpose**: ${unit.purposePattern}
+        - **Template Keywords** (for reference, expand with domain-specific terms): ${unit.keywords.join(", ")}
+        `,
+          )
+          .join("\n")}
 
         ## CRITICAL: Value Consistency
 
         **You MUST use the EXACT same values defined in the module section content above.**
         If the module section says "10MB file limit", you MUST use 10MB, not 25MB or 5MB.
-        If the module section says "5 attachments maximum", you MUST use 5, not 10.
         Any deviation will cause the review to REJECT your output.
 
         ## CRITICAL: No Duplication with Other Module Sections
 
         The module sections listed above define clear boundaries. Your unit sections
         for "${moduleSection?.title ?? "Unknown"}" MUST NOT overlap with content belonging
-        to other module sections. If a topic is covered by another module (e.g., Security
-        covers authentication), do NOT create units for that topic here.
-        Each entity-operation pair must belong to exactly ONE unit — no duplicates.
+        to other module sections.
 
-        Create unit sections that break down this module section into functional groupings.
+        Write content and keywords for all ${expandedUnits.length} pre-defined unit sections.
         ${
           props.feedback
             ? `
@@ -122,6 +152,6 @@ export const transformAnalyzeWriteUnitHistory = (
       `,
       },
     ],
-    userMessage: `Create unit sections (### level) for module section "${moduleSection?.title ?? "Unknown"}".`,
+    userMessage: `Write content and keywords for the ${expandedUnits.length} pre-defined unit sections in module "${moduleSection?.title ?? "Unknown"}".`,
   };
 };

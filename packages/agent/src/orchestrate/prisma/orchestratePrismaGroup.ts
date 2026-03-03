@@ -17,13 +17,13 @@ export async function orchestratePrismaGroup(
 ): Promise<AutoBeDatabaseGroup[]> {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeDatabaseGroupApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
-      "previousAnalysisFiles",
+      "analysisSections",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
     ],
     state: ctx.state(),
@@ -66,7 +66,7 @@ export async function orchestratePrismaGroup(
 function createController(props: {
   pointer: IPointer<IAutoBeDatabaseGroupApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
 }): IAgenticaController.IClass {
   const validate = (

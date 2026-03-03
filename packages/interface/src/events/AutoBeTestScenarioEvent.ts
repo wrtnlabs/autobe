@@ -25,7 +25,7 @@ export interface AutoBeTestScenarioEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+      "analysisSections" | "interfaceOperations" | "interfaceSchemas"
     > {
   /**
    * List of test scenarios generated for the target endpoints.

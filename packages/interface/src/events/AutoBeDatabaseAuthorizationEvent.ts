@@ -19,7 +19,9 @@ export interface AutoBeDatabaseAuthorizationEvent
     AutoBeEventBase<"databaseAuthorization">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Analysis of all actors' authentication requirements.

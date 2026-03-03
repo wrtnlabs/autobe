@@ -13,13 +13,14 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { validateScenarioFileNames } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
+import { FixedAnalyzeTemplate } from "./structures/FixedAnalyzeTemplate";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
+  props?: { feedback?: string },
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -41,7 +42,7 @@ export const orchestrateAnalyzeScenario = async (
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeScenarioHistory(ctx, preliminary),
+      ...transformAnalyzeScenarioHistory(ctx, preliminary, props?.feedback),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({
@@ -52,6 +53,7 @@ export const orchestrateAnalyzeScenario = async (
       } satisfies AutoBeAssistantMessageHistory);
     else if (pointer.value === null) return out(result)(null);
 
+    const features = pointer.value.features ?? [];
     const event: AutoBeAnalyzeScenarioEvent = {
       type: SOURCE,
       id: v7(),
@@ -59,7 +61,15 @@ export const orchestrateAnalyzeScenario = async (
       language: pointer.value.language,
       actors: pointer.value.actors,
       entities: pointer.value.entities,
-      files: pointer.value.files,
+      features: features.map((f) => ({
+        id: f.id,
+        ...(f.providers ? { providers: f.providers } : {}),
+        ...(f.jobs ? { jobs: f.jobs } : {}),
+      })),
+      files: FixedAnalyzeTemplate.buildScenarioFiles(
+        pointer.value.prefix,
+        features,
+      ) as AutoBeAnalyzeScenarioEvent["files"],
       acquisition: preliminary.getAcquisition(),
       metric: result.metric,
       tokenUsage: result.tokenUsage,
@@ -78,30 +88,11 @@ function createController(props: {
     input: unknown,
   ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     input = repairMissingRequestType(input);
-    input = normalizeScenarioFileNames(input);
     const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
       typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
 
-    // Validate file naming for complete requests
-    if (result.data.request.type === "complete") {
-      const fileNameValidation = validateScenarioFileNames(
-        result.data.request.files,
-      );
-      if (!fileNameValidation.valid) {
-        return {
-          success: false,
-          errors: fileNameValidation.errors.map((error) => ({
-            path: "$input.request.files",
-            expected:
-              "Sequential file names (00-toc.md, 01-xxx.md, 02-xxx.md, ...)",
-            value: error,
-          })),
-          data: result.data,
-        };
-      }
-      return result;
-    }
+    if (result.data.request.type === "complete") return result;
 
     return props.preliminary.validate({
       thinking: result.data.thinking ?? "",
@@ -163,8 +154,6 @@ const repairMissingRequestType = (input: unknown): unknown => {
     typeof request.prefix === "string" &&
     Array.isArray(request.actors) &&
     Array.isArray(request.entities) &&
-    Array.isArray(request.files) &&
-    typeof request.page === "number" &&
     Object.prototype.hasOwnProperty.call(request, "language")
   ) {
     return {
@@ -197,8 +186,7 @@ const repairFlattenedRequestPayload = (
       actors,
       language,
       entities,
-      page,
-      files,
+      features,
       ...rest
     } = input;
     return {
@@ -211,8 +199,7 @@ const repairFlattenedRequestPayload = (
         actors,
         language,
         entities,
-        page,
-        files,
+        features,
       },
     };
   }
@@ -240,12 +227,7 @@ const normalizeAnalyzeScenarioRequest = (
 ): Record<string, unknown> => {
   const output: Record<string, unknown> = { ...input };
 
-  if (typeof output.page === "string") {
-    const page: number = Number(output.page);
-    if (Number.isFinite(page)) output.page = page;
-  }
-
-  for (const key of ["actors", "entities", "files", "fileNames"] as const) {
+  for (const key of ["actors", "entities", "features", "fileNames"] as const) {
     if (typeof output[key] === "string") {
       const parsed: unknown = parseLooseStructuredString(output[key]);
       if (parsed !== undefined) output[key] = parsed;
@@ -282,50 +264,3 @@ const parseLooseStructuredString = (input: string): unknown => {
 
 const isRecord = (input: unknown): input is Record<string, unknown> =>
   typeof input === "object" && input !== null && Array.isArray(input) === false;
-
-const normalizeScenarioFileNames = (input: unknown): unknown => {
-  if (isRecord(input) === false) return input;
-  if (isRecord(input.request) === false) return input;
-  const request = input.request;
-  if (request.type !== "complete") return input;
-  if (Array.isArray(request.files) === false) return input;
-
-  let changed = false;
-  const files = request.files.map((file, index) => {
-    if (isRecord(file) === false || typeof file.filename !== "string")
-      return file;
-    const filename = normalizeScenarioFileName(file.filename, index);
-    if (filename === file.filename) return file;
-    changed = true;
-    return {
-      ...file,
-      filename,
-    };
-  });
-  if (!changed) return input;
-  return {
-    ...input,
-    request: {
-      ...request,
-      files,
-    },
-  };
-};
-
-const normalizeScenarioFileName = (filename: string, index: number): string => {
-  const trimmed = filename.trim();
-
-  // Common LLM variants for TOC
-  if (/^0*0[-_ ]?toc\.md$/i.test(trimmed)) return "00-toc.md";
-
-  const match = /^(\d{1,2})[-_ ]?(.*)\.md$/i.exec(trimmed);
-  if (!match) return trimmed;
-
-  const rest = (match[2] ?? "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-+/g, "-");
-  const normalizedPrefix = index.toString().padStart(2, "0");
-  return `${normalizedPrefix}-${rest || "untitled"}.md`;
-};

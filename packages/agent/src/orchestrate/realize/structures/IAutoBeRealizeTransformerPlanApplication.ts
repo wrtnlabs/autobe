@@ -1,4 +1,4 @@
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
 
@@ -68,7 +68,7 @@ export namespace IAutoBeRealizeTransformerPlanApplication {
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceSchemas;
   }

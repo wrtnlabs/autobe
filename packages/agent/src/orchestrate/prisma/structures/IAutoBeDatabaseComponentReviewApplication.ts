@@ -1,7 +1,7 @@
 import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseComponentReviewApplication {
@@ -13,7 +13,7 @@ export interface IAutoBeDatabaseComponentReviewApplication {
    * existing tables and identify necessary modifications using create, update,
    * or erase operations.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
+   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
    * what features this component's domain needs to support, then systematically
    * verify table coverage and apply corrections.
    *
@@ -28,8 +28,8 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What requirements documents do you need to analyze this component?
      * - Which features in this domain need to be understood?
@@ -45,14 +45,14 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
-     * documents. Use complete to submit table revisions after thorough
-     * requirements analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit table revisions after
+     * thorough requirements analysis.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 

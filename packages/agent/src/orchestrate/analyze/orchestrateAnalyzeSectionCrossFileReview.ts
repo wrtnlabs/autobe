@@ -42,9 +42,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
       status: "approved" | "rewritten" | "new";
     }>;
-    constraintReport: string;
-    attributeOwnershipReport: string;
-    enumConsistencyReport: string;
+    mechanicalViolationSummary?: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
     retry: number;
@@ -74,9 +72,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       ...transformAnalyzeSectionCrossFileReviewHistory(ctx, {
         scenario: props.scenario,
         allFileSummaries: props.allFileSummaries,
-        constraintReport: props.constraintReport,
-        attributeOwnershipReport: props.attributeOwnershipReport,
-        enumConsistencyReport: props.enumConsistencyReport,
+        mechanicalViolationSummary: props.mechanicalViolationSummary,
         preliminary,
       }),
     });

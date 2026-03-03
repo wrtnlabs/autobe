@@ -1,8 +1,8 @@
 import { AutoBeDatabaseComponentTableDesign } from "@autobe/interface";
 import { tags } from "typia";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseAuthorizationApplication {
@@ -36,8 +36,8 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What critical information is missing for designing auth tables?
      * - Why do you need it specifically right now?
@@ -58,15 +58,15 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      * Type discriminator for the request.
      *
      * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisFiles, getPreviousAnalysisFiles, getPreviousDatabaseSchemas)
-     * or final table design (complete). When preliminary returns empty array,
-     * that type is removed from the union, physically preventing repeated
-     * calls.
+     * (getAnalysisSections, getPreviousAnalysisSections,
+     * getPreviousDatabaseSchemas) or final table design (complete). When
+     * preliminary returns empty array, that type is removed from the union,
+     * physically preventing repeated calls.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 

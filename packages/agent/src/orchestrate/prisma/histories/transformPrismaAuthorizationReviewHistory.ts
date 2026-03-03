@@ -10,7 +10,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export const transformPrismaAuthorizationReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
   actors: AutoBeAnalyzeActor[];
@@ -92,7 +92,7 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
       **IMPORTANT - All Actors Must Be Covered**:
       Verify that EVERY actor has: main actor table + session table + auth support tables.
 
-      1. First, fetch analysis files using \`getAnalysisFiles\` to understand authentication requirements
+      1. First, fetch analysis files using \`getAnalysisSections\` to understand authentication requirements
       2. Verify EACH actor has: main actor table + session table + auth support tables
       3. Call \`process({ request: { type: "complete", revises: [...] } })\` with your revisions
 

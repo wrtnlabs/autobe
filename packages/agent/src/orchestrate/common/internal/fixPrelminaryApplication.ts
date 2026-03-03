@@ -172,6 +172,7 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisFiles>()
         : typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.fileNames,
       StringUtil.trim`
@@ -240,6 +241,7 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousDatabaseSchemas>()
         : typia.reflect.name<IAutoBePreliminaryGetDatabaseSchemas>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.schemaNames,
       StringUtil.trim`
@@ -272,6 +274,7 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceOperations>()
         : typia.reflect.name<IAutoBePreliminaryGetInterfaceOperations>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.endpoints,
       StringUtil.trim`
@@ -307,6 +310,7 @@ namespace ApplicationFixer {
         ? typia.reflect.name<IAutoBePreliminaryGetPreviousInterfaceSchemas>()
         : typia.reflect.name<IAutoBePreliminaryGetInterfaceSchemas>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.typeNames,
       StringUtil.trim`
@@ -330,6 +334,7 @@ namespace ApplicationFixer {
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeCollectors>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.dtoTypeNames,
       StringUtil.trim`
@@ -354,6 +359,7 @@ namespace ApplicationFixer {
     const type: ILlmSchema.IObject = props.$defs[
       typia.reflect.name<IAutoBePreliminaryGetRealizeTransformers>()
     ] as ILlmSchema.IObject;
+    if (type === undefined) return;
     describe(
       type.properties.dtoTypeNames,
       StringUtil.trim`

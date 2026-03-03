@@ -39,11 +39,11 @@ export const test_schema_preliminary_erase = async () => {
       IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
     >();
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
@@ -54,11 +54,11 @@ export const test_schema_preliminary_erase = async () => {
       >(),
     source: "interfaceSchemaReview",
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
       "previousInterfaceSchemas",
@@ -77,7 +77,7 @@ export const test_schema_preliminary_erase = async () => {
       .sort(),
     [
       "IAutoBeInterfaceSchemaReviewApplication.ICompleteAutoBeInterfaceSchemaPropertyRevise",
-      "IAutoBePreliminaryGetAnalysisFiles",
+      "IAutoBePreliminaryGetAnalysisSections",
       "IAutoBePreliminaryGetDatabaseSchemas",
       "IAutoBePreliminaryGetInterfaceOperations",
       "IAutoBePreliminaryGetInterfaceSchemas",
@@ -88,7 +88,7 @@ export const test_schema_preliminary_erase = async () => {
     Object.keys(request["x-discriminator"]?.mapping ?? {}).sort(),
     [
       "complete",
-      "getAnalysisFiles",
+      "getAnalysisSections",
       "getDatabaseSchemas",
       "getInterfaceOperations",
       "getInterfaceSchemas",
@@ -98,12 +98,12 @@ export const test_schema_preliminary_erase = async () => {
     "kinds",
     preliminary.getKinds().slice().sort(),
     [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
       "interfaceOperations",
       "interfaceSchemas",
     ].sort() as Array<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
       | "interfaceOperations"
       | "interfaceSchemas"

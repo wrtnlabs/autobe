@@ -31,7 +31,9 @@ export interface AutoBeDatabaseGroupEvent
     AutoBeEventBase<"databaseGroup">,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+      | "analysisSections"
+      | "previousAnalysisSections"
+      | "previousDatabaseSchemas"
     > {
   /**
    * Analysis of the requirements structure and domain organization.

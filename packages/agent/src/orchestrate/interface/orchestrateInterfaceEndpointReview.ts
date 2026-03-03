@@ -1,6 +1,5 @@
 import {
   AutoBeAnalyzeActor,
-  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -14,9 +13,11 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHistory";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { AutoBeInterfaceEndpointProgrammer } from "./programmers/AutoBeInterfaceEndpointProgrammer";
 import { AutoBeInterfaceEndpointReviewProgrammer } from "./programmers/AutoBeInterfaceEndpointReviewProgrammer";
 import { IAutoBeInterfaceEndpointReviewApplication } from "./structures/IAutoBeInterfaceEndpointReviewApplication";
@@ -25,9 +26,9 @@ interface IProgrammer {
   kind: AutoBeInterfaceEndpointReviewEvent["kind"];
   history(next: {
     preliminary: AutoBePreliminaryController<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
       | "previousInterfaceOperations"
     >;
@@ -46,7 +47,9 @@ export const orchestrateInterfaceEndpointReview = async (
     promptCacheKey: string;
   },
 ): Promise<AutoBeInterfaceEndpointDesign[]> => {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
   const queryText: string = [
     "interface",
     "endpoint",
@@ -56,20 +59,21 @@ export const orchestrateInterfaceEndpointReview = async (
     ...props.designs.map((d) => `${d.endpoint.method} ${d.endpoint.path}`),
   ].join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "interfaceEndpointReview" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "interfaceEndpointReview" },
+    );
 
   const pointer: IPointer<IAutoBeInterfaceEndpointReviewApplication.IComplete | null> =
     { value: null };
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
@@ -77,15 +81,15 @@ export const orchestrateInterfaceEndpointReview = async (
       typia.json.application<IAutoBeInterfaceEndpointReviewApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       databaseSchemas:
         ctx
           .state()
@@ -144,9 +148,9 @@ export const orchestrateInterfaceEndpointReview = async (
 const createController = (props: {
   actors: AutoBeAnalyzeActor[];
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

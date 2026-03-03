@@ -1,19 +1,15 @@
-import {
-  AutoBeAnalyzeActor,
-  AutoBeAnalyzeFile,
-  CamelCasePattern,
-} from "@autobe/interface";
-import { tags } from "typia";
+import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { FixedAnalyzeTemplate } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
    * Process scenario composition task or preliminary data requests.
    *
-   * Composes project structure with actors and documentation files based on
-   * requirements. Processes composition with incremental context loading to
-   * ensure comprehensive scenario planning.
+   * Composes project structure with actors and entities based on requirements.
+   * File structure is fixed (6-file SRS template); the LLM only determines
+   * actors, entities, prefix, and language.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -59,10 +55,11 @@ export namespace IAutoBeAnalyzeScenarioApplication {
   }
 
   /**
-   * Request to compose project structure with actors and documentation files.
+   * Request to compose project structure with actors and entities.
    *
-   * Executes scenario composition to determine the list of user actors and
-   * documents to generate based on requirements.
+   * The document file structure is fixed as 6-file SRS template. LLM only
+   * determines actors, entities, prefix, and language. Files are generated
+   * programmatically from FixedAnalyzeTemplate.
    */
   export interface IComplete {
     /**
@@ -130,49 +127,15 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     }>;
 
     /**
-     * If the user has requested a specific number of pages, enter that number.
-     * Otherwise, provide an appropriate number of documents needed to meet the
-     * user's requirements. This number must always match the length of the
-     * files property, must be greater than 1, and must include the table of
-     * contents. For example, if the user requests 3 pages, the total should be
-     * 4, including the table of contents.
+     * High-level project features that activate conditional modules.
+     *
+     * Selected from a FIXED catalog — the LLM must NOT invent features outside
+     * the predefined list. Each feature activates additional modules in the
+     * appropriate SRS files.
+     *
+     * If the project has no special features beyond REST CRUD, return an empty
+     * array.
      */
-    page: number;
-
-    /**
-     * Array of document metadata objects defining files to be generated.
-     *
-     * Each array element is an AutoBeAnalyzeFile.Scenario object containing:
-     *
-     * - Filename: The output file name (e.g., "01-service-overview.md")
-     * - Reason: Why this document is being created
-     * - DocumentType, outline, constraints, etc.: Metadata guiding content
-     *   generation
-     *
-     * These documents represent business-focused planning documentation:
-     *
-     * - Business requirements and functional specifications in natural language
-     * - User journey mapping and use case scenarios
-     * - Business rules and workflow definitions
-     * - Service overview and business model description
-     * - User actors and permission requirements (described in natural language)
-     * - Business logic and validation rules
-     * - DO NOT: Include database schemas, ERD, or API specifications
-     * - DO: Write all requirements in natural language for clarity
-     *
-     * Generate metadata objects based on actual requirements gathered from
-     * conversation. Do not create unnecessary documentation - only generate
-     * what is needed to properly define the business requirements and system
-     * specifications.
-     *
-     * # Array Length Rules
-     *
-     * The array length must match the user's requested page count plus one for
-     * ToC. For example: user requests 3 pages → generate 4 objects (1 ToC + 3
-     * content). If user does not specify a number, generate sufficient objects
-     * to adequately document the service (typically 11+ objects including
-     * ToC).
-     */
-    files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
+    features: FixedAnalyzeTemplate.IFeature[];
   }
 }

@@ -24,18 +24,18 @@ export async function orchestrateInterfaceGroup(
   const start: Date = new Date();
   const prisma: AutoBeDatabaseHistory | null = ctx.state().database;
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeInterfaceGroupApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
@@ -88,9 +88,9 @@ export async function orchestrateInterfaceGroup(
 function createController(props: {
   pointer: IPointer<IAutoBeInterfaceGroupApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

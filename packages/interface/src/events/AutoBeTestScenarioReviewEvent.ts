@@ -51,7 +51,7 @@ export interface AutoBeTestScenarioReviewEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+      "analysisSections" | "interfaceOperations" | "interfaceSchemas"
     > {
   /**
    * The API endpoint being tested.

@@ -13,11 +13,11 @@ export const transformInterfacePrerequisiteHistory = (props: {
   document: AutoBeOpenApi.IDocument;
   operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"

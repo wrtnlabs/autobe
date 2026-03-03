@@ -1,6 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeOpenApi,
@@ -15,10 +14,12 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformTestScenarioHistory } from "./histories/transformTestScenarioHistory";
 import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
@@ -111,7 +112,9 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeTestScenario[]> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
   const pathSegments = props.operation.path
     .split("/")
     .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
@@ -122,28 +125,29 @@ async function process(
     ...pathSegments,
   ].join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "testScenario" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "testScenario" },
+    );
 
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
   const preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   > = new AutoBePreliminaryController({
     application: typia.json.application<IAutoBeTestScenarioApplication>(),
     source: SOURCE,
-    kinds: ["analysisFiles", "interfaceOperations", "interfaceSchemas"],
+    kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
     state: ctx.state(),
     all: {
       interfaceOperations: props.document.operations,
     },
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
       interfaceOperations: (() => {
         const unique: HashSet<AutoBeOpenApi.IEndpoint> = new HashSet(
           AutoBeOpenApiEndpointComparator.hashCode,
@@ -218,7 +222,7 @@ function createController(props: {
   operation: AutoBeOpenApi.IOperation;
   build: (scenarios: AutoBeTestScenario[]) => void;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
 }): IAgenticaController.IClass {
   const validate = (

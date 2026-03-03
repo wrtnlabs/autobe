@@ -13,9 +13,9 @@ import { transformInterfaceEndpointAuthorizationSection } from "./transformInter
 
 export const transformInterfaceActionEndpointReviewHistory = (props: {
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

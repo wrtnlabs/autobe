@@ -1,7 +1,7 @@
 import { AutoBeDatabaseGroupRevise } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseGroupReviewApplication {
@@ -13,7 +13,7 @@ export interface IAutoBeDatabaseGroupReviewApplication {
    * requirements. Review existing groups and identify necessary modifications
    * using create, update, or erase operations.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisFiles` to understand
+   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
    * what business domains exist, then systematically verify group coverage and
    * apply corrections.
    *
@@ -28,8 +28,8 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     /**
      * Reflect on requirements analysis before acting.
      *
-     * For preliminary requests (getAnalysisFiles, getPreviousAnalysisFiles,
-     * getPreviousDatabaseSchemas):
+     * For preliminary requests (getAnalysisSections,
+     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
      *
      * - What business domains do you need to analyze?
      * - What requirements will help verify group coverage?
@@ -45,14 +45,14 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     /**
      * Request type discriminator.
      *
-     * Use preliminary requests (getAnalysisFiles, etc.) to fetch requirements
-     * documents. Use complete to submit group revisions after thorough domain
-     * coverage analysis.
+     * Use preliminary requests (getAnalysisSections, etc.) to fetch
+     * requirements documents. Use complete to submit group revisions after
+     * thorough domain coverage analysis.
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
-      | IAutoBePreliminaryGetPreviousAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
+      | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 

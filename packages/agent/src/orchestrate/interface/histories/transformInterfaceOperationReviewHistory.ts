@@ -8,9 +8,9 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 
 export function transformInterfaceOperationReviewHistory(props: {
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

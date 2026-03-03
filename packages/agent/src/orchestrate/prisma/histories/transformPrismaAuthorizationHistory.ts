@@ -14,7 +14,7 @@ export const transformPrismaAuthorizationHistory = (props: {
   group: AutoBeDatabaseGroup;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
 }): IAutoBeOrchestrateHistory => {
   const prefix: string = props.prefix ? `${props.prefix}_` : "";
@@ -133,11 +133,11 @@ export const transformPrismaAuthorizationHistory = (props: {
       ## Your Task: Design Authorization Tables for ALL Actors
 
       **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via
-      \`getAnalysisFiles\` to identify authentication requirements for all actors.
+      \`getAnalysisSections\` to identify authentication requirements for all actors.
 
       **MANDATORY STEPS**:
 
-      1. **FIRST**: Call \`getAnalysisFiles\` to load authentication requirement documents
+      1. **FIRST**: Call \`getAnalysisSections\` to load authentication requirement documents
          - NEVER skip this step - Requirements are the ONLY valid source for authentication design
       2. **THEN**: Analyze the LOADED requirements to design authorization tables for ALL actors
       3. **FINALLY**: Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors
@@ -153,7 +153,7 @@ export const transformPrismaAuthorizationHistory = (props: {
       ${mandatoryOutput}
       - Plus any additional auth support tables based on requirements
 
-      Begin by calling \`getAnalysisFiles\` to load the authentication requirement documents you need to analyze.
+      Begin by calling \`getAnalysisSections\` to load the authentication requirement documents you need to analyze.
     `,
   };
 };

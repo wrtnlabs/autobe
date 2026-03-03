@@ -11,6 +11,7 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
 
 export const transformAnalyzeWriteSectionHistory = (
   ctx: AutoBeContext,
@@ -24,9 +25,6 @@ export const transformAnalyzeWriteSectionHistory = (
     unitIndex: number;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
-    attributeRegistry?: string;
-    permissionRegistry?: string;
-    errorCodeRegistry?: string;
   },
 ): IAutoBeOrchestrateHistory => {
   const moduleSection:
@@ -34,6 +32,26 @@ export const transformAnalyzeWriteSectionHistory = (
     | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
   const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
     props.unitEvent.unitSections[props.unitIndex];
+
+  // Find the file template for scope context (using expanded template for conditional modules)
+  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  );
+  const fileTemplate = expandedTemplate.find(
+    (t) => t.filename === props.file.filename,
+  );
+
+  // Build scope summary for all 6 files
+  const fileScopeSummary = expandedTemplate
+    .map(
+      (t) =>
+        `- **${t.filename}**: ${t.description}${t.filename === props.file.filename ? " ← **YOU ARE HERE**" : ""}`,
+    )
+    .join("\n");
+
+  // Build canonical source declaration
+  const canonicalSourceDeclaration =
+    FixedAnalyzeTemplate.buildCanonicalSourceContent();
 
   return {
     histories: [
@@ -79,33 +97,34 @@ export const transformAnalyzeWriteSectionHistory = (
         If actors are [guest, member], do NOT introduce "admin" or "moderator".
         If entities are [Todo, User], do NOT introduce "Project" or "Label".
 
+        ## File Scope Context
+
+        **Current File**: ${props.file.filename}
+        **File Scope**: ${fileTemplate?.description ?? props.file.reason}
+
+        ### All SRS Files (Fixed 6-File Structure)
+
+        ${fileScopeSummary}
+
+        ### Canonical Source Declaration
+
+        ${canonicalSourceDeclaration}
+
+        ${
+          fileTemplate?.yamlSpecs?.length
+            ? `
+        ### YAML Spec Block Required
+
+        This file is a **canonical source** file. Sections in this file MUST include
+        structured YAML code blocks for machine-parseable data. See the prompt for format details.
+        `
+            : ""
+        }
+
         ## Document Context
 
         **Document Title**: ${props.moduleEvent.title}
         **Document Summary**: ${props.moduleEvent.summary}
-
-        ${
-          props.file.filename === "00-toc.md"
-            ? `
-        ## AUTHORITATIVE Document List (TOC MUST use ONLY these filenames)
-
-        ${props.scenario.files
-          .map(
-            (f, i) =>
-              `${i + 1}. [${f.filename}](./${f.filename}) — ${f.documentType}`,
-          )
-          .join("\n")}
-
-        ## TOC Summary-Only Rules (CRITICAL)
-
-        - DO NOT include requirements, constraints, limits, or error codes
-        - DO NOT use SHALL/SHOULD/MUST or IF/WHEN/THEN patterns
-        - Use short summaries and simple tables only
-        - Reference details by filename instead of restating them
-        - EVERY filename reference MUST be a markdown hyperlink: [filename](./filename)
-        `
-            : ""
-        }
 
         ## Parent Module Section
 
@@ -128,17 +147,11 @@ export const transformAnalyzeWriteSectionHistory = (
         If the parent section says "5 attachments maximum", you MUST use 5, not 10.
         Any deviation will cause the review to REJECT your output.
 
-        ${props.attributeRegistry ? props.attributeRegistry : ""}
-
-        ${props.permissionRegistry ? props.permissionRegistry : ""}
-
-        ${props.errorCodeRegistry ? props.errorCodeRegistry : ""}
-
         ## CRITICAL: No Duplicate Content
 
         Each section MUST contain unique information:
         - Do NOT restate requirements already implied by sibling sections' keywords
-        - In your [DOWNSTREAM CONTEXT] Bridge Block, define each Entity.attribute ONLY in the first section that introduces it
+        - Define each Entity.attribute ONLY in the first section that introduces it
         - Subsequent sections referencing the same attribute should use: "(defined in [Section Name])"
         - Do NOT duplicate state transitions, operations, or permission rules across sections
 

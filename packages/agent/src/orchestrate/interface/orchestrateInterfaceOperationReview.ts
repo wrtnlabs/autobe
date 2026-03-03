@@ -1,6 +1,5 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceOperationReviewEvent,
@@ -13,10 +12,12 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { buildAnalysisContextFiles } from "../../utils/RAGRetrieval";
+import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
+import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
+import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformInterfaceOperationReviewHistory } from "./histories/transformInterfaceOperationReviewHistory";
 import { AutoBeInterfaceOperationProgrammer } from "./programmers/AutoBeInterfaceOperationProgrammer";
 import { IAutoBeInterfaceOperationReviewApplication } from "./structures/IAutoBeInterfaceOperationReviewApplication";
@@ -55,7 +56,9 @@ async function process(
     promptCacheKey: string;
   },
 ): Promise<AutoBeOpenApi.IOperation | false> {
-  const analyzeFiles: AutoBeAnalyzeFile[] = ctx.state().analyze?.files ?? [];
+  const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
+    ctx.state().analyze?.files ?? [],
+  );
   const op = props.operation;
   const pathSegments = op.path
     .split("/")
@@ -89,20 +92,21 @@ async function process(
 
   const queryText: string = queryParts.join(" ");
 
-  const ragAnalysisFiles: AutoBeAnalyzeFile[] = await buildAnalysisContextFiles(
-    getEmbedder(),
-    analyzeFiles,
-    queryText,
-    "TOPK",
-    { log: false, logPrefix: "interfaceOperationReview" },
-  );
+  const ragSections: IAnalysisSectionEntry[] =
+    await buildAnalysisContextSections(
+      getEmbedder(),
+      allSections,
+      queryText,
+      "TOPK",
+      { log: false, logPrefix: "interfaceOperationReview" },
+    );
 
   const files: AutoBeDatabase.IFile[] =
     ctx.state().database?.result.data.files!;
   const preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   > = new AutoBePreliminaryController({
@@ -110,15 +114,15 @@ async function process(
       typia.json.application<IAutoBeInterfaceOperationReviewApplication>(),
     source: SOURCE,
     kinds: [
-      "analysisFiles",
+      "analysisSections",
       "databaseSchemas",
-      "previousAnalysisFiles",
+      "previousAnalysisSections",
       "previousDatabaseSchemas",
       "previousInterfaceOperations",
     ],
     state: ctx.state(),
     local: {
-      analysisFiles: ragAnalysisFiles,
+      analysisSections: ragSections,
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -175,9 +179,9 @@ async function process(
 
 function createReviewController(props: {
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;

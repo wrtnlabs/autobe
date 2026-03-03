@@ -13,11 +13,11 @@ export const transformInterfaceSchemaComplementHistory = (props: {
   document: AutoBeOpenApi.IDocument;
   typeName: string;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousInterfaceSchemas"
     | "previousInterfaceOperations"
     | "previousDatabaseSchemas"

@@ -14,9 +14,9 @@ export const transformInterfaceAuthorizationHistory = (props: {
   prefix: string;
   actor: AutoBeAnalyzeActor;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
   >;
   instruction: string;

@@ -1,4 +1,4 @@
-import { IAutoBePreliminaryGetAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetAnalysisFiles";
+import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
@@ -25,7 +25,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      * Before requesting preliminary data or completing your task, reflect on
      * your current state and explain your reasoning:
      *
-     * For preliminary requests (getAnalysisFiles, getDatabaseSchemas, etc.):
+     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
      * - What critical information is missing that you don't already have?
      * - Why do you need it specifically right now?
@@ -53,7 +53,7 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
      */
     request:
       | IComplete
-      | IAutoBePreliminaryGetAnalysisFiles
+      | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
       | IAutoBePreliminaryGetRealizeTransformers;

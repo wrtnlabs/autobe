@@ -13,11 +13,11 @@ export const transformInterfaceSchemaReviewHistory = (props: {
   systemPrompt: string;
   instruction: string;
   preliminary: AutoBePreliminaryController<
-    | "analysisFiles"
+    | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
     | "interfaceSchemas"
-    | "previousAnalysisFiles"
+    | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"

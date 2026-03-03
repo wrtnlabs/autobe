@@ -27,7 +27,7 @@ export const transformTestScenarioHistory = (props: {
   state: AutoBeState;
   operation: AutoBeOpenApi.IOperation;
   preliminary: AutoBePreliminaryController<
-    "analysisFiles" | "interfaceOperations" | "interfaceSchemas"
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
   instruction: string;
 }): IAutoBeOrchestrateHistory => {

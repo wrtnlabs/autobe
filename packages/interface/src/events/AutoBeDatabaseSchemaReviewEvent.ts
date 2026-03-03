@@ -25,9 +25,9 @@ export interface AutoBeDatabaseSchemaReviewEvent
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
     AutoBeAcquisitionEventBase<
-      | "analysisFiles"
+      | "analysisSections"
       | "databaseSchemas"
-      | "previousAnalysisFiles"
+      | "previousAnalysisSections"
       | "previousDatabaseSchemas"
     > {
   /**
