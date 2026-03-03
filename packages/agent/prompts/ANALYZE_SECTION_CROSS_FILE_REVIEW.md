@@ -42,6 +42,8 @@ You receive section titles, keywords, and brief content summaries from ALL files
 
 ### 5. Completeness (ADVISORY)
 - Features described in one file should have corresponding coverage in related files
+- Error scenarios in 03-functional-requirements should have matching error codes in 04-business-rules
+- Validation rules in 04-business-rules should reference entities defined in 02-domain-model
 - Flag gaps in feedback, do NOT reject
 
 ### 6. Entity Name Consistency (ADVISORY)

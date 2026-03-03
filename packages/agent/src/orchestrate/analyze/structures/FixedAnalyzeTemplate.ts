@@ -520,6 +520,48 @@ export namespace FixedAnalyzeTemplate {
             },
           },
         },
+        {
+          index: 2,
+          title: "Error Scenarios and Edge Cases",
+          purpose:
+            "Comprehensive error handling specifications, edge case coverage, and failure response definitions for all operations.",
+          unitStrategy: {
+            type: "perEntity",
+            unitTemplate: {
+              titlePattern: "{name} Error Scenarios",
+              purposePattern:
+                "Define error conditions, edge cases, validation failure responses, and conflict handling for all {name} operations.",
+              keywords: [
+                "error-handling",
+                "edge-case",
+                "validation-failure",
+                "conflict",
+                "boundary-condition",
+              ],
+            },
+          },
+        },
+        {
+          index: 3,
+          title: "End-to-End Interaction Flows",
+          purpose:
+            "Cross-entity interaction flows, multi-step operation sequences, and end-to-end user scenarios.",
+          unitStrategy: {
+            type: "perEntityGroup",
+            unitTemplate: {
+              titlePattern: "{name} Interaction Flows",
+              purposePattern:
+                "Define end-to-end interaction flows involving {name} and related entities, including multi-step sequences and cross-entity operations.",
+              keywords: [
+                "interaction-flow",
+                "sequence",
+                "end-to-end",
+                "multi-step",
+                "cross-entity",
+              ],
+            },
+          },
+        },
       ],
     },
 
@@ -539,7 +581,7 @@ export namespace FixedAnalyzeTemplate {
       yamlSpecs: [
         {
           rootKey: "errors",
-          moduleIndex: 3,
+          moduleIndex: 4,
           registryType: "error-codes",
         },
       ],
@@ -589,6 +631,27 @@ export namespace FixedAnalyzeTemplate {
         },
         {
           index: 2,
+          title: "Detailed Validation Rules",
+          purpose:
+            "Per-entity field-level validation rules with boundary values, format specifications, and sanitization requirements.",
+          unitStrategy: {
+            type: "perEntity",
+            unitTemplate: {
+              titlePattern: "{name} Validation Rules",
+              purposePattern:
+                "Define field-level validation rules for {name}, including boundary values, format constraints, and input sanitization requirements.",
+              keywords: [
+                "validation",
+                "boundary-value",
+                "format-constraint",
+                "sanitization",
+                "field-validation",
+              ],
+            },
+          },
+        },
+        {
+          index: 3,
           title: "Filtering, Sorting, and Pagination",
           purpose:
             "List query specifications for filtering, sorting, and pagination.",
@@ -611,7 +674,7 @@ export namespace FixedAnalyzeTemplate {
           },
         },
         {
-          index: 3,
+          index: 4,
           title: "Error Catalog",
           purpose:
             "Centralized error code definitions with HTTP status mappings.",
@@ -748,6 +811,40 @@ export namespace FixedAnalyzeTemplate {
                   "monitoring",
                   "alerting",
                   "observability",
+                ],
+              },
+            ],
+          },
+        },
+        {
+          index: 3,
+          title: "Concurrency and Data Consistency",
+          purpose:
+            "Concurrency control policies, race condition handling, and data consistency guarantees.",
+          unitStrategy: {
+            type: "fixed",
+            units: [
+              {
+                titlePattern: "Concurrency Control Policies",
+                purposePattern:
+                  "Define optimistic/pessimistic locking strategies, conflict resolution, and retry semantics for concurrent operations.",
+                keywords: [
+                  "concurrency",
+                  "locking",
+                  "conflict-resolution",
+                  "race-condition",
+                  "retry-semantics",
+                ],
+              },
+              {
+                titlePattern: "Data Consistency Guarantees",
+                purposePattern:
+                  "Define consistency models, transactional boundary requirements, and idempotency guarantees.",
+                keywords: [
+                  "consistency",
+                  "transaction-boundary",
+                  "atomicity",
+                  "idempotency",
                 ],
               },
             ],

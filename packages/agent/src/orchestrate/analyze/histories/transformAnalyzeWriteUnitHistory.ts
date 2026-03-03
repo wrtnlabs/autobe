@@ -112,7 +112,7 @@ export const transformAnalyzeWriteUnitHistory = (
         ### Pre-defined Unit Sections (FIXED — do NOT change titles or purposes)
 
         The following unit sections are pre-defined by the template. You MUST write
-        \`content\` (5-15 sentences) and \`keywords\` (5-12 structured anchors) for EACH unit below.
+        \`content\` (8-20 sentences) and \`keywords\` (7-18 structured anchors) for EACH unit below.
         Do NOT add, remove, or rename any units.
 
         ${expandedUnits

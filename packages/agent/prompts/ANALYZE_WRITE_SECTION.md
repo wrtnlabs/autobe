@@ -275,10 +275,11 @@ The examples in this prompt demonstrate FORMAT and STRUCTURE only. Do NOT copy t
 - Filler sentences without testable content
 
 ### Word Budget & Content Rules:
-- **Regular**: 150-500 words | **Complex**: 300-800 words | **00-toc**: 50-100 words
-- 3-15 requirements per section, RFC2119 keywords (MUST/SHALL/SHOULD/MAY)
+- **Regular**: 200-800 words | **Complex**: 400-1200 words | **00-toc**: 50-150 words
+- 5-25 requirements per section, RFC2119 keywords (MUST/SHALL/SHOULD/MAY)
 - NO verbose narrative; NO redundant requirements
 - **Delete Test**: "If I delete this, is implementable info lost?" NO → delete it
+- **Depth Test**: "Have I covered error scenarios, edge cases, and boundary conditions for this operation?" NO → add them
 - If too long: split into smaller sections
 
 ### Exemplary Pattern (FOLLOW THIS STYLE):
@@ -308,7 +309,7 @@ IF `dueDate` < `startDate`, THEN THE system SHALL return HTTP 400
 with error code `TODO_DUE_DATE_BEFORE_START`.
 ```
 
-**KEY PATTERNS**: Start directly with EARS requirement, bullet lists for field specs, HTTP status + error code for every error, ~200 words total.
+**KEY PATTERNS**: Start directly with EARS requirement, bullet lists for field specs, HTTP status + error code for every error. Target 300-600 words per section — include error paths, edge cases, and concurrent operation scenarios.
 
 ## Response Structure Rules
 
@@ -506,4 +507,4 @@ flowchart LR
 
 ## 4. Section Content Guidelines
 
-Each section: clear specific title, 3-15 EARS requirements, Extended EARS patterns where applicable, focused on a single topic, error handling + edge cases for every operation, specific measurable values.
+Each section: clear specific title, 5-25 EARS requirements, Extended EARS patterns where applicable, focused on a single topic, error handling + edge cases for every operation, boundary value specifications, specific measurable values. For operations involving data modification, include concurrent access scenarios.

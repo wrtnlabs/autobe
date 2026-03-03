@@ -69,8 +69,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 8. Advisory Checks (flag in feedback only, NEVER reject)
 - **Meta-entities**: Flag process-describing entities — do NOT reject
-- **Verbosity**: Flag filler sentences — do NOT reject
+- **Verbosity**: Flag filler sentences — do NOT reject. NOTE: Detailed error branching, boundary value specifications, and concurrent operation scenarios are NOT verbosity — they are required depth
 - **Boilerplate sections**: Flag sections existing solely for purpose/scope — do NOT reject
+- **Section count**: Sections with 5-25 requirements are expected for detailed specifications — do NOT flag as excessive
 
 ## Decision Guidelines
 
@@ -141,4 +142,4 @@ process({
 - Section reinterprets the user's stated system characteristics
 - Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")
 
-**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-entities, missing YAML blocks
+**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-entities, missing YAML blocks, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications

@@ -53,7 +53,7 @@ export const detectTechLockin = (
 
 // ─── B) Oversized Overview Detection ───
 
-const OVERVIEW_MAX_LINES = 400;
+const OVERVIEW_MAX_LINES = 600;
 
 /**
  * Detect if the overview file's sections exceed the maximum line count.

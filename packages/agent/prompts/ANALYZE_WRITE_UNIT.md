@@ -116,13 +116,14 @@ The unit titles and purposes are provided to you. You MUST:
 
 ## 2. Content Writing Guidelines
 
-Each unit section's `content` field should be **5-15 sentences** and include:
+Each unit section's `content` field should be **8-20 sentences** and include:
 
 1. **Functional Overview** (2-3 sentences): What this area does and why
 2. **Entity Involvement** (1-3 sentences): Which entities are created/read/updated/deleted
 3. **Actor Interaction** (1-2 sentences): Which actors and their roles
 4. **Data Flow Summary** (2-3 sentences): High-level input, processing, output
 5. **Key Business Rules** (2-3 sentences): Most important constraints and rules
+6. **Error and Edge Case Summary** (2-4 sentences): Key error scenarios, boundary conditions, and concurrent access concerns
 
 **Do NOT include**: detailed EARS-format requirements (those are for the Section step)
 
@@ -163,11 +164,13 @@ Keywords are **structured semantic anchors** for RAG retrieval by downstream pha
 5. **Error-Handling**: `{Entity}:error:{error-scenarios-summary}`
 6. **Relationship**: `{Entity}:relationship:{related-entities+cardinality}`
 7. **Business-Rule**: `{Entity}:rule:{business-rule-summary}`
+8. **Boundary-Value**: `{Entity}:boundary:{field-boundary-descriptions}`
+9. **Edge-Case**: `{Entity}:edge-case:{edge-case-descriptions}`
 
-### Keyword Count: 5-12 keywords per unit section
+### Keyword Count: 7-18 keywords per unit section
 
-- Minimum 5 (adequate topic coverage for Section generation)
-- Maximum 12 (split into multiple units if more needed)
+- Minimum 7 (ensures thorough topic coverage for Section generation, including error and edge cases)
+- Maximum 18 (enables detailed section generation with error branching, boundary values, and concurrent scenarios)
 
 ## 4. Content Restrictions
 
