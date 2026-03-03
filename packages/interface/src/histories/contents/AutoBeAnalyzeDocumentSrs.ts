@@ -12,34 +12,39 @@ import { AutoBeAnalyzeDocumentWorkflow } from "./AutoBeAnalyzeDocumentWorkflow";
 /**
  * Semantic Layer: composite structure of 29148-based SRS sections.
  *
- * A set of SRS categories dynamically selected by the LLM based on project
- * characteristics. 3 required categories (introduction, systemOverview,
- * capabilities) are always present; 7 optional categories are included
- * depending on the project.
+ * Each `AutoBeAnalyzeFile` holds its own per-file SRS with only the categories
+ * relevant to that file's content. `selectedCategories` tracks which categories
+ * are populated. All categories are optional at the per-file level; the three
+ * project-level required categories (`introduction`, `systemOverview`,
+ * `capabilities`) must exist across the full set of files but need not all
+ * appear in every single file.
  *
  * @author Juntak
  */
 export interface AutoBeAnalyzeDocumentSrs {
   /**
-   * List of SRS category keys selected by the LLM.
+   * List of SRS category keys populated in this file's SRS.
    *
-   * Required categories (introduction, systemOverview, capabilities) are always
-   * included; optional categories are determined by project characteristics.
+   * Only categories relevant to this file's content are included. The three
+   * project-level required categories (introduction, systemOverview,
+   * capabilities) must exist across the full set of files but need not all
+   * appear in every single file.
    */
   selectedCategories: AutoBeAnalyzeDocumentSrs.Category[];
 
   // ──────────────────────────────────────────────
-  // Required categories (always present)
+  // All categories are optional at the per-file level.
+  // Project-level required: introduction, systemOverview, capabilities
   // ──────────────────────────────────────────────
 
   /** SRS Section 1: purpose, scope, glossary, references */
-  introduction: AutoBeAnalyzeDocumentIntroduction;
+  introduction?: AutoBeAnalyzeDocumentIntroduction;
 
   /** SRS Section 2: system context, stakeholders, assumptions/constraints */
-  systemOverview: AutoBeAnalyzeDocumentSystemOverview;
+  systemOverview?: AutoBeAnalyzeDocumentSystemOverview;
 
   /** SRS Section 4: Capability → Use Case → Functional Requirement */
-  capabilities: AutoBeAnalyzeDocumentCapability;
+  capabilities?: AutoBeAnalyzeDocumentCapability;
 
   // ──────────────────────────────────────────────
   // Optional categories (dynamically selected by LLM)
@@ -71,7 +76,8 @@ export namespace AutoBeAnalyzeDocumentSrs {
   /**
    * Available SRS category keys.
    *
-   * Required 3: introduction, systemOverview, capabilities Optional 7: the rest
+   * Project-level required 3: introduction, systemOverview, capabilities.
+   * Optional 7: the rest. At the per-file level all are optional.
    */
   export type Category =
     | "introduction"
@@ -85,7 +91,7 @@ export namespace AutoBeAnalyzeDocumentSrs {
     | "workflowStateMachine"
     | "dataDictionary";
 
-  /** Required categories that must always be included */
+  /** Required categories that must exist across the full set of files */
   export const REQUIRED_CATEGORIES: readonly Category[] = [
     "introduction",
     "systemOverview",

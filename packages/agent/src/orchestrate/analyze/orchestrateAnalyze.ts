@@ -15,6 +15,7 @@ import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { orchestrateAnalyzeDocument } from "./orchestrateAnalyzeDocument";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
@@ -199,19 +200,53 @@ export const orchestrateAnalyze = async (
   });
 
   // === ASSEMBLE ===
-  const files: AutoBeAnalyzeFile[] = fileStates.map((state) => ({
-    ...state.file,
-    content: AutoBeAnalyzeProgrammer.assembleContent(
+  const files: AutoBeAnalyzeFile[] = [];
+  for (let fileIndex = 0; fileIndex < fileStates.length; fileIndex++) {
+    const state = fileStates[fileIndex]!;
+    const content = AutoBeAnalyzeProgrammer.assembleContent(
       state.moduleResult!,
       state.unitResults!,
       state.sectionResults!,
-    ),
-    module: AutoBeAnalyzeProgrammer.assembleModule(
+    );
+    const module = AutoBeAnalyzeProgrammer.assembleModule(
       state.moduleResult!,
       state.unitResults!,
       state.sectionResults!,
-    ),
-  }));
+    );
+
+    // Evidence Layer: programmatic conversion from module/unit/section tree
+    const sections = AutoBeAnalyzeProgrammer.assembleEvidence(
+      fileIndex,
+      state.moduleResult!,
+      state.unitResults!,
+      state.sectionResults!,
+    );
+
+    // Semantic Layer: LLM-based SRS extraction
+    const categoryId = state.file.filename.replace(/\.md$/, "");
+    const documentEvent = await orchestrateAnalyzeDocument(ctx, {
+      fileIndex,
+      filename: state.file.filename,
+      categoryId,
+      content,
+      sections,
+    });
+
+    // Assemble the complete Two-Layer document
+    const document = AutoBeAnalyzeProgrammer.assembleDocument(
+      sections,
+      documentEvent.srs,
+    );
+
+    files.push({
+      ...state.file,
+      title: state.moduleResult!.title,
+      summary: state.moduleResult!.summary,
+      content,
+      module,
+      document,
+    });
+  }
 
   // Complete the analysis
   return ctx.dispatch({
