@@ -36,6 +36,7 @@ export * from "./AutoBeAnalyzeWriteSectionEvent";
 export * from "./AutoBeAnalyzeModuleReviewEvent";
 export * from "./AutoBeAnalyzeUnitReviewEvent";
 export * from "./AutoBeAnalyzeSectionReviewEvent";
+export * from "./AutoBeAnalyzeScenarioReviewEvent";
 
 // PRISMA
 export * from "./AutoBeDatabaseAuthorizationEvent";

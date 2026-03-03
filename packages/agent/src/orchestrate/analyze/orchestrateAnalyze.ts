@@ -16,6 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
+import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
 import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionReview";
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
@@ -48,6 +49,7 @@ import {
   buildFileYamlRootKeyMismatchMap,
   detectYamlRootKeyMismatches,
 } from "./utils/detectYamlRootKeyMismatch";
+import { validateScenarioBasics } from "./utils/validateScenarioBasics";
 
 /**
  * Per-file state tracking across all three stages (Module → Unit → Section).
@@ -72,6 +74,7 @@ interface IFileState {
   lastSectionRejectionSignature?: string;
 }
 
+const ANALYZE_SCENARIO_MAX_RETRY = 2;
 const ANALYZE_SECTION_FILE_MAX_RETRY = 5;
 const ANALYZE_SECTION_FILE_MAX_REVIEW = 1;
 const ANALYZE_SECTION_STAGNATION_MAX = 4;
@@ -96,12 +99,53 @@ export const orchestrateAnalyze = async (
     created_at: startTime.toISOString(),
   });
 
-  // Generate analysis scenario
-  const scenario: AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory =
-    await orchestrateAnalyzeScenario(ctx);
-  if (scenario.type === "assistantMessage")
-    return ctx.assistantMessage(scenario);
-  else ctx.dispatch(scenario);
+  // Generate analysis scenario with pre-check + LLM review + retry loop
+  let scenario!: AutoBeAnalyzeScenarioEvent;
+  let scenarioFeedback: string | undefined;
+
+  for (let attempt = 0; attempt <= ANALYZE_SCENARIO_MAX_RETRY; attempt++) {
+    const rawScenario = await orchestrateAnalyzeScenario(ctx, {
+      feedback: scenarioFeedback,
+    });
+    if (rawScenario.type === "assistantMessage")
+      return ctx.assistantMessage(rawScenario);
+
+    // 1) Programmatic pre-check
+    const preCheck = validateScenarioBasics({
+      prefix: rawScenario.prefix,
+      actors: rawScenario.actors,
+      entities: rawScenario.entities,
+    });
+    if (!preCheck.valid && attempt < ANALYZE_SCENARIO_MAX_RETRY) {
+      analyzeDebug(
+        `Scenario pre-check failed (attempt ${attempt}): ${preCheck.errors.join("; ")}`,
+      );
+      scenarioFeedback = `Programmatic validation failed:\n${preCheck.errors.join("\n")}`;
+      continue;
+    }
+
+    // 2) LLM review
+    const review = await orchestrateAnalyzeScenarioReview(ctx, {
+      scenario: rawScenario,
+      retry: attempt,
+    });
+
+    if (review.approved || attempt >= ANALYZE_SCENARIO_MAX_RETRY) {
+      analyzeDebug(
+        review.approved
+          ? `Scenario approved (attempt ${attempt})`
+          : `Scenario max retry reached (attempt ${attempt}), proceeding`,
+      );
+      scenario = rawScenario;
+      ctx.dispatch(scenario);
+      break;
+    }
+
+    analyzeDebug(
+      `Scenario rejected (attempt ${attempt}): ${review.feedback}`,
+    );
+    scenarioFeedback = review.feedback;
+  }
 
   // Initialize per-file state
   const fileStates: IFileState[] = scenario.files.map((file) => ({

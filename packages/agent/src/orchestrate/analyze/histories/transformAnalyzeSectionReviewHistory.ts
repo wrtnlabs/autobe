@@ -96,6 +96,14 @@ export const transformAnalyzeSectionReviewHistory = (
         **File**: ${props.file.filename}
         **Scope**: ${FixedAnalyzeTemplate.buildExpandedTemplate((props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[]).find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
 
+        ## Authorized Scenario Reference
+
+        **Entities**: ${props.scenario.entities.map((e) => e.name).join(", ")}
+        **Actors**: ${props.scenario.actors.map((a) => `${a.name}(${a.kind})`).join(", ")}
+        **Features**: ${(props.scenario.features ?? []).map((f) => f.id).join(", ") || "None"}
+
+        Reject if content references entities, actors, or features NOT in this list.
+
         ## Per-File Review Criteria
 
         Please evaluate this file's section content:
@@ -106,6 +114,7 @@ export const transformAnalyzeSectionReviewHistory = (
         5. Is EARS format correct and consistent?
         6. Is there no duplicate content within this file?
         7. (For canonical files 01/02/04) Are YAML spec blocks present?
+        8. Does content ONLY reference entities, actors, and features from the Authorized Scenario Reference above?
         ${
           props.feedback
             ? `

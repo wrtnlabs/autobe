@@ -20,6 +20,7 @@ import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeSc
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
+  props?: { feedback?: string },
 ): Promise<AutoBeAnalyzeScenarioEvent | AutoBeAssistantMessageHistory> => {
   const start: Date = new Date();
   const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
@@ -41,7 +42,7 @@ export const orchestrateAnalyzeScenario = async (
         preliminary,
       }),
       enforceFunctionCall: false,
-      ...transformAnalyzeScenarioHistory(ctx, preliminary),
+      ...transformAnalyzeScenarioHistory(ctx, preliminary, props?.feedback),
     });
     if (result.histories.at(-1)?.type === "assistantMessage")
       return out(result)({

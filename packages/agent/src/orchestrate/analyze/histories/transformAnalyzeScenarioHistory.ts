@@ -9,6 +9,7 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 export const transformAnalyzeScenarioHistory = (
   ctx: AutoBeContext,
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">,
+  feedback?: string,
 ): IAutoBeOrchestrateHistory => ({
   histories: [
     ...ctx
@@ -21,6 +22,24 @@ export const transformAnalyzeScenarioHistory = (
       created_at: new Date().toISOString(),
     },
     ...preliminary.getHistories(),
+    ...(feedback
+      ? [
+          {
+            id: v7(),
+            type: "assistantMessage" as const,
+            text: StringUtil.trim`
+              ## Previous Attempt Feedback
+
+              Your previous scenario was rejected during review. Please address the following issues:
+
+              ${feedback}
+
+              Revise your scenario to fix these problems while keeping everything else correct.
+            `,
+            created_at: new Date().toISOString(),
+          },
+        ]
+      : []),
   ],
   userMessage: StringUtil.trim`
     You are in the Analyze Scenario stage, which comes BEFORE Analyze Write.
