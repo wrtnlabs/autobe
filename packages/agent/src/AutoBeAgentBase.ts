@@ -7,13 +7,6 @@ import {
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
 import { emplaceMap } from "./utils/emplaceMap";
 
-interface Something {
-  nothing: { a: string; b: number };
-}
-const _a: Something = {
-  nothing: { a: "1", b: 2 },
-};
-
 /**
  * Base class for AutoBE agents providing event subscription capabilities.
  *
