@@ -1,6 +1,11 @@
 #!/usr/bin/env node
+import * as dotenv from "dotenv";
 import * as path from 'path';
 import * as fs from 'fs';
+
+// Load .env — try current directory first, then packages/estimate/
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 import { Command } from 'commander';
 import * as p from '@clack/prompts';
 import { CompareEvaluator } from '../compare/CompareEvaluator';

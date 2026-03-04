@@ -2,22 +2,57 @@
 
 A CLI tool that evaluates code quality for AutoBE-generated projects.
 
-## Getting Started
+## Quick Start
+
+### 1. Setup
+
 ```bash
 cd packages/estimate
 pnpm install
 ```
 
-Run your first evaluation:
+If you want AI-powered evaluation (optional), create a `.env` file in the `packages/estimate/` directory:
+
 ```bash
-pnpm start --input /path/to/project --output ./reports --verbose
+OPENROUTER_API_KEY=sk-or-...
+
+# Optional: Langfuse telemetry for tracking costs
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com
 ```
 
-Want AI-powered analysis too? Add the agent flags:
+The CLI automatically loads `.env` from your current directory or `packages/estimate/`.
+
+### 2. Run an evaluation
+
+Basic (scoring only, no API key needed):
 ```bash
-pnpm start --input /path/to/project --output ./reports --verbose \
-  --use-agent --provider openrouter --api-key "your-key"
+pnpm start -i /path/to/project -o ./reports -v
 ```
+
+With AI agents (needs `OPENROUTER_API_KEY`):
+```bash
+pnpm start -i /path/to/project -o ./reports -v --use-agent
+```
+
+### 3. Read the results
+
+Two files are generated in your output directory:
+- `estimate-report.md` — Human-readable score breakdown
+- `estimate-report.json` — Machine-readable for CI/CD
+
+The terminal also prints a summary like this:
+```
+📊 Final Score: 77/100 (Grade: C)
+
+   Phase Score:  84/100 × 70% = 59.0
+   Agent Score:  73/100 × 30% = 22.0
+   ─────────────────────────────
+   Total:        77/100
+```
+
+Scores 90+ are production-ready, 80+ need minor fixes, below 70 means significant issues.
 
 ## How It Works
 

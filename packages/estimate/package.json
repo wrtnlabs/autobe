@@ -10,9 +10,12 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/bin/estimate.ts",
-    "compare": "ts-node src/bin/compare.ts",
-    "dev": "ts-node-dev src/bin/estimate.ts",
+    "start": "tsx src/bin/estimate.ts",
+    "compare": "tsx src/bin/compare.ts",
+    "dev": "tsx --watch src/bin/estimate.ts",
+    "benchmark": "./run-benchmark.sh",
+    "benchmark:agent": "./run-benchmark.sh agent",
+    "benchmark:full": "./run-benchmark.sh full",
     "test": "vitest --passWithNoTests",
     "lint": "eslint src --ext .ts"
   },
@@ -32,8 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
-    "ts-node": "^10.9.0",
-    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.0.0",
     "vitest": "^1.2.0"
   },
   "engines": {
