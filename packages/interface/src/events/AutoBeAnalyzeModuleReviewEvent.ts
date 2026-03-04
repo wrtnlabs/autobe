@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeWriteModuleEvent } from "./AutoBeAnalyzeWriteModuleEvent";
+import { AutoBeAnalyzeModuleSection } from "./AutoBeAnalyzeWriteModuleEvent";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -40,7 +40,7 @@ export interface AutoBeAnalyzeModuleReviewEvent
    * Each entry contains the review verdict for a specific file, including
    * whether it was approved, feedback for improvement, and optional revisions.
    */
-  fileResults: AutoBeAnalyzeModuleReviewEvent.IFileResult[];
+  fileResults: AutoBeAnalyzeModuleReviewFileResult[];
 
   /**
    * Current iteration number of the review process.
@@ -58,38 +58,36 @@ export interface AutoBeAnalyzeModuleReviewEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeModuleReviewEvent {
-  /** Per-file result from the cross-file module review. */
-  export interface IFileResult {
-    /** Index of the file in the scenario's files array. */
-    fileIndex: number;
+/** Per-file result from the cross-file module review. */
+export interface AutoBeAnalyzeModuleReviewFileResult {
+  /** Index of the file in the scenario's files array. */
+  fileIndex: number;
 
-    /**
-     * Whether this file's module structure passed the cross-file review.
-     *
-     * If true, the file's module is consistent with the overall structure. If
-     * false, the file's module must be regenerated with feedback.
-     */
-    approved: boolean;
+  /**
+   * Whether this file's module structure passed the cross-file review.
+   *
+   * If true, the file's module is consistent with the overall structure. If
+   * false, the file's module must be regenerated with feedback.
+   */
+  approved: boolean;
 
-    /**
-     * Detailed review feedback for this specific file.
-     *
-     * Contains specific issues and recommendations for aligning with other
-     * files' structures.
-     */
-    feedback: string;
+  /**
+   * Detailed review feedback for this specific file.
+   *
+   * Contains specific issues and recommendations for aligning with other files'
+   * structures.
+   */
+  feedback: string;
 
-    /** Revised title if modified during review. Set to `null` if no revision. */
-    revisedTitle: string | null;
+  /** Revised title if modified during review. Set to `null` if no revision. */
+  revisedTitle: string | null;
 
-    /** Revised summary if modified during review. Set to `null` if no revision. */
-    revisedSummary: string | null;
+  /** Revised summary if modified during review. Set to `null` if no revision. */
+  revisedSummary: string | null;
 
-    /**
-     * Revised module sections if modified during review. Set to `null` if no
-     * revision.
-     */
-    revisedSections: AutoBeAnalyzeWriteModuleEvent.IModuleSection[] | null;
-  }
+  /**
+   * Revised module sections if modified during review. Set to `null` if no
+   * revision.
+   */
+  revisedSections: AutoBeAnalyzeModuleSection[] | null;
 }

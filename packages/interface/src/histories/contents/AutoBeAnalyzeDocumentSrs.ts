@@ -30,7 +30,7 @@ export interface AutoBeAnalyzeDocumentSrs {
    * capabilities) must exist across the full set of files but need not all
    * appear in every single file.
    */
-  selectedCategories: AutoBeAnalyzeDocumentSrs.Category[];
+  selectedCategories: AutoBeAnalyzeDocumentSrsCategory[];
 
   // ──────────────────────────────────────────────
   // All categories are optional at the per-file level.
@@ -72,34 +72,31 @@ export interface AutoBeAnalyzeDocumentSrs {
   dataDictionary?: AutoBeAnalyzeDocumentDataDictionary;
 }
 
-export namespace AutoBeAnalyzeDocumentSrs {
-  /**
-   * Available SRS category keys.
-   *
-   * Project-level required 3: introduction, systemOverview, capabilities.
-   * Optional 7: the rest. At the per-file level all are optional.
-   */
-  export type Category =
-    | "introduction"
-    | "systemOverview"
-    | "externalInterface"
-    | "capabilities"
-    | "physicalPerformance"
-    | "securityQuality"
-    | "domainModel"
-    | "actorPermissionMatrix"
-    | "workflowStateMachine"
-    | "dataDictionary";
+/**
+ * Available SRS category keys.
+ *
+ * Project-level required 3: introduction, systemOverview, capabilities.
+ * Optional 7: the rest. At the per-file level all are optional.
+ */
+export type AutoBeAnalyzeDocumentSrsCategory =
+  | "introduction"
+  | "systemOverview"
+  | "externalInterface"
+  | "capabilities"
+  | "physicalPerformance"
+  | "securityQuality"
+  | "domainModel"
+  | "actorPermissionMatrix"
+  | "workflowStateMachine"
+  | "dataDictionary";
 
-  /** Required categories that must exist across the full set of files */
-  export const REQUIRED_CATEGORIES: readonly Category[] = [
-    "introduction",
-    "systemOverview",
-    "capabilities",
-  ] as const;
+/** Required categories that must exist across the full set of files */
+export const AutoBeAnalyzeDocumentSrsRequiredCategories: readonly AutoBeAnalyzeDocumentSrsCategory[] =
+  ["introduction", "systemOverview", "capabilities"] as const;
 
-  /** All available categories */
-  export const ALL_CATEGORIES: readonly Category[] = [
+/** All available categories */
+export const AutoBeAnalyzeDocumentSrsAllCategories: readonly AutoBeAnalyzeDocumentSrsCategory[] =
+  [
     "introduction",
     "systemOverview",
     "externalInterface",
@@ -111,4 +108,3 @@ export namespace AutoBeAnalyzeDocumentSrs {
     "workflowStateMachine",
     "dataDictionary",
   ] as const;
-}

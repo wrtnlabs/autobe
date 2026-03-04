@@ -1,6 +1,8 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeUnitSection,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
 } from "@autobe/interface";
@@ -11,13 +13,17 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
+import {
+  FixedAnalyzeTemplateFeature,
+  buildFixedAnalyzeCanonicalSourceContent,
+  buildFixedAnalyzeExpandedTemplate,
+} from "../structures/FixedAnalyzeTemplate";
 
 export const transformAnalyzeWriteSectionHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
     allUnitEvents: AutoBeAnalyzeWriteUnitEvent[];
@@ -27,15 +33,14 @@ export const transformAnalyzeWriteSectionHistory = (
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection:
-    | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-    | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
-  const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
+  const moduleSection: AutoBeAnalyzeModuleSection | undefined =
+    props.moduleEvent.moduleSections[props.moduleIndex];
+  const unitSection: AutoBeAnalyzeUnitSection | undefined =
     props.unitEvent.unitSections[props.unitIndex];
 
   // Find the file template for scope context (using expanded template for conditional modules)
-  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
-    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  const expandedTemplate = buildFixedAnalyzeExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
   );
   const fileTemplate = expandedTemplate.find(
     (t) => t.filename === props.file.filename,
@@ -50,8 +55,7 @@ export const transformAnalyzeWriteSectionHistory = (
     .join("\n");
 
   // Build canonical source declaration
-  const canonicalSourceDeclaration =
-    FixedAnalyzeTemplate.buildCanonicalSourceContent();
+  const canonicalSourceDeclaration = buildFixedAnalyzeCanonicalSourceContent();
 
   return {
     histories: [

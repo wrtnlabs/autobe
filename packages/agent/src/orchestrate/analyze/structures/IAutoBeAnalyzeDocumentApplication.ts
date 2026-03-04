@@ -14,42 +14,39 @@ export interface IAutoBeAnalyzeDocumentApplication {
    *
    * @param props Request containing the extraction result
    */
-  process(props: IAutoBeAnalyzeDocumentApplication.IProps): void;
+  process(props: IAutoBeAnalyzeDocumentApplicationProps): void;
 }
 
-export namespace IAutoBeAnalyzeDocumentApplication {
-  export interface IProps {
-    /**
-     * Think before you act.
-     *
-     * Before completing the extraction, reflect on:
-     *
-     * - Which SRS categories are relevant to this file's content?
-     * - Have you mapped all traceable items to valid sectionIds?
-     * - Have you included only categories that have substantive content?
-     */
-    thinking?: string | null;
+export interface IAutoBeAnalyzeDocumentApplicationProps {
+  /**
+   * Think before you act.
+   *
+   * Before completing the extraction, reflect on:
+   *
+   * - Which SRS categories are relevant to this file's content?
+   * - Have you mapped all traceable items to valid sectionIds?
+   * - Have you included only categories that have substantive content?
+   */
+  thinking?: string | null;
 
-    /** Extraction result. */
-    request: IComplete;
-  }
+  /** Extraction result. */
+  request: IAutoBeAnalyzeDocumentApplicationComplete;
+}
 
-  /** Request to complete the SRS extraction. */
-  export interface IComplete {
-    /** Type discriminator for the request. */
-    type: "complete";
+/** Request to complete the SRS extraction. */
+export interface IAutoBeAnalyzeDocumentApplicationComplete {
+  /** Type discriminator for the request. */
+  type: "complete";
 
-    /**
-     * The extracted SRS data.
-     *
-     * Only populate categories that are relevant to this file's content. The
-     * `selectedCategories` array must list exactly the categories that have
-     * data populated.
-     *
-     * Every traceable item (those with `sourceSectionIds`) must reference at
-     * least one valid sectionId from the Evidence Layer provided in the
-     * context.
-     */
-    srs: AutoBeAnalyzeDocumentSrs;
-  }
+  /**
+   * The extracted SRS data.
+   *
+   * Only populate categories that are relevant to this file's content. The
+   * `selectedCategories` array must list exactly the categories that have data
+   * populated.
+   *
+   * Every traceable item (those with `sourceSectionIds`) must reference at
+   * least one valid sectionId from the Evidence Layer provided in the context.
+   */
+  srs: AutoBeAnalyzeDocumentSrs;
 }

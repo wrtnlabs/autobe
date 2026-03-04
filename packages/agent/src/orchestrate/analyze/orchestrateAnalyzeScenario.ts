@@ -15,8 +15,12 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
-import { FixedAnalyzeTemplate } from "./structures/FixedAnalyzeTemplate";
-import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
+import { buildFixedAnalyzeScenarioFiles } from "./structures/FixedAnalyzeTemplate";
+import {
+  IAutoBeAnalyzeScenarioApplication,
+  IAutoBeAnalyzeScenarioApplicationComplete,
+  IAutoBeAnalyzeScenarioApplicationProps,
+} from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
@@ -31,7 +35,7 @@ export const orchestrateAnalyzeScenario = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeScenarioApplicationComplete | null> =
       {
         value: null,
       };
@@ -66,7 +70,7 @@ export const orchestrateAnalyzeScenario = async (
         ...(f.providers ? { providers: f.providers } : {}),
         ...(f.jobs ? { jobs: f.jobs } : {}),
       })),
-      files: FixedAnalyzeTemplate.buildScenarioFiles(
+      files: buildFixedAnalyzeScenarioFiles(
         pointer.value.prefix,
         features,
       ) as AutoBeAnalyzeScenarioEvent["files"],
@@ -81,15 +85,15 @@ export const orchestrateAnalyzeScenario = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeScenarioApplicationComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
+  ): IValidation<IAutoBeAnalyzeScenarioApplicationProps> => {
     input = repairMissingRequestType(input);
-    const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
+    const result: IValidation<IAutoBeAnalyzeScenarioApplicationProps> =
+      typia.validate<IAutoBeAnalyzeScenarioApplicationProps>(input);
     if (result.success === false) return result;
 
     if (result.data.request.type === "complete") return result;
