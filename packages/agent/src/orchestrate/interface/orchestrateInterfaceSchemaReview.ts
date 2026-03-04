@@ -2,7 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeDatabase,
   AutoBeEventSource,
-  AutoBeInterfaceSchemaPropertyRevise,
+  AutoBeInterfaceSchemaReviewEvent,
   // AutoBeInterfaceSchemaReviewEvent,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
@@ -10,6 +10,7 @@ import {
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
+import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -24,21 +25,12 @@ import { transformInterfaceSchemaReviewHistory } from "./histories/transformInte
 import { AutoBeInterfaceSchemaProgrammer } from "./programmers/AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
 import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
-import { IAutoBeInterfaceSchemaReviewConfig } from "./structures/IAutoBeInterfaceSchemaReviewConfig";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 import { fulfillJsonSchemaErrorMessages } from "./utils/fulfillJsonSchemaErrorMessages";
 
-// interface IConfig {
-//   kind: AutoBeInterfaceSchemaReviewEvent["kind"];
-//   systemPrompt: string;
-// }
-
-export async function orchestrateInterfaceSchemaReview<
-  Revise extends AutoBeInterfaceSchemaPropertyRevise,
->(
+export async function orchestrateInterfaceSchemaReview(
   ctx: AutoBeContext,
-  config: IAutoBeInterfaceSchemaReviewConfig<Revise>,
   props: {
     document: AutoBeOpenApi.IDocument;
     schemas: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive>;
@@ -54,15 +46,7 @@ export async function orchestrateInterfaceSchemaReview<
         AutoBeOpenApiTypeChecker.isObject(v) &&
         Object.keys(v.properties).length !== 0,
     )
-    .map(([k]) => k)
-    .filter(
-      (typeName) =>
-        config.kind !== "security" ||
-        AutoBeInterfaceSchemaReviewProgrammer.filterSecurity({
-          document: props.document,
-          typeName,
-        }),
-    );
+    .map(([k]) => k);
   const x: Record<string, AutoBeOpenApi.IJsonSchemaDescriptive> = {};
   await executeCachedBatch(
     ctx,
@@ -84,7 +68,7 @@ export async function orchestrateInterfaceSchemaReview<
           return;
         }
         const reviewed: AutoBeOpenApi.IJsonSchemaDescriptive.IObject =
-          await process(ctx, config, {
+          await process(ctx, {
             instruction: props.instruction,
             document: props.document,
             typeName: it,
@@ -103,9 +87,8 @@ export async function orchestrateInterfaceSchemaReview<
   return x;
 }
 
-async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
+async function process(
   ctx: AutoBeContext,
-  config: IAutoBeInterfaceSchemaReviewConfig<Revise>,
   props: {
     instruction: string;
     document: AutoBeOpenApi.IDocument;
@@ -145,7 +128,8 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
-    application: config.jsonSchema(),
+    application:
+      typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
     source: SOURCE,
     kinds: [
       "analysisSections",
@@ -187,13 +171,13 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     },
   });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete<Revise> | null> =
+    const pointer: IPointer<IAutoBeInterfaceSchemaReviewApplication.IComplete | null> =
       {
         value: null,
       };
     const result: AutoBeContext.IResult = await ctx.conversate({
       source: SOURCE,
-      controller: createController(ctx, config, {
+      controller: createController(ctx, {
         typeName: props.typeName,
         operations: props.document.operations,
         schema: props.reviewSchema,
@@ -204,7 +188,6 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       promptCacheKey: props.promptCacheKey,
       ...transformInterfaceSchemaReviewHistory({
         state: ctx.state(),
-        systemPrompt: config.systemPrompt,
         instruction: props.instruction,
         typeName: props.typeName,
         reviewOperations: props.reviewOperations,
@@ -222,7 +205,6 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       });
     ctx.dispatch({
       type: SOURCE,
-      kind: config.kind,
       id: v7(),
       typeName: props.typeName,
       schema: props.reviewSchema,
@@ -236,20 +218,19 @@ async function process<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
       total: props.progress.total,
       completed: ++props.progress.completed,
       created_at: new Date().toISOString(),
-    });
+    } satisfies AutoBeInterfaceSchemaReviewEvent);
     return out(result)(content);
   });
 }
 
-function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
+function createController(
   ctx: AutoBeContext,
-  config: IAutoBeInterfaceSchemaReviewConfig<Revise>,
   props: {
     typeName: string;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
     operations: AutoBeOpenApi.IOperation[];
     pointer: IPointer<
-      IAutoBeInterfaceSchemaReviewApplication.IComplete<Revise> | null | false
+      IAutoBeInterfaceSchemaReviewApplication.IComplete | null | false
     >;
     preliminary: AutoBePreliminaryController<
       | "analysisSections"
@@ -263,10 +244,9 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
     >;
   },
 ): IAgenticaController.IClass {
-  const validate: Validator<Revise> = (next) => {
-    const result: IValidation<
-      IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>
-    > = config.validate(next);
+  const validate: Validator = (next) => {
+    const result: IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps> =
+      typia.validate<IAutoBeInterfaceSchemaReviewApplication.IProps>(next);
     if (result.success === false) {
       fulfillJsonSchemaErrorMessages(result.errors);
       return result;
@@ -297,7 +277,11 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
   };
 
   const application: ILlmApplication = props.preliminary.fixApplication(
-    config.application(validate),
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>({
+      validate: {
+        process: validate,
+      },
+    }),
   );
   AutoBeInterfaceSchemaReviewProgrammer.fixApplication({
     everyModels:
@@ -316,12 +300,12 @@ function createController<Revise extends AutoBeInterfaceSchemaPropertyRevise>(
         if (input.request.type === "complete")
           props.pointer.value = input.request;
       },
-    } satisfies IAutoBeInterfaceSchemaReviewApplication<Revise>,
+    } satisfies IAutoBeInterfaceSchemaReviewApplication,
   };
 }
 
-type Validator<Revise extends AutoBeInterfaceSchemaPropertyRevise> = (
+type Validator = (
   input: unknown,
-) => IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>>;
+) => IValidation<IAutoBeInterfaceSchemaReviewApplication.IProps>;
 
 const SOURCE = "interfaceSchemaReview" satisfies AutoBeEventSource;

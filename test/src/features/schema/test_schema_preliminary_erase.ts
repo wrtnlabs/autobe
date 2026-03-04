@@ -3,7 +3,6 @@ import { AutoBePreliminaryController } from "@autobe/agent/src/orchestrate/commo
 import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orchestrate/interface/structures/IAutoBeInterfaceSchemaReviewApplication";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
-import { AutoBeInterfaceSchemaPropertyRevise } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
 import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import OpenAI from "openai";
@@ -35,9 +34,7 @@ export const test_schema_preliminary_erase = async () => {
   });
 
   const application: ILlmApplication =
-    typia.llm.application<
-      IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-    >();
+    typia.llm.application<IAutoBeInterfaceSchemaReviewApplication>();
   const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"
@@ -49,9 +46,7 @@ export const test_schema_preliminary_erase = async () => {
     | "previousInterfaceSchemas"
   > = new AutoBePreliminaryController({
     application:
-      typia.json.application<
-        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-      >(),
+      typia.json.application<IAutoBeInterfaceSchemaReviewApplication>(),
     source: "interfaceSchemaReview",
     kinds: [
       "analysisSections",
@@ -76,7 +71,7 @@ export const test_schema_preliminary_erase = async () => {
       .map((r) => r.$ref.split("/").pop()!)
       .sort(),
     [
-      "IAutoBeInterfaceSchemaReviewApplication.ICompleteAutoBeInterfaceSchemaPropertyRevise",
+      "IAutoBeInterfaceSchemaReviewApplication.IComplete",
       "IAutoBePreliminaryGetAnalysisSections",
       "IAutoBePreliminaryGetDatabaseSchemas",
       "IAutoBePreliminaryGetInterfaceOperations",

@@ -59,7 +59,7 @@ interface IComplete {
 |--------------------------------------------------|----------------|--------------------|----------------|
 | `*_member_id`, `*_author_id` (when = auth actor) | ❌ FORBIDDEN  | ✅ As object       | From JWT       |
 | `*_session_id`                                   | ❌ FORBIDDEN  | ❌ FORBIDDEN       | Server-managed |
-| `password`, `*_hashed`, `salt`, `secret`         | ❌ FORBIDDEN  | ❌ FORBIDDEN       | Security       |
+| `*_hashed`, `salt`, `secret_key`                 | ❌ FORBIDDEN  | ❌ FORBIDDEN       | Security       |
 | `id` (primary key)                               | ❌ FORBIDDEN  | ✅ Include         | Auto-generated |
 | `created_at`, `updated_at`, `deleted_at`         | ❌ FORBIDDEN  | ✅ If exists in DB | System-managed |
 | `*_count` (aggregations)                         | ❌ FORBIDDEN  | ✅ Include         | Computed       |

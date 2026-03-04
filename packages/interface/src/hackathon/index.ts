@@ -9,3 +9,4 @@ export * from "./IAutoBeHackathonSessionConnection";
 
 export * from "./IAuthorizationToken";
 export * from "./IPage";
+export * from "./ISetAuthorizationHeaders";
