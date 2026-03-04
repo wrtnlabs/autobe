@@ -2,9 +2,9 @@ import { AutoBeDatabaseCompiler } from "@autobe/compiler";
 import * as fs from "fs";
 import * as path from "path";
 
-import type { EvaluationContext, Issue } from "../../types";
+import type { EvaluationContext } from "../../types";
 import { createIssue } from "../../types";
-import { GateEvaluator } from "../base";
+import { GateCheckResult, GateEvaluator } from "../base";
 
 /**
  * Prisma Evaluator Validates Prisma schema using AutoBeDatabaseCompiler
@@ -14,11 +14,7 @@ export class PrismaEvaluator extends GateEvaluator {
   readonly name = "PrismaEvaluator";
   readonly description = "Validates Prisma schema using in-memory compiler";
 
-  async checkGate(context: EvaluationContext): Promise<{
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  }> {
+  async checkGate(context: EvaluationContext): Promise<GateCheckResult> {
     if (context.files.prismaSchemas.length === 0) {
       return {
         passed: true,
@@ -72,7 +68,7 @@ export class PrismaEvaluator extends GateEvaluator {
                 : typeof result.error === "object" &&
                     result.error !== null &&
                     "message" in result.error
-                  ? (result.error as { message: string }).message
+                  ? String((result.error as Record<string, unknown>).message)
                   : String(result.error),
             )}`;
 

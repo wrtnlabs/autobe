@@ -5,6 +5,12 @@ import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Location of a code block */
+interface CodeBlockLocation {
+  file: string;
+  line: number;
+}
+
 export class DuplicationEvaluator extends BaseEvaluator {
   readonly name = "DuplicationEvaluator";
   readonly phase = "quality" as const;
@@ -21,7 +27,7 @@ export class DuplicationEvaluator extends BaseEvaluator {
       ...context.files.providers,
     ];
 
-    const codeBlocks: Map<string, { file: string; line: number }[]> = new Map();
+    const codeBlocks: Map<string, CodeBlockLocation[]> = new Map();
 
     // Read all files in parallel
     const fileContents = await Promise.all(
@@ -80,7 +86,7 @@ export class DuplicationEvaluator extends BaseEvaluator {
   private collectBlocks(
     filePath: string,
     content: string,
-    codeBlocks: Map<string, { file: string; line: number }[]>,
+    codeBlocks: Map<string, CodeBlockLocation[]>,
   ): void {
     const lines = content.split("\n");
 

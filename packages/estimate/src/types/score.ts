@@ -109,33 +109,70 @@ export interface PhaseResult {
 
 /** Reference info (no score impact) */
 export interface ReferenceInfo {
-  complexity: {
+  complexity: ReferenceInfo.Complexity;
+  duplication: ReferenceInfo.Duplication;
+  naming: ReferenceInfo.Naming;
+  jsdoc: ReferenceInfo.JsDoc;
+  security: ReferenceInfo.Security;
+  schemaSync: ReferenceInfo.SchemaSync;
+}
+export namespace ReferenceInfo {
+  export interface Complexity {
     totalFunctions: number;
     complexFunctions: number;
     maxComplexity: number;
     issues: Issue[];
-  };
-  duplication: {
+  }
+  export interface Duplication {
     totalBlocks: number;
     issues: Issue[];
-  };
-  naming: {
+  }
+  export interface Naming {
     totalIssues: number;
     issues: Issue[];
-  };
-  jsdoc: {
+  }
+  export interface JsDoc {
     totalMissing: number;
     issues: Issue[];
-  };
-  security: {
+  }
+  export interface Security {
     totalIssues: number;
     issues: Issue[];
-  };
-  schemaSync: {
+  }
+  export interface SchemaSync {
     totalTypes: number;
     emptyTypes: number;
     issues: Issue[];
-  };
+  }
+}
+
+/** Penalty detail types */
+export interface WarningPenalty {
+  amount: number;
+  ratio: string;
+}
+
+export interface DuplicationPenalty {
+  amount: number;
+  blocks: number;
+}
+
+export interface JsDocPenalty {
+  amount: number;
+  missing: number;
+  ratio: string;
+}
+
+export interface SchemaSyncPenalty {
+  amount: number;
+  emptyTypes: number;
+}
+
+export interface EvaluationPenalties {
+  warning?: WarningPenalty;
+  duplication?: DuplicationPenalty;
+  jsdoc?: JsDocPenalty;
+  schemaSync?: SchemaSyncPenalty;
 }
 
 /** Final evaluation result */
@@ -143,9 +180,18 @@ export interface EvaluationResult {
   targetPath: string;
   totalScore: number;
   grade: Grade;
-
-  // New scoring phases
-  phases: {
+  phases: EvaluationResult.Phases;
+  reference: ReferenceInfo;
+  summary: EvaluationResult.Summary;
+  criticalIssues: Issue[];
+  warnings: Issue[];
+  suggestions: Issue[];
+  meta: EvaluationResult.Meta;
+  penalties?: EvaluationPenalties;
+  agentEvaluations?: AgentResult[];
+}
+export namespace EvaluationResult {
+  export interface Phases {
     gate: PhaseResult;
     documentQuality: PhaseResult;
     requirementsCoverage: PhaseResult;
@@ -153,35 +199,19 @@ export interface EvaluationResult {
     logicCompleteness: PhaseResult;
     apiCompleteness: PhaseResult;
     goldenSet?: PhaseResult;
-  };
-
-  // Reference info (no score impact)
-  reference: ReferenceInfo;
-
-  summary: {
+  }
+  export interface Summary {
     totalIssues: number;
     criticalCount: number;
     warningCount: number;
     suggestionCount: number;
-  };
-
-  criticalIssues: Issue[];
-  warnings: Issue[];
-  suggestions: Issue[];
-
-  meta: {
+  }
+  export interface Meta {
     evaluatedAt: string;
     totalDurationMs: number;
     estimateVersion: string;
     evaluatedFiles: number;
-  };
-  penalties?: {
-    warning?: { amount: number; ratio: string };
-    duplication?: { amount: number; blocks: number };
-    jsdoc?: { amount: number; missing: number; ratio: string };
-    schemaSync?: { amount: number; emptyTypes: number };
-  };
-  agentEvaluations?: AgentResult[];
+  }
 }
 
 /** Convert score to grade */

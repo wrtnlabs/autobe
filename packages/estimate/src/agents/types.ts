@@ -19,6 +19,25 @@ export interface AgentIssue {
   suggestion?: string;
 }
 
+/** Token usage from LLM call */
+export interface TokenUsage {
+  input: number;
+  output: number;
+}
+
+/** Parsed response from agent LLM call */
+export interface AgentParseResult {
+  issues: AgentIssue[];
+  score: number;
+  summary: string;
+}
+
+/** Result from a chunk evaluation (parsed + optional token usage) */
+export interface AgentChunkResult {
+  parsed: AgentParseResult;
+  tokensUsed?: TokenUsage;
+}
+
 /** Agent evaluation result */
 export interface AgentResult {
   agent: string;
@@ -28,10 +47,7 @@ export interface AgentResult {
   score: number;
   summary: string;
   durationMs: number;
-  tokensUsed?: {
-    input: number;
-    output: number;
-  };
+  tokensUsed?: TokenUsage;
 }
 
 /** Default model */

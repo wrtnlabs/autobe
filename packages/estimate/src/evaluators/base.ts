@@ -1,5 +1,18 @@
 import type { EvaluationContext, Issue, Phase, PhaseResult } from "../types";
 
+/** Result of measureTime wrapper */
+export interface MeasureTimeResult<T> {
+  result: T;
+  durationMs: number;
+}
+
+/** Result of a gate check */
+export interface GateCheckResult {
+  passed: boolean;
+  issues: Issue[];
+  metrics?: Record<string, number | string | boolean>;
+}
+
 /** Base evaluator abstract class All evaluators must extend this class */
 export abstract class BaseEvaluator {
   /** Evaluator name */
@@ -17,7 +30,7 @@ export abstract class BaseEvaluator {
   /** Time measurement wrapper */
   protected async measureTime<T>(
     fn: () => Promise<T>,
-  ): Promise<{ result: T; durationMs: number }> {
+  ): Promise<MeasureTimeResult<T>> {
     const start = performance.now();
     const result = await fn();
     const durationMs = Math.round(performance.now() - start);
@@ -68,11 +81,7 @@ export abstract class GateEvaluator extends BaseEvaluator {
   readonly phase: Phase = "gate";
 
   /** Check gate pass status */
-  abstract checkGate(context: EvaluationContext): Promise<{
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  }>;
+  abstract checkGate(context: EvaluationContext): Promise<GateCheckResult>;
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
     const { result, durationMs } = await this.measureTime(() =>

@@ -4,7 +4,7 @@ import * as path from "path";
 
 import type { EvaluationContext, Issue } from "../../types";
 import { createIssue } from "../../types";
-import { GateEvaluator } from "../base";
+import { GateCheckResult, GateEvaluator } from "../base";
 import { type GoldenProject, GoldenSetEvaluator } from "../golden";
 
 const HEALTH_CHECK_TIMEOUT_MS = 60000;
@@ -15,6 +15,20 @@ const BUILD_TIMEOUT_MS = 120000;
 
 type RuntimeMode = "docker" | "direct";
 
+/** Result of building the project */
+interface BuildResult {
+  success: boolean;
+  issues: Issue[];
+}
+
+/** Parsed test output */
+interface TestOutputResult {
+  passed: number;
+  failed: number;
+  total: number;
+  durationMs: number;
+}
+
 export class RuntimeEvaluator extends GateEvaluator {
   readonly name = "RuntimeEvaluator";
   readonly description =
@@ -22,11 +36,7 @@ export class RuntimeEvaluator extends GateEvaluator {
 
   private serverProcess: ChildProcess | null = null;
 
-  async checkGate(context: EvaluationContext): Promise<{
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  }> {
+  async checkGate(context: EvaluationContext): Promise<GateCheckResult> {
     const rootPath = context.project.rootPath;
     const composeFile = path.join(rootPath, "docker-compose.yml");
     const hasDocker = fs.existsSync(composeFile);
@@ -196,10 +206,7 @@ export class RuntimeEvaluator extends GateEvaluator {
     return DEFAULT_API_PORT;
   }
 
-  private buildProject(rootPath: string): {
-    success: boolean;
-    issues: Issue[];
-  } {
+  private buildProject(rootPath: string): BuildResult {
     const issues: Issue[] = [];
 
     // 1. prisma generate
@@ -391,12 +398,7 @@ export class RuntimeEvaluator extends GateEvaluator {
     return false;
   }
 
-  private async runTests(rootPath: string): Promise<{
-    passed: number;
-    failed: number;
-    total: number;
-    durationMs: number;
-  } | null> {
+  private async runTests(rootPath: string): Promise<TestOutputResult | null> {
     return new Promise((resolve) => {
       const startTime = Date.now();
       let output = "";
@@ -433,7 +435,7 @@ export class RuntimeEvaluator extends GateEvaluator {
   private parseTestOutput(
     output: string,
     durationMs: number,
-  ): { passed: number; failed: number; total: number; durationMs: number } {
+  ): TestOutputResult {
     if (output.includes("Success") && !output.includes("Failed")) {
       return { passed: 1, failed: 0, total: 1, durationMs };
     }
