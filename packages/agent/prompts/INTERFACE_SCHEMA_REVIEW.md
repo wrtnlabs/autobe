@@ -142,7 +142,7 @@ DTOs must enable complete operations in single API calls.
 
 ### Circular Reference Removal
 
-Circular back-references in DTOs must be erased. Use `erase` for the DTO property that causes the cycle.
+Circular back-references in DTOs must be erased — the child is accessed within the parent's endpoint context, so repeating parent data in every child record is redundant (especially in paginated lists). `IInvert` provides parent context when needed across different endpoints.
 
 DB-mapped non-relation properties (e.g., `title`, `start_date`) and recognized-role fields (e.g., `page`, `*_count`) are **never** valid erase targets — always `keep` them. Only phantom fields (no DB mapping, no recognized role, no valid specification) may be erased.
 
@@ -401,7 +401,7 @@ Security violation:
 
 Circular back-reference:
 ```typescript
-{ key: "articles", databaseSchemaProperty: "articles", reason: "Circular back-reference — removing from DTO", type: "erase" }
+{ key: "articles", databaseSchemaProperty: "articles", reason: "Circular back-reference — child accessed within parent context", type: "erase" }
 ```
 
 ### `excludes` entries
@@ -559,7 +559,7 @@ process({
 - [ ] FK fields in Read DTOs transformed to `$ref` objects with relation name in `databaseSchemaProperty`
 - [ ] FK fields in Create/Update DTOs kept as scalar IDs/codes with column name in `databaseSchemaProperty`
 - [ ] Compositions nested in both Read and Create DTOs
-- [ ] No circular references
+- [ ] No circular references (parent back-refs erased; IInvert provides parent context)
 - [ ] Path parameters not duplicated in request body
 - [ ] DB-mapped non-relation and recognized-role fields never erased
 - [ ] `excludes` used for aggregation, actor, and path-param relations
