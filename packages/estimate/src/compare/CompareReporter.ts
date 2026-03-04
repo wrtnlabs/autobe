@@ -2,7 +2,7 @@ import chalk from "chalk";
 import * as fs from "fs";
 import * as path from "path";
 
-import type { CompareResult } from "./types";
+import type { CompareResult, ReportPaths } from "./types";
 
 export class CompareReporter {
   generateMarkdown(result: CompareResult): string {
@@ -248,7 +248,7 @@ export class CompareReporter {
   saveReports(
     result: CompareResult,
     outputPath: string,
-  ): { mdPath: string; jsonPath: string } {
+  ): ReportPaths {
     if (!fs.existsSync(outputPath)) {
       fs.mkdirSync(outputPath, { recursive: true });
     }

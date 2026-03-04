@@ -4,6 +4,7 @@ import * as path from "path";
 import { CLIOptions, runCLI } from "../cli";
 import type {
   AgentEvaluation,
+  AgentScores,
   CompareInput,
   CompareResult,
   EstimateReport,
@@ -130,7 +131,7 @@ export class CompareEvaluator {
 
   private extractAgentScores(
     report: EstimateReport,
-  ): { security: number; llmQuality: number } | undefined {
+  ): AgentScores | undefined {
     if (!report.agentEvaluations || report.agentEvaluations.length === 0) {
       return undefined;
     }

@@ -41,13 +41,16 @@ export function buildRouteMap(rootPath: string): RouteInfo[] {
   return routes;
 }
 
+/** Options for finding an endpoint */
+export interface FindEndpointOptions {
+  pathKeywords: string[];
+  mustContain?: string;
+  method?: string;
+}
+
 export function findEndpoint(
   routes: RouteInfo[],
-  options: {
-    pathKeywords: string[];
-    mustContain?: string;
-    method?: string;
-  },
+  options: FindEndpointOptions,
 ): ResolvedEndpoint | null {
   const { pathKeywords, mustContain, method } = options;
 
