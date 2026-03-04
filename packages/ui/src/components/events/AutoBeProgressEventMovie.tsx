@@ -102,7 +102,7 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
       case "interfaceSchemaReview":
         return {
           title: "Interface Schemas Review",
-          description: `Reviewing API type schemas' ${event.kind}`,
+          description: `Reviewing API type schemas`,
         };
       case "interfaceSchemaComplement":
         return {
