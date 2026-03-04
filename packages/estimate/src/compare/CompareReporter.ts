@@ -245,10 +245,7 @@ export class CompareReporter {
     console.log("");
   }
 
-  saveReports(
-    result: CompareResult,
-    outputPath: string,
-  ): ReportPaths {
+  saveReports(result: CompareResult, outputPath: string): ReportPaths {
     if (!fs.existsSync(outputPath)) {
       fs.mkdirSync(outputPath, { recursive: true });
     }

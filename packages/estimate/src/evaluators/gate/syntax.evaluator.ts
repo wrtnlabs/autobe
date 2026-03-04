@@ -36,9 +36,7 @@ export class SyntaxEvaluator extends GateEvaluator {
     };
   }
 
-  private async checkFile(
-    filePath: string,
-  ): Promise<FileCheckResult> {
+  private async checkFile(filePath: string): Promise<FileCheckResult> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
       const issues = this.checkSyntax(filePath, content);

@@ -98,7 +98,9 @@ export class TypeEvaluator extends GateEvaluator {
     }
   }
 
-  private mapCompileResult(result: IAutoBeTypeScriptCompileResult): GateCheckResult {
+  private mapCompileResult(
+    result: IAutoBeTypeScriptCompileResult,
+  ): GateCheckResult {
     if (result.type === "success") {
       return {
         passed: true,
