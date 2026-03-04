@@ -96,8 +96,8 @@ model bbs_articles {
 
 Your output has two separate arrays that together must cover every database property:
 
-- **`excludes`**: Database properties intentionally not in this DTO
-- **`revises`**: Operations on DTO properties (`depict`, `create`, `update`, `erase`)
+- **`excludes`**: DB property **should never appear** in this DTO → declare the exclusion
+- **`revises`**: Operations on DTO properties (`depict`, `create`, `update`, `erase`). `erase` is for a property that **exists in the DTO** but shouldn't → remove it
 
 Every DTO property must appear exactly once in `revises`. Every database property must appear either in `revises` (via `databaseSchemaProperty`) or in `excludes` — never both, never omitted.
 
@@ -107,14 +107,14 @@ Every DTO property must appear exactly once in `revises`. Every database propert
 
 Each entry declares a database property that intentionally does not appear in this DTO.
 
-Use when a database property should NOT appear in this DTO:
+Use when a database property (column OR relation) should NOT appear in this DTO:
 - Auto-generated fields: `id`, `created_at` excluded from Create DTO
-- Actor identity FK: `member_id`, `author_id` excluded from Create/Update DTO (resolved from JWT)
-- Path parameter FK: parent FK excluded from Create/Update DTO when already in URL path
+- Actor identity FK (column or relation): `member_id`, `author_id`, `member` excluded from Create/Update DTO (resolved from JWT)
+- Path parameter FK (column or relation): `article_id`, `article` excluded from Create/Update DTO when already in URL path
 - Session FK: `session_id` excluded from Create/Update DTO (server-managed, not user-provided)
 - Summary DTO: only essential display fields included
 - Immutability: `id`, `created_at` excluded from Update DTO
-- Security: `password`, `salt`, `refresh_token` excluded from Read DTO
+- Security: `password_hashed`, `salt`, `refresh_token` excluded from Read DTO
 - Aggregation relations: use computed counts instead of nested arrays
 
 ```typescript
@@ -122,7 +122,8 @@ Use when a database property should NOT appear in this DTO:
 { databaseSchemaProperty: "id", reason: "DTO purpose: id is auto-generated, not user-provided in Create DTO" }
 { databaseSchemaProperty: "deleted_at", reason: "Summary DTO: only essential display fields included" }
 { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity: resolved from JWT, not user-provided in Create DTO" }
-{ databaseSchemaProperty: "bbs_article_id", reason: "Path parameter: provided via URL path, not in request body" }
+{ databaseSchemaProperty: "member", reason: "Actor relation: FK resolved from JWT, not in Create body" }
+{ databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead" }
 ```
 
 ### 3.2. `revises` - DTO Property Operations
@@ -180,7 +181,9 @@ Each DTO property receives exactly one refinement operation.
 }
 ```
 
-**Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key.
+**Erase targets**: Only phantom fields and security violations. Non-relation scalar properties (e.g., `title`, `start_date`, `page`) are never valid erase targets.
+
+**Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key. When security and content concerns conflict on the same property, security takes precedence.
 
 ## 4. Pre-Review Hardening
 
@@ -194,12 +197,14 @@ While enriching, also inspect and fix:
 **DTO Type Rules** (use `excludes` for DB properties not included):
 | DTO Type | Include | Exclude (add to `excludes`) |
 |----------|---------|------------------------------|
-| Read (IEntity) | All DB columns + computed fields | `password`, `salt`, `refresh_token` |
+| Read (IEntity) | All DB columns + computed fields | `password_hashed`, `salt`, `refresh_token` |
 | Create (ICreate) | User-provided fields | `id`, `created_at`, actor FK, path param FK, session FK |
 | Update (IUpdate) | Mutable fields | `id`, `created_at`, actor FK, path param FK, session FK |
 | Summary (ISummary) | Display essentials | Heavy fields, internal fields |
 
-**Nullable Rule**: DB nullable → DTO MUST handle null (use `oneOf` with null for Read DTOs).
+**Nullable Rules**:
+- DB nullable → DTO non-null is **forbidden** (use `oneOf` with null for Read DTOs, remove from `required` for Create DTOs)
+- DB non-null → DTO nullable is **allowed** (intentional, e.g., `@default`) — do NOT "fix" this
 
 ### 4.2. Phantom Detection
 
@@ -218,7 +223,7 @@ While enriching, also inspect and fix:
 | Property | DTO Type | Why valid |
 |----------|----------|-----------|
 | `page`, `limit`, `search`, `sort` | `IRequest` | Pagination/search parameters — query logic, not DB columns |
-| `ip`, `href`, `referrer` | `IJoin`, `ILogin` | Session context — stored in session table, not actor table |
+| `ip`, `href`, `referrer` | `IJoin`, `ILogin`, `IActorSession` | Session context — stored in session table, not actor table |
 | `password` | `IJoin`, `ILogin` | Plain-text input → backend hashes to `password_hashed` column |
 | `*_count` | Read DTOs | Aggregation — `COUNT()` of related records |
 | `token` / `access` / `refresh` / `expired_at` | `IAuthorized` | Auth response — computed by server, not stored as-is |
@@ -249,6 +254,7 @@ These fields serve cross-table mappings, transformations, or query parameter rol
 | FK Field | Transform to `$ref` object | Keep as scalar ID |
 | Field Name | Remove `_id` suffix | Keep `_id` suffix |
 | Type | `IEntity.ISummary` | `string` (UUID) |
+| `databaseSchemaProperty` | Relation name: `"author"` | Column name: `"author_id"` |
 | Example | `author: IUser.ISummary` | `author_id: string` |
 
 ```typescript
@@ -300,10 +306,31 @@ interface ITeam.ICreate {
 |------|-----------|-----|
 | `password_hashed` in request DTO | Field name contains "hashed" | Erase, create `password: string` |
 | `password` in response DTO | Password exposed | Erase |
-| Session fields (`ip`, `href`, `referrer`) in wrong DTO | Present in IActor/IAuthorized | Erase (only allowed in IJoin, ILogin, IActorSession) |
+| Session fields (`ip`, `href`, `referrer`) in wrong DTO | Present in IActor/ISummary/IAuthorized/IRefresh | Erase |
 | Secrets in response | `salt`, `refresh_token`, `secret_key` | Erase |
 
 **Principle**: Actor is WHO, Session is HOW THEY CONNECTED.
+
+#### Actor Kind and Password
+
+| Actor Kind | Password in IJoin? | Password in ILogin? |
+|------------|-------------------|---------------------|
+| `guest` | NO | N/A (no login) |
+| `member` | YES | YES |
+| `admin` | YES | YES |
+
+#### Session Context Fields
+
+`ip`, `href`, `referrer` belong only where sessions are created or represented.
+
+`ip` is optional in `IJoin`/`ILogin` because in SSR (Server Side Rendering) the client cannot know its own IP — the server captures it as fallback (`body.ip ?? serverIp`). In `IActorSession` (Read DTO), `ip` is required because the stored value is always present.
+
+| DTO Type | `href` | `referrer` | `ip` |
+|----------|--------|------------|------|
+| `IActor.IJoin` | required | required | optional (format: `ipv4`) |
+| `IActor.ILogin` | required | required | optional (format: `ipv4`) |
+| `IActorSession` | required | required | required |
+| `IActor`, `ISummary`, `IAuthorized`, `IRefresh` | **delete** | **delete** | **delete** |
 
 ## 5. Input Materials
 
@@ -421,9 +448,10 @@ Before calling `complete`:
 
 **Pre-Review Hardening**:
 - [ ] Content: All fields present (DB + computed)
-- [ ] Phantom: No fields without valid source
-- [ ] Relation: FK → `$ref` in Read DTOs
-- [ ] Security (Actor DTOs): No exposed passwords/secrets
+- [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional, e.g., `@default`)
+- [ ] Phantom: No fields without valid source; non-relation properties never erased
+- [ ] Relation: FK → `$ref` in Read DTOs; `databaseSchemaProperty` uses relation name (Read) or column name (Request)
+- [ ] Security (Actor DTOs): No exposed passwords/secrets; guest IJoin has no `password`; `ip` optional in IJoin/ILogin
 
 **Function Calling**:
 - [ ] All needed materials loaded
