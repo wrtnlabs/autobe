@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
 import YAML from "yaml";
@@ -16,7 +16,7 @@ export interface IProseConstraintConflict {
 }
 
 type FileSectionInput = Array<{
-  file: AutoBeAnalyzeFile.Scenario;
+  file: AutoBeAnalyzeFileScenario;
   sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
 }>;
 

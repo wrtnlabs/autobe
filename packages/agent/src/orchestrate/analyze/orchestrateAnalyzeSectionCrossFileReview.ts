@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
@@ -17,7 +17,11 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeSectionCrossFileReviewHistory } from "./histories/transformAnalyzeSectionCrossFileReviewHistory";
-import { IAutoBeAnalyzeSectionCrossFileReviewApplication } from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
+import {
+  IAutoBeAnalyzeSectionCrossFileReviewApplication,
+  IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete,
+  IAutoBeAnalyzeSectionCrossFileReviewApplicationProps,
+} from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
 
 /**
  * Orchestrate cross-file lightweight review of section metadata across ALL
@@ -36,7 +40,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     allFileSummaries: Array<{
-      file: AutoBeAnalyzeFile.Scenario;
+      file: AutoBeAnalyzeFileScenario;
       moduleEvent: AutoBeAnalyzeWriteModuleEvent;
       unitEvents: AutoBeAnalyzeWriteUnitEvent[];
       sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
@@ -57,7 +61,7 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete | null> =
       {
         value: null,
       };
@@ -101,14 +105,14 @@ export const orchestrateAnalyzeSectionCrossFileReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplication.IProps>(
+  ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> => {
+    const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> =
+      typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps>(
         input,
       );
     if (result.success === false || result.data.request.type === "complete")

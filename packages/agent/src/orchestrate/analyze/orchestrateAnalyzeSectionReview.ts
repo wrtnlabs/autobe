@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
@@ -17,7 +17,11 @@ import { v7 } from "uuid";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeSectionReviewHistory } from "./histories/transformAnalyzeSectionReviewHistory";
-import { IAutoBeAnalyzeSectionReviewApplication } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
+import {
+  IAutoBeAnalyzeSectionReviewApplication,
+  IAutoBeAnalyzeSectionReviewApplicationComplete,
+  IAutoBeAnalyzeSectionReviewApplicationProps,
+} from "./structures/IAutoBeAnalyzeSectionReviewApplication";
 
 /**
  * Orchestrate per-file review of section content for a SINGLE file.
@@ -35,7 +39,7 @@ export const orchestrateAnalyzeSectionReview = async (
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     fileIndex: number;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
@@ -54,7 +58,7 @@ export const orchestrateAnalyzeSectionReview = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeSectionReviewApplicationComplete | null> =
       {
         value: null,
       };
@@ -102,14 +106,14 @@ export const orchestrateAnalyzeSectionReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeSectionReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeSectionReviewApplicationComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> => {
-    const result: IValidation<IAutoBeAnalyzeSectionReviewApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeSectionReviewApplication.IProps>(input);
+  ): IValidation<IAutoBeAnalyzeSectionReviewApplicationProps> => {
+    const result: IValidation<IAutoBeAnalyzeSectionReviewApplicationProps> =
+      typia.validate<IAutoBeAnalyzeSectionReviewApplicationProps>(input);
     if (result.success === false || result.data.request.type === "complete")
       return result;
     return props.preliminary.validate({

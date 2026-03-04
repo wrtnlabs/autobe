@@ -1,6 +1,8 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeUnitSection,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -17,7 +19,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
   _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
     moduleIndex: number;
@@ -28,10 +30,9 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     sectionIndices?: number[] | null;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection:
-    | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-    | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
-  const unitSection: AutoBeAnalyzeWriteUnitEvent.IUnitSection | undefined =
+  const moduleSection: AutoBeAnalyzeModuleSection | undefined =
+    props.moduleEvent.moduleSections[props.moduleIndex];
+  const unitSection: AutoBeAnalyzeUnitSection | undefined =
     props.unitEvent.unitSections[props.unitIndex];
 
   const hasSectionTargets =

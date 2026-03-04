@@ -1,6 +1,8 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeUnitSection,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -12,7 +14,10 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
+import {
+  FixedAnalyzeTemplateFeature,
+  buildFixedAnalyzeExpandedTemplate,
+} from "../structures/FixedAnalyzeTemplate";
 
 /**
  * Transform histories for per-file review of section content.
@@ -25,7 +30,7 @@ export const transformAnalyzeSectionReviewHistory = (
   _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
@@ -60,9 +65,8 @@ export const transformAnalyzeSectionReviewHistory = (
 
         ${props.sectionEvents
           .map((sectionsForModule, moduleIndex) => {
-            const moduleSection:
-              | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-              | undefined = props.moduleEvent.moduleSections[moduleIndex];
+            const moduleSection: AutoBeAnalyzeModuleSection | undefined =
+              props.moduleEvent.moduleSections[moduleIndex];
             const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
               props.unitEvents[moduleIndex];
             return `
@@ -70,9 +74,8 @@ export const transformAnalyzeSectionReviewHistory = (
 
         ${sectionsForModule
           .map((sectionEvent, unitIndex) => {
-            const unitSection:
-              | AutoBeAnalyzeWriteUnitEvent.IUnitSection
-              | undefined = unitEvent?.unitSections[unitIndex];
+            const unitSection: AutoBeAnalyzeUnitSection | undefined =
+              unitEvent?.unitSections[unitIndex];
             return `
         #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
 
@@ -94,7 +97,7 @@ export const transformAnalyzeSectionReviewHistory = (
         ## File Scope
 
         **File**: ${props.file.filename}
-        **Scope**: ${FixedAnalyzeTemplate.buildExpandedTemplate((props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[]).find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
+        **Scope**: ${buildFixedAnalyzeExpandedTemplate((props.scenario.features ?? []) as FixedAnalyzeTemplateFeature[]).find((t) => t.filename === props.file.filename)?.description ?? "Unknown"}
 
         ## Authorized Scenario Reference
 

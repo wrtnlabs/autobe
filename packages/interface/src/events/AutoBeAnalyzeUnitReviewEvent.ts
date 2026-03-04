@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeWriteUnitEvent } from "./AutoBeAnalyzeWriteUnitEvent";
+import { AutoBeAnalyzeUnitSection } from "./AutoBeAnalyzeWriteUnitEvent";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -42,7 +42,7 @@ export interface AutoBeAnalyzeUnitReviewEvent
    * structure, including whether it was approved, feedback for improvement, and
    * optional revisions.
    */
-  fileResults: AutoBeAnalyzeUnitReviewEvent.IFileResult[];
+  fileResults: AutoBeAnalyzeUnitReviewFileResult[];
 
   /**
    * Current iteration number of the review process.
@@ -60,61 +60,58 @@ export interface AutoBeAnalyzeUnitReviewEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeUnitReviewEvent {
-  /** Per-file result from the cross-file unit review. */
-  export interface IFileResult {
-    /** Index of the file in the scenario's files array. */
-    fileIndex: number;
+/** Per-file result from the cross-file unit review. */
+export interface AutoBeAnalyzeUnitReviewFileResult {
+  /** Index of the file in the scenario's files array. */
+  fileIndex: number;
 
-    /**
-     * Whether this file's unit structure passed the cross-file review.
-     *
-     * If true, the file's units are consistent with the overall structure. If
-     * false, the file's units must be regenerated with feedback.
-     */
-    approved: boolean;
+  /**
+   * Whether this file's unit structure passed the cross-file review.
+   *
+   * If true, the file's units are consistent with the overall structure. If
+   * false, the file's units must be regenerated with feedback.
+   */
+  approved: boolean;
 
-    /**
-     * Detailed review feedback for this specific file's unit structure.
-     *
-     * Contains specific issues and recommendations for aligning with other
-     * files.
-     */
-    feedback: string;
+  /**
+   * Detailed review feedback for this specific file's unit structure.
+   *
+   * Contains specific issues and recommendations for aligning with other files.
+   */
+  feedback: string;
 
-    /**
-     * Revised units for this file if modifications were made during review.
-     *
-     * Indexed by moduleIndex, each entry contains revised unit sections for
-     * that module. Set to `null` if no revisions were made.
-     */
-    revisedUnits: IRevisedModuleUnit[] | null;
+  /**
+   * Revised units for this file if modifications were made during review.
+   *
+   * Indexed by moduleIndex, each entry contains revised unit sections for that
+   * module. Set to `null` if no revisions were made.
+   */
+  revisedUnits: AutoBeAnalyzeUnitReviewRevisedModuleUnit[] | null;
 
-    /**
-     * Specific modules whose units were rejected.
-     *
-     * When non-null, only these modules need unit regeneration on retry. When
-     * null or undefined, all modules are considered rejected
-     * (backward-compatible fallback to regenerate all).
-     */
-    rejectedModules: IRejectedModule[] | null;
-  }
+  /**
+   * Specific modules whose units were rejected.
+   *
+   * When non-null, only these modules need unit regeneration on retry. When
+   * null or undefined, all modules are considered rejected (backward-compatible
+   * fallback to regenerate all).
+   */
+  rejectedModules: AutoBeAnalyzeUnitReviewRejectedModule[] | null;
+}
 
-  /** Identifies a specific module whose unit sections were rejected. */
-  export interface IRejectedModule {
-    /** Index of the module section that needs unit regeneration. */
-    moduleIndex: number;
+/** Identifies a specific module whose unit sections were rejected. */
+export interface AutoBeAnalyzeUnitReviewRejectedModule {
+  /** Index of the module section that needs unit regeneration. */
+  moduleIndex: number;
 
-    /** Specific feedback for this module's unit issues. */
-    feedback: string;
-  }
+  /** Specific feedback for this module's unit issues. */
+  feedback: string;
+}
 
-  /** Structure for revised units of a single module section. */
-  export interface IRevisedModuleUnit {
-    /** Index of the module section these units belong to. */
-    moduleIndex: number;
+/** Structure for revised units of a single module section. */
+export interface AutoBeAnalyzeUnitReviewRevisedModuleUnit {
+  /** Index of the module section these units belong to. */
+  moduleIndex: number;
 
-    /** Revised unit sections for this module. */
-    unitSections: AutoBeAnalyzeWriteUnitEvent.IUnitSection[];
-  }
+  /** Revised unit sections for this module. */
+  unitSections: AutoBeAnalyzeUnitSection[];
 }

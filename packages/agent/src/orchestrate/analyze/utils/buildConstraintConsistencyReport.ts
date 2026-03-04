@@ -1,11 +1,11 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
 import YAML from "yaml";
 
 type ConstraintSource = {
-  file: AutoBeAnalyzeFile.Scenario;
+  file: AutoBeAnalyzeFileScenario;
   sectionTitle: string;
 };
 
@@ -24,7 +24,7 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
 
 export const buildConstraintConsistencyReport = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): string => {
@@ -177,7 +177,7 @@ export interface IConstraintConflict {
  */
 export const detectConstraintConflicts = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IConstraintConflict[] => {
@@ -264,7 +264,7 @@ export interface IAttributeDuplicate {
  */
 export const detectAttributeDuplicates = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IAttributeDuplicate[] => {
@@ -369,7 +369,7 @@ export interface IEnumConflict {
  */
 export const detectEnumConflicts = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IEnumConflict[] => {
@@ -450,7 +450,7 @@ export interface IPermissionConflict {
  */
 export const detectPermissionConflicts = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IPermissionConflict[] => {
@@ -527,7 +527,7 @@ export interface IStateFieldConflict {
  */
 export const detectStateFieldConflicts = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IStateFieldConflict[] => {

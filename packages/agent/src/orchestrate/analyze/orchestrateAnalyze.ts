@@ -1,8 +1,12 @@
 import {
   AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeSectionReviewEvent,
+  AutoBeAnalyzeSectionReviewFileResult,
+  AutoBeAnalyzeSectionReviewIssue,
+  AutoBeAnalyzeSectionReviewRejectedModuleUnit,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -23,8 +27,17 @@ import { orchestrateAnalyzeSectionReview } from "./orchestrateAnalyzeSectionRevi
 import { orchestrateAnalyzeWriteSection } from "./orchestrateAnalyzeWriteSection";
 import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSectionPatch";
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
-import { AutoBeAnalyzeProgrammer } from "./programmers/AutoBeAnalyzeProgrammer";
-import { FixedAnalyzeTemplate } from "./structures/FixedAnalyzeTemplate";
+import {
+  assembleContent,
+  assembleDocument,
+  assembleEvidence,
+  assembleModule,
+} from "./programmers/AutoBeAnalyzeProgrammer";
+import {
+  FixedAnalyzeTemplateFeature,
+  FixedAnalyzeTemplateUnitTemplate,
+  buildFixedAnalyzeExpandedTemplate,
+} from "./structures/FixedAnalyzeTemplate";
 import {
   buildFileAttributeDuplicateMap,
   buildFileConflictMap,
@@ -59,15 +72,13 @@ import { validateScenarioBasics } from "./utils/validateScenarioBasics";
  * throughout the stage-synchronized pipeline.
  */
 interface IFileState {
-  file: AutoBeAnalyzeFile.Scenario;
+  file: AutoBeAnalyzeFileScenario;
   moduleResult: AutoBeAnalyzeWriteModuleEvent | null;
   unitResults: AutoBeAnalyzeWriteUnitEvent[] | null;
   sectionResults: AutoBeAnalyzeWriteSectionEvent[][] | null;
   sectionFeedback?: string;
   // Section-stage partial regeneration tracking
-  rejectedModuleUnits?:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-    | null;
+  rejectedModuleUnits?: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null;
   sectionRetryCount?: number;
   sectionReviewCount?: number;
   sectionStagnationCount?: number;
@@ -203,12 +214,12 @@ export const orchestrateAnalyze = async (
   const files: AutoBeAnalyzeFile[] = [];
   for (let fileIndex = 0; fileIndex < fileStates.length; fileIndex++) {
     const state = fileStates[fileIndex]!;
-    const content = AutoBeAnalyzeProgrammer.assembleContent(
+    const content = assembleContent(
       state.moduleResult!,
       state.unitResults!,
       state.sectionResults!,
     );
-    const module = AutoBeAnalyzeProgrammer.assembleModule(
+    const module = assembleModule(
       state.moduleResult!,
       state.unitResults!,
       state.sectionResults!,
@@ -220,7 +231,7 @@ export const orchestrateAnalyze = async (
     if (!isToc) {
       try {
         // Evidence Layer: programmatic conversion from module/unit/section tree
-        const sections = AutoBeAnalyzeProgrammer.assembleEvidence(
+        const sections = assembleEvidence(
           fileIndex,
           state.moduleResult!,
           state.unitResults!,
@@ -239,10 +250,7 @@ export const orchestrateAnalyze = async (
         });
 
         // Assemble the complete Two-Layer document
-        document = AutoBeAnalyzeProgrammer.assembleDocument(
-          sections,
-          documentEvent.srs,
-        );
+        document = assembleDocument(sections, documentEvent.srs);
       } catch {
         // Document extraction is best-effort; null fallback is acceptable
         document = null;
@@ -289,8 +297,8 @@ function processStageModuleDeterministic(
     moduleWriteProgress: AutoBeProgressEventBase;
   },
 ): void {
-  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
-    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  const expandedTemplate = buildFixedAnalyzeExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
   );
   for (const [i, state] of props.fileStates.entries()) {
     const template = expandedTemplate[i]!;
@@ -353,8 +361,8 @@ async function processStageUnit(
   },
 ): Promise<void> {
   const promptCacheKey: string = v7();
-  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
-    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  const expandedTemplate = buildFixedAnalyzeExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
   );
 
   // Count total units needed for progress tracking
@@ -429,7 +437,7 @@ function buildDeterministicUnitEvent(
   ctx: AutoBeContext,
   props: {
     moduleIndex: number;
-    units: FixedAnalyzeTemplate.IUnitTemplate[];
+    units: FixedAnalyzeTemplateUnitTemplate[];
     progress: AutoBeProgressEventBase;
     fileCount: number;
   },
@@ -830,7 +838,7 @@ async function processStageSection(
     // Merge results from both passes
     const crossFileResultMap: Map<
       number,
-      AutoBeAnalyzeSectionReviewEvent.IFileResult
+      AutoBeAnalyzeSectionReviewFileResult
     > = new Map();
     const validCrossFileResults = filterValidFileResults(
       crossFileReviewEvent.fileResults,
@@ -1049,10 +1057,7 @@ function chunkSectionFileIndices(indices: number[], size: number): number[][] {
 }
 
 function buildRejectedSet(
-  rejected:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-    | null
-    | undefined,
+  rejected: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null | undefined,
 ): Set<string> | null {
   if (rejected == null) return null;
   if (rejected.length === 0) return null;
@@ -1071,10 +1076,7 @@ interface ISectionAwareFeedback {
 }
 
 function buildFeedbackMap(
-  rejected:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-    | null
-    | undefined,
+  rejected: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null | undefined,
 ): Map<string, ISectionAwareFeedback> {
   const map: Map<string, ISectionAwareFeedback> = new Map();
   if (rejected == null) return map;
@@ -1119,7 +1121,7 @@ function filterValidFileResults<T extends { fileIndex: number }>(
 }
 
 function formatRejectedModuleUnitFeedback(
-  entry: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit,
+  entry: AutoBeAnalyzeSectionReviewRejectedModuleUnit,
   unitIndex: number,
 ): string {
   const scopedIssues = (entry.issues ?? []).filter(
@@ -1142,14 +1144,14 @@ function collectStructuredReviewIssues(
     | {
         feedback: string;
         rejectedModuleUnits?:
-          | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+          | AutoBeAnalyzeSectionReviewRejectedModuleUnit[]
           | null;
-        issues?: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] | null;
+        issues?: AutoBeAnalyzeSectionReviewIssue[] | null;
       }
     | undefined,
-): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
+): AutoBeAnalyzeSectionReviewIssue[] {
   if (!result) return [];
-  const collected: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] = [];
+  const collected: AutoBeAnalyzeSectionReviewIssue[] = [];
 
   for (const issue of result.issues ?? []) collected.push(issue);
   for (const group of result.rejectedModuleUnits ?? []) {
@@ -1190,7 +1192,7 @@ function buildProgrammaticSectionIssues(props: {
   fileOversizedToc: string[];
   fileProseConflicts: string[];
   fileYamlRootKeyMismatches: string[];
-}): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
+}): AutoBeAnalyzeSectionReviewIssue[] {
   return [
     ...props.fileCriticalConflicts.map((detail) => ({
       ruleCode: "cross_file_constraint_conflict",
@@ -1268,7 +1270,7 @@ function buildProgrammaticSectionIssues(props: {
 }
 
 function buildSectionIndicesPerUnit(
-  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+  issues: AutoBeAnalyzeSectionReviewIssue[],
   moduleIndex: number,
   unitIndices: number[],
 ): Record<number, number[]> | null {
@@ -1301,12 +1303,9 @@ function buildSectionIndicesPerUnit(
 }
 
 function normalizeRejectedModuleUnits(
-  rejected:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-    | null
-    | undefined,
-  fileIssues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
-): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
+  rejected: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null | undefined,
+  fileIssues: AutoBeAnalyzeSectionReviewIssue[],
+): AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null {
   if (rejected == null) return null;
   return rejected.map((entry) => {
     const enrichedIssues =
@@ -1343,9 +1342,9 @@ function normalizeRejectedModuleUnits(
  * only specific module/unit pairs have issues.
  */
 function inferRejectedModuleUnitsFromIssues(
-  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+  issues: AutoBeAnalyzeSectionReviewIssue[],
   unitResults: AutoBeAnalyzeWriteUnitEvent[],
-): AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] | null {
+): AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null {
   const moduleUnitMap = new Map<number, Set<number>>();
   let hasTargetedIssue = false;
 
@@ -1363,7 +1362,7 @@ function inferRejectedModuleUnitsFromIssues(
 
   if (!hasTargetedIssue) return null;
 
-  const result: AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[] = [];
+  const result: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] = [];
   for (const [moduleIndex, unitIndexSet] of moduleUnitMap) {
     // If no specific units targeted, include all units for this module
     let unitIndices: number[];
@@ -1402,7 +1401,7 @@ function inferRejectedModuleUnitsFromIssues(
 
 function formatStructuredIssuesForRetry(props: {
   fallbackFeedback: string;
-  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[];
+  issues: AutoBeAnalyzeSectionReviewIssue[];
 }): string {
   if (props.issues.length === 0) return props.fallbackFeedback;
   const lines = props.issues.map(
@@ -1414,10 +1413,8 @@ function formatStructuredIssuesForRetry(props: {
 }
 
 function formatIssueTarget(
-  issue: Pick<
-    AutoBeAnalyzeSectionReviewEvent.IReviewIssue,
-    "moduleIndex" | "unitIndex" | "sectionIndex"
-  >,
+  issue: Pick<AutoBeAnalyzeSectionReviewIssue, "moduleIndex" | "unitIndex"> &
+    Partial<Pick<AutoBeAnalyzeSectionReviewIssue, "sectionIndex">>,
 ): string {
   const parts: string[] = [];
   if (issue.moduleIndex !== null && issue.moduleIndex !== undefined)
@@ -1430,9 +1427,9 @@ function formatIssueTarget(
 }
 
 function dedupeReviewIssues(
-  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
-): AutoBeAnalyzeSectionReviewEvent.IReviewIssue[] {
-  const map = new Map<string, AutoBeAnalyzeSectionReviewEvent.IReviewIssue>();
+  issues: AutoBeAnalyzeSectionReviewIssue[],
+): AutoBeAnalyzeSectionReviewIssue[] {
+  const map = new Map<string, AutoBeAnalyzeSectionReviewIssue>();
   for (const issue of issues) {
     const key = [
       issue.ruleCode,
@@ -1465,7 +1462,7 @@ function buildSectionContentSignature(state: IFileState): string {
 
 function buildSectionRejectionSignature(props: {
   rejectedModuleUnits:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
+    | AutoBeAnalyzeSectionReviewRejectedModuleUnit[]
     | null
     | undefined;
   feedback: string;
@@ -1488,10 +1485,7 @@ function buildSectionRejectionSignature(props: {
 }
 
 function formatRejectedModuleUnitsSummary(
-  rejected:
-    | AutoBeAnalyzeSectionReviewEvent.IRejectedModuleUnit[]
-    | null
-    | undefined,
+  rejected: AutoBeAnalyzeSectionReviewRejectedModuleUnit[] | null | undefined,
 ): string {
   if (!rejected || rejected.length === 0) return "all-or-unknown";
   return rejected
@@ -1507,7 +1501,7 @@ function formatRejectedModuleUnitsSummary(
 }
 
 function formatReviewIssuesSummary(
-  issues: AutoBeAnalyzeSectionReviewEvent.IReviewIssue[],
+  issues: AutoBeAnalyzeSectionReviewIssue[],
 ): string {
   if (issues.length === 0) return "none";
   return issues
