@@ -40,11 +40,14 @@ We only score things that AutoBE can actually fix. Stuff like code complexity or
 - Naming conventions
 - JSDoc comments
 - Security patterns
+- Schema sync (empty interfaces in DTOs)
 
-**Penalties (deducted from phase score):**
+**Penalties (deducted from total score):**
 - Warning penalty: up to -10 if warning ratio > 50%
 - Duplication penalty: up to -5 if > 50 duplicate blocks
 - JSDoc penalty: up to -5 if > 10% missing
+- Empty interface penalty: up to -5 if > 5 empty types detected (SYNC001)
+- Mapping ratio penalty: up to -40 if < 50% of controllers have matching providers (REQ006)
 
 ## CLI Options
 ```bash
@@ -60,13 +63,24 @@ pnpm start --input <path> --output <path> [options]
 | `--use-agent` | Enable AI evaluation (30% of score) |
 | `--provider` | Which LLM to use: `claude`, `openai`, or `openrouter` |
 | `--api-key` | Your API key |
-| `--model` | Specific model (optional) |
+| `--auto-fix` | Auto-fix simple issues (TS1161, TS7006) after evaluation |
+| `--run-tests` | Start Docker server and run e2e tests |
+| `--golden` | Run Golden Set evaluation |
+| `--project` | Project type for Golden Set (`todo`, `bbs`, `reddit`, `shopping`) |
 
-You can also set API keys via environment variables:
+You can also use a `.env` file in the `packages/estimate/` directory:
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-..."    # for claude
-export OPENAI_API_KEY="sk-..."           # for openai
-export OPENROUTER_API_KEY="sk-or-..."    # for openrouter
+OPENROUTER_API_KEY=sk-or-...
+
+# Optional: Langfuse telemetry
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com
+```
+
+Or set them as environment variables:
+```bash
+export OPENROUTER_API_KEY="sk-or-..."
 ```
 
 ## Evaluation Pipeline
@@ -77,6 +91,7 @@ Here's what happens when you run an evaluation:
 
 First, we make sure the code actually compiles. If this fails, you get a 0.
 
+- **Source file check**: If there are no TypeScript files in `src/`, the gate fails immediately (GATE001). This catches cases where the pipeline didn't generate any code.
 - **TypeScript compilation**: Uses `AutoBeTypeScriptCompiler` (in-memory, no external `tsc` binary required)
 - **Prisma schema validation**: Uses `AutoBeDatabaseCompiler.compilePrismaSchemas()` (in-memory, no external `prisma` binary required)
 
@@ -103,6 +118,8 @@ After scoring, penalties are applied based on reference metrics:
 | Warning | Warning ratio > 50% | -10 |
 | Duplication | > 50 duplicate blocks | -5 |
 | JSDoc | > 10% missing | -5 |
+| Empty interfaces | > 5 empty types in DTOs (SYNC001) | -5 |
+| Mapping ratio | < 50% controller-provider coverage (REQ006) | -40 |
 
 ### 4. Reference Metrics
 
@@ -113,6 +130,7 @@ We also collect these, but they don't directly affect your score (except through
 - **Naming**: Classes/interfaces not following PascalCase
 - **JSDoc**: Missing documentation comments
 - **Security**: Hardcoded passwords, eval() usage, etc.
+- **Schema Sync**: Empty interfaces/types in DTO files (`export type IFoo = {}`)
 
 ### 5. AI Agent Evaluation (30% of total)
 
@@ -144,7 +162,7 @@ Large codebases are automatically split into chunks and evaluated in parallel. D
 ## Scoring Formula
 ```
 Raw Phase Score = Σ(phase_score × phase_weight)
-Penalties       = warning + duplication + jsdoc (max -20)
+Penalties       = warning + duplication + jsdoc + schemaSync (max -25)
 Adjusted Phase  = Raw Phase - Penalties
 
 Agent Average   = Σ(agent_scores) / agent_count
@@ -204,24 +222,38 @@ You get two files:
 For comparisons, you also get:
 - `comparison-report.md` - Side-by-side comparison
 
+## Benchmarking
+
+Run evaluations across all models and projects at once:
+
+```bash
+cd packages/estimate
+
+# Scoring only (no LLM calls, fast)
+./run-benchmark.sh
+
+# With AI agents (needs OPENROUTER_API_KEY in .env)
+./run-benchmark.sh agent
+
+# Full mode (agents + runtime tests + golden set)
+./run-benchmark.sh full
+```
+
+The script reads `.env` automatically, runs 5 models x 4 projects = 20 evaluations, and reports pass/fail counts.
+
+Results go to `reports/benchmark/<model>/<project>/`.
+
 ## Examples
 
 Basic evaluation:
 ```bash
-pnpm start -i ~/autobe-examples/anthropic/claude-sonnet-4.5/todo -o ./reports -v
+pnpm start -i ~/autobe-examples/openai/gpt-4.1-mini/todo -o ./reports -v
 ```
 
-With AI agents via OpenRouter:
+With AI agents:
 ```bash
 pnpm start -i ~/project -o ./reports -v \
-  --use-agent --provider openrouter --api-key "sk-or-..."
-```
-
-Using a specific model:
-```bash
-pnpm start -i ~/project -o ./reports -v \
-  --use-agent --provider openrouter --api-key "sk-or-..." \
-  --model "openai/gpt-4o"
+  --use-agent --api-key "sk-or-..."
 ```
 
 Sample output:
@@ -243,6 +275,7 @@ Sample output:
    Naming:        0 issues
    JSDoc:         36 missing
    Security:      0 issues
+   Schema Sync:   26/35 empty types
 ─────────────────────────────────────────
 
 🤖 AI Agent Evaluations (30% of total score):
