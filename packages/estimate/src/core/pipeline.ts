@@ -11,6 +11,7 @@ import {
   DuplicationEvaluator,
   JsDocEvaluator,
   NamingEvaluator,
+  SchemaSyncEvaluator,
 } from "../evaluators/quality";
 import { SecurityEvaluator } from "../evaluators/safety";
 import {
@@ -355,6 +356,11 @@ export class EvaluationPipeline {
       { key: "naming", Evaluator: NamingEvaluator, label: "naming" },
       { key: "jsdoc", Evaluator: JsDocEvaluator, label: "JSDoc" },
       { key: "security", Evaluator: SecurityEvaluator, label: "security" },
+      {
+        key: "schemaSync",
+        Evaluator: SchemaSyncEvaluator,
+        label: "schema sync",
+      },
     ] as const;
 
     const results = await Promise.all(
@@ -400,6 +406,11 @@ export class EvaluationPipeline {
         totalIssues: resultMap.security.issues.length,
         issues: resultMap.security.issues,
       },
+      schemaSync: {
+        totalTypes: (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
+        emptyTypes: (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
+        issues: resultMap.schemaSync.issues,
+      },
     };
   }
 
@@ -415,6 +426,7 @@ export class EvaluationPipeline {
       naming: { totalIssues: 0, issues: [] },
       jsdoc: { totalMissing: 0, issues: [] },
       security: { totalIssues: 0, issues: [] },
+      schemaSync: { totalTypes: 0, emptyTypes: 0, issues: [] },
     };
   }
 
@@ -535,6 +547,24 @@ export class EvaluationPipeline {
               `  JSDoc penalty: -${jsdocPenalty} (${reference.jsdoc.totalMissing} missing, ${penaltyData.jsdoc.ratio})`,
             );
           }
+        }
+      }
+
+      // Empty interface penalty
+      if (reference.schemaSync.emptyTypes >= 5) {
+        const syncPenalty = Math.min(
+          5,
+          Math.round(reference.schemaSync.emptyTypes / 10),
+        );
+        totalScore = Math.max(0, totalScore - syncPenalty);
+        penaltyData.schemaSync = {
+          amount: syncPenalty,
+          emptyTypes: reference.schemaSync.emptyTypes,
+        };
+        if (this.verbose) {
+          console.log(
+            `  Schema sync penalty: -${syncPenalty} (${reference.schemaSync.emptyTypes} empty types)`,
+          );
         }
       }
 
