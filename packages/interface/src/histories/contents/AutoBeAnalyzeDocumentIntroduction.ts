@@ -61,23 +61,3 @@ export interface AutoBeAnalyzeDocumentIntroduction {
   /** External reference documents/standards */
   references: Array<AutoBeAnalyzeDocumentIntroductionReference>;
 }
-export namespace AutoBeAnalyzeDocumentIntroduction {
-  export interface Scope {
-    /** Items included in v1 */
-    included: string[];
-    /** Items explicitly excluded from v1 */
-    excluded: string[];
-  }
-  export interface GlossaryEntry {
-    /** Term */
-    term: string;
-    /** Definition */
-    definition: string;
-  }
-  export interface ReferenceEntry {
-    /** Reference document name */
-    name: string;
-    /** Reference document description */
-    description: string;
-  }
-}

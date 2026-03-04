@@ -7,6 +7,28 @@ import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
 
 /**
+ * High-level project feature that activates conditional modules.
+ *
+ * @author Kakasoo
+ */
+export interface AutoBeAnalyzeScenarioFeature {
+  id: string;
+  providers?: string[];
+  jobs?: string[];
+}
+
+/**
+ * Core domain entity identified during scenario planning.
+ *
+ * @author Kakasoo
+ */
+export interface AutoBeAnalyzeScenarioEntity {
+  name: string;
+  attributes: string[];
+  relationships?: string[];
+}
+
+/**
  * Event interface for analyze scenario composition operations in the AutoBE
  * system.
  *
@@ -133,11 +155,7 @@ export interface AutoBeAnalyzeScenarioEvent
    * Each feature adds specialized modules to the SRS files beyond the base REST
    * CRUD structure. Empty array means standard REST-only.
    */
-  features: Array<{
-    id: string;
-    providers?: string[];
-    jobs?: string[];
-  }>;
+  features: Array<AutoBeAnalyzeScenarioFeature>;
 
   /**
    * Core domain entities identified during scenario planning.
@@ -153,11 +171,7 @@ export interface AutoBeAnalyzeScenarioEvent
    * - `attributes`: Key attributes with type hints (e.g., "title: text(1-500)")
    * - `relationships`: Optional relationships to other entities
    */
-  entities: Array<{
-    name: string;
-    attributes: string[];
-    relationships?: string[];
-  }>;
+  entities: Array<AutoBeAnalyzeScenarioEntity>;
 
   /**
    * Current step number in the multi-event analysis scenario.

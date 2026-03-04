@@ -1,6 +1,22 @@
 import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 
 /**
+ * External system integration entry.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentExternalInterfaceIntegration extends ITraceable {
+  /** External system name */
+  systemName: string;
+  /** Integration description */
+  description: string;
+  /** Communication protocol (e.g., REST, gRPC, WebSocket) */
+  protocol: string;
+  /** Data exchange format (e.g., JSON, XML, Protocol Buffers) */
+  dataFormat: string;
+}
+
+/**
  * SRS Section 3: External Interface Requirements.
  *
  * Defines external system, data store, and communication protocol requirements.
@@ -13,16 +29,5 @@ import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
  */
 export interface AutoBeAnalyzeDocumentExternalInterface {
   /** External system integration list */
-  integrations: Array<
-    {
-      /** External system name */
-      systemName: string;
-      /** Integration description */
-      description: string;
-      /** Communication protocol (e.g., REST, gRPC, WebSocket) */
-      protocol: string;
-      /** Data exchange format (e.g., JSON, XML, Protocol Buffers) */
-      dataFormat: string;
-    } & ITraceable
-  >;
+  integrations: Array<AutoBeAnalyzeDocumentExternalInterfaceIntegration>;
 }
