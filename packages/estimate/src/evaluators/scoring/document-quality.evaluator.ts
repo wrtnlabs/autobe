@@ -5,6 +5,19 @@ import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Result of reading docs folder */
+interface DocsFolderResult {
+  files: string[];
+  totalLength: number;
+  contents: Map<string, string>;
+}
+
+/** Result of reading README */
+interface ReadmeResult {
+  length: number;
+  content: string;
+}
+
 export class DocumentQualityEvaluator extends BaseEvaluator {
   readonly name = "DocumentQualityEvaluator";
   readonly phase = "documentQuality" as const;
@@ -222,11 +235,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
   private async readDocsFolder(
     docsPath: string,
     exists: boolean,
-  ): Promise<{
-    files: string[];
-    totalLength: number;
-    contents: Map<string, string>;
-  }> {
+  ): Promise<DocsFolderResult> {
     if (!exists) return { files: [], totalLength: 0, contents: new Map() };
 
     try {
@@ -264,7 +273,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
   private async readReadme(
     readmePath: string,
     exists: boolean,
-  ): Promise<{ length: number; content: string }> {
+  ): Promise<ReadmeResult> {
     if (!exists) return { length: 0, content: "" };
 
     try {

@@ -11,7 +11,13 @@ export {
   AGENT_WEIGHTS,
 } from "./score";
 
-export type { Severity, IssueCategory, SourceLocation, Issue } from "./issue";
+export type {
+  Severity,
+  IssueCategory,
+  SourceLocation,
+  Issue,
+  CreateIssueInput,
+} from "./issue";
 export type {
   Grade,
   Phase,
@@ -20,6 +26,11 @@ export type {
   IssueSummary,
   ScoreExplanation,
   ReferenceInfo,
+  WarningPenalty,
+  DuplicationPenalty,
+  JsDocPenalty,
+  SchemaSyncPenalty,
+  EvaluationPenalties,
 } from "./score";
 export type {
   EvaluationContext,

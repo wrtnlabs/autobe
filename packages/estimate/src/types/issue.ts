@@ -51,13 +51,14 @@ export interface Issue {
   docsUrl?: string;
 }
 
+/** Partial input for creating an issue */
+export type CreateIssueInput = Omit<Issue, "id" | "autoFixable"> & {
+  id?: string;
+  autoFixable?: boolean;
+};
+
 /** Create issue helper */
-export function createIssue(
-  partial: Omit<Issue, "id" | "autoFixable"> & {
-    id?: string;
-    autoFixable?: boolean;
-  },
-): Issue {
+export function createIssue(partial: CreateIssueInput): Issue {
   return {
     ...partial,
     id:

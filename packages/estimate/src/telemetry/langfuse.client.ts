@@ -26,15 +26,20 @@ export async function flushLangfuse(): Promise<void> {
   }
 }
 
+/** Metadata for creating an evaluation trace */
+export interface EvalTraceMeta {
+  model: string;
+  project: string;
+  inputPath: string;
+}
+
 /**
  * Create a trace for one evaluation run. Returns null if Langfuse is not
  * configured.
  */
-export function createEvalTrace(meta: {
-  model: string;
-  project: string;
-  inputPath: string;
-}): LangfuseTraceClient | null {
+export function createEvalTrace(
+  meta: EvalTraceMeta,
+): LangfuseTraceClient | null {
   const lf = getLangfuse();
   if (!lf) return null;
 

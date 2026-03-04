@@ -1,6 +1,12 @@
 import { EvaluationContext } from "../types";
 import { LLMClient } from "./llm-client";
-import { AgentConfig, AgentIssue, AgentResult } from "./types";
+import {
+  AgentChunkResult,
+  AgentConfig,
+  AgentIssue,
+  AgentParseResult,
+  AgentResult,
+} from "./types";
 
 /** Base class for AI evaluation agents */
 export abstract class BaseAgent {
@@ -18,11 +24,7 @@ export abstract class BaseAgent {
   abstract evaluate(context: EvaluationContext): Promise<AgentResult>;
 
   /** Parse JSON response from LLM */
-  protected parseResponse(content: string): {
-    issues: AgentIssue[];
-    score: number;
-    summary: string;
-  } {
+  protected parseResponse(content: string): AgentParseResult {
     try {
       let jsonStr = content;
       if (jsonStr.includes("```json")) {
@@ -51,10 +53,7 @@ export abstract class BaseAgent {
     systemPrompt: string,
     userPrompt: string,
     maxRetries: number = 2,
-  ): Promise<{
-    parsed: { issues: AgentIssue[]; score: number; summary: string };
-    tokensUsed?: { input: number; output: number };
-  }> {
+  ): Promise<AgentChunkResult> {
     let lastError: string = "";
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -124,10 +123,7 @@ export abstract class BaseAgent {
     systemPrompt: string,
     chunks: string[],
     buildUserPrompt: (chunk: string, index: number, total: number) => string,
-  ): Promise<{
-    parsed: { issues: AgentIssue[]; score: number; summary: string };
-    tokensUsed?: { input: number; output: number };
-  }> {
+  ): Promise<AgentChunkResult> {
     if (chunks.length <= 1) {
       const prompt = buildUserPrompt(chunks[0] || "", 1, 1);
       return this.chatWithRetry(systemPrompt, prompt);

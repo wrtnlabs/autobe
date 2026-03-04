@@ -10,6 +10,13 @@ import type {
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Test quality analysis result */
+interface TestQuality {
+  stubCount: number;
+  withAssertions: number;
+  qualityRatio: number;
+}
+
 export class TestCoverageEvaluator extends BaseEvaluator {
   readonly name = "TestCoverageEvaluator";
   readonly phase = "testCoverage" as const;
@@ -99,7 +106,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
   private analyzeTestQuality(
     testFiles: string[],
     issues: Issue[],
-  ): { stubCount: number; withAssertions: number; qualityRatio: number } {
+  ): TestQuality {
     let stubCount = 0;
     let withAssertions = 0;
 
@@ -153,11 +160,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     testCount: number,
     controllerCount: number,
     coverageRatio: number,
-    quality: {
-      stubCount: number;
-      withAssertions: number;
-      qualityRatio: number;
-    },
+    quality: TestQuality,
     issues: Issue[],
   ): number {
     if (testCount === 0) {

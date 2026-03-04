@@ -79,6 +79,9 @@ const phaseStrategies = [
 
 type PhaseKey = (typeof phaseStrategies)[number]["key"];
 
+/** Assembled phase results — alias for EvaluationResult.Phases */
+type EvaluationPhases = EvaluationResult.Phases;
+
 export class EvaluationPipeline {
   private verbose: boolean;
   private context: EvaluationContext | null = null;
@@ -155,10 +158,7 @@ export class EvaluationPipeline {
       ...Object.fromEntries(
         phaseStrategies.map((s, i) => [s.key, phaseResults[i]]),
       ),
-    } as { gate: PhaseResult; goldenSet?: PhaseResult } & Record<
-      PhaseKey,
-      PhaseResult
-    >;
+    } as EvaluationPhases;
 
     // ── Golden Set ───────────────────────────────────────
     if (input.options?.golden && input.options?.project) {
@@ -451,7 +451,7 @@ export class EvaluationPipeline {
   private buildResult(
     input: EvaluationInput,
     context: EvaluationContext,
-    phases: { gate: PhaseResult } & Record<PhaseKey, PhaseResult>,
+    phases: EvaluationPhases,
     reference: ReferenceInfo,
     startTime: number,
   ): EvaluationResult {

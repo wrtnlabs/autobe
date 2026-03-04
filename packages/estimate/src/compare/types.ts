@@ -13,6 +13,45 @@ export interface ProjectInput {
   name: string;
 }
 
+/** Phase scores for a project */
+export interface ProjectScores {
+  documentQuality: number;
+  requirementsCoverage: number;
+  testCoverage: number;
+  logicCompleteness: number;
+  apiCompleteness: number;
+}
+
+/** Project metric counts */
+export interface ProjectMetrics {
+  files: number;
+  controllers: number;
+  providers: number;
+  structures: number;
+  tests: number;
+}
+
+/** Agent evaluation scores */
+export interface AgentScores {
+  security: number;
+  llmQuality: number;
+}
+
+/** Project penalty breakdown */
+export interface ProjectPenalties {
+  warning?: number;
+  duplication?: number;
+  jsdoc?: number;
+  total: number;
+}
+
+/** Issue counts by category */
+export interface IssueCounts {
+  gate: number;
+  requirements: number;
+  logic: number;
+}
+
 /** Result types for comparison */
 export interface ProjectResult {
   name: string;
@@ -20,64 +59,88 @@ export interface ProjectResult {
   totalScore: number;
   grade: string;
   gatePass: boolean;
-  scores: {
-    documentQuality: number;
-    requirementsCoverage: number;
-    testCoverage: number;
-    logicCompleteness: number;
-    apiCompleteness: number;
-  };
-  metrics: {
-    files: number;
-    controllers: number;
-    providers: number;
-    structures: number;
-    tests: number;
-  };
-  agentScores?: {
-    security: number;
-    llmQuality: number;
-  };
-  penalties?: {
-    warning?: number;
-    duplication?: number;
-    jsdoc?: number;
-    total: number;
-  };
-  issues: {
-    gate: number;
-    requirements: number;
-    logic: number;
-  };
+  scores: ProjectScores;
+  metrics: ProjectMetrics;
+  agentScores?: AgentScores;
+  penalties?: ProjectPenalties;
+  issues: IssueCounts;
+}
+
+/** Report metadata */
+export interface ReportMeta {
+  evaluatedFiles?: number;
+}
+
+/** Gate phase in report */
+export interface ReportGatePhase {
+  passed?: boolean;
+  issues?: unknown[];
+}
+
+/** Phase with score only */
+export interface ReportScoredPhase {
+  score?: number;
+}
+
+/** Requirements coverage phase with metrics */
+export interface ReportRequirementsPhase {
+  score?: number;
+  issues?: unknown[];
+  metrics?: ReportRequirementsPhase.Metrics;
+}
+export namespace ReportRequirementsPhase {
+  export interface Metrics {
+    controllerCount?: number;
+    providerCount?: number;
+    structureCount?: number;
+  }
+}
+
+/** Test coverage phase with metrics */
+export interface ReportTestCoveragePhase {
+  score?: number;
+  metrics?: ReportTestCoveragePhase.Metrics;
+}
+export namespace ReportTestCoveragePhase {
+  export interface Metrics {
+    testCount?: number;
+  }
+}
+
+/** Logic completeness phase */
+export interface ReportLogicPhase {
+  score?: number;
+  issues?: unknown[];
+}
+
+/** Report phases */
+export interface ReportPhases {
+  gate?: ReportGatePhase;
+  documentQuality?: ReportScoredPhase;
+  requirementsCoverage?: ReportRequirementsPhase;
+  testCoverage?: ReportTestCoveragePhase;
+  logicCompleteness?: ReportLogicPhase;
+  apiCompleteness?: ReportScoredPhase;
+}
+
+/** Penalty amount entry */
+export interface PenaltyAmount {
+  amount: number;
+}
+
+/** Report penalties */
+export interface ReportPenalties {
+  warning?: PenaltyAmount;
+  duplication?: PenaltyAmount;
+  jsdoc?: PenaltyAmount;
 }
 
 export interface EstimateReport {
   totalScore?: number;
   grade?: string;
-  meta?: {
-    evaluatedFiles?: number;
-  };
-  phases?: {
-    gate?: { passed?: boolean; issues?: unknown[] };
-    documentQuality?: { score?: number };
-    requirementsCoverage?: {
-      score?: number;
-      issues?: unknown[];
-      metrics?: {
-        controllerCount?: number;
-        providerCount?: number;
-        structureCount?: number;
-      };
-    };
-    testCoverage?: { score?: number; metrics?: { testCount?: number } };
-    logicCompleteness?: { score?: number; issues?: unknown[] };
-    apiCompleteness?: { score?: number };
-  };
-  penalties?: {
-    warning?: { amount: number };
-    duplication?: { amount: number };
-    jsdoc?: { amount: number };
-  };
+  meta?: ReportMeta;
+  phases?: ReportPhases;
+  penalties?: ReportPenalties;
   agentEvaluations?: AgentEvaluation[];
 }
 
@@ -86,33 +149,66 @@ export interface AgentEvaluation {
   score: number;
 }
 
+/** Named score entry (name + score pair) */
+export interface NamedScore {
+  name: string;
+  score: number;
+}
+
+/** Named value entry (name + value pair) */
+export interface NamedValue {
+  name: string;
+  value: number | string;
+}
+
+/** Ranking entry */
+export interface RankingEntry {
+  rank: number;
+  name: string;
+  score: number;
+  grade: string;
+}
+
+/** Phase comparison entry */
+export interface PhaseComparisonEntry {
+  phase: string;
+  scores: NamedScore[];
+  winner: string;
+}
+
+/** Metric comparison entry */
+export interface MetricComparisonEntry {
+  metric: string;
+  values: NamedValue[];
+  better: string;
+}
+
+/** Agent comparison entry */
+export interface AgentComparisonEntry {
+  agent: string;
+  scores: NamedScore[];
+  winner: string;
+}
+
+/** Paths to saved report files */
+export interface ReportPaths {
+  mdPath: string;
+  jsonPath: string;
+}
+
+/** Comparison summary */
+export interface CompareSummary {
+  overallWinner: string;
+  recommendation: string;
+}
+
 export interface CompareResult {
   timestamp: string;
   projectCount: number;
   projects: ProjectResult[];
-  ranking: {
-    rank: number;
-    name: string;
-    score: number;
-    grade: string;
-  }[];
-  phaseComparison: {
-    phase: string;
-    scores: { name: string; score: number }[];
-    winner: string;
-  }[];
-  metricComparison: {
-    metric: string;
-    values: { name: string; value: number | string }[];
-    better: string;
-  }[];
-  agentComparison?: {
-    agent: string;
-    scores: { name: string; score: number }[];
-    winner: string;
-  }[];
-  summary: {
-    overallWinner: string;
-    recommendation: string;
-  };
+  ranking: RankingEntry[];
+  phaseComparison: PhaseComparisonEntry[];
+  metricComparison: MetricComparisonEntry[];
+  agentComparison?: AgentComparisonEntry[];
+  summary: CompareSummary;
 }

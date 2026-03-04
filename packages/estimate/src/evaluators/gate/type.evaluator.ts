@@ -5,7 +5,7 @@ import * as path from "path";
 
 import type { EvaluationContext, Issue } from "../../types";
 import { createIssue } from "../../types";
-import { GateEvaluator } from "../base";
+import { GateCheckResult, GateEvaluator } from "../base";
 import { classifyDiagnostic } from "./classify";
 
 /** Prisma type → TypeScript type mapping */
@@ -42,11 +42,7 @@ export class TypeEvaluator extends GateEvaluator {
   readonly description =
     "Checks TypeScript type errors using in-memory compiler";
 
-  async checkGate(context: EvaluationContext): Promise<{
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  }> {
+  async checkGate(context: EvaluationContext): Promise<GateCheckResult> {
     if (context.files.typescript.length === 0) {
       return {
         passed: true,
@@ -102,11 +98,9 @@ export class TypeEvaluator extends GateEvaluator {
     }
   }
 
-  private mapCompileResult(result: IAutoBeTypeScriptCompileResult): {
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  } {
+  private mapCompileResult(
+    result: IAutoBeTypeScriptCompileResult,
+  ): GateCheckResult {
     if (result.type === "success") {
       return {
         passed: true,

@@ -5,6 +5,22 @@ import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Controller-to-provider mapping result */
+interface ControllerProviderMapping {
+  mapped: number;
+  unmapped: number;
+  ratio: number;
+}
+
+/** Counts used for requirements score computation */
+interface RequirementsCounts {
+  controllerCount: number;
+  providerCount: number;
+  structureCount: number;
+  hasRequirementsDocs: boolean;
+  mappingRatio: number;
+}
+
 export class RequirementsCoverageEvaluator extends BaseEvaluator {
   readonly name = "RequirementsCoverageEvaluator";
   readonly phase = "requirementsCoverage" as const;
@@ -79,7 +95,7 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     controllers: string[],
     providers: string[],
     issues: Issue[],
-  ): { mapped: number; unmapped: number; ratio: number } {
+  ): ControllerProviderMapping {
     if (controllers.length === 0) return { mapped: 0, unmapped: 0, ratio: 0 };
 
     const providerNames = providers.map((f) =>
@@ -145,13 +161,7 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
   }
 
   private computeRequirementsScore(
-    counts: {
-      controllerCount: number;
-      providerCount: number;
-      structureCount: number;
-      hasRequirementsDocs: boolean;
-      mappingRatio: number;
-    },
+    counts: RequirementsCounts,
     issues: Issue[],
   ): number {
     let score = 0;

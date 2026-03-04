@@ -5,6 +5,13 @@ import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Result of analyzing a single file for schema sync */
+interface SchemaSyncFileResult {
+  totalTypes: number;
+  emptyTypes: number;
+  issues: Issue[];
+}
+
 /**
  * Detects empty interfaces/types in structure (DTO) files.
  *
@@ -72,7 +79,7 @@ export class SchemaSyncEvaluator extends BaseEvaluator {
   private async analyzeFile(
     filePath: string,
     rootPath: string,
-  ): Promise<{ totalTypes: number; emptyTypes: number; issues: Issue[] }> {
+  ): Promise<SchemaSyncFileResult> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
       const issues: Issue[] = [];
