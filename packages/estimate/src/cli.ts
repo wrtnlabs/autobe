@@ -508,6 +508,9 @@ function printResults(result: EvaluationResult): void {
   console.log(
     `   Security:      ${result.reference.security.totalIssues} issues`,
   );
+  console.log(
+    `   Schema Sync:   ${result.reference.schemaSync.emptyTypes}/${result.reference.schemaSync.totalTypes} empty types`,
+  );
   console.log("─────────────────────────────────────────\n");
 
   if (result.summary.criticalCount > 0) {
