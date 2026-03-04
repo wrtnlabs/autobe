@@ -1,6 +1,14 @@
 #!/bin/bash
 set -e
 
+# Load .env from estimate package
+ENV_FILE="$(cd "$(dirname "$0")" && pwd)/.env"
+if [ -f "$ENV_FILE" ]; then
+  set -a
+  source "$ENV_FILE"
+  set +a
+fi
+
 MODELS=(
   "gpt-4.1-mini:openai/gpt-4.1-mini"
   "qwen3-30b:qwen/qwen3-30b-a3b-thinking-2507"
@@ -12,8 +20,16 @@ PROJECTS=("todo" "bbs" "reddit" "shopping")
 BASE="$HOME/Downloads/autobe-examples"
 ESTIMATE="$HOME/Downloads/autobe/packages/estimate"
 
-# Mode: "scoring" (fast, no server) or "full" (with runtime + golden set)
+# Mode: "scoring" (fast, no server), "agent" (with AI agents), or "full" (agent + runtime + golden set)
 MODE="${1:-scoring}"
+
+if [ "$MODE" = "agent" ] || [ "$MODE" = "full" ]; then
+  if [ -z "$OPENROUTER_API_KEY" ]; then
+    echo "ERROR: OPENROUTER_API_KEY is required for mode=$MODE"
+    echo "  export OPENROUTER_API_KEY=sk-or-..."
+    exit 1
+  fi
+fi
 
 PASSED=0
 FAILED=0
@@ -37,11 +53,13 @@ for MODEL in "${MODELS[@]}"; do
     echo "[$TOTAL/$TOTAL_COUNT] $MODEL_NAME / $PROJECT ($MODE)"
 
     ARGS="-i $INPUT -o $OUTPUT"
-    if [ "$MODE" = "full" ]; then
-      ARGS="$ARGS --run-tests --golden --project $PROJECT"
+    if [ "$MODE" = "agent" ]; then
+      ARGS="$ARGS --use-agent"
+    elif [ "$MODE" = "full" ]; then
+      ARGS="$ARGS --use-agent --run-tests --golden --project $PROJECT"
     fi
 
-    if node "$ESTIMATE/dist/bin/estimate.js" $ARGS 2>&1 | tail -3; then
+    if npx tsx "$ESTIMATE/dist/bin/estimate.js" $ARGS 2>&1 | tail -3; then
       PASSED=$((PASSED + 1))
     else
       echo "  ERROR: evaluation failed"
