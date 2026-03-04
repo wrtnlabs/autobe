@@ -7,8 +7,8 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired during the unified review and validation phase of
- * OpenAPI schema generation process.
+ * Event fired during the unified review and validation phase of OpenAPI schema
+ * generation process.
  *
  * This event represents the activity of a single unified Schema Review Agent
  * that validates schemas across all dimensions simultaneously: security,
@@ -18,17 +18,17 @@ import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
  *
  * - **Security**: Password/token field protection, session context placement,
  *   actor DTO compliance
- * - **Relations**: Relation classification, FK-to-object transformation,
- *   circular reference removal
- * - **Content**: Field completeness, type accuracy, nullability,
- *   DB coverage verification
- * - **Phantom detection**: Identifying and erasing fields with no DB mapping,
- *   no recognized role, and no valid specification
+ * - **Relations**: Relation classification, FK-to-object transformation, circular
+ *   reference removal
+ * - **Content**: Field completeness, type accuracy, nullability, DB coverage
+ *   verification
+ * - **Phantom detection**: Identifying and erasing fields with no DB mapping, no
+ *   recognized role, and no valid specification
  *
  * The review agent runs twice per schema generation cycle to ensure
- * convergence. Each run produces `excludes` (DB properties not in the DTO)
- * and `revises` (property-level operations: keep, create, update, depict,
- * erase, nullish).
+ * convergence. Each run produces `excludes` (DB properties not in the DTO) and
+ * `revises` (property-level operations: keep, create, update, depict, erase,
+ * nullish).
  *
  * @author Samchon
  */
