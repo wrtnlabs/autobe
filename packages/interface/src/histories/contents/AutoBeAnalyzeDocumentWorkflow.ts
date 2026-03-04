@@ -1,6 +1,48 @@
 import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 
 /**
+ * Transition between workflow states.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentWorkflowTransition {
+  /** Target state */
+  to: string;
+  /** Trigger that causes the transition */
+  trigger: string;
+  /** Transition guard condition */
+  guard?: string;
+}
+
+/**
+ * State within a workflow.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentWorkflowState {
+  /** State name (e.g., "pending", "active", "banned") */
+  name: string;
+  /** State description */
+  description: string;
+  /** Transitions from this state */
+  transitions: Array<AutoBeAnalyzeDocumentWorkflowTransition>;
+}
+
+/**
+ * Workflow/state machine entry.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentWorkflowEntry extends ITraceable {
+  /** Workflow name (e.g., "Order Processing", "User Account Lifecycle") */
+  name: string;
+  /** Workflow description */
+  description: string;
+  /** State list */
+  states: Array<AutoBeAnalyzeDocumentWorkflowState>;
+}
+
+/**
  * Extension category: Workflow & State Machine.
  *
  * Structures state transitions/workflows as **direct input** for business logic
@@ -13,28 +55,5 @@ import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
  */
 export interface AutoBeAnalyzeDocumentWorkflow {
   /** Workflow/state machine list */
-  workflows: Array<
-    {
-      /** Workflow name (e.g., "Order Processing", "User Account Lifecycle") */
-      name: string;
-      /** Workflow description */
-      description: string;
-      /** State list */
-      states: Array<{
-        /** State name (e.g., "pending", "active", "banned") */
-        name: string;
-        /** State description */
-        description: string;
-        /** Transitions from this state */
-        transitions: Array<{
-          /** Target state */
-          to: string;
-          /** Trigger that causes the transition */
-          trigger: string;
-          /** Transition guard condition */
-          guard?: string;
-        }>;
-      }>;
-    } & ITraceable
-  >;
+  workflows: Array<AutoBeAnalyzeDocumentWorkflowEntry>;
 }
