@@ -2,6 +2,7 @@ import { tags } from "typia";
 
 import { IAuthorizationToken } from "./IAuthorizationToken";
 import { IAutoBeHackathonSession } from "./IAutoBeHackathonSession";
+import { ISetAuthorizationHeaders } from "./ISetAuthorizationHeaders";
 
 export interface IAutoBeHackathonParticipant {
   type: "participant";
@@ -25,9 +26,7 @@ export namespace IAutoBeHackathonParticipant {
   }
   export interface IAuthorized extends IAutoBeHackathonParticipant {
     token: IAuthorizationToken;
-    setHeaders: {
-      Authorization: string;
-    };
+    setHeaders: ISetAuthorizationHeaders;
   }
 
   export interface ISummary extends IAutoBeHackathonParticipant {
