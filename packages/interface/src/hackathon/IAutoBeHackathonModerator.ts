@@ -1,6 +1,7 @@
 import { tags } from "typia";
 
 import { IAuthorizationToken } from "./IAuthorizationToken";
+import { ISetAuthorizationHeaders } from "./ISetAuthorizationHeaders";
 
 export interface IAutoBeHackathonModerator {
   type: "moderator";
@@ -19,8 +20,6 @@ export namespace IAutoBeHackathonModerator {
   }
   export interface IAuthorized extends IAutoBeHackathonModerator {
     token: IAuthorizationToken;
-    setHeaders: {
-      Authorization: string;
-    };
+    setHeaders: ISetAuthorizationHeaders;
   }
 }

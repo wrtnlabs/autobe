@@ -1,15 +1,12 @@
 import OpenAI from "openai";
 
 import { getActiveTrace } from "../telemetry";
-import { AgentConfig, DEFAULT_MODEL } from "./types";
+import { AgentConfig, DEFAULT_MODEL, TokenUsage } from "./types";
 
 /** LLM API response */
 interface LLMResponse {
   content: string;
-  tokensUsed: {
-    input: number;
-    output: number;
-  };
+  tokensUsed: TokenUsage;
 }
 
 /** LLM client using OpenAI SDK (OpenRouter compatible) */

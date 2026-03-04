@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import {
+  AgentConfig,
   AgentResult,
   LLMProvider,
   LLMQualityAgent,
@@ -92,6 +93,16 @@ export function createProgram(): Command {
     });
 
   return program;
+}
+
+/** Score breakdown with phase and agent contributions */
+interface ScoreBreakdown {
+  phaseScore: number;
+  phaseWeight: number;
+  phaseContribution: number;
+  agentScore: number | null;
+  agentWeight: number;
+  agentContribution: number;
 }
 
 export async function runCLI(options: CLIOptions): Promise<void> {
@@ -258,32 +269,32 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Cap score if agents found too many critical issues
     const _totalAgentCritical = agentResults.reduce(
       (sum, r) =>
-        sum +
-        r.issues.filter((i: { severity: string }) => i.severity === "critical")
-          .length,
+        sum + r.issues.filter((i) => i.severity === "critical").length,
       0,
     );
     // No hard cap — let weighted average reflect real quality
     if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 60);
   }
 
+  const scoreBreakdown: ScoreBreakdown = {
+    phaseScore: result.totalScore,
+    phaseWeight: agentResults.length > 0 ? 0.7 : 1.0,
+    phaseContribution:
+      agentResults.length > 0
+        ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
+        : result.totalScore,
+    agentScore: agentResults.length > 0 ? Math.round(agentAvg) : null,
+    agentWeight: agentResults.length > 0 ? 0.3 : 0,
+    agentContribution:
+      agentResults.length > 0 ? Math.round(agentAvg * AGENT_WEIGHT_RATIO) : 0,
+  };
+
   const fullResult = {
     ...result,
     totalScore: adjustedScore,
     grade: scoreToGrade(adjustedScore),
     agentEvaluations: agentResults,
-    scoreBreakdown: {
-      phaseScore: result.totalScore,
-      phaseWeight: agentResults.length > 0 ? 0.7 : 1.0,
-      phaseContribution:
-        agentResults.length > 0
-          ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
-          : result.totalScore,
-      agentScore: agentResults.length > 0 ? Math.round(agentAvg) : null,
-      agentWeight: agentResults.length > 0 ? 0.3 : 0,
-      agentContribution:
-        agentResults.length > 0 ? Math.round(agentAvg * AGENT_WEIGHT_RATIO) : 0,
-    },
+    scoreBreakdown,
   };
 
   fs.writeFileSync(jsonPath, generateJsonReport(fullResult));
@@ -314,14 +325,17 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   );
 }
 
-async function runCompare(options: {
+/** Options for the compare subcommand */
+interface CompareCommandOptions {
   projects: string[];
   output: string;
   verbose?: boolean;
   useAgent?: boolean;
   provider?: string;
   apiKey?: string;
-}): Promise<void> {
+}
+
+async function runCompare(options: CompareCommandOptions): Promise<void> {
   const { CompareEvaluator, CompareReporter } = await import("./compare");
 
   if (!options.apiKey) {
@@ -373,7 +387,7 @@ async function runCompare(options: {
 
 async function runAgentEvaluations(
   context: EvaluationContext,
-  config: { provider: LLMProvider; apiKey: string },
+  config: AgentConfig,
   _verbose?: boolean,
 ): Promise<AgentResult[]> {
   const securityAgent = new SecurityAgent(config);
@@ -532,11 +546,15 @@ function printResults(result: EvaluationResult): void {
   }
 }
 
+/** Grouped issue entry for display */
+interface GroupedIssue {
+  message: string;
+  count: number;
+  files: string[];
+}
+
 function printGroupedIssues(issues: EvaluationResult["criticalIssues"]): void {
-  const grouped = new Map<
-    string,
-    { message: string; count: number; files: string[] }
-  >();
+  const grouped = new Map<string, GroupedIssue>();
 
   for (const issue of issues) {
     const existing = grouped.get(issue.code);

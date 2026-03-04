@@ -5,6 +5,13 @@ import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
+/** Result of analyzing a single file for JSDoc */
+interface JsDocFileResult {
+  issues: Issue[];
+  totalApis: number;
+  documentedApis: number;
+}
+
 export class JsDocEvaluator extends BaseEvaluator {
   readonly name = "JsDocEvaluator";
   readonly phase = "quality" as const;
@@ -49,9 +56,7 @@ export class JsDocEvaluator extends BaseEvaluator {
     };
   }
 
-  private async analyzeFile(
-    filePath: string,
-  ): Promise<{ issues: Issue[]; totalApis: number; documentedApis: number }> {
+  private async analyzeFile(filePath: string): Promise<JsDocFileResult> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
       const issues: Issue[] = [];

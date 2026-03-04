@@ -9,6 +9,13 @@ import type {
   SourceFiles,
 } from "../types";
 
+/** Glob target definition for file discovery */
+interface GlobTarget {
+  dir: string | undefined;
+  pattern: string;
+  ignore: string[];
+}
+
 /** Build evaluation context by scanning AutoBE generated project structure */
 export async function buildContext(
   rootPath: string,
@@ -170,10 +177,7 @@ async function discoverSourceFiles(
       pattern: "**/*.prisma",
       ignore: [],
     },
-  } as const satisfies Record<
-    string,
-    { dir: string | undefined; pattern: string; ignore: string[] }
-  >;
+  } as const satisfies Record<string, GlobTarget>;
 
   const entries = await Promise.all(
     Object.entries(globTargets).map(

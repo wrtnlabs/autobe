@@ -3,19 +3,21 @@ import * as ts from "typescript";
 
 import type { EvaluationContext, Issue } from "../../types";
 import { createIssue } from "../../types";
-import { GateEvaluator } from "../base";
+import { GateCheckResult, GateEvaluator } from "../base";
 import { classifyDiagnostic } from "./classify";
+
+/** Result of checking a single file */
+interface FileCheckResult {
+  issues: Issue[];
+  hasError: boolean;
+}
 
 /** Syntax Evaluator Checks TypeScript syntax errors using the compiler API */
 export class SyntaxEvaluator extends GateEvaluator {
   readonly name = "SyntaxEvaluator";
   readonly description = "Checks TypeScript syntax errors";
 
-  async checkGate(context: EvaluationContext): Promise<{
-    passed: boolean;
-    issues: Issue[];
-    metrics?: Record<string, number | string | boolean>;
-  }> {
+  async checkGate(context: EvaluationContext): Promise<GateCheckResult> {
     const results = await Promise.all(
       context.files.typescript.map((filePath) => this.checkFile(filePath)),
     );
@@ -34,9 +36,7 @@ export class SyntaxEvaluator extends GateEvaluator {
     };
   }
 
-  private async checkFile(
-    filePath: string,
-  ): Promise<{ issues: Issue[]; hasError: boolean }> {
+  private async checkFile(filePath: string): Promise<FileCheckResult> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
       const issues = this.checkSyntax(filePath, content);
