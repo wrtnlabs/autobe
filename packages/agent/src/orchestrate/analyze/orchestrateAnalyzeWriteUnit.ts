@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -16,14 +16,18 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteUnitHistory } from "./histories/transformAnalyzeWriteUnitHistory";
-import { IAutoBeAnalyzeWriteUnitApplication } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
+import {
+  IAutoBeAnalyzeWriteUnitApplication,
+  IAutoBeAnalyzeWriteUnitApplicationComplete,
+  IAutoBeAnalyzeWriteUnitApplicationProps,
+} from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 import { isRecord, parseLooseStructuredString } from "./utils/repairUtils";
 
 export const orchestrateAnalyzeWriteUnit = async (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     moduleIndex: number;
     progress: AutoBeProgressEventBase;
@@ -40,7 +44,7 @@ export const orchestrateAnalyzeWriteUnit = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null> =
       {
         value: null,
       };
@@ -83,15 +87,15 @@ export const orchestrateAnalyzeWriteUnit = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> => {
+  ): IValidation<IAutoBeAnalyzeWriteUnitApplicationProps> => {
     input = repairAnalyzeWriteUnitInput(input);
-    const result: IValidation<IAutoBeAnalyzeWriteUnitApplication.IProps> =
-      typia.validate<IAutoBeAnalyzeWriteUnitApplication.IProps>(input);
+    const result: IValidation<IAutoBeAnalyzeWriteUnitApplicationProps> =
+      typia.validate<IAutoBeAnalyzeWriteUnitApplicationProps>(input);
     if (result.success === false) return result;
 
     // Validate English-only content for complete requests

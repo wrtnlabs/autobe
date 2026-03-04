@@ -53,7 +53,7 @@ export interface AutoBeAnalyzeWriteSectionEvent
    * Each section represents a detailed subsection (#### level) with complete
    * implementation-ready content.
    */
-  sectionSections: AutoBeAnalyzeWriteSectionEvent.ISectionSection[];
+  sectionSections: AutoBeAnalyzeSectionContent[];
 
   /**
    * Current iteration number of the section generation.
@@ -73,19 +73,17 @@ export interface AutoBeAnalyzeWriteSectionEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeWriteSectionEvent {
-  /** Structure representing a single section in the document. */
-  export interface ISectionSection {
-    /** Title of the section (#### level heading). */
-    title: string;
+/** Structure representing a single section in the document. */
+export interface AutoBeAnalyzeSectionContent {
+  /** Title of the section (#### level heading). */
+  title: string;
 
-    /**
-     * Complete content for the section.
-     *
-     * Contains detailed requirements, specifications, and diagrams. Should use
-     * EARS format for requirements and proper Mermaid syntax for any diagrams
-     * included.
-     */
-    content: string;
-  }
+  /**
+   * Complete content for the section.
+   *
+   * Contains detailed requirements, specifications, and diagrams. Should use
+   * EARS format for requirements and proper Mermaid syntax for any diagrams
+   * included.
+   */
+  content: string;
 }

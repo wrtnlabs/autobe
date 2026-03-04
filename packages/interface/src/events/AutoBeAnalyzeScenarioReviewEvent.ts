@@ -30,7 +30,7 @@ export interface AutoBeAnalyzeScenarioReviewEvent
   feedback: string;
 
   /** Structured review issues for targeted scenario regeneration. */
-  issues: AutoBeAnalyzeScenarioReviewEvent.IScenarioReviewIssue[];
+  issues: AutoBeAnalyzeScenarioReviewIssue[];
 
   /** Current step number in the analysis state machine. */
   step: number;
@@ -39,22 +39,20 @@ export interface AutoBeAnalyzeScenarioReviewEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeScenarioReviewEvent {
-  /** Structured issue identified during scenario review. */
-  export interface IScenarioReviewIssue {
-    /** Issue category for programmatic handling. */
-    category:
-      | "missing_entity"
-      | "hallucinated_entity"
-      | "actor_misclassification"
-      | "incomplete_relationship"
-      | "missing_feature"
-      | "hallucinated_feature";
+/** Structured issue identified during scenario review. */
+export interface AutoBeAnalyzeScenarioReviewIssue {
+  /** Issue category for programmatic handling. */
+  category:
+    | "missing_entity"
+    | "hallucinated_entity"
+    | "actor_misclassification"
+    | "incomplete_relationship"
+    | "missing_feature"
+    | "hallucinated_feature";
 
-    /** Human-readable description of the issue. */
-    description: string;
+  /** Human-readable description of the issue. */
+  description: string;
 
-    /** Suggested fix for the scenario regeneration. */
-    suggestion: string;
-  }
+  /** Suggested fix for the scenario regeneration. */
+  suggestion: string;
 }

@@ -72,3 +72,35 @@ done
 
 echo ""
 echo "Benchmark complete: $PASSED passed, $FAILED failed (total $TOTAL)"
+
+# ── Summary table ──────────────────────────────────────────
+# Read scores from generated JSON reports
+
+read_score() {
+  local report="$1"
+  if [ -f "$report" ]; then
+    python3 -c "
+import json
+d = json.load(open('$report'))
+print(str(d.get('totalScore','?')) + '(' + str(d.get('grade','?')) + ')')
+" 2>/dev/null || echo "?"
+  else
+    echo "--"
+  fi
+}
+
+echo ""
+echo "┌──────────────────┬────────┬────────┬────────┬──────────┐"
+printf "│ %-16s │ %-6s │ %-6s │ %-6s │ %-8s │\n" "Model" "todo" "bbs" "reddit" "shopping"
+echo "├──────────────────┼────────┼────────┼────────┼──────────┤"
+
+for MODEL in "${MODELS[@]}"; do
+  MODEL_NAME="${MODEL%%:*}"
+  T=$(read_score "$ESTIMATE/reports/benchmark/$MODEL_NAME/todo/estimate-report.json")
+  B=$(read_score "$ESTIMATE/reports/benchmark/$MODEL_NAME/bbs/estimate-report.json")
+  R=$(read_score "$ESTIMATE/reports/benchmark/$MODEL_NAME/reddit/estimate-report.json")
+  S=$(read_score "$ESTIMATE/reports/benchmark/$MODEL_NAME/shopping/estimate-report.json")
+  printf "│ %-16s │ %6s │ %6s │ %6s │ %8s │\n" "$MODEL_NAME" "$T" "$B" "$R" "$S"
+done
+
+echo "└──────────────────┴────────┴────────┴────────┴──────────┘"

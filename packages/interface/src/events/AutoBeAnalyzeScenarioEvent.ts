@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
-import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
+import { AutoBeAnalyzeFileScenario } from "../histories/contents/AutoBeAnalyzeFileScenario";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";
@@ -125,7 +125,7 @@ export interface AutoBeAnalyzeScenarioEvent
    * The array structure allows flexible composition of documents based on
    * project complexity and specific needs.
    */
-  files: Array<AutoBeAnalyzeFile.Scenario> & tags.MinItems<1>;
+  files: Array<AutoBeAnalyzeFileScenario> & tags.MinItems<1>;
 
   /**
    * High-level project features that activate conditional modules.

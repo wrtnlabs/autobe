@@ -55,7 +55,7 @@ export interface AutoBeAnalyzeWriteModuleEvent
    * title, purpose, and initial content. These sections establish the
    * document's primary structure.
    */
-  moduleSections: AutoBeAnalyzeWriteModuleEvent.IModuleSection[];
+  moduleSections: AutoBeAnalyzeModuleSection[];
 
   /**
    * Current iteration number of the module section generation.
@@ -75,26 +75,24 @@ export interface AutoBeAnalyzeWriteModuleEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeWriteModuleEvent {
-  /** Structure representing a single module section in the document. */
-  export interface IModuleSection {
-    /** Title of the module section (## level heading). */
-    title: string;
+/** Structure representing a single module section in the document. */
+export interface AutoBeAnalyzeModuleSection {
+  /** Title of the module section (## level heading). */
+  title: string;
 
-    /**
-     * Purpose statement explaining what this section covers.
-     *
-     * A brief description (1-2 sentences) of the section's role in the overall
-     * document structure.
-     */
-    purpose: string;
+  /**
+   * Purpose statement explaining what this section covers.
+   *
+   * A brief description (1-2 sentences) of the section's role in the overall
+   * document structure.
+   */
+  purpose: string;
 
-    /**
-     * Initial content for the module section.
-     *
-     * Introductory content that appears after the section heading, before any
-     * unit sections.
-     */
-    content: string;
-  }
+  /**
+   * Initial content for the module section.
+   *
+   * Introductory content that appears after the section heading, before any
+   * unit sections.
+   */
+  content: string;
 }

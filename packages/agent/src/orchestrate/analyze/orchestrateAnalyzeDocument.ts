@@ -11,7 +11,11 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeDocumentHistory } from "./histories/transformAnalyzeDocumentHistory";
-import { IAutoBeAnalyzeDocumentApplication } from "./structures/IAutoBeAnalyzeDocumentApplication";
+import {
+  IAutoBeAnalyzeDocumentApplication,
+  IAutoBeAnalyzeDocumentApplicationComplete,
+  IAutoBeAnalyzeDocumentApplicationProps,
+} from "./structures/IAutoBeAnalyzeDocumentApplication";
 
 /**
  * Orchestrate Semantic Layer extraction for a single analysis file.
@@ -32,8 +36,9 @@ export const orchestrateAnalyzeDocument = async (
   },
 ): Promise<AutoBeAnalyzeDocumentEvent> => {
   const start: Date = new Date();
-  const pointer: IPointer<IAutoBeAnalyzeDocumentApplication.IComplete | null> =
-    { value: null };
+  const pointer: IPointer<IAutoBeAnalyzeDocumentApplicationComplete | null> = {
+    value: null,
+  };
 
   const result: AutoBeContext.IResult = await ctx.conversate({
     source: SOURCE,
@@ -82,15 +87,15 @@ export const orchestrateAnalyzeDocument = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeDocumentApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeDocumentApplicationComplete | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
     typia.llm.application<IAutoBeAnalyzeDocumentApplication>({
       validate: {
         process: (
           input: unknown,
-        ): IValidation<IAutoBeAnalyzeDocumentApplication.IProps> =>
-          typia.validate<IAutoBeAnalyzeDocumentApplication.IProps>(input),
+        ): IValidation<IAutoBeAnalyzeDocumentApplicationProps> =>
+          typia.validate<IAutoBeAnalyzeDocumentApplicationProps>(input),
       },
     });
   return {

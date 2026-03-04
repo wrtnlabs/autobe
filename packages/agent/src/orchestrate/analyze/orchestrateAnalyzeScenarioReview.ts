@@ -2,6 +2,7 @@ import { IAgenticaController } from "@agentica/core";
 import {
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeScenarioReviewEvent,
+  AutoBeAnalyzeScenarioReviewIssue,
   AutoBeEventSource,
 } from "@autobe/interface";
 import { ILlmApplication, IValidation } from "@samchon/openapi";
@@ -11,7 +12,11 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { transformAnalyzeScenarioReviewHistory } from "./histories/transformAnalyzeScenarioReviewHistory";
-import { IAutoBeAnalyzeScenarioReviewApplication } from "./structures/IAutoBeAnalyzeScenarioReviewApplication";
+import {
+  IAutoBeAnalyzeScenarioReviewApplication,
+  IAutoBeAnalyzeScenarioReviewApplicationComplete,
+  IAutoBeAnalyzeScenarioReviewApplicationProps,
+} from "./structures/IAutoBeAnalyzeScenarioReviewApplication";
 
 /**
  * Orchestrate scenario review: validate scenario output against user's original
@@ -28,7 +33,7 @@ export const orchestrateAnalyzeScenarioReview = async (
   },
 ): Promise<AutoBeAnalyzeScenarioReviewEvent> => {
   const start: Date = new Date();
-  const pointer: IPointer<IAutoBeAnalyzeScenarioReviewApplication.IComplete | null> =
+  const pointer: IPointer<IAutoBeAnalyzeScenarioReviewApplicationComplete | null> =
     {
       value: null,
     };
@@ -66,8 +71,7 @@ export const orchestrateAnalyzeScenarioReview = async (
     approved: pointer.value.approved,
     feedback: pointer.value.feedback,
     issues: pointer.value.issues.map((issue) => ({
-      category:
-        issue.category as AutoBeAnalyzeScenarioReviewEvent.IScenarioReviewIssue["category"],
+      category: issue.category as AutoBeAnalyzeScenarioReviewIssue["category"],
       description: issue.description,
       suggestion: issue.suggestion,
     })),
@@ -82,15 +86,15 @@ export const orchestrateAnalyzeScenarioReview = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeScenarioReviewApplication.IComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeScenarioReviewApplicationComplete | null>;
 }): IAgenticaController.IClass {
   const application: ILlmApplication =
     typia.llm.application<IAutoBeAnalyzeScenarioReviewApplication>({
       validate: {
         process: (
           input: unknown,
-        ): IValidation<IAutoBeAnalyzeScenarioReviewApplication.IProps> =>
-          typia.validate<IAutoBeAnalyzeScenarioReviewApplication.IProps>(input),
+        ): IValidation<IAutoBeAnalyzeScenarioReviewApplicationProps> =>
+          typia.validate<IAutoBeAnalyzeScenarioReviewApplicationProps>(input),
       },
     });
   return {

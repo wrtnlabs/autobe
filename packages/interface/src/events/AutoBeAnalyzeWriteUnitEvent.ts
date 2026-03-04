@@ -45,7 +45,7 @@ export interface AutoBeAnalyzeWriteUnitEvent
    * Each unit section represents a subsection (### level) with its title,
    * purpose, content, and keywords for guiding section generation.
    */
-  unitSections: AutoBeAnalyzeWriteUnitEvent.IUnitSection[];
+  unitSections: AutoBeAnalyzeUnitSection[];
 
   /**
    * Current iteration number of the unit section generation.
@@ -65,34 +65,31 @@ export interface AutoBeAnalyzeWriteUnitEvent
   retry: number;
 }
 
-export namespace AutoBeAnalyzeWriteUnitEvent {
-  /** Structure representing a single unit section in the document. */
-  export interface IUnitSection {
-    /** Title of the unit section (### level heading). */
-    title: string;
+/** Structure representing a single unit section in the document. */
+export interface AutoBeAnalyzeUnitSection {
+  /** Title of the unit section (### level heading). */
+  title: string;
 
-    /**
-     * Purpose statement explaining what this section covers.
-     *
-     * A brief description of the section's role within the parent module
-     * section.
-     */
-    purpose: string;
+  /**
+   * Purpose statement explaining what this section covers.
+   *
+   * A brief description of the section's role within the parent module section.
+   */
+  purpose: string;
 
-    /**
-     * Content for the unit section.
-     *
-     * The main body content that appears after the section heading, before any
-     * sections.
-     */
-    content: string;
+  /**
+   * Content for the unit section.
+   *
+   * The main body content that appears after the section heading, before any
+   * sections.
+   */
+  content: string;
 
-    /**
-     * Keywords that hint at section topics.
-     *
-     * Used by the Section Agent to understand what detailed topics should be
-     * covered within this unit section.
-     */
-    keywords: string[];
-  }
+  /**
+   * Keywords that hint at section topics.
+   *
+   * Used by the Section Agent to understand what detailed topics should be
+   * covered within this unit section.
+   */
+  keywords: string[];
 }

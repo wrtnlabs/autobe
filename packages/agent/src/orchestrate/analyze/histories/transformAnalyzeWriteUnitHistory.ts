@@ -1,5 +1,6 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
 } from "@autobe/interface";
@@ -10,26 +11,29 @@ import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromp
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
-import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
+import {
+  FixedAnalyzeTemplateFeature,
+  buildFixedAnalyzeExpandedTemplate,
+  expandFixedAnalyzeTemplateUnits,
+} from "../structures/FixedAnalyzeTemplate";
 
 export const transformAnalyzeWriteUnitHistory = (
   ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     moduleIndex: number;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
   },
 ): IAutoBeOrchestrateHistory => {
-  const moduleSection:
-    | AutoBeAnalyzeWriteModuleEvent.IModuleSection
-    | undefined = props.moduleEvent.moduleSections[props.moduleIndex];
+  const moduleSection: AutoBeAnalyzeModuleSection | undefined =
+    props.moduleEvent.moduleSections[props.moduleIndex];
 
   // Find the matching file template and expand units for this module
-  const expandedTemplate = FixedAnalyzeTemplate.buildExpandedTemplate(
-    (props.scenario.features ?? []) as FixedAnalyzeTemplate.IFeature[],
+  const expandedTemplate = buildFixedAnalyzeExpandedTemplate(
+    (props.scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
   );
   const fileIndex = expandedTemplate.findIndex(
     (t) => t.filename === props.file.filename,
@@ -37,7 +41,7 @@ export const transformAnalyzeWriteUnitHistory = (
   const fileTemplate = fileIndex >= 0 ? expandedTemplate[fileIndex] : undefined;
   const moduleTemplate = fileTemplate?.modules[props.moduleIndex];
   const expandedUnits = moduleTemplate
-    ? FixedAnalyzeTemplate.expandUnits(
+    ? expandFixedAnalyzeTemplateUnits(
         moduleTemplate,
         props.scenario.entities,
         props.scenario.actors,

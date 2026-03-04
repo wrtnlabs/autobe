@@ -1,10 +1,13 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
 import YAML from "yaml";
 
-import { FixedAnalyzeTemplate } from "../structures/FixedAnalyzeTemplate";
+import {
+  FIXED_ANALYZE_TEMPLATE,
+  FixedAnalyzeTemplateYamlSpecDefinition,
+} from "../structures/FixedAnalyzeTemplate";
 
 // ─── Types ───
 
@@ -16,7 +19,7 @@ export interface IYamlRootKeyMismatch {
 }
 
 type FileSectionInput = Array<{
-  file: AutoBeAnalyzeFile.Scenario;
+  file: AutoBeAnalyzeFileScenario;
   sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
 }>;
 
@@ -30,12 +33,12 @@ const YAML_CODE_BLOCK_REGEX = /```yaml\n([\s\S]*?)```/g;
  */
 function buildExpectedRootKeys(): Map<string, string[]> {
   const map: Map<string, string[]> = new Map();
-  for (const fileTemplate of FixedAnalyzeTemplate.TEMPLATE) {
+  for (const fileTemplate of FIXED_ANALYZE_TEMPLATE) {
     if (fileTemplate.yamlSpecs && fileTemplate.yamlSpecs.length > 0) {
       map.set(
         fileTemplate.filename,
         fileTemplate.yamlSpecs.map(
-          (s: FixedAnalyzeTemplate.IYamlSpecDefinition) => s.rootKey,
+          (s: FixedAnalyzeTemplateYamlSpecDefinition) => s.rootKey,
         ),
       );
     }

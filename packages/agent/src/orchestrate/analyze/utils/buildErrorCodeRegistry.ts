@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeFile,
+  AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeWriteSectionEvent,
 } from "@autobe/interface";
 import YAML from "yaml";
@@ -177,7 +177,7 @@ const extractBacktickErrorCodeReferences = (
  */
 export const validateErrorCodes = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IErrorCodeValidationResult => {
@@ -229,7 +229,7 @@ export const validateErrorCodes = (props: {
  */
 export const detectErrorCodeConflicts = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IErrorCodeConflict[] => {
@@ -308,7 +308,7 @@ export const buildFileErrorCodeConflictMap = (
 /** @deprecated Bridge block registry removed. Use validateErrorCodes() instead. */
 export const buildErrorCodeRegistry = (props: {
   files: Array<{
-    file: AutoBeAnalyzeFile.Scenario;
+    file: AutoBeAnalyzeFileScenario;
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
   }>;
 }): IErrorCodeRegistryEntry[] => {
