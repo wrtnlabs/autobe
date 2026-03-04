@@ -269,9 +269,7 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Cap score if agents found too many critical issues
     const _totalAgentCritical = agentResults.reduce(
       (sum, r) =>
-        sum +
-        r.issues.filter((i) => i.severity === "critical")
-          .length,
+        sum + r.issues.filter((i) => i.severity === "critical").length,
       0,
     );
     // No hard cap — let weighted average reflect real quality

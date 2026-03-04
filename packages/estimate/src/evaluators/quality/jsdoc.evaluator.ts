@@ -56,9 +56,7 @@ export class JsDocEvaluator extends BaseEvaluator {
     };
   }
 
-  private async analyzeFile(
-    filePath: string,
-  ): Promise<JsDocFileResult> {
+  private async analyzeFile(filePath: string): Promise<JsDocFileResult> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
       const issues: Issue[] = [];

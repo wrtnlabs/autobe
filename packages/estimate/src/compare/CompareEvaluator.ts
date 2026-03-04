@@ -129,9 +129,7 @@ export class CompareEvaluator {
     };
   }
 
-  private extractAgentScores(
-    report: EstimateReport,
-  ): AgentScores | undefined {
+  private extractAgentScores(report: EstimateReport): AgentScores | undefined {
     if (!report.agentEvaluations || report.agentEvaluations.length === 0) {
       return undefined;
     }

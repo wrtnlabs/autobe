@@ -37,7 +37,9 @@ export interface EvalTraceMeta {
  * Create a trace for one evaluation run. Returns null if Langfuse is not
  * configured.
  */
-export function createEvalTrace(meta: EvalTraceMeta): LangfuseTraceClient | null {
+export function createEvalTrace(
+  meta: EvalTraceMeta,
+): LangfuseTraceClient | null {
   const lf = getLangfuse();
   if (!lf) return null;
 

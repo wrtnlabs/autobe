@@ -14,33 +14,36 @@ export interface AutoBeAnalyzeDocumentIntroduction {
   purpose: string;
 
   /** System scope definition */
-  scope: {
-    /** Items included in v1 */
-    included: string[];
-    /** Items explicitly excluded from v1 */
-    excluded: string[];
-  };
+  scope: AutoBeAnalyzeDocumentIntroduction.Scope;
 
   /** Target audience of the document */
   audience: string;
 
   /** Domain glossary definitions */
-  glossary: Array<
-    {
-      /** Term */
-      term: string;
-      /** Definition */
-      definition: string;
-    } & ITraceable
-  >;
+  glossary: Array<AutoBeAnalyzeDocumentIntroduction.GlossaryEntry & ITraceable>;
 
   /** External reference documents/standards */
   references: Array<
-    {
-      /** Reference document name */
-      name: string;
-      /** Reference document description */
-      description: string;
-    } & ITraceable
+    AutoBeAnalyzeDocumentIntroduction.ReferenceEntry & ITraceable
   >;
+}
+export namespace AutoBeAnalyzeDocumentIntroduction {
+  export interface Scope {
+    /** Items included in v1 */
+    included: string[];
+    /** Items explicitly excluded from v1 */
+    excluded: string[];
+  }
+  export interface GlossaryEntry {
+    /** Term */
+    term: string;
+    /** Definition */
+    definition: string;
+  }
+  export interface ReferenceEntry {
+    /** Reference document name */
+    name: string;
+    /** Reference document description */
+    description: string;
+  }
 }
