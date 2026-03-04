@@ -29,7 +29,6 @@ export class TestGlobal {
   public static getVendorConfig(
     vendor: string = TestGlobal.vendorModel,
   ): IAutoBeVendor {
-    const qwenFamily: boolean = vendor.startsWith("qwen/");
     return {
       api: new OpenAI({
         apiKey: TestGlobal.env.OPENROUTER_API_KEY ?? "********",
@@ -37,7 +36,8 @@ export class TestGlobal {
       }),
       model: vendor,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? 32),
-      useToolChoice: qwenFamily ? false : vendor.includes("thinking") === false,
+      // useToolChoice: vendor.includes("thinking") === false,
+      useToolChoice: false,
     };
   }
 

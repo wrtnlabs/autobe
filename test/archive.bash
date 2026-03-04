@@ -10,17 +10,23 @@ pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
-# qwen/qwen3-next-80b-a3b-instruct (0.09) -> working
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project todo > archive.qwen-qwen3-next-80b-a3b-instruct.todo.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project bbs > archive.qwen-qwen3-next-80b-a3b-instruct.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project reddit > archive.qwen-qwen3-next-80b-a3b-instruct.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-next-80b-a3b-instruct --project shopping > archive.qwen-qwen3-next-80b-a3b-instruct.shopping.log
+# qwen/qwen3.5-397b-a17b (0.39)
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project bbs > archive.qwen-qwen3.5-397b-a17b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project reddit > archive.qwen-qwen3.5-397b-a17b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project shopping > archive.qwen-qwen3.5-397b-a17b.shopping.log
 
-# qwen/qwen3-30b-a3b-thinking-2507 (0.051) -> working
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project todo > archive.qwen-qwen3-30b-a3b-thinking-2507.todo.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project bbs > archive.qwen-qwen3-30b-a3b-thinking-2507.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project reddit > archive.qwen-qwen3-30b-a3b-thinking-2507.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-30b-a3b-thinking-2507 --project shopping > archive.qwen-qwen3-30b-a3b-thinking-2507.shopping.log
+# qwen/qwen3.5-122b-a10b (0.26)
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project bbs > archive.qwen-qwen3.5-122b-a10b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project reddit > archive.qwen-qwen3.5-122b-a10b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project shopping > archive.qwen-qwen3.5-122b-a10b.shopping.log
+
+# qwen/qwen3.5-35b-a3b (0.1625)
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project bbs > archive.qwen-qwen3.5-35b-a3b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
 
 ######################################################
 # KIMI
