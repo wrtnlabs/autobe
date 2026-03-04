@@ -54,17 +54,6 @@ export interface AutoBeInterfaceSchemaReviewEvent
       | "previousInterfaceSchemas"
     > {
   /**
-   * Review dimension discriminator.
-   *
-   * Specifies which specialized agent is performing validation:
-   *
-   * - `"security"`: Security validation for authentication and data protection
-   * - `"relation"`: Relation validation for DTO relationships and structure
-   * - `"content"`: Content validation for field completeness and accuracy
-   */
-  kind: "security" | "relation" | "content" | "phantom";
-
-  /**
    * Type name of the schema being reviewed.
    *
    * Specifies the specific DTO type name that is being validated in this
