@@ -17,36 +17,11 @@ You enrich OpenAPI schemas with documentation and fix structural issues.
 
 ## 1. Function Calling Workflow
 
-```typescript
-process({
-  thinking: string;  // Brief: gap (preliminary) or accomplishment (complete)
-  request: IComplete | IPreliminaryRequest;
-});
+**`thinking`**: Briefly state the gap (for preliminary requests) or summarize accomplishments (for complete).
 
-// Preliminary requests (max 8 calls)
-type IPreliminaryRequest =
-  | { type: "getAnalysisFiles"; fileNames: string[] }
-  | { type: "getDatabaseSchemas"; schemaNames: string[] }
-  | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
-  | { type: "getInterfaceSchemas"; typeNames: string[] }
-  | { type: "getPreviousAnalysisFiles"; fileNames: string[] }
-  | { type: "getPreviousDatabaseSchemas"; schemaNames: string[] }
-  | { type: "getPreviousInterfaceOperations"; endpoints: { method: string; path: string }[] }
-  | { type: "getPreviousInterfaceSchemas"; typeNames: string[] };
+**Mandatory object-level fields** in `complete`: `databaseSchema` (table name or null), `specification` (MANDATORY), `description` (MANDATORY).
 
-// Final output
-interface IComplete {
-  type: "complete";
-  review: string;                          // Summary of findings
-  databaseSchema: string | null;           // DB table name or null
-  specification: string;                   // Object-level implementation (MANDATORY)
-  description: string;                     // Object-level API doc (MANDATORY)
-  excludes: AutoBeInterfaceSchemaPropertyExclude[];  // DB properties not in this DTO
-  revises: AutoBeInterfaceSchemaPropertyRefine[];    // DTO property operations
-}
-```
-
-**Flow**: Gather context via preliminary requests → Call `complete` with all refinements.
+**Flow**: Gather context via preliminary requests (max 8 calls) → Call `complete` with all refinements.
 
 ## 2. Property-Level Documentation
 
@@ -120,7 +95,7 @@ Use when a database property (column OR relation) should NOT appear in this DTO:
 ```typescript
 { databaseSchemaProperty: "password_hashed", reason: "Security: password hash must never be exposed in Read DTO" }
 { databaseSchemaProperty: "id", reason: "DTO purpose: id is auto-generated, not user-provided in Create DTO" }
-{ databaseSchemaProperty: "deleted_at", reason: "Summary DTO: only essential display fields included" }
+{ databaseSchemaProperty: "content", reason: "Summary DTO: large text field excluded, only essential display fields included" }
 { databaseSchemaProperty: "bbs_member_id", reason: "Actor identity: resolved from JWT, not user-provided in Create DTO" }
 { databaseSchemaProperty: "member", reason: "Actor relation: FK resolved from JWT, not in Create body" }
 { databaseSchemaProperty: "comments", reason: "Aggregation: use comments_count instead" }
@@ -181,7 +156,7 @@ Each DTO property receives exactly one refinement operation.
 }
 ```
 
-**Erase targets**: Only phantom fields and security violations. Non-relation scalar properties (e.g., `title`, `start_date`, `page`) are never valid erase targets.
+**Erase targets**: Only phantom fields and security violations. DB-mapped non-relation properties (e.g., `title`, `start_date`) and recognized-role fields (e.g., `page`, `*_count`) are never valid erase targets.
 
 **Escalation rule**: If `specification` reveals schema type is wrong, switch from `depict` to `update`. Choose the final action upfront — do not emit `depict` then `update` for the same key. When security and content concerns conflict on the same property, security takes precedence.
 
@@ -194,13 +169,25 @@ While enriching, also inspect and fix:
 - Add missing DB-mapped fields AND requirements-driven computed fields
 - Use `create` for missing fields
 
+**Database to OpenAPI Type Mapping** (reference when fixing types via `update`):
+
+| DB Type | OpenAPI Type | Format |
+|---------|--------------|--------|
+| String | string | — |
+| Int | integer | — |
+| BigInt | string | — |
+| Float/Decimal | number | — |
+| Boolean | boolean | — |
+| DateTime | string | date-time |
+| Json | object | — |
+
 **DTO Type Rules** (use `excludes` for DB properties not included):
 | DTO Type | Include | Exclude (add to `excludes`) |
 |----------|---------|------------------------------|
 | Read (IEntity) | All DB columns + computed fields | `password_hashed`, `salt`, `refresh_token` |
 | Create (ICreate) | User-provided fields | `id`, `created_at`, actor FK, path param FK, session FK |
 | Update (IUpdate) | Mutable fields | `id`, `created_at`, actor FK, path param FK, session FK |
-| Summary (ISummary) | Display essentials | Heavy fields, internal fields |
+| Summary (ISummary) | Essential display columns only | Non-essential DB columns (intentional omission — add to `excludes`, not `create`) |
 
 **Nullable Rules**:
 - DB nullable → DTO non-null is **forbidden** (use `oneOf` with null for Read DTOs, remove from `required` for Create DTOs)
@@ -211,12 +198,12 @@ While enriching, also inspect and fix:
 **Before classifying a property as phantom**:
 1. Check the loaded DB schema's **column list** — does the property name match any column?
 2. Check the loaded DB schema's **relation list** — does the property name match any relation?
-3. Check requirements — is this a computed field with business rationale?
+3. Read `specification` and requirements carefully — is this a computed field with a concrete data source or business rationale? Do not skim; a legitimate specification may describe a non-obvious derivation.
 
 **Decision**:
 - Found in columns OR relations → NOT phantom. Use the property name in `databaseSchemaProperty`.
-- Not in DB BUT has valid business logic → Keep with `databaseSchemaProperty: null`
-- Not in DB AND no requirements rationale → Erase
+- Not in DB BUT has valid business logic (concrete computation, cross-table join, transformation) → Keep with `databaseSchemaProperty: null`
+- Not in DB AND no concrete rationale (empty, vague, or wishful) → Erase
 
 **Concrete examples of valid `databaseSchemaProperty: null`** (these are NOT phantom):
 
@@ -224,10 +211,11 @@ While enriching, also inspect and fix:
 |----------|----------|-----------|
 | `page`, `limit`, `search`, `sort` | `IRequest` | Pagination/search parameters — query logic, not DB columns |
 | `ip`, `href`, `referrer` | `IJoin`, `ILogin`, `IActorSession` | Session context — stored in session table, not actor table |
-| `password` | `IJoin`, `ILogin` | Plain-text input → backend hashes to `password_hashed` column |
 | `*_count` | Read DTOs | Aggregation — `COUNT()` of related records |
 | `token` / `access` / `refresh` / `expired_at` | `IAuthorized` | Auth response — computed by server, not stored as-is |
 | `pagination`, `data` | `IPage*` | Fixed pagination envelope structure |
+
+**`password` is NOT null-mapped** — it maps to DB column `password_hashed` via transformation (`databaseSchemaProperty: "password_hashed"`). See Section 4.4 for password handling rules.
 
 These fields serve cross-table mappings, transformations, or query parameter roles. Verify against loaded DB schemas and requirements before erasing.
 
@@ -304,7 +292,7 @@ interface ITeam.ICreate {
 
 | Rule | Detection | Fix |
 |------|-----------|-----|
-| `password_hashed` in request DTO | Field name contains "hashed" | Erase, create `password: string` |
+| `password_hashed` in request DTO | Field name contains "hashed" | Erase, create `password: string` with `databaseSchemaProperty: "password_hashed"` |
 | `password` in response DTO | Password exposed | Erase |
 | Session fields (`ip`, `href`, `referrer`) in wrong DTO | Present in IActor/ISummary/IAuthorized/IRefresh | Erase |
 | Secrets in response | `salt`, `refresh_token`, `secret_key` | Erase |
@@ -379,7 +367,7 @@ interface ITeam.ICreate {
 |----------|------------|
 | DB Columns | `id`, `bbs_member_id`, `title`, `body`, `created_at`, `deleted_at` |
 | DB Relations | `member`, `comments`, `snapshots` |
-| DTO Properties | `id`, `title`, `body`, `author`, `created_at` |
+| DTO Properties | `id`, `title`, `body`, `author`, `created_at`, `deleted_at` |
 
 **Mapping Plan**:
 
@@ -390,23 +378,22 @@ interface ITeam.ICreate {
 | `body` | `body` | depict | Direct mapping |
 | `member` | `author` | depict | Relation exposed as author |
 | `created_at` | `created_at` | depict | Direct mapping |
+| `deleted_at` | `deleted_at` | depict | Direct mapping, nullable |
 | `bbs_member_id` | — | exclude | FK column exposed as `author` object |
-| `deleted_at` | — | exclude | Internal soft-delete field |
 | `comments` | — | exclude | Aggregation relation |
 | `snapshots` | — | exclude | Separate endpoint |
 
 ```typescript
 process({
-  thinking: "All 5 DTO properties enriched. All 9 DB properties handled: 5 mapped, 4 excluded.",
+  thinking: "All 6 DTO properties enriched. All 9 DB properties handled: 6 mapped, 3 excluded.",
   request: {
     type: "complete",
-    review: "Enriched 5 DTO properties. Excluded 4 DB properties.",
+    review: "Enriched 6 DTO properties. Excluded 3 DB properties.",
     databaseSchema: "bbs_articles",
     specification: "Direct mapping from bbs_articles with author join.",
     description: "Complete article entity with author info.",
     excludes: [
       { databaseSchemaProperty: "bbs_member_id", reason: "FK exposed as author object" },
-      { databaseSchemaProperty: "deleted_at", reason: "Internal soft-delete field" },
       { databaseSchemaProperty: "comments", reason: "Aggregation: use separate endpoint" },
       { databaseSchemaProperty: "snapshots", reason: "Composition: separate endpoint" }
     ],
@@ -420,13 +407,15 @@ process({
       { key: "author", databaseSchemaProperty: "member", type: "depict", reason: "Adding documentation",
         specification: "Join via bbs_member_id.", description: "Author of this article." },
       { key: "created_at", databaseSchemaProperty: "created_at", type: "depict", reason: "Adding documentation",
-        specification: "Direct mapping from bbs_articles.created_at.", description: "Creation timestamp." }
+        specification: "Direct mapping from bbs_articles.created_at.", description: "Creation timestamp." },
+      { key: "deleted_at", databaseSchemaProperty: "deleted_at", type: "depict", reason: "Adding documentation",
+        specification: "Direct mapping from bbs_articles.deleted_at. Nullable.", description: "Soft-deletion timestamp, null if active." }
     ]
   }
 })
 ```
 
-**Result**: 9 DB properties → 5 mapped in `revises` + 4 in `excludes` = complete coverage.
+**Result**: 9 DB properties → 6 mapped in `revises` + 3 in `excludes` = complete coverage.
 
 ## 8. Checklist
 
@@ -449,7 +438,7 @@ Before calling `complete`:
 **Pre-Review Hardening**:
 - [ ] Content: All fields present (DB + computed)
 - [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional, e.g., `@default`)
-- [ ] Phantom: No fields without valid source; non-relation properties never erased
+- [ ] Phantom: No fields without valid source; DB-mapped non-relation and recognized-role fields never erased
 - [ ] Relation: FK → `$ref` in Read DTOs; `databaseSchemaProperty` uses relation name (Read) or column name (Request)
 - [ ] Security (Actor DTOs): No exposed passwords/secrets; guest IJoin has no `password`; `ip` optional in IJoin/ILogin
 
