@@ -1,6 +1,42 @@
 import { ITraceable } from "./AutoBeAnalyzeDocumentTraceable";
 
 /**
+ * System scope definition.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentIntroductionScope {
+  /** Items included in v1 */
+  included: string[];
+  /** Items explicitly excluded from v1 */
+  excluded: string[];
+}
+
+/**
+ * Domain glossary entry.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentIntroductionGlossary extends ITraceable {
+  /** Term */
+  term: string;
+  /** Definition */
+  definition: string;
+}
+
+/**
+ * External reference document/standard.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentIntroductionReference extends ITraceable {
+  /** Reference document name */
+  name: string;
+  /** Reference document description */
+  description: string;
+}
+
+/**
  * SRS Section 1: Introduction.
  *
  * Structures purpose, scope, audience, glossary, and references. Used by
@@ -14,18 +50,16 @@ export interface AutoBeAnalyzeDocumentIntroduction {
   purpose: string;
 
   /** System scope definition */
-  scope: AutoBeAnalyzeDocumentIntroduction.Scope;
+  scope: AutoBeAnalyzeDocumentIntroductionScope;
 
   /** Target audience of the document */
   audience: string;
 
   /** Domain glossary definitions */
-  glossary: Array<AutoBeAnalyzeDocumentIntroduction.GlossaryEntry & ITraceable>;
+  glossary: Array<AutoBeAnalyzeDocumentIntroductionGlossary>;
 
   /** External reference documents/standards */
-  references: Array<
-    AutoBeAnalyzeDocumentIntroduction.ReferenceEntry & ITraceable
-  >;
+  references: Array<AutoBeAnalyzeDocumentIntroductionReference>;
 }
 export namespace AutoBeAnalyzeDocumentIntroduction {
   export interface Scope {
