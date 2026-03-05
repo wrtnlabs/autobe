@@ -16,11 +16,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { buildFixedAnalyzeScenarioFiles } from "./structures/FixedAnalyzeTemplate";
-import {
-  IAutoBeAnalyzeScenarioApplication,
-  IAutoBeAnalyzeScenarioApplicationComplete,
-  IAutoBeAnalyzeScenarioApplicationProps,
-} from "./structures/IAutoBeAnalyzeScenarioApplication";
+import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
@@ -35,7 +31,7 @@ export const orchestrateAnalyzeScenario = async (
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeScenarioApplicationComplete | null> =
+    const pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null> =
       {
         value: null,
       };
@@ -85,15 +81,15 @@ export const orchestrateAnalyzeScenario = async (
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeScenarioApplicationComplete | null>;
+  pointer: IPointer<IAutoBeAnalyzeScenarioApplication.IComplete | null>;
   preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,
-  ): IValidation<IAutoBeAnalyzeScenarioApplicationProps> => {
+  ): IValidation<IAutoBeAnalyzeScenarioApplication.IProps> => {
     input = repairMissingRequestType(input);
-    const result: IValidation<IAutoBeAnalyzeScenarioApplicationProps> =
-      typia.validate<IAutoBeAnalyzeScenarioApplicationProps>(input);
+    const result: IValidation<IAutoBeAnalyzeScenarioApplication.IProps> =
+      typia.validate<IAutoBeAnalyzeScenarioApplication.IProps>(input);
     if (result.success === false) return result;
 
     if (result.data.request.type === "complete") return result;

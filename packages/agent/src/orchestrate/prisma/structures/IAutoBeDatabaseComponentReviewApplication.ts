@@ -13,6 +13,10 @@ export interface IAutoBeDatabaseComponentReviewApplication {
    * existing tables and identify necessary modifications using create, update,
    * or erase operations.
    *
+   * ALWAYS fetch analysis sections first using `getAnalysisSections` to
+   * understand what features this component's domain needs to support, then
+   * systematically verify table coverage and apply corrections.
+   *
    * @param props Request containing either preliminary data request or complete
    *   task with table revisions
    */
