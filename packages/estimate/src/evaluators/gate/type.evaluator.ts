@@ -372,5 +372,4 @@ export class TypeEvaluator extends GateEvaluator {
 
     return lines.join("\n");
   }
-
 }
