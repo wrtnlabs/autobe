@@ -351,8 +351,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 0,
         title: "Domain Concepts",
-        purpose:
-          "Describe what each concept means to users and why it exists.",
+        purpose: "Describe what each concept means to users and why it exists.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
@@ -463,8 +462,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 0,
         title: "Core Business Operations",
-        purpose:
-          "What the system must do for each business concept.",
+        purpose: "What the system must do for each business concept.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
@@ -485,8 +483,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 1,
         title: "Business Actions and Workflows",
-        purpose:
-          "Business actions and workflows beyond basic CRUD.",
+        purpose: "Business actions and workflows beyond basic CRUD.",
         unitStrategy: {
           type: "perEntityGroup",
           unitTemplate: {
@@ -653,8 +650,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 4,
         title: "Error Conditions",
-        purpose:
-          "Business error scenarios and how the system should respond.",
+        purpose: "Business error scenarios and how the system should respond.",
         unitStrategy: {
           type: "fixed",
           units: [
@@ -1008,12 +1004,7 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
               titlePattern: "Job Failure and Recovery",
               purposePattern:
                 "Define failure handling, recovery procedures, and notification requirements for background jobs.",
-              keywords: [
-                "job-failure",
-                "retry",
-                "recovery",
-                "notification",
-              ],
+              keywords: ["job-failure", "retry", "recovery", "notification"],
             },
           ],
         },
@@ -1033,10 +1024,7 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
               titlePattern: "Queue Performance SLOs",
               purposePattern:
                 "Define performance requirements for background job processing.",
-              keywords: [
-                "queue-throughput",
-                "processing-latency",
-              ],
+              keywords: ["queue-throughput", "processing-latency"],
             },
           ],
         },
