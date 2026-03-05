@@ -10,13 +10,6 @@ import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 import { buildRouteMap, type RouteInfo } from "../golden/url-resolver";
 
-/** Test quality analysis result */
-interface TestQuality {
-  stubCount: number;
-  withAssertions: number;
-  qualityRatio: number;
-}
-
 /** Route-level test coverage analysis */
 export namespace RouteCoverage {
   /** Parsed information about what route a test targets */

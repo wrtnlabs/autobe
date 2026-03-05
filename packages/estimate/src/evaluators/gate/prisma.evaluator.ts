@@ -105,5 +105,4 @@ export class PrismaEvaluator extends GateEvaluator {
   private cleanErrorMessage(msg: string): string {
     return msg.replace(/\/[^\s']*\/([^\/\s']+\.prisma)/g, "$1");
   }
-
 }
