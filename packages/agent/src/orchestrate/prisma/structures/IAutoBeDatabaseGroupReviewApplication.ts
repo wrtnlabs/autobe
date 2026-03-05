@@ -54,12 +54,6 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
 
   /**
    * Submit group revisions after domain coverage analysis.
-   *
-   * Call this after you have:
-   *
-   * 1. Fetched and analyzed business requirements documents
-   * 2. Verified all business domains have corresponding groups
-   * 3. Prepared create/update/erase operations with clear reasons
    */
   export interface IComplete {
     /** Type discriminator. Value "complete" indicates final submission. */

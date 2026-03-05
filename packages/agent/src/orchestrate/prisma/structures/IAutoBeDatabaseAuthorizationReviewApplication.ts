@@ -57,12 +57,6 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
   /**
    * Submit table revisions after authentication requirements analysis.
    *
-   * Call this after you have:
-   *
-   * 1. Fetched and analyzed authentication requirements documents
-   * 2. Verified EVERY actor has main actor and session tables
-   * 3. Prepared create/update/erase operations with clear reasons
-   *
    * The authorization component contains tables for ALL actors, so ensure no
    * actor is missing its required tables.
    */
