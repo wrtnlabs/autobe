@@ -46,8 +46,8 @@ export interface IAutoBeAnalyzeScenarioApplicationProps {
    * Type discriminator for the request.
    *
    * Determines which action to perform: preliminary data retrieval
-   * (getPreviousAnalysisSections) or final scenario composition (complete). When
-   * preliminary returns empty array, that type is removed from the union,
+   * (getPreviousAnalysisSections) or final scenario composition (complete).
+   * When preliminary returns empty array, that type is removed from the union,
    * physically preventing repeated calls.
    */
   request:

@@ -55,8 +55,8 @@ export interface AutoBePreliminaryEvent<
    * Type of preliminary validation being performed.
    *
    * Specifies what kind of items are being validated (e.g., "databaseSchemas",
-   * "interfaceOperations", "analysisSections"). The validation type determines how
-   * existing and requested items are compared and what reconciliation
+   * "interfaceOperations", "analysisSections"). The validation type determines
+   * how existing and requested items are compared and what reconciliation
    * strategies are appropriate for resolving inconsistencies.
    */
   function: Function;
