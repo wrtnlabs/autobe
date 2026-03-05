@@ -164,6 +164,11 @@ namespace ApplicationFixer {
         : typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>()
     ] as ILlmSchema.IObject;
     if (type === undefined) return;
+
+    const array: ILlmSchema | undefined = type.properties.sectionIds;
+    if (array === undefined) return;
+    else if (LlmTypeChecker.isArray(array) === false) return;
+
     describe(
       type.properties.sectionIds,
       StringUtil.trim`
@@ -179,10 +184,6 @@ namespace ApplicationFixer {
           .join("\n")}
       `,
     );
-
-    const array: ILlmSchema | undefined = type.properties.sectionIds;
-    if (array === undefined) return;
-    else if (LlmTypeChecker.isArray(array) === false) return;
 
     const items: ILlmSchema = array.items;
     if (LlmTypeChecker.isInteger(items) === false) return;
