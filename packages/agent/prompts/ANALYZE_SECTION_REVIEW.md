@@ -25,11 +25,12 @@ This agent achieves its goal through function calling. **Function calling is MAN
 ### 1. File Scope Adherence (CRITICAL)
 - Does this file's content stay within its designated scope?
 - 00-toc: Project summary, scope, glossary — NO EARS requirements
-- 01-actors-and-auth: Actors, permissions, auth — NO entity attribute tables
-- 02-domain-model: Entities, relationships, enums — NO API endpoints
-- 03-functional-requirements: CRUD, endpoints — NO entity definitions, NO error catalogs
-- 04-business-rules: Rules, filtering, errors — NO entity definitions, NO API endpoints
-- 05-non-functional: Performance, security, integrity — NO CRUD details
+- 01-actors-and-auth: Actors, permissions, auth flows — NO attribute tables, NO API endpoints
+- 02-domain-model: Domain concepts, relationships, business states — NO API endpoints, NO database indexes
+- 03-functional-requirements: Functional requirements, use cases, business operations — NO API endpoints, NO HTTP methods, NO error catalogs
+- 04-business-rules: Rules, filtering, errors — NO API endpoints
+- 05-non-functional: Performance, security, integrity — NO operation details
+- **REJECT if file contains API specifications (HTTP methods, URL paths, request/response schemas)**
 - **REJECT if file clearly contains content belonging to another file's scope**
 
 ### 2. EARS Format (RECOMMENDED)
@@ -41,23 +42,18 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Minor deviations: provide feedback, do NOT reject
 
 ### 4. Prohibited Content Check
-- No database schemas or ERD
-- No API specifications
+- No database schemas, ERD, indexes, or cascade rules
+- No API specifications (HTTP methods, URL paths, request/response schemas, HTTP status codes)
+- No JSON request/response examples
 - No implementation details
 - No frontend specifications
+- **REJECT if API endpoints like `POST /users` or `GET /todos/{id}` are present**
+- **REJECT if HTTP status codes like `HTTP 200`, `HTTP 404` are present**
 - **REJECT only if prohibited content is clearly present**
 
-### 5. YAML Spec Block Validation (for canonical files 01/02/04)
-- Canonical files SHOULD contain YAML code blocks for structured data
-- 02-domain-model: entity attribute YAML blocks and index definition YAML blocks
-- 04-business-rules: error code YAML blocks
-- 01-actors-and-auth: permission YAML blocks
-- **Advisory**: Flag missing YAML blocks but do NOT reject
-
-### 5b. Error Code Reference Accuracy (for 03-functional-requirements)
-- Error codes referenced in 03 MUST use the exact canonical names from 04-business-rules' YAML error catalog
-- If a section uses an error code name not defined in 04's error catalog, flag in feedback
-- **REJECT** if the section invents error code names that clearly deviate from the naming pattern used in 04 (e.g., using `EMAIL_DUPLICATE` when 04 defines `USER_EMAIL_ALREADY_EXISTS`)
+### 5. Error Condition Clarity
+- Error conditions should be described in natural language
+- **Advisory**: Flag vague error descriptions but do NOT reject
 
 ### 6. Intra-File Content Deduplication (ADVISORY)
 - Minor overlap or paraphrased references are acceptable
@@ -68,7 +64,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Provide feedback for gaps, do NOT reject
 
 ### 8. Advisory Checks (flag in feedback only, NEVER reject)
-- **Meta-entities**: Flag process-describing entities — do NOT reject
+- **Meta-concepts**: Flag process-describing concepts — do NOT reject
 - **Verbosity**: Flag filler sentences — do NOT reject. NOTE: Detailed error branching, boundary value specifications, and concurrent operation scenarios are NOT verbosity — they are required depth
 - **Boilerplate sections**: Flag sections existing solely for purpose/scope — do NOT reject
 - **Section count**: Sections with 5-25 requirements are expected for detailed specifications — do NOT flag as excessive
@@ -110,7 +106,7 @@ process({
 
 ```typescript
 process({
-  thinking: "Module 2, Unit 1 contains entity attribute definitions that belong in 02-domain-model.",
+  thinking: "Module 2, Unit 1 contains content that belongs in 02-domain-model.",
   request: {
     type: "complete",
     fileResults: [
@@ -120,7 +116,7 @@ process({
         feedback: "Scope violation in Module 2, Unit 1.",
         revisedSections: null,
         rejectedModuleUnits: [
-          { moduleIndex: 2, unitIndices: [1], feedback: "Contains entity attribute tables — move to 02-domain-model." }
+          { moduleIndex: 2, unitIndices: [1], feedback: "Contains scope violation — move to 02-domain-model." }
         ]
       }
     ]
@@ -136,10 +132,10 @@ process({
 - Non-English text detected (Chinese, Korean, Japanese, etc.)
 - Prohibited content clearly present (database schemas, API specs, implementation details)
 - File scope violation (content that belongs in another SRS file)
-- Section directly contradicts scenario entities or actors
-- Section invents features, entities, or workflows not present in scenario
+- Section directly contradicts scenario concepts or actors
+- Section invents features, concepts, or workflows not present in scenario
 - Section contradicts its own parent module/unit definitions
 - Section reinterprets the user's stated system characteristics
 - Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")
 
-**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-entities, missing YAML blocks, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications
+**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-concepts, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications

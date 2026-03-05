@@ -255,25 +255,19 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       /\|\s*(?:type|required|default|constraint)\s*\|/i, // Entity attribute tables → 02
       /```yaml\s*\n\s*entity:/i, // Entity YAML specs → 02
     ],
-    yamlSpecs: [
-      {
-        rootKey: "permissions",
-        moduleIndex: 0,
-        registryType: "permissions",
-      },
-    ],
+    yamlSpecs: [],
     modules: [
       {
         index: 0,
         title: "Actor Definitions",
         purpose:
-          "Define all user actor types with their permissions and capabilities.",
+          "Define all user actor types with their roles and what they can do.",
         unitStrategy: {
           type: "perActor",
           unitTemplate: {
             titlePattern: "{name} Actor",
             purposePattern:
-              "Define the {name} actor's role, permissions, and capabilities.",
+              "Define the {name} actor's role and capabilities in business terms.",
             keywords: [
               "actor",
               "role",
@@ -281,7 +275,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               "capabilities",
               "authorization",
             ],
-            requiresYamlSpec: true,
+            requiresYamlSpec: false,
           },
         },
       },
@@ -345,81 +339,67 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "02-domain-model.md",
     documentType: "domain-model",
     description:
-      "Entity definitions, relationships, indexes, cascade rules, state machines, enums",
-    downstreamPhase: "prisma-schema",
+      "Business concepts, relationships, and states from user perspective",
+    downstreamPhase: "database-design",
     forbiddenPatterns: [
       /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs → 03
       /\bRequest\s+Body\b/i,
       /\bResponse\s+(?:Body|Schema)\b/i,
     ],
-    yamlSpecs: [
-      {
-        rootKey: "entity",
-        moduleIndex: 0,
-        registryType: "entity-attributes",
-      },
-      {
-        rootKey: "indexes",
-        moduleIndex: 1,
-        registryType: "entity-attributes",
-      },
-    ],
+    yamlSpecs: [],
     modules: [
       {
         index: 0,
-        title: "Entity Definitions",
+        title: "Domain Concepts",
         purpose:
-          "Define all domain entities with their attributes, types, and constraints.",
+          "Describe what each concept means to users and why it exists.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
-            titlePattern: "{name} Entity",
+            titlePattern: "{name} Concept",
             purposePattern:
-              "Define the {name} entity's attributes, constraints, and validation rules.",
+              "Describe what {name} represents in the business domain, its purpose, and how users interact with it.",
             keywords: [
-              "entity",
-              "attributes",
-              "constraints",
-              "validation",
-              "schema",
+              "concept",
+              "domain",
+              "business-meaning",
+              "purpose",
+              "user-interaction",
             ],
-            requiresYamlSpec: true,
+            requiresYamlSpec: false,
           },
         },
       },
       {
         index: 1,
-        title: "Entity Relationships and Integrity",
+        title: "Domain Relationships",
         purpose:
-          "Define relationships between entities and data integrity rules.",
+          "Describe how concepts relate to each other from a business perspective.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "Relationship Map",
+              titlePattern: "Conceptual Relationships",
               purposePattern:
-                "Define all entity relationships (1:1, 1:N, M:N) with foreign key mappings.",
+                "Describe how concepts relate to each other in business terms.",
               keywords: [
                 "relationship",
-                "foreign-key",
-                "one-to-many",
-                "many-to-many",
                 "association",
+                "belongs-to",
+                "has-many",
+                "ownership",
               ],
             },
             {
-              titlePattern: "Cascading and Integrity Rules",
+              titlePattern: "Lifecycle and Retention",
               purposePattern:
-                "Define cascade delete/update rules and referential integrity constraints.",
+                "Describe business rules for concept lifecycle and data retention from a user perspective.",
               keywords: [
-                "cascade",
-                "integrity",
-                "on-delete",
-                "on-update",
-                "orphan",
-                "index",
-                "composite-index",
-                "unique-index",
+                "lifecycle",
+                "retention",
+                "archival",
+                "deletion-policy",
+                "recovery",
               ],
             },
           ],
@@ -428,7 +408,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 2,
         title: "Enums and State Machines",
-        purpose: "Enum type definitions and entity state transitions.",
+        purpose: "Enum type definitions and state transitions.",
         unitStrategy: {
           type: "fixed",
           units: [
@@ -446,7 +426,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             {
               titlePattern: "State Transitions",
               purposePattern:
-                "Define valid state transition paths for stateful entities.",
+                "Define valid state transition paths for stateful concepts.",
               keywords: [
                 "state-machine",
                 "transition",
@@ -467,9 +447,14 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "03-functional-requirements.md",
     documentType: "functional-requirements",
     description:
-      "REST API endpoints with HTTP method and URL path (e.g., POST /users, GET /todos/{id}), per-entity CRUD operations, request/response specifications",
-    downstreamPhase: "openapi-controllers",
+      "What operations users can perform, use cases, business workflows",
+    downstreamPhase: "interface-design",
     forbiddenPatterns: [
+      /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs FORBIDDEN in requirements
+      /\bHTTP\s+[1-5]\d{2}\b/i, // HTTP status codes FORBIDDEN
+      /\bRequest\s+(?:Body|Example)\b/i, // Request schemas FORBIDDEN
+      /\bResponse\s+(?:Body|Example|Schema)\b/i, // Response schemas FORBIDDEN
+      /```json\s*\n\s*\{/i, // JSON examples FORBIDDEN
       /\b(?:CREATE\s+)?(?:UNIQUE\s+)?INDEX\b/i, // Index defs → 02
       /\bON\s+DELETE\s+(?:CASCADE|SET\s+NULL|RESTRICT)\b/i, // Cascade rules → 02
       /```yaml\s*\n\s*errors:/i, // Error catalog YAML → 04
@@ -477,47 +462,44 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     modules: [
       {
         index: 0,
-        title: "CRUD Operations",
+        title: "Core Business Operations",
         purpose:
-          "Per-entity CRUD endpoint specifications with request/response schemas.",
+          "What the system must do for each business concept.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
             titlePattern: "{name} Operations",
             purposePattern:
-              "Define CRUD endpoints for {name}: create, read, update, delete, and list operations.",
+              "Define business operations for {name}: what create, read, update, delete, and list operations must accomplish from a business perspective.",
             keywords: [
-              "crud",
-              "endpoint",
-              "api",
-              "request",
-              "response",
-              "http",
+              "operation",
+              "business-logic",
+              "use-case",
+              "requirement",
+              "behavior",
+              "functionality",
             ],
           },
         },
       },
       {
         index: 1,
-        title: "Action Endpoints",
+        title: "Business Actions and Workflows",
         purpose:
-          "Non-CRUD action endpoints grouped by domain concern, including authentication endpoints (login, token refresh, logout).",
+          "Business actions and workflows beyond basic CRUD.",
         unitStrategy: {
           type: "perEntityGroup",
           unitTemplate: {
             titlePattern: "{name} Actions",
             purposePattern:
-              "Define non-CRUD action endpoints for the {name} domain group.",
+              "Define business actions and workflows for the {name} domain group from a functional requirements perspective.",
             keywords: [
               "action",
-              "endpoint",
               "workflow",
-              "operation",
+              "business-process",
               "trigger",
-              "login",
-              "logout",
-              "refresh",
-              "authentication",
+              "authentication-flow",
+              "authorization",
             ],
           },
         },
@@ -526,18 +508,18 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         index: 2,
         title: "Error Scenarios and Edge Cases",
         purpose:
-          "Comprehensive error handling specifications, edge case coverage, and failure response definitions for all operations.",
+          "Business-level error scenarios, edge case coverage, and expected system behaviors for exceptional conditions.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
             titlePattern: "{name} Error Scenarios",
             purposePattern:
-              "Define error conditions, edge cases, validation failure responses, and conflict handling for all {name} operations.",
+              "Define business error conditions, edge cases, and expected system behaviors for all {name} operations.",
             keywords: [
-              "error-handling",
+              "error-scenario",
               "edge-case",
-              "validation-failure",
-              "conflict",
+              "validation-rule",
+              "conflict-resolution",
               "boundary-condition",
             ],
           },
@@ -545,21 +527,21 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 3,
-        title: "End-to-End Interaction Flows",
+        title: "End-to-End User Scenarios",
         purpose:
-          "Cross-entity interaction flows, multi-step operation sequences, and end-to-end user scenarios.",
+          "Cross-domain user scenarios, multi-step business flows, and end-to-end use cases.",
         unitStrategy: {
           type: "perEntityGroup",
           unitTemplate: {
-            titlePattern: "{name} Interaction Flows",
+            titlePattern: "{name} User Scenarios",
             purposePattern:
-              "Define end-to-end interaction flows involving {name} and related entities, including multi-step sequences and cross-entity operations.",
+              "Define end-to-end user scenarios involving {name} and related concepts, describing business flows from the user's perspective.",
             keywords: [
-              "interaction-flow",
-              "sequence",
+              "user-scenario",
+              "use-case",
               "end-to-end",
               "multi-step",
-              "cross-entity",
+              "cross-domain",
             ],
           },
         },
@@ -574,19 +556,13 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "04-business-rules.md",
     documentType: "business-rules",
     description:
-      "Data isolation, entity business rules, filtering/sorting/pagination, error catalog",
+      "Data isolation, business rules, filtering/sorting/pagination, error catalog",
     downstreamPhase: "service-layer",
     forbiddenPatterns: [
       /```yaml\s*\n\s*entity:/i, // Entity YAML specs → 02
       /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs → 03
     ],
-    yamlSpecs: [
-      {
-        rootKey: "errors",
-        moduleIndex: 4,
-        registryType: "error-codes",
-      },
-    ],
+    yamlSpecs: [],
     modules: [
       {
         index: 0,
@@ -613,9 +589,9 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 1,
-        title: "Entity Business Rules",
+        title: "Domain Business Rules",
         purpose:
-          "Per-entity business rules, validation logic, and domain constraints.",
+          "Per-concept business rules, validation logic, and domain constraints.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
@@ -635,7 +611,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         index: 2,
         title: "Detailed Validation Rules",
         purpose:
-          "Per-entity field-level validation rules with boundary values, format specifications, and sanitization requirements.",
+          "Per-concept field-level validation rules with boundary values, format specifications, and sanitization requirements.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
@@ -679,21 +655,21 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         index: 4,
         title: "Error Catalog",
         purpose:
-          "Centralized error code definitions with HTTP status mappings.",
+          "Centralized error code definitions with conditions and resolution.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
               titlePattern: "Error Code Catalog",
               purposePattern:
-                "Define all error codes with HTTP status, condition, and resolution guidance.",
+                "Define all error codes with condition and user-facing message.",
               keywords: [
                 "error-code",
-                "http-status",
+                "error-condition",
                 "error-catalog",
                 "exception",
               ],
-              requiresYamlSpec: true,
+              requiresYamlSpec: false,
             },
           ],
         },
@@ -737,12 +713,11 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             {
               titlePattern: "Rate Limiting and Throttling",
               purposePattern:
-                "Define per-IP and per-user rate limits, throttling policies, and abuse prevention thresholds.",
+                "Define rate limiting policies and abuse prevention requirements.",
               keywords: [
                 "rate-limit",
                 "throttling",
                 "abuse-prevention",
-                "ip-limit",
                 "cooldown",
               ],
             },
@@ -771,12 +746,11 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             {
               titlePattern: "Availability and Reliability",
               purposePattern:
-                "Define uptime targets, error rate budgets, concurrent session limits, and failover policies.",
+                "Define availability targets, reliability expectations, and failover policies.",
               keywords: [
                 "availability",
                 "uptime",
                 "error-budget",
-                "session-limit",
                 "reliability",
               ],
             },
@@ -879,7 +853,7 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
           unitTemplate: {
             titlePattern: "{name} Events",
             purposePattern:
-              "Define real-time events for {name} entity changes, including event payload and subscription rules.",
+              "Define real-time events for {name} changes, including event payload and subscription rules.",
             keywords: [
               "websocket",
               "sse",
@@ -1034,12 +1008,12 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
             {
               titlePattern: "Job Failure and Recovery",
               purposePattern:
-                "Define retry limits, dead-letter queue handling, failure notification, and manual recovery procedures for background jobs.",
+                "Define failure handling, recovery procedures, and notification requirements for background jobs.",
               keywords: [
-                "dead-letter",
                 "job-failure",
-                "retry-limit",
+                "retry",
                 "recovery",
+                "notification",
               ],
             },
           ],
@@ -1059,11 +1033,10 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
             {
               titlePattern: "Queue Performance SLOs",
               purposePattern:
-                "Define queue throughput targets, processing latency limits, and backpressure thresholds for background job infrastructure.",
+                "Define performance requirements for background job processing.",
               keywords: [
                 "queue-throughput",
                 "processing-latency",
-                "backpressure",
               ],
             },
           ],
@@ -1085,8 +1058,8 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
             {
               titlePattern: "File Upload and Management",
               purposePattern:
-                "Define file upload endpoints, supported formats, size limits, processing pipelines, and access control for stored files.",
-              keywords: ["file-upload", "media", "storage", "s3", "attachment"],
+                "Define file upload capabilities, supported formats, processing requirements, and access control for stored files.",
+              keywords: ["file-upload", "media", "storage", "attachment"],
             },
           ],
         },
@@ -1128,8 +1101,8 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
             {
               titlePattern: "Storage Capacity Requirements",
               purposePattern:
-                "Define storage tier requirements, CDN policies, bandwidth limits, and capacity planning for file storage infrastructure.",
-              keywords: ["storage-capacity", "cdn", "bandwidth", "tier"],
+                "Define storage requirements and capacity planning for file storage.",
+              keywords: ["storage-capacity", "cdn", "capacity"],
             },
           ],
         },
