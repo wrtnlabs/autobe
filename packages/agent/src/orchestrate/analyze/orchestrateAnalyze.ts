@@ -216,8 +216,9 @@ export const orchestrateAnalyze = async (
     (scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
   );
   const tocIndex = fileStates.findIndex((s) => s.file.filename === "00-toc.md");
+  let tocContent: string | null = null;
   if (tocIndex >= 0) {
-    fillTocDeterministic(ctx, {
+    tocContent = fillTocDeterministic(ctx, {
       scenario,
       tocFileState: fileStates[tocIndex]!,
       otherFileStates: fileStates.filter((_, i) => i !== tocIndex),
@@ -229,11 +230,15 @@ export const orchestrateAnalyze = async (
   const files: AutoBeAnalyzeFile[] = [];
   for (let fileIndex = 0; fileIndex < fileStates.length; fileIndex++) {
     const state = fileStates[fileIndex]!;
-    const content = assembleContent(
-      state.moduleResult!,
-      state.unitResults!,
-      state.sectionResults!,
-    );
+    // TOC uses flat content directly (no module/unit hierarchy)
+    const content =
+      fileIndex === tocIndex
+        ? tocContent!
+        : assembleContent(
+            state.moduleResult!,
+            state.unitResults!,
+            state.sectionResults!,
+          );
     const module = assembleModule(
       state.moduleResult!,
       state.unitResults!,

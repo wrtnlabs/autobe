@@ -57,9 +57,9 @@ const EMPTY_ACQUISITION = { previousAnalysisSections: [] as number[] };
  * Must be called AFTER all other files (01-05) have completed Stage 2/3 so that
  * their module/unit/section titles are available for navigation.
  *
- * Produces `unitResults` and `sectionResults` in the same format as the LLM
- * pipeline so that `assembleContent()`, `assembleModule()`, and
- * `convertToSectionEntries()` work identically.
+ * Returns the final markdown content directly (no module/unit hierarchy).
+ * Also sets minimal `unitResults` and `sectionResults` so that
+ * `convertToSectionEntries()` for preloading still works.
  */
 export function fillTocDeterministic(
   ctx: AutoBeContext,
@@ -69,14 +69,14 @@ export function fillTocDeterministic(
     otherFileStates: ITocFileState[];
     expandedTemplate: FixedAnalyzeTemplateFileTemplate[];
   },
-): void {
+): string {
   const { scenario, tocFileState, otherFileStates, expandedTemplate } = props;
   const step = (ctx.state().analyze?.step ?? -1) + 1;
 
-  // Build all content parts and merge into a single section
+  // Build flat markdown content — no # / ## / ### hierarchy
   const content = buildTocContent(scenario, expandedTemplate, otherFileStates);
 
-  // Single unit event (module 0, 1 unit)
+  // Minimal unit/section events for convertToSectionEntries() preloading
   const unitEvent: AutoBeAnalyzeWriteUnitEvent = {
     type: "analyzeWriteUnit",
     id: v7(),
@@ -101,18 +101,12 @@ export function fillTocDeterministic(
     created_at: new Date().toISOString(),
   };
 
-  // Single section event containing all TOC content
   const sectionEvent: AutoBeAnalyzeWriteSectionEvent = {
     type: "analyzeWriteSection",
     id: v7(),
     moduleIndex: 0,
     unitIndex: 0,
-    sectionSections: [
-      {
-        title: "Project Overview and Navigation",
-        content,
-      },
-    ],
+    sectionSections: [{ title: "Table of Contents", content }],
     step,
     retry: 0,
     total: 1,
@@ -123,8 +117,6 @@ export function fillTocDeterministic(
     created_at: new Date().toISOString(),
   };
 
-  // Override moduleResult to single module so assembleContent() produces
-  // only one # / ## / ### hierarchy instead of the template's 3 modules.
   tocFileState.moduleResult = {
     ...tocFileState.moduleResult!,
     moduleSections: [
@@ -138,6 +130,8 @@ export function fillTocDeterministic(
   };
   tocFileState.unitResults = [unitEvent];
   tocFileState.sectionResults = [[sectionEvent]];
+
+  return content;
 }
 
 // ─── Content builder ───
@@ -154,6 +148,8 @@ function buildTocContent(
   otherFileStates: ITocFileState[],
 ): string {
   const lines: string[] = [];
+
+  lines.push("### Table of Contents", "");
 
   // ── Project Vision ──
   const actors = scenario.actors.map((a) => a.name).join(", ");
