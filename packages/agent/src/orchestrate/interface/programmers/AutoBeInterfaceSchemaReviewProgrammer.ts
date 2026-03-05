@@ -15,10 +15,18 @@ import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import typia, { IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
+import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";
 import { AutoBeInterfaceSchemaPropertyReviseProgrammer } from "./AutoBeInterfaceSchemaPropertyReviseProgrammer";
 
 export namespace AutoBeInterfaceSchemaReviewProgrammer {
+  export const filter = (
+    key: string,
+    value: AutoBeOpenApi.IJsonSchema,
+  ): boolean =>
+    AutoBeJsonSchemaValidator.isPreset(key) === false &&
+    AutoBeOpenApiTypeChecker.isObject(value);
+
   export const filterSecurity = (props: {
     document: AutoBeOpenApi.IDocument;
     typeName: string;

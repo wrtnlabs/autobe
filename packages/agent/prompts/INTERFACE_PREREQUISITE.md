@@ -38,10 +38,10 @@ When initial context is insufficient, request additional materials.
 **Available Functions**:
 
 ```typescript
-// Request requirement analysis files
+// Request requirement analysis sections
 process({
   thinking: "Missing workflow context for dependencies.",
-  request: { type: "getAnalysisFiles", fileNames: ["Feature_A.md", "Feature_B.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 2] }
 })
 
 // Request database schemas

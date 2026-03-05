@@ -106,13 +106,13 @@ You MUST NEVER proceed based on assumptions about database schema contents. ALWA
 
 ---
 
-## Cross-Reference: Analysis Files for Business Context
+## Cross-Reference: Analysis Sections for Business Context
 
 Database schema decisions often depend on business requirements (field nullability, status fields, lifecycle behavior, actor relationships). Database structure alone is INSUFFICIENT for these decisions.
 
-**Rule:** When designing schemas that involve business logic, also call `getAnalysisFiles` to load relevant requirement documents.
+**Rule:** When designing schemas that involve business logic, also call `getAnalysisSections` to load relevant requirement documents.
 
-**Examples of decisions requiring analysis files:**
+**Examples of decisions requiring analysis sections:**
 - Whether a field should be nullable or required
 - Whether to include status/workflow fields
 - Soft delete policy and retention rules

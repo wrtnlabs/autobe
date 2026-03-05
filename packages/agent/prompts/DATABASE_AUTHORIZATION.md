@@ -81,7 +81,7 @@ tables: [
 ```typescript
 process({
   thinking: "Missing authentication requirements.",
-  request: { type: "getAnalysisFiles", fileNames: ["Auth_Requirements.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 3] }
 })
 ```
 

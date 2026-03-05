@@ -309,7 +309,6 @@ export namespace ArchiveLogger {
       );
     else if (event.type === "interfaceSchemaReview")
       content.push(
-        `  - kind: ${event.kind}`,
         `  - typeName: ${event.typeName}`,
         `  - excludes:`,
         ...event.excludes.map(

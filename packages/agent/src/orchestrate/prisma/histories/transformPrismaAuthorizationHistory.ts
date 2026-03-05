@@ -132,28 +132,13 @@ export const transformPrismaAuthorizationHistory = (props: {
     userMessage: StringUtil.trim`
       ## Your Task: Design Authorization Tables for ALL Actors
 
-      **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via
-      \`getAnalysisSections\` to identify authentication requirements for all actors.
-
-      **MANDATORY STEPS**:
-
-      1. **FIRST**: Call \`getAnalysisSections\` to load authentication requirement documents
-         - NEVER skip this step - Requirements are the ONLY valid source for authentication design
-      2. **THEN**: Analyze the LOADED requirements to design authorization tables for ALL actors
-      3. **FINALLY**: Call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors
-
-      **ABSOLUTE PROHIBITIONS**:
-
-      - NEVER generate tables without loading requirement documents first
-      - NEVER work from assumptions, imagination, or "typical patterns"
-      - NEVER skip loading requirements under any circumstances
-      - NEVER forget any actor - ALL actors must have their tables
+      Design authentication and authorization tables for every actor in the system.
 
       **MANDATORY OUTPUT** (for each actor, at minimum):
       ${mandatoryOutput}
       - Plus any additional auth support tables based on requirements
 
-      Begin by calling \`getAnalysisSections\` to load the authentication requirement documents you need to analyze.
+      When ready, call \`process({ request: { type: "complete", analysis: "...", rationale: "...", tables: [...] } })\` with complete tables for ALL actors.
     `,
   };
 };

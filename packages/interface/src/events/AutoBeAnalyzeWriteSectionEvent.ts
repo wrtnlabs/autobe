@@ -31,7 +31,7 @@ export interface AutoBeAnalyzeWriteSectionEvent
     AutoBeEventBase<"analyzeWriteSection">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
+    AutoBeAcquisitionEventBase<"previousAnalysisSections"> {
   /**
    * Index of the grandparent module section.
    *

@@ -118,21 +118,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     this.all = createPreliminaryCollection(props.state, props.all);
     this.local = createPreliminaryCollection(null, props.local);
 
-    // biome-ignore-start lint: intended
-    if (
-      (
-        this as any as AutoBePreliminaryController<AutoBePreliminaryKind>
-      ).kinds.includes("analysisFiles")
-    ) {
-      const controller: AutoBePreliminaryController<"analysisFiles"> =
-        this as any;
-      if (controller.local.analysisFiles.length === 0)
-        controller.local.analysisFiles.push(
-          ...controller.all.analysisFiles.slice(0, 1),
-        );
-    }
-    // biome-ignore-end lint: intended
-
     complementPreliminaryCollection({
       kinds: props.kinds,
       all: this.all as IAutoBePreliminaryCollection,
@@ -234,9 +219,7 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
     const local: IAutoBePreliminaryCollection = this
       .local as IAutoBePreliminaryCollection;
     for (const kind of this.kinds)
-      if (kind === "analysisFiles")
-        acquisition.analysisFiles = local.analysisFiles.map((f) => f.filename);
-      else if (kind === "analysisSections")
+      if (kind === "analysisSections")
         acquisition.analysisSections = local.analysisSections.map((s) => s.id);
       else if (kind === "databaseSchemas")
         acquisition.databaseSchemas = local.databaseSchemas.map((s) => s.name);
@@ -256,10 +239,6 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
       else if (kind === "realizeTransformers")
         acquisition.realizeTransformers = local.realizeTransformers.map(
           (f) => f.plan.dtoTypeName,
-        );
-      else if (kind === "previousAnalysisFiles")
-        acquisition.previousAnalysisFiles = local.previousAnalysisFiles.map(
-          (f) => f.filename,
         );
       else if (kind === "previousAnalysisSections")
         acquisition.previousAnalysisSections =

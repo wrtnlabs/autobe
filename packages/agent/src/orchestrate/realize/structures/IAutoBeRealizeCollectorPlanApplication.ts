@@ -64,7 +64,7 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
      * Determines which action to perform:
      *
      * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
-     * - "getAnalysisSections": Retrieve analysis files for context
+     * - "getAnalysisSections": Retrieve analysis sections for context
      * - "getInterfaceOperations": Retrieve operation specifications
      * - "getInterfaceSchemas": Retrieve DTO type definitions for API contracts
      * - "complete": Generate final collector plan

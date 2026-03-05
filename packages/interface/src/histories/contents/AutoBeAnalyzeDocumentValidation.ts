@@ -1,4 +1,29 @@
 /**
+ * Single validation result entry.
+ *
+ * @author Juntak
+ */
+export interface AutoBeAnalyzeDocumentValidationResult {
+  /**
+   * Severity.
+   *
+   * - `fail`: blocks downstream (e.g., missing sourceSectionIds, missing required
+   *   category)
+   * - `warn`: quality signal (e.g., empty useCase, unused glossary term)
+   */
+  severity: "fail" | "warn";
+
+  /** Validation category (e.g., "traceability", "completeness", "consistency") */
+  category: string;
+
+  /** Validation result message */
+  message: string;
+
+  /** Related section IDs (if applicable) */
+  sectionIds?: string[];
+}
+
+/**
  * Structural completeness validation result of the Analyze artifact.
  *
  * A separate result type decoupled from the document data model.
@@ -10,25 +35,7 @@
  */
 export interface AutoBeAnalyzeDocumentValidation {
   /** Validation result list */
-  results: Array<{
-    /**
-     * Severity.
-     *
-     * - `fail`: blocks downstream (e.g., missing sourceSectionIds, missing
-     *   required category)
-     * - `warn`: quality signal (e.g., empty useCase, unused glossary term)
-     */
-    severity: "fail" | "warn";
-
-    /** Validation category (e.g., "traceability", "completeness", "consistency") */
-    category: string;
-
-    /** Validation result message */
-    message: string;
-
-    /** Related section IDs (if applicable) */
-    sectionIds?: string[];
-  }>;
+  results: Array<AutoBeAnalyzeDocumentValidationResult>;
 
   /**
    * Overall validity.

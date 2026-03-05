@@ -105,10 +105,8 @@ export const transformRealizeCollectorWriteHistory = async (
       **Your task**:
 
       1. Use the provided database schema name: \`${props.plan.databaseSchemaName}\`
-      2. Request database schemas to understand the table structure
-      3. Request Interface schemas to understand the DTO structure
-      4. Analyze field mappings between DTO properties and database columns
-      5. Generate complete TypeScript code that includes:
+      2. Analyze field mappings between DTO properties and database columns
+      3. Generate complete TypeScript code that includes:
          - A namespace with collect() function
          - Proper Prisma CreateInput types
          - Type-safe field mappings from DTO to DB

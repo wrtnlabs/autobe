@@ -12,9 +12,7 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
-export interface IAutoBeInterfaceSchemaReviewApplication<
-  Revise extends AutoBeInterfaceSchemaPropertyRevise,
-> {
+export interface IAutoBeInterfaceSchemaReviewApplication {
   /**
    * Process schema review task or preliminary data requests.
    *
@@ -24,10 +22,10 @@ export interface IAutoBeInterfaceSchemaReviewApplication<
    * @param props Request containing either preliminary data request or complete
    *   task
    */
-  process(props: IAutoBeInterfaceSchemaReviewApplication.IProps<Revise>): void;
+  process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceSchemaReviewApplication {
-  export interface IProps<Revise extends AutoBeInterfaceSchemaPropertyRevise> {
+  export interface IProps {
     /**
      * Think before you act.
      *
@@ -62,7 +60,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * preventing repeated calls.
      */
     request:
-      | IComplete<Revise>
+      | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetInterfaceOperations
@@ -74,9 +72,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
   }
 
   /** Complete schema review with property-level revisions. */
-  export interface IComplete<
-    Revise extends AutoBeInterfaceSchemaPropertyRevise,
-  > {
+  export interface IComplete {
     /**
      * Type discriminator for the request.
      *
@@ -101,12 +97,12 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * Property-level revisions to apply to DTO properties.
      *
      * Every DTO property must appear exactly once with one of: `keep`,
-     * `update`, `depict`, `nullish`, `create`, or `erase` (depending on review
-     * type). Use `keep` for properties that need no changes.
+     * `update`, `depict`, `nullish`, `create`, or `erase`. Use `keep` for
+     * properties that need no changes.
      *
      * Database properties are addressed either here (via
      * `databaseSchemaProperty`) or in `excludes`. No property can be omitted.
      */
-    revises: Revise[];
+    revises: AutoBeInterfaceSchemaPropertyRevise[];
   }
 }

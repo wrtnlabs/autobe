@@ -106,13 +106,13 @@ You MUST NEVER proceed based on assumptions about TypeScript type schema content
 
 ---
 
-## Cross-Reference: Analysis Files for Business Context
+## Cross-Reference: Analysis Sections for Business Context
 
 Schema design decisions (field inclusion/exclusion, validation rules, enum values, DTO scoping) often depend on business requirements that database structure alone cannot provide.
 
-**Rule:** When designing schemas with business-rule-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents.
+**Rule:** When designing schemas with business-rule-dependent decisions, also call `getAnalysisSections` to load relevant requirement documents.
 
-**Examples of decisions requiring analysis files:**
+**Examples of decisions requiring analysis sections:**
 - Field inclusion or exclusion based on business requirements
 - Validation rules and enum value design
 - DTO Summary vs full entity scoping decisions

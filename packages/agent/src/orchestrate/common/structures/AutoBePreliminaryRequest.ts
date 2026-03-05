@@ -1,11 +1,9 @@
 import { AutoBePreliminaryKind } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetAnalysisFiles } from "./IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetAnalysisSections } from "./IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "./IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "./IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "./IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "./IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "./IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "./IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "./IAutoBePreliminaryGetPreviousInterfaceOperations";
@@ -31,14 +29,12 @@ export interface IAutoBePreliminaryRequest<Kind extends AutoBePreliminaryKind> {
 
 /** Maps preliminary `Kind` to corresponding request type. */
 type Mapper = {
-  analysisFiles: IAutoBePreliminaryGetAnalysisFiles;
   analysisSections: IAutoBePreliminaryGetAnalysisSections;
   databaseSchemas: IAutoBePreliminaryGetDatabaseSchemas;
   interfaceOperations: IAutoBePreliminaryGetInterfaceOperations;
   interfaceSchemas: IAutoBePreliminaryGetInterfaceSchemas;
   realizeCollectors: IAutoBePreliminaryGetRealizeCollectors;
   realizeTransformers: IAutoBePreliminaryGetRealizeTransformers;
-  previousAnalysisFiles: IAutoBePreliminaryGetPreviousAnalysisFiles;
   previousAnalysisSections: IAutoBePreliminaryGetPreviousAnalysisSections;
   previousDatabaseSchemas: IAutoBePreliminaryGetPreviousDatabaseSchemas;
   previousInterfaceSchemas: IAutoBePreliminaryGetPreviousInterfaceSchemas;

@@ -8,7 +8,6 @@ export function createPreliminaryCollection(
 ): IAutoBePreliminaryCollection {
   if (state === null)
     return {
-      analysisFiles: (defined?.analysisFiles ?? []).slice(),
       analysisSections: (defined?.analysisSections ?? []).slice(),
       databaseSchemas: (defined?.databaseSchemas ?? []).slice(),
       interfaceOperations: (defined?.interfaceOperations ?? []).slice(),
@@ -17,7 +16,6 @@ export function createPreliminaryCollection(
       ),
       realizeCollectors: (defined?.realizeCollectors ?? []).slice(),
       realizeTransformers: (defined?.realizeTransformers ?? []).slice(),
-      previousAnalysisFiles: (defined?.previousAnalysisFiles ?? []).slice(),
       previousAnalysisSections: (
         defined?.previousAnalysisSections ?? []
       ).slice(),
@@ -30,11 +28,6 @@ export function createPreliminaryCollection(
       ).slice(),
     };
   return {
-    analysisFiles: (
-      defined?.analysisFiles ??
-      state.analyze?.files ??
-      []
-    ).slice(),
     analysisSections: (
       defined?.analysisSections ??
       convertToSectionEntries(state.analyze?.files ?? [])
@@ -66,7 +59,6 @@ export function createPreliminaryCollection(
       state.realize?.functions.filter((f) => f.type === "transformer") ??
       []
     ).slice(),
-    previousAnalysisFiles: state.previousAnalyze?.files.slice() ?? [],
     previousAnalysisSections: convertToSectionEntries(
       state.previousAnalyze?.files ?? [],
     ),

@@ -201,14 +201,14 @@ To solve the "infinite re-request of already acquired assets" problem occurring 
 
 ### 3.4. RAG Preliminary Prompt Tuning
 
-The core of the RAG system is that agents **request appropriate assets at the right time**. However, current agents rarely call the `getAnalysisFiles()` function that retrieves requirements documents. They request DB schemas and API specs well, but don't reference the requirements documents that form the basis of those designs.
+The core of the RAG system is that agents **request appropriate assets at the right time**. However, current agents rarely call the `getAnalysisSections()` function that retrieves requirements documents. They request DB schemas and API specs well, but don't reference the requirements documents that form the basis of those designs.
 
 The cause of this problem lies in the RAG preliminary agent's system prompt. Agents were only instructed to "request when needed," lacking concrete guidance on **when to reference requirements**.
 
 **Prompt Optimization Directions**:
 
 - Explicitly enumerate situations requiring requirements reference
-- Present specific trigger conditions for `getAnalysisFiles()` calls
+- Present specific trigger conditions for `getAnalysisSections()` calls
 - Warn about problems that can occur when requirements aren't referenced
 - Provide examples contrasting good and bad requirements utilization
 

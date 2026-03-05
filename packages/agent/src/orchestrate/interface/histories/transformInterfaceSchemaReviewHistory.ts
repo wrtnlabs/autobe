@@ -10,7 +10,6 @@ import { transformInterfaceOperationParameterHistory } from "./transformInterfac
 
 export const transformInterfaceSchemaReviewHistory = (props: {
   state: AutoBeState;
-  systemPrompt: string;
   instruction: string;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
@@ -48,7 +47,7 @@ export const transformInterfaceSchemaReviewHistory = (props: {
         type: "systemMessage",
         id: v7(),
         created_at: new Date().toISOString(),
-        text: props.systemPrompt,
+        text: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_REVIEW,
       },
       ...props.preliminary.getHistories(),
       {

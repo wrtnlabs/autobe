@@ -1,4 +1,4 @@
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /**
  * Application interface for the Section (###) generation agent.
@@ -43,7 +43,7 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
   /** Type discriminator for the request. */
   request:
     | IAutoBeAnalyzeWriteSectionApplicationComplete
-    | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
 /**

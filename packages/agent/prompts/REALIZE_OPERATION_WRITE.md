@@ -111,7 +111,7 @@ This produces four combinations:
 | Transformer only | PUT: manual `update({ data: { ... } })` → `findUniqueOrThrow({ ...Transformer.select() })` → `Transformer.transform()` |
 | Neither | Full manual implementation (Pattern B) |
 
-**Always request available Collectors/Transformers via `getRealizeCollectors`/`getRealizeTransformers` before writing code.**
+Available Collectors/Transformers can be inspected via `getRealizeCollectors`/`getRealizeTransformers`.
 
 ### 5.2. Transformer Naming Algorithm
 
