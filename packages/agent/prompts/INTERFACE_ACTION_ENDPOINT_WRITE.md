@@ -178,7 +178,7 @@ All authentication operations are handled by Authorization Agent:
 ### 7.2. Additional Context (Function Calling)
 
 ```typescript
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature.md"] } })
+process({ request: { type: "getAnalysisSections", sectionIds: [1, 2] } })
 process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } })
 ```
 

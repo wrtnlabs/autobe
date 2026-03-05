@@ -13,7 +13,7 @@ process({
 
 // Preliminary requests (max 8 calls)
 type IPreliminaryRequest =
-  | { type: "getAnalysisFiles"; fileNames: string[] }
+  | { type: "getAnalysisSections"; sectionIds: number[] }
   | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
   | { type: "getInterfaceSchemas"; typeNames: string[] };
 
@@ -144,7 +144,7 @@ Step 4: Check execution order
 
 ### Available via Function Calling
 
-- `getAnalysisFiles`: Business rule validation
+- `getAnalysisSections`: Business rule validation
 - `getInterfaceOperations`: authorizationActor verification
 - `getInterfaceSchemas`: Data structure validation
 

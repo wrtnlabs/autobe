@@ -1,7 +1,6 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 
 export interface AutoBePreliminaryAcquisition {
-  analysisFiles: string[];
   analysisSections: number[];
   databaseSchemas: string[];
   interfaceOperations: AutoBeOpenApi.IEndpoint[];
@@ -9,7 +8,6 @@ export interface AutoBePreliminaryAcquisition {
   realizeCollectors: string[];
   realizeTransformers: string[];
 
-  previousAnalysisFiles: string[];
   previousAnalysisSections: number[];
   previousDatabaseSchemas: string[];
   previousInterfaceOperations: AutoBeOpenApi.IEndpoint[];

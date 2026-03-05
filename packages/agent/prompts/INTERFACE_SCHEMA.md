@@ -14,10 +14,10 @@ process({
 
 // Preliminary requests (max 8 calls total)
 type IPreliminaryRequest =
-  | { type: "getAnalysisFiles"; fileNames: string[] }
+  | { type: "getAnalysisSections"; sectionIds: number[] }
   | { type: "getDatabaseSchemas"; schemaNames: string[] }
   | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
-  | { type: "getPreviousAnalysisFiles"; fileNames: string[] }
+  | { type: "getPreviousAnalysisSections"; sectionIds: number[] }
   | { type: "getPreviousDatabaseSchemas"; schemaNames: string[] }
   | { type: "getPreviousInterfaceOperations"; endpoints: { method: string; path: string }[] }
   | { type: "getPreviousInterfaceSchemas"; typeNames: string[] };

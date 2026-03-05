@@ -63,7 +63,7 @@ export interface AutoBeAnalyzeScenarioEvent
   extends
     AutoBeEventBase<"analyzeScenario">,
     AutoBeAggregateEventBase,
-    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
+    AutoBeAcquisitionEventBase<"previousAnalysisSections"> {
   /**
    * Prefix identifier for the analysis scenario.
    *

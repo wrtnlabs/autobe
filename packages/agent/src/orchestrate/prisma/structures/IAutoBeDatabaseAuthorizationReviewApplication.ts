@@ -15,7 +15,7 @@ export interface IAutoBeDatabaseAuthorizationReviewApplication {
    * (guest/member/admin), and you must verify that each actor has its required
    * tables.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
+   * ALWAYS fetch analysis sections first using `getAnalysisSections` to understand
    * what authentication features are required, then systematically verify that
    * EVERY actor has main actor table + session table, and apply corrections.
    *

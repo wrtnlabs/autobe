@@ -33,7 +33,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
       status: "approved" | "rewritten" | "new";
     }>;
     mechanicalViolationSummary?: string;
-    preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
+    preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
   },
 ): IAutoBeOrchestrateHistory => {
   return {

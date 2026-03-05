@@ -164,8 +164,8 @@ tables: [
 process({
   thinking: "Missing business domain context for table extraction.",
   request: {
-    type: "getAnalysisFiles",
-    fileNames: ["Business_Model.md", "Features.md"]
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 5]
   }
 })
 ```

@@ -273,8 +273,8 @@ Subsidiary tables are accessed through their parent:
 ### 6.2. Additional Context (Function Calling)
 
 ```typescript
-// Request analysis files
-process({ request: { type: "getAnalysisFiles", fileNames: ["Feature.md"] } })
+// Request analysis sections
+process({ request: { type: "getAnalysisSections", sectionIds: [1, 2] } })
 
 // Request database schemas
 process({ request: { type: "getDatabaseSchemas", schemaNames: ["table_name"] } })

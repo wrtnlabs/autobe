@@ -1,6 +1,6 @@
 import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { FixedAnalyzeTemplateFeature } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
@@ -24,7 +24,7 @@ export interface IAutoBeAnalyzeScenarioApplicationProps {
    * Before requesting preliminary data or completing your task, reflect on your
    * current state and explain your reasoning:
    *
-   * For preliminary requests (getPreviousAnalysisFiles):
+   * For preliminary requests (getPreviousAnalysisSections):
    *
    * - What critical information is missing that you don't already have?
    * - Why do you need it specifically right now?
@@ -46,13 +46,13 @@ export interface IAutoBeAnalyzeScenarioApplicationProps {
    * Type discriminator for the request.
    *
    * Determines which action to perform: preliminary data retrieval
-   * (getPreviousAnalysisFiles) or final scenario composition (complete). When
+   * (getPreviousAnalysisSections) or final scenario composition (complete). When
    * preliminary returns empty array, that type is removed from the union,
    * physically preventing repeated calls.
    */
   request:
     | IAutoBeAnalyzeScenarioApplicationComplete
-    | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
 /**

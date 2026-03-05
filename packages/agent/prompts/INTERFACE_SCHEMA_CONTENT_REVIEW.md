@@ -66,7 +66,7 @@ interface IComplete {
 
 **Flow**: Gather context → Compare DB fields against DTO → Call `complete` with exclusions and revisions.
 
-Available preliminary requests (max 8 calls): `getAnalysisFiles`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`.
+Available preliminary requests (max 8 calls): `getAnalysisSections`, `getDatabaseSchemas`, `getInterfaceOperations`, `getInterfaceSchemas`.
 
 - Use batch requests
 - Never re-request loaded materials

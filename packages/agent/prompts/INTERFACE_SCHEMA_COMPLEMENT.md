@@ -37,7 +37,7 @@ If your generated schema introduces new `$ref` to types that also don't exist, t
 
 | Type | Purpose |
 |------|---------|
-| `getAnalysisFiles` | Business requirements |
+| `getAnalysisSections` | Business requirements |
 | `getDatabaseSchemas` | DB model definitions |
 | `getInterfaceOperations` | API operation definitions |
 | `getInterfaceSchemas` | Already-generated schemas (for pattern reference) |

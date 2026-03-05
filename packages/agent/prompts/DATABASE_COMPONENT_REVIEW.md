@@ -106,7 +106,7 @@ For each requirement, ask:
 ```typescript
 process({
   thinking: "Need to analyze requirements before reviewing tables.",
-  request: { type: "getAnalysisFiles", fileNames: ["Order_Requirements.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 4] }
 })
 ```
 

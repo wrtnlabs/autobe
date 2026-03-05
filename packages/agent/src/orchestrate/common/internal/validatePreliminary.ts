@@ -6,12 +6,10 @@ import typia, { IValidation } from "typia";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
-import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
@@ -45,105 +43,6 @@ export const validatePreliminary = <Kind extends AutoBePreliminaryKind>(
 };
 
 namespace PreliminaryApplicationValidator {
-  export const getAnalysisFiles = (
-    controller: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles"
-    >,
-    input: IAutoBePreliminaryRequest<"analysisFiles" | "previousAnalysisFiles">,
-    previous: boolean,
-  ): IValidation<
-    IAutoBePreliminaryRequest<"analysisFiles" | "previousAnalysisFiles">
-  > => {
-    const accessor: "analysisFiles" | "previousAnalysisFiles" = previous
-      ? "previousAnalysisFiles"
-      : "analysisFiles";
-    if (controller.getAll()[accessor] === undefined)
-      return nonExisting(controller, accessor, input);
-
-    const all: Set<string> = new Set(
-      controller.getAll()[accessor].map((f) => f.filename),
-    );
-    const oldbie: Set<string> = new Set(
-      controller.getLocal()[accessor].map((f) => f.filename),
-    );
-    const newbie: Set<string> = new Set(
-      controller
-        .getAll()
-        [accessor].filter((f) => oldbie.has(f.filename) === false)
-        .map((f) => f.filename),
-    );
-
-    const errors: IValidation.IError[] = [];
-    input.request.fileNames.forEach((key, i) => {
-      if (all.has(key) === false)
-        errors.push({
-          path: `$input.request.fileNames[${i}]`,
-          value: key,
-          expected: Array.from(newbie)
-            .map((x) => JSON.stringify(x))
-            .join(" | "),
-          description: StringUtil.trim`
-            You've requested a NON-EXISTING analysis file: ${JSON.stringify(key)}
-
-            This file does NOT exist in the system. This is NOT a recommendation,
-            but an ABSOLUTE INSTRUCTION you MUST follow:
-
-            ⛔ NEVER request ${JSON.stringify(key)} again - it does not exist!
-            ⛔ NEVER assume or invent file names that are not in the list below!
-            ⛔ You MUST choose ONLY from the available files listed below!
-
-            Available analysis files you can request:
-
-            Filename | Document Type
-            ---------|---------------
-            ${controller
-              .getAll()
-              [accessor].filter((f) => newbie.has(f.filename))
-              .sort((a, b) => a.filename.localeCompare(b.filename))
-              .map((f) => `${f.filename} | ${f.documentType}`)
-              .join("\n")}
-
-            ${
-              newbie.size === 0
-                ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED.replace(
-                    "getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"],
-                    previous
-                      ? ("getPreviousAnalysisFiles" satisfies IAutoBePreliminaryGetPreviousAnalysisFiles["type"])
-                      : ("getAnalysisFiles" satisfies IAutoBePreliminaryGetAnalysisFiles["type"]),
-                  )
-                : ""
-            }
-          `,
-        });
-    });
-    if (input.request.fileNames.every((k) => oldbie.has(k)))
-      errors.push({
-        path: `$input.request`,
-        value: input.request,
-        expected: controller.getArgumentTypeNames().join(" | "),
-        description:
-          AutoBeSystemPromptConstant.PRELIMINARY_ARGUMENT_ALL_DUPLICATED.replaceAll(
-            "{{REQUEST_TYPE}}",
-            typia.misc.literals<
-              IAutoBePreliminaryGetAnalysisFiles["type"]
-            >()[0],
-          )
-            .replace(
-              "{{OLDBIE}}",
-              Array.from(oldbie.keys())
-                .map((k) => `- ${k}`)
-                .join("\n"),
-            )
-            .replace(
-              "{{NEWBIE}}",
-              Array.from(newbie.keys())
-                .map((k) => `- ${k}`)
-                .join("\n") || "(none)",
-            ),
-      });
-    return finalize(input, errors);
-  };
-
   export const getAnalysisSections = (
     controller: AutoBePreliminaryController<
       "analysisSections" | "previousAnalysisSections"

@@ -315,11 +315,11 @@ mv_bbs_article_last_snapshots: {
 
 ## 6. Function Calling
 
-### 6.1. Request Analysis Files (when needed)
+### 6.1. Request Analysis Sections (when needed)
 ```typescript
 process({
   thinking: "Need related component context for foreign key design.",
-  request: { type: "getAnalysisFiles", fileNames: ["Related.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 3] }
 })
 ```
 

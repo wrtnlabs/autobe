@@ -22,7 +22,7 @@ import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/stru
  * accurate schema definitions that properly map to database entities.
  *
  * The refinement follows a structured RAG workflow: preliminary context
- * gathering (analysis files, database schemas, interface operations) followed
+ * gathering (analysis sections, database schemas, interface operations) followed
  * by property-level enrichment operations.
  *
  * @author Samchon

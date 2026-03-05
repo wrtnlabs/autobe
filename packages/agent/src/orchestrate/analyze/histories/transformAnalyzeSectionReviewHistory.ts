@@ -35,7 +35,7 @@ export const transformAnalyzeSectionReviewHistory = (
     unitEvents: AutoBeAnalyzeWriteUnitEvent[];
     sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
     feedback?: string;
-    preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
+    preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
   },
 ): IAutoBeOrchestrateHistory => {
   return {

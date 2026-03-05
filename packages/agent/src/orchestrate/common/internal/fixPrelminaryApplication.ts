@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeOpenApi,
   AutoBePreliminaryKind,
@@ -17,12 +16,10 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
 import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
-import { IAutoBePreliminaryGetAnalysisFiles } from "../structures/IAutoBePreliminaryGetAnalysisFiles";
 import { IAutoBePreliminaryGetAnalysisSections } from "../structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../structures/IAutoBePreliminaryGetInterfaceSchemas";
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
@@ -71,12 +68,7 @@ export const fixPreliminaryApplication = <
   if (eraseMetadata === null) return;
 
   for (const kind of props.preliminary.getKinds().slice())
-    if (kind === "previousAnalysisFiles") {
-      if (props.state.previousAnalyze === null) {
-        eraseMetadata("getPreviousAnalysisFiles");
-        eraseKind(kind);
-      }
-    } else if (kind === "previousAnalysisSections") {
+    if (kind === "previousAnalysisSections") {
       if (props.state.previousAnalyze === null) {
         eraseMetadata("getPreviousAnalysisSections");
         eraseKind(kind);
@@ -109,7 +101,6 @@ export const fixPreliminaryApplication = <
     ) as Exclude<AutoBePreliminaryKind, `previous${string}`>;
     if (
       props.enumerable === false &&
-      accessor !== "analysisFiles" &&
       accessor !== "analysisSections" &&
       accessor !== "databaseSchemas"
     )
@@ -154,39 +145,6 @@ const getUnionErasure = (props: {
 };
 
 namespace ApplicationFixer {
-  export const analysisFiles = (props: {
-    $defs: Record<string, ILlmSchema>;
-    controller: AutoBePreliminaryController<
-      "analysisFiles" | "previousAnalysisFiles"
-    >;
-    previous: boolean;
-  }): void => {
-    const analysisFiles: AutoBeAnalyzeFile[] =
-      props.controller.getAll()[
-        props.previous ? "previousAnalysisFiles" : "analysisFiles"
-      ];
-    if (analysisFiles.length === 0) return;
-
-    const type: ILlmSchema.IObject = props.$defs[
-      props.previous
-        ? typia.reflect.name<IAutoBePreliminaryGetPreviousAnalysisFiles>()
-        : typia.reflect.name<IAutoBePreliminaryGetAnalysisFiles>()
-    ] as ILlmSchema.IObject;
-    if (type === undefined) return;
-    describe(
-      type.properties.fileNames,
-      StringUtil.trim`
-        Here is the list of analysis files available for retrieval:
-
-        ${analysisFiles
-          .slice()
-          .sort((a, b) => a.filename.localeCompare(b.filename))
-          .map((f) => `- ${f.filename}`)
-          .join("\n")}
-        `,
-    );
-  };
-
   export const analysisSections = (props: {
     $defs: Record<string, ILlmSchema>;
     controller: AutoBePreliminaryController<

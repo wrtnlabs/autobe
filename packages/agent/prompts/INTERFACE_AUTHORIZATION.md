@@ -33,8 +33,8 @@ thinking: "Designed all auth operations for all actor types."
 export namespace IAutoBeInterfaceAuthorizationApplication {
   export interface IProps {
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousDatabaseSchemas;
+    request: IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   export interface IComplete {
@@ -50,9 +50,9 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
 
 | Type | Purpose |
 |------|---------|
-| `getAnalysisFiles` | Deeper business context for auth workflows |
+| `getAnalysisSections` | Deeper business context for auth workflows |
 | `getDatabaseSchemas` | Verify actor table structures and auth fields |
-| `getPreviousAnalysisFiles` | Reference previous version (only when exists) |
+| `getPreviousAnalysisSections` | Reference previous version (only when exists) |
 | `getPreviousDatabaseSchemas` | Previous version schemas (only when exists) |
 
 When a preliminary request returns empty array → that type is permanently removed. Never re-request loaded materials. NEVER work from imagination - always load actual data first.

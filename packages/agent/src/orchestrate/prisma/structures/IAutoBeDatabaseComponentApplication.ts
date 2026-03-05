@@ -121,7 +121,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      * The AI agent must design tables based on:
      *
      * - The component's namespace and intended domain (from skeleton)
-     * - Business requirements from analysis files
+     * - Business requirements from analysis sections
      * - Previous database schemas for consistency
      * - Normalization principles (3NF)
      * - Relationship integrity

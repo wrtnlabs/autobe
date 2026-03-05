@@ -33,7 +33,7 @@ export interface AutoBeAnalyzeModuleReviewEvent
     AutoBeEventBase<"analyzeModuleReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
+    AutoBeAcquisitionEventBase<"previousAnalysisSections"> {
   /**
    * Per-file review results.
    *

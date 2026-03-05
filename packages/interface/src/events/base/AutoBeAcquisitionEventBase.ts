@@ -6,7 +6,7 @@ import { AutoBePreliminaryAcquisition } from "../contents/AutoBePreliminaryAcqui
  * an agent during its RAG (Retrieval-Augmented Generation) process.
  *
  * When an agent executes, it incrementally loads preliminary data (analysis
- * files, database schemas, interface operations, etc.) through the
+ * sections, database schemas, interface operations, etc.) through the
  * {@link AutoBePreliminaryController}. This base interface captures a
  * lightweight summary of what data was actually loaded into the agent's context
  * at the time the event was emitted.
@@ -14,7 +14,7 @@ import { AutoBePreliminaryAcquisition } from "../contents/AutoBePreliminaryAcqui
  * The `Kind` type parameter constrains which acquisition fields are included,
  * ensuring each event only carries the subset of preliminary data relevant to
  * its agent. For example, a database group event only tracks acquisition of
- * `"analysisFiles" | "previousAnalysisFiles" | "previousDatabaseSchemas"`,
+ * `"analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"`,
  * while an interface prerequisite event tracks nearly all kinds.
  *
  * The acquisition data contains only identifiers (file names, schema names,
