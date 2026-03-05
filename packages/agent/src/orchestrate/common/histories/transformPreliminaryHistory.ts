@@ -3,7 +3,6 @@ import {
   IMicroAgenticaHistoryJson,
 } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeAnalyzeHistory,
   AutoBeDatabase,
   AutoBeEventSource,
@@ -65,89 +64,6 @@ namespace PreliminaryTransformer {
     config: AutoBePreliminaryController.IConfig<Kind>;
     previous: boolean;
   }
-
-  export const analysisFiles = (
-    props: IProps<"analysisFiles" | "previousAnalysisFiles">,
-  ): IMicroAgenticaHistoryJson[] => {
-    const kind: "analysisFiles" | "previousAnalysisFiles" = props.previous
-      ? "previousAnalysisFiles"
-      : "analysisFiles";
-    const oldbie: Record<string, AutoBeAnalyzeFile> = Object.fromEntries(
-      props.local[kind]
-        .map((f) => [f.filename, f] as const)
-        .sort(([a], [b]) => a.localeCompare(b)),
-    );
-    const newbie: AutoBeAnalyzeFile[] = props.all[kind]
-      .filter((f) => oldbie[f.filename] === undefined)
-      .sort((a, b) => a.filename.localeCompare(b.filename));
-
-    const analyze: AutoBeAnalyzeHistory | null = props.previous
-      ? props.state.previousAnalyze
-      : props.state.analyze;
-    const assistant: IAgenticaHistoryJson.IAssistantMessage =
-      createAssistantMessage({
-        prompt:
-          AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_LOADED.replace(
-            "{{PREFIX}}",
-            analyze?.prefix ?? "",
-          ).replace(
-            "{{ACTORS}}",
-            analyze?.actors ? toJsonBlock(analyze.actors) : "",
-          ),
-        previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
-        content: toJsonBlock(oldbie),
-        replace: props.previous
-          ? { from: "getAnalysisFiles", to: "getPreviousAnalysisFiles" }
-          : null,
-      });
-    const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
-      prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE,
-      previous: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_PREVIOUS,
-      available: StringUtil.trim`
-        \`\`\`json
-        ${JSON.stringify(
-          newbie.map((f) => ({
-            filename: f.filename,
-            documentType: f.documentType,
-            audience: f.audience,
-            outline: f.outline,
-            keyQuestions: f.keyQuestions,
-          })),
-        )}
-        \`\`\`
-      `,
-      loaded: props.local[kind].map((f) => `- ${f.filename}`).join("\n"),
-      exhausted:
-        newbie.length === 0
-          ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_FILE_EXHAUSTED
-          : "",
-      replace: props.previous
-        ? {
-            from: "getAnalysisFiles",
-            to: "getPreviousAnalysisFiles",
-          }
-        : null,
-    });
-    return props.local[kind].length === 0
-      ? [assistant, system]
-      : [
-          createFunctionCallingMessage({
-            controller: props.source,
-            kind,
-            arguments: {
-              thinking: "analysis files for detailed requirements' analyses",
-              request: {
-                type: props.previous
-                  ? "getPreviousAnalysisFiles"
-                  : "getAnalysisFiles",
-                fileNames: props.local[kind].map((f) => f.filename),
-              },
-            },
-          }),
-          assistant,
-          system,
-        ];
-  };
 
   export const analysisSections = (
     props: IProps<"analysisSections" | "previousAnalysisSections">,

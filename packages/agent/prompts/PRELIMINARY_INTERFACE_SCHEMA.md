@@ -110,7 +110,7 @@ You MUST NEVER proceed based on assumptions about TypeScript type schema content
 
 Schema design decisions (field inclusion/exclusion, validation rules, enum values, DTO scoping) often depend on business requirements that database structure alone cannot provide.
 
-**Rule:** When designing schemas with business-rule-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents.
+**Rule:** When designing schemas with business-rule-dependent decisions, also call `getAnalysisSections` to load relevant requirement documents.
 
 **Examples of decisions requiring analysis files:**
 - Field inclusion or exclusion based on business requirements

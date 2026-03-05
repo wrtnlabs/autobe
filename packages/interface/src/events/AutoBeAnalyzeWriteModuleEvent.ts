@@ -31,7 +31,7 @@ export interface AutoBeAnalyzeWriteModuleEvent
     AutoBeEventBase<"analyzeWriteModule">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
+    AutoBeAcquisitionEventBase<"previousAnalysisSections"> {
   /**
    * Document title (# level heading).
    *

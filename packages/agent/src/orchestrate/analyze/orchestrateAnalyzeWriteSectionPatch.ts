@@ -44,12 +44,12 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
     sectionIndices?: number[] | null;
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
+  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
     new AutoBePreliminaryController({
       application:
         typia.json.application<IAutoBeAnalyzeWriteSectionApplication>(),
       source: SOURCE,
-      kinds: ["previousAnalysisFiles"],
+      kinds: ["previousAnalysisSections"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -120,7 +120,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
 
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteSectionApplicationComplete | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
+  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
   scenarioEntityNames?: string[];
 }): IAgenticaController.IClass {
   const validate = (

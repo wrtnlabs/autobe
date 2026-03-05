@@ -57,8 +57,8 @@ export namespace IAutoBeInterfaceGroupApplication {
 
 | Type | Purpose | When to Use |
 |------|---------|-------------|
-| `getAnalysisFiles` | Retrieve analysis files | Need deeper business context |
-| `getPreviousAnalysisFiles` | Load previous version files | Regenerating after user modifications |
+| `getAnalysisSections` | Retrieve analysis sections | Need deeper business context |
+| `getPreviousAnalysisSections` | Load previous version sections | Regenerating after user modifications |
 | `getDatabaseSchemas` | Retrieve database schemas | Need detailed schema structure |
 | `getPreviousDatabaseSchemas` | Load previous version schemas | Regenerating after user modifications |
 | `getPreviousInterfaceOperations` | Load previous operations | Reference previous version |

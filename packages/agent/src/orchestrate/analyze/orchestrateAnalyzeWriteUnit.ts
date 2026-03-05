@@ -36,11 +36,11 @@ export const orchestrateAnalyzeWriteUnit = async (
     retry: number;
   },
 ): Promise<AutoBeAnalyzeWriteUnitEvent> => {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisFiles"> =
+  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
     new AutoBePreliminaryController({
       application: typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
       source: SOURCE,
-      kinds: ["previousAnalysisFiles"],
+      kinds: ["previousAnalysisSections"],
       state: ctx.state(),
     });
   return await preliminary.orchestrate(ctx, async (out) => {
@@ -88,7 +88,7 @@ export const orchestrateAnalyzeWriteUnit = async (
 
 function createController(props: {
   pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisFiles">;
+  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
 }): IAgenticaController.IClass {
   const validate = (
     input: unknown,

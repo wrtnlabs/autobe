@@ -96,7 +96,7 @@ For each actor type, verify:
 ```typescript
 process({
   thinking: "Need to analyze authentication requirements.",
-  request: { type: "getAnalysisFiles", fileNames: ["Auth_Specs.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 3] }
 })
 ```
 

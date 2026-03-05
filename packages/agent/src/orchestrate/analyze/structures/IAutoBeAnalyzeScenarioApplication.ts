@@ -1,6 +1,6 @@
 import { AutoBeAnalyzeActor, CamelCasePattern } from "@autobe/interface";
 
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { FixedAnalyzeTemplateFeature } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
@@ -52,7 +52,7 @@ export interface IAutoBeAnalyzeScenarioApplicationProps {
    */
   request:
     | IAutoBeAnalyzeScenarioApplicationComplete
-    | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
 /**

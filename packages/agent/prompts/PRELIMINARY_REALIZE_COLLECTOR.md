@@ -109,7 +109,7 @@ You MUST NEVER proceed based on assumptions about collector function contents. A
 
 Collector function implementation may require understanding business rules that affect data transformation logic (e.g., default values, conditional field mapping, validation constraints).
 
-**Rule:** When collector implementation involves business-logic-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents for evidence-based implementation.
+**Rule:** When collector implementation involves business-logic-dependent decisions, also call `getAnalysisSections` to load relevant requirement documents for evidence-based implementation.
 
 ---
 

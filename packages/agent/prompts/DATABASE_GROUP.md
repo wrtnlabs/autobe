@@ -107,8 +107,8 @@ groups: [
 process({
   thinking: "Need requirements to identify business domains.",
   request: {
-    type: "getAnalysisFiles",
-    fileNames: ["Business_Requirements.md", "Domain_Model.md", "Features.md"]
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3, 5]
   }
 })
 ```
@@ -170,13 +170,13 @@ process({
 process({
   thinking: "Missing business workflow details.",
   request: {
-    type: "getAnalysisFiles",
-    fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3]
   }
 })
 
 // ❌ FORBIDDEN - Complete while preliminary pending
-process({ request: { type: "getAnalysisFiles", ... } })
+process({ request: { type: "getAnalysisSections", ... } })
 process({ request: { type: "complete", ... } })  // WRONG!
 ```
 

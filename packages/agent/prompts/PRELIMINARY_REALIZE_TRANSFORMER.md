@@ -109,7 +109,7 @@ You MUST NEVER proceed based on assumptions about transformer function contents.
 
 Transformer function implementation may require understanding business rules that affect response data construction (e.g., computed fields, conditional inclusion, display logic).
 
-**Rule:** When transformer implementation involves business-logic-dependent decisions, also call `getAnalysisFiles` to load relevant requirement documents for evidence-based implementation.
+**Rule:** When transformer implementation involves business-logic-dependent decisions, also call `getAnalysisSections` to load relevant requirement documents for evidence-based implementation.
 
 ---
 

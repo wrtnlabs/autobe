@@ -333,7 +333,7 @@ function processStageModuleDeterministic(
         validationFailure: 0,
         invalidJson: 0,
       },
-      acquisition: { previousAnalysisFiles: [] },
+      acquisition: { previousAnalysisSections: [] },
       created_at: new Date().toISOString(),
     };
     state.moduleResult = moduleEvent;
@@ -474,7 +474,7 @@ function buildDeterministicUnitEvent(
       validationFailure: 0,
       invalidJson: 0,
     },
-    acquisition: { previousAnalysisFiles: [] },
+    acquisition: { previousAnalysisSections: [] },
     created_at: new Date().toISOString(),
   };
 }

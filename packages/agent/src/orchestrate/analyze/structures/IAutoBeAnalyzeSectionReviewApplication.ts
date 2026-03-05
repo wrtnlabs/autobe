@@ -1,4 +1,4 @@
-import { IAutoBePreliminaryGetPreviousAnalysisFiles } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisFiles";
+import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /**
  * Application interface for the Cross-File Section Review agent.
@@ -43,7 +43,7 @@ export interface IAutoBeAnalyzeSectionReviewApplicationProps {
   /** Type discriminator for the request. */
   request:
     | IAutoBeAnalyzeSectionReviewApplicationComplete
-    | IAutoBePreliminaryGetPreviousAnalysisFiles;
+    | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
 /**

@@ -330,7 +330,7 @@ interface ITeam.ICreate {
 - Operations using this schema
 
 ### Available via Function Calling
-- `getAnalysisFiles`: Business requirements
+- `getAnalysisSections`: Business requirements
 - `getDatabaseSchemas`: DB field details (columns + relations)
 - `getInterfaceOperations`: API operation context
 - `getInterfaceSchemas`: Other DTOs for reference

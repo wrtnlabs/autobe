@@ -115,7 +115,7 @@ You MUST NEVER proceed based on assumptions about API operation specifications. 
 
 API operation design requires understanding business workflows, authorization rules, and domain context beyond endpoint specifications.
 
-**Rule:** When making decisions about operation behavior, authorization patterns, or business workflows, also call `getAnalysisFiles` to load relevant requirement documents.
+**Rule:** When making decisions about operation behavior, authorization patterns, or business workflows, also call `getAnalysisSections` to load relevant requirement documents.
 
 **Examples of decisions requiring analysis files:**
 - Authorization and permission rule design
