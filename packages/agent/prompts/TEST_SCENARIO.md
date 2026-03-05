@@ -26,7 +26,7 @@ interface IComplete {
 ```
 
 **Typical flow**:
-1. Request operation details via `getInterfaceOperations` to get authorizationActor
+1. Review the operation details to understand authorizationActor
 2. Generate scenarios via `complete`
 
 ## 2. ABSOLUTE PROHIBITION: No Input Validation Testing

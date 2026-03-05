@@ -128,23 +128,9 @@ export const transformPrismaComponentsHistory = (
     userMessage: StringUtil.trim`
       ## Your Task: Design Database Tables for This Component
 
-      **CRITICAL REQUIREMENT**: You MUST load requirement analysis documents via
-      \`getAnalysisSections\` to identify all entities and tables for this component.
+      Identify all entities belonging to this component's domain and generate complete table definitions covering them.
 
-      **MANDATORY STEPS**:
-
-      1. **FIRST**: Call \`getAnalysisSections\` to load requirement documents
-         - NEVER skip this step - Requirements are the ONLY valid source for entity identification
-      2. **THEN**: Analyze the LOADED requirements to identify all entities belonging to this component
-      3. **FINALLY**: Generate complete table definitions covering ALL entities found in requirements
-
-      **ABSOLUTE PROHIBITIONS**:
-
-      - ❌ NEVER generate tables without loading requirement documents first
-      - ❌ NEVER work from assumptions, imagination, or "typical patterns"
-      - ❌ NEVER skip loading requirements under any circumstances
-
-      Begin by calling \`getAnalysisSections\` to load the requirement documents you need to analyze.
+      When ready, call \`process({ request: { type: "complete", ... } })\` with the table definitions.
     `,
   };
 };

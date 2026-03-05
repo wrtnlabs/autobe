@@ -13,10 +13,6 @@ export interface IAutoBeDatabaseGroupReviewApplication {
    * requirements. Review existing groups and identify necessary modifications
    * using create, update, or erase operations.
    *
-   * ALWAYS fetch analysis sections first using `getAnalysisSections` to understand
-   * what business domains exist, then systematically verify group coverage and
-   * apply corrections.
-   *
    * @param props Request containing either preliminary data request or complete
    *   task with group revisions
    */
@@ -56,15 +52,7 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Submit group revisions after domain coverage analysis.
-   *
-   * Call this after you have:
-   *
-   * 1. Fetched and analyzed business requirements documents
-   * 2. Verified all business domains have corresponding groups
-   * 3. Prepared create/update/erase operations with clear reasons
-   */
+  /** Submit group revisions after domain coverage analysis. */
   export interface IComplete {
     /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";

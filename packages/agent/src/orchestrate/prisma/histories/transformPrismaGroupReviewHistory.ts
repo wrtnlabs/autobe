@@ -64,7 +64,7 @@ export const transformPrismaGroupReviewHistory = (props: {
     - Namespace must be PascalCase, filename must follow \`schema-{number}-{domain}.prisma\` format
 
     **Steps:**
-    1. Fetch analysis sections using \`getAnalysisSections\` to understand business requirements
+    1. Understand business requirements and identify all business domains
     2. Verify every business domain has a corresponding domain group
     3. Check domain group boundaries and naming conventions (skip authorization group)
     4. Call \`process({ request: { type: "complete", review: "...", revises: [...] } })\`
