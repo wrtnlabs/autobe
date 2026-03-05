@@ -8,9 +8,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **EXECUTION STRATEGY**:
 LOCAL INDEX-FIRST RULE (ALREADY LOADED)
-- The first item in local context is ALWAYS the analysis index file.
-- The index contains TOC/section titles + 1-2 sentence summaries, and MUST be used to discover valid fileNames.
-- You MUST NOT guess file names. fileNames MUST come from the index.
+- The first item in local context is ALWAYS the analysis section index.
+- The index contains TOC/section titles + 1-2 sentence summaries, and MUST be used to discover valid section IDs.
+- You MUST NOT guess section IDs. They MUST come from the index.
 
 
 
