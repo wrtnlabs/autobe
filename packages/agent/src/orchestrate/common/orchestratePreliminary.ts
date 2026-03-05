@@ -1,6 +1,5 @@
 import { AgenticaExecuteHistory, MicroAgenticaHistory } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeOpenApi,
@@ -44,33 +43,8 @@ export const orchestratePreliminary = async <
 
   for (const exec of executes) {
     // ANALYSIS
-    if (isAnalysisFiles(props.preliminary, exec.arguments)) {
-      const pa: AutoBePreliminaryController<"analysisFiles"> =
-        props.preliminary;
-      orchestrateAnalyzeFiles(ctx, {
-        source: props.source,
-        source_id: props.source_id,
-        trial: props.trial,
-        all: pa.getAll().analysisFiles,
-        local: pa.getLocal().analysisFiles,
-        arguments: exec.arguments,
-        previous: false,
-      });
-    } else if (isPreviousAnalysisFiles(props.preliminary, exec.arguments)) {
-      const pa: AutoBePreliminaryController<"previousAnalysisFiles"> =
-        props.preliminary;
-      orchestrateAnalyzeFiles(ctx, {
-        source: props.source,
-        source_id: props.source_id,
-        trial: props.trial,
-        all: pa.getAll().previousAnalysisFiles,
-        local: pa.getLocal().previousAnalysisFiles,
-        arguments: exec.arguments,
-        previous: true,
-      });
-    }
-    // ANALYSIS SECTIONS
-    else if (isAnalysisSections(props.preliminary, exec.arguments)) {
+    // ANALYSIS
+    if (isAnalysisSections(props.preliminary, exec.arguments)) {
       const ps: AutoBePreliminaryController<"analysisSections"> =
         props.preliminary;
       orchestrateAnalysisSections(ctx, {
@@ -213,30 +187,6 @@ export const orchestratePreliminary = async <
 /* -----------------------------------------------------------
   TYPE CHECKERS
 ----------------------------------------------------------- */
-const isAnalysisFiles = (
-  // biome-ignore lint: intended
-  preliminary: AutoBePreliminaryController<any>,
-  input: unknown,
-): preliminary is AutoBePreliminaryController<"analysisFiles"> =>
-  typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(input) &&
-  preliminary.getAll()[
-    typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "analysisFiles">
-    >()[0]
-  ] !== undefined;
-
-const isPreviousAnalysisFiles = (
-  // biome-ignore lint: intended
-  preliminary: AutoBePreliminaryController<any>,
-  input: unknown,
-): preliminary is AutoBePreliminaryController<"previousAnalysisFiles"> =>
-  typia.is<IAutoBePreliminaryRequest<"previousAnalysisFiles">>(input) &&
-  preliminary.getAll()[
-    typia.misc.literals<
-      Extract<keyof IAutoBePreliminaryCollection, "previousAnalysisFiles">
-    >()[0]
-  ] !== undefined;
-
 const isAnalysisSections = (
   // biome-ignore lint: intended
   preliminary: AutoBePreliminaryController<any>,
@@ -360,54 +310,6 @@ const isRealizeTransformers = (
 /* -----------------------------------------------------------
   ORCHESTRATORS
 ----------------------------------------------------------- */
-const orchestrateAnalyzeFiles = (
-  ctx: AutoBeContext,
-  props: {
-    source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
-    source_id: string;
-    trial: number;
-    all: AutoBeAnalyzeFile[];
-    local: AutoBeAnalyzeFile[];
-    arguments: unknown;
-    previous: boolean;
-  },
-): void => {
-  if (props.previous) {
-    if (
-      false ===
-      typia.is<IAutoBePreliminaryRequest<"previousAnalysisFiles">>(
-        props.arguments,
-      )
-    )
-      return;
-  } else if (
-    false ===
-    typia.is<IAutoBePreliminaryRequest<"analysisFiles">>(props.arguments)
-  )
-    return;
-
-  const existing: string[] = props.local.map((f) => f.filename);
-  for (const filename of props.arguments.request.fileNames) {
-    const file: AutoBeAnalyzeFile | undefined = props.all.find(
-      (f) => f.filename === filename,
-    );
-    if (file === undefined) continue;
-    else if (props.local.find((x) => x.filename === filename) === undefined)
-      props.local.push(file);
-  }
-  ctx.dispatch({
-    type: "preliminary",
-    id: v7(),
-    function: props.previous ? "previousAnalysisFiles" : "analysisFiles",
-    source: props.source,
-    source_id: props.source_id,
-    existing,
-    requested: props.arguments.request.fileNames,
-    trial: props.trial,
-    created_at: new Date().toISOString(),
-  });
-};
-
 const orchestrateAnalysisSections = (
   ctx: AutoBeContext,
   props: {

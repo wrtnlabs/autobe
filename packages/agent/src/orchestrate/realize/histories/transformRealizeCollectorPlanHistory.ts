@@ -35,10 +35,8 @@ export const transformRealizeCollectorPlanHistory = (props: {
           I need to analyze the given DTO type "${props.dtoTypeName}" and determine if it needs a collector.
 
           **My approach**:
-          1. Request Interface schema to understand the DTO structure
-          2. Request database schemas to find matching table
-          3. Analyze the DTO to determine if it's collectable or not
-          4. Generate a plan with ONE entry for this DTO
+          1. Analyze the DTO to determine if it's collectable or not
+          2. Generate a plan with ONE entry for this DTO
 
           **For collectable DTOs**: Set databaseSchemaName to actual database table name
           **For non-collectable DTOs**: Set databaseSchemaName to null
@@ -51,10 +49,8 @@ export const transformRealizeCollectorPlanHistory = (props: {
       Analyze the DTO type "${props.dtoTypeName}" and create a collector plan entry.
 
       **Your task**:
-      1. Request Interface schema to understand the DTO structure
-      2. Request database schema to find the matching table
-      3. Determine if this DTO is collectable (maps to database table) or non-collectable
-      4. Generate a plan with exactly ONE entry for this DTO
+      1. Determine if this DTO is collectable (maps to database table) or non-collectable
+      2. Generate a plan with exactly ONE entry for this DTO
 
       **Remember**:
       - Your plan must contain exactly ONE entry for "${props.dtoTypeName}"

@@ -97,7 +97,7 @@ interface IComplete {
 }
 ```
 
-Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`.
+Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisSections`, `getInterfaceOperations`, `getInterfaceSchemas`.
 
 - Use batch requests
 - Never re-request loaded materials

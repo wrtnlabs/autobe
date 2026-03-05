@@ -7,34 +7,28 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
 import { AutoBeProgressEventBase } from "./base/AutoBeProgressEventBase";
 
 /**
- * Event fired during the multi-dimensional review and validation phase of
- * OpenAPI schema generation process.
+ * Event fired during the unified review and validation phase of OpenAPI schema
+ * generation process.
  *
- * This event represents the unified validation activity of specialized
- * Interface Schema Review Agents, which ensure schemas are secure, structurally
- * sound, and complete. The event supports three distinct review kinds executed
- * sequentially: security, relation, and content validation.
+ * This event represents the activity of a single unified Schema Review Agent
+ * that validates schemas across all dimensions simultaneously: security,
+ * relation structure, content completeness, and phantom detection.
  *
- * The Interface Schema Review Agents perform comprehensive validation
- * including:
+ * The Schema Review Agent performs comprehensive validation including:
  *
- * - **Security** (`kind: "security"`): Authentication context removal,
- *   password/token field protection, phantom field detection, system-managed
- *   field protection
- * - **Relation** (`kind: "relation"`): Relation classification, foreign key to
- *   object transformation, actor reversal prohibition, $ref extraction
- * - **Content** (`kind: "content"`): Field completeness, type accuracy, required
- *   field alignment, cross-variant consistency
+ * - **Security**: Password/token field protection, session context placement,
+ *   actor DTO compliance
+ * - **Relations**: Relation classification, FK-to-object transformation, circular
+ *   reference removal
+ * - **Content**: Field completeness, type accuracy, nullability, DB coverage
+ *   verification
+ * - **Phantom detection**: Identifying and erasing fields with no DB mapping, no
+ *   recognized role, and no valid specification
  *
- * Review execution order:
- *
- * 1. Security review removes dangerous fields and prevents vulnerabilities
- * 2. Relation review structures relationships between clean schemas
- * 3. Content review validates completeness of secure, well-structured schemas
- *
- * Each review kind focuses on its specialized domain while contributing to
- * production-ready, type-safe OpenAPI schemas that accurately model the
- * business domain.
+ * The review agent runs twice per schema generation cycle to ensure
+ * convergence. Each run produces `excludes` (DB properties not in the DTO) and
+ * `revises` (property-level operations: keep, create, update, depict, erase,
+ * nullish).
  *
  * @author Samchon
  */
@@ -54,17 +48,6 @@ export interface AutoBeInterfaceSchemaReviewEvent
       | "previousInterfaceSchemas"
     > {
   /**
-   * Review dimension discriminator.
-   *
-   * Specifies which specialized agent is performing validation:
-   *
-   * - `"security"`: Security validation for authentication and data protection
-   * - `"relation"`: Relation validation for DTO relationships and structure
-   * - `"content"`: Content validation for field completeness and accuracy
-   */
-  kind: "security" | "relation" | "content" | "phantom";
-
-  /**
    * Type name of the schema being reviewed.
    *
    * Specifies the specific DTO type name that is being validated in this
@@ -75,24 +58,17 @@ export interface AutoBeInterfaceSchemaReviewEvent
   /**
    * Original schema submitted for review.
    *
-   * Contains the OpenAPI schema requiring validation according to the review
-   * kind. The schema is the full descriptive JSON schema structure with
-   * AutoBE-specific metadata.
+   * Contains the OpenAPI schema requiring validation. The schema is the full
+   * descriptive JSON schema structure with AutoBE-specific metadata.
    */
   schema: AutoBeOpenApi.IJsonSchemaDescriptive;
 
   /**
-   * Violation findings from the review.
+   * Summary of issues found and fixes applied during the review.
    *
-   * Documents all issues discovered during validation, categorized by severity
-   * or type according to the review kind:
-   *
-   * - **Security**: CRITICAL/HIGH/MEDIUM/LOW severity violations
-   * - **Relation**: CRITICAL/HIGH/MEDIUM/LOW relation issues
-   * - **Content**: Field completeness, type accuracy, description quality issues
-   *
-   * Each finding includes the affected schema, specific problem, and correction
-   * justification.
+   * Documents all issues discovered during validation across security,
+   * relations, content completeness, and phantom detection. Each finding
+   * includes the affected property, specific problem, and correction applied.
    */
   review: string;
 

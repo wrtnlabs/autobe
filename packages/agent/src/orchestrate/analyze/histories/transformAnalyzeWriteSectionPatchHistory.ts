@@ -26,7 +26,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
     unitIndex: number;
     previousSectionEvent: AutoBeAnalyzeWriteSectionEvent;
     feedback: string;
-    preliminary: null | AutoBePreliminaryController<"previousAnalysisFiles">;
+    preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
     sectionIndices?: number[] | null;
   },
 ): IAutoBeOrchestrateHistory => {

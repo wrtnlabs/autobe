@@ -14,7 +14,7 @@ process({
 
 // Preliminary requests (max 8 calls)
 type IPreliminaryRequest =
-  | { type: "getAnalysisFiles"; fileNames: string[] }
+  | { type: "getAnalysisSections"; sectionIds: number[] }
   | { type: "getInterfaceOperations"; endpoints: { method: string; path: string }[] }
   | { type: "getInterfaceSchemas"; typeNames: string[] };
 
@@ -26,7 +26,7 @@ interface IComplete {
 ```
 
 **Typical flow**:
-1. Request operation details via `getInterfaceOperations` to get authorizationActor
+1. Review the operation details to understand authorizationActor
 2. Generate scenarios via `complete`
 
 ## 2. ABSOLUTE PROHIBITION: No Input Validation Testing
@@ -172,7 +172,7 @@ interface AutoBeTestScenario {
 - **Target Operation**: Operation with prerequisites and authorizationActors
 
 ### Available via Function Calling
-- `getAnalysisFiles`: Business rules for edge cases
+- `getAnalysisSections`: Business rules for edge cases
 - `getInterfaceOperations`: authorizationActor for operations
 - `getInterfaceSchemas`: DTO structures
 

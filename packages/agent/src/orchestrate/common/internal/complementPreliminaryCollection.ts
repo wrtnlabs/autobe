@@ -55,18 +55,6 @@ export const complementPreliminaryCollection = (props: IProps): void => {
       ...props,
       previous: true,
     });
-
-  // Complement analysis index file
-  if (props.kinds.includes("analysisFiles") === true)
-    complementAnalysisIndexFile({
-      ...props,
-      previous: false,
-    });
-  if (props.kinds.includes("previousAnalysisFiles") === true)
-    complementAnalysisIndexFile({
-      ...props,
-      previous: true,
-    });
 };
 
 const complementRealizeCollectors = (props: IProps): void =>
@@ -249,13 +237,4 @@ const complementInterfaceSchemas = (props: INextProps) => {
         );
     }
   }
-};
-const complementAnalysisIndexFile = (props: INextProps): void => {
-  const kind: "analysisFiles" | "previousAnalysisFiles" =
-    props.previous === true ? "previousAnalysisFiles" : "analysisFiles";
-  const all = props.all[kind];
-  if (all.length === 0) return;
-  const first = all[0];
-  if (props.local[kind].includes(first) === false)
-    props.local[kind].unshift(first);
 };

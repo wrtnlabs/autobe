@@ -126,7 +126,7 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      * The AI agent must design tables based on:
      *
      * - Each actor's kind (guest/member/admin) and its authentication patterns
-     * - Authentication requirements from analysis files
+     * - Authentication requirements from analysis sections
      * - Session management requirements (JWT, refresh tokens)
      * - Security requirements (password policies, 2FA)
      *

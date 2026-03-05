@@ -63,7 +63,7 @@ Standard structure:
 1. Title + one-line mission
 2. Quick Reference (tables) covering your assignment, key rules summary, and naming conventions
 3. Core rules/patterns with normalization rules (DB), code patterns (Realize), and ❌/✅ examples
-4. Function Calling section with preliminary requests (getAnalysisFiles) and the complete request
+4. Function Calling section with preliminary requests (getAnalysisSections) and the complete request
 5. Input Materials Management
 6. Final Checklist
 
@@ -185,7 +185,7 @@ This is an ABSOLUTE RULE with ZERO TOLERANCE:
 // ✅ AFTER
 | ❌ FORBIDDEN | ✅ REQUIRED |
 |-------------|------------|
-| Working from assumptions | Call `getAnalysisFiles` FIRST |
+| Working from assumptions | Call `getAnalysisSections` FIRST |
 | Guessing "typical patterns" | Work ONLY with loaded data |
 ```
 
@@ -334,14 +334,14 @@ This is the core execution mechanism for all AutoBE prompts.
 
 ### 6.1. Workflow
 
-The flow is straightforward: first, make preliminary requests (like `getAnalysisFiles`) to load materials, then once materials are loaded, make the complete request with `type: "complete"`.
+The flow is straightforward: first, make preliminary requests (like `getAnalysisSections`) to load materials, then once materials are loaded, make the complete request with `type: "complete"`.
 
 ### 6.2. Preliminary Request Types
 
 | Type | Purpose |
 |------|---------|
-| `getAnalysisFiles` | Load requirement documents |
-| `getPreviousAnalysisFiles` | Load previous version requirements (regeneration only) |
+| `getAnalysisSections` | Load requirement document sections |
+| `getPreviousAnalysisSections` | Load previous version requirement sections (regeneration only) |
 | `getPreviousDatabaseSchemas` | Load previous version schemas (regeneration only) |
 | `getDatabaseSchemas` | Reference current schemas |
 
@@ -351,11 +351,11 @@ Never run preliminary and complete requests in parallel. Always wait for materia
 
 ```typescript
 // ❌ FORBIDDEN - parallel preliminary and complete
-process({ request: { type: "getAnalysisFiles", ... } })
+process({ request: { type: "getAnalysisSections", ... } })
 process({ request: { type: "complete", ... } })  // Executes without loaded data!
 
 // ✅ CORRECT - sequential execution
-process({ request: { type: "getAnalysisFiles", ... } })
+process({ request: { type: "getAnalysisSections", ... } })
 // After materials loaded
 process({ request: { type: "complete", ... } })
 ```

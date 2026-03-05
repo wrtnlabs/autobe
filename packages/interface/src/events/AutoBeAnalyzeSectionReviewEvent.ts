@@ -35,7 +35,7 @@ export interface AutoBeAnalyzeSectionReviewEvent
     AutoBeEventBase<"analyzeSectionReview">,
     AutoBeProgressEventBase,
     AutoBeAggregateEventBase,
-    AutoBeAcquisitionEventBase<"previousAnalysisFiles"> {
+    AutoBeAcquisitionEventBase<"previousAnalysisSections"> {
   /**
    * Per-file review results.
    *

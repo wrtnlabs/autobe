@@ -44,8 +44,8 @@ thinking: "Validated the operation, removed security violations."
 export namespace IAutoBeInterfaceOperationReviewApplication {
   export interface IProps {
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousDatabaseSchemas
+    request: IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
@@ -79,9 +79,9 @@ export interface IOperation {
 
 | Type | Purpose |
 |------|---------|
-| `getAnalysisFiles` | Verify security rules and business requirements |
+| `getAnalysisSections` | Verify security rules and business requirements |
 | `getDatabaseSchemas` | Verify field existence and constraints |
-| `getPreviousAnalysisFiles` | Reference previous version (only when exists) |
+| `getPreviousAnalysisSections` | Reference previous version (only when exists) |
 | `getPreviousDatabaseSchemas` | Previous version schemas (only when exists) |
 | `getPreviousInterfaceOperations` | Previous operation designs (only when exists) |
 

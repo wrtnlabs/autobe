@@ -2,11 +2,18 @@ import { AutoBeAnalyzeFile } from "@autobe/interface";
 
 import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 
+let _cachedInput: AutoBeAnalyzeFile[] | null = null;
+let _cachedResult: IAnalysisSectionEntry[] | null = null;
+
 /**
  * Converts an array of analysis files into a flat array of section entries.
  *
  * Walks the `AutoBeAnalyzeFile.module.units[].sections[]` hierarchy and
  * produces a flat list with sequential integer IDs for LLM retrieval.
+ *
+ * Uses referential equality memoization: when the same `files` array reference
+ * is passed again (common during downstream phases where `state.analyze.files`
+ * is immutable), the cached result is returned immediately.
  *
  * @param files - Analysis files with structured module hierarchy
  * @returns Flat array of section entries with sequential IDs starting from 0
@@ -14,6 +21,10 @@ import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 export function convertToSectionEntries(
   files: AutoBeAnalyzeFile[],
 ): IAnalysisSectionEntry[] {
+  if (_cachedInput === files && _cachedResult !== null) {
+    return _cachedResult;
+  }
+
   const entries: IAnalysisSectionEntry[] = [];
   let id = 0;
 
@@ -34,5 +45,13 @@ export function convertToSectionEntries(
       }
     }
   }
+
+  _cachedInput = files;
+  _cachedResult = entries;
   return entries;
+}
+
+export function clearSectionEntriesCache(): void {
+  _cachedInput = null;
+  _cachedResult = null;
 }

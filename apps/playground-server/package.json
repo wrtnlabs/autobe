@@ -8,7 +8,6 @@
     "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf lib && tsc --watch",
     "prepack": "pnpm run build",
-    "prepare": "ts-patch install",
     "start": "ts-node src/executable/server.ts"
   },
   "keywords": [],
@@ -57,7 +56,6 @@
     "nestia": "catalog:samchon",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   }
 }

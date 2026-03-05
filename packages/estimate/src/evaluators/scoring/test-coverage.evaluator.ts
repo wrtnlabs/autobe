@@ -84,6 +84,13 @@ const ACTION_TO_METHOD: Record<string, string> = {
   upsert: "PUT",
 };
 
+/** Test quality analysis result */
+interface TestQuality {
+  stubCount: number;
+  withAssertions: number;
+  qualityRatio: number;
+}
+
 export class TestCoverageEvaluator extends BaseEvaluator {
   readonly name = "TestCoverageEvaluator";
   readonly phase = "testCoverage" as const;

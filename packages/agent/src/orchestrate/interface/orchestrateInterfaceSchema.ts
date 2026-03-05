@@ -1,15 +1,6 @@
-import {
-  AutoBeInterfaceSchemaPropertyErase,
-  AutoBeInterfaceSchemaPropertyKeep,
-  AutoBeInterfaceSchemaPropertyNullish,
-  AutoBeInterfaceSchemaPropertyRevise,
-  AutoBeOpenApi,
-  AutoBeProgressEventBase,
-} from "@autobe/interface";
-import { AutoBeOpenApiTypeChecker, missedOpenApiSchemas } from "@autobe/utils";
-import typia from "typia";
+import { AutoBeOpenApi, AutoBeProgressEventBase } from "@autobe/interface";
+import { missedOpenApiSchemas } from "@autobe/utils";
 
-import { AutoBeSystemPromptConstant } from "../../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateInterfaceSchemaCasting } from "./orchestrateInterfaceSchemaCasting";
 import { orchestrateInterfaceSchemaComplement } from "./orchestrateInterfaceSchemaComplement";
@@ -18,12 +9,9 @@ import { orchestrateInterfaceSchemaRename } from "./orchestrateInterfaceSchemaRe
 import { orchestrateInterfaceSchemaReview } from "./orchestrateInterfaceSchemaReview";
 import { orchestrateInterfaceSchemaWrite } from "./orchestrateInterfaceSchemaWrite";
 import { AutoBeInterfaceSchemaReviewProgrammer } from "./programmers/AutoBeInterfaceSchemaReviewProgrammer";
-import { IAutoBeInterfaceSchemaReviewApplication } from "./structures/IAutoBeInterfaceSchemaReviewApplication";
-import { IAutoBeInterfaceSchemaReviewConfig } from "./structures/IAutoBeInterfaceSchemaReviewConfig";
 import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
-import { AutoBeJsonSchemaValidator } from "./utils/AutoBeJsonSchemaValidator";
 
 export const orchestrateInterfaceSchema = async (
   ctx: AutoBeContext,
@@ -154,22 +142,12 @@ export const orchestrateInterfaceSchema = async (
 
     // review schemas
     reviewProgress.total +=
-      Object.entries(schemas).filter(
-        ([k, v]) =>
-          AutoBeJsonSchemaValidator.isPreset(k) === false &&
-          AutoBeOpenApiTypeChecker.isObject(v) &&
-          Object.keys(v.properties).length !== 0,
-      ).length *
-        (REVIEWERS.length - 1) +
-      Object.keys(schemas).filter((k) =>
-        AutoBeInterfaceSchemaReviewProgrammer.filterSecurity({
-          document,
-          typeName: k,
-        }),
-      ).length;
-    for (const config of REVIEWERS)
+      Object.entries(schemas).filter(([k, v]) =>
+        AutoBeInterfaceSchemaReviewProgrammer.filter(k, v),
+      ).length * 2;
+    for (let i: number = 0; i < 2; i++)
       await overwrite(
-        await orchestrateInterfaceSchemaReview(ctx, config, {
+        await orchestrateInterfaceSchemaReview(ctx, {
           instruction: props.instruction,
           document,
           schemas,
@@ -211,114 +189,3 @@ export const orchestrateInterfaceSchema = async (
   });
   return document.components.schemas;
 };
-
-// biome-ignore lint: intended
-const REVIEWERS: IAutoBeInterfaceSchemaReviewConfig<any>[] = [
-  {
-    kind: "content",
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_CONTENT_REVIEW,
-    validate:
-      typia.createValidate<
-        IAutoBeInterfaceSchemaReviewApplication.IProps<
-          Exclude<
-            AutoBeInterfaceSchemaPropertyRevise,
-            AutoBeInterfaceSchemaPropertyErase
-          >
-        >
-      >(),
-    application: (process) =>
-      typia.llm.application<
-        IAutoBeInterfaceSchemaReviewApplication<
-          Exclude<
-            AutoBeInterfaceSchemaPropertyRevise,
-            AutoBeInterfaceSchemaPropertyErase
-          >
-        >
-      >({
-        validate: {
-          process,
-        },
-      }),
-    jsonSchema: () =>
-      typia.json.application<
-        IAutoBeInterfaceSchemaReviewApplication<
-          Exclude<
-            AutoBeInterfaceSchemaPropertyRevise,
-            AutoBeInterfaceSchemaPropertyErase
-          >
-        >
-      >(),
-  },
-  {
-    kind: "relation",
-    validate:
-      typia.createValidate<
-        IAutoBeInterfaceSchemaReviewApplication.IProps<AutoBeInterfaceSchemaPropertyRevise>
-      >(),
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_RELATION_REVIEW,
-    application: (process) =>
-      typia.llm.application<
-        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-      >({
-        validate: {
-          process,
-        },
-      }),
-    jsonSchema: () =>
-      typia.json.application<
-        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-      >(),
-  },
-  {
-    kind: "security",
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_SECURITY_REVIEW,
-    validate:
-      typia.createValidate<
-        IAutoBeInterfaceSchemaReviewApplication.IProps<AutoBeInterfaceSchemaPropertyRevise>
-      >(),
-    application: (process) =>
-      typia.llm.application<
-        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-      >({
-        validate: {
-          process,
-        },
-      }),
-    jsonSchema: () =>
-      typia.json.application<
-        IAutoBeInterfaceSchemaReviewApplication<AutoBeInterfaceSchemaPropertyRevise>
-      >(),
-  },
-  {
-    kind: "phantom" as const,
-    systemPrompt: AutoBeSystemPromptConstant.INTERFACE_SCHEMA_PHANTOM_REVIEW,
-    validate:
-      typia.createValidate<
-        IAutoBeInterfaceSchemaReviewApplication.IProps<
-          | AutoBeInterfaceSchemaPropertyErase
-          | AutoBeInterfaceSchemaPropertyKeep
-          | AutoBeInterfaceSchemaPropertyNullish
-        >
-      >(),
-    application: (process) =>
-      typia.llm.application<
-        IAutoBeInterfaceSchemaReviewApplication<
-          | AutoBeInterfaceSchemaPropertyErase
-          | AutoBeInterfaceSchemaPropertyKeep
-          | AutoBeInterfaceSchemaPropertyNullish
-        >
-      >({
-        validate: {
-          process,
-        },
-      }),
-    jsonSchema: () =>
-      typia.json.application<
-        IAutoBeInterfaceSchemaReviewApplication<
-          | AutoBeInterfaceSchemaPropertyErase
-          | AutoBeInterfaceSchemaPropertyKeep
-          | AutoBeInterfaceSchemaPropertyNullish
-        >
-      >(),
-  },
-];

@@ -68,7 +68,7 @@ process({
 });
 ```
 
-Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisFiles`, `getInterfaceOperations`, `getInterfaceSchemas`, and their `previous*` variants.
+Available preliminary requests (max 8 calls): `getDatabaseSchemas`, `getAnalysisSections`, `getInterfaceOperations`, `getInterfaceSchemas`, and their `previous*` variants.
 
 - Use batch requests
 - Never re-request loaded materials

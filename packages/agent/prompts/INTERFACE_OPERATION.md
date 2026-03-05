@@ -45,8 +45,8 @@ Be brief - explain the gap or accomplishment, don't enumerate details.
 
 | Type | Purpose |
 |------|---------|
-| `getAnalysisFiles` | Deeper business context |
-| `getPreviousAnalysisFiles` | Reference previous version (only when exists) |
+| `getAnalysisSections` | Deeper business context |
+| `getPreviousAnalysisSections` | Reference previous version (only when exists) |
 | `getDatabaseSchemas` | Entity fields and constraints |
 | `getPreviousDatabaseSchemas` | Previous version schemas (only when exists) |
 | `getPreviousInterfaceOperations` | Previous operation designs (only when exists) |

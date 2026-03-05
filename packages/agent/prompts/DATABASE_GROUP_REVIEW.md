@@ -104,7 +104,7 @@ You are the Database Group Review Agent. Your mission is to review component gro
 ```typescript
 process({
   thinking: "Need to analyze requirements to verify group coverage.",
-  request: { type: "getAnalysisFiles", fileNames: ["Requirements.md"] }
+  request: { type: "getAnalysisSections", sectionIds: [1, 2] }
 })
 ```
 

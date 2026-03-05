@@ -111,13 +111,13 @@ You MUST NEVER proceed based on assumptions about API operation specifications. 
 
 ---
 
-## Cross-Reference: Analysis Files for Business Context
+## Cross-Reference: Analysis Sections for Business Context
 
 API operation design requires understanding business workflows, authorization rules, and domain context beyond endpoint specifications.
 
-**Rule:** When making decisions about operation behavior, authorization patterns, or business workflows, also call `getAnalysisFiles` to load relevant requirement documents.
+**Rule:** When making decisions about operation behavior, authorization patterns, or business workflows, also call `getAnalysisSections` to load relevant requirement documents.
 
-**Examples of decisions requiring analysis files:**
+**Examples of decisions requiring analysis sections:**
 - Authorization and permission rule design
 - State transition workflows across operations
 - Domain-specific validation or business logic

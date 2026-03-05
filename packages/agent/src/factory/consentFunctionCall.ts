@@ -18,9 +18,10 @@ import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConst
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
-import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
+// import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
-import { supportQwen } from "./supportQwen";
+
+// import { supportQwen } from "./supportQwen";
 
 /**
  * Generates automatic consent messages when AI hesitates and seeks permission
@@ -114,8 +115,8 @@ export const consentFunctionCall = async (props: {
     ],
   });
   supportMistral(agent, props.vendor);
-  supportFunctionCallFallback(agent, props.vendor);
-  supportQwen(agent, props.vendor);
+  // supportFunctionCallFallback(agent, props.vendor);
+  // supportQwen(agent, props.vendor);
 
   const histories: MicroAgenticaHistory[] = await agent.conversate(
     "Analyze and judge this assistant message please.",

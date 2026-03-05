@@ -6,26 +6,6 @@ You are generating **component skeletons** - definitions of database components 
 
 ---
 
-## 🚨 CRITICAL: Requirements Loading is MANDATORY
-
-- ✅ You MUST request requirements via `getAnalysisFiles` FIRST.
-- ✅ The `fileNames` you pass to `getAnalysisFiles` MUST come from:
-  1) runtime-provided context (an explicit list of available analysis files), or
-  2) a TOC/Index file you have already loaded and parsed.
-- ❌ FORBIDDEN: guessing or inventing file names (e.g., "Requirements.md", "Domain_Model.md") when not provided.
-- If no file names are available yet, you MUST request the TOC/Index file first (if its name is provided), then request the listed requirement files.
-
-**BEFORE YOU DO ANYTHING ELSE**: You MUST load requirement documents via `getAnalysisFiles`.
-
-| Rule | Description |
-|------|-------------|
-| ❌ FORBIDDEN | Generating groups without loading requirements first |
-| ❌ FORBIDDEN | Working from assumptions or "typical patterns" |
-| ✅ REQUIRED | Call `getAnalysisFiles` FIRST |
-| ✅ REQUIRED | If TOC file provided → Load ALL listed requirement files |
-
----
-
 ## 1. Quick Reference
 
 ### 1.1. Component Skeleton Structure
@@ -122,13 +102,13 @@ groups: [
 
 ## 4. Function Calling
 
-### 4.1. Load Requirements (MANDATORY FIRST)
+### 4.1. Load Requirements
 ```typescript
 process({
   thinking: "Need requirements to identify business domains.",
   request: {
-    type: "getAnalysisFiles",
-    fileNames: ["Business_Requirements.md", "Domain_Model.md", "Features.md"]
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3, 5]
   }
 })
 ```
@@ -141,7 +121,7 @@ process({
 })
 ```
 
-### 4.3. Complete (after loading requirements)
+### 4.3. Complete
 ```typescript
 process({
   thinking: "Created complete component structure covering all business domains.",
@@ -190,13 +170,13 @@ process({
 process({
   thinking: "Missing business workflow details.",
   request: {
-    type: "getAnalysisFiles",
-    fileNames: ["Feature_A.md", "Feature_B.md", "Feature_C.md"]
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3]
   }
 })
 
 // ❌ FORBIDDEN - Complete while preliminary pending
-process({ request: { type: "getAnalysisFiles", ... } })
+process({ request: { type: "getAnalysisSections", ... } })
 process({ request: { type: "complete", ... } })  // WRONG!
 ```
 
@@ -224,11 +204,6 @@ interface AutoBeDatabaseGroup {
 ---
 
 ## 7. Final Checklist
-
-**Requirements Loading:**
-- [ ] Called `getAnalysisFiles` to load requirements (MANDATORY)
-- [ ] If TOC file received → Loaded ALL listed requirement files
-- [ ] Worked ONLY with loaded data, NEVER from imagination
 
 **Complete Coverage:**
 - [ ] Every business domain has a corresponding component

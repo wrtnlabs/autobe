@@ -1,5 +1,4 @@
 import {
-  AutoBeAnalyzeFile,
   AutoBeDatabase,
   AutoBeOpenApi,
   AutoBeRealizeCollectorFunction,
@@ -18,9 +17,6 @@ import { IAnalysisSectionEntry } from "./IAnalysisSectionEntry";
  * @author Samchon
  */
 export interface IAutoBePreliminaryCollection {
-  /** Requirements analysis files from ANALYZE phase. */
-  analysisFiles: AutoBeAnalyzeFile[];
-
   /** Individual ### sections from analysis files for fine-grained retrieval. */
   analysisSections: IAnalysisSectionEntry[];
 
@@ -38,9 +34,6 @@ export interface IAutoBePreliminaryCollection {
 
   /** Transformer functions from REALIZE_TRANSFORMER_WRITE phase. */
   realizeTransformers: AutoBeRealizeTransformerFunction[];
-
-  /** Analysis files from previous iteration (for complement). */
-  previousAnalysisFiles: AutoBeAnalyzeFile[];
 
   /** Analysis sections from previous iteration (for complement). */
   previousAnalysisSections: IAnalysisSectionEntry[];

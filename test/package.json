@@ -5,7 +5,6 @@
   "description": "AutoBE Test Program",
   "main": "src/index.ts",
   "scripts": {
-    "prepare": "ts-patch install",
     "build": "tsc --noEmit",
     "build:prompt": "node build/prompt.js",
     "dev": "tsc --watch --noEmit",
@@ -51,7 +50,6 @@
     "chalk": "4.1.2",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   }
 }
