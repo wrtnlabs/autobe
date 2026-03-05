@@ -10,7 +10,7 @@ import { AutoBeEventBase } from "./base/AutoBeEventBase";
  * This event occurs during the preliminary validation phase that runs before
  * major pipeline operations. The preliminary agent compares what currently
  * exists in the system (e.g., database schemas, interface operations, analysis
- * files) against what the AI agent is requesting to create or modify. When
+ * sections) against what the AI agent is requesting to create or modify. When
  * discrepancies are detected - such as requesting to create items that already
  * exist, or referencing items that don't exist - this event is fired.
  *
@@ -55,7 +55,7 @@ export interface AutoBePreliminaryEvent<
    * Type of preliminary validation being performed.
    *
    * Specifies what kind of items are being validated (e.g., "databaseSchemas",
-   * "interfaceOperations", "analysisFiles"). The validation type determines how
+   * "interfaceOperations", "analysisSections"). The validation type determines how
    * existing and requested items are compared and what reconciliation
    * strategies are appropriate for resolving inconsistencies.
    */

@@ -143,12 +143,12 @@ const repairMissingRequestType = (input: unknown): unknown => {
   if (typeof request.type === "string" && request.type.length !== 0)
     return input;
 
-  if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
+  if (Array.isArray(request.sectionIds) && request.sectionIds.length > 0) {
     return {
       ...root,
       request: {
         ...request,
-        type: "getPreviousAnalysisFiles",
+        type: "getPreviousAnalysisSections",
       },
     };
   }
@@ -210,16 +210,16 @@ const repairFlattenedRequestPayload = (
 
   const previousLike =
     typeof input.type === "string" &&
-    input.type === "getPreviousAnalysisFiles" &&
-    input.fileNames !== undefined;
+    input.type === "getPreviousAnalysisSections" &&
+    input.sectionIds !== undefined;
   if (previousLike) {
-    const { thinking, type, fileNames, ...rest } = input;
+    const { thinking, type, sectionIds, ...rest } = input;
     return {
       ...rest,
       ...(thinking !== undefined ? { thinking } : {}),
       request: {
         type,
-        fileNames,
+        sectionIds,
       },
     };
   }
@@ -231,7 +231,7 @@ const normalizeAnalyzeScenarioRequest = (
 ): Record<string, unknown> => {
   const output: Record<string, unknown> = { ...input };
 
-  for (const key of ["actors", "entities", "features", "fileNames"] as const) {
+  for (const key of ["actors", "entities", "features", "sectionIds"] as const) {
     if (typeof output[key] === "string") {
       const parsed: unknown = parseLooseStructuredString(output[key]);
       if (parsed !== undefined) output[key] = parsed;

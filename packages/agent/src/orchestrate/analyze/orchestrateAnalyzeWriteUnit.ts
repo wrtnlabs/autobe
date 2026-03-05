@@ -183,14 +183,14 @@ const repairFlattenedPayload = (
 
   const previousLike =
     typeof input.type === "string" &&
-    input.type === "getPreviousAnalysisFiles" &&
-    input.fileNames !== undefined;
+    input.type === "getPreviousAnalysisSections" &&
+    input.sectionIds !== undefined;
   if (previousLike) {
-    const { thinking, type, fileNames, ...rest } = input;
+    const { thinking, type, sectionIds, ...rest } = input;
     return {
       ...rest,
       ...(thinking !== undefined ? { thinking } : {}),
-      request: { type, fileNames },
+      request: { type, sectionIds },
     };
   }
 
@@ -202,14 +202,14 @@ const repairRequestType = (
   request: Record<string, unknown>,
 ): Record<string, unknown> => {
   const t = request.type;
-  if (t === "complete" || t === "getPreviousAnalysisFiles") return request;
+  if (t === "complete" || t === "getPreviousAnalysisSections") return request;
 
   if (Array.isArray(request.unitSections) || Array.isArray(request.sections)) {
     return { ...request, type: "complete" };
   }
 
-  if (Array.isArray(request.fileNames) && request.fileNames.length > 0) {
-    return { ...request, type: "getPreviousAnalysisFiles" };
+  if (Array.isArray(request.sectionIds) && request.sectionIds.length > 0) {
+    return { ...request, type: "getPreviousAnalysisSections" };
   }
 
   if (typeof t === "string" || t === null || t === undefined) {

@@ -66,7 +66,7 @@ export const transformPrismaComponentReviewHistory = (props: {
 
     ## Your Task
 
-    1. **Analyze**: Fetch analysis files using \`getAnalysisSections\` to understand requirements
+    1. **Analyze**: Fetch analysis sections using \`getAnalysisSections\` to understand requirements
     2. **Compare**: Review Target Component tables against requirements AND "Tables in Other Components"
     3. **Revise**: Apply CREATE/UPDATE/ERASE to Target Component ONLY
 

@@ -33,8 +33,8 @@ thinking: "Designed all auth operations for all actor types."
 export namespace IAutoBeInterfaceAuthorizationApplication {
   export interface IProps {
     thinking: string;
-    request: IComplete | IAutoBePreliminaryGetAnalysisFiles | IAutoBePreliminaryGetDatabaseSchemas
-      | IAutoBePreliminaryGetPreviousAnalysisFiles | IAutoBePreliminaryGetPreviousDatabaseSchemas;
+    request: IComplete | IAutoBePreliminaryGetAnalysisSections | IAutoBePreliminaryGetDatabaseSchemas
+      | IAutoBePreliminaryGetPreviousAnalysisSections | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
   export interface IComplete {

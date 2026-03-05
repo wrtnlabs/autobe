@@ -13,7 +13,7 @@ export interface IAutoBeDatabaseGroupReviewApplication {
    * requirements. Review existing groups and identify necessary modifications
    * using create, update, or erase operations.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
+   * ALWAYS fetch analysis sections first using `getAnalysisSections` to understand
    * what business domains exist, then systematically verify group coverage and
    * apply corrections.
    *

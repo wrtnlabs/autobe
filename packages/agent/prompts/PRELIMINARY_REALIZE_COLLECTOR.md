@@ -105,7 +105,7 @@ You MUST NEVER proceed based on assumptions about collector function contents. A
 
 ---
 
-## Cross-Reference: Analysis Files for Business Context
+## Cross-Reference: Analysis Sections for Business Context
 
 Collector function implementation may require understanding business rules that affect data transformation logic (e.g., default values, conditional field mapping, validation constraints).
 

@@ -13,7 +13,7 @@ export interface IAutoBeDatabaseComponentReviewApplication {
    * existing tables and identify necessary modifications using create, update,
    * or erase operations.
    *
-   * ALWAYS fetch analysis files first using `getAnalysisSections` to understand
+   * ALWAYS fetch analysis sections first using `getAnalysisSections` to understand
    * what features this component's domain needs to support, then systematically
    * verify table coverage and apply corrections.
    *
