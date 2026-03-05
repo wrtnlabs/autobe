@@ -92,7 +92,7 @@ For each actor type, verify:
 
 ## 4. Function Calling
 
-### 4.1. Load Requirements (MANDATORY FIRST)
+### 4.1. Load Requirements
 ```typescript
 process({
   thinking: "Need to analyze authentication requirements.",
