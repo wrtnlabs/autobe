@@ -10,6 +10,7 @@
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
     "package:next": "pnpm --filter=./packages/** -r publish --tag next",
     "playground": "rimraf playground-result && node playground/index.js",
+    "prepare": "ts-patch install",
     "release": "pnpm run sync:readme && pnpm run sync:dependencies && bumpp -r",
     "sync:readme": "node deploy/sync_readme.js",
     "sync:dependencies": "node deploy/sync_dependencies.js",
@@ -38,6 +39,8 @@
     "prettier-plugin-jsdoc": "^1.3.2",
     "prisma": "catalog:prisma",
     "rimraf": "^6.0.1",
+    "ts-patch": "catalog:typescript",
+    "typescript": "catalog:typescript",
     "typescript-eslint": "^8.56.1"
   },
   "changelogithub": {
