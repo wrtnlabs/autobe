@@ -168,9 +168,8 @@ namespace ApplicationFixer {
     const array: ILlmSchema | undefined = type.properties.sectionIds;
     if (array === undefined) return;
     else if (LlmTypeChecker.isArray(array) === false) return;
-
     describe(
-      type.properties.sectionIds,
+      array,
       StringUtil.trim`
         Here is the catalog of analysis sections available for retrieval:
 
