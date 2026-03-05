@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import { EvaluationContext } from "../types";
 import { LLMClient } from "./llm-client";
 import {
@@ -95,7 +97,6 @@ export abstract class BaseAgent {
     rootPath: string,
     maxChars: number = 30000,
   ): string[] {
-    const path = require("path");
     const chunks: string[] = [];
     let current = "";
 

@@ -266,12 +266,6 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
     adjustedScore = Math.round(phasesPortion + agentPortion);
 
-    // Cap score if agents found too many critical issues
-    const _totalAgentCritical = agentResults.reduce(
-      (sum, r) =>
-        sum + r.issues.filter((i) => i.severity === "critical").length,
-      0,
-    );
     // No hard cap — let weighted average reflect real quality
     if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 60);
   }
@@ -518,9 +512,6 @@ function printResults(result: EvaluationResult): void {
   );
   console.log(
     `   JSDoc:         ${result.reference.jsdoc.totalMissing} missing`,
-  );
-  console.log(
-    `   Security:      ${result.reference.security.totalIssues} issues`,
   );
   console.log(
     `   Schema Sync:   ${result.reference.schemaSync.emptyTypes}/${result.reference.schemaSync.totalTypes} empty types`,
