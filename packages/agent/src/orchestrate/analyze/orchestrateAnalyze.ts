@@ -19,6 +19,7 @@ import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { fillTocDeterministic } from "./fillTocDeterministic";
 import { orchestrateAnalyzeDocument } from "./orchestrateAnalyzeDocument";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
@@ -201,7 +202,7 @@ export const orchestrateAnalyze = async (
     unitWriteProgress,
   });
 
-  // === STAGE 3: SECTION (all files synchronized) ===
+  // === STAGE 3: SECTION (01-05 only, TOC excluded) ===
   await processStageSection(ctx, {
     scenario,
     fileStates,
@@ -209,6 +210,20 @@ export const orchestrateAnalyze = async (
     perFileSectionReviewProgress,
     crossFileSectionReviewProgress,
   });
+
+  // === TOC FILL (deterministic — no LLM) ===
+  const expandedTemplate = buildFixedAnalyzeExpandedTemplate(
+    (scenario.features ?? []) as FixedAnalyzeTemplateFeature[],
+  );
+  const tocIndex = fileStates.findIndex((s) => s.file.filename === "00-toc.md");
+  if (tocIndex >= 0) {
+    fillTocDeterministic(ctx, {
+      scenario,
+      tocFileState: fileStates[tocIndex]!,
+      otherFileStates: fileStates.filter((_, i) => i !== tocIndex),
+      expandedTemplate,
+    });
+  }
 
   // === ASSEMBLE ===
   const files: AutoBeAnalyzeFile[] = [];
@@ -375,6 +390,9 @@ async function processStageUnit(
   await executeCachedBatch(
     ctx,
     props.fileStates.map((state, fileIndex) => async (cacheKey) => {
+      // TOC is filled deterministically after all other files complete
+      if (state.file.filename === "00-toc.md") return [];
+
       const moduleResult: AutoBeAnalyzeWriteModuleEvent = state.moduleResult!;
       const template = expandedTemplate[fileIndex]!;
       analyzeDebug(
@@ -396,7 +414,6 @@ async function processStageUnit(
             moduleIndex,
             units: strategy.units,
             progress: props.unitWriteProgress,
-            fileCount: props.fileStates.length,
           });
           ctx.dispatch(unitEvent);
           unitResults.push(unitEvent);
@@ -439,7 +456,6 @@ function buildDeterministicUnitEvent(
     moduleIndex: number;
     units: FixedAnalyzeTemplateUnitTemplate[];
     progress: AutoBeProgressEventBase;
-    fileCount: number;
   },
 ): AutoBeAnalyzeWriteUnitEvent {
   props.progress.completed++;
@@ -455,7 +471,7 @@ function buildDeterministicUnitEvent(
     })),
     step: (ctx.state().analyze?.step ?? -1) + 1,
     retry: 0,
-    total: props.fileCount,
+    total: props.progress.total,
     completed: props.progress.completed,
     tokenUsage: {
       total: 0,
@@ -504,8 +520,11 @@ async function processStageSection(
     crossFileSectionReviewProgress: AutoBeProgressEventBase;
   },
 ): Promise<void> {
+  // Exclude TOC (00-toc.md) — it is filled deterministically after all files
   const pendingIndices: Set<number> = new Set(
-    props.fileStates.map((_, i) => i),
+    props.fileStates
+      .map((s, i) => (s.file.filename === "00-toc.md" ? -1 : i))
+      .filter((i) => i >= 0),
   );
   let crossFileReviewCount: number = 0;
 
@@ -804,17 +823,22 @@ async function processStageSection(
         ctx,
         {
           scenario: props.scenario,
-          allFileSummaries: props.fileStates.map((state, fileIndex) => ({
-            file: state.file,
-            moduleEvent: state.moduleResult!,
-            unitEvents: state.unitResults!,
-            sectionEvents: state.sectionResults!,
-            status: pendingIndices.has(fileIndex)
-              ? attempt === 0
-                ? "new"
-                : "rewritten"
-              : "approved",
-          })),
+          allFileSummaries: props.fileStates
+            .filter((s) => s.file.filename !== "00-toc.md")
+            .map((state) => {
+              const fi = props.fileStates.indexOf(state);
+              return {
+                file: state.file,
+                moduleEvent: state.moduleResult!,
+                unitEvents: state.unitResults!,
+                sectionEvents: state.sectionResults!,
+                status: pendingIndices.has(fi)
+                  ? attempt === 0
+                    ? ("new" as const)
+                    : ("rewritten" as const)
+                  : ("approved" as const),
+              };
+            }),
           mechanicalViolationSummary,
           progress: props.crossFileSectionReviewProgress,
           promptCacheKey,
