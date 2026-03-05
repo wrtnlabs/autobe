@@ -372,24 +372,4 @@ export class TypeEvaluator extends GateEvaluator {
 
     return lines.join("\n");
   }
-
-  private async readFilesAsRecord(
-    filePaths: string[],
-    rootPath: string,
-  ): Promise<Record<string, string>> {
-    const entries = await Promise.all(
-      filePaths.map(async (filePath) => {
-        try {
-          const content = await fs.promises.readFile(filePath, "utf-8");
-          const relativePath = path.relative(rootPath, filePath);
-          return [relativePath, content] as const;
-        } catch {
-          return null;
-        }
-      }),
-    );
-    return Object.fromEntries(
-      entries.filter((e): e is NonNullable<typeof e> => e !== null),
-    );
-  }
 }

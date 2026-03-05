@@ -1,6 +1,4 @@
 import { AutoBeDatabaseCompiler } from "@autobe/compiler";
-import * as fs from "fs";
-import * as path from "path";
 
 import type { EvaluationContext } from "../../types";
 import { createIssue } from "../../types";
@@ -106,25 +104,5 @@ export class PrismaEvaluator extends GateEvaluator {
   /** Strip temp directory paths from error messages, keep only filenames */
   private cleanErrorMessage(msg: string): string {
     return msg.replace(/\/[^\s']*\/([^\/\s']+\.prisma)/g, "$1");
-  }
-
-  private async readFilesAsRecord(
-    filePaths: string[],
-    rootPath: string,
-  ): Promise<Record<string, string>> {
-    const entries = await Promise.all(
-      filePaths.map(async (filePath) => {
-        try {
-          const content = await fs.promises.readFile(filePath, "utf-8");
-          const relativePath = path.relative(rootPath, filePath);
-          return [relativePath, content] as const;
-        } catch {
-          return null;
-        }
-      }),
-    );
-    return Object.fromEntries(
-      entries.filter((e): e is NonNullable<typeof e> => e !== null),
-    );
   }
 }

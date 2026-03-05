@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 
 import type {
   EvaluationContext,
@@ -9,6 +8,74 @@ import type {
 } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
+import { type RouteInfo, buildRouteMap } from "../golden/url-resolver";
+
+/** Route-level test coverage analysis */
+export namespace RouteCoverage {
+  /** Parsed information about what route a test targets */
+  export interface TestRouteTarget {
+    filePath: string;
+    accessorSegments: string[];
+    inferredMethod: string;
+    inferredPath: string;
+  }
+
+  /** Coverage status for a single route */
+  export interface RouteCoverageStatus {
+    route: RouteInfo;
+    covered: boolean;
+    coveringTests: string[];
+  }
+
+  /** Per-controller coverage summary */
+  export interface ControllerCoverage {
+    basePath: string;
+    totalRoutes: number;
+    coveredRoutes: number;
+    coverageRatio: number;
+  }
+
+  /** Full route coverage analysis result */
+  export interface AnalysisResult {
+    totalRoutes: number;
+    coveredRoutes: number;
+    routeCoverageRatio: number;
+    controllerCoverage: ControllerCoverage[];
+    testedMethods: Set<string>;
+    definedMethods: Set<string>;
+    routeStatuses: RouteCoverageStatus[];
+  }
+}
+
+/** Action name → HTTP method mapping */
+const ACTION_TO_METHOD: Record<string, string> = {
+  // POST
+  join: "POST",
+  create: "POST",
+  store: "POST",
+  register: "POST",
+  sign: "POST",
+  // GET
+  index: "GET",
+  get: "GET",
+  at: "GET",
+  find: "GET",
+  search: "GET",
+  list: "GET",
+  read: "GET",
+  // PATCH
+  update: "PATCH",
+  patch: "PATCH",
+  modify: "PATCH",
+  // DELETE
+  erase: "DELETE",
+  remove: "DELETE",
+  destroy: "DELETE",
+  // PUT
+  put: "PUT",
+  replace: "PUT",
+  upsert: "PUT",
+};
 
 /** Test quality analysis result */
 interface TestQuality {
@@ -20,12 +87,13 @@ interface TestQuality {
 export class TestCoverageEvaluator extends BaseEvaluator {
   readonly name = "TestCoverageEvaluator";
   readonly phase = "testCoverage" as const;
-  readonly description = "Evaluates test coverage";
+  readonly description = "Evaluates test coverage with route-level analysis";
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
     const issues: Issue[] = [];
     const startTime = performance.now();
 
+    // Runtime path (unchanged)
     if (
       context.runtimeResult?.serverStarted &&
       context.runtimeResult.testResults
@@ -38,48 +106,87 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
     const testCount = context.files.tests.length;
     const controllerCount = context.files.controllers.length;
-    const providerCount = context.files.providers.length;
 
-    const expectedMinTests = controllerCount;
-
-    const coverageRatio =
-      expectedMinTests > 0
-        ? Math.min(testCount / expectedMinTests, 1)
-        : testCount > 0
-          ? 1
-          : 0;
-
-    const quality = this.analyzeTestQuality(context.files.tests, issues);
-
-    const score = this.computeCoverageScore(
-      testCount,
-      controllerCount,
-      coverageRatio,
-      quality,
-      issues,
-    );
-
-    const controllerNames = context.files.controllers.map((f) => {
-      const basename = path.basename(f, ".ts");
-      return basename.replace("Controller", "").toLowerCase();
-    });
-
-    const testNames = context.files.tests.map((f) => {
-      return path.basename(f, ".ts").toLowerCase();
-    });
-
-    let coveredControllers = 0;
-    for (const ctrl of controllerNames) {
-      const hasTest = testNames.some(
-        (t) => t.includes(ctrl) || ctrl.includes(t.replace("test_api_", "")),
+    if (testCount === 0) {
+      issues.push(
+        createIssue({
+          severity: "critical",
+          category: "test",
+          code: "TEST001",
+          message: "No test files found",
+        }),
       );
-      if (hasTest) coveredControllers++;
+      return {
+        phase: "testCoverage",
+        passed: true,
+        score: 0,
+        maxScore: 100,
+        weightedScore: 0,
+        issues,
+        durationMs: Math.round(performance.now() - startTime),
+        metrics: {
+          testCount: 0,
+          controllerCount,
+          routeAnalysis: false,
+          runtimeVerified: false,
+        },
+      };
     }
 
-    const actualCoverage =
-      controllerCount > 0
-        ? Math.round((coveredControllers / controllerCount) * 100)
-        : 0;
+    const quality = this.analyzeTestQuality(context.files.tests, issues);
+    const routes = buildRouteMap(context.project.rootPath);
+
+    let score: number;
+    let metrics: Record<string, number | string | boolean>;
+
+    if (routes.length > 0) {
+      // Route-based analysis
+      const testTargets = this.parseTestRouteTargets(context.files.tests);
+      const analysis = this.analyzeRouteCoverage(routes, testTargets);
+      score = this.computeRouteBasedScore(analysis, quality, issues);
+
+      metrics = {
+        testCount,
+        controllerCount,
+        routeAnalysis: true,
+        totalRoutes: analysis.totalRoutes,
+        coveredRoutes: analysis.coveredRoutes,
+        routeCoveragePercent: Math.round(analysis.routeCoverageRatio * 100),
+        definedMethods: [...analysis.definedMethods].join(","),
+        testedMethods: [...analysis.testedMethods].join(","),
+        controllersAnalyzed: analysis.controllerCoverage.length,
+        stubTests: quality.stubCount,
+        assertionTests: quality.withAssertions,
+        runtimeVerified: false,
+      };
+    } else {
+      // Fallback: naive analysis (no @Controller/@TypedRoute found)
+      const coverageRatio =
+        controllerCount > 0
+          ? Math.min(testCount / controllerCount, 1)
+          : testCount > 0
+            ? 1
+            : 0;
+
+      score = this.computeCoverageScore(
+        testCount,
+        controllerCount,
+        coverageRatio,
+        quality,
+        issues,
+      );
+
+      metrics = {
+        testCount,
+        controllerCount,
+        routeAnalysis: false,
+        coverageRatio: Math.round(coverageRatio * 100),
+        stubTests: quality.stubCount,
+        assertionTests: quality.withAssertions,
+        runtimeVerified: false,
+        note: "No routes extracted; using controller-name fallback",
+      };
+    }
 
     return {
       phase: "testCoverage",
@@ -89,19 +196,217 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       weightedScore: score * 0.2,
       issues,
       durationMs: Math.round(performance.now() - startTime),
-      metrics: {
-        testCount,
-        controllerCount,
-        providerCount,
-        coverageRatio: Math.round(coverageRatio * 100),
-        actualCoverage,
-        stubTests: quality.stubCount,
-        assertionTests: quality.withAssertions,
-        runtimeVerified: false,
-        note: "Static analysis only - runt with docker-compose for runtime verification",
-      },
+      metrics,
     };
   }
+
+  // ── Route-based analysis ──────────────────────────────
+
+  private parseTestRouteTargets(
+    testFiles: string[],
+  ): RouteCoverage.TestRouteTarget[] {
+    const targets: RouteCoverage.TestRouteTarget[] = [];
+    const callPattern = /\.functional\.([\w.]+)\s*\(/g;
+
+    for (const filePath of testFiles) {
+      try {
+        const content = fs.readFileSync(filePath, "utf-8");
+        const seen = new Set<string>();
+
+        let match: RegExpExecArray | null;
+        while ((match = callPattern.exec(content)) !== null) {
+          const fullAccessor = match[1];
+          if (seen.has(fullAccessor)) continue;
+          seen.add(fullAccessor);
+
+          const segments = fullAccessor.split(".");
+          if (segments.length < 2) continue;
+
+          const action = segments[segments.length - 1];
+          const pathSegments = segments.slice(0, -1);
+          const inferredMethod = ACTION_TO_METHOD[action] ?? "UNKNOWN";
+          const inferredPath = "/" + pathSegments.join("/");
+
+          targets.push({
+            filePath,
+            accessorSegments: segments,
+            inferredMethod,
+            inferredPath,
+          });
+        }
+        callPattern.lastIndex = 0;
+      } catch {
+        // skip unreadable files
+      }
+    }
+
+    return targets;
+  }
+
+  private analyzeRouteCoverage(
+    routes: RouteInfo[],
+    testTargets: RouteCoverage.TestRouteTarget[],
+  ): RouteCoverage.AnalysisResult {
+    const routeStatuses: RouteCoverage.RouteCoverageStatus[] = [];
+    const definedMethods = new Set<string>();
+    const testedMethods = new Set<string>();
+    const controllerMap = new Map<string, { total: number; covered: number }>();
+
+    for (const route of routes) {
+      definedMethods.add(route.method);
+      const routeSegments = this.normalizePathSegments(route.fullPath);
+
+      const coveringTests: string[] = [];
+      for (const target of testTargets) {
+        if (target.inferredMethod !== route.method) continue;
+        const targetSegments = this.normalizePathSegments(target.inferredPath);
+        if (this.segmentsMatch(routeSegments, targetSegments)) {
+          coveringTests.push(target.filePath);
+          testedMethods.add(route.method);
+        }
+      }
+
+      const covered = coveringTests.length > 0;
+      routeStatuses.push({ route, covered, coveringTests });
+
+      const ctrl = controllerMap.get(route.controller) ?? {
+        total: 0,
+        covered: 0,
+      };
+      ctrl.total++;
+      if (covered) ctrl.covered++;
+      controllerMap.set(route.controller, ctrl);
+    }
+
+    const totalRoutes = routes.length;
+    const coveredRoutes = routeStatuses.filter((r) => r.covered).length;
+
+    const controllerCoverage: RouteCoverage.ControllerCoverage[] = [];
+    for (const [basePath, stats] of controllerMap) {
+      controllerCoverage.push({
+        basePath,
+        totalRoutes: stats.total,
+        coveredRoutes: stats.covered,
+        coverageRatio: stats.total > 0 ? stats.covered / stats.total : 0,
+      });
+    }
+
+    return {
+      totalRoutes,
+      coveredRoutes,
+      routeCoverageRatio: totalRoutes > 0 ? coveredRoutes / totalRoutes : 0,
+      controllerCoverage,
+      testedMethods,
+      definedMethods,
+      routeStatuses,
+    };
+  }
+
+  private normalizePathSegments(pathStr: string): string[] {
+    return pathStr
+      .split("/")
+      .filter((s) => s.length > 0 && !s.startsWith(":"))
+      .map((s) => s.toLowerCase());
+  }
+
+  private segmentsMatch(
+    routeSegments: string[],
+    targetSegments: string[],
+  ): boolean {
+    if (routeSegments.length !== targetSegments.length) return false;
+    return routeSegments.every((seg, i) => seg === targetSegments[i]);
+  }
+
+  private computeRouteBasedScore(
+    analysis: RouteCoverage.AnalysisResult,
+    quality: TestQuality,
+    issues: Issue[],
+  ): number {
+    if (analysis.totalRoutes === 0) return 0;
+
+    // 1. Route coverage (50 pts)
+    const routeScore = Math.round(analysis.routeCoverageRatio * 50);
+
+    // 2. Method diversity (15 pts)
+    const methodDiversity =
+      analysis.definedMethods.size > 0
+        ? analysis.testedMethods.size / analysis.definedMethods.size
+        : 0;
+    const methodScore = Math.round(methodDiversity * 15);
+
+    // 3. Test quality (25 pts)
+    const qualityScore = Math.round(quality.qualityRatio * 25);
+
+    // 4. Controller breadth (10 pts)
+    const wellCoveredControllers = analysis.controllerCoverage.filter(
+      (c) => c.coverageRatio > 0.5,
+    ).length;
+    const controllerBreadth =
+      analysis.controllerCoverage.length > 0
+        ? wellCoveredControllers / analysis.controllerCoverage.length
+        : 0;
+    const breadthScore = Math.round(controllerBreadth * 10);
+
+    let score = routeScore + methodScore + qualityScore + breadthScore;
+
+    // Issues for uncovered routes (grouped by controller)
+    const uncoveredRoutes = analysis.routeStatuses.filter((r) => !r.covered);
+    if (uncoveredRoutes.length > 0) {
+      const byController = new Map<string, string[]>();
+      for (const status of uncoveredRoutes) {
+        const ctrl = status.route.controller;
+        const list = byController.get(ctrl) ?? [];
+        list.push(`${status.route.method} ${status.route.fullPath}`);
+        byController.set(ctrl, list);
+      }
+
+      for (const [controller, endpoints] of byController) {
+        const preview = endpoints.slice(0, 3).join(", ");
+        const more =
+          endpoints.length > 3 ? ` (+${endpoints.length - 3} more)` : "";
+        issues.push(
+          createIssue({
+            severity: "warning",
+            category: "test",
+            code: "TEST005",
+            message: `Controller "${controller}" has ${endpoints.length} untested route(s): ${preview}${more}`,
+          }),
+        );
+      }
+    }
+
+    // Issue for poor method diversity
+    const untestedMethods = [...analysis.definedMethods].filter(
+      (m) => !analysis.testedMethods.has(m),
+    );
+    if (untestedMethods.length > 0) {
+      issues.push(
+        createIssue({
+          severity: "suggestion",
+          category: "test",
+          code: "TEST006",
+          message: `HTTP method(s) not covered by any test: ${untestedMethods.join(", ")}`,
+        }),
+      );
+    }
+
+    // Zero route coverage
+    if (analysis.coveredRoutes === 0 && analysis.totalRoutes > 0) {
+      issues.push(
+        createIssue({
+          severity: "critical",
+          category: "test",
+          code: "TEST007",
+          message: `No routes are covered by tests (0/${analysis.totalRoutes} routes)`,
+        }),
+      );
+      score = 0;
+    }
+
+    return Math.min(100, Math.max(0, score));
+  }
+
+  // ── Test quality analysis (unchanged) ─────────────────
 
   private analyzeTestQuality(
     testFiles: string[],
@@ -156,6 +461,8 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     return { stubCount, withAssertions, qualityRatio };
   }
 
+  // ── Fallback: naive scoring (kept for no-route projects) ──
+
   private computeCoverageScore(
     testCount: number,
     controllerCount: number,
@@ -200,6 +507,8 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
     return Math.min(80, Math.round(score * 0.85));
   }
+
+  // ── Runtime evaluation (unchanged) ────────────────────
 
   private evaluateFromRuntime(
     testResults: RuntimeTestResult,

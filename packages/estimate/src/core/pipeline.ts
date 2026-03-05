@@ -13,7 +13,6 @@ import {
   NamingEvaluator,
   SchemaSyncEvaluator,
 } from "../evaluators/quality";
-import { SecurityEvaluator } from "../evaluators/safety";
 import {
   ApiCompletenessEvaluator,
   DocumentQualityEvaluator,
@@ -355,7 +354,6 @@ export class EvaluationPipeline {
       },
       { key: "naming", Evaluator: NamingEvaluator, label: "naming" },
       { key: "jsdoc", Evaluator: JsDocEvaluator, label: "JSDoc" },
-      { key: "security", Evaluator: SecurityEvaluator, label: "security" },
       {
         key: "schemaSync",
         Evaluator: SchemaSyncEvaluator,
@@ -402,10 +400,6 @@ export class EvaluationPipeline {
         totalMissing: resultMap.jsdoc.issues.length,
         issues: resultMap.jsdoc.issues,
       },
-      security: {
-        totalIssues: resultMap.security.issues.length,
-        issues: resultMap.security.issues,
-      },
       schemaSync: {
         totalTypes: (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
         emptyTypes: (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
@@ -425,7 +419,6 @@ export class EvaluationPipeline {
       duplication: { totalBlocks: 0, issues: [] },
       naming: { totalIssues: 0, issues: [] },
       jsdoc: { totalMissing: 0, issues: [] },
-      security: { totalIssues: 0, issues: [] },
       schemaSync: { totalTypes: 0, emptyTypes: 0, issues: [] },
     };
   }

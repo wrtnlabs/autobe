@@ -113,7 +113,6 @@ export interface ReferenceInfo {
   duplication: ReferenceInfo.Duplication;
   naming: ReferenceInfo.Naming;
   jsdoc: ReferenceInfo.JsDoc;
-  security: ReferenceInfo.Security;
   schemaSync: ReferenceInfo.SchemaSync;
 }
 export namespace ReferenceInfo {
@@ -133,10 +132,6 @@ export namespace ReferenceInfo {
   }
   export interface JsDoc {
     totalMissing: number;
-    issues: Issue[];
-  }
-  export interface Security {
-    totalIssues: number;
     issues: Issue[];
   }
   export interface SchemaSync {

@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as path from "path";
+
 import type { EvaluationContext, Issue, Phase, PhaseResult } from "../types";
 
 /** Result of measureTime wrapper */
@@ -73,6 +76,27 @@ export abstract class BaseEvaluator {
     if (verbose) {
       console.log(`[${this.name}] ${message}`);
     }
+  }
+
+  /** Read files and return as record keyed by relative path */
+  protected async readFilesAsRecord(
+    filePaths: string[],
+    rootPath: string,
+  ): Promise<Record<string, string>> {
+    const entries = await Promise.all(
+      filePaths.map(async (filePath) => {
+        try {
+          const content = await fs.promises.readFile(filePath, "utf-8");
+          const relativePath = path.relative(rootPath, filePath);
+          return [relativePath, content] as const;
+        } catch {
+          return null;
+        }
+      }),
+    );
+    return Object.fromEntries(
+      entries.filter((e): e is NonNullable<typeof e> => e !== null),
+    );
   }
 }
 
