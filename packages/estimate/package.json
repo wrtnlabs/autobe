@@ -5,13 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "estimate": "./dist/bin/estimate.js",
-    "compare": "./dist/bin/compare.js"
+    "estimate": "./dist/bin/estimate.js"
   },
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/bin/estimate.ts",
-    "compare": "ts-node src/bin/compare.ts",
     "dev": "ts-node-dev src/bin/estimate.ts",
     "test": "vitest --passWithNoTests",
     "lint": "eslint src --ext .ts"

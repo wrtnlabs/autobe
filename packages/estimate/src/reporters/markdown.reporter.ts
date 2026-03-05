@@ -232,11 +232,6 @@ function renderReferenceInfo(result: ExtendedResult): string {
       ? renderComplexityTable(result.reference.complexity.issues)
       : "";
 
-  const securityIssues =
-    result.reference.security.issues.length > 0
-      ? renderSecurityTable(result.reference.security.issues)
-      : "";
-
   return `
 ## Reference Info (no score impact)
 
@@ -261,12 +256,6 @@ ${complexityIssues}
 ### JSDoc
 
 - Missing JSDoc: ${result.reference.jsdoc.totalMissing}
-
-### Security
-
-- Security issues: ${result.reference.security.totalIssues}
-
-${securityIssues}
 `.trim();
 }
 
@@ -291,24 +280,6 @@ function renderComplexityTable(issues: Issue[]): string {
 | Severity | Code | Message | Location |
 |----------|------|---------|----------|
 ${rows}${moreRow}
-`.trim();
-}
-
-function renderSecurityTable(issues: Issue[]): string {
-  const rows = issues
-    .map((issue) => {
-      const severity = getSeverityEmoji(issue.severity);
-      const location = issue.location
-        ? `${path.basename(issue.location.file)}:${issue.location.line || "?"}`
-        : "-";
-      return `| ${severity} | ${issue.code} | ${issue.message} | ${location} |`;
-    })
-    .join("\n");
-
-  return `
-| Severity | Code | Message | Location |
-|----------|------|---------|----------|
-${rows}
 `.trim();
 }
 
