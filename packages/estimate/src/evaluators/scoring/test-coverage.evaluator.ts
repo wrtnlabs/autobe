@@ -8,7 +8,7 @@ import type {
 } from "../../types";
 import { createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
-import { buildRouteMap, type RouteInfo } from "../golden/url-resolver";
+import { type RouteInfo, buildRouteMap } from "../golden/url-resolver";
 
 /** Route-level test coverage analysis */
 export namespace RouteCoverage {
@@ -250,10 +250,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     const routeStatuses: RouteCoverage.RouteCoverageStatus[] = [];
     const definedMethods = new Set<string>();
     const testedMethods = new Set<string>();
-    const controllerMap = new Map<
-      string,
-      { total: number; covered: number }
-    >();
+    const controllerMap = new Map<string, { total: number; covered: number }>();
 
     for (const route of routes) {
       definedMethods.add(route.method);
