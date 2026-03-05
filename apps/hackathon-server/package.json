@@ -28,7 +28,7 @@
     "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
-    "prepare": "ts-patch install && pnpm run build:env && pnpm run build:prisma",
+    "prepare": "pnpm run build:env && pnpm run build:prisma",
     "schema": "ts-node src/executable/schema.ts",
     "start": "ts-node src/executable/server.ts",
     "pm2:start": "pm2 start ecosystem.config.js",
@@ -78,7 +78,6 @@
     "pm2": "^6.0.10",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript",
     "typescript-transform-paths": "catalog:typescript"
   },

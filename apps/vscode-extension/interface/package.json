@@ -5,11 +5,9 @@
   "description": "Interface for AutoBe VSCode Extension",
   "main": "src/index.ts",
   "scripts": {
-    "prepare": "ts-patch install",
     "build": "tsc"
   },
   "devDependencies": {
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript",
     "@autobe/interface": "workspace:^",
     "@samchon/openapi": "catalog:samchon"
