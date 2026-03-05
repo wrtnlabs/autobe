@@ -57,8 +57,8 @@ const EMPTY_ACQUISITION = { previousAnalysisSections: [] as number[] };
  * Must be called AFTER all other files (01-05) have completed Stage 2/3 so that
  * their module/unit/section titles are available for navigation.
  *
- * Returns the final markdown content directly (no module/unit hierarchy).
- * Also sets minimal `unitResults` and `sectionResults` so that
+ * Returns the final markdown content directly (no module/unit hierarchy). Also
+ * sets minimal `unitResults` and `sectionResults` so that
  * `convertToSectionEntries()` for preloading still works.
  */
 export function fillTocDeterministic(
