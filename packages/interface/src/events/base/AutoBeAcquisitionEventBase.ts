@@ -14,8 +14,9 @@ import { AutoBePreliminaryAcquisition } from "../contents/AutoBePreliminaryAcqui
  * The `Kind` type parameter constrains which acquisition fields are included,
  * ensuring each event only carries the subset of preliminary data relevant to
  * its agent. For example, a database group event only tracks acquisition of
- * `"analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"`,
- * while an interface prerequisite event tracks nearly all kinds.
+ * `"analysisSections" | "previousAnalysisSections" |
+ * "previousDatabaseSchemas"`, while an interface prerequisite event tracks
+ * nearly all kinds.
  *
  * The acquisition data contains only identifiers (file names, schema names,
  * endpoint path+method pairs, DTO type names) rather than full payloads,

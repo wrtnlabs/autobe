@@ -13,9 +13,9 @@ export interface IAutoBeDatabaseGroupReviewApplication {
    * requirements. Review existing groups and identify necessary modifications
    * using create, update, or erase operations.
    *
-   * ALWAYS fetch analysis sections first using `getAnalysisSections` to understand
-   * what business domains exist, then systematically verify group coverage and
-   * apply corrections.
+   * ALWAYS fetch analysis sections first using `getAnalysisSections` to
+   * understand what business domains exist, then systematically verify group
+   * coverage and apply corrections.
    *
    * @param props Request containing either preliminary data request or complete
    *   task with group revisions

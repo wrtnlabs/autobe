@@ -306,9 +306,9 @@ export interface BuildAnalysisContextOptions {
 /**
  * Build analysis context at section granularity.
  *
- * Operates on `IAnalysisSectionEntry[]` from `convertToSectionEntries`.
- * Each section entry is treated as an independent retrieval unit (~200-600
- * words), yielding fine-grained context for downstream agents.
+ * Operates on `IAnalysisSectionEntry[]` from `convertToSectionEntries`. Each
+ * section entry is treated as an independent retrieval unit (~200-600 words),
+ * yielding fine-grained context for downstream agents.
  *
  * Uses SHA256-based index caching to avoid rebuilding the vector index when
  * called repeatedly with the same section pool (e.g. across batch items in

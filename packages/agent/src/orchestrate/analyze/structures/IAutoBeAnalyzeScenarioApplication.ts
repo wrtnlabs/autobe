@@ -55,9 +55,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * When preliminary returns empty array, that type is removed from the
      * union, physically preventing repeated calls.
      */
-    request:
-      | IComplete
-      | IAutoBePreliminaryGetPreviousAnalysisSections;
+    request: IComplete | IAutoBePreliminaryGetPreviousAnalysisSections;
   }
 
   /**
@@ -101,8 +99,8 @@ export namespace IAutoBeAnalyzeScenarioApplication {
 
     /**
      * Language for document content. When specified by the user, this takes
-     * precedence over the locale setting for determining document language.
-     * Set to `null` if not specified.
+     * precedence over the locale setting for determining document language. Set
+     * to `null` if not specified.
      */
     language: string | null;
 
@@ -116,10 +114,10 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * Each entity should include:
      *
      * - `name`: PascalCase entity name (e.g., "Todo", "User", "Comment")
-     * - `attributes`: Key attributes with type hints (e.g., "title:
-     *   text(1-500), required")
-     * - `relationships`: How this entity relates to others (e.g., "belongsTo
-     *   User via userId")
+     * - `attributes`: Key attributes with type hints (e.g., "title: text(1-500),
+     *   required")
+     * - `relationships`: How this entity relates to others (e.g., "belongsTo User
+     *   via userId")
      *
      * Include ALL domain entities that will appear in the requirements
      * documents. Do NOT include meta-entities (InterpretationLog,
@@ -131,12 +129,12 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     /**
      * High-level project features that activate conditional modules.
      *
-     * Selected from a FIXED catalog — the LLM must NOT invent features
-     * outside the predefined list. Each feature activates additional modules
-     * in the appropriate SRS files.
+     * Selected from a FIXED catalog — the LLM must NOT invent features outside
+     * the predefined list. Each feature activates additional modules in the
+     * appropriate SRS files.
      *
-     * If the project has no special features beyond REST CRUD, return an
-     * empty array.
+     * If the project has no special features beyond REST CRUD, return an empty
+     * array.
      */
     features: FixedAnalyzeTemplateFeature[];
   }
