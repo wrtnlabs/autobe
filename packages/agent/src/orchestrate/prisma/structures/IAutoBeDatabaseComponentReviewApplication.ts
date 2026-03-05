@@ -56,15 +56,7 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Submit table revisions after requirements analysis.
-   *
-   * Call this after you have:
-   *
-   * 1. Fetched and analyzed requirements documents
-   * 2. Identified missing tables, naming issues, or misplaced tables
-   * 3. Prepared create/update/erase operations with clear reasons
-   */
+  /** Submit table revisions after requirements analysis. */
   export interface IComplete {
     /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";
