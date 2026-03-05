@@ -183,6 +183,8 @@ export const createAutoBeContext = (props: {
             (props.vendor.useToolChoice ?? true) === true
           )
             event.body.tool_choice = "required";
+          else if (event.body.tool_choice !== undefined)
+            delete event.body.tool_choice;
           if (event.body.parallel_tool_calls !== undefined)
             delete event.body.parallel_tool_calls;
           if (next.promptCacheKey)
