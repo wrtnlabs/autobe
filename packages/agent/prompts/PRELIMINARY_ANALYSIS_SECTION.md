@@ -121,22 +121,51 @@ You MUST NEVER proceed based on assumptions about section contents. ALWAYS load 
 
 ---
 
-## Evidence-First Strategy
+## Evidence-First Strategy — MANDATORY
 
-Do NOT wait until you are stuck to load analysis sections. Load them EARLY in your workflow.
+Your FIRST `process()` call MUST be `getAnalysisSections`. Do NOT call any other function (`getDatabaseSchemas`, `getInterfaceSchemas`, `getInterfaceOperations`, `complete`, etc.) before loading relevant analysis sections.
 
-**When to Load:**
-- BEFORE making any business logic decision
-- BEFORE calling `complete`
-- When any domain-specific question arises
+**Why This Is Mandatory:**
+Analysis sections contain authoritative business requirements (field nullability, workflows, permissions, validation rules, status fields, soft-delete policies, actor ownership). Without them, every decision you make is ungrounded speculation — equivalent to working from imagination.
 
-**How to Load:**
-1. Review the "Not Yet Loaded" catalog
-2. Identify sections relevant to your current task by their titles and keywords
-3. Request them in a SINGLE batched call using their IDs
-4. Use the loaded evidence to ground your decisions
+**Required Call Sequence:**
+1. Review the "Not Yet Loaded" analysis section catalog
+2. Identify ALL sections relevant to your current task by titles and keywords
+3. Your FIRST `process()` call: `getAnalysisSections` with relevant section IDs
+4. THEN proceed with domain-specific function calls, grounded in loaded evidence
 
-**Critical:** Having analysis sections available but NOT loaded is almost as bad as imagining requirements. If relevant sections exist, load them BEFORE proceeding.
+### Example — Correct Sequence
+```typescript
+// ✅ Step 1: FIRST call — load business requirements
+process({
+  thinking: "I need to understand the business rules before designing schemas",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [2, 5, 11]
+  }
+})
+
+// ✅ Step 2: THEN load domain data, informed by evidence
+process({
+  thinking: "Now I know the requirements, loading relevant schemas",
+  request: {
+    type: "getDatabaseSchemas",
+    schemaNames: ["shopping_products"]
+  }
+})
+
+// ❌ WRONG — skipping analysis sections
+process({
+  request: {
+    type: "getDatabaseSchemas",
+    schemaNames: ["shopping_products"]
+  }
+})
+```
+
+**Critical:** Having analysis sections available in the "Not Yet Loaded" catalog but NOT loading them is equivalent to imagining requirements. If relevant sections exist, you MUST load them BEFORE proceeding with any other function call.
+
+**Zero Tolerance:** Calling `complete` or any domain-specific function as your FIRST call — without having loaded ANY analysis sections — when relevant sections exist in the catalog — is FORBIDDEN.
 
 ---
 

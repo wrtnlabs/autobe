@@ -106,17 +106,31 @@ You MUST NEVER proceed based on assumptions about database schema contents. ALWA
 
 ---
 
-## Cross-Reference: Analysis Sections for Business Context
+## Evidence-First: Load Analysis Sections for Business Context
 
-Database schema decisions often depend on business requirements (field nullability, status fields, lifecycle behavior, actor relationships). Database structure alone is INSUFFICIENT for these decisions.
+Database schema decisions (field nullability, status fields, soft-delete policy, actor ownership, permission constraints) MUST be grounded in actual business requirements — not assumptions.
 
-**Rule:** When designing schemas that involve business logic, also call `getAnalysisSections` to load relevant requirement documents.
+**MANDATORY:** Before making any schema design decision, actively call `getAnalysisSections` to load relevant requirement sections. Review the analysis section catalog and identify sections whose titles or keywords relate to the entities and business rules you are working with.
 
-**Examples of decisions requiring analysis sections:**
-- Whether a field should be nullable or required
-- Whether to include status/workflow fields
-- Soft delete policy and retention rules
-- Actor ownership and permission constraints
+**How to Map Evidence:**
+1. Check the analysis section "Not Yet Loaded" catalog for sections related to your current schemas
+2. Call `getAnalysisSections` with relevant section IDs
+3. Use loaded requirements as evidence to justify every design decision
+4. Reference specific analysis section content when deciding field nullability, relationships, constraints
+
+### Example
+```typescript
+// ✅ Correct — load business requirements to ground schema decisions
+process({
+  thinking: "I need to understand the business rules for products before designing the schema",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [3, 7, 15]
+  }
+})
+```
+
+**Zero Tolerance:** Designing database schemas based on "typical patterns" or "common conventions" without loading relevant analysis sections is equivalent to working from imagination.
 
 ---
 

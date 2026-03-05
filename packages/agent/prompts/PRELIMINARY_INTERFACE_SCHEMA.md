@@ -106,17 +106,31 @@ You MUST NEVER proceed based on assumptions about TypeScript type schema content
 
 ---
 
-## Cross-Reference: Analysis Sections for Business Context
+## Evidence-First: Load Analysis Sections for Business Context
 
-Schema design decisions (field inclusion/exclusion, validation rules, enum values, DTO scoping) often depend on business requirements that database structure alone cannot provide.
+Schema design decisions (field inclusion/exclusion, validation rules, enum values, DTO scoping, security classification) MUST be grounded in actual business requirements — not assumptions.
 
-**Rule:** When designing schemas with business-rule-dependent decisions, also call `getAnalysisSections` to load relevant requirement documents.
+**MANDATORY:** Before making any schema design decision, actively call `getAnalysisSections` to load relevant requirement sections. Review the analysis section catalog and identify sections whose titles or keywords relate to the types and validation rules you are working with.
 
-**Examples of decisions requiring analysis sections:**
-- Field inclusion or exclusion based on business requirements
-- Validation rules and enum value design
-- DTO Summary vs full entity scoping decisions
-- Security field classification for non-obvious cases
+**How to Map Evidence:**
+1. Check the analysis section "Not Yet Loaded" catalog for sections related to your current schemas
+2. Call `getAnalysisSections` with relevant section IDs
+3. Use loaded requirements as evidence to justify every design decision
+4. Reference specific analysis section content when deciding field inclusion, validation constraints, enum values
+
+### Example
+```typescript
+// ✅ Correct — load business requirements to ground schema decisions
+process({
+  thinking: "I need to understand the validation rules and field requirements before designing the DTO schema",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [4, 8, 12]
+  }
+})
+```
+
+**Zero Tolerance:** Designing TypeScript type schemas based on "typical patterns" or "common conventions" without loading relevant analysis sections is equivalent to working from imagination.
 
 ---
 
