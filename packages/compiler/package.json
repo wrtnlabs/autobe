@@ -13,7 +13,7 @@
     "url": "https://github.com/wrtnlabs/autobe/issues"
   },
   "scripts": {
-    "prepare": "ts-patch install && pnpm run prebuild",
+    "prepare": "pnpm run prebuild",
     "build": "pnpm run prebuild && rimraf lib && tsc",
     "prebuild": "ts-node build/template.ts && ts-node build/external.ts",
     "postbuild": "node ../../internals/config/assertBuild.js",
@@ -48,7 +48,6 @@
     "rimraf": "^6.0.1",
     "sync-request": "^6.1.0",
     "ts-node": "catalog:typescript",
-    "ts-patch": "catalog:typescript",
     "typescript": "catalog:typescript"
   },
   "keywords": [
