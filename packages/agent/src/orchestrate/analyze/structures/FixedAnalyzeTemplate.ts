@@ -46,7 +46,7 @@ export interface FixedAnalyzeTemplateYamlSpecDefinition {
   /** Module index where this YAML block lives. */
   moduleIndex: number;
   /** Registry type this YAML feeds into. */
-  registryType: "entity-attributes" | "error-codes" | "permissions";
+  registryType: "domain-concepts" | "error-conditions" | "permissions";
 }
 
 export interface FixedAnalyzeTemplateModuleTemplate {
@@ -116,8 +116,8 @@ export const FIXED_ANALYZE_TEMPLATE_CANONICAL_SOURCE: Record<
   string,
   FixedAnalyzeTemplateCategoryId
 > = {
-  "entity-attributes": "02-domain-model",
-  "error-codes": "04-business-rules",
+  "domain-concepts": "02-domain-model",
+  "error-conditions": "04-business-rules",
   permissions: "01-actors-and-auth",
 };
 
@@ -611,19 +611,18 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         index: 2,
         title: "Detailed Validation Rules",
         purpose:
-          "Per-concept field-level validation rules with boundary values, format specifications, and sanitization requirements.",
+          "Detailed validation rules with boundary values and format requirements.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
             titlePattern: "{name} Validation Rules",
             purposePattern:
-              "Define field-level validation rules for {name}, including boundary values, format constraints, and input sanitization requirements.",
+              "Define validation rules for {name}, including boundary values and format requirements.",
             keywords: [
               "validation",
               "boundary-value",
-              "format-constraint",
+              "format-requirement",
               "sanitization",
-              "field-validation",
             ],
           },
         },
@@ -639,7 +638,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             {
               titlePattern: "List Query Specifications",
               purposePattern:
-                "Define filtering, sorting, and pagination rules for list endpoints.",
+                "Define filtering, sorting, and pagination rules for list operations.",
               keywords: [
                 "filtering",
                 "sorting",
@@ -653,20 +652,20 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 4,
-        title: "Error Catalog",
+        title: "Error Conditions",
         purpose:
-          "Centralized error code definitions with conditions and resolution.",
+          "Business error scenarios and how the system should respond.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "Error Code Catalog",
+              titlePattern: "Error Scenarios",
               purposePattern:
-                "Define all error codes with condition and user-facing message.",
+                "Describe error conditions and expected system responses in natural language.",
               keywords: [
-                "error-code",
-                "error-condition",
-                "error-catalog",
+                "error-scenario",
+                "rejection",
+                "failure-case",
                 "exception",
               ],
               requiresYamlSpec: false,
@@ -1051,7 +1050,7 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
         index: 103,
         title: "File Storage",
         purpose:
-          "File upload endpoints, media processing, and storage specifications.",
+          "File upload capabilities, media processing, and storage requirements.",
         unitStrategy: {
           type: "fixed",
           units: [
@@ -1247,15 +1246,14 @@ export const buildFixedAnalyzeDocumentMapContent = (
 
 /** Deterministically generate the Canonical Source Declaration unit content. */
 export const buildFixedAnalyzeCanonicalSourceContent = (): string => {
-  const header = `Other files MUST reference canonical definitions using the backtick format below.\nPlain-text mentions of the same terms are NOT treated as references.\n`;
+  const header = `Each type of information has one authoritative location. Other files should reference these canonical sources.\n`;
   const table = [
-    "| Data Type | Canonical File | Reference Format |",
-    "|-----------|---------------|-----------------|",
-    "| Entity attributes | [02-domain-model.md](./02-domain-model.md) | \\`Entity.field\\` |",
-    "| Error codes | [04-business-rules.md](./04-business-rules.md) | \\`ERROR_CODE\\` |",
-    "| Permissions | [01-actors-and-auth.md](./01-actors-and-auth.md) | \\`actor:resource:action\\` |",
-    "| Actor definitions | [01-actors-and-auth.md](./01-actors-and-auth.md) | \\`ActorName\\` |",
-    "| Enum values | [02-domain-model.md](./02-domain-model.md) | \\`EnumName.VALUE\\` |",
+    "| Information Type | Canonical File |",
+    "|------------------|---------------|",
+    "| Domain concepts | [02-domain-model.md](./02-domain-model.md) |",
+    "| Error conditions | [04-business-rules.md](./04-business-rules.md) |",
+    "| Permissions | [01-actors-and-auth.md](./01-actors-and-auth.md) |",
+    "| Actor definitions | [01-actors-and-auth.md](./01-actors-and-auth.md) |",
   ].join("\n");
   return `${header}\n${table}`;
 };
