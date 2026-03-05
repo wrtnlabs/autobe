@@ -13,6 +13,7 @@ import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeRealizeCollectorProgrammer } from "../../realize/programmers/AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "../../realize/programmers/AutoBeRealizeTransformerProgrammer";
+import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCollection";
 
 interface IProps {
@@ -52,6 +53,18 @@ export const complementPreliminaryCollection = (props: IProps): void => {
     });
   if (props.kinds.includes("previousInterfaceSchemas") === true)
     complementInterfaceSchemas({
+      ...props,
+      previous: true,
+    });
+
+  // Complement analysis section
+  if (props.kinds.includes("analysisSections") === true)
+    complementAnalysisIndex({
+      ...props,
+      previous: false,
+    });
+  if (props.kinds.includes("previousAnalysisSections") === true)
+    complementAnalysisIndex({
       ...props,
       previous: true,
     });
@@ -237,4 +250,15 @@ const complementInterfaceSchemas = (props: INextProps) => {
         );
     }
   }
+};
+
+const complementAnalysisIndex = (props: INextProps): void => {
+  const kind: "analysisSections" | "previousAnalysisSections" =
+    props.previous === true ? "previousAnalysisSections" : "analysisSections";
+  const all = props.all[kind];
+  if (all.length === 0) return;
+
+  const first: IAnalysisSectionEntry = all[0];
+  if (props.local[kind].includes(first) === false)
+    props.local[kind].unshift(first);
 };
