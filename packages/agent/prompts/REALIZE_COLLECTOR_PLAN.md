@@ -119,11 +119,9 @@ References are **foreign keys not in the Create DTO body** - from path parameter
 
 ## 6. Discovery Process
 
-1. **Request Interface schema** for the given DTO
-2. **Analyze the DTO pattern** (`.ICreate` = likely collectable)
-3. **Request database schema** based on hypothesis
-4. **Compare and match** DTO fields vs table columns
-5. **Generate plan** with ONE entry
+1. **Analyze the DTO pattern** (`.ICreate` = likely collectable)
+2. **Compare and match** DTO fields vs table columns
+3. **Generate plan** with ONE entry
 
 ## 7. Example Plan
 

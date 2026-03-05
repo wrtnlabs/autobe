@@ -52,9 +52,7 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Submit table revisions after requirements analysis.
-   */
+  /** Submit table revisions after requirements analysis. */
   export interface IComplete {
     /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";

@@ -52,9 +52,7 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Submit group revisions after domain coverage analysis.
-   */
+  /** Submit group revisions after domain coverage analysis. */
   export interface IComplete {
     /** Type discriminator. Value "complete" indicates final submission. */
     type: "complete";
