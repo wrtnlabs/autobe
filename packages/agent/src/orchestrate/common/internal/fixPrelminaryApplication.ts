@@ -164,8 +164,12 @@ namespace ApplicationFixer {
         : typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>()
     ] as ILlmSchema.IObject;
     if (type === undefined) return;
+
+    const array: ILlmSchema | undefined = type.properties.sectionIds;
+    if (array === undefined) return;
+    else if (LlmTypeChecker.isArray(array) === false) return;
     describe(
-      type.properties.sectionIds,
+      array,
       StringUtil.trim`
         Here is the catalog of analysis sections available for retrieval:
 
@@ -179,6 +183,12 @@ namespace ApplicationFixer {
           .join("\n")}
       `,
     );
+
+    const items: ILlmSchema = array.items;
+    if (LlmTypeChecker.isInteger(items) === false) return;
+
+    items.minimum = Math.min(...sections.map((s) => s.id));
+    items.maximum = Math.max(...sections.map((s) => s.id));
   };
 
   export const databaseSchemas = (props: {
