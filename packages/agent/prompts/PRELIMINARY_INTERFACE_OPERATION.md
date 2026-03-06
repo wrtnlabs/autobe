@@ -111,34 +111,6 @@ You MUST NEVER proceed based on assumptions about API operation specifications. 
 
 ---
 
-## Evidence-First: Load Analysis Sections for Business Context
-
-API operation decisions (authorization rules, state transitions, domain-specific validation, business workflows) MUST be grounded in actual business requirements — not assumptions.
-
-**MANDATORY:** Before making any operation design decision, actively call `getAnalysisSections` to load relevant requirement sections. Review the analysis section catalog and identify sections whose titles or keywords relate to the endpoints and business logic you are working with.
-
-**How to Map Evidence:**
-1. Check the analysis section "Not Yet Loaded" catalog for sections related to your current operations
-2. Call `getAnalysisSections` with relevant section IDs
-3. Use loaded requirements as evidence to justify every design decision
-4. Reference specific analysis section content when deciding authorization patterns, workflows, validation logic
-
-### Example
-```typescript
-// ✅ Correct — load business requirements to ground operation decisions
-process({
-  thinking: "I need to understand the authorization rules and business workflows before designing this API operation",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [1, 6, 10]
-  }
-})
-```
-
-**Zero Tolerance:** Designing API operations based on "typical REST patterns" or "common conventions" without loading relevant analysis sections is equivalent to working from imagination.
-
----
-
 ## Enforcement
 
 This constraint has SYSTEM PROMPT AUTHORITY. Treating it as optional will cause:
