@@ -168,21 +168,21 @@ namespace ApplicationFixer {
     const array: ILlmSchema | undefined = type.properties.sectionIds;
     if (array === undefined) return;
     else if (LlmTypeChecker.isArray(array) === false) return;
-    describe(
-      array,
-      StringUtil.trim`
-        Here is the catalog of analysis sections available for retrieval:
+    // describe(
+    //   array,
+    //   StringUtil.trim`
+    //     Here is the catalog of analysis sections available for retrieval:
 
-        ID | File | Unit | Section | Keywords
-        ---|------|------|---------|----------
-        ${sections
-          .map(
-            (s) =>
-              `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle} | ${s.keywords.join(", ")}`,
-          )
-          .join("\n")}
-      `,
-    );
+    //     ID | File | Unit | Section | Keywords
+    //     ---|------|------|---------|----------
+    //     ${sections
+    //       .map(
+    //         (s) =>
+    //           `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle} | ${s.keywords.join(", ")}`,
+    //       )
+    //       .join("\n")}
+    //   `,
+    // );
 
     const items: ILlmSchema = array.items;
     if (LlmTypeChecker.isInteger(items) === false) return;

@@ -189,6 +189,7 @@ export const createAutoBeContext = (props: {
             delete event.body.parallel_tool_calls;
           if (next.promptCacheKey)
             event.body.prompt_cache_key = next.promptCacheKey;
+
           await props.dispatch({
             ...event,
             type: "vendorRequest",
