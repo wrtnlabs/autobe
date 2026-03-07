@@ -697,9 +697,8 @@ async function processStageSection(
               analyzeDebug(
                 `section per-file-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
               );
-              return sectionResults;
             }
-            throw e;
+            return sectionResults;
           }
           analyzeDebug(
             `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,

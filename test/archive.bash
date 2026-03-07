@@ -10,12 +10,6 @@ pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
-# qwen/qwen3.5-397b-a17b (0.39)
-pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
-pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project bbs > archive.qwen-qwen3.5-397b-a17b.bbs.log
-pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project reddit > archive.qwen-qwen3.5-397b-a17b.reddit.log
-pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --project shopping > archive.qwen-qwen3.5-397b-a17b.shopping.log
-
 # qwen/qwen3.5-122b-a10b (0.26)
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project bbs > archive.qwen-qwen3.5-122b-a10b.bbs.log
