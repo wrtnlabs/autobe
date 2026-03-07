@@ -115,7 +115,7 @@ namespace PreliminaryTransformer {
         ---|------|------|---------
         ${newbie
           .map((s) =>
-            [s.id, s.filename, s.unitTitle, s.keywords.join(", ")].join(" | "),
+            [s.id, s.filename, s.unitTitle, s.sectionTitle].join(" | "),
           )
           .join("\n")}
       `,
