@@ -105,22 +105,17 @@ namespace PreliminaryTransformer {
           ? { from: "getAnalysisSections", to: "getPreviousAnalysisSections" }
           : null,
       });
+
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION,
       previous:
         AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
       available: StringUtil.trim`
-        ID | File | Unit | Section | Keywords
-        ---|------|------|---------|----------
+        ID | File | Unit | Section 
+        ---|------|------|---------
         ${newbie
           .map((s) =>
-            [
-              s.id,
-              s.filename,
-              s.unitTitle,
-              s.sectionTitle,
-              s.keywords.join(", "),
-            ].join(" | "),
+            [s.id, s.filename, s.unitTitle, s.keywords.join(", ")].join(" | "),
           )
           .join("\n")}
       `,

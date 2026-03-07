@@ -196,7 +196,7 @@ function buildTocContent(
   lines.push("", "**Section Navigation**");
   lines.push(
     "",
-    '> Load sections by ID: `process({ request: { type: "getAnalysisSections", sectionIds: [ID, ...] } })`',
+    '<!-- Load sections by ID: `process({ request: { type: "getAnalysisSections", sectionIds: [ID, ...] } })` -->',
   );
 
   // TOC itself occupies section ID 0, so remaining files start from ID 1
@@ -232,13 +232,9 @@ function buildTocContent(
       );
 
       for (const unitSection of unitEvent.unitSections) {
-        const keywords =
-          unitSection.keywords.length > 0
-            ? ` {${unitSection.keywords.join(", ")}}`
-            : "";
         const purpose = unitSection.purpose ? ` — ${unitSection.purpose}` : "";
         lines.push(
-          `  - [${sectionId}] [${unitSection.title}](./${filename}#${resolveAnchor(unitSection.title)})${purpose}${keywords}`,
+          `  - [${sectionId}] [${unitSection.title}](./${filename}#${resolveAnchor(unitSection.title)})${purpose}`,
         );
         sectionId++;
       }
