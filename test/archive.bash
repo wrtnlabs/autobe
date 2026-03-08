@@ -11,16 +11,16 @@ pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qw
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
 # qwen/qwen3.5-122b-a10b (0.26)
-pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
-pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project bbs > archive.qwen-qwen3.5-122b-a10b.bbs.log
-pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project reddit > archive.qwen-qwen3.5-122b-a10b.reddit.log
-pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --project shopping > archive.qwen-qwen3.5-122b-a10b.shopping.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project bbs > archive.qwen-qwen3.5-122b-a10b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project reddit > archive.qwen-qwen3.5-122b-a10b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project shopping > archive.qwen-qwen3.5-122b-a10b.shopping.log
 
 # qwen/qwen3.5-35b-a3b (0.1625)
-pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
-pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project bbs > archive.qwen-qwen3.5-35b-a3b.bbs.log
-pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
-pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project bbs > archive.qwen-qwen3.5-35b-a3b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
 
 ######################################################
 # KIMI
@@ -63,15 +63,3 @@ pnpm run archive:go --vendor openai/gpt-5.2 --project todo > archive.openai-gpt-
 pnpm run archive:go --vendor openai/gpt-5.2 --project bbs > archive.openai-gpt-5.2.bbs.log
 pnpm run archive:go --vendor openai/gpt-5.2 --project reddit > archive.openai-gpt-5.2.reddit.log
 pnpm run archive:go --vendor openai/gpt-5.2 --project shopping > archive.openai-gpt-5.2.shopping.log
-
-# openai/gpt-5-mini (0.25) -> working
-pnpm run archive:go --vendor openai/gpt-5-mini --project todo > archive.openai-gpt-5-mini.todo.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project bbs > archive.openai-gpt-5-mini.bbs.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project reddit > archive.openai-gpt-5-mini.reddit.log
-pnpm run archive:go --vendor openai/gpt-5-mini --project shopping > archive.openai-gpt-5-mini.shopping.log
-
-# openai/gpt-4.1-mini (0.4) -> working
-pnpm run archive:go --vendor openai/gpt-4.1-mini --project todo > archive.openai-gpt-4.1-mini.todo.log
-pnpm run archive:go --vendor openai/gpt-4.1-mini --project bbs > archive.openai-gpt-4.1-mini.bbs.log
-pnpm run archive:go --vendor openai/gpt-4.1-mini --project reddit > archive.openai-gpt-4.1-mini.reddit.log
-pnpm run archive:go --vendor openai/gpt-4.1-mini --project shopping > archive.openai-gpt-4.1-mini.shopping.log
