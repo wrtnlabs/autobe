@@ -28,8 +28,8 @@ import {
  *
  * This function reviews one module's section content in a single LLM call,
  * validating EARS format, value consistency, prohibited content, bridge block
- * completeness, and intra-module deduplication. Sibling modules are included
- * as lightweight title-only context for intra-file consistency reference.
+ * completeness, and intra-module deduplication. Sibling modules are included as
+ * lightweight title-only context for intra-file consistency reference.
  *
  * For cross-file consistency checks (terminology alignment, value consistency
  * across files, naming conventions), use

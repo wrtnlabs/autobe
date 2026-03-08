@@ -540,8 +540,7 @@ async function processStageSection(
   ) {
     // Dynamically increase progress for retries (module-level granularity)
     const pendingModuleCount = [...pendingIndices].reduce(
-      (sum, fi) =>
-        sum + (props.fileStates[fi]?.unitResults?.length ?? 1),
+      (sum, fi) => sum + (props.fileStates[fi]?.unitResults?.length ?? 1),
       0,
     );
     props.perFileSectionReviewProgress.total += pendingModuleCount;
@@ -690,8 +689,9 @@ async function processStageSection(
               moduleIndex < state.unitResults!.length;
               moduleIndex++
             ) {
-              const moduleReviewEvent =
-                await orchestrateAnalyzeSectionReview(ctx, {
+              const moduleReviewEvent = await orchestrateAnalyzeSectionReview(
+                ctx,
+                {
                   scenario: props.scenario,
                   fileIndex,
                   file: state.file,
@@ -708,7 +708,8 @@ async function processStageSection(
                   progress: props.perFileSectionReviewProgress,
                   promptCacheKey: cacheKey,
                   retry: attempt,
-                });
+                },
+              );
               moduleReviews.push(moduleReviewEvent);
             }
           } catch (e) {
@@ -719,10 +720,7 @@ async function processStageSection(
             }
             return sectionResults;
           }
-          const reviewEvent = mergeModuleReviewEvents(
-            moduleReviews,
-            fileIndex,
-          );
+          const reviewEvent = mergeModuleReviewEvents(moduleReviews, fileIndex);
           analyzeDebug(
             `section per-module-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${moduleReviews.length} elapsedMs=${Date.now() - reviewStart}`,
           );

@@ -23,9 +23,9 @@ import {
  *
  * This transformer provides context for reviewing a SINGLE module's section
  * content, validating EARS format, value consistency, prohibited content,
- * bridge block completeness, and intra-module deduplication.
- * Sibling modules are included as lightweight title-only context for
- * intra-file consistency reference.
+ * bridge block completeness, and intra-module deduplication. Sibling modules
+ * are included as lightweight title-only context for intra-file consistency
+ * reference.
  */
 export const transformAnalyzeSectionReviewHistory = (
   _ctx: AutoBeContext,
@@ -70,11 +70,16 @@ export const transformAnalyzeSectionReviewHistory = (
 
         ## Sibling Modules (titles only, for intra-file consistency reference)
 
-        ${props.siblingModuleSummaries.length > 0
-          ? props.siblingModuleSummaries
-              .map((s) => `- Module ${s.moduleIndex + 1}: ${s.title} — sections: ${s.sectionTitles.join(", ")}`)
-              .join("\n")
-          : "(this is the only module in this file)"}
+        ${
+          props.siblingModuleSummaries.length > 0
+            ? props.siblingModuleSummaries
+                .map(
+                  (s) =>
+                    `- Module ${s.moduleIndex + 1}: ${s.title} — sections: ${s.sectionTitles.join(", ")}`,
+                )
+                .join("\n")
+            : "(this is the only module in this file)"
+        }
 
         ## Section Content to Review (Module ${props.moduleIndex + 1})
 
