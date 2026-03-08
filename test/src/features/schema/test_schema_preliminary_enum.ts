@@ -84,13 +84,21 @@ const validateAnalysisSections = (
   const type: ILlmSchema.IObject = $defs[
     typia.reflect.name<IAutoBePreliminaryGetAnalysisSections>()
   ] as ILlmSchema.IObject;
-  TestValidator.predicate(
-    "getAnalysisSections",
-    (state.analyze?.files ?? [])
-      .filter((f) => f.module?.units?.length)
-      .every(
-        (f) => !!type.properties?.sectionIds.description?.includes(f.filename),
-      ),
+  const array: ILlmSchema.IArray = type.properties
+    ?.sectionIds as ILlmSchema.IArray;
+  const numeric: ILlmSchema.IInteger = array.items as ILlmSchema.IInteger;
+  TestValidator.equals(
+    "range",
+    {
+      type: "integer",
+      minimum: 0,
+      maximum:
+        state
+          .analyze!.files.map((f) => f.module.units.map((u) => u.sections))
+          .flat()
+          .flat().length - 1,
+    } satisfies ILlmSchema.IInteger as ILlmSchema.IInteger,
+    numeric,
   );
 };
 
