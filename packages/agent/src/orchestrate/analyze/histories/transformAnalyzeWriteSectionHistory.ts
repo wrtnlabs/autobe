@@ -169,11 +169,11 @@ export const transformAnalyzeWriteSectionHistory = (
 
         ${props.allUnitEvents
           .flatMap((unitEvt, mi) =>
-            unitEvt.unitSections
+            (unitEvt?.unitSections ?? [])
               .map((unit, ui) => {
                 if (mi === props.moduleIndex && ui === props.unitIndex)
                   return null;
-                return `- **Module ${mi + 1} > ${unit.title}**: ${unit.keywords.slice(0, 5).join(", ")}`;
+                return `- **Module ${mi + 1} > ${unit.title}**: ${(unit.keywords ?? []).slice(0, 5).join(", ")}`;
               })
               .filter(Boolean),
           )
