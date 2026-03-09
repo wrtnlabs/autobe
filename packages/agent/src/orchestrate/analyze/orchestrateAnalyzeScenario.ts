@@ -17,6 +17,7 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeScenarioHistory } from "./histories/transformAnalyzeScenarioHistory";
 import { buildFixedAnalyzeScenarioFiles } from "./structures/FixedAnalyzeTemplate";
 import { IAutoBeAnalyzeScenarioApplication } from "./structures/IAutoBeAnalyzeScenarioApplication";
+import { tryParseStringAsRecord } from "./utils/repairUtils";
 
 export const orchestrateAnalyzeScenario = async (
   ctx: AutoBeContext,
@@ -127,6 +128,8 @@ const repairMissingRequestType = (input: unknown): unknown => {
   input = repairFlattenedRequestPayload(input);
   if (isRecord(input) === false) return input;
   const root: Record<string, unknown> = input;
+  // LLMs (e.g. Qwen) sometimes send `request` as a JSON string
+  root.request = tryParseStringAsRecord(root.request);
   if (isRecord(root.request) === false) return input;
   const rawRequest: Record<string, unknown> = root.request;
 
