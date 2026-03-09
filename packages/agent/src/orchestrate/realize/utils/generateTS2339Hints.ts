@@ -20,7 +20,7 @@ export function generateTS2339Hints(
   const hints: Array<{ property: string; modelType: string }> = [];
 
   for (const diag of diagnostics) {
-    if (diag.code !== 2339) continue;
+    if (Number(diag.code) !== 2339) continue;
 
     const match = diag.messageText.match(TS2339_PATTERN);
     if (match === null) continue;

@@ -126,7 +126,7 @@ files: {
 
 ### 5.2. TS2339 on Prisma Model Type — Relation Field Access
 
-When you see `Property 'X' does not exist on type 'Y'` where `Y` is a snake_case Prisma model name (e.g., `shopping_mall_product_variants`), this means `X` is a **relation field** not available on the base CreateInput type.
+When you see `Property 'X' does not exist on type 'Y'` where `Y` is a Prisma-derived type name (e.g., `shopping_mall_cart_itemsCreateInput`), this means `X` is a **relation field** not available on the CreateInput type.
 
 ```typescript
 // ❌ ERROR: Property 'product' does not exist on type 'shopping_mall_cart_itemsCreateInput'
