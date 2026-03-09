@@ -317,9 +317,48 @@ select: {
 }
 ```
 
-## 7. Pattern B: WITHOUT Collector/Transformer (Manual)
+### 6.7. Relation Fields Require Explicit Selection
 
-### 7.1. Database Schema is Absolute Source of Truth
+In Prisma, relation fields are NOT available on query results unless explicitly included in `select`. This is the most common source of TS2339 errors.
+
+```typescript
+// ❌ ERROR: Property 'seller' does not exist (not selected)
+const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
+  where: { id: props.productId },
+  select: { id: true, name: true },  // 'seller' not selected
+});
+if (product.seller.id !== props.seller.id) { ... }  // TS2339!
+
+// ✅ CORRECT: Include the relation in select
+const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
+  where: { id: props.productId },
+  select: {
+    id: true,
+    name: true,
+    seller: { select: { id: true } },  // ← Must select
+  },
+});
+if (product.seller.id !== props.seller.id) { ... }  // ✅ Works
+```
+
+For ownership checks, prefer selecting the FK column directly — simpler and avoids nesting:
+
+```typescript
+// ✅ PREFERRED for ownership checks
+const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
+  where: { id: props.productId },
+  select: { id: true, shopping_mall_seller_id: true },
+});
+if (product.shopping_mall_seller_id !== props.seller.id) {
+  throw new HttpException("Forbidden", 403);
+}
+```
+
+**Rule**: Every field accessed on a query result MUST appear in its `select`. If you need a relation's data, either select the relation or use the FK column.
+
+## 8. Pattern B: WITHOUT Collector/Transformer (Manual)
+
+### 8.1. Database Schema is Absolute Source of Truth
 
 **Before writing ANY query**:
 1. READ the database schema thoroughly
@@ -334,7 +373,7 @@ select: {
 
 **IMPORTANT**: These specifications are drafts — treat them as **reference hints, not absolute truth**. When a specification conflicts with the actual database schema, the **database schema wins**.
 
-### 7.2. Use Relation Property Names
+### 8.2. Use Relation Property Names
 
 Given this Prisma schema:
 
@@ -368,7 +407,7 @@ model bbs_article_comments {
 
 In both `select` and `create`, use the **relation property name** (left side of the model definition), not the referenced table name.
 
-### 7.3. Prisma Select (READ Operations)
+### 8.3. Prisma Select (READ Operations)
 
 ```typescript
 // ✅ CORRECT - Use select with relation property names + satisfies
@@ -404,7 +443,7 @@ user: BbsUserAtSummaryTransformer.select(),          // ✅ Direct assignment
 user: BbsUserAtSummaryTransformer.select().select,   // ❌ Strips the wrapper
 ```
 
-### 7.4. Prisma CreateInput (CREATE Operations)
+### 8.4. Prisma CreateInput (CREATE Operations)
 
 ```typescript
 // ✅ CORRECT - Use connect with relation property names
@@ -427,7 +466,7 @@ bbs_article_id: props.articleId,
 bbs_user_id: props.user.id,
 ```
 
-### 7.5. Data Transformation Rules
+### 8.5. Data Transformation Rules
 
 | Transformation | Pattern |
 |----------------|---------|
@@ -466,7 +505,7 @@ return {
 };
 ```
 
-### 7.6. DELETE Operation: Cascade Deletion
+### 8.6. DELETE Operation: Cascade Deletion
 
 All tables use `onDelete: Cascade` in their foreign key relations. When deleting a record, simply delete the target row — the database automatically cascades to all dependent rows.
 
@@ -488,7 +527,7 @@ await MyGlobal.prisma.shopping_sales.delete({
 });
 ```
 
-### 7.7. Manual CREATE Example
+### 8.7. Manual CREATE Example
 
 ```typescript
 export async function postShoppingSaleReview(props: {
@@ -527,9 +566,9 @@ export async function postShoppingSaleReview(props: {
 }
 ```
 
-## 8. Absolute Prohibitions
+## 9. Absolute Prohibitions
 
-### 8.1. No Runtime Type Validation on Parameters
+### 9.1. No Runtime Type Validation on Parameters
 
 ```typescript
 // ❌ FORBIDDEN - All type/format validation
@@ -552,7 +591,7 @@ if (props.quantity > props.maxAllowed) {
 }
 ```
 
-### 8.2. No Intermediate Variables for Prisma Parameters
+### 9.2. No Intermediate Variables for Prisma Parameters
 
 ```typescript
 // ✅ CORRECT - Inline parameters
@@ -583,7 +622,7 @@ const orderByInput = (
 ) satisfies Prisma.shopping_salesOrderByWithRelationInput;
 ```
 
-### 8.3. No Raw SQL Queries
+### 9.3. No Raw SQL Queries
 
 **NEVER use `$queryRaw`, `$queryRawUnsafe`, `$executeRaw`, or `$executeRawUnsafe`**. Raw queries bypass Prisma's type system entirely — when column names, types, or tables change, the compiler cannot detect the breakage. The generic type parameter is a lie; it is never validated.
 
@@ -608,7 +647,7 @@ const votes = await MyGlobal.prisma.comment_votes.groupBy({
 
 **No exceptions.** Every query MUST go through the typed Prisma client API.
 
-### 8.4. Escape Sequences in JSON Context
+### 9.4. Escape Sequences in JSON Context
 
 | Intent | Write This | After JSON Parse |
 |--------|------------|------------------|
@@ -616,7 +655,7 @@ const votes = await MyGlobal.prisma.comment_votes.groupBy({
 | `\r` | `\\r` | `\r` |
 | `\t` | `\\t` | `\t` |
 
-## 9. HTTP Method Conventions
+## 10. HTTP Method Conventions
 
 | Method | Purpose | Request Body | Response Body | Name |
 |--------|---------|--------------|---------------|------|
@@ -626,9 +665,9 @@ const votes = await MyGlobal.prisma.comment_votes.groupBy({
 | DELETE | Delete | null | void | `erase` |
 | PATCH | List/Search | `IEntity.IRequest` | `IPageIEntity.ISummary` | `index` |
 
-## 10. Error Handling
+## 11. Error Handling
 
-### 10.1. Record Not Found → Use `OrThrow`
+### 11.1. Record Not Found → Use `OrThrow`
 
 When a record must exist, use `findUniqueOrThrow` or `findFirstOrThrow`. The system automatically converts the thrown error into an HTTP 404 response — no manual null check or `HttpException` needed.
 
@@ -647,7 +686,7 @@ if (existing) {
 }
 ```
 
-### 10.2. Business Errors → `HttpException`
+### 11.2. Business Errors → `HttpException`
 
 For business logic errors (not "record not found"), use `HttpException` with a numeric status code.
 
@@ -663,7 +702,7 @@ throw new Error("Something went wrong");
 throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 ```
 
-## 11. Final Checklist
+## 12. Final Checklist
 
 ### Code Structure
 - [ ] Starts with `export async function` (no arrow functions)

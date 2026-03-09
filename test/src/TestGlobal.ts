@@ -29,6 +29,8 @@ export class TestGlobal {
   public static getVendorConfig(
     vendor: string = TestGlobal.vendorModel,
   ): IAutoBeVendor {
+    const useToolChoiceArgument: string | undefined =
+      TestGlobal.getArguments("useToolChoice")?.[0];
     return {
       api: new OpenAI({
         apiKey: TestGlobal.env.OPENROUTER_API_KEY ?? "********",
@@ -36,8 +38,9 @@ export class TestGlobal {
       }),
       model: vendor,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? 32),
-      // useToolChoice: vendor.includes("thinking") === false,
-      useToolChoice: false,
+      useToolChoice: useToolChoiceArgument
+        ? useToolChoiceArgument.toLowerCase() !== "false"
+        : vendor.includes("thinking") === false,
     };
   }
 

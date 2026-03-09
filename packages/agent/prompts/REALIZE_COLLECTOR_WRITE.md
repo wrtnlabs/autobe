@@ -377,6 +377,29 @@ export async function collect(props: {
 }
 ```
 
+**IMPORTANT**: When querying a related record, you can only access scalar columns — NOT relation fields. Relation fields require explicit `include` or `select`:
+
+```typescript
+// ❌ ERROR: Property 'product' does not exist
+const variant = await MyGlobal.prisma.shopping_mall_product_variants.findFirstOrThrow({
+  where: { id: props.body.variantId },
+});
+const productName = variant.product.name;  // TS2339! 'product' is a relation
+
+// ✅ CORRECT option 1: Use the FK column directly
+const variant = await MyGlobal.prisma.shopping_mall_product_variants.findFirstOrThrow({
+  where: { id: props.body.variantId },
+});
+// variant.shopping_mall_product_id is available (it's a scalar column)
+
+// ✅ CORRECT option 2: Select the relation explicitly
+const variant = await MyGlobal.prisma.shopping_mall_product_variants.findFirstOrThrow({
+  where: { id: props.body.variantId },
+  include: { product: { select: { name: true } } },
+});
+const productName = variant.product.name;  // ✅ Works
+```
+
 ## 11. Session Collector (Special IP Pattern)
 
 ```typescript

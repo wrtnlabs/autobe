@@ -1,6 +1,5 @@
 import {
   AutoBeAnalyzeFileScenario,
-  AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeUnitSection,
   AutoBeAnalyzeWriteModuleEvent,
@@ -20,11 +19,13 @@ import {
 } from "../structures/FixedAnalyzeTemplate";
 
 /**
- * Transform histories for per-file review of section content.
+ * Transform histories for per-module review of section content.
  *
- * This transformer provides context for reviewing a SINGLE file's section
+ * This transformer provides context for reviewing a SINGLE module's section
  * content, validating EARS format, value consistency, prohibited content,
- * bridge block completeness, and intra-file deduplication.
+ * bridge block completeness, and intra-module deduplication. Sibling modules
+ * are included as lightweight title-only context for intra-file consistency
+ * reference.
  */
 export const transformAnalyzeSectionReviewHistory = (
   _ctx: AutoBeContext,
@@ -32,8 +33,14 @@ export const transformAnalyzeSectionReviewHistory = (
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+    moduleIndex: number;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    moduleSectionEvents: AutoBeAnalyzeWriteSectionEvent[];
+    siblingModuleSummaries: Array<{
+      moduleIndex: number;
+      title: string;
+      sectionTitles: string[];
+    }>;
     feedback?: string;
     preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
   },
@@ -61,23 +68,29 @@ export const transformAnalyzeSectionReviewHistory = (
         **Title**: ${props.moduleEvent.title}
         **Summary**: ${props.moduleEvent.summary}
 
-        ## Section Content to Review
+        ## Sibling Modules (titles only, for intra-file consistency reference)
 
-        ${props.sectionEvents
-          .map((sectionsForModule, moduleIndex) => {
-            const moduleSection: AutoBeAnalyzeModuleSection | undefined =
-              props.moduleEvent.moduleSections[moduleIndex];
-            const unitEvent: AutoBeAnalyzeWriteUnitEvent | undefined =
-              props.unitEvents[moduleIndex];
-            return `
-        ### Module ${moduleIndex + 1}: ${moduleSection?.title ?? "Unknown"}
+        ${
+          props.siblingModuleSummaries.length > 0
+            ? props.siblingModuleSummaries
+                .map(
+                  (s) =>
+                    `- Module ${s.moduleIndex + 1}: ${s.title} — sections: ${s.sectionTitles.join(", ")}`,
+                )
+                .join("\n")
+            : "(this is the only module in this file)"
+        }
 
-        ${sectionsForModule
+        ## Section Content to Review (Module ${props.moduleIndex + 1})
+
+        ### Module ${props.moduleIndex + 1}: ${props.moduleEvent.moduleSections[props.moduleIndex]?.title ?? "Unknown"}
+
+        ${props.moduleSectionEvents
           .map((sectionEvent, unitIndex) => {
             const unitSection: AutoBeAnalyzeUnitSection | undefined =
-              unitEvent?.unitSections[unitIndex];
+              props.unitEvent?.unitSections[unitIndex];
             return `
-        #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
+        #### Unit ${props.moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
 
         ${sectionEvent.sectionSections
           .map(
@@ -86,9 +99,6 @@ export const transformAnalyzeSectionReviewHistory = (
         ${section.content}
         `,
           )
-          .join("\n")}
-        `;
-          })
           .join("\n")}
         `;
           })
@@ -107,17 +117,18 @@ export const transformAnalyzeSectionReviewHistory = (
 
         Reject if content references entities, actors, or features NOT in this list.
 
-        ## Per-File Review Criteria
+        ## Per-Module Review Criteria
 
-        Please evaluate this file's section content:
+        Please evaluate this module's section content:
         1. Is ALL text in English only?
         2. Does content stay within this file's designated scope?
         3. Are values consistent with parent module/unit definitions?
         4. Is there any prohibited content (schemas, API specs, implementation details)?
         5. Is EARS format correct and consistent?
-        6. Is there no duplicate content within this file?
+        6. Is there no duplicate content within this module?
         7. (For canonical files 01/02/04) Are YAML spec blocks present?
         8. Does content ONLY reference entities, actors, and features from the Authorized Scenario Reference above?
+        9. Is terminology consistent with sibling modules listed above?
         ${
           props.feedback
             ? `
@@ -133,6 +144,6 @@ export const transformAnalyzeSectionReviewHistory = (
       },
     ],
     userMessage:
-      "Review this file's section content for quality and provide an approved/rejected verdict.",
+      "Review this module's section content for quality and provide an approved/rejected verdict.",
   };
 };

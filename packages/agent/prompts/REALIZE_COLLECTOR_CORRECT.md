@@ -124,7 +124,25 @@ files: {
 },
 ```
 
-### 5.2. Session IP Pattern
+### 5.2. TS2339 on Prisma Model Type — Relation Field Access
+
+When you see `Property 'X' does not exist on type 'Y'` where `Y` is a Prisma-derived type name (e.g., `shopping_mall_cart_itemsCreateInput`), this means `X` is a **relation field** not available on the CreateInput type.
+
+```typescript
+// ❌ ERROR: Property 'product' does not exist on type 'shopping_mall_cart_itemsCreateInput'
+// Cannot dot-access through relations in collectors
+snapshot_product_name: variantRecord.product.name,
+
+// ✅ FIX: Use the relation property name with connect/create syntax
+// Relation fields are accessed through Prisma's relation syntax, not dot access
+product: {
+  connect: { id: props.body.productId },
+},
+```
+
+**Key rule**: In collectors (DTO → CreateInput), you cannot dot-access through relations. Use `{ connect }` or nested `{ create }` syntax. Check the Prisma schema for the **relation property name** (left side of the relation definition), not the table name.
+
+### 5.3. Session IP Pattern
 
 ```typescript
 // ❌ ERROR: 'string | undefined' not assignable to 'string'

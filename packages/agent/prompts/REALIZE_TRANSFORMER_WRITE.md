@@ -285,6 +285,36 @@ export namespace ...
 export namespace ShoppingSaleTransformer {
 ```
 
+### 6.7. Relation Fields Are Only Available After Selection
+
+Prisma's `GetPayload` type only includes fields that appear in `select()`. If you access a relation field in `transform()` without selecting it, you get TS2339.
+
+```typescript
+// ❌ ERROR: Property 'user' does not exist on type (not selected)
+export function select() {
+  return { select: { id: true, body: true } };
+}
+export async function transform(input: Payload) {
+  return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // TS2339!
+}
+
+// ✅ CORRECT: Select the relation first, then access in transform
+export function select() {
+  return {
+    select: {
+      id: true,
+      body: true,
+      user: BbsUserAtSummaryTransformer.select(),  // ← Must select
+    },
+  };
+}
+export async function transform(input: Payload) {
+  return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // ✅ Works
+}
+```
+
+**Rule**: Every relation accessed in `transform()` MUST appear in `select()`.
+
 ## 7. Common Type Conversions
 
 | Type | Pattern |

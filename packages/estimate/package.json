@@ -1,16 +1,25 @@
 {
   "name": "@autobe/estimate",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Code quality evaluation system for AutoBE generated code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "estimate": "./dist/bin/estimate.js"
   },
+  "files": [
+    "dist",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/bin/estimate.ts",
-    "dev": "ts-node-dev src/bin/estimate.ts",
+    "estimate": "tsx dist/bin/estimate.js",
+    "benchmark": "./run-benchmark.sh",
     "test": "vitest --passWithNoTests",
     "lint": "eslint src --ext .ts"
   },
