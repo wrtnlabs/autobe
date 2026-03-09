@@ -22,6 +22,7 @@ import {
   IAutoBeAnalyzeSectionReviewApplicationComplete,
   IAutoBeAnalyzeSectionReviewApplicationProps,
 } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
+import { repairSectionReviewInput } from "./utils/repairSectionReviewUtils";
 
 /**
  * Orchestrate per-file review of section content for a SINGLE file.
@@ -112,6 +113,7 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeSectionReviewApplicationProps> => {
+    input = repairSectionReviewInput(input);
     const result: IValidation<IAutoBeAnalyzeSectionReviewApplicationProps> =
       typia.validate<IAutoBeAnalyzeSectionReviewApplicationProps>(input);
     if (result.success === false || result.data.request.type === "complete")

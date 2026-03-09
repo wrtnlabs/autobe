@@ -22,6 +22,7 @@ import {
   IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete,
   IAutoBeAnalyzeSectionCrossFileReviewApplicationProps,
 } from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
+import { repairSectionReviewInput } from "./utils/repairSectionReviewUtils";
 
 /**
  * Orchestrate cross-file lightweight review of section metadata across ALL
@@ -111,6 +112,7 @@ function createController(props: {
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> => {
+    input = repairSectionReviewInput(input);
     const result: IValidation<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps> =
       typia.validate<IAutoBeAnalyzeSectionCrossFileReviewApplicationProps>(
         input,
