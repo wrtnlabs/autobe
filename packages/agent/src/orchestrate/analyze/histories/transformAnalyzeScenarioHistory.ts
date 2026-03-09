@@ -12,15 +12,15 @@ export const transformAnalyzeScenarioHistory = (
   feedback?: string,
 ): IAutoBeOrchestrateHistory => ({
   histories: [
-    ...ctx
-      .histories()
-      .filter((h) => h.type === "userMessage" || h.type === "assistantMessage"),
     {
       id: v7(),
       type: "systemMessage",
       text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO,
       created_at: new Date().toISOString(),
     },
+    ...ctx
+      .histories()
+      .filter((h) => h.type === "userMessage" || h.type === "assistantMessage"),
     ...preliminary.getHistories(),
     ...(feedback
       ? [

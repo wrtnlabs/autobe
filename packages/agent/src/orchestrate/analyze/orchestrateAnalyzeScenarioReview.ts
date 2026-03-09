@@ -17,6 +17,7 @@ import {
   IAutoBeAnalyzeScenarioReviewApplicationComplete,
   IAutoBeAnalyzeScenarioReviewApplicationProps,
 } from "./structures/IAutoBeAnalyzeScenarioReviewApplication";
+import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 
 /**
  * Orchestrate scenario review: validate scenario output against user's original
@@ -93,8 +94,17 @@ function createController(props: {
       validate: {
         process: (
           input: unknown,
-        ): IValidation<IAutoBeAnalyzeScenarioReviewApplicationProps> =>
-          typia.validate<IAutoBeAnalyzeScenarioReviewApplicationProps>(input),
+        ): IValidation<IAutoBeAnalyzeScenarioReviewApplicationProps> => {
+          if (isRecord(input) && typeof input.request === "string") {
+            input = {
+              ...input,
+              request: tryParseStringAsRecord(input.request),
+            };
+          }
+          return typia.validate<IAutoBeAnalyzeScenarioReviewApplicationProps>(
+            input,
+          );
+        },
       },
     });
   return {
