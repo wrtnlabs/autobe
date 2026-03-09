@@ -514,7 +514,7 @@ function printResults(result: EvaluationResult): void {
     `   JSDoc:         ${result.reference.jsdoc.totalMissing} missing`,
   );
   console.log(
-    `   Schema Sync:   ${result.reference.schemaSync.emptyTypes}/${result.reference.schemaSync.totalTypes} empty types`,
+    `   Schema Sync:   ${result.reference.schemaSync.emptyTypes}/${result.reference.schemaSync.totalTypes} empty types, ${result.reference.schemaSync.mismatchedProperties} mismatched`,
   );
   console.log("─────────────────────────────────────────\n");
 

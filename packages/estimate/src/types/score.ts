@@ -39,11 +39,11 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.2, // 20%
+  documentQuality: 0.1, // 10%
   requirementsCoverage: 0.25, // 25%
-  testCoverage: 0.2, // 20%
-  logicCompleteness: 0.2, // 20%
-  apiCompleteness: 0.15, // 15%
+  testCoverage: 0.3, // 30%
+  logicCompleteness: 0.25, // 25%
+  apiCompleteness: 0.1, // 10%
   // Legacy (not used in score)
   requirements: 0,
   database: 0,
@@ -137,6 +137,7 @@ export namespace ReferenceInfo {
   export interface SchemaSync {
     totalTypes: number;
     emptyTypes: number;
+    mismatchedProperties: number;
     issues: Issue[];
   }
 }
@@ -161,6 +162,7 @@ export interface JsDocPenalty {
 export interface SchemaSyncPenalty {
   amount: number;
   emptyTypes: number;
+  mismatchedProperties: number;
 }
 
 export interface EvaluationPenalties {

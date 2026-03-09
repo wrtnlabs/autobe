@@ -403,6 +403,8 @@ export class EvaluationPipeline {
       schemaSync: {
         totalTypes: (resultMap.schemaSync.metrics?.totalTypes as number) || 0,
         emptyTypes: (resultMap.schemaSync.metrics?.emptyTypes as number) || 0,
+        mismatchedProperties:
+          (resultMap.schemaSync.metrics?.mismatchedProperties as number) || 0,
         issues: resultMap.schemaSync.issues,
       },
     };
@@ -419,7 +421,12 @@ export class EvaluationPipeline {
       duplication: { totalBlocks: 0, issues: [] },
       naming: { totalIssues: 0, issues: [] },
       jsdoc: { totalMissing: 0, issues: [] },
-      schemaSync: { totalTypes: 0, emptyTypes: 0, issues: [] },
+      schemaSync: {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      },
     };
   }
 
@@ -543,21 +550,33 @@ export class EvaluationPipeline {
         }
       }
 
-      // Empty interface penalty
-      if (reference.schemaSync.emptyTypes >= 5) {
-        const syncPenalty = Math.min(
-          5,
-          Math.round(reference.schemaSync.emptyTypes / 10),
-        );
-        totalScore = Math.max(0, totalScore - syncPenalty);
-        penaltyData.schemaSync = {
-          amount: syncPenalty,
-          emptyTypes: reference.schemaSync.emptyTypes,
-        };
-        if (this.verbose) {
-          console.log(
-            `  Schema sync penalty: -${syncPenalty} (${reference.schemaSync.emptyTypes} empty types)`,
+      // Empty interface + mismatch penalty
+      {
+        let syncPenalty = 0;
+        if (reference.schemaSync.emptyTypes >= 5) {
+          syncPenalty += Math.min(
+            5,
+            Math.round(reference.schemaSync.emptyTypes / 10),
           );
+        }
+        if (reference.schemaSync.mismatchedProperties >= 3) {
+          syncPenalty += Math.min(
+            5,
+            Math.round(reference.schemaSync.mismatchedProperties / 5),
+          );
+        }
+        if (syncPenalty > 0) {
+          totalScore = Math.max(0, totalScore - syncPenalty);
+          penaltyData.schemaSync = {
+            amount: syncPenalty,
+            emptyTypes: reference.schemaSync.emptyTypes,
+            mismatchedProperties: reference.schemaSync.mismatchedProperties,
+          };
+          if (this.verbose) {
+            console.log(
+              `  Schema sync penalty: -${syncPenalty} (${reference.schemaSync.emptyTypes} empty types, ${reference.schemaSync.mismatchedProperties} mismatched)`,
+            );
+          }
         }
       }
 

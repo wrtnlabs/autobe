@@ -51,4 +51,4 @@ export interface AgentResult {
 }
 
 /** Default model */
-export const DEFAULT_MODEL = "qwen/qwen3-next-80b-a3b-instruct";
+export const DEFAULT_MODEL = "qwen/qwen3.5-35b-a3b";
