@@ -190,6 +190,18 @@ export const createAutoBeContext = (props: {
           if (next.promptCacheKey)
             event.body.prompt_cache_key = next.promptCacheKey;
 
+          // Reorder messages: system messages must come first
+          // (required by some providers like Parasail)
+          if (event.body.messages) {
+            const systems = event.body.messages.filter(
+              (m: { role: string }) => m.role === "system",
+            );
+            const others = event.body.messages.filter(
+              (m: { role: string }) => m.role !== "system",
+            );
+            event.body.messages = [...systems, ...others];
+          }
+
           await props.dispatch({
             ...event,
             type: "vendorRequest",
