@@ -163,7 +163,7 @@ export const transformAnalyzeWriteSectionHistory = (
 
         You MUST create sections that address these keywords:
 
-        ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+        ${unitSection?.keywords?.map((kw, i) => `${i + 1}. ${kw}`)?.join("\n") ?? "No keywords"}
 
         ## Sibling Unit Summaries (do NOT duplicate this content)
 
