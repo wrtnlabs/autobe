@@ -68,8 +68,10 @@ export const validate_analyze_write_section_review = async (props: {
       fileIndex: 0,
       file,
       moduleEvent,
-      unitEvents: [unitEvent],
-      sectionEvents: [[sectionEvent]],
+      moduleIndex: 0,
+      unitEvent,
+      moduleSectionEvents: [sectionEvent],
+      siblingModuleSummaries: [],
       progress,
       retry: 0,
     });
