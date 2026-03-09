@@ -46,7 +46,7 @@ export function createProgram(): Command {
   program
     .name("estimate")
     .description("Evaluate AutoBE generated code quality")
-    .version("0.3.0")
+    .version("1.0.0")
     .requiredOption("-i, --input <path>", "Input project path")
     .requiredOption("-o, --output <path>", "Output directory for reports")
     .option("-v, --verbose", "Enable verbose output (default: false)", false)

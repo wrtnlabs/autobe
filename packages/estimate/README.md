@@ -2,205 +2,99 @@
 
 A CLI tool that evaluates code quality for AutoBE-generated projects.
 
-## Getting Started
+## Quick Start
+
 ```bash
+# 1. Build (한 번만)
 cd packages/estimate
-pnpm install
+npx tsc --build
+
+# 2. .env 설정
+cp .env.example .env
+# OPENROUTER_API_KEY=sk-or-... (AI agent 사용 시)
+
+# 3. 단일 프로젝트 평가
+npx tsx dist/bin/estimate.js -i /path/to/project -o ./reports
+
+# 4. 전체 벤치마크
+./run-benchmark.sh
 ```
 
-Run your first evaluation:
+## CLI Usage
+
 ```bash
-pnpm start --input /path/to/project --output ./reports --verbose
+npx tsx dist/bin/estimate.js -i <path> -o <path> [options]
 ```
 
-Want AI-powered analysis too? Add the agent flags:
-```bash
-pnpm start --input /path/to/project --output ./reports --verbose \
-  --use-agent --provider openrouter --api-key "your-key"
-```
+| Option | Description |
+|--------|-------------|
+| `-i, --input <path>` | 평가할 프로젝트 경로 (required) |
+| `-o, --output <path>` | 리포트 저장 경로 (required) |
+| `-v, --verbose` | 상세 로그 출력 |
+| `--continue-on-gate-failure` | Gate 실패해도 계속 평가 |
+| `--use-agent` | AI agent 평가 활성화 (30% of score) |
+| `--provider <provider>` | LLM provider: `claude`, `openai`, `openrouter` |
+| `--api-key <key>` | API key (또는 `OPENROUTER_API_KEY` 환경변수) |
+| `--auto-fix` | 단순 이슈 자동 수정 (TS1161, TS7006) |
+| `--run-tests` | Docker 서버 시작 후 e2e 테스트 실행 |
+| `--golden` | Golden Set 평가 |
+| `--project <project>` | Golden Set 프로젝트 타입: `todo`, `bbs`, `reddit`, `shopping` |
 
-## How It Works
+## Scoring System
 
-We only score things that AutoBE can actually fix. Stuff like code complexity or duplicate blocks? That's on you to refactor, so we just show it as reference info — but they may trigger penalties if they're excessive.
+### Gate Check (pass/fail)
 
-**Affects your score (70%):**
-- Documentation quality
-- Requirements coverage
-- Test coverage (file count + assertion quality)
-- Logic completeness (no TODOs, stub code, empty methods)
-- API completeness (provider delegation, no empty endpoints)
+컴파일이 안 되면 0점:
+- **Source file check**: `src/`에 TypeScript 파일이 없으면 즉시 실패 (GATE001)
+- **TypeScript compilation**: `AutoBeTypeScriptCompiler` (in-memory)
+- **Prisma schema validation**: `AutoBeDatabaseCompiler` (in-memory)
 
-**AI Agent evaluation (30%):**
-- Security analysis (OWASP Top 10)
-- LLM quality analysis (hallucinations, logic errors)
-
-**Reference only (no direct score impact):**
-- Code complexity
-- Duplicate code blocks
-- Naming conventions
-- JSDoc comments
-- Security patterns
-- Schema sync (empty interfaces in DTOs)
-
-**Penalties (deducted from total score):**
-- Warning penalty: up to -10 if warning ratio > 50%
-- Duplication penalty: up to -5 if > 50 duplicate blocks
-- JSDoc penalty: up to -5 if > 10% missing
-- Empty interface penalty: up to -5 if > 5 empty types detected (SYNC001)
-- Mapping ratio penalty: up to -40 if < 50% of controllers have matching providers (REQ006)
-
-## CLI Options
-```bash
-pnpm start --input <path> --output <path> [options]
-```
-
-| Option | What it does |
-|--------|--------------|
-| `--input`, `-i` | Project to evaluate (required) |
-| `--output`, `-o` | Where to save reports (required) |
-| `--verbose`, `-v` | Show detailed logs |
-| `--continue-on-gate-failure` | Keep going even if basic checks fail |
-| `--use-agent` | Enable AI evaluation (30% of score) |
-| `--provider` | Which LLM to use: `claude`, `openai`, or `openrouter` |
-| `--api-key` | Your API key |
-| `--auto-fix` | Auto-fix simple issues (TS1161, TS7006) after evaluation |
-| `--run-tests` | Start Docker server and run e2e tests |
-| `--golden` | Run Golden Set evaluation |
-| `--project` | Project type for Golden Set (`todo`, `bbs`, `reddit`, `shopping`) |
-
-You can also use a `.env` file in the `packages/estimate/` directory:
-```bash
-OPENROUTER_API_KEY=sk-or-...
-
-# Optional: Langfuse telemetry
-LANGFUSE_PUBLIC_KEY=pk-lf-...
-LANGFUSE_SECRET_KEY=sk-lf-...
-LANGFUSE_HOST=https://cloud.langfuse.com
-```
-
-Or set them as environment variables:
-```bash
-export OPENROUTER_API_KEY="sk-or-..."
-```
-
-## Evaluation Pipeline
-
-Here's what happens when you run an evaluation:
-
-### 1. Gate Check (pass/fail)
-
-First, we make sure the code actually compiles. If this fails, you get a 0.
-
-- **Source file check**: If there are no TypeScript files in `src/`, the gate fails immediately (GATE001). This catches cases where the pipeline didn't generate any code.
-- **TypeScript compilation**: Uses `AutoBeTypeScriptCompiler` (in-memory, no external `tsc` binary required)
-- **Prisma schema validation**: Uses `AutoBeDatabaseCompiler.compilePrismaSchemas()` (in-memory, no external `prisma` binary required)
-
-Both compilers run entirely in-memory, so there's no need to install project dependencies or have global toolchains available.
-
-### 2. Scoring Phases (70% of total)
-
-Then we score these five areas:
+### Scoring Phases (70% of total)
 
 | Phase | Weight | What we check |
 |-------|--------|---------------|
-| Document Quality | 20% | Does `docs/analysis/` exist? Is there a README? |
-| Requirements Coverage | 25% | Are there controllers, providers, and DTOs? |
-| Test Coverage | 20% | Test count, assertion quality, stub detection |
-| Logic Completeness | 20% | TODOs, FIXMEs, empty methods, empty catch, stub returns |
-| API Completeness | 15% | Endpoint implementation, provider delegation |
+| Document Quality | 10% | `docs/analysis/` 존재 여부, README |
+| Requirements Coverage | 25% | Controllers, providers, DTOs 존재 |
+| Test Coverage | 30% | 테스트 수, assertion quality, stub 감지 |
+| Logic Completeness | 25% | TODOs, FIXMEs, empty methods, stub returns |
+| API Completeness | 10% | Endpoint 구현, provider delegation |
 
-### 3. Penalties
-
-After scoring, penalties are applied based on reference metrics:
+### Penalties (점수 차감)
 
 | Penalty | Trigger | Max Deduction |
 |---------|---------|---------------|
 | Warning | Warning ratio > 50% | -10 |
 | Duplication | > 50 duplicate blocks | -5 |
 | JSDoc | > 10% missing | -5 |
-| Empty interfaces | > 5 empty types in DTOs (SYNC001) | -5 |
-| Mapping ratio | < 50% controller-provider coverage (REQ006) | -40 |
+| Schema Sync (SYNC001) | > 5 empty types in DTOs | -5 |
+| Schema Sync (SYNC002) | >= 3 Prisma ↔ Structure mismatches | -5 |
+| Mapping ratio (REQ006) | < 50% controller-provider coverage | -40 |
 
-### 4. Reference Metrics
+### Reference Info (점수 영향 없음)
 
-We also collect these, but they don't directly affect your score (except through penalties):
+- **Complexity**: cyclomatic complexity > 15인 함수
+- **Duplication**: 10줄 이상 중복 블록
+- **Naming**: PascalCase 위반
+- **JSDoc**: 누락된 문서 주석
+- **Schema Sync**: 빈 인터페이스(SYNC001) + Prisma ↔ Structure 매핑 불일치(SYNC002)
 
-- **Complexity**: Functions with cyclomatic complexity > 15
-- **Duplication**: Blocks of 10+ identical lines
-- **Naming**: Classes/interfaces not following PascalCase
-- **JSDoc**: Missing documentation comments
-- **Security**: Hardcoded passwords, eval() usage, etc.
-- **Schema Sync**: Empty interfaces/types in DTO files (`export type IFoo = {}`)
+### AI Agent Evaluation (30% of total)
 
-### 5. AI Agent Evaluation (30% of total)
+`--use-agent` 플래그로 활성화:
 
-If you enable `--use-agent`, two AI agents analyze your code:
+- **SecurityAgent**: OWASP Top 10 기반 보안 분석
+- **LLMQualityAgent**: hallucination, 불완전 구현, 로직 오류 감지
 
-**SecurityAgent** reviews `controllers/` and `providers/` based on OWASP Top 10 2025:
-- Injection (SQL injection, XSS, shell injection)
-- Broken Access Control
-- Cryptographic Failures
-- Insecure Design
-- Security Misconfiguration
-- Vulnerable and Outdated Components
-- Identification and Authentication Failures
-- Software and Data Integrity Failures
-- Security Logging and Monitoring Failures
-- Server-Side Request Forgery (SSRF)
+### Scoring Formula
 
-**LLMQualityAgent** compares `docs/analysis/` with `providers/` to find:
-- Hallucinated imports (packages that don't exist)
-- Incomplete implementations
-- Logic that doesn't match requirements
-- Copy-paste errors
-- Missing edge case handling
-
-Large codebases are automatically split into chunks and evaluated in parallel. Duplicate issues across chunks are removed using similarity matching.
-
-> **Note:** Without `--use-agent`, agent evaluation is skipped and 100% of the score comes from phases.
-
-## Scoring Formula
 ```
 Raw Phase Score = Σ(phase_score × phase_weight)
-Penalties       = warning + duplication + jsdoc + schemaSync (max -25)
+Penalties       = warning + duplication + jsdoc + schemaSync + mapping (max ~65)
 Adjusted Phase  = Raw Phase - Penalties
 
-Agent Average   = Σ(agent_scores) / agent_count
-
-Final Score     = (Adjusted Phase × 70%) + (Agent Average × 30%)
+Without agents:  Final Score = Adjusted Phase (100%)
+With agents:     Final Score = (Adjusted Phase × 70%) + (Agent Average × 30%)
 ```
-
-Without agents enabled:
-```
-Final Score     = Adjusted Phase (100%)
-```
-
-## Comparing Projects
-
-Compare two or more projects side-by-side:
-```bash
-pnpm run compare \
-  --project-a /path/to/project-a \
-  --project-b /path/to/project-b \
-  --name-a "AutoBE Generated" \
-  --name-b "Hand Written" \
-  --output ./reports/comparison \
-  --verbose
-```
-
-With AI agents:
-```bash
-pnpm run compare \
-  --project-a /path/to/project-a \
-  --project-b /path/to/project-b \
-  --name-a "AutoBE Generated" \
-  --name-b "Hand Written" \
-  --output ./reports/comparison \
-  --use-agent --provider openrouter \
-  --verbose
-```
-
-The comparison report includes rankings, per-phase score breakdowns, penalty comparison, agent scores, and metric comparisons between projects.
 
 ## Grading
 
@@ -212,60 +106,64 @@ The comparison report includes rankings, per-phase score breakdowns, penalty com
 | D | 60-69 | Significant problems |
 | F | 0-59 | Major issues or gate failure |
 
-## Output
-
-You get two files:
-
-- `estimate-report.md` - Human-readable summary with score breakdown
-- `estimate-report.json` - Machine-readable for CI/CD
-
-For comparisons, you also get:
-- `comparison-report.md` - Side-by-side comparison
-
 ## Benchmarking
 
-Run evaluations across all models and projects at once:
+전체 모델 × 프로젝트 벤치마크:
 
 ```bash
 cd packages/estimate
 
-# Scoring only (no LLM calls, fast)
+# Scoring only (LLM 호출 없음, 빠름)
 ./run-benchmark.sh
 
-# With AI agents (needs OPENROUTER_API_KEY in .env)
+# With AI agents (OPENROUTER_API_KEY 필요)
 ./run-benchmark.sh agent
 
 # Full mode (agents + runtime tests + golden set)
 ./run-benchmark.sh full
 ```
 
-The script reads `.env` automatically, runs 5 models x 4 projects = 20 evaluations, and reports pass/fail counts.
+결과: `reports/benchmark/<model>/<project>/`
 
-Results go to `reports/benchmark/<model>/<project>/`.
+### Compare
 
-## Examples
+여러 프로젝트 비교:
 
-Basic evaluation:
 ```bash
-pnpm start -i ~/autobe-examples/openai/gpt-4.1-mini/todo -o ./reports -v
+npx tsx dist/bin/estimate.js compare \
+  -p "model-a:/path/to/a" "model-b:/path/to/b" \
+  -o ./reports/comparison
 ```
 
-With AI agents:
+## Environment Variables
+
+`.env` 파일 (packages/estimate/):
+
 ```bash
-pnpm start -i ~/project -o ./reports -v \
-  --use-agent --api-key "sk-or-..."
+OPENROUTER_API_KEY=sk-or-...
+
+# Optional: Langfuse telemetry
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_HOST=https://cloud.langfuse.com
 ```
 
-Sample output:
+## Output
+
+- `estimate-report.md` — 사람이 읽는 요약
+- `estimate-report.json` — CI/CD용 기계 판독
+
+## Sample Output
+
 ```
 📋 Scoring Phases (70% of total score):
 ─────────────────────────────────────────
    Gate:                    ✅ Pass
    Document Quality         100/100 ✅
    Requirements Coverage    90/100 ✅
-   Test Coverage            98/100 ✅
+   Test Coverage            61/100 ⚠️
    Logic Completeness       100/100 ✅
-   API Completeness         70/100 📊
+   API Completeness         100/100 ✅
 ─────────────────────────────────────────
 
 📋 Reference Info (no score impact):
@@ -274,74 +172,27 @@ Sample output:
    Duplication:   102 duplicate blocks
    Naming:        0 issues
    JSDoc:         36 missing
-   Security:      0 issues
-   Schema Sync:   26/35 empty types
+   Schema Sync:   0/35 empty types, 0 mismatched
 ─────────────────────────────────────────
 
-🤖 AI Agent Evaluations (30% of total score):
-─────────────────────────────────────────
-   SecurityAgent: 77/100 ⚠️
-      Summary: [6 chunks, 68→52 issues] Critical access control flaws...
-      Issues found: 52
-
-   LLMQualityAgent: 69/100 ⚠️
-      Summary: [4 chunks, 47→47 issues] Multiple critical issues...
-      Issues found: 47
-─────────────────────────────────────────
-
-📊 Final Score: 77/100 (Grade: C)
-
-   Phase Score:  84/100 × 70% = 59.0
-   Agent Score:  73/100 × 30% = 22.0
-   ─────────────────────────────
-   Total:        77/100
+📊 Final Score: 85/100 (Grade: B)
 ```
-
-## Supported LLM Providers
-
-For AI agent evaluation, you can use:
-
-| Provider | Models |
-|----------|--------|
-| `claude` | claude-sonnet-4-20250514 (default) |
-| `openai` | gpt-4o (default) |
-| `openrouter` | Any model they support |
-
-OpenRouter is nice because one API key gets you access to Claude, GPT, Gemini, Llama, and more. Just specify the model like `anthropic/claude-3.5-sonnet` or `openai/gpt-4o`.
-
-## Token Usage
-
-AI agents read your code in chunks, so larger projects use more tokens. Chunks are evaluated in parallel for speed.
-
-| Project Size | Approx Tokens | Chunks |
-|--------------|---------------|--------|
-| Small (~50 files) | ~30k | 1-2 |
-| Medium (~100 files) | ~80k | 2-4 |
-| Large (~300+ files) | ~200k+ | 5-10+ |
 
 ## Troubleshooting
 
 **Gate keeps failing**
-- Try `--continue-on-gate-failure` to see all issues
-- Gate uses in-memory compilers, so external module imports (e.g. `@nestjs/common`) will show as unresolved — this is expected behavior
+- `--continue-on-gate-failure`로 전체 이슈 확인
+- Gate는 in-memory 컴파일러 사용 — `@nestjs/common` 같은 외부 모듈 미해결은 정상
 
 **AI agent errors**
-- Make sure your API key is correct
-- Check the model ID format (OpenRouter uses `provider/model-name`)
-- If you hit rate limits, chunks are retried automatically
+- API key 확인
+- OpenRouter 모델 ID 형식: `provider/model-name`
+- Rate limit 시 자동 재시도
 
-**High token usage**
-- We only send `controllers/` and `providers/` to AI
-- For huge projects, consider evaluating a subset first
-
-## Code Quality
-
-This package follows [Biome](https://biomejs.dev/) lint rules enforced in CI:
-- `noUnusedImports` — No unused imports
-- `noUnusedVariables` — No unused variables
-- `noFloatingPromises` — All promises must be awaited or handled
-- `noExplicitAny` — No `any` type usage
+**빌드 안 됨**
+- `npx tsc --build` 먼저 실행
+- `dist/` 디렉토리가 있는지 확인
 
 ## License
 
-MIT
+AGPL-3.0
