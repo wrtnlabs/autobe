@@ -110,17 +110,11 @@ namespace PreliminaryTransformer {
       previous:
         AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
       available: StringUtil.trim`
-        ID | File | Unit | Section | Keywords
-        ---|------|------|---------|----------
+        ID | File | Unit | Section
+        ---|------|------|--------
         ${newbie
           .map((s) =>
-            [
-              s.id,
-              s.filename,
-              s.unitTitle,
-              s.sectionTitle,
-              s.keywords.join(", "),
-            ].join(" | "),
+            [s.id, s.filename, s.unitTitle, s.sectionTitle].join(" | "),
           )
           .join("\n")}
       `,

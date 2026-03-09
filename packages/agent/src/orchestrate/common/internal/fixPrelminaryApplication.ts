@@ -173,12 +173,12 @@ namespace ApplicationFixer {
       StringUtil.trim`
         Here is the catalog of analysis sections available for retrieval:
 
-        ID | File | Unit | Section | Keywords
-        ---|------|------|---------|----------
+        ID | File | Unit | Section
+        ---|------|------|--------
         ${sections
           .map(
             (s) =>
-              `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle} | ${s.keywords.join(", ")}`,
+              `${s.id} | ${s.filename} | ${s.unitTitle} | ${s.sectionTitle}`,
           )
           .join("\n")}
       `,

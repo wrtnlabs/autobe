@@ -146,7 +146,7 @@ export const enum AutoBeConfigConstant {
    * accommodates complex scenarios requiring multiple context rounds while
    * preventing runaway execution.
    */
-  RAG_LIMIT = 8,
+  RAG_LIMIT = 7,
 
   /**
    * Default timeout for long-running operations in milliseconds (15 minutes).
