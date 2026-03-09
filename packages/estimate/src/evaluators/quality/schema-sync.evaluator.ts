@@ -14,8 +14,8 @@ interface SchemaSyncFileResult {
 }
 
 /**
- * Detects empty interfaces/types (SYNC001) and Prisma ↔ Structure
- * property mismatches (SYNC002) in structure (DTO) files.
+ * Detects empty interfaces/types (SYNC001) and Prisma ↔ Structure property
+ * mismatches (SYNC002) in structure (DTO) files.
  *
  * SYNC001: Empty structures like `export type IJoin = {}` indicate that the
  * OpenAPI-to-TypeScript pipeline failed to populate interface properties.
@@ -91,8 +91,8 @@ export class SchemaSyncEvaluator extends BaseEvaluator {
   }
 
   /**
-   * Parse all Prisma schema files and extract model names with their
-   * column and relation names.
+   * Parse all Prisma schema files and extract model names with their column and
+   * relation names.
    */
   private async parsePrismaModels(
     prismaFiles: string[],
@@ -279,7 +279,12 @@ export class SchemaSyncEvaluator extends BaseEvaluator {
 
       return { totalTypes, emptyTypes, mismatchedProperties, issues };
     } catch {
-      return { totalTypes: 0, emptyTypes: 0, mismatchedProperties: 0, issues: [] };
+      return {
+        totalTypes: 0,
+        emptyTypes: 0,
+        mismatchedProperties: 0,
+        issues: [],
+      };
     }
   }
 }
