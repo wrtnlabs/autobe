@@ -10,6 +10,12 @@ pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
 pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
+# qwen/qwen3.5-397b-a17b (0.39)
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project bbs > archive.qwen-qwen3.5-397b-a17b.bbs.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project reddit > archive.qwen-qwen3.5-397b-a17b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project shopping > archive.qwen-qwen3.5-397b-a17b.shopping.log
+
 # qwen/qwen3.5-122b-a10b (0.26)
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project todo > archive.qwen-qwen3.5-122b-a10b.todo.log
 pnpm run archive:go --vendor qwen/qwen3.5-122b-a10b --useToolChoice false --project bbs > archive.qwen-qwen3.5-122b-a10b.bbs.log
@@ -49,7 +55,7 @@ pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project bbs > archive.deep
 pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project reddit > archive.deepseek-deepseek-v3.2.reddit.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.2 --project shopping > archive.deepseek-deepseek-v3.2.shopping.log
 
-# deepseek/deepseek-v3.1-terminus:exacto (0.21) -> not working
+# deepseek/deepseek-v3.1-terminus:exacto (0.21) -> working
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project todo > archive.deepseek-deepseek-v3.1-terminus-exacto.todo.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project bbs > archive.deepseek-deepseek-v3.1-terminus-exacto.bbs.log
 pnpm run archive:go --vendor deepseek/deepseek-v3.1-terminus:exacto --project reddit > archive.deepseek-deepseek-v3.1-terminus-exacto.reddit.log
