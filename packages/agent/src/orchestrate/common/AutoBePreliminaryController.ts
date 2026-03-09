@@ -302,8 +302,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * requests data → `orchestratePreliminary` adds to `local` → next iteration
    * with updated context.
    *
-   * When RAG_LIMIT is exhausted, throws `AutoBePreliminaryExhaustedError`
-   * which can be caught alongside `AutoBeTimeoutError` for force-pass.
+   * When RAG_LIMIT is exhausted, throws `AutoBePreliminaryExhaustedError` which
+   * can be caught alongside `AutoBeTimeoutError` for force-pass.
    *
    * @param ctx AutoBe context for `conversate` and state access.
    * @param process Callback that runs LLM `conversate` and returns result.
