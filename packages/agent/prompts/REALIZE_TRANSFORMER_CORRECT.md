@@ -207,6 +207,37 @@ return {
 };
 ```
 
+### 5.6. TS2339 on Prisma Model Type — Relation Field Not Selected
+
+When you see `Property 'X' does not exist on type 'Y'` where `Y` is a snake_case Prisma model name (e.g., `shopping_mall_product_variants`), this means `X` is a **relation field** not included in your `select()`.
+
+```typescript
+// ❌ ERROR: Property 'user' does not exist on type
+// The select() doesn't include the 'user' relation
+export function select() {
+  return { select: { id: true, body: true } };
+}
+export async function transform(input: Payload) {
+  return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // ❌
+}
+
+// ✅ FIX: Add the relation to select() using the neighbor transformer
+export function select() {
+  return {
+    select: {
+      id: true,
+      body: true,
+      user: BbsUserAtSummaryTransformer.select(),  // ✅ Added
+    },
+  };
+}
+export async function transform(input: Payload) {
+  return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // ✅ Now works
+}
+```
+
+**Key rule**: In transformers (Database Payload → DTO), every relation field accessed in `transform()` must be selected in `select()`. Use `NeighborTransformer.select()` for the relation value in select().
+
 ## 6. Compiler Authority
 
 **The TypeScript compiler is ALWAYS right. Your role is to FIX errors, not judge them.**

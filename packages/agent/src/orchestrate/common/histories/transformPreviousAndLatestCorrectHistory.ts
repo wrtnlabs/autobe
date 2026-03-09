@@ -3,6 +3,7 @@ import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { v7 } from "uuid";
 
+import { generateTS2339Hints } from "../../realize/utils/generateTS2339Hints";
 import { printErrorHints } from "../../realize/utils/printErrorHints";
 
 export const transformPreviousAndLatestCorrectHistory = (
@@ -12,56 +13,65 @@ export const transformPreviousAndLatestCorrectHistory = (
   }>,
 ): IAgenticaHistoryJson.IAssistantMessage[] => {
   // console.log(printErrorHints(array.at(-1)!.script, array.at(-1)!.diagnostics));
-  return array.map((failure, i) => ({
-    id: v7(),
-    type: "assistantMessage",
-    text: StringUtil.trim`
-      ${
-        i === array.length - 1
-          ? "# Latest Failure"
-          : StringUtil.trim`
-            # Previous Failure
+  return array.map((failure, i) => {
+    const isLatest = i === array.length - 1;
+    const ts2339Hints = isLatest
+      ? generateTS2339Hints(failure.diagnostics)
+      : "";
 
-            This is the previous failure for your reference.
+    return {
+      id: v7(),
+      type: "assistantMessage",
+      text: StringUtil.trim`
+        ${
+          isLatest
+            ? "# Latest Failure"
+            : StringUtil.trim`
+              # Previous Failure
 
-            Never try to fix this previous failure code, but only
-            focus on the latest failure below. This is provided just
-            to give you context about your past mistakes.
+              This is the previous failure for your reference.
 
-            If same mistake happens again, you must try to not
-            repeat the same mistake. Change your approach to fix
-            the issue.
-          `
-      }
-      
-      ## Original Code
+              Never try to fix this previous failure code, but only
+              focus on the latest failure below. This is provided just
+              to give you context about your past mistakes.
 
-      Here is the previous code you have to review and fix.
+              If same mistake happens again, you must try to not
+              repeat the same mistake. Change your approach to fix
+              the issue.
+            `
+        }
 
-      \`\`\`typescript
-      ${failure.script}
-      \`\`\`
+        ## Original Code
 
-      ## Compilation Errors
+        Here is the previous code you have to review and fix.
 
-      Here are the compilation errors found in the code above.
+        \`\`\`typescript
+        ${failure.script}
+        \`\`\`
 
-      \`\`\`json
-      ${JSON.stringify(failure.diagnostics)}
-      \`\`\`
+        ## Compilation Errors
 
-      ## Error Annotated Code
+        Here are the compilation errors found in the code above.
 
-      Here is the error annotated code.
+        \`\`\`json
+        ${JSON.stringify(failure.diagnostics)}
+        \`\`\`
 
-      Please refer to the annotation for the location of the error.
+        ## Error Annotated Code
 
-      By the way, note that, this code is only for reference purpose.
-      Never fix code from this error annotated code. You must fix
-      the original code above.
+        Here is the error annotated code.
 
-      ${printErrorHints(failure.script, failure.diagnostics)}
-    `,
-    created_at: new Date().toISOString(),
-  }));
+        Please refer to the annotation for the location of the error.
+
+        By the way, note that, this code is only for reference purpose.
+        Never fix code from this error annotated code. You must fix
+        the original code above.
+
+        ${printErrorHints(failure.script, failure.diagnostics)}
+
+        ${ts2339Hints}
+      `,
+      created_at: new Date().toISOString(),
+    };
+  });
 };
