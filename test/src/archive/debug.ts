@@ -32,6 +32,8 @@ const debug = (props: {
   const content: string = StringUtil.trim`
     ## \`${props.vendor}\` - \`${props.project}\`
 
+    Total ${dict.size} compile errors.
+
     ### Location
 
     \`\`\`bash
