@@ -56,6 +56,7 @@ export const orchestratePreliminary = async <
         arguments: exec.arguments,
         previous: false,
       });
+      props.preliminary.advanceAnalysisPage();
     } else if (isPreviousAnalysisSections(props.preliminary, exec.arguments)) {
       const ps: AutoBePreliminaryController<"previousAnalysisSections"> =
         props.preliminary;
@@ -68,6 +69,7 @@ export const orchestratePreliminary = async <
         arguments: exec.arguments,
         previous: true,
       });
+      props.preliminary.advanceAnalysisPage();
     }
     // PRISMA SCHEMAS
     else if (isPrismaSchemas(props.preliminary, exec.arguments)) {

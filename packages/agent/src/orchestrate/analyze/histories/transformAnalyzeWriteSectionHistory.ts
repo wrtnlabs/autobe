@@ -163,17 +163,17 @@ export const transformAnalyzeWriteSectionHistory = (
 
         You MUST create sections that address these keywords:
 
-        ${unitSection?.keywords.map((kw, i) => `${i + 1}. ${kw}`).join("\n") ?? "No keywords"}
+        ${unitSection?.keywords?.map((kw, i) => `${i + 1}. ${kw}`)?.join("\n") ?? "No keywords"}
 
         ## Sibling Unit Summaries (do NOT duplicate this content)
 
         ${props.allUnitEvents
           .flatMap((unitEvt, mi) =>
-            unitEvt.unitSections
+            (unitEvt?.unitSections ?? [])
               .map((unit, ui) => {
                 if (mi === props.moduleIndex && ui === props.unitIndex)
                   return null;
-                return `- **Module ${mi + 1} > ${unit.title}**: ${unit.keywords.slice(0, 5).join(", ")}`;
+                return `- **Module ${mi + 1} > ${unit.title}**: ${(unit.keywords ?? []).slice(0, 5).join(", ")}`;
               })
               .filter(Boolean),
           )

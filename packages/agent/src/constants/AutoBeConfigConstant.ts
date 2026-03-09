@@ -167,4 +167,15 @@ export const enum AutoBeConfigConstant {
    * exhaustion; too low wastes potential parallelism.
    */
   SEMAPHORE = 8,
+
+  /**
+   * Maximum number of analysis section metadata rows shown per page.
+   *
+   * Controls how many rows appear in the "available sections" table sent to the
+   * LLM during preliminary context loading. When analysis produces many
+   * sections (e.g. 1,000+), sending the entire metadata table at once can
+   * exceed model context limits. Pagination shows only this many rows per RAG
+   * iteration, with the next batch appearing after each context request.
+   */
+  ANALYSIS_PAGE_SIZE = 100,
 }

@@ -50,6 +50,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
   private readonly config: AutoBePreliminaryController.IConfig<Kind>;
   private readonly state: AutoBeState;
 
+  // PAGINATION
+  private analysisPageOffset: number = 0;
+
   /**
    * Initializes controller with data collections and auto-complements
    * dependencies.
@@ -268,6 +271,16 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    */
   public getState(): AutoBeState {
     return this.state;
+  }
+
+  /** Returns current page offset for analysis section metadata pagination. */
+  public getAnalysisPageOffset(): number {
+    return this.analysisPageOffset;
+  }
+
+  /** Advances analysis section metadata page by PAGE_SIZE. */
+  public advanceAnalysisPage(): void {
+    this.analysisPageOffset += AutoBeConfigConstant.ANALYSIS_PAGE_SIZE;
   }
 
   /**

@@ -24,11 +24,12 @@ import {
 } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
 
 /**
- * Orchestrate per-file review of section content for a SINGLE file.
+ * Orchestrate per-module review of section content for a SINGLE module.
  *
- * This function reviews one file's section content in a single LLM call,
+ * This function reviews one module's section content in a single LLM call,
  * validating EARS format, value consistency, prohibited content, bridge block
- * completeness, and intra-file deduplication.
+ * completeness, and intra-module deduplication. Sibling modules are included as
+ * lightweight title-only context for intra-file consistency reference.
  *
  * For cross-file consistency checks (terminology alignment, value consistency
  * across files, naming conventions), use
@@ -41,8 +42,14 @@ export const orchestrateAnalyzeSectionReview = async (
     fileIndex: number;
     file: AutoBeAnalyzeFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
-    unitEvents: AutoBeAnalyzeWriteUnitEvent[];
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
+    moduleIndex: number;
+    unitEvent: AutoBeAnalyzeWriteUnitEvent;
+    moduleSectionEvents: AutoBeAnalyzeWriteSectionEvent[];
+    siblingModuleSummaries: Array<{
+      moduleIndex: number;
+      title: string;
+      sectionTitles: string[];
+    }>;
     feedback?: string;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
@@ -74,8 +81,10 @@ export const orchestrateAnalyzeSectionReview = async (
         scenario: props.scenario,
         file: props.file,
         moduleEvent: props.moduleEvent,
-        unitEvents: props.unitEvents,
-        sectionEvents: props.sectionEvents,
+        moduleIndex: props.moduleIndex,
+        unitEvent: props.unitEvent,
+        moduleSectionEvents: props.moduleSectionEvents,
+        siblingModuleSummaries: props.siblingModuleSummaries,
         feedback: props.feedback,
         preliminary,
       }),

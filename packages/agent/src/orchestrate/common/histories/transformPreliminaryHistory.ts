@@ -19,6 +19,7 @@ import {
 import { HashSet } from "tstl";
 import { v7 } from "uuid";
 
+import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBeInterfaceSchemaProgrammer } from "../../interface/programmers/AutoBeInterfaceSchemaProgrammer";
@@ -50,6 +51,7 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         // biome-ignore lint: intended
         config: preliminary.getConfig() as any,
         previous: key.startsWith("previous"),
+        analysisPageOffset: preliminary.getAnalysisPageOffset(),
       });
     })
     .flat(),
@@ -63,6 +65,7 @@ namespace PreliminaryTransformer {
     local: Pick<IAutoBePreliminaryCollection, Kind>;
     config: AutoBePreliminaryController.IConfig<Kind>;
     previous: boolean;
+    analysisPageOffset: number;
   }
 
   export const analysisSections = (
@@ -105,25 +108,36 @@ namespace PreliminaryTransformer {
           ? { from: "getAnalysisSections", to: "getPreviousAnalysisSections" }
           : null,
       });
-
+    const pageSize: number = AutoBeConfigConstant.ANALYSIS_PAGE_SIZE;
+    const pageStart: number = props.analysisPageOffset;
+    const page: IAnalysisSectionEntry[] = newbie.slice(
+      pageStart,
+      pageStart + pageSize,
+    );
+    const totalAvailable: number = newbie.length;
+    const paginationNote: string =
+      totalAvailable > pageStart + pageSize
+        ? `\n\n(Showing ${page.length} of ${totalAvailable} available sections, starting from offset ${pageStart}. More sections will appear after you request some of the above.)`
+        : "";
     const system: IAgenticaHistoryJson.ISystemMessage = createSystemMessage({
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION,
       previous:
         AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
-      available: StringUtil.trim`
-        ID | File | Unit | Section 
+      available:
+        StringUtil.trim`
+        ID | File | Unit | Section
         ---|------|------|---------
-        ${newbie
+        ${page
           .map((s) =>
             [s.id, s.filename, s.unitTitle, s.sectionTitle].join(" | "),
           )
           .join("\n")}
-      `,
+      ` + paginationNote,
       loaded: Array.from(oldbie.values())
         .map((s) => `- [${s.id}] ${s.sectionTitle}`)
         .join("\n"),
       exhausted:
-        newbie.length === 0
+        page.length === 0
           ? AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_EXHAUSTED
           : "",
       replace: props.previous

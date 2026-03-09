@@ -180,7 +180,7 @@ export const orchestrateAnalyze = async (
     completed: 0,
   };
   const perFileSectionReviewProgress: AutoBeProgressEventBase = {
-    total: scenario.files.length,
+    total: 0,
     completed: 0,
   };
   const crossFileSectionReviewProgress: AutoBeProgressEventBase = {
@@ -538,9 +538,13 @@ async function processStageSection(
     attempt < AutoBeConfigConstant.ANALYZE_RETRY && pendingIndices.size > 0;
     attempt++
   ) {
-    // Dynamically increase progress for retries
+    // Dynamically increase progress for retries (module-level granularity)
+    const pendingModuleCount = [...pendingIndices].reduce(
+      (sum, fi) => sum + (props.fileStates[fi]?.unitResults?.length ?? 1),
+      0,
+    );
+    props.perFileSectionReviewProgress.total += pendingModuleCount;
     if (attempt > 0) {
-      props.perFileSectionReviewProgress.total += pendingIndices.size;
       props.crossFileSectionReviewProgress.total++;
     }
 
@@ -673,37 +677,54 @@ async function processStageSection(
             `section file-write-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
           );
 
-          // Per-file review immediately after write (removes barrier)
+          // Per-module review immediately after write (removes barrier)
           const reviewStart: number = Date.now();
           analyzeDebug(
-            `section per-file-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}"`,
+            `section per-module-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${state.unitResults!.length}`,
           );
-          let reviewEvent: AutoBeAnalyzeSectionReviewEvent | null = null;
+          const moduleReviews: AutoBeAnalyzeSectionReviewEvent[] = [];
           try {
-            reviewEvent = await orchestrateAnalyzeSectionReview(ctx, {
-              scenario: props.scenario,
-              fileIndex,
-              file: state.file,
-              moduleEvent: state.moduleResult!,
-              unitEvents: state.unitResults!,
-              sectionEvents: state.sectionResults!,
-              feedback: state.sectionFeedback,
-              progress: props.perFileSectionReviewProgress,
-              promptCacheKey: cacheKey,
-              retry: attempt,
-            });
+            for (
+              let moduleIndex = 0;
+              moduleIndex < state.unitResults!.length;
+              moduleIndex++
+            ) {
+              const moduleReviewEvent = await orchestrateAnalyzeSectionReview(
+                ctx,
+                {
+                  scenario: props.scenario,
+                  fileIndex,
+                  file: state.file,
+                  moduleEvent: state.moduleResult!,
+                  moduleIndex,
+                  unitEvent: state.unitResults![moduleIndex]!,
+                  moduleSectionEvents: state.sectionResults![moduleIndex]!,
+                  siblingModuleSummaries: buildSiblingModuleSummaries(
+                    state.moduleResult!,
+                    state.sectionResults!,
+                    moduleIndex,
+                  ),
+                  feedback: state.sectionFeedback,
+                  progress: props.perFileSectionReviewProgress,
+                  promptCacheKey: cacheKey,
+                  retry: attempt,
+                },
+              );
+              moduleReviews.push(moduleReviewEvent);
+            }
           } catch (e) {
             if (e instanceof AutoBeTimeoutError) {
               analyzeDebug(
-                `section per-file-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
+                `section per-module-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
               );
             }
             return sectionResults;
           }
+          const reviewEvent = mergeModuleReviewEvents(moduleReviews, fileIndex);
           analyzeDebug(
-            `section per-file-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" elapsedMs=${Date.now() - reviewStart}`,
+            `section per-module-review-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${moduleReviews.length} elapsedMs=${Date.now() - reviewStart}`,
           );
-          perFileReviewResults.set(fileIndex, reviewEvent);
+          perFileReviewResults.set(fileIndex, reviewEvent!);
 
           return sectionResults;
         }),
@@ -1469,6 +1490,66 @@ function dedupeReviewIssues(
     if (!map.has(key)) map.set(key, issue);
   }
   return [...map.values()];
+}
+
+// ─── Per-module review helpers ───
+
+function buildSiblingModuleSummaries(
+  moduleEvent: AutoBeAnalyzeWriteModuleEvent,
+  sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
+  excludeModuleIndex: number,
+): Array<{
+  moduleIndex: number;
+  title: string;
+  sectionTitles: string[];
+}> {
+  return sectionResults
+    .map((sectionsForModule, moduleIndex) => ({
+      moduleIndex,
+      title: moduleEvent.moduleSections[moduleIndex]?.title ?? "Unknown",
+      sectionTitles: sectionsForModule.flatMap((se) =>
+        se.sectionSections.map((s) => s.title),
+      ),
+    }))
+    .filter((s) => s.moduleIndex !== excludeModuleIndex);
+}
+
+function mergeModuleReviewEvents(
+  moduleReviews: AutoBeAnalyzeSectionReviewEvent[],
+  fileIndex: number,
+): AutoBeAnalyzeSectionReviewEvent | null {
+  if (moduleReviews.length === 0) return null;
+
+  const allApproved = moduleReviews.every(
+    (r) => r.fileResults[0]?.approved ?? true,
+  );
+  const allFeedback = moduleReviews
+    .map((r) => r.fileResults[0]?.feedback)
+    .filter(Boolean)
+    .join("\n");
+  const allRejectedModuleUnits = moduleReviews.flatMap(
+    (r) => r.fileResults[0]?.rejectedModuleUnits ?? [],
+  );
+  const allIssues = moduleReviews.flatMap(
+    (r) => r.fileResults[0]?.issues ?? [],
+  );
+
+  // Use the last review event as base (for tokenUsage, metric, etc.)
+  const base = moduleReviews[moduleReviews.length - 1]!;
+  return {
+    ...base,
+    fileResults: [
+      {
+        fileIndex,
+        approved: allApproved,
+        feedback: allFeedback,
+        revisedSections: null,
+        rejectedModuleUnits:
+          allRejectedModuleUnits.length > 0 ? allRejectedModuleUnits : null,
+        issues: allIssues.length > 0 ? allIssues : null,
+      },
+    ],
+  };
 }
 
 // ─── Section-stage helpers ───
