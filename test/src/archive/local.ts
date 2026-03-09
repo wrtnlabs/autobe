@@ -47,14 +47,22 @@ const main = async (): Promise<void> => {
     TestGlobal.getArguments("dbms")?.[0] ?? "postgres",
   );
   for (const project of typia.misc.literals<AutoBeExampleProject>())
-    for (const phase of typia.misc.literals<AutoBePhase>())
-      try {
-        await archive({
+    for (const phase of typia.misc.literals<AutoBePhase>()) {
+      if (
+        false ===
+        (await AutoBeExampleStorage.has({
           vendor: TestGlobal.vendorModel,
           project,
           phase,
-          dbms,
-        });
-      } catch {}
+        }))
+      )
+        continue;
+      await archive({
+        vendor: TestGlobal.vendorModel,
+        project,
+        phase,
+        dbms,
+      });
+    }
 };
 main().catch(console.error);
