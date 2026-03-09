@@ -40,6 +40,12 @@ const main = async (): Promise<void> => {
         project,
       }),
     });
+    console.log(
+      `code results/${AutoBeExampleStorage.slugModel(
+        TestGlobal.vendorModel,
+        false,
+      )}/${project}/realize`,
+    );
   }
 };
 main().catch(console.error);
