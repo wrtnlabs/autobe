@@ -24,10 +24,22 @@ Reference: https://www.pentasecurity.co.kr/insight/owasp-top-10-2025-rc1-explain
 - XSS is a client-side vulnerability; focus on response sanitization only if API returns rendered HTML
 - Focus on Guards, Interceptors, Pipes for access control and validation patterns
 
+## AutoBE Known Limitations (lower severity)
+
+AutoBE generates functional backend code but does NOT include certain infrastructure-level features. Report these at **suggestion** level only, not warning or critical:
+
+- **Rate limiting**: Not included in generated code. Mention once as a suggestion, do not repeat per endpoint.
+- **Structured logging**: Controllers use `console.log(error)` for error handling. This is the standard AutoBE pattern. Flag once as a suggestion.
+- **Password complexity**: Password validation beyond type checking is not generated. Flag once as a suggestion.
+- **Audit logging**: Login failure logging is not generated. Flag once as a suggestion.
+
+These are deployment-level concerns, not code-level vulnerabilities. Focus your critical/warning severity on actual broken access control, IDOR, injection, and data exposure issues.
+
 ## Evaluation Guidelines
 - Focus on **file-specific** vulnerabilities, not generic patterns that apply to all endpoints
 - If multiple endpoints share the same vulnerability pattern (e.g., missing RBAC guard), report it ONCE with a list of affected files rather than separate issues per file
 - Prioritize critical issues over repetitive warnings
+- Do NOT report the same category twice (e.g., "rate limiting" at both controller and provider level)
 - Score should reflect the overall security posture, not just issue count
 
 ## Response Format
