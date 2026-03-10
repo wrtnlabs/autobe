@@ -129,10 +129,13 @@ ${Object.keys(props.schema.properties)
       props.code,
     );
     const imports: string[] = writeImportStatements(props);
+    const selfName: string = getName(props.dtoTypeName);
     code = [
       ...imports,
       "",
-      ...getNeighbors(code).map((trs) => `import { ${trs} } from "./${trs}";`),
+      ...getNeighbors(code)
+        .filter((trs) => trs !== selfName)
+        .map((trs) => `import { ${trs} } from "./${trs}";`),
       "",
       code,
     ].join("\n");
