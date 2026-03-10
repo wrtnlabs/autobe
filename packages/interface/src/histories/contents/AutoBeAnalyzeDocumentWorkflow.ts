@@ -45,8 +45,8 @@ export interface AutoBeAnalyzeDocumentWorkflowEntry extends ITraceable {
 /**
  * Extension category: Workflow & State Machine.
  *
- * Structures state transitions/workflows as **direct input** for business logic
- * implementation in the Realize Phase.
+ * Structures state transitions and workflows as business-level process
+ * descriptions.
  *
  * Optional category: selected for projects with complex state transition
  * business logic.

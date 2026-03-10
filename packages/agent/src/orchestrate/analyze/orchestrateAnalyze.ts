@@ -61,10 +61,6 @@ import {
   buildFileProseConflictMap,
   detectProseConstraintConflicts,
 } from "./utils/detectProseConstraintConflicts";
-import {
-  buildFileYamlRootKeyMismatchMap,
-  detectYamlRootKeyMismatches,
-} from "./utils/detectYamlRootKeyMismatch";
 import { validateScenarioBasics } from "./utils/validateScenarioBasics";
 
 /**
@@ -811,12 +807,6 @@ async function processStageSection(
     const fileProseConflictMap: Map<string, string[]> =
       buildFileProseConflictMap(proseConflicts);
 
-    const yamlRootKeyMismatches = detectYamlRootKeyMismatches({
-      files: filesWithSections,
-    });
-    const fileYamlRootKeyMismatchMap: Map<string, string[]> =
-      buildFileYamlRootKeyMismatchMap(yamlRootKeyMismatches);
-
     const oversizedTocMap: Map<number, string[]> = new Map();
     for (const fileIndex of pendingArray) {
       const state = props.fileStates[fileIndex]!;
@@ -848,10 +838,6 @@ async function processStageSection(
       ...proseConflicts.map(
         (c) =>
           `Prose constraint conflict: ${c.entityAttr} — canonical [${c.canonicalValues.join(", ")}] vs prose [${c.proseValues.join(", ")}] in ${c.file}`,
-      ),
-      ...yamlRootKeyMismatches.map(
-        (m) =>
-          `YAML root key mismatch: expected "${m.expectedRootKey}" but found [${m.actualKeys.join(", ")}] in ${m.file} section "${m.sectionTitle}"`,
       ),
     ];
     const mechanicalViolationSummary =
@@ -952,8 +938,6 @@ async function processStageSection(
         fileErrorCodeConflictMap.get(filename) ?? [];
       const fileOversizedToc = oversizedTocMap.get(fileIndex) ?? [];
       const fileProseConflicts = fileProseConflictMap.get(filename) ?? [];
-      const fileYamlRootKeyMismatches =
-        fileYamlRootKeyMismatchMap.get(filename) ?? [];
       const hasCriticalConflict =
         fileCriticalConflicts.length > 0 ||
         fileAttrDuplicates.length > 0 ||
@@ -962,8 +946,7 @@ async function processStageSection(
         fileStateFieldConflicts.length > 0 ||
         fileErrorCodeConflicts.length > 0 ||
         fileOversizedToc.length > 0 ||
-        fileProseConflicts.length > 0 ||
-        fileYamlRootKeyMismatches.length > 0;
+        fileProseConflicts.length > 0;
 
       // Decision logic:
       // 1. per-file reject → reject (unchanged)
@@ -984,7 +967,6 @@ async function processStageSection(
         fileErrorCodeConflicts,
         fileOversizedToc,
         fileProseConflicts,
-        fileYamlRootKeyMismatches,
       });
 
       if (approved) {
@@ -1036,7 +1018,6 @@ async function processStageSection(
               ...fileAttrDuplicates,
               ...fileEnumConflicts,
               ...fileProseConflicts,
-              ...fileYamlRootKeyMismatches,
             ].join("; ")}` +
             (crossFileResult?.feedback ? `\n${crossFileResult.feedback}` : ""),
           issues: [...programmaticIssues, ...structuredCrossFileIssues],
@@ -1262,7 +1243,6 @@ function buildProgrammaticSectionIssues(props: {
   fileErrorCodeConflicts: string[];
   fileOversizedToc: string[];
   fileProseConflicts: string[];
-  fileYamlRootKeyMismatches: string[];
 }): AutoBeAnalyzeSectionReviewIssue[] {
   return [
     ...props.fileCriticalConflicts.map((detail) => ({
@@ -1327,14 +1307,6 @@ function buildProgrammaticSectionIssues(props: {
       unitIndex: null,
       fixInstruction:
         "Remove the restated constraint value and use a backtick reference to the canonical definition in 02-domain-model instead. Example: 'THE system SHALL validate `User.bio` per entity constraints (see 02-domain-model)'",
-      evidence: detail,
-    })),
-    ...props.fileYamlRootKeyMismatches.map((detail) => ({
-      ruleCode: "yaml_root_key_mismatch",
-      moduleIndex: null,
-      unitIndex: null,
-      fixInstruction:
-        "Fix the YAML root key to match the expected format. For 02-domain-model use 'entity:', for 04-business-rules use 'errors:', for 01-actors-and-auth use 'permissions:'.",
       evidence: detail,
     })),
   ];

@@ -114,17 +114,6 @@ export const transformAnalyzeWriteSectionHistory = (
 
         ${canonicalSourceDeclaration}
 
-        ${
-          fileTemplate?.yamlSpecs?.length
-            ? `
-        ### YAML Spec Block Required
-
-        This file is a **canonical source** file. Sections in this file MUST include
-        structured YAML code blocks for machine-parseable data. See the prompt for format details.
-        `
-            : ""
-        }
-
         ## Document Context
 
         **Document Title**: ${props.moduleEvent.title}

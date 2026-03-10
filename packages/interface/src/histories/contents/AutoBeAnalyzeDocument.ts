@@ -39,7 +39,7 @@ export interface AutoBeAnalyzeDocument {
    * Semantic Layer: structured SRS data.
    *
    * A set of categories dynamically selected by the LLM based on project
-   * characteristics, from 6 standard ISO/IEC/IEEE 29148 sections + 4 extension
+   * characteristics, from 6 standard ISO/IEC/IEEE 29148 sections + 2 extension
    * categories.
    */
   srs: AutoBeAnalyzeDocumentSrs;

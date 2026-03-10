@@ -23,10 +23,8 @@ export * from "./AutoBeAnalyzeDocumentExternalInterface";
 export * from "./AutoBeAnalyzeDocumentCapability";
 export * from "./AutoBeAnalyzeDocumentPhysicalPerformance";
 export * from "./AutoBeAnalyzeDocumentSecurityQuality";
-export * from "./AutoBeAnalyzeDocumentDomainModel";
 export * from "./AutoBeAnalyzeDocumentActorPermission";
 export * from "./AutoBeAnalyzeDocumentWorkflow";
-export * from "./AutoBeAnalyzeDocumentDataDictionary";
 export * from "./AutoBeAnalyzeDocumentValidation";
 
 export * from "./AutoBeDatabaseComponent";

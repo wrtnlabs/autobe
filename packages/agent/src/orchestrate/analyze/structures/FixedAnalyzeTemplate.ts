@@ -36,17 +36,6 @@ export interface FixedAnalyzeTemplateFileTemplate {
   modules: FixedAnalyzeTemplateModuleTemplate[];
   /** Regex patterns that must NOT appear in this file's sections. */
   forbiddenPatterns: RegExp[];
-  /** YAML spec block definitions for canonical files (01/02/04). */
-  yamlSpecs?: FixedAnalyzeTemplateYamlSpecDefinition[];
-}
-
-export interface FixedAnalyzeTemplateYamlSpecDefinition {
-  /** Root key of the YAML block (e.g., "entity", "errors", "permissions"). */
-  rootKey: string;
-  /** Module index where this YAML block lives. */
-  moduleIndex: number;
-  /** Registry type this YAML feeds into. */
-  registryType: "domain-concepts" | "error-conditions" | "permissions";
 }
 
 export interface FixedAnalyzeTemplateModuleTemplate {
@@ -83,8 +72,6 @@ export interface FixedAnalyzeTemplateUnitTemplate {
   titlePattern: string;
   purposePattern: string;
   keywords: string[];
-  /** Whether this unit must contain a canonical YAML spec block. */
-  requiresYamlSpec?: boolean;
 }
 
 // ─────────────────────────────────────────────
@@ -200,7 +187,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
                 "canonical-source",
                 "reference-format",
                 "backtick",
-                "yaml-spec",
                 "authority",
               ],
             },
@@ -255,7 +241,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       /\|\s*(?:type|required|default|constraint)\s*\|/i, // Entity attribute tables → 02
       /```yaml\s*\n\s*entity:/i, // Entity YAML specs → 02
     ],
-    yamlSpecs: [],
     modules: [
       {
         index: 0,
@@ -275,7 +260,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               "capabilities",
               "authorization",
             ],
-            requiresYamlSpec: false,
           },
         },
       },
@@ -346,7 +330,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       /\bRequest\s+Body\b/i,
       /\bResponse\s+(?:Body|Schema)\b/i,
     ],
-    yamlSpecs: [],
     modules: [
       {
         index: 0,
@@ -365,7 +348,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               "purpose",
               "user-interaction",
             ],
-            requiresYamlSpec: false,
           },
         },
       },
@@ -406,18 +388,19 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 2,
-        title: "Enums and State Machines",
-        purpose: "Enum type definitions and state transitions.",
+        title: "Business Categories and State Flows",
+        purpose:
+          "Business category classifications and state flow definitions.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "Enum Definitions",
+              titlePattern: "Business Category Definitions",
               purposePattern:
-                "Define all enum types with their allowed values and descriptions.",
+                "Define all business category classifications with their allowed values and descriptions.",
               keywords: [
-                "enum",
-                "enumeration",
+                "business-category",
+                "classification",
                 "allowed-values",
                 "status-type",
               ],
@@ -427,7 +410,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               purposePattern:
                 "Define valid state transition paths for stateful concepts.",
               keywords: [
-                "state-machine",
+                "state-flow",
                 "transition",
                 "workflow",
                 "status-change",
@@ -553,13 +536,12 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "04-business-rules.md",
     documentType: "business-rules",
     description:
-      "Data isolation, business rules, filtering/sorting/pagination, error catalog",
+      "Data isolation, business rules, data browsing expectations, error scenarios",
     downstreamPhase: "service-layer",
     forbiddenPatterns: [
       /```yaml\s*\n\s*entity:/i, // Entity YAML specs → 02
       /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs → 03
     ],
-    yamlSpecs: [],
     modules: [
       {
         index: 0,
@@ -606,42 +588,39 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 2,
-        title: "Detailed Validation Rules",
+        title: "Business Validation Criteria",
         purpose:
-          "Detailed validation rules with boundary values and format requirements.",
+          "Business-level validation expectations and data quality criteria.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
-            titlePattern: "{name} Validation Rules",
+            titlePattern: "{name} Validation Criteria",
             purposePattern:
-              "Define validation rules for {name}, including boundary values and format requirements.",
+              "Define business validation expectations for {name}, including acceptable data quality criteria.",
             keywords: [
               "validation",
               "boundary-value",
               "format-requirement",
-              "sanitization",
             ],
           },
         },
       },
       {
         index: 3,
-        title: "Filtering, Sorting, and Pagination",
+        title: "Data Browsing Expectations",
         purpose:
-          "List query specifications for filtering, sorting, and pagination.",
+          "Business expectations for how users browse, find, and navigate through lists of data.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "List Query Specifications",
+              titlePattern: "List Browsing Expectations",
               purposePattern:
-                "Define filtering, sorting, and pagination rules for list operations.",
+                "Define business expectations for how users find, filter, and browse lists.",
               keywords: [
                 "filtering",
                 "sorting",
                 "pagination",
-                "cursor",
-                "query",
               ],
             },
           ],
@@ -664,7 +643,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
                 "failure-case",
                 "exception",
               ],
-              requiresYamlSpec: false,
             },
           ],
         },
@@ -1126,7 +1104,6 @@ export const expandFixedAnalyzeTemplateUnits = (
           e.name,
         ),
         keywords: [...strategy.unitTemplate.keywords, e.name.toLowerCase()],
-        requiresYamlSpec: strategy.unitTemplate.requiresYamlSpec,
       }));
     case "perActor":
       return actors.map((a) => ({
@@ -1139,7 +1116,6 @@ export const expandFixedAnalyzeTemplateUnits = (
           a.name,
         ),
         keywords: [...strategy.unitTemplate.keywords, a.name.toLowerCase()],
-        requiresYamlSpec: strategy.unitTemplate.requiresYamlSpec,
       }));
     case "perEntityGroup":
       // For now, entity groups = entities; can be refined later
@@ -1153,7 +1129,6 @@ export const expandFixedAnalyzeTemplateUnits = (
           e.name,
         ),
         keywords: [...strategy.unitTemplate.keywords, e.name.toLowerCase()],
-        requiresYamlSpec: strategy.unitTemplate.requiresYamlSpec,
       }));
   }
 };

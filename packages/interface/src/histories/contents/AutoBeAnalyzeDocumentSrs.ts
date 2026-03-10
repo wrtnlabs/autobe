@@ -1,7 +1,5 @@
 import { AutoBeAnalyzeDocumentActorPermission } from "./AutoBeAnalyzeDocumentActorPermission";
 import { AutoBeAnalyzeDocumentCapability } from "./AutoBeAnalyzeDocumentCapability";
-import { AutoBeAnalyzeDocumentDataDictionary } from "./AutoBeAnalyzeDocumentDataDictionary";
-import { AutoBeAnalyzeDocumentDomainModel } from "./AutoBeAnalyzeDocumentDomainModel";
 import { AutoBeAnalyzeDocumentExternalInterface } from "./AutoBeAnalyzeDocumentExternalInterface";
 import { AutoBeAnalyzeDocumentIntroduction } from "./AutoBeAnalyzeDocumentIntroduction";
 import { AutoBeAnalyzeDocumentPhysicalPerformance } from "./AutoBeAnalyzeDocumentPhysicalPerformance";
@@ -59,24 +57,18 @@ export interface AutoBeAnalyzeDocumentSrs {
   /** SRS Section 6: security, quality attributes */
   securityQuality?: AutoBeAnalyzeDocumentSecurityQuality;
 
-  /** Extension: domain entities/relationships/business rules */
-  domainModel?: AutoBeAnalyzeDocumentDomainModel;
-
   /** Extension: per-actor permission mapping */
   actorPermissionMatrix?: AutoBeAnalyzeDocumentActorPermission;
 
   /** Extension: state transitions/workflows */
   workflowStateMachine?: AutoBeAnalyzeDocumentWorkflow;
-
-  /** Extension: per-field constraints/validation rules */
-  dataDictionary?: AutoBeAnalyzeDocumentDataDictionary;
 }
 
 /**
  * Available SRS category keys.
  *
  * Project-level required 3: introduction, systemOverview, capabilities.
- * Optional 7: the rest. At the per-file level all are optional.
+ * Optional 5: the rest. At the per-file level all are optional.
  */
 export type AutoBeAnalyzeDocumentSrsCategory =
   | "introduction"
@@ -85,10 +77,8 @@ export type AutoBeAnalyzeDocumentSrsCategory =
   | "capabilities"
   | "physicalPerformance"
   | "securityQuality"
-  | "domainModel"
   | "actorPermissionMatrix"
-  | "workflowStateMachine"
-  | "dataDictionary";
+  | "workflowStateMachine";
 
 /** Required categories that must exist across the full set of files */
 export const AutoBeAnalyzeDocumentSrsRequiredCategories: readonly AutoBeAnalyzeDocumentSrsCategory[] =
@@ -103,8 +93,6 @@ export const AutoBeAnalyzeDocumentSrsAllCategories: readonly AutoBeAnalyzeDocume
     "capabilities",
     "physicalPerformance",
     "securityQuality",
-    "domainModel",
     "actorPermissionMatrix",
     "workflowStateMachine",
-    "dataDictionary",
   ] as const;

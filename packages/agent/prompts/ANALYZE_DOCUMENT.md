@@ -18,7 +18,7 @@ Each file covers specific SRS categories. Use the file's **category** as a guide
 |---|---|
 | `00-toc` | `introduction` (purpose, scope, glossary), `systemOverview` (stakeholders, assumptions, constraints) |
 | `01-actors-and-auth` | `actorPermissionMatrix`, `securityQuality` |
-| `02-domain-model` | `domainModel`, `dataDictionary` |
+| `02-domain-model` | `capabilities` (domain concepts), optionally `workflowStateMachine` |
 | `03-functional-requirements` | `capabilities` (primary), optionally `workflowStateMachine`, `externalInterface` |
 | `04-business-rules` | `workflowStateMachine`, optionally `capabilities` (business rule requirements) |
 | `05-non-functional` | `physicalPerformance`, `securityQuality`, optionally `externalInterface` |

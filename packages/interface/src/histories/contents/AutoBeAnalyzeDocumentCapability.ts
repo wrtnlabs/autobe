@@ -60,8 +60,8 @@ export interface AutoBeAnalyzeDocumentCapabilityEntry extends ITraceable {
  * SRS Section 4: System Capabilities and Functional Requirements.
  *
  * Capability → Use Case → Functional Requirement hierarchy. The **core**
- * artifact of the Analyze Phase, used as direct input for DB schema and API
- * design.
+ * artifact of the Analyze Phase, the primary source of business requirements
+ * for downstream phases.
  *
  * Required category: always included.
  *

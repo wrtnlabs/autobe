@@ -31,8 +31,8 @@ export interface AutoBeAnalyzeDocumentActorPermissionEntry extends ITraceable {
 /**
  * Extension category: Actor Permission Matrix.
  *
- * Structures per-actor capability permission mappings as **direct input** for
- * permission verification in the Test/Interface Phase.
+ * Structures per-actor capability permission mappings as business-level access
+ * control descriptions.
  *
  * Optional category: selected for projects with complex permission models.
  *
