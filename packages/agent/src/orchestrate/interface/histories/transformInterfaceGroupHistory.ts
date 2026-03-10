@@ -22,7 +22,7 @@ export const transformInterfaceGroupHistory = (props: {
   const common = transformInterfaceCommonHistory(props.state);
   if (common !== null)
     return {
-      histories: common,
+      histories: [common[0], ...common.slice(1)],
       userMessage: "Please wait for prerequisites to complete",
     };
   const app: AutoBeDatabase.IApplication | undefined =

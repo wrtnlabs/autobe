@@ -1,4 +1,7 @@
-import { IMicroAgenticaHistoryJson } from "@agentica/core";
+import {
+  IAgenticaHistoryJson,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
 
 /**
  * Prepared conversation context package for LLM interaction in orchestrators.
@@ -28,7 +31,10 @@ export interface IAutoBeOrchestrateHistory {
    * Conversation history array containing system prompts, previous messages,
    * and context data formatted as assistant messages.
    */
-  histories: IMicroAgenticaHistoryJson[];
+  histories: [
+    IAgenticaHistoryJson.ISystemMessage,
+    ...IMicroAgenticaHistoryJson[],
+  ];
 
   /**
    * Final user command message triggering the AI operation (e.g., "Write

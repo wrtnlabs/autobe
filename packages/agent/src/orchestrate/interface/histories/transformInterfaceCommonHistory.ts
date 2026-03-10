@@ -5,9 +5,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 
 export const transformInterfaceCommonHistory = (
   state: AutoBeState,
-): Array<
-  IAgenticaHistoryJson.IAssistantMessage | IAgenticaHistoryJson.ISystemMessage
-> | null => {
+): Array<IAgenticaHistoryJson.ISystemMessage> | null => {
   if (state.analyze === null)
     return [
       {

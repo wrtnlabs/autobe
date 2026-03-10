@@ -1,3 +1,7 @@
+import {
+  IAgenticaHistoryJson,
+  IMicroAgenticaHistoryJson,
+} from "@agentica/core";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -89,7 +93,10 @@ export const transformTestCorrectOverallHistory = async (
 
   return {
     histories: [
-      ...previousHistories,
+      ...(previousHistories as [
+        IAgenticaHistoryJson.ISystemMessage,
+        ...IMicroAgenticaHistoryJson[],
+      ]),
       {
         id: v7(),
         created_at: new Date().toISOString(),
