@@ -14,7 +14,6 @@ import { transformPreviousAndLatestCorrectHistory } from "../../common/histories
 import { AutoBeRealizeOperationProgrammer } from "../programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { transformRealizeOperationWriteHistory } from "./transformRealizeOperationWriteHistory";
 
 export function transformRealizeOperationCorrectHistory(props: {
@@ -80,10 +79,9 @@ export function transformRealizeOperationCorrectHistory(props: {
 
       Below is template code you wrote:
 
-      ${getRealizeWriteCodeTemplate({
-        scenario,
+      ${AutoBeRealizeOperationProgrammer.writeTemplate({
+        authorizations: props.authorizations,
         operation,
-        authorization: scenario.decoratorEvent ?? null,
         schemas: props.state.interface!.document.components.schemas,
       })}
 

@@ -8,8 +8,8 @@ import { AutoBeTemplateFileConstant } from "../../../constants/AutoBeTemplateFil
 import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
+import { AutoBeRealizeOperationProgrammer } from "../programmers/AutoBeRealizeOperationProgrammer";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
-import { getRealizeWriteCodeTemplate } from "../utils/getRealizeWriteCodeTemplate";
 import { getRealizeWriteInputType } from "../utils/getRealizeWriteInputType";
 import { transformRealizeWriteMembershipHistory } from "./transformRealizeWriteMembershipHistory";
 
@@ -67,9 +67,8 @@ export const transformRealizeOperationWriteHistory = (props: {
         id: v7(),
         type: "systemMessage",
         created_at: new Date().toISOString(),
-        text: getRealizeWriteCodeTemplate({
-          authorization: props.authorization,
-          scenario: props.scenario,
+        text: AutoBeRealizeOperationProgrammer.writeTemplate({
+          authorizations: props.totalAuthorizations,
           schemas: document.components.schemas,
           operation,
         }),
