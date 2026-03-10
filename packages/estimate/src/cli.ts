@@ -284,19 +284,20 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
     adjustedScore = Math.round(phasesPortion + agentPortion);
 
-    // No hard cap — let weighted average reflect real quality
-    if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 60);
+    // Two-tier agent cap
+    if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
+    else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
   }
 
   const scoreBreakdown: ScoreBreakdown = {
     phaseScore: result.totalScore,
-    phaseWeight: agentResults.length > 0 ? 0.7 : 1.0,
+    phaseWeight: agentResults.length > 0 ? 1 - AGENT_WEIGHT_RATIO : 1.0,
     phaseContribution:
       agentResults.length > 0
         ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
         : result.totalScore,
     agentScore: agentResults.length > 0 ? Math.round(agentAvg) : null,
-    agentWeight: agentResults.length > 0 ? 0.3 : 0,
+    agentWeight: agentResults.length > 0 ? AGENT_WEIGHT_RATIO : 0,
     agentContribution:
       agentResults.length > 0 ? Math.round(agentAvg * AGENT_WEIGHT_RATIO) : 0,
   };
@@ -420,7 +421,7 @@ async function runAgentEvaluations(
 }
 
 function printAgentResults(agentResults: AgentResult[]): void {
-  console.log("\n🤖 AI Agent Evaluations (30% of total score):");
+  console.log(`\n🤖 AI Agent Evaluations (${Math.round(AGENT_WEIGHT_RATIO * 100)}% of total score):`);
   console.log("─────────────────────────────────────────");
 
   for (const result of agentResults) {
@@ -436,6 +437,14 @@ function printAgentResults(agentResults: AgentResult[]): void {
     console.log(
       `      Issues: ${result.issues.length} (${criticalCount} critical, ${warningCount} warning)`,
     );
+    if (result.tokensUsed) {
+      const t = result.tokensUsed;
+      const totalCost = (t.inputCost || 0) + (t.outputCost || 0);
+      console.log(
+        `      Tokens: ${t.input.toLocaleString()} in / ${t.output.toLocaleString()} out` +
+          (totalCost > 0 ? ` ($${totalCost.toFixed(4)})` : ""),
+      );
+    }
     const summaryText =
       result.summary.length > 120
         ? result.summary.substring(0, 120) + "..."
@@ -444,6 +453,13 @@ function printAgentResults(agentResults: AgentResult[]): void {
     console.log("");
   }
 
+  const totalAgentCost = agentResults.reduce((sum, r) => {
+    const c = r.tokensUsed;
+    return sum + (c?.inputCost || 0) + (c?.outputCost || 0);
+  }, 0);
+  if (totalAgentCost > 0) {
+    console.log(`   Total Agent Cost: $${totalAgentCost.toFixed(4)}`);
+  }
   console.log("─────────────────────────────────────────");
 }
 
@@ -469,18 +485,20 @@ function printFinalScore(
   if (!result.phases.gate.passed) {
     console.log(`   ❌ Gate Failed — Score forced to 0`);
     if (hasAgents && agentAvg > 0) {
-      const wouldBe = Math.round(phaseScore * 0.7 + agentAvg * 0.3);
+      const phaseW = 1 - AGENT_WEIGHT_RATIO;
+      const wouldBe = Math.round(phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO);
       console.log(
         `   (Reference: Phase ${phaseScore}, Agent ${Math.round(agentAvg)} → ~${wouldBe}/100 if gate passed)`,
       );
     }
   } else if (hasAgents) {
-    const rawTotal = Math.round(phaseScore * 0.7 + agentAvg * 0.3);
+    const phaseW = 1 - AGENT_WEIGHT_RATIO;
+    const rawTotal = Math.round(phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO);
     console.log(
-      `   Phase Score:  ${phaseScore}/100 × 70% = ${(phaseScore * 0.7).toFixed(1)}`,
+      `   Phase Score:  ${phaseScore}/100 × ${Math.round(phaseW * 100)}% = ${(phaseScore * phaseW).toFixed(1)}`,
     );
     console.log(
-      `   Agent Score:  ${Math.round(agentAvg)}/100 × 30% = ${(agentAvg * 0.3).toFixed(1)}`,
+      `   Agent Score:  ${Math.round(agentAvg)}/100 × ${Math.round(AGENT_WEIGHT_RATIO * 100)}% = ${(agentAvg * AGENT_WEIGHT_RATIO).toFixed(1)}`,
     );
     if (result.totalScore < rawTotal) {
       console.log(`   ─────────────────────────────`);
@@ -505,7 +523,7 @@ function printFinalScore(
 function printResults(result: EvaluationResult): void {
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
-  console.log("📋 Scoring Phases (70% of total score):");
+  console.log(`📋 Scoring Phases (${Math.round((1 - AGENT_WEIGHT_RATIO) * 100)}% of total score):`);
   console.log("─────────────────────────────────────────");
 
   const gateStatus = result.phases.gate.passed ? "✅ Pass" : "❌ Fail";

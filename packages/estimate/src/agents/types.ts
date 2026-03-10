@@ -23,6 +23,8 @@ export interface AgentIssue {
 export interface TokenUsage {
   input: number;
   output: number;
+  inputCost?: number;
+  outputCost?: number;
 }
 
 /** Parsed response from agent LLM call */

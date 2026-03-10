@@ -580,6 +580,27 @@ export class EvaluationPipeline {
         }
       }
 
+      // Suggestion overflow penalty (e.g., 2000+ TS2339 suggestions)
+      {
+        const suggestionCount = suggestions.length;
+        if (suggestionCount > 500) {
+          const suggestionPenalty = Math.min(
+            10,
+            Math.round((suggestionCount - 500) / 200),
+          );
+          totalScore = Math.max(0, totalScore - suggestionPenalty);
+          penaltyData.suggestionOverflow = {
+            amount: suggestionPenalty,
+            count: suggestionCount,
+          };
+          if (this.verbose) {
+            console.log(
+              `  Suggestion overflow penalty: -${suggestionPenalty} (${suggestionCount} suggestions)`,
+            );
+          }
+        }
+      }
+
       penalties = Object.keys(penaltyData).length > 0 ? penaltyData : undefined;
     }
 

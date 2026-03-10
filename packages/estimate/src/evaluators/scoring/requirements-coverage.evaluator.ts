@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 import type { EvaluationContext, Issue, PhaseResult } from "../../types";
-import { createIssue } from "../../types";
+import { PHASE_WEIGHTS, createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
 /** Controller-to-provider mapping result */
@@ -74,7 +74,7 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       passed: true,
       score,
       maxScore: 100,
-      weightedScore: score * 0.25,
+      weightedScore: score * PHASE_WEIGHTS.requirementsCoverage,
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: {

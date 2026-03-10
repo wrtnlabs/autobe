@@ -1,7 +1,7 @@
 import * as fs from "fs";
 
 import type { EvaluationContext, Issue, PhaseResult } from "../../types";
-import { createIssue } from "../../types";
+import { PHASE_WEIGHTS, createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 
 export class LogicCompletenessEvaluator extends BaseEvaluator {
@@ -98,7 +98,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
       passed: true,
       score,
       maxScore: 100,
-      weightedScore: score * 0.2,
+      weightedScore: score * PHASE_WEIGHTS.logicCompleteness,
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: {
