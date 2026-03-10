@@ -15,6 +15,7 @@ import { v7 } from "uuid";
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeState } from "../../context/AutoBeState";
+import { AutoBePreliminaryExhaustedError } from "../../utils/AutoBePreliminaryExhaustedError";
 import { transformPreliminaryHistory } from "./histories/transformPreliminaryHistory";
 import { complementPreliminaryCollection } from "./internal/complementPreliminaryCollection";
 import { createPreliminaryCollection } from "./internal/createPreliminaryCollection";
@@ -314,6 +315,9 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
    * requests data → `orchestratePreliminary` adds to `local` → next iteration
    * with updated context.
    *
+   * When RAG_LIMIT is exhausted, throws `AutoBePreliminaryExhaustedError` which
+   * can be caught alongside `AutoBeTimeoutError` for force-pass.
+   *
    * @param ctx AutoBe context for `conversate` and state access.
    * @param process Callback that runs LLM `conversate` and returns result.
    * @returns Final value when process returns non-null or throws after
@@ -344,9 +348,8 @@ export class AutoBePreliminaryController<Kind extends AutoBePreliminaryKind> {
         histories: result.histories,
       });
     }
-    throw new Error(
-      "Preliminary process exceeded the maximum number of retries.",
-    );
+
+    throw new AutoBePreliminaryExhaustedError();
   }
 }
 export namespace AutoBePreliminaryController {

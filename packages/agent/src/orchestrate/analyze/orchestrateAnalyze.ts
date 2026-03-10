@@ -17,6 +17,7 @@ import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBePreliminaryExhaustedError } from "../../utils/AutoBePreliminaryExhaustedError";
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { fillTocDeterministic } from "./fillTocDeterministic";
@@ -627,37 +628,52 @@ async function processStageSection(
                   | AutoBeAnalyzeWriteSectionEvent
                   | undefined =
                   state.sectionResults?.[moduleIndex]?.[unitIndex];
-                const sectionEvent: AutoBeAnalyzeWriteSectionEvent =
-                  previousSection && targetedFeedback?.trim()
-                    ? await orchestrateAnalyzeWriteSectionPatch(ctx, {
-                        scenario: props.scenario,
-                        file: state.file,
-                        moduleEvent: moduleResult,
-                        unitEvent,
-                        moduleIndex,
-                        unitIndex,
-                        previousSectionEvent: previousSection,
-                        feedback: targetedFeedback,
-                        progress: props.sectionWriteProgress,
-                        promptCacheKey: cacheKey,
-                        retry: attempt,
-                        scenarioEntityNames,
-                        sectionIndices: targetedSectionIndices,
-                      })
-                    : await orchestrateAnalyzeWriteSection(ctx, {
-                        scenario: props.scenario,
-                        file: state.file,
-                        moduleEvent: moduleResult,
-                        unitEvent,
-                        allUnitEvents: unitResults,
-                        moduleIndex,
-                        unitIndex,
-                        progress: props.sectionWriteProgress,
-                        promptCacheKey: cacheKey,
-                        feedback: targetedFeedback,
-                        retry: attempt,
-                        scenarioEntityNames,
-                      });
+                let sectionEvent: AutoBeAnalyzeWriteSectionEvent;
+                try {
+                  sectionEvent =
+                    previousSection && targetedFeedback?.trim()
+                      ? await orchestrateAnalyzeWriteSectionPatch(ctx, {
+                          scenario: props.scenario,
+                          file: state.file,
+                          moduleEvent: moduleResult,
+                          unitEvent,
+                          moduleIndex,
+                          unitIndex,
+                          previousSectionEvent: previousSection,
+                          feedback: targetedFeedback,
+                          progress: props.sectionWriteProgress,
+                          promptCacheKey: cacheKey,
+                          retry: attempt,
+                          scenarioEntityNames,
+                          sectionIndices: targetedSectionIndices,
+                        })
+                      : await orchestrateAnalyzeWriteSection(ctx, {
+                          scenario: props.scenario,
+                          file: state.file,
+                          moduleEvent: moduleResult,
+                          unitEvent,
+                          allUnitEvents: unitResults,
+                          moduleIndex,
+                          unitIndex,
+                          progress: props.sectionWriteProgress,
+                          promptCacheKey: cacheKey,
+                          feedback: targetedFeedback,
+                          retry: attempt,
+                          scenarioEntityNames,
+                        });
+                } catch (e) {
+                  if (
+                    e instanceof AutoBePreliminaryExhaustedError &&
+                    previousSection
+                  ) {
+                    analyzeDebug(
+                      `section unit-rag-exhausted attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} — reusing previous`,
+                    );
+                    sectionEvent = previousSection;
+                  } else {
+                    throw e;
+                  }
+                }
                 analyzeDebug(
                   `section unit-done attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} sectionCount=${sectionEvent.sectionSections.length} elapsedMs=${Date.now() - sectionStart}`,
                 );
@@ -713,7 +729,10 @@ async function processStageSection(
               moduleReviews.push(moduleReviewEvent);
             }
           } catch (e) {
-            if (e instanceof AutoBeTimeoutError) {
+            if (
+              e instanceof AutoBeTimeoutError ||
+              e instanceof AutoBePreliminaryExhaustedError
+            ) {
               analyzeDebug(
                 `section per-module-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
               );
@@ -871,7 +890,10 @@ async function processStageSection(
         },
       );
     } catch (e) {
-      if (e instanceof AutoBeTimeoutError) {
+      if (
+        e instanceof AutoBeTimeoutError ||
+        e instanceof AutoBePreliminaryExhaustedError
+      ) {
         analyzeDebug(
           `section cross-file-review-timeout attempt=${attempt} — force-passing all pending files`,
         );

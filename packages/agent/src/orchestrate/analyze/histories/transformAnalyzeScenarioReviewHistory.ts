@@ -22,17 +22,17 @@ export const transformAnalyzeScenarioReviewHistory = (
 ): IAutoBeOrchestrateHistory => {
   return {
     histories: [
-      ...ctx
-        .histories()
-        .filter(
-          (h) => h.type === "userMessage" || h.type === "assistantMessage",
-        ),
       {
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
         text: AutoBeSystemPromptConstant.ANALYZE_SCENARIO_REVIEW,
       },
+      ...ctx
+        .histories()
+        .filter(
+          (h) => h.type === "userMessage" || h.type === "assistantMessage",
+        ),
       {
         id: v7(),
         created_at: new Date().toISOString(),

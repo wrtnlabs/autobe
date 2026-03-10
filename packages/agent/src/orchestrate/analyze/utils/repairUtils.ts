@@ -46,3 +46,15 @@ export const parseLooseStructuredString = (input: string): unknown => {
  */
 export const isRecord = (input: unknown): input is Record<string, unknown> =>
   typeof input === "object" && input !== null && Array.isArray(input) === false;
+
+/**
+ * If `value` is a JSON string that parses into a plain object, return the
+ * parsed object. Otherwise return `value` unchanged. This covers the case where
+ * an LLM (e.g. Qwen) serializes the entire `request` payload as a string
+ * instead of emitting a nested object.
+ */
+export const tryParseStringAsRecord = (value: unknown): unknown => {
+  if (typeof value !== "string") return value;
+  const parsed = parseLooseStructuredString(value);
+  return isRecord(parsed) ? parsed : value;
+};

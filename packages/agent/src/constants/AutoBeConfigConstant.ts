@@ -30,7 +30,7 @@ export const enum AutoBeConfigConstant {
    * Permanent issues (fundamentally misunderstood requirements) still fail fast
    * rather than wasting resources.
    */
-  VALIDATION_RETRY = 8,
+  VALIDATION_RETRY = 3,
 
   /**
    * Retry attempts specifically for AutoBE compiler error correction loops.
@@ -146,7 +146,7 @@ export const enum AutoBeConfigConstant {
    * accommodates complex scenarios requiring multiple context rounds while
    * preventing runaway execution.
    */
-  RAG_LIMIT = 10,
+  RAG_LIMIT = 7,
 
   /**
    * Default timeout for long-running operations in milliseconds (15 minutes).

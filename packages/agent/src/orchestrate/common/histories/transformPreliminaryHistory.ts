@@ -30,8 +30,8 @@ import { IAutoBePreliminaryCollection } from "../structures/IAutoBePreliminaryCo
 
 export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
   preliminary: AutoBePreliminaryController<Kind>,
-): IMicroAgenticaHistoryJson[] => [
-  ...preliminary
+): IMicroAgenticaHistoryJson[] => {
+  const histories: IMicroAgenticaHistoryJson[] = preliminary
     .getKinds()
     .map((key): IMicroAgenticaHistoryJson[] => {
       const newKey: string = key.startsWith("previous")
@@ -54,8 +54,11 @@ export const transformPreliminaryHistory = <Kind extends AutoBePreliminaryKind>(
         analysisPageOffset: preliminary.getAnalysisPageOffset(),
       });
     })
-    .flat(),
-];
+    .flat();
+  const systems = histories.filter((h) => h.type === "systemMessage");
+  const others = histories.filter((h) => h.type !== "systemMessage");
+  return [...systems, ...others];
+};
 
 namespace PreliminaryTransformer {
   export interface IProps<Kind extends AutoBePreliminaryKind> {

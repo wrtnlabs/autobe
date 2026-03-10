@@ -21,7 +21,11 @@ import {
   IAutoBeAnalyzeWriteUnitApplicationComplete,
   IAutoBeAnalyzeWriteUnitApplicationProps,
 } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
-import { isRecord, parseLooseStructuredString } from "./utils/repairUtils";
+import {
+  isRecord,
+  parseLooseStructuredString,
+  tryParseStringAsRecord,
+} from "./utils/repairUtils";
 
 export const orchestrateAnalyzeWriteUnit = async (
   ctx: AutoBeContext,
@@ -324,6 +328,8 @@ export const repairAnalyzeWriteUnitInput = (input: unknown): unknown => {
   // Gap 1: reconstruct { request: {...} } wrapper if missing
   const root = repairFlattenedPayload(input);
 
+  // LLMs (e.g. Qwen) sometimes send `request` as a JSON string
+  root.request = tryParseStringAsRecord(root.request);
   if (isRecord(root.request) === false) return root;
 
   // Gap 2 + 3 + 4 + 6: normalize the request record
