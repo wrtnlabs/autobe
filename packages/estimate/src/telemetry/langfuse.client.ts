@@ -1,6 +1,7 @@
 import { Langfuse } from "langfuse";
 import type { LangfuseSpanClient, LangfuseTraceClient } from "langfuse";
 
+import type { AgentResult } from "../agents/types";
 import type { EvaluationResult, PhaseResult } from "../types";
 
 let client: Langfuse | null = null;
@@ -115,4 +116,42 @@ export function recordScores(
       comment: phase.passed ? "passed" : "failed",
     });
   }
+}
+
+/** Record agent evaluation results as spans + scores on the trace. */
+export function recordAgentResults(
+  trace: LangfuseTraceClient,
+  agentResults: AgentResult[],
+  finalScore: number,
+): void {
+  for (const agent of agentResults) {
+    const span = trace.span({
+      name: `agent/${agent.agent}`,
+      input: { model: agent.model, provider: agent.provider },
+    });
+    span.end({
+      output: {
+        score: agent.score,
+        issueCount: agent.issues.length,
+        criticalCount: agent.issues.filter((i) => i.severity === "critical")
+          .length,
+        summary: agent.summary,
+        durationMs: agent.durationMs,
+        tokensUsed: agent.tokensUsed,
+      },
+    });
+
+    trace.score({
+      name: `agent_${agent.agent}`,
+      value: agent.score,
+      comment: `${agent.model} | ${agent.issues.length} issues`,
+    });
+  }
+
+  // Update total score with agent-adjusted value
+  trace.score({
+    name: "total_with_agents",
+    value: finalScore,
+    comment: `Final score including agent evaluation (30%)`,
+  });
 }

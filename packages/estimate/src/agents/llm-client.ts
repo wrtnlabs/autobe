@@ -3,6 +3,15 @@ import OpenAI from "openai";
 import { getActiveTrace } from "../telemetry";
 import { AgentConfig, TokenUsage } from "./types";
 
+/**
+ * OpenRouter model pricing (USD per million tokens). Update when models or
+ * pricing change.
+ */
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  "anthropic/claude-sonnet-4-6": { input: 3.0, output: 15.0 },
+  "deepseek/deepseek-v3.2": { input: 0.3, output: 0.88 },
+};
+
 /** LLM API response */
 interface LLMResponse {
   content: string;
@@ -59,9 +68,19 @@ export class LLMClient {
     const inputTokens = response.usage?.prompt_tokens || 0;
     const outputTokens = response.usage?.completion_tokens || 0;
 
+    const pricing = MODEL_PRICING[this.model];
+    const usageData: Record<string, number> = {
+      input: inputTokens,
+      output: outputTokens,
+    };
+    if (pricing) {
+      usageData.inputCost = (inputTokens / 1_000_000) * pricing.input;
+      usageData.outputCost = (outputTokens / 1_000_000) * pricing.output;
+    }
+
     generation?.end({
       output: content,
-      usage: { input: inputTokens, output: outputTokens },
+      usage: usageData,
     });
 
     return {

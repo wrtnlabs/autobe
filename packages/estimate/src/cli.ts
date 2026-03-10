@@ -14,7 +14,7 @@ import {
 } from "./agents";
 import { EvaluationPipeline } from "./core/pipeline";
 import { generateJsonReport, generateMarkdownReport } from "./reporters";
-import { flushLangfuse } from "./telemetry";
+import { flushLangfuse, getActiveTrace, recordAgentResults } from "./telemetry";
 import type {
   EvaluationContext,
   EvaluationInput,
@@ -250,6 +250,22 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     );
 
     agentSpinner.stop("AI Agent Evaluations complete");
+
+    // Record agent results to Langfuse trace
+    const trace = getActiveTrace();
+    if (trace && agentResults.length > 0) {
+      const agentAvgForTrace = agentResults.reduce((sum, r) => {
+        const w = AGENT_WEIGHTS[r.agent] || 1 / agentResults.length;
+        return sum + r.score * w;
+      }, 0);
+      const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
+      const agentPortion = agentAvgForTrace * AGENT_WEIGHT_RATIO;
+      recordAgentResults(
+        trace,
+        agentResults,
+        Math.round(phasesPortion + agentPortion),
+      );
+    }
   }
 
   // Reports
