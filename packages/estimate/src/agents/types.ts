@@ -50,5 +50,6 @@ export interface AgentResult {
   tokensUsed?: TokenUsage;
 }
 
-/** Default model */
-export const DEFAULT_MODEL = "qwen/qwen3.5-35b-a3b";
+/** Default models per agent role */
+export const SECURITY_MODEL = "anthropic/claude-sonnet-4-6";
+export const QUALITY_MODEL = "deepseek/deepseek-v3.2";

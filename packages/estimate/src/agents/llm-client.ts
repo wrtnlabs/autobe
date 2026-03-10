@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 
 import { getActiveTrace } from "../telemetry";
-import { AgentConfig, DEFAULT_MODEL, TokenUsage } from "./types";
+import { AgentConfig, TokenUsage } from "./types";
 
 /** LLM API response */
 interface LLMResponse {
@@ -16,7 +16,10 @@ export class LLMClient {
   private maxTokens: number;
 
   constructor(config: AgentConfig) {
-    this.model = config.model || DEFAULT_MODEL;
+    if (!config.model) {
+      throw new Error("AgentConfig.model is required");
+    }
+    this.model = config.model;
     this.maxTokens = config.maxTokens || 4096;
 
     this.client = new OpenAI({

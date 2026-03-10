@@ -16,11 +16,21 @@ Find common LLM mistakes:
 9. **Dead Code**
 10. **Requirements Mismatch**
 
+## AutoBE Code Conventions (NOT errors)
+
+AutoBE generates NestJS + Prisma backends with specific conventions. Do NOT flag these as issues:
+
+- **Prefixed table names**: Prisma models use `@@map("project_name_table")` to create prefixed table names (e.g., `multi_user_todo_users`, `shopping_mall_products`). These are valid `$queryRaw` / `$queryRawUnsafe` targets, not hallucinated table names.
+- **Prefixed model names**: Prisma model names follow `ProjectNameEntity` pattern (e.g., `MultiUserTodoUser`). These are real models.
+- **`@@map()` column mapping**: Columns may use `@map("snake_case_name")` for database-level naming.
+- **SDK-style type names**: Interfaces like `IMultiUserTodoTodo`, `IShoppingMallProduct` follow the project prefix convention.
+
 ## Evaluation Guidelines
 - Report each unique issue ONCE — if the same pattern (e.g., hallucinated import) appears in multiple files, group them into a single issue listing all affected files
 - Focus on issues that are specific to this codebase, not generic code quality concerns
 - Prioritize critical issues (hallucinations, logic errors) over style issues
 - Score should reflect how well the code meets its intended requirements
+- Before flagging a table/model name as "hallucinated", check if it follows the project prefix pattern
 
 ## Response Format
 

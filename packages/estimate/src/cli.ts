@@ -8,6 +8,8 @@ import {
   AgentResult,
   LLMProvider,
   LLMQualityAgent,
+  QUALITY_MODEL,
+  SECURITY_MODEL,
   SecurityAgent,
 } from "./agents";
 import { EvaluationPipeline } from "./core/pipeline";
@@ -381,11 +383,17 @@ async function runCompare(options: CompareCommandOptions): Promise<void> {
 
 async function runAgentEvaluations(
   context: EvaluationContext,
-  config: AgentConfig,
+  baseConfig: Omit<AgentConfig, "model">,
   _verbose?: boolean,
 ): Promise<AgentResult[]> {
-  const securityAgent = new SecurityAgent(config);
-  const llmQualityAgent = new LLMQualityAgent(config);
+  const securityAgent = new SecurityAgent({
+    ...baseConfig,
+    model: SECURITY_MODEL,
+  });
+  const llmQualityAgent = new LLMQualityAgent({
+    ...baseConfig,
+    model: QUALITY_MODEL,
+  });
 
   const [securityResult, llmQualityResult] = await Promise.all([
     securityAgent.evaluate(context),
