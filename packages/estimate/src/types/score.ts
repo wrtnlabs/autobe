@@ -3,7 +3,7 @@ import type { Issue } from "./issue";
 
 export const GATE_ERROR_THRESHOLD = 0.05;
 export const GATE_PENALTY_PER_PERCENT = 5;
-export const AGENT_WEIGHT_RATIO = 0.3;
+export const AGENT_WEIGHT_RATIO = 0.25;
 export const AGENT_WEIGHTS: Record<string, number> = {
   SecurityAgent: 0.5, // 50% of agent portion
   LLMQualityAgent: 0.5, // 50% of agent portion
@@ -39,10 +39,10 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.1, // 10%
+  documentQuality: 0.05, // 5% (always 100, low discrimination)
   requirementsCoverage: 0.25, // 25%
-  testCoverage: 0.3, // 30%
-  logicCompleteness: 0.25, // 25%
+  testCoverage: 0.25, // 25% (evaluator maturing, restore to 30% later)
+  logicCompleteness: 0.35, // 35% (best discriminator of real quality)
   apiCompleteness: 0.1, // 10%
   // Legacy (not used in score)
   requirements: 0,
@@ -165,11 +165,17 @@ export interface SchemaSyncPenalty {
   mismatchedProperties: number;
 }
 
+export interface SuggestionOverflowPenalty {
+  amount: number;
+  count: number;
+}
+
 export interface EvaluationPenalties {
   warning?: WarningPenalty;
   duplication?: DuplicationPenalty;
   jsdoc?: JsDocPenalty;
   schemaSync?: SchemaSyncPenalty;
+  suggestionOverflow?: SuggestionOverflowPenalty;
 }
 
 /** Final evaluation result */

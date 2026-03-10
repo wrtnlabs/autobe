@@ -6,7 +6,7 @@ import type {
   PhaseResult,
   RuntimeTestResult,
 } from "../../types";
-import { createIssue } from "../../types";
+import { PHASE_WEIGHTS, createIssue } from "../../types";
 import { BaseEvaluator } from "../base";
 import { type RouteInfo, buildRouteMap } from "../golden/url-resolver";
 
@@ -193,7 +193,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       passed: true,
       score,
       maxScore: 100,
-      weightedScore: score * 0.2,
+      weightedScore: score * PHASE_WEIGHTS.testCoverage,
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics,
@@ -535,7 +535,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       passed: true,
       score,
       maxScore: 100,
-      weightedScore: score * 0.2,
+      weightedScore: score * PHASE_WEIGHTS.testCoverage,
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: {

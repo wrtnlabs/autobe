@@ -83,9 +83,15 @@ export class LLMClient {
       usage: usageData,
     });
 
+    const tokenUsage: TokenUsage = { input: inputTokens, output: outputTokens };
+    if (pricing) {
+      tokenUsage.inputCost = (inputTokens / 1_000_000) * pricing.input;
+      tokenUsage.outputCost = (outputTokens / 1_000_000) * pricing.output;
+    }
+
     return {
       content,
-      tokensUsed: { input: inputTokens, output: outputTokens },
+      tokensUsed: tokenUsage,
     };
   }
 
