@@ -17,9 +17,9 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { createAutoBeUserMessageContent } from "../../factory/createAutoBeMessageContent";
+import { mergeSystemMessages } from "../../factory/mergeSystemMessages";
 // import { supportFunctionCallFallback } from "../../factory/supportFunctionCallFallback";
 import { supportMistral } from "../../factory/supportMistral";
-import { mergeSystemMessages } from "../../factory/mergeSystemMessages";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { transformImageDescribeDraftHistories } from "./histories/transformImageDescribeDraftHistories";
 import { IAutoBeImageDescribeDraftApplication } from "./structures/IAutoBeImageDescribeDraftApplication";

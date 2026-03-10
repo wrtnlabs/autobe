@@ -18,9 +18,9 @@ import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConst
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
+import { mergeSystemMessages } from "./mergeSystemMessages";
 // import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
-import { mergeSystemMessages } from "./mergeSystemMessages";
 
 /**
  * Generates automatic consent messages when AI hesitates and seeks permission

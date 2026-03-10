@@ -56,9 +56,9 @@ import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
 import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
+import { mergeSystemMessages } from "./mergeSystemMessages";
 // import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
-import { mergeSystemMessages } from "./mergeSystemMessages";
 
 export const createAutoBeContext = (props: {
   vendor: IAutoBeVendor;
