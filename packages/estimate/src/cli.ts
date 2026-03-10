@@ -421,7 +421,9 @@ async function runAgentEvaluations(
 }
 
 function printAgentResults(agentResults: AgentResult[]): void {
-  console.log(`\n🤖 AI Agent Evaluations (${Math.round(AGENT_WEIGHT_RATIO * 100)}% of total score):`);
+  console.log(
+    `\n🤖 AI Agent Evaluations (${Math.round(AGENT_WEIGHT_RATIO * 100)}% of total score):`,
+  );
   console.log("─────────────────────────────────────────");
 
   for (const result of agentResults) {
@@ -486,14 +488,18 @@ function printFinalScore(
     console.log(`   ❌ Gate Failed — Score forced to 0`);
     if (hasAgents && agentAvg > 0) {
       const phaseW = 1 - AGENT_WEIGHT_RATIO;
-      const wouldBe = Math.round(phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO);
+      const wouldBe = Math.round(
+        phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO,
+      );
       console.log(
         `   (Reference: Phase ${phaseScore}, Agent ${Math.round(agentAvg)} → ~${wouldBe}/100 if gate passed)`,
       );
     }
   } else if (hasAgents) {
     const phaseW = 1 - AGENT_WEIGHT_RATIO;
-    const rawTotal = Math.round(phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO);
+    const rawTotal = Math.round(
+      phaseScore * phaseW + agentAvg * AGENT_WEIGHT_RATIO,
+    );
     console.log(
       `   Phase Score:  ${phaseScore}/100 × ${Math.round(phaseW * 100)}% = ${(phaseScore * phaseW).toFixed(1)}`,
     );
@@ -523,7 +529,9 @@ function printFinalScore(
 function printResults(result: EvaluationResult): void {
   console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
 
-  console.log(`📋 Scoring Phases (${Math.round((1 - AGENT_WEIGHT_RATIO) * 100)}% of total score):`);
+  console.log(
+    `📋 Scoring Phases (${Math.round((1 - AGENT_WEIGHT_RATIO) * 100)}% of total score):`,
+  );
   console.log("─────────────────────────────────────────");
 
   const gateStatus = result.phases.gate.passed ? "✅ Pass" : "❌ Fail";
