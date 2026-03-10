@@ -177,5 +177,5 @@ export const enum AutoBeConfigConstant {
    * exceed model context limits. Pagination shows only this many rows per RAG
    * iteration, with the next batch appearing after each context request.
    */
-  ANALYSIS_PAGE_SIZE = 100,
+  ANALYSIS_PAGE_SIZE = 75,
 }

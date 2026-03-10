@@ -126,16 +126,7 @@ namespace PreliminaryTransformer {
       prompt: AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION,
       previous:
         AutoBeSystemPromptConstant.PRELIMINARY_ANALYSIS_SECTION_PREVIOUS,
-      available:
-        StringUtil.trim`
-        ID | File | Unit | Section
-        ---|------|------|---------
-        ${page
-          .map((s) =>
-            [s.id, s.filename, s.unitTitle, s.sectionTitle].join(" | "),
-          )
-          .join("\n")}
-      ` + paginationNote,
+      available: formatCompactSectionIndex(page) + paginationNote,
       loaded: Array.from(oldbie.values())
         .map((s) => `- [${s.id}] ${s.sectionTitle}`)
         .join("\n"),
@@ -678,6 +669,36 @@ const toJsonBlock = (obj: unknown): string =>
       ${JSON.stringify(obj)}
       \`\`\`
     `;
+
+const formatCompactSectionIndex = (
+  sections: IAnalysisSectionEntry[],
+): string => {
+  let result = "";
+  let lastFile = "";
+  let lastUnit = "";
+  let unitSections: string[] = [];
+  const flushUnit = () => {
+    if (unitSections.length > 0) {
+      result += "  " + lastUnit + ": " + unitSections.join(", ") + "\n";
+      unitSections = [];
+    }
+  };
+  for (const s of sections) {
+    if (s.filename !== lastFile) {
+      flushUnit();
+      result += "\n[" + s.filename + "]\n";
+      lastFile = s.filename;
+      lastUnit = "";
+    }
+    if (s.unitTitle !== lastUnit) {
+      flushUnit();
+      lastUnit = s.unitTitle;
+    }
+    unitSections.push(s.id + "." + s.sectionTitle);
+  }
+  flushUnit();
+  return result.trim();
+};
 
 // experimenting between assistantMessage and execute types
 const createFunctionCallingMessage = <

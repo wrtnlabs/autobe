@@ -597,11 +597,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             titlePattern: "{name} Validation Criteria",
             purposePattern:
               "Define business validation expectations for {name}, including acceptable data quality criteria.",
-            keywords: [
-              "validation",
-              "boundary-value",
-              "format-requirement",
-            ],
+            keywords: ["validation", "boundary-value", "format-requirement"],
           },
         },
       },
@@ -617,11 +613,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               titlePattern: "List Browsing Expectations",
               purposePattern:
                 "Define business expectations for how users find, filter, and browse lists.",
-              keywords: [
-                "filtering",
-                "sorting",
-                "pagination",
-              ],
+              keywords: ["filtering", "sorting", "pagination"],
             },
           ],
         },
