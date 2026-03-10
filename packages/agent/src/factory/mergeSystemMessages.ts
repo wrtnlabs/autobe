@@ -6,9 +6,9 @@ import { IAutoBeVendor } from "../structures/IAutoBeVendor";
 /**
  * Merges multiple system messages into a single one.
  *
- * Some models (e.g. Qwen) require exactly one system message at the
- * beginning of the conversation. This function intercepts API requests
- * and consolidates all system messages into one.
+ * Some models (e.g. Qwen) require exactly one system message at the beginning
+ * of the conversation. This function intercepts API requests and consolidates
+ * all system messages into one.
  *
  * @param agent MicroAgentica instance to patch
  * @param vendor Vendor configuration containing model name
