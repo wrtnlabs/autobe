@@ -57,15 +57,7 @@ const main = async (): Promise<void> => {
         }),
     },
     {
-      vendors: (() => {
-        const v = TestGlobal.getArguments("vendor");
-        if (!v || v.length === 0) {
-          throw new Error(
-            "--vendor is required. Example: --vendor openai/gpt-4.1-mini",
-          );
-        }
-        return v;
-      })() ?? [
+      vendors: TestGlobal.getArguments("vendor") ?? [
         //----
         // COMMERCIAL MODELS
         //----

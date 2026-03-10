@@ -135,8 +135,6 @@ export abstract class BaseAgent {
     const summaries: string[] = [];
     let totalInput = 0;
     let totalOutput = 0;
-    let totalInputCost = 0;
-    let totalOutputCost = 0;
 
     const chunkResults = await this.runWithConcurrency(
       chunks,
@@ -156,8 +154,6 @@ export abstract class BaseAgent {
       if (tokensUsed) {
         totalInput += tokensUsed.input;
         totalOutput += tokensUsed.output;
-        totalInputCost += tokensUsed.inputCost || 0;
-        totalOutputCost += tokensUsed.outputCost || 0;
       }
     }
 
@@ -178,12 +174,7 @@ export abstract class BaseAgent {
             ? `[${chunks.length} chunks, ${allIssues.length}→${uniqueIssues.length} issues] ${summaries[0]}`
             : summaries[0] || "No summary",
       },
-      tokensUsed: {
-        input: totalInput,
-        output: totalOutput,
-        inputCost: totalInputCost || undefined,
-        outputCost: totalOutputCost || undefined,
-      },
+      tokensUsed: { input: totalInput, output: totalOutput },
     };
   }
 
