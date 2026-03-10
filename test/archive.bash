@@ -4,12 +4,6 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
-# qwen/qwen3-coder-next (0.12) -> working
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-qwen3-coder-next.bbs.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
-pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
-
 # qwen/qwen3.5-397b-a17b (0.39)
 pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
 pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project bbs > archive.qwen-qwen3.5-397b-a17b.bbs.log
@@ -27,6 +21,12 @@ pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --proje
 pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project bbs > archive.qwen-qwen3.5-35b-a3b.bbs.log
 pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
 pnpm run archive:go --vendor qwen/qwen3.5-35b-a3b  --useToolChoice false --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
+
+# qwen/qwen3-coder-next (0.12) -> working
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project todo > archive.qwen-qwen3-coder-next.todo.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project bbs > archive.qwen-qwen3-coder-next.bbs.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project reddit > archive.qwen-qwen3-coder-next.reddit.log
+pnpm run archive:go --vendor qwen/qwen3-coder-next --project shopping > archive.qwen-qwen3-coder-next.shopping.log
 
 ######################################################
 # KIMI

@@ -252,10 +252,8 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
 - [ ] Select includes all transformed fields
-- [ ] Relations use `connect` syntax
 
 ### Code Quality
 - [ ] No import statements
 - [ ] Business logic preserved
 - [ ] Function signature preserved (no return type changes)
-- [ ] Compiles without errors
