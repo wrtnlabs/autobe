@@ -190,21 +190,22 @@ articleTags: {
 } satisfies Prisma.bbs_article_tagsFindManyArgs,
 ```
 
-### 5.5. Nullable Timestamp with Required DTO (Sentinel Date)
+### 5.5. Nullable Date → Required DTO Field
+
+When `DateTime?` (nullable) maps to `string & Format<"date-time">` (required), choose a default that reflects the field's semantic meaning:
 
 ```typescript
-// Prisma: expired_at DateTime? (nullable)
-// DTO: expiredAt: string & tags.Format<"date-time"> (required!)
+// ❌ WRONG: new Date() = "already expired" — semantically opposite of "unlimited"
+expiredAt: (input.expired_at ?? new Date()).toISOString(),
 
-// ❌ ERROR: null.toISOString() or null → string
-return { expiredAt: input.expired_at.toISOString() };
+// ✅ CORRECT: null = "no expiration" → far-future
+expiredAt: (input.expired_at ?? new Date("9999-12-31T23:59:59.999Z")).toISOString(),
+```
 
-// ✅ FIX: Use sentinel date
-return {
-  expiredAt: input.expired_at
-    ? input.expired_at.toISOString()
-    : new Date("2300-01-01").toISOString(),  // "never expires"
-};
+When `DateTime?` maps to `(string & Format<"date-time">) | null` (nullable DTO), `?? null` is correct:
+
+```typescript
+deletedAt: input.deleted_at?.toISOString() ?? null,
 ```
 
 ### 5.6. TS2339 on Prisma Model Type — Relation Field Not Selected
@@ -237,6 +238,16 @@ export async function transform(input: Payload) {
 ```
 
 **Key rule**: In transformers (Database Payload → DTO), every relation field accessed in `transform()` must be selected in `select()`. Use `NeighborTransformer.select()` for the relation value in select().
+
+### 5.7. Typia Tag Type Mismatch
+
+```typescript
+// ❌ ERROR: Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'
+count: input._count.reviews,
+
+// ✅ FIX: satisfies pattern
+count: input._count.reviews satisfies number as number,
+```
 
 ## 6. Compiler Authority
 
