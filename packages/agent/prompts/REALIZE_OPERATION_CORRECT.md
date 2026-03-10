@@ -67,18 +67,33 @@ where: { name: { contains: term } }  // Use correct field from schema
 | `string \| null` → `string & Format<"date-time">` | `(date ?? contextualDefault).toISOString()` — analyze field semantics (e.g., `expired_at` null = unlimited → far-future, NOT `new Date()`) |
 | `number & Type<"int32">` → `Minimum<0>` | `value satisfies number as number` |
 
-### 4.3. Error 2339: "Property does not exist on type"
+### 4.3. Error 2339: Property Not in Select
+
+`Property 'X' does not exist on type` — if the object comes from a Prisma query with `select`, check whether `X` is included in the select clause. Also check for typos or table-name/property-name confusion (see 4.5).
+
+**Diagnosis**: Find the query producing the object, then add the missing property:
+
+| What's missing | Add to select |
+|----------------|---------------|
+| Scalar field | `fieldName: true` |
+| Relation | `relation: { select: { ... } }` or `relation: Transformer.select()` |
+| Aggregate count | `_count: { select: { relation: true } }` |
 
 ```typescript
-// ERROR: Property 'author' does not exist
-return { author: article.author };  // Not included in select
+// ❌ ERROR: Property 'author' does not exist on type '{ id: string; title: string; }'
+const article = await MyGlobal.prisma.bbs_articles.findUniqueOrThrow({
+  where: { id },
+  select: { id: true, title: true }  // 'author' not selected
+});
+return { author: article.author };  // ❌
 
-// FIX: Add to select statement
+// ✅ FIX: Add the relation to select
 const article = await MyGlobal.prisma.bbs_articles.findUniqueOrThrow({
   where: { id },
   select: {
     id: true,
-    author: { select: { id: true, name: true } }  // Add missing relation
+    title: true,
+    author: { select: { id: true, name: true } },  // ✅ Added
   }
 });
 ```
@@ -213,7 +228,7 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | 2322 (Date → string) | `.toISOString()` | - |
 | 2322 (string \| null → string) | `(date ?? contextualDefault).toISOString()` | Analyze field semantics for default |
 | Tag type mismatch | `value satisfies number as number` | - |
-| 2339 (property doesn't exist) | Add to select | Check relation |
+| 2339 (property doesn't exist) | Add to select | Scalar: `true`, Relation: `{ select: {...} }` |
 | 2345 (`T \| null` → `T`) | Check `!== undefined && !== null` | Optional nullable field |
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |

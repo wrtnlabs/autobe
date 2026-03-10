@@ -124,24 +124,7 @@ Apply ALL corrections, then verify exhaustively. Use `revise.final` only if draf
 
 ## 5. Common Error Patterns
 
-### 5.1. Missing Fields in select()
-
-```typescript
-// ❌ ERROR: Property 'email' does not exist on type
-export function select() {
-  return { select: { id: true } };  // email missing!
-}
-export async function transform(input: Payload) {
-  return { id: input.id, email: input.email };  // ❌ Error
-}
-
-// ✅ FIX: Add missing field
-export function select() {
-  return { select: { id: true, email: true } };  // ✅ Added
-}
-```
-
-### 5.2. Table Name Used Instead of Relation Property Name
+### 5.1. Table Name Used Instead of Relation Property Name
 
 ```typescript
 // ❌ ERROR: 'bbs_article_comment_files' does not exist on type
@@ -156,7 +139,7 @@ select: {
 }
 ```
 
-### 5.3. Unwrapping Neighbor Transformer with `.select`
+### 5.2. Unwrapping Neighbor Transformer with `.select`
 
 ```typescript
 // ❌ ERROR: Type mismatch — select().select strips the wrapper
@@ -172,7 +155,7 @@ select: {
 }
 ```
 
-### 5.4. M:N Join Table with Table Name and `.select` Unwrap
+### 5.3. M:N Join Table with Table Name and `.select` Unwrap
 
 ```typescript
 // ❌ ERROR: Table name + .select unwrap
@@ -190,7 +173,7 @@ articleTags: {
 } satisfies Prisma.bbs_article_tagsFindManyArgs,
 ```
 
-### 5.5. Nullable Date → Required DTO Field
+### 5.4. Nullable Date → Required DTO Field
 
 When `DateTime?` (nullable) maps to `string & Format<"date-time">` (required), choose a default that reflects the field's semantic meaning:
 
@@ -208,13 +191,21 @@ When `DateTime?` maps to `(string & Format<"date-time">) | null` (nullable DTO),
 deletedAt: input.deleted_at?.toISOString() ?? null,
 ```
 
-### 5.6. TS2339 on Prisma Model Type — Relation Field Not Selected
+### 5.5. TS2339 — Property Not in select()
 
-When you see `Property 'X' does not exist on type 'Y'` where `Y` is a snake_case Prisma model name (e.g., `shopping_mall_product_variants`), this means `X` is a **relation field** not included in your `select()`.
+`Property 'X' does not exist on type` in `transform()` — first check whether `X` is included in your `select()`. If the type is an inlined object (`{ id: string; body: string; }`) or a Prisma payload type, a missing select entry is the likely cause. Also check for typos or table-name/property-name confusion (see 5.1).
+
+**Diagnosis**: For every TS2339 in `transform()`, find the missing property and add it to `select()`:
+
+| What's missing | Add to select() |
+|----------------|-----------------|
+| Scalar field | `fieldName: true` |
+| Relation (has neighbor transformer) | `relation: NeighborTransformer.select()` |
+| Relation (no neighbor transformer) | `relation: { select: { id: true, ... } }` |
+| Aggregate count | `_count: { select: { relation: true } }` |
 
 ```typescript
-// ❌ ERROR: Property 'user' does not exist on type
-// The select() doesn't include the 'user' relation
+// ❌ ERROR: Property 'user' does not exist on type '{ id: string; body: string; }'
 export function select() {
   return { select: { id: true, body: true } };
 }
@@ -222,7 +213,7 @@ export async function transform(input: Payload) {
   return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // ❌
 }
 
-// ✅ FIX: Add the relation to select() using the neighbor transformer
+// ✅ FIX: Add the relation to select()
 export function select() {
   return {
     select: {
@@ -232,14 +223,11 @@ export function select() {
     },
   };
 }
-export async function transform(input: Payload) {
-  return { writer: await BbsUserAtSummaryTransformer.transform(input.user) };  // ✅ Now works
-}
 ```
 
-**Key rule**: In transformers (Database Payload → DTO), every relation field accessed in `transform()` must be selected in `select()`. Use `NeighborTransformer.select()` for the relation value in select().
+**Key rule**: Every property accessed on `input` in `transform()` MUST have a corresponding entry in `select()`.
 
-### 5.7. Typia Tag Type Mismatch
+### 5.6. Typia Tag Type Mismatch
 
 ```typescript
 // ❌ ERROR: Type 'number & Type<"int32">' is not assignable to type 'Minimum<0>'
