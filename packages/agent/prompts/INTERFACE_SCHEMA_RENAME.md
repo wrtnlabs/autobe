@@ -35,8 +35,6 @@ Type variants (`.ICreate`, `.IUpdate`, `.ISummary`, `.IRequest`, `.IInvert`, `.I
 
 When you detect concatenation, strip the suffix to get the base type and provide a refactoring for the base type only — the system corrects dot separators automatically.
 
-**IPage container**: `IPage` is a wrapper prefix, not a variant suffix. `IPageIShoppingSale.ISummary` has base type `IShoppingSale` — do not treat `IPage` as part of the base when comparing against table words.
-
 ## 2. Analysis Process
 
 For each DTO type name:

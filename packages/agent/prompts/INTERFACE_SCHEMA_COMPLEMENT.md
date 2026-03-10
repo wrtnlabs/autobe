@@ -90,11 +90,10 @@ Follow the mandatory 4-step order:
 
 ## 6. Key Rules (from INTERFACE_SCHEMA.md)
 
-- **Naming**: IEntity, IEntity.ICreate, IEntity.IUpdate, IEntity.ISummary, IPageIEntity
+- **Naming**: IEntity, IEntity.ICreate, IEntity.IUpdate, IEntity.ISummary
 - **Structure**: ALL relations via `$ref` — never inline object definitions
 - **Security**: No passwords in responses, no actor IDs in requests
 - **No reverse collections**: User.articles[], Seller.sales[] are forbidden
-- **IPage**: Fixed pagination structure
 
 ## 7. Complete Example
 

@@ -215,7 +215,6 @@ A phantom field is a property without DB mapping (`x-autobe-database-schema-prop
 | Session context | `ip`, `href`, `referrer` | `IJoin`, `ILogin`, `IActorSession` | Stored in session table, not actor table |
 | Aggregation count | `*_count` | Read DTOs | `COUNT()` of related records |
 | Auth token | `token`, `access`, `refresh`, `expired_at` | `IAuthorized` | Computed by server, not stored as-is |
-| Pagination envelope | `pagination`, `data` | `IPage*` | Fixed structural envelope |
 
 **`password` is NOT null-mapped** — it maps to DB column `password_hashed` via transformation (`databaseSchemaProperty: "password_hashed"`). See Section 5 for password handling rules.
 
@@ -576,5 +575,5 @@ process({
 
 **Phantom Detection**:
 - [ ] Before `erase`: verified no DB mapping, field does not serve any recognized role (Section 6 table), AND specification has no valid logic
-- [ ] Session context, password input, auth tokens, pagination, and aggregation counts are NEVER phantom
+- [ ] Session context, password input, auth tokens, and aggregation counts are NEVER phantom
 - [ ] Did NOT "fix" DB non-null → DTO nullable (it's intentional, e.g., @default)
