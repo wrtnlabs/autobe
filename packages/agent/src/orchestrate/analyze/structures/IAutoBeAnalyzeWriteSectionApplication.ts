@@ -124,6 +124,19 @@ export interface IAutoBeAnalyzeWriteSectionApplicationSectionSection {
    * - API endpoint specifications
    * - Technical implementation details
    * - Frontend UI/UX specifications
+   *
+   * Hallucination Prevention:
+   *
+   * - Every requirement must trace to the original user input
+   * - Do NOT invent SLA numbers, timeout values, or performance targets
+   * - Do NOT add security mechanisms (2FA, JWT, encryption) user did not mention
+   * - Do NOT add infrastructure requirements (CDN, caching) user did not mention
+   * - 05-non-functional: only describe aspects the user explicitly mentioned
+   *
+   * Conciseness:
+   *
+   * - One concept = one section, not multiple sections rephrasing the same idea
+   * - 02-domain-model: max 1-3 sections per business concept
    */
   content: string;
 }

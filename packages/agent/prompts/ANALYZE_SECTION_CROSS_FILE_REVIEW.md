@@ -49,6 +49,17 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - Same concept should use same PascalCase name across all files
 - Flag differences in feedback, do NOT reject
 
+### 1.7. Cross-File Hallucination Check (CRITICAL)
+- A hallucinated feature referenced consistently across multiple files is still a hallucination
+- If one file introduces a feature not in the scenario, reject it even if other files reference it
+- 05-non-functional: specific SLO numbers, infrastructure requirements not in user input → REJECT
+- **REJECT files containing requirements not traceable to user input**
+
+### 1.8. Cross-File Verbosity (ADVISORY)
+- Same concept explained in detail in multiple files = cross-file duplication
+- Example: "data isolation" described in 01, 02, 04, 05 → define once in canonical file, reference elsewhere
+- Flag with specific consolidation suggestions
+
 ---
 
 ## 2. Decision Guidelines

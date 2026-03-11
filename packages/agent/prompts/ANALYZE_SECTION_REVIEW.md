@@ -74,6 +74,22 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - **Boilerplate sections**: Flag sections existing solely for purpose/scope — do NOT reject
 - **Section count**: Sections with 5-25 requirements are expected for detailed specifications — do NOT flag as excessive
 
+### 1.10. Hallucination Detection (CRITICAL)
+- Does the section contain features, numbers, or requirements not in original user input?
+- Common hallucinations to catch:
+  - Security mechanisms user didn't mention (2FA, OAuth2, JWT, encryption)
+  - Specific performance numbers (99.9% uptime, 500ms, 10-second timeout)
+  - Infrastructure requirements (CDN, caching, load balancing, storage planning)
+  - Compliance frameworks (GDPR, SOC2, PCI-DSS)
+  - Features user never requested (notifications, webhooks, rate limiting, i18n)
+- **05-non-functional**: Highest hallucination risk. Reject if it contains specific SLO numbers, timeout thresholds, or infrastructure requirements user did not mention.
+- **REJECT if section contains requirements not traceable to user input**
+
+### 1.11. Verbosity Detection (ADVISORY)
+- 3+ subsections explaining the same idea in different words = excessive verbosity
+- 02-domain-model: 10+ subsections for one concept is verbosity — suggest merging to 1-3
+- Flag in feedback with specific merge suggestions, do NOT reject
+
 ---
 
 ## 2. Decision Guidelines
@@ -148,6 +164,8 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - File scope violation (content that belongs in another SRS file)
 - Section directly contradicts scenario concepts or actors
 - Section invents features, concepts, or workflows not present in scenario
+- Section contains specific numbers (SLAs, timeouts, thresholds) not stated by the user
+- Section adds security mechanisms, compliance frameworks, or infrastructure requirements the user did not mention
 - Section contradicts its own parent module/unit definitions
 - Section reinterprets the user's stated system characteristics
 - Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")

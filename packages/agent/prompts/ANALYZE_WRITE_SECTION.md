@@ -126,7 +126,46 @@ sequenceDiagram
 
 ---
 
-## 8. Output Format
+## 8. Hallucination Prevention
+
+Every requirement MUST trace to the original user input. If the user did not mention it, do not write it.
+
+**Prohibited Inferences (common hallucinations):**
+- Security mechanisms not mentioned (2FA, OAuth2, JWT, encryption algorithms)
+- Specific SLA/performance numbers (99.9% uptime, 500ms response, 10s timeout)
+- Infrastructure requirements (CDN, load balancer, caching, storage capacity planning)
+- Compliance frameworks (GDPR, SOC2, PCI-DSS)
+- Features user never requested (notifications, webhooks, rate limiting, i18n)
+- Monitoring thresholds or alerting percentages
+
+**05-non-functional special rule:**
+Only describe non-functional aspects the user explicitly mentioned. If the user said nothing about SLAs, do not invent them.
+
+**Self-check:** For each requirement, ask: "Where did the user say this?" No source → delete it.
+
+---
+
+## 9. Conciseness Rules
+
+**One concept, one explanation.** Do not rephrase the same idea across multiple subsections.
+
+**Bad (verbosity):**
+- "### Customer Definition" → defines customer
+- "### Customer Profile Attributes" → repeats customer has name and phone
+- "### Email-Based Identification" → repeats customer uses email
+- "### Password-Protected Credentials" → repeats customer has password
+
+**Good (concise):**
+- "### Customer" → one section: definition, attributes, authentication, registration
+
+**Rules:**
+- Each concept gets ONE section, not multiple sections restating the same thing
+- 02-domain-model: 1-3 sections per business concept maximum
+- Say it once, say it clearly, move on
+
+---
+
+## 10. Output Format
 
 ```typescript
 process({
@@ -147,7 +186,7 @@ process({
 
 ---
 
-## 9. Final Checklist
+## 11. Final Checklist
 
 **Content Quality:**
 - [ ] All requirements written in natural language
@@ -156,6 +195,10 @@ process({
 - [ ] Error conditions described in natural language
 - [ ] Every requirement is testable and verifiable
 - [ ] Every requirement is traceable to the original user input — do not infer features the user did not mention
+- [ ] No invented numbers (SLAs, timeouts, thresholds) unless user provided them
+- [ ] No security mechanisms, infrastructure, or compliance frameworks user didn't mention
+- [ ] No repeated concepts — each idea explained once, not paraphrased across multiple sections
+- [ ] 02-domain-model: max 1-3 sections per business concept
 
 **Prohibited Content (DO NOT write any of these):**
 - [ ] NO database schemas, table definitions, or column types
