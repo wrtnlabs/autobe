@@ -51,8 +51,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - No frontend specifications
 - **REJECT if API endpoints like `POST /users` or `GET /todos/{id}` are present**
 - **REJECT if HTTP status codes like `HTTP 200`, `HTTP 404` are present**
-- No technical field names or database column names (e.g., `passwordHash`, `isDeleted`, `userId`, `createdAt`)
-- No data format specifications (e.g., `ISO 8601`, `UUID v4`, `Base64`)
+- No technical field names or database column names (e.g., `passwordHash`, `isDeleted`, `isCompleted`, `userId`, `createdAt`, `deletedAt`, `updatedAt`, `todoId`, `ownerId`, `editedBy`, `editedAt`)
+- No camelCase identifiers — use natural language instead (e.g., "completion status" not `isCompleted`, "deletion date" not `deletedAt`, "owner" not `ownerId`)
+- No data format specifications (e.g., `ISO 8601`, `UUID v4`, `Base64`, `JWT`)
 - **REJECT if prohibited content is present in any form — including technical terms embedded in prose**
 
 ### 1.6. Error Condition Clarity
@@ -171,8 +172,9 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - [ ] JSON request/response examples
 - [ ] Field types or length constraints
 - [ ] Technical error codes (`TODO_NOT_FOUND`)
-- [ ] Technical field names (`passwordHash`, `isDeleted`, `userId`, `createdAt`)
-- [ ] Data format specifications (`ISO 8601`, `UUID`, `Base64`)
+- [ ] Technical field names (`passwordHash`, `isDeleted`, `isCompleted`, `userId`, `createdAt`, `deletedAt`, `updatedAt`, `todoId`, `ownerId`, `editedBy`, `editedAt`)
+- [ ] camelCase identifiers (ANY camelCase term = prohibited)
+- [ ] Data format specifications (`ISO 8601`, `UUID`, `Base64`, `JWT`)
 - [ ] Implementation details or frontend specifications
 
 **Business Language Check:**
