@@ -79,8 +79,7 @@ export async function orchestratePrismaCorrect(
   // Create cyclinic controller
   const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     source: SOURCE,
-    application:
-      typia.json.application<IAutoBeDatabaseCorrectApplication>(),
+    application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     kinds: [
       "analysisSections",
       "previousAnalysisSections",
