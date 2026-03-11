@@ -1,8 +1,10 @@
+import { AgenticaValidationError } from "@agentica/core";
 import {
   AutoBeAnalyzeFile,
   AutoBeAnalyzeFileScenario,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeScenarioEvent,
+  AutoBeAnalyzeScenarioReviewEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeSectionReviewFileResult,
   AutoBeAnalyzeSectionReviewIssue,
@@ -39,6 +41,7 @@ import {
   FixedAnalyzeTemplateFeature,
   FixedAnalyzeTemplateUnitTemplate,
   buildFixedAnalyzeExpandedTemplate,
+  expandFixedAnalyzeTemplateUnits,
 } from "./structures/FixedAnalyzeTemplate";
 import {
   buildFileAttributeDuplicateMap,
@@ -135,10 +138,53 @@ export const orchestrateAnalyze = async (
     }
 
     // 2) LLM review
-    const review = await orchestrateAnalyzeScenarioReview(ctx, {
-      scenario: rawScenario,
-      retry: attempt,
-    });
+    let review: AutoBeAnalyzeScenarioReviewEvent;
+    try {
+      review = await orchestrateAnalyzeScenarioReview(ctx, {
+        scenario: rawScenario,
+        retry: attempt,
+      });
+    } catch (e) {
+      if (
+        e instanceof AgenticaValidationError ||
+        e instanceof AutoBePreliminaryExhaustedError ||
+        e instanceof AutoBeTimeoutError
+      ) {
+        analyzeDebug(
+          `scenario review force-pass (attempt ${attempt}) error=${(e as Error).constructor.name}`,
+        );
+        review = {
+          type: "analyzeScenarioReview",
+          id: v7(),
+          approved: true,
+          feedback:
+            "Review could not be completed; proceeding with current scenario.",
+          issues: [],
+          tokenUsage: {
+            total: 0,
+            input: { total: 0, cached: 0 },
+            output: {
+              total: 0,
+              reasoning: 0,
+              accepted_prediction: 0,
+              rejected_prediction: 0,
+            },
+          },
+          metric: {
+            attempt: 0,
+            success: 0,
+            consent: 0,
+            validationFailure: 0,
+            invalidJson: 0,
+          },
+          step: (ctx.state().analyze?.step ?? -1) + 1,
+          retry: attempt,
+          created_at: new Date().toISOString(),
+        };
+      } else {
+        throw e;
+      }
+    }
 
     if (review.approved || attempt >= ANALYZE_SCENARIO_MAX_RETRY) {
       analyzeDebug(
@@ -425,20 +471,46 @@ async function processStageUnit(
           analyzeDebug(
             `unit module-start fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} strategy=${strategy.type}`,
           );
-          const unitEvent: AutoBeAnalyzeWriteUnitEvent =
-            await orchestrateAnalyzeWriteUnit(ctx, {
-              scenario: props.scenario,
-              file: state.file,
-              moduleEvent: moduleResult,
-              moduleIndex,
-              progress: props.unitWriteProgress,
-              promptCacheKey: cacheKey,
-              retry: 0,
-            });
-          analyzeDebug(
-            `unit module-done fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitCount=${unitEvent.unitSections.length} elapsedMs=${Date.now() - unitStart}`,
-          );
-          unitResults.push(unitEvent);
+          try {
+            const unitEvent: AutoBeAnalyzeWriteUnitEvent =
+              await orchestrateAnalyzeWriteUnit(ctx, {
+                scenario: props.scenario,
+                file: state.file,
+                moduleEvent: moduleResult,
+                moduleIndex,
+                progress: props.unitWriteProgress,
+                promptCacheKey: cacheKey,
+                retry: 0,
+              });
+            analyzeDebug(
+              `unit module-done fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitCount=${unitEvent.unitSections.length} elapsedMs=${Date.now() - unitStart}`,
+            );
+            unitResults.push(unitEvent);
+          } catch (e) {
+            if (
+              e instanceof AgenticaValidationError ||
+              e instanceof AutoBePreliminaryExhaustedError ||
+              e instanceof AutoBeTimeoutError
+            ) {
+              analyzeDebug(
+                `unit module-skipped fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} error=${(e as Error).constructor.name} elapsedMs=${Date.now() - unitStart} — using fallback`,
+              );
+              const expandedUnits = expandFixedAnalyzeTemplateUnits(
+                moduleTemplate,
+                props.scenario.entities,
+                props.scenario.actors,
+              );
+              const fallbackEvent = buildDeterministicUnitEvent(ctx, {
+                moduleIndex,
+                units: expandedUnits,
+                progress: props.unitWriteProgress,
+              });
+              ctx.dispatch(fallbackEvent);
+              unitResults.push(fallbackEvent);
+            } else {
+              throw e;
+            }
+          }
         }
       }
       state.unitResults = unitResults;
@@ -659,13 +731,48 @@ async function processStageSection(
                         });
                 } catch (e) {
                   if (
-                    e instanceof AutoBePreliminaryExhaustedError &&
-                    previousSection
+                    e instanceof AgenticaValidationError ||
+                    e instanceof AutoBePreliminaryExhaustedError ||
+                    e instanceof AutoBeTimeoutError
                   ) {
                     analyzeDebug(
-                      `section unit-rag-exhausted attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} — reusing previous`,
+                      `section unit-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} unitIndex=${unitIndex} error=${(e as Error).constructor.name} — ${previousSection ? "reusing previous" : "using placeholder"}`,
                     );
-                    sectionEvent = previousSection;
+                    if (previousSection) {
+                      sectionEvent = previousSection;
+                    } else {
+                      sectionEvent = {
+                        type: "analyzeWriteSection",
+                        id: v7(),
+                        moduleIndex,
+                        unitIndex,
+                        sectionSections: [],
+                        acquisition: { previousAnalysisSections: [] },
+                        tokenUsage: {
+                          total: 0,
+                          input: { total: 0, cached: 0 },
+                          output: {
+                            total: 0,
+                            reasoning: 0,
+                            accepted_prediction: 0,
+                            rejected_prediction: 0,
+                          },
+                        },
+                        metric: {
+                          attempt: 0,
+                          success: 0,
+                          consent: 0,
+                          validationFailure: 0,
+                          invalidJson: 0,
+                        },
+                        step: (ctx.state().analyze?.step ?? -1) + 1,
+                        total: props.sectionWriteProgress.total,
+                        completed: ++props.sectionWriteProgress.completed,
+                        retry: attempt,
+                        created_at: new Date().toISOString(),
+                      };
+                      ctx.dispatch(sectionEvent);
+                    }
                   } else {
                     throw e;
                   }
@@ -726,12 +833,15 @@ async function processStageSection(
             }
           } catch (e) {
             if (
+              e instanceof AgenticaValidationError ||
               e instanceof AutoBeTimeoutError ||
               e instanceof AutoBePreliminaryExhaustedError
             ) {
               analyzeDebug(
-                `section per-module-review-timeout attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" — force-passing`,
+                `section per-module-review-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" error=${(e as Error).constructor.name} — force-passing`,
               );
+            } else {
+              throw e;
             }
             return sectionResults;
           }
@@ -877,11 +987,12 @@ async function processStageSection(
       );
     } catch (e) {
       if (
+        e instanceof AgenticaValidationError ||
         e instanceof AutoBeTimeoutError ||
         e instanceof AutoBePreliminaryExhaustedError
       ) {
         analyzeDebug(
-          `section cross-file-review-timeout attempt=${attempt} — force-passing all pending files`,
+          `section cross-file-review-force-pass attempt=${attempt} error=${(e as Error).constructor.name} — force-passing all pending files`,
         );
         for (const fileIndex of pendingArray) pendingIndices.delete(fileIndex);
         break;
