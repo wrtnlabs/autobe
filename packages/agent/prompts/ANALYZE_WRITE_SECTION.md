@@ -109,7 +109,7 @@ Each type of information has one authoritative location:
 
 ## 7. Section Quality
 
-- **Length**: 5-25 requirements per section
+- **Length**: 5-25 requirements per section (fewer is acceptable if the source material is limited)
 - **No fluff**: Start directly with requirements, skip introductions
 - **Error coverage**: Include error scenarios and edge cases
 - **Testable**: Every requirement must be verifiable
@@ -168,6 +168,7 @@ process({
 - [ ] 5-25 requirements per section
 - [ ] Error conditions described in natural language
 - [ ] Every requirement is testable and verifiable
+- [ ] Every requirement is traceable to the original user input — do not infer features the user did not mention
 
 **Prohibited Content (REJECT if present):**
 - [ ] NO database schemas, table definitions, or column types

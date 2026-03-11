@@ -59,7 +59,7 @@ process({
 
 ## 4. Actors
 
-**Default to minimal set**: `guest`, `member`, `admin`
+**Default to minimal set**: `guest`, `member`
 
 Only add actors when the user explicitly describes a distinct identity type (e.g., "sellers" vs "buyers" in a marketplace). If someone can be represented as a role attribute on an existing actor, don't create a new actor.
 
