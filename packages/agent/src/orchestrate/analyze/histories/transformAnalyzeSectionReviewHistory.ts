@@ -28,7 +28,7 @@ import {
  * reference.
  */
 export const transformAnalyzeSectionReviewHistory = (
-  _ctx: AutoBeContext,
+  ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     file: AutoBeAnalyzeFileScenario;
@@ -116,6 +116,21 @@ export const transformAnalyzeSectionReviewHistory = (
         **Features**: ${(props.scenario.features ?? []).map((f) => f.id).join(", ") || "None"}
 
         Reject if content references entities, actors, or features NOT in this list.
+
+        ## Original User Requirements (for traceability check)
+
+        Every requirement in the sections above MUST be traceable to the user input below.
+        REJECT if sections contain features, workflows, or constraints not stated or directly implied.
+
+        ${ctx
+          .histories()
+          .filter((h) => h.type === "userMessage")
+          .flatMap((h) =>
+            h.type === "userMessage"
+              ? h.contents.filter((c) => c.type === "text").map((c) => c.text)
+              : [],
+          )
+          .join("\n\n---\n\n")}
 
         ## Per-Module Review Criteria
 

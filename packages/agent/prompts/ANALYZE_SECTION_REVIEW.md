@@ -51,7 +51,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - No frontend specifications
 - **REJECT if API endpoints like `POST /users` or `GET /todos/{id}` are present**
 - **REJECT if HTTP status codes like `HTTP 200`, `HTTP 404` are present**
-- **REJECT only if prohibited content is clearly present**
+- No technical field names or database column names (e.g., `passwordHash`, `isDeleted`, `userId`, `createdAt`)
+- No data format specifications (e.g., `ISO 8601`, `UUID v4`, `Base64`)
+- **REJECT if prohibited content is present in any form — including technical terms embedded in prose**
 
 ### 1.6. Error Condition Clarity
 - Error conditions should be described in natural language
@@ -81,7 +83,8 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **REJECT** when ANY of:
 - Non-English text detected
-- Prohibited content clearly present
+- Prohibited content present (in any form)
+- Features not traceable to original user requirements (hallucination)
 - File scope violation (content belongs in another file)
 - Contradiction with scenario concepts/actors
 - Invented features not in keywords
@@ -139,7 +142,8 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 
 **REJECT if ANY of these are true**:
 - Non-English text detected (Chinese, Korean, Japanese, etc.)
-- Prohibited content clearly present (database schemas, API specs, implementation details)
+- Prohibited content present in any form (database schemas, API specs, implementation details, technical field names)
+- Section contains features, workflows, or constraints not traceable to the original user requirements
 - File scope violation (content that belongs in another SRS file)
 - Section directly contradicts scenario concepts or actors
 - Section invents features, concepts, or workflows not present in scenario
@@ -158,6 +162,7 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - [ ] Content stays within designated file scope
 - [ ] No contradiction with scenario concepts or actors
 - [ ] No invented features or concepts
+- [ ] Every requirement is traceable to the original user requirements
 
 **Prohibited Content (MUST REJECT if present):**
 - [ ] Database schemas, ERD, indexes, cascade rules
@@ -166,6 +171,8 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - [ ] JSON request/response examples
 - [ ] Field types or length constraints
 - [ ] Technical error codes (`TODO_NOT_FOUND`)
+- [ ] Technical field names (`passwordHash`, `isDeleted`, `userId`, `createdAt`)
+- [ ] Data format specifications (`ISO 8601`, `UUID`, `Base64`)
 - [ ] Implementation details or frontend specifications
 
 **Business Language Check:**

@@ -23,15 +23,13 @@ process({
     moduleIndex: 0,
     unitSections: [
       {
-        title: "User Registration",  // Fixed by template
-        purpose: "Handle new user account creation",  // Fixed by template
-        content: "Users register with email and password. Email must be unique among active accounts. Password must meet security requirements. New accounts start unverified until email confirmation. Verification links expire after a period of time. Registration attempts are rate-limited to prevent abuse.",
+        title: "Unit Title Here",  // Fixed by template
+        purpose: "Unit purpose here",  // Fixed by template
+        content: "Describe what users can do in detail based on the original requirements. Cover the main operations, key business rules, which actors are involved, and what happens on errors. Do not include database field names or API specifications.",
         keywords: [
-          "registration flow",
-          "email verification",
-          "password requirements",
-          "duplicate email handling",
-          "rate limiting"
+          "descriptive phrase from user requirements",
+          "another specific business operation",
+          "error scenario phrase"
         ]
       }
     ]
@@ -49,9 +47,9 @@ Write **5-15 sentences** covering:
 - Key business rules
 - Error scenarios
 
-**Good**: "Users create todos with a title and optional description. Title is required."
+**Good**: "Users can create an item with a title and optional description. Title is required. The system rejects requests without a title."
 
-**Bad**: "This unit details the todo creation process..." — skip meta-descriptions.
+**Bad**: "This unit details the item creation process..." — skip meta-descriptions.
 
 ---
 
@@ -59,7 +57,7 @@ Write **5-15 sentences** covering:
 
 Short phrases that capture what this unit covers. Used to guide section writing.
 
-**Good keywords**: "registration flow", "password recovery", "todo ownership", "draft to published", "access denied scenarios"
+**Good keywords**: "item creation flow", "ownership rules", "draft to published", "access denied scenarios"
 
 **Bad keywords**: "login", "validation", "permissions" — too vague.
 
@@ -71,6 +69,7 @@ Short phrases that capture what this unit covers. Used to guide section writing.
 2. **No duplicates** — each topic in exactly one unit
 3. **Business language** — describe what users can do, not how it's implemented
 4. **English only**
+5. **No invented features** — only generate keywords for features explicitly stated or directly implied by the original user requirements. Do not add common industry features (e.g., email verification, rate limiting, password recovery) unless the user mentioned them.
 
 ---
 
@@ -81,6 +80,8 @@ Short phrases that capture what this unit covers. Used to guide section writing.
 - [ ] 7-18 keywords per unit
 - [ ] Keywords are descriptive phrases, not technical terms
 - [ ] Content describes business operations from user perspective
+- [ ] Every keyword is traceable to the original user requirements
+- [ ] No industry-standard features added that the user did not mention
 
 **Prohibited Content (REJECT if present):**
 - [ ] NO database schemas or field definitions

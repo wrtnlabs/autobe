@@ -124,7 +124,7 @@ export const transformAnalyzeWriteUnitHistory = (
             (unit, index) => `
         **Unit ${index + 1}**: ${unit.titlePattern}
         - **Purpose**: ${unit.purposePattern}
-        - **Template Keywords** (for reference, expand with domain-specific terms): ${unit.keywords.join(", ")}
+        - **Template Keywords** (use as starting points — only add keywords traceable to the original user requirements above): ${unit.keywords.join(", ")}
         `,
           )
           .join("\n")}
