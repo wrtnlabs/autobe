@@ -176,12 +176,11 @@ function buildTocContent(
   // ── Scope ──
   lines.push("", "---", "", "**Scope**", "");
   for (const e of scenario.entities) {
-    const attrs = e.attributes.join(", ");
     const rels =
       e.relationships && e.relationships.length > 0
-        ? ` | Relationships: ${e.relationships.join(", ")}`
+        ? ` — ${e.relationships.join(", ")}`
         : "";
-    lines.push(`- **${e.name}**: ${attrs}${rels}`);
+    lines.push(`- **${e.name}**${rels}`);
   }
   lines.push("");
   for (const a of scenario.actors) {
@@ -248,7 +247,11 @@ function buildTocContent(
   // ── Glossary ──
   lines.push("", "---", "", "**Glossary**", "");
   for (const e of scenario.entities) {
-    lines.push(`- **${e.name}**: ${e.attributes.join(", ")}`);
+    const rels =
+      e.relationships && e.relationships.length > 0
+        ? ` — ${e.relationships.join(", ")}`
+        : "";
+    lines.push(`- **${e.name}**${rels}`);
   }
 
   // ── Constraints & Features ──
