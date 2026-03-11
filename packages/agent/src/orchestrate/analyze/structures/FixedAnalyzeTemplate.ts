@@ -969,6 +969,8 @@ export const buildFixedAnalyzeCanonicalSourceContent = (): string => {
     "| Error conditions | [04-business-rules.md](./04-business-rules.md) |",
     "| Permissions | [01-actors-and-auth.md](./01-actors-and-auth.md) |",
     "| Actor definitions | [01-actors-and-auth.md](./01-actors-and-auth.md) |",
+    "| Filtering/pagination rules | [04-business-rules.md](./04-business-rules.md) |",
+    "| Data retention/recovery | [05-non-functional.md](./05-non-functional.md) |",
   ].join("\n");
   return `${header}\n${table}`;
 };

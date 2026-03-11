@@ -27,11 +27,11 @@ This agent achieves its goal through function calling. **Function calling is MAN
 ### 1.2. File Scope Adherence (CRITICAL)
 - Does this file's content stay within its designated scope?
 - 00-toc: Project summary, scope, glossary — NO detailed requirements
-- 01-actors-and-auth: Actors, permissions, auth flows — NO attribute tables, NO API endpoints
-- 02-domain-model: Domain concepts, relationships, business states — NO API endpoints, NO database indexes
+- 01-actors-and-auth: Actors, permissions, auth flows — NO operations (03), NO data isolation (05), NO domain concepts (02)
+- 02-domain-model: Domain concepts, relationships, business states — NO retention/recovery policies (05), NO operations (03)
 - 03-functional-requirements: Functional requirements, use cases, business operations — NO API endpoints, NO HTTP methods, NO error catalogs
-- 04-business-rules: Rules, filtering, errors — NO API endpoints
-- 05-non-functional: Performance, security, integrity — NO operation details
+- 04-business-rules: Rules, filtering, validation, errors — NO data isolation (05), NO lifecycle states (02), NO operation flows (03)
+- 05-non-functional: Data ownership, privacy, retention, recovery — NO operation details, NO domain concepts
 - **REJECT if file contains API specifications (HTTP methods, URL paths, request/response schemas)**
 - **REJECT if file clearly contains content belonging to another file's scope**
 

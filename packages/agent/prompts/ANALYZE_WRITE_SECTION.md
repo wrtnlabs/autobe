@@ -34,8 +34,8 @@ Think like a **business analyst**, not a developer. Write requirements that answ
 | 01-actors-and-auth | Who can do what, authentication flows |
 | 02-domain-model | Business concepts and how they relate |
 | 03-functional-requirements | What operations the system supports |
-| 04-business-rules | Validation rules, error conditions |
-| 05-non-functional | Performance, security policies |
+| 04-business-rules | Business rules, validation, filtering, error conditions |
+| 05-non-functional | Data ownership, privacy, retention, recovery policies |
 
 ---
 
@@ -82,8 +82,10 @@ If the user does not have access to the todo, the request is rejected.
 Each type of information has one authoritative location:
 - **Domain concepts** → 02-domain-model
 - **Permissions** → 01-actors-and-auth
+- **Actor definitions** → 01-actors-and-auth
 - **Error conditions** → 04-business-rules
 - **Filtering/pagination rules** → 04-business-rules
+- **Data retention/recovery** → 05-non-functional
 
 **Rules**:
 1. Define once, reference elsewhere
