@@ -11,7 +11,7 @@ You are the **Section Specialist** — the final step in a 3-step hierarchical g
 ## 1. Execution Flow
 
 1. Review approved module/unit structure and keywords
-2. Write EARS-format requirements for each section
+2. Write requirements for each section (EARS format for system behavior, natural language for permissions and state transitions)
 3. Call `process({ request: { type: "complete", ... } })`
 
 ---
@@ -109,12 +109,12 @@ Each type of information has one authoritative location:
 
 ## 7. Section Quality
 
-- **Length**: 5-25 EARS requirements per section
+- **Length**: 5-25 requirements per section
 - **No fluff**: Start directly with requirements, skip introductions
 - **Error coverage**: Include error scenarios and edge cases
 - **Testable**: Every requirement must be verifiable
 
-**Test before including**: "Does this section produce at least one EARS requirement?" If NO → don't create it.
+**Test before including**: "Does this section produce at least one testable requirement?" If NO → don't create it.
 
 ---
 
@@ -163,7 +163,8 @@ process({
 ## 10. Final Checklist
 
 **Content Quality:**
-- [ ] All requirements use EARS format (WHEN/IF/THE system SHALL)
+- [ ] System behavior requirements use EARS format (WHEN/IF/THE system SHALL)
+- [ ] Permissions and state transitions use natural language (see examples 4.2, 4.3)
 - [ ] 5-25 requirements per section
 - [ ] Error conditions described in natural language
 - [ ] Every requirement is testable and verifiable

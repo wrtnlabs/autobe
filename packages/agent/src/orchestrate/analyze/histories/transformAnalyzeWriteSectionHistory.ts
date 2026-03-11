@@ -170,8 +170,8 @@ export const transformAnalyzeWriteSectionHistory = (
 
         ## Your Task
 
-        Create detailed sections (#### level) with EARS-formatted requirements
-        that address ALL the keywords above.
+        Create detailed sections (#### level) that address ALL the keywords above.
+        Use EARS format for system behavior. Use natural language for permissions and state transitions.
         ${
           props.feedback
             ? `
@@ -186,6 +186,6 @@ export const transformAnalyzeWriteSectionHistory = (
       `,
       },
     ],
-    userMessage: `Create detailed sections with EARS requirements for "${unitSection?.title ?? "Unknown"}".`,
+    userMessage: `Create detailed sections for "${unitSection?.title ?? "Unknown"}".`,
   };
 };
