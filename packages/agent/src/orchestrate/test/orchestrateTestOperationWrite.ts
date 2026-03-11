@@ -27,8 +27,8 @@ import { transformPreviousAndLatestCorrectHistory } from "../common/histories/tr
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestOperationWriteHistory } from "./histories/transformTestOperationWriteHistory";
 import { AutoBeTestOperationProgrammer } from "./programmers/AutoBeTestOperationProgrammer";
-import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
+import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
 export async function orchestrateTestOperationWrite(
@@ -124,8 +124,7 @@ async function execute(
   // Create cyclinic controller (dummy preliminary — test ops have none)
   const cyclinic = new AutoBeCyclinicController<DummyKind>({
     source: SOURCE,
-    application:
-      typia.json.application<IAutoBeTestOperationWriteApplication>(),
+    application: typia.json.application<IAutoBeTestOperationWriteApplication>(),
     kinds: ["databaseSchemas"],
     state: ctx.state(),
   });
