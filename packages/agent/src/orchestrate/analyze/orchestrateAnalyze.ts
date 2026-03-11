@@ -802,12 +802,12 @@ async function processStageSection(
             `section per-module-review-start attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" modules=${state.unitResults!.length}`,
           );
           const moduleReviews: AutoBeAnalyzeSectionReviewEvent[] = [];
-          try {
-            for (
-              let moduleIndex = 0;
-              moduleIndex < state.unitResults!.length;
-              moduleIndex++
-            ) {
+          for (
+            let moduleIndex = 0;
+            moduleIndex < state.unitResults!.length;
+            moduleIndex++
+          ) {
+            try {
               const moduleReviewEvent = await orchestrateAnalyzeSectionReview(
                 ctx,
                 {
@@ -830,20 +830,19 @@ async function processStageSection(
                 },
               );
               moduleReviews.push(moduleReviewEvent);
+            } catch (e) {
+              if (
+                e instanceof AgenticaValidationError ||
+                e instanceof AutoBeTimeoutError ||
+                e instanceof AutoBePreliminaryExhaustedError
+              ) {
+                analyzeDebug(
+                  `section per-module-review-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" moduleIndex=${moduleIndex} error=${(e as Error).constructor.name} — skipping this module review`,
+                );
+              } else {
+                throw e;
+              }
             }
-          } catch (e) {
-            if (
-              e instanceof AgenticaValidationError ||
-              e instanceof AutoBeTimeoutError ||
-              e instanceof AutoBePreliminaryExhaustedError
-            ) {
-              analyzeDebug(
-                `section per-module-review-force-pass attempt=${attempt} fileIndex=${fileIndex} file="${state.file.filename}" error=${(e as Error).constructor.name} — force-passing`,
-              );
-            } else {
-              throw e;
-            }
-            return sectionResults;
           }
           const reviewEvent = mergeModuleReviewEvents(moduleReviews, fileIndex);
           analyzeDebug(
