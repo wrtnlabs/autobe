@@ -25,6 +25,7 @@ import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";
 import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
+import { transformPreviousAndLatestCorrectHistory } from "../common/histories/transformPreviousAndLatestCorrectHistory";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
@@ -32,8 +33,6 @@ import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOpe
 import { compileRealizeFiles } from "./programmers/compileRealizeFiles";
 import { IAutoBeRealizeOperationCyclinicApplication } from "./structures/IAutoBeRealizeOperationCyclinicApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
-import { generateTS2339Hints } from "./utils/generateTS2339Hints";
-import { printErrorHints } from "./utils/printErrorHints";
 
 export async function orchestrateRealizeOperationWrite(
   ctx: AutoBeContext,
@@ -72,11 +71,26 @@ export async function orchestrateRealizeOperationWrite(
   );
 }
 
+// ── Types ──
+
 type PreliminaryKinds =
   | "analysisSections"
   | "databaseSchemas"
   | "realizeCollectors"
   | "realizeTransformers";
+
+type ActionPointerValue =
+  | { type: "write"; data: IAutoBeRealizeOperationCyclinicApplication.IWrite }
+  | { type: "complete" }
+  | null;
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeRealizeOperationCyclinicApplication.IProps>;
+
+const SOURCE = "realizeWrite" satisfies AutoBeEventSource;
+
+// ── Per-operation execution ──
 
 async function execute(
   ctx: AutoBeContext,
@@ -91,30 +105,29 @@ async function execute(
     promptCacheKey: string;
   },
 ): Promise<AutoBeRealizeOperationFunction> {
-  // ── Build RAG sections ──
+  // Build RAG sections
   const allSections: IAnalysisSectionEntry[] = convertToSectionEntries(
     ctx.state().analyze?.files ?? [],
   );
   const pathSegments = props.scenario.operation.path
     .split("/")
     .filter((p) => p && !p.startsWith(":") && !p.startsWith("{"));
-  const queryText: string = [
-    "operation",
-    "write",
-    props.scenario.operation.method,
-    ...pathSegments,
-    props.scenario.functionName,
-  ].join(" ");
   const ragSections: IAnalysisSectionEntry[] =
     await buildAnalysisContextSections(
       getEmbedder(),
       allSections,
-      queryText,
+      [
+        "operation",
+        "write",
+        props.scenario.operation.method,
+        ...pathSegments,
+        props.scenario.functionName,
+      ].join(" "),
       "TOPK",
       { log: false, logPrefix: "realizeOperationWrite" },
     );
 
-  // ── Create cyclinic controller ──
+  // Create cyclinic controller
   const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     source: SOURCE,
     application:
@@ -144,7 +157,7 @@ async function execute(
     },
   });
 
-  // ── Precompute static data ──
+  // Precompute static data
   const dto: Record<string, string> =
     await AutoBeRealizeOperationProgrammer.writeStructures(
       ctx,
@@ -157,29 +170,22 @@ async function execute(
       transformers: props.transformers,
     });
 
-  // ── Closure state for validate → finalize bridging ──
+  // Closure state bridging validate → finalize
   let lastProcessedContent: string | null = null;
   let lastResult: AutoBeContext.IResult | null = null;
 
-  // ── Run cyclinic write-compile-correct loop ──
+  // Run cyclinic loop
   return await cyclinic.orchestrate<
     IAutoBeRealizeOperationCyclinicApplication.IWrite,
     AutoBeRealizeOperationFunction
   >(
     ctx,
 
-    // ── PROCESS: one LLM iteration ──
+    // PROCESS
     async (context) => {
-      const actionPointer: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeRealizeOperationCyclinicApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
+      const actionPointer: IPointer<ActionPointerValue> = { value: null };
 
-      const result: AutoBeContext.IResult = await ctx.conversate({
+      const result = await ctx.conversate({
         source: SOURCE,
         controller: createController({
           functionName: props.scenario.functionName,
@@ -211,10 +217,10 @@ async function execute(
       return { result, action: { type: "complete" } };
     },
 
-    // ── VALIDATE: compile submitted code ──
+    // VALIDATE
     async (writeData) => {
-      const code: string = writeData.revise.final ?? writeData.draft;
-      const processedContent: string =
+      const code = writeData.revise.final ?? writeData.draft;
+      const processedContent =
         await AutoBeRealizeOperationProgrammer.replaceImportStatements(ctx, {
           operation: props.scenario.operation,
           schemas: props.document.components.schemas,
@@ -239,11 +245,11 @@ async function execute(
         progress: () => props.progress,
       });
 
+      // Success: no failure or no diagnostics in this file
       if (compiled.result.type !== "failure") {
         lastProcessedContent = processedContent;
         return { success: true };
       }
-
       const fileDiagnostics = compiled.result.diagnostics.filter(
         (d) => d.file === props.scenario.location,
       );
@@ -254,15 +260,12 @@ async function execute(
 
       return {
         success: false,
-        diagnostics: {
-          code: processedContent,
-          diagnostics: fileDiagnostics,
-        },
+        diagnostics: { code: processedContent, diagnostics: fileDiagnostics },
       };
     },
 
-    // ── FINALIZE: create function and dispatch event ──
-    (_lastWrite) => {
+    // FINALIZE
+    () => {
       const functor: AutoBeRealizeOperationFunction = {
         type: "operation",
         endpoint: {
@@ -294,24 +297,16 @@ async function execute(
 
 function createController(props: {
   functionName: string;
-  onAction: (
-    action:
-      | {
-          type: "write";
-          data: IAutoBeRealizeOperationCyclinicApplication.IWrite;
-        }
-      | { type: "complete" },
-  ) => void;
+  onAction: (action: Exclude<ActionPointerValue, null>) => void;
   cyclinic: AutoBeCyclinicController<PreliminaryKinds>;
 }): ILlmController {
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeRealizeOperationCyclinicApplication.IProps> =
+    const result =
       typia.validate<IAutoBeRealizeOperationCyclinicApplication.IProps>(input);
     if (result.success === false) return result;
 
     const request = result.data.request;
 
-    // Preliminary request → delegate to preliminary validation
     if (request.type !== "write" && request.type !== "complete") {
       return props.cyclinic.getPreliminary().validate({
         thinking: result.data.thinking,
@@ -319,9 +314,8 @@ function createController(props: {
       });
     }
 
-    // Write request → validate code content
     if (request.type === "write") {
-      const errors: IValidation.IError[] = validateEmptyCode({
+      const errors = validateEmptyCode({
         name: props.functionName,
         draft: request.draft,
         revise: request.revise,
@@ -333,7 +327,6 @@ function createController(props: {
         : result;
     }
 
-    // Complete request → accept as-is
     return result;
   };
 
@@ -355,7 +348,6 @@ function createController(props: {
           props.onAction({ type: "write", data: next.request });
         else if (next.request.type === "complete")
           props.onAction({ type: "complete" });
-        // else: preliminary → actionPointer stays null → action = null
       },
     } satisfies IAutoBeRealizeOperationCyclinicApplication,
   };
@@ -372,85 +364,27 @@ function buildHistories(props: {
   cyclinic: AutoBeCyclinicController<PreliminaryKinds>;
   failures: AutoBeCyclinicController.IFailure[];
 }): IAutoBeOrchestrateHistory {
-  const baseHistory: IAutoBeOrchestrateHistory =
-    transformRealizeOperationWriteHistory({
-      state: props.state,
-      scenario: props.scenario,
-      authorization: props.authorization,
-      totalAuthorizations: props.totalAuthorizations,
-      dto: props.dto,
-      preliminary: props.cyclinic.getPreliminary(),
-    });
-
-  // No failures → return base write history as-is
-  if (props.failures.length === 0) {
-    return baseHistory;
-  }
-
-  // With failures → add correction context and diagnostics
-  const failureEntries = props.failures.map((failure, i) => {
-    const diag = failure.diagnostics as {
-      code: string;
-      diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
-    };
-    const isLatest = i === props.failures.length - 1;
-    const ts2339Hints = isLatest ? generateTS2339Hints(diag.diagnostics) : "";
-
-    return {
-      id: v7(),
-      type: "assistantMessage" as const,
-      text: StringUtil.trim`
-        ${
-          isLatest
-            ? "# Latest Failure"
-            : StringUtil.trim`
-              # Previous Failure
-
-              This is a previous failure for your reference.
-
-              Never try to fix this previous failure code, but only
-              focus on the latest failure below. This is provided just
-              to give you context about your past mistakes.
-
-              If same mistake happens again, you must try to not
-              repeat the same mistake. Change your approach to fix
-              the issue.
-            `
-        }
-
-        ## Original Code
-
-        Here is the previous code you have to review and fix.
-
-        \`\`\`typescript
-        ${diag.code}
-        \`\`\`
-
-        ## Compilation Errors
-
-        Here are the compilation errors found in the code above.
-
-        \`\`\`json
-        ${JSON.stringify(diag.diagnostics)}
-        \`\`\`
-
-        ## Error Annotated Code
-
-        Here is the error annotated code.
-
-        Please refer to the annotation for the location of the error.
-
-        By the way, note that, this code is only for reference purpose.
-        Never fix code from this error annotated code. You must fix
-        the original code above.
-
-        ${printErrorHints(diag.code, diag.diagnostics)}
-
-        ${ts2339Hints}
-      `,
-      created_at: new Date().toISOString(),
-    };
+  const baseHistory = transformRealizeOperationWriteHistory({
+    state: props.state,
+    scenario: props.scenario,
+    authorization: props.authorization,
+    totalAuthorizations: props.totalAuthorizations,
+    dto: props.dto,
+    preliminary: props.cyclinic.getPreliminary(),
   });
+
+  if (props.failures.length === 0) return baseHistory;
+
+  // Build correction history from failures
+  const failureEntries = transformPreviousAndLatestCorrectHistory(
+    props.failures.map((f) => {
+      const diag = f.diagnostics as {
+        code: string;
+        diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
+      };
+      return { script: diag.code, diagnostics: diag.diagnostics };
+    }),
+  );
 
   const successEntries = props.cyclinic.hasWriteSucceeded()
     ? [
@@ -485,9 +419,3 @@ function buildHistories(props: {
     `,
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeRealizeOperationCyclinicApplication.IProps>;
-
-const SOURCE = "realizeWrite" satisfies AutoBeEventSource;

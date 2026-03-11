@@ -47,38 +47,35 @@ export async function orchestrateTestOperationWrite(
     await executeCachedBatch(
       ctx,
       props.scenarios.map((scenario) => async (promptCacheKey) => {
-        const artifacts: IAutoBeTestScenarioArtifacts =
-          await getTestScenarioArtifacts(ctx, scenario);
-        const usedActors: Set<string> = new Set(
+        const artifacts = await getTestScenarioArtifacts(ctx, scenario);
+        const usedActors = new Set(
           artifacts.document.operations
             .map((o) => o.authorizationActor)
             .filter((a) => a !== null),
         );
 
-        const authorizationFunctions: AutoBeTestAuthorizeFunction[] =
-          props.authorizes.filter((f) => usedActors.has(f.actor));
-        const generationFunctions: AutoBeTestGenerateFunction[] =
-          props.generates.filter((f) =>
-            artifacts.document.operations.some(
-              (o) =>
-                o.method === f.endpoint.method && o.path === f.endpoint.path,
-            ),
-          );
-        const prepareFunctions: AutoBeTestPrepareFunction[] =
-          props.prepares.filter((f) =>
-            Object.keys(artifacts.document.components.schemas).includes(
-              f.typeName,
-            ),
-          );
+        const authorizeFns = props.authorizes.filter((f) =>
+          usedActors.has(f.actor),
+        );
+        const generateFns = props.generates.filter((f) =>
+          artifacts.document.operations.some(
+            (o) => o.method === f.endpoint.method && o.path === f.endpoint.path,
+          ),
+        );
+        const prepareFns = props.prepares.filter((f) =>
+          Object.keys(artifacts.document.components.schemas).includes(
+            f.typeName,
+          ),
+        );
 
         try {
           return await forceRetry(() =>
             execute(ctx, {
               document: props.document,
               scenario,
-              authorizes: authorizationFunctions,
-              generates: generationFunctions,
-              prepares: prepareFunctions,
+              authorizes: authorizeFns,
+              generates: generateFns,
+              prepares: prepareFns,
               artifacts,
               progress: props.progress,
               promptCacheKey,
@@ -93,7 +90,22 @@ export async function orchestrateTestOperationWrite(
   return result.filter((r) => r !== null);
 }
 
+// ── Types ──
+
 type DummyKind = "databaseSchemas";
+
+type ActionPointerValue =
+  | { type: "write"; data: IAutoBeTestOperationCyclinicApplication.IWrite }
+  | { type: "complete" }
+  | null;
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeTestOperationCyclinicApplication.IProps>;
+
+const SOURCE = "testWrite" satisfies AutoBeEventSource;
+
+// ── Per-scenario execution ──
 
 async function execute(
   ctx: AutoBeContext,
@@ -109,7 +121,7 @@ async function execute(
     instruction: string;
   },
 ): Promise<IAutoBeTestOperationProcedure> {
-  // ── Create cyclinic controller (dummy preliminary — test ops have none) ──
+  // Create cyclinic controller (dummy preliminary — test ops have none)
   const cyclinic = new AutoBeCyclinicController<DummyKind>({
     source: SOURCE,
     application:
@@ -118,40 +130,32 @@ async function execute(
     state: ctx.state(),
   });
 
-  // ── Pre-compute static write history (avoids re-computing each iteration) ──
-  const baseHistory: IAutoBeOrchestrateHistory =
-    await transformTestOperationWriteHistory(ctx, {
-      instruction: props.instruction,
-      scenario: props.scenario,
-      artifacts: props.artifacts,
-      authorizationFunctions: props.authorizes,
-      generationFunctions: props.generates,
-    });
+  // Precompute static write history
+  const baseHistory = await transformTestOperationWriteHistory(ctx, {
+    instruction: props.instruction,
+    scenario: props.scenario,
+    artifacts: props.artifacts,
+    authorizationFunctions: props.authorizes,
+    generationFunctions: props.generates,
+  });
 
-  // ── Closure state for validate → finalize bridging ──
+  // Closure state bridging validate → finalize
   let lastProcessedContent: string | null = null;
   let lastResult: AutoBeContext.IResult | null = null;
   let lastDomain: string | null = null;
 
-  // ── Run cyclinic write-compile-correct loop ──
+  // Run cyclinic loop
   return await cyclinic.orchestrate<
     IAutoBeTestOperationCyclinicApplication.IWrite,
     IAutoBeTestOperationProcedure
   >(
     ctx,
 
-    // ── PROCESS: one LLM iteration ──
+    // PROCESS
     async (context) => {
-      const actionPointer: IPointer<
-        | {
-            type: "write";
-            data: IAutoBeTestOperationCyclinicApplication.IWrite;
-          }
-        | { type: "complete" }
-        | null
-      > = { value: null };
+      const actionPointer: IPointer<ActionPointerValue> = { value: null };
 
-      const result: AutoBeContext.IResult = await ctx.conversate({
+      const result = await ctx.conversate({
         source: SOURCE,
         controller: createController({
           functionName: props.scenario.functionName,
@@ -179,13 +183,13 @@ async function execute(
       return { result, action: { type: "complete" } };
     },
 
-    // ── VALIDATE: compile submitted code ──
+    // VALIDATE
     async (writeData) => {
-      const domain: string = NamingConvention.snake(writeData.domain);
-      const code: string = writeData.revise.final ?? writeData.draft;
-      const location: string = `test/features/api/${domain}/${props.scenario.functionName}.ts`;
+      const domain = NamingConvention.snake(writeData.domain);
+      const code = writeData.revise.final ?? writeData.draft;
+      const location = `test/features/api/${domain}/${props.scenario.functionName}.ts`;
 
-      const processedContent: string =
+      const processedContent =
         await AutoBeTestOperationProgrammer.replaceImportStatements({
           compiler: await ctx.compiler(),
           artifacts: props.artifacts,
@@ -220,7 +224,7 @@ async function execute(
         step: ctx.state().analyze?.step ?? 0,
       });
 
-      // Filter diagnostics to only this file's location
+      // Filter diagnostics to only this file
       if (compiled.result.type === "failure") {
         compiled.result.diagnostics = compiled.result.diagnostics.filter(
           (d) => d.file === location,
@@ -245,9 +249,9 @@ async function execute(
       };
     },
 
-    // ── FINALIZE: create procedure and dispatch event ──
-    (_lastWrite) => {
-      const location: string = `test/features/api/${lastDomain!}/${props.scenario.functionName}.ts`;
+    // FINALIZE
+    () => {
+      const location = `test/features/api/${lastDomain!}/${props.scenario.functionName}.ts`;
       const functor: AutoBeTestOperationFunction = {
         type: "operation",
         domain: lastDomain!,
@@ -284,26 +288,18 @@ async function execute(
 
 function createController(props: {
   functionName: string;
-  onAction: (
-    action:
-      | {
-          type: "write";
-          data: IAutoBeTestOperationCyclinicApplication.IWrite;
-        }
-      | { type: "complete" },
-  ) => void;
+  onAction: (action: Exclude<ActionPointerValue, null>) => void;
   cyclinic: AutoBeCyclinicController<DummyKind>;
 }): ILlmController {
   const validate: Validator = (input) => {
-    const result: IValidation<IAutoBeTestOperationCyclinicApplication.IProps> =
+    const result =
       typia.validate<IAutoBeTestOperationCyclinicApplication.IProps>(input);
     if (result.success === false) return result;
 
     const request = result.data.request;
 
-    // Write request → validate code content
     if (request.type === "write") {
-      const errors: IValidation.IError[] = validateEmptyCode({
+      const errors = validateEmptyCode({
         name: props.functionName,
         draft: request.draft,
         revise: request.revise,
@@ -315,7 +311,6 @@ function createController(props: {
         : result;
     }
 
-    // Complete request → accept as-is
     return result;
   };
 
@@ -349,20 +344,15 @@ function buildHistories(props: {
   cyclinic: AutoBeCyclinicController<DummyKind>;
   failures: AutoBeCyclinicController.IFailure[];
 }): IAutoBeOrchestrateHistory {
-  // No failures → return base write history as-is
   if (props.failures.length === 0) return props.baseHistory;
 
-  // With failures → add correction context and diagnostics
   const failureEntries = transformPreviousAndLatestCorrectHistory(
     props.failures.map((f) => {
       const diag = f.diagnostics as {
         code: string;
         diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
       };
-      return {
-        script: diag.code,
-        diagnostics: diag.diagnostics,
-      };
+      return { script: diag.code, diagnostics: diag.diagnostics };
     }),
   );
 
@@ -394,9 +384,3 @@ function buildHistories(props: {
     userMessage: "Fix the compile errors in the test code please",
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeTestOperationCyclinicApplication.IProps>;
-
-const SOURCE = "testWrite" satisfies AutoBeEventSource;

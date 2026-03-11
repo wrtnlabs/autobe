@@ -2,7 +2,6 @@ import {
   AutoBeDatabase,
   AutoBeDatabaseCorrectEvent,
   AutoBeEventSource,
-  IAutoBeCompiler,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -20,35 +19,51 @@ import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
 import { IAutoBeDatabaseCorrectCyclinicApplication } from "./structures/IAutoBeDatabaseCorrectCyclinicApplication";
 
+// ── Types ──
+
 type PreliminaryKinds =
   | "analysisSections"
   | "databaseSchemas"
   | "previousAnalysisSections"
   | "previousDatabaseSchemas";
 
+type ActionPointerValue =
+  | { type: "write"; data: IAutoBeDatabaseCorrectCyclinicApplication.IWrite }
+  | { type: "complete" }
+  | null;
+
+type Validator = (
+  input: unknown,
+) => IValidation<IAutoBeDatabaseCorrectCyclinicApplication.IProps>;
+
+const SOURCE = "databaseCorrect" satisfies AutoBeEventSource;
+
+// ── Entry point ──
+
 export async function orchestratePrismaCorrect(
   ctx: AutoBeContext,
   application: AutoBeDatabase.IApplication,
 ): Promise<IAutoBeDatabaseValidation> {
   // Dedup models
-  const unique: Set<string> = new Set();
+  const seen = new Set<string>();
   for (const file of application.files)
     file.models = file.models.filter((model) => {
-      if (unique.has(model.name)) return false;
-      unique.add(model.name);
+      if (seen.has(model.name)) return false;
+      seen.add(model.name);
       return true;
     });
   application.files = application.files.filter((f) => f.models.length !== 0);
 
   // Initial validation
-  const compiler: IAutoBeCompiler = await ctx.compiler();
-  const initialResult: IAutoBeDatabaseValidation =
-    await compiler.database.validate(application);
+  const compiler = await ctx.compiler();
+  const initialResult = await compiler.database.validate(application);
   if (initialResult.success) return initialResult;
 
-  // Dispatch initial validation failure event
-  const initialSchemas: Record<string, string> =
-    await compiler.database.writePrismaSchemas(application, "postgres");
+  // Dispatch initial validation failure
+  const initialSchemas = await compiler.database.writePrismaSchemas(
+    application,
+    "postgres",
+  );
   ctx.dispatch({
     type: "databaseValidate",
     id: v7(),
@@ -61,7 +76,7 @@ export async function orchestratePrismaCorrect(
     created_at: new Date().toISOString(),
   });
 
-  // ── Create cyclinic controller ──
+  // Create cyclinic controller
   const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     source: SOURCE,
     application:
@@ -74,24 +89,22 @@ export async function orchestratePrismaCorrect(
     ],
     state: ctx.state(),
     all: {
-      databaseSchemas: application.files.map((f) => f.models).flat(),
+      databaseSchemas: application.files.flatMap((f) => f.models),
     },
     local: {
       databaseSchemas: getErrorModels(application, initialResult),
     },
-    config: {
-      database: "ast",
-    },
+    config: { database: "ast" },
     maxIterations: AutoBeConfigConstant.DATABASE_CORRECT_RETRY,
   });
 
-  // ── Closure state ──
-  let currentApplication: AutoBeDatabase.IApplication = application;
+  // Closure state
+  let currentApplication = application;
   let currentFailure: IAutoBeDatabaseValidation.IFailure = initialResult;
   let lastResult: AutoBeContext.IResult | null = null;
   let lastValidation: IAutoBeDatabaseValidation = initialResult;
 
-  // ── Run cyclinic correction loop ──
+  // Run cyclinic correction loop
   try {
     return await cyclinic.orchestrate<
       IAutoBeDatabaseCorrectCyclinicApplication.IWrite,
@@ -99,25 +112,18 @@ export async function orchestratePrismaCorrect(
     >(
       ctx,
 
-      // ── PROCESS: one LLM iteration ──
+      // PROCESS
       async (context) => {
-        const actionPointer: IPointer<
-          | {
-              type: "write";
-              data: IAutoBeDatabaseCorrectCyclinicApplication.IWrite;
-            }
-          | { type: "complete" }
-          | null
-        > = { value: null };
+        const actionPointer: IPointer<ActionPointerValue> = { value: null };
 
-        // Use latest failure from cyclinic or initial failure
+        // Use latest failure from cyclinic or initial
         const latestFailure: IAutoBeDatabaseValidation.IFailure =
           context.failures.length > 0
             ? (context.failures.at(-1)!
                 .diagnostics as IAutoBeDatabaseValidation.IFailure)
             : currentFailure;
 
-        const result: AutoBeContext.IResult = await ctx.conversate({
+        const result = await ctx.conversate({
           source: SOURCE,
           controller: createController({
             onAction: (a) => {
@@ -126,10 +132,7 @@ export async function orchestratePrismaCorrect(
             cyclinic,
           }),
           enforceFunctionCall: true,
-          ...buildHistories({
-            cyclinic,
-            failure: latestFailure,
-          }),
+          ...buildHistories({ cyclinic, failure: latestFailure }),
         });
         lastResult = result;
 
@@ -142,7 +145,7 @@ export async function orchestratePrismaCorrect(
         return { result, action: { type: "complete" } };
       },
 
-      // ── VALIDATE: merge corrections and validate ──
+      // VALIDATE
       async (writeData) => {
         // Merge corrected models into application
         const correction: AutoBeDatabase.IApplication = {
@@ -151,15 +154,13 @@ export async function orchestratePrismaCorrect(
             namespace: file.namespace,
             models: file.models.map((model) => {
               AutoBeDatabaseModelProgrammer.emend(model);
-              const newbie = writeData.models.find(
-                (m) => m.name === model.name,
+              return (
+                writeData.models.find((m) => m.name === model.name) ?? model
               );
-              return newbie ?? model;
             }),
           })),
         };
 
-        // Dispatch correction event
         ctx.dispatch({
           type: SOURCE,
           id: v7(),
@@ -173,10 +174,8 @@ export async function orchestratePrismaCorrect(
           created_at: new Date().toISOString(),
         } satisfies AutoBeDatabaseCorrectEvent);
 
-        // Validate corrected application
-        const compiler: IAutoBeCompiler = await ctx.compiler();
-        const result: IAutoBeDatabaseValidation =
-          await compiler.database.validate(correction);
+        const compiler = await ctx.compiler();
+        const result = await compiler.database.validate(correction);
         lastValidation = result;
 
         if (result.success) {
@@ -184,9 +183,11 @@ export async function orchestratePrismaCorrect(
           return { success: true };
         }
 
-        // Dispatch validation failure event
-        const schemas: Record<string, string> =
-          await compiler.database.writePrismaSchemas(correction, "postgres");
+        // Dispatch validation failure
+        const schemas = await compiler.database.writePrismaSchemas(
+          correction,
+          "postgres",
+        );
         ctx.dispatch({
           type: "databaseValidate",
           id: v7(),
@@ -199,24 +200,18 @@ export async function orchestratePrismaCorrect(
           created_at: new Date().toISOString(),
         });
 
-        // Update state for next iteration
         currentApplication = result.data;
         currentFailure = result;
 
-        return {
-          success: false,
-          diagnostics: result,
-        };
+        return { success: false, diagnostics: result };
       },
 
-      // ── FINALIZE: return successful validation ──
-      (_lastWrite) => lastValidation,
+      // FINALIZE
+      () => lastValidation,
     );
   } catch (error) {
-    if (error instanceof AutoBeCyclinicExhaustedError) {
-      // Return the last known validation (may still have errors)
-      return lastValidation;
-    }
+    // Graceful degradation: return last known validation even if exhausted
+    if (error instanceof AutoBeCyclinicExhaustedError) return lastValidation;
     throw error;
   }
 }
@@ -227,15 +222,12 @@ function getErrorModels(
   application: AutoBeDatabase.IApplication,
   failure: IAutoBeDatabaseValidation.IFailure,
 ): AutoBeDatabase.IModel[] {
-  return Array.from(
-    new Set(failure.errors.map((e) => e.table).filter((t) => t !== null)),
-  )
-    .map((table: string): AutoBeDatabase.IModel | undefined =>
-      application.files
-        .map((f) => f.models)
-        .flat()
-        .find((m) => m.name === table),
-    )
+  const allModels = application.files.flatMap((f) => f.models);
+  const errorTables = new Set(
+    failure.errors.map((e) => e.table).filter((t) => t !== null),
+  );
+  return [...errorTables]
+    .map((table) => allModels.find((m) => m.name === table))
     .filter((m) => m !== undefined);
 }
 
@@ -243,11 +235,11 @@ function filterErrorsByCapacity(
   errors: IAutoBeDatabaseValidation.IError[],
   capacity: number = 8,
 ): IAutoBeDatabaseValidation.IError[] {
-  const unique: Set<string | null> = new Set();
+  const tables = new Set<string | null>();
   const filtered: IAutoBeDatabaseValidation.IError[] = [];
   for (const err of errors) {
-    unique.add(err.table ?? null);
-    if (unique.size > capacity) break;
+    tables.add(err.table ?? null);
+    if (tables.size > capacity) break;
     filtered.push(err);
   }
   return filtered;
@@ -256,14 +248,7 @@ function filterErrorsByCapacity(
 // ── Controller factory ──
 
 function createController(props: {
-  onAction: (
-    action:
-      | {
-          type: "write";
-          data: IAutoBeDatabaseCorrectCyclinicApplication.IWrite;
-        }
-      | { type: "complete" },
-  ) => void;
+  onAction: (action: Exclude<ActionPointerValue, null>) => void;
   cyclinic: AutoBeCyclinicController<PreliminaryKinds>;
 }): ILlmController {
   const validate: Validator = (input) => {
@@ -273,7 +258,6 @@ function createController(props: {
 
     const request = result.data.request;
 
-    // Preliminary request → delegate to preliminary validation
     if (request.type !== "write" && request.type !== "complete") {
       return props.cyclinic.getPreliminary().validate({
         thinking: result.data.thinking,
@@ -281,7 +265,6 @@ function createController(props: {
       });
     }
 
-    // Write or Complete → accept as-is
     return result;
   };
 
@@ -295,7 +278,7 @@ function createController(props: {
 
   return {
     protocol: "class",
-    name: SOURCE satisfies AutoBeEventSource,
+    name: SOURCE,
     application,
     execute: {
       process: (next) => {
@@ -314,7 +297,6 @@ function buildHistories(props: {
   cyclinic: AutoBeCyclinicController<PreliminaryKinds>;
   failure: IAutoBeDatabaseValidation.IFailure;
 }): IAutoBeOrchestrateHistory {
-  // Filter errors to manageable capacity for the LLM
   const errors = filterErrorsByCapacity(props.failure.errors);
 
   return {
@@ -343,9 +325,3 @@ function buildHistories(props: {
       "Resolve the compilation errors in the provided database schema files.",
   };
 }
-
-type Validator = (
-  input: unknown,
-) => IValidation<IAutoBeDatabaseCorrectCyclinicApplication.IProps>;
-
-const SOURCE = "databaseCorrect" satisfies AutoBeEventSource;
