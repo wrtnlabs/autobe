@@ -8,7 +8,6 @@ import {
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeOperationCorrectCasting } from "./orchestrateRealizeOperationCorrectCasting";
-import { orchestrateRealizeOperationCorrectOverall } from "./orchestrateRealizeOperationCorrectOverall";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
 
 export async function orchestrateRealizeOperation(
@@ -21,6 +20,7 @@ export async function orchestrateRealizeOperation(
     validateProgress: AutoBeProgressEventBase;
   },
 ): Promise<AutoBeRealizeOperationFunction[]> {
+  // Cyclinic loop: write + compile + correct in one unified loop per operation
   let functions: AutoBeRealizeOperationFunction[] =
     await orchestrateRealizeOperationWrite(ctx, {
       authorizations: props.authorizations,
@@ -28,8 +28,9 @@ export async function orchestrateRealizeOperation(
       transformers: props.transformers,
       progress: props.writeProgress,
     });
-  props.validateProgress.total += 2 * functions.length;
 
+  // CastingCorrect: structural type casting fixes (separate pattern)
+  props.validateProgress.total += functions.length;
   functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
     authorizations: props.authorizations,
     collectors: props.collectors,
@@ -37,12 +38,6 @@ export async function orchestrateRealizeOperation(
     functions,
     progress: props.validateProgress,
   });
-  functions = await orchestrateRealizeOperationCorrectOverall(ctx, {
-    functions,
-    authorizations: props.authorizations,
-    collectors: props.collectors,
-    transformers: props.transformers,
-    progress: props.validateProgress,
-  });
+
   return functions;
 }
