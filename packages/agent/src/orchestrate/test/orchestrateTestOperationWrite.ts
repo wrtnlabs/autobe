@@ -27,7 +27,7 @@ import { transformPreviousAndLatestCorrectHistory } from "../common/histories/tr
 import { getTestScenarioArtifacts } from "./compile/getTestArtifacts";
 import { transformTestOperationWriteHistory } from "./histories/transformTestOperationWriteHistory";
 import { AutoBeTestOperationProgrammer } from "./programmers/AutoBeTestOperationProgrammer";
-import { IAutoBeTestOperationCyclinicApplication } from "./structures/IAutoBeTestOperationCyclinicApplication";
+import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
 
@@ -95,13 +95,13 @@ export async function orchestrateTestOperationWrite(
 type DummyKind = "databaseSchemas";
 
 type ActionPointerValue =
-  | { type: "write"; data: IAutoBeTestOperationCyclinicApplication.IWrite }
+  | { type: "write"; data: IAutoBeTestOperationWriteApplication.IWrite }
   | { type: "complete" }
   | null;
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeTestOperationCyclinicApplication.IProps>;
+) => IValidation<IAutoBeTestOperationWriteApplication.IProps>;
 
 const SOURCE = "testWrite" satisfies AutoBeEventSource;
 
@@ -125,7 +125,7 @@ async function execute(
   const cyclinic = new AutoBeCyclinicController<DummyKind>({
     source: SOURCE,
     application:
-      typia.json.application<IAutoBeTestOperationCyclinicApplication>(),
+      typia.json.application<IAutoBeTestOperationWriteApplication>(),
     kinds: ["databaseSchemas"],
     state: ctx.state(),
   });
@@ -146,7 +146,7 @@ async function execute(
 
   // Run cyclinic loop
   return await cyclinic.orchestrate<
-    IAutoBeTestOperationCyclinicApplication.IWrite,
+    IAutoBeTestOperationWriteApplication.IWrite,
     IAutoBeTestOperationProcedure
   >(
     ctx,
@@ -293,7 +293,7 @@ function createController(props: {
 }): ILlmController {
   const validate: Validator = (input) => {
     const result =
-      typia.validate<IAutoBeTestOperationCyclinicApplication.IProps>(input);
+      typia.validate<IAutoBeTestOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     const request = result.data.request;
@@ -315,7 +315,7 @@ function createController(props: {
   };
 
   const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
-    typia.llm.application<IAutoBeTestOperationCyclinicApplication>({
+    typia.llm.application<IAutoBeTestOperationWriteApplication>({
       validate: { process: validate },
     }),
   );
@@ -333,7 +333,7 @@ function createController(props: {
           props.onAction({ type: "complete" });
         }
       },
-    } satisfies IAutoBeTestOperationCyclinicApplication,
+    } satisfies IAutoBeTestOperationWriteApplication,
   };
 }
 
