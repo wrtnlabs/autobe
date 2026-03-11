@@ -4,8 +4,9 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
  * Application interface for the Cross-File Section Review agent.
  *
  * This agent reviews ALL files' section content together in a single LLM call,
- * providing cross-file validation for EARS format, value consistency,
- * terminology, and Mermaid diagram style.
+ * providing cross-file validation for value consistency, terminology,
+ * Mermaid diagram style, and EARS format (03-functional-requirements,
+ * 04-business-rules only).
  */
 export interface IAutoBeAnalyzeSectionReviewApplication {
   /**
@@ -33,7 +34,7 @@ export interface IAutoBeAnalyzeSectionReviewApplicationProps {
    *
    * For completion:
    *
-   * - Is EARS format consistent across all files?
+   * - Is EARS format consistent across requirement files (03, 04)?
    * - Are values and constraints consistent across all files?
    * - Is terminology aligned across all files?
    * - Are Mermaid diagram styles uniform?
@@ -81,7 +82,7 @@ export interface IAutoBeAnalyzeSectionReviewApplicationFileResult {
    *
    * Cross-file review criteria evaluated:
    *
-   * - EARS format compliance consistency
+   * - EARS format compliance (03-functional-requirements, 04-business-rules only)
    * - Value and constraint consistency
    * - Terminology alignment
    * - Mermaid diagram style uniformity
