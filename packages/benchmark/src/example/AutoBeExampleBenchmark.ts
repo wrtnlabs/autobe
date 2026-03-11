@@ -179,6 +179,7 @@ const PROJECT_SEQUENCE = [
   "reddit",
   "shopping",
   "account",
+  "gauzy",
 ] as const;
 const PHASE_SEQUENCE = [
   "analyze",
