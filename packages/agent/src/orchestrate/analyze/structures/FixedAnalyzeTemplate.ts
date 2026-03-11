@@ -244,12 +244,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             titlePattern: "{name} Actor",
             purposePattern:
               "Define the {name} actor's identity, permissions, and access boundaries. Do NOT describe specific operations (03), data isolation policies (05), or domain concepts (02).",
-            keywords: [
-              "actor",
-              "role",
-              "permissions",
-              "access-boundary",
-            ],
+            keywords: ["actor", "role", "permissions", "access-boundary"],
           },
         },
       },
@@ -265,11 +260,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
               titlePattern: "Registration and Login",
               purposePattern:
                 "Define user registration and login flows including validation and error handling.",
-              keywords: [
-                "registration",
-                "login",
-                "authentication",
-              ],
+              keywords: ["registration", "login", "authentication"],
             },
             {
               titlePattern: "Session and Logout",
@@ -329,12 +320,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             titlePattern: "{name} Concept",
             purposePattern:
               "Describe what {name} represents in the business domain and its key attributes. Do NOT describe operations or workflows — those belong in 03-functional-requirements.",
-            keywords: [
-              "concept",
-              "domain",
-              "business-meaning",
-              "attributes",
-            ],
+            keywords: ["concept", "domain", "business-meaning", "attributes"],
           },
         },
       },
@@ -577,8 +563,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     fileId: "05-non-functional",
     filename: "05-non-functional.md",
     documentType: "non-functional",
-    description:
-      "Data ownership, privacy, retention, and recovery policies",
+    description: "Data ownership, privacy, retention, and recovery policies",
     downstreamPhase: "test-infra",
     forbiddenPatterns: [
       /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs → 03

@@ -4,9 +4,9 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
  * Application interface for the Cross-File Section Review agent.
  *
  * This agent reviews ALL files' section content together in a single LLM call,
- * providing cross-file validation for value consistency, terminology,
- * Mermaid diagram style, and EARS format (03-functional-requirements,
- * 04-business-rules only).
+ * providing cross-file validation for value consistency, terminology, Mermaid
+ * diagram style, and EARS format (03-functional-requirements, 04-business-rules
+ * only).
  */
 export interface IAutoBeAnalyzeSectionReviewApplication {
   /**

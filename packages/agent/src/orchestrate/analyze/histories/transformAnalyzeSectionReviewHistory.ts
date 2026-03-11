@@ -22,10 +22,9 @@ import {
  * Transform histories for per-module review of section content.
  *
  * This transformer provides context for reviewing a SINGLE module's section
- * content, validating value consistency, prohibited content,
- * bridge block completeness, and intra-module deduplication. Sibling modules
- * are included as lightweight title-only context for intra-file consistency
- * reference.
+ * content, validating value consistency, prohibited content, bridge block
+ * completeness, and intra-module deduplication. Sibling modules are included as
+ * lightweight title-only context for intra-file consistency reference.
  */
 export const transformAnalyzeSectionReviewHistory = (
   ctx: AutoBeContext,
