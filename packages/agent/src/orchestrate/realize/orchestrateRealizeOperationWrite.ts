@@ -28,8 +28,8 @@ import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
-import { compileRealizeFiles } from "./programmers/compileRealizeFiles";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
+import { compileRealizeFiles } from "./programmers/compileRealizeFiles";
 import { IAutoBeRealizeOperationCyclinicApplication } from "./structures/IAutoBeRealizeOperationCyclinicApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 import { generateTS2339Hints } from "./utils/generateTS2339Hints";
@@ -394,9 +394,7 @@ function buildHistories(props: {
       diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
     };
     const isLatest = i === props.failures.length - 1;
-    const ts2339Hints = isLatest
-      ? generateTS2339Hints(diag.diagnostics)
-      : "";
+    const ts2339Hints = isLatest ? generateTS2339Hints(diag.diagnostics) : "";
 
     return {
       id: v7(),
@@ -461,7 +459,7 @@ function buildHistories(props: {
           type: "systemMessage" as const,
           text:
             "Your last write attempt passed validation successfully. " +
-            'You may now call complete(are_you_sure: true) to finalize.',
+            "You may now call complete(are_you_sure: true) to finalize.",
           created_at: new Date().toISOString(),
         },
       ]

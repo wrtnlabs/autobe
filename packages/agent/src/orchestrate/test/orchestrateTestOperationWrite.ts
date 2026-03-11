@@ -373,7 +373,7 @@ function buildHistories(props: {
           type: "systemMessage" as const,
           text:
             "Your last write attempt passed validation successfully. " +
-            'You may now call complete(are_you_sure: true) to finalize.',
+            "You may now call complete(are_you_sure: true) to finalize.",
           created_at: new Date().toISOString(),
         },
       ]

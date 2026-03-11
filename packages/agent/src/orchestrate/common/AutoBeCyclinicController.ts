@@ -1,13 +1,6 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
-import {
-  AutoBeEventSource,
-  AutoBePreliminaryKind,
-} from "@autobe/interface";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  LlmTypeChecker,
-} from "@samchon/openapi";
+import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
+import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -23,24 +16,20 @@ import { orchestratePreliminary } from "./orchestratePreliminary";
  * validation (compiler), and iterative correction into a single unified loop.
  *
  * Manages three action types within one loop:
+ *
  * - `getXXX` (preliminary): Load context data incrementally
  * - `write`: Submit code/schema for external validation (compile)
  * - `complete`: Finalize after a successful write
  *
- * The `complete` action is only available in the union after a successful
- * write validation. This is enforced by dynamic schema narrowing via
+ * The `complete` action is only available in the union after a successful write
+ * validation. This is enforced by dynamic schema narrowing via
  * {@link fixCompleteAvailability}.
  *
  * @author Samchon
  */
-export class AutoBeCyclinicController<
-  Kind extends AutoBePreliminaryKind,
-> {
+export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
   // METADATA
-  private readonly source: Exclude<
-    AutoBeEventSource,
-    "facade" | "preliminary"
-  >;
+  private readonly source: Exclude<AutoBeEventSource, "facade" | "preliminary">;
   private readonly source_id: string;
 
   // COMPOSED CONTROLLER
@@ -85,8 +74,8 @@ export class AutoBeCyclinicController<
   /**
    * Returns accumulated write validation failures.
    *
-   * Each entry contains diagnostics from a failed write attempt. Use this
-   * to include failure context in conversation histories.
+   * Each entry contains diagnostics from a failed write attempt. Use this to
+   * include failure context in conversation histories.
    *
    * @returns Array of failure records with diagnostics and iteration index.
    */
@@ -127,8 +116,7 @@ export class AutoBeCyclinicController<
     const func = application.functions.find((f) => f.name === "process");
     if (func === undefined) return application;
 
-    const request: ILlmSchema | undefined =
-      func.parameters.properties.request;
+    const request: ILlmSchema | undefined = func.parameters.properties.request;
     if (request === undefined) return application;
     if (LlmTypeChecker.isAnyOf(request) === false) return application;
 
@@ -140,9 +128,7 @@ export class AutoBeCyclinicController<
 
     // Find and remove IComplete reference from union
     const completeIndex: number = children.findIndex(
-      (c) =>
-        c.$ref.endsWith("/IComplete") ||
-        c.$ref.endsWith(".IComplete"),
+      (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
     );
     if (completeIndex !== -1) {
       // Remove from anyOf array
@@ -159,16 +145,15 @@ export class AutoBeCyclinicController<
   /**
    * Generates conversation history entries for write validation failures.
    *
-   * Each failure produces a system message containing the compiler
-   * diagnostics from that attempt. When a write has succeeded, appends a
-   * success notification informing the LLM it may call `complete`.
+   * Each failure produces a system message containing the compiler diagnostics
+   * from that attempt. When a write has succeeded, appends a success
+   * notification informing the LLM it may call `complete`.
    *
    * Callers should combine these with `preliminary.getHistories()` and
    * phase-specific histories when building the full conversation context.
    *
    * @param formatDiagnostics Callback to format diagnostics into a
-   *   human-readable string. Phase-specific (TS errors vs Prisma errors
-   *   etc.).
+   *   human-readable string. Phase-specific (TS errors vs Prisma errors etc.).
    * @returns Array of history entries to inject into the conversation.
    */
   public getFailureHistories(
@@ -192,7 +177,7 @@ export class AutoBeCyclinicController<
         created_at: new Date().toISOString(),
         text:
           "Your last write attempt passed validation successfully. " +
-          'You may now call complete(are_you_sure: true) to finalize.',
+          "You may now call complete(are_you_sure: true) to finalize.",
       });
     }
 
@@ -202,18 +187,17 @@ export class AutoBeCyclinicController<
   /**
    * Runs the unified cyclinic write-compile-correct loop.
    *
-   * Iterates up to `maxIterations` times. Each iteration calls the
-   * `process` callback which performs one `ctx.conversate()` call. The
-   * callback returns an `IProcessResult` indicating which action the LLM
-   * took:
+   * Iterates up to `maxIterations` times. Each iteration calls the `process`
+   * callback which performs one `ctx.conversate()` call. The callback returns
+   * an `IProcessResult` indicating which action the LLM took:
    *
    * - `action === null`: Preliminary data request. Delegates to
    *   `orchestratePreliminary()` and continues the loop.
-   * - `action.type === "write"`: Code submission. Calls `validate()`. On
-   *   success, stores the result and enables `complete`. On failure, pushes
-   *   diagnostics to `failures[]` for the next iteration's history.
-   * - `action.type === "complete"`: Finalization. Calls `finalize()` with
-   *   the last successful write data and returns.
+   * - `action.type === "write"`: Code submission. Calls `validate()`. On success,
+   *   stores the result and enables `complete`. On failure, pushes diagnostics
+   *   to `failures[]` for the next iteration's history.
+   * - `action.type === "complete"`: Finalization. Calls `finalize()` with the
+   *   last successful write data and returns.
    *
    * @param ctx AutoBe execution context.
    * @param process Callback that runs one LLM conversate iteration.
@@ -300,20 +284,19 @@ export namespace AutoBeCyclinicController {
    * Extends `AutoBePreliminaryController.IProps` with cyclinic-specific
    * configuration.
    */
-  export interface IProps<Kind extends AutoBePreliminaryKind>
-    extends AutoBePreliminaryController.IProps<Kind> {
+  export interface IProps<
+    Kind extends AutoBePreliminaryKind,
+  > extends AutoBePreliminaryController.IProps<Kind> {
     /**
      * Maximum total iterations for the cyclinic loop.
      *
-     * Covers both preliminary data requests and write-compile-correct
-     * cycles. Defaults to `RAG_LIMIT * COMPILER_RETRY`.
+     * Covers both preliminary data requests and write-compile-correct cycles.
+     * Defaults to `RAG_LIMIT * COMPILER_RETRY`.
      */
     maxIterations?: number;
   }
 
-  /**
-   * Context passed to the `process` callback on each iteration.
-   */
+  /** Context passed to the `process` callback on each iteration. */
   export interface IProcessContext<Kind extends AutoBePreliminaryKind> {
     /** Composed preliminary controller for data access and history. */
     preliminary: AutoBePreliminaryController<Kind>;
@@ -332,6 +315,7 @@ export namespace AutoBeCyclinicController {
    * Result returned by the `process` callback.
    *
    * The `action` field indicates what the LLM did:
+   *
    * - `null`: Preliminary data request (getXXX). Loop continues.
    * - `{ type: "write", data }`: Write submission. Will be validated.
    * - `{ type: "complete" }`: Finalization request.
@@ -347,10 +331,7 @@ export namespace AutoBeCyclinicController {
      * - `{ type: "write", data }` = write submission
      * - `{ type: "complete" }` = finalization
      */
-    action:
-      | { type: "write"; data: WriteData }
-      | { type: "complete" }
-      | null;
+    action: { type: "write"; data: WriteData } | { type: "complete" } | null;
   }
 
   /** Record of a failed write validation attempt. */
