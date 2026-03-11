@@ -37,8 +37,6 @@ export * from "./AutoBeAnalyzeModuleReviewEvent";
 export * from "./AutoBeAnalyzeUnitReviewEvent";
 export * from "./AutoBeAnalyzeSectionReviewEvent";
 export * from "./AutoBeAnalyzeScenarioReviewEvent";
-// ANALYZE (Document - Two-Layer SRS extraction)
-export * from "./AutoBeAnalyzeDocumentEvent";
 
 // PRISMA
 export * from "./AutoBeDatabaseAuthorizationEvent";

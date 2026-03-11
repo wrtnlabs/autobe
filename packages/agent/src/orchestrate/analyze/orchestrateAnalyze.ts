@@ -23,7 +23,6 @@ import { AutoBePreliminaryExhaustedError } from "../../utils/AutoBePreliminaryEx
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { fillTocDeterministic } from "./fillTocDeterministic";
-import { orchestrateAnalyzeDocument } from "./orchestrateAnalyzeDocument";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
@@ -33,8 +32,6 @@ import { orchestrateAnalyzeWriteSectionPatch } from "./orchestrateAnalyzeWriteSe
 import { orchestrateAnalyzeWriteUnit } from "./orchestrateAnalyzeWriteUnit";
 import {
   assembleContent,
-  assembleDocument,
-  assembleEvidence,
   assembleModule,
 } from "./programmers/AutoBeAnalyzeProgrammer";
 import {
@@ -288,45 +285,12 @@ export const orchestrateAnalyze = async (
       state.sectionResults!,
     );
 
-    let document: AutoBeAnalyzeFile["document"] = null;
-    // TOC file has no substantive requirements — skip document extraction
-    const isToc = state.file.filename === "00-toc.md";
-    if (!isToc) {
-      try {
-        // Evidence Layer: programmatic conversion from module/unit/section tree
-        const sections = assembleEvidence(
-          fileIndex,
-          state.moduleResult!,
-          state.unitResults!,
-          state.sectionResults!,
-        );
-
-        // Semantic Layer: LLM-based SRS extraction (lower retry to save tokens)
-        const categoryId = state.file.filename.replace(/\.md$/, "");
-        const documentEvent = await orchestrateAnalyzeDocument(ctx, {
-          fileIndex,
-          filename: state.file.filename,
-          categoryId,
-          content,
-          sections,
-          retry: AutoBeConfigConstant.DOCUMENT_RETRY,
-        });
-
-        // Assemble the complete Two-Layer document
-        document = assembleDocument(sections, documentEvent.srs);
-      } catch {
-        // Document extraction is best-effort; null fallback is acceptable
-        document = null;
-      }
-    }
-
     files.push({
       ...state.file,
       title: state.moduleResult!.title,
       summary: state.moduleResult!.summary,
       content,
       module,
-      document,
     });
   }
 

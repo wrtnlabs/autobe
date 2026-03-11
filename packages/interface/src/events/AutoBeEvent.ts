@@ -1,5 +1,4 @@
 import { AutoBeAnalyzeCompleteEvent } from "./AutoBeAnalyzeCompleteEvent";
-import { AutoBeAnalyzeDocumentEvent } from "./AutoBeAnalyzeDocumentEvent";
 import { AutoBeAnalyzeModuleReviewEvent } from "./AutoBeAnalyzeModuleReviewEvent";
 import { AutoBeAnalyzeScenarioEvent } from "./AutoBeAnalyzeScenarioEvent";
 import { AutoBeAnalyzeScenarioReviewEvent } from "./AutoBeAnalyzeScenarioReviewEvent";
@@ -121,8 +120,6 @@ export type AutoBeEvent =
   | AutoBeAnalyzeUnitReviewEvent
   | AutoBeAnalyzeSectionReviewEvent
   | AutoBeAnalyzeScenarioReviewEvent
-  // ANALYZE (Document - Two-Layer SRS extraction)
-  | AutoBeAnalyzeDocumentEvent
   // DATABASE
   | AutoBeDatabaseStartEvent
   | AutoBeDatabaseGroupEvent

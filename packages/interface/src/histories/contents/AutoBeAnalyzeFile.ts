@@ -1,4 +1,3 @@
-import { AutoBeAnalyzeDocument } from "./AutoBeAnalyzeDocument";
 import { AutoBeAnalyzeFileScenario } from "./AutoBeAnalyzeFileScenario";
 import { AutoBeAnalyzeModule } from "./AutoBeAnalyzeModule";
 
@@ -52,24 +51,4 @@ export interface AutoBeAnalyzeFile extends AutoBeAnalyzeFileScenario {
    * `title`, `purpose`, `content`, and `units`.
    */
   module: AutoBeAnalyzeModule;
-
-  /**
-   * Two-layer structured document data (per-file).
-   *
-   * - **Evidence Layer** (`sections`): flat mirror of `module` hierarchy with
-   *   `sectionId`s for traceability.
-   * - **Semantic Layer** (`srs`): SRS categories extracted from this file's
-   *   content via LLM. Every traceable item references back to the Evidence
-   *   Layer via `sourceSectionIds`.
-   *
-   * `null` when:
-   *
-   * - The file is a TOC (`00-toc.md`) — no substantive requirements to extract.
-   * - LLM-based SRS extraction failed after
-   *   {@link AutoBeConfigConstant.DOCUMENT_RETRY} attempts — the pipeline
-   *   continues without blocking.
-   *
-   * New downstream consumers should prefer this field over `content`/`module`.
-   */
-  document: AutoBeAnalyzeDocument | null;
 }
