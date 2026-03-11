@@ -243,19 +243,18 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         index: 0,
         title: "Actor Definitions",
         purpose:
-          "Define all user actor types with their roles and what they can do.",
+          "Define all user actor types with their identity, permissions, and access boundaries.",
         unitStrategy: {
           type: "perActor",
           unitTemplate: {
             titlePattern: "{name} Actor",
             purposePattern:
-              "Define the {name} actor's role and capabilities in business terms.",
+              "Define the {name} actor's identity, permissions, and access boundaries. Do NOT describe specific operations — those belong in 03-functional-requirements.",
             keywords: [
               "actor",
               "role",
               "permissions",
-              "capabilities",
-              "authorization",
+              "access-boundary",
             ],
           },
         },
@@ -328,19 +327,19 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 0,
         title: "Domain Concepts",
-        purpose: "Describe what each concept means to users and why it exists.",
+        purpose:
+          "Describe what each concept means in the business domain and its key attributes.",
         unitStrategy: {
           type: "perEntity",
           unitTemplate: {
             titlePattern: "{name} Concept",
             purposePattern:
-              "Describe what {name} represents in the business domain, its purpose, and how users interact with it.",
+              "Describe what {name} represents in the business domain and its key attributes. Do NOT describe operations or workflows — those belong in 03-functional-requirements.",
             keywords: [
               "concept",
               "domain",
               "business-meaning",
-              "purpose",
-              "user-interaction",
+              "attributes",
             ],
           },
         },
@@ -459,27 +458,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       },
       {
         index: 1,
-        title: "Business Actions and Workflows",
-        purpose: "Business actions and workflows beyond basic CRUD.",
-        unitStrategy: {
-          type: "perEntityGroup",
-          unitTemplate: {
-            titlePattern: "{name} Actions",
-            purposePattern:
-              "Define business actions and workflows for the {name} domain group from a functional requirements perspective.",
-            keywords: [
-              "action",
-              "workflow",
-              "business-process",
-              "trigger",
-              "authentication-flow",
-              "authorization",
-            ],
-          },
-        },
-      },
-      {
-        index: 2,
         title: "Error Scenarios and Edge Cases",
         purpose:
           "Business-level error scenarios, edge case coverage, and expected system behaviors for exceptional conditions.",
@@ -500,24 +478,25 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         },
       },
       {
-        index: 3,
+        index: 2,
         title: "End-to-End User Scenarios",
         purpose:
-          "Cross-domain user scenarios, multi-step business flows, and end-to-end use cases.",
+          "Cross-domain user scenarios that span multiple concepts, describing complete user journeys.",
         unitStrategy: {
-          type: "perEntityGroup",
-          unitTemplate: {
-            titlePattern: "{name} User Scenarios",
-            purposePattern:
-              "Define end-to-end user scenarios involving {name} and related concepts, describing business flows from the user's perspective.",
-            keywords: [
-              "user-scenario",
-              "use-case",
-              "end-to-end",
-              "multi-step",
-              "cross-domain",
-            ],
-          },
+          type: "fixed",
+          units: [
+            {
+              titlePattern: "Cross-Domain User Scenarios",
+              purposePattern:
+                "Define end-to-end user scenarios that span multiple concepts, describing complete user journeys from start to finish.",
+              keywords: [
+                "user-scenario",
+                "end-to-end",
+                "multi-step",
+                "user-journey",
+              ],
+            },
+          ],
         },
       },
     ],
@@ -539,29 +518,6 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     modules: [
       {
         index: 0,
-        title: "Data Isolation and Ownership",
-        purpose:
-          "Data ownership rules and tenant/user-level isolation policies.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Ownership and Isolation Rules",
-              purposePattern:
-                "Define data ownership semantics and isolation boundaries for multi-user access.",
-              keywords: [
-                "ownership",
-                "isolation",
-                "tenant",
-                "multi-user",
-                "data-access",
-              ],
-            },
-          ],
-        },
-      },
-      {
-        index: 1,
         title: "Domain Business Rules",
         purpose:
           "Per-concept business rules, validation logic, and domain constraints.",
@@ -581,22 +537,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         },
       },
       {
-        index: 2,
-        title: "Business Validation Criteria",
-        purpose:
-          "Business-level validation expectations and data quality criteria.",
-        unitStrategy: {
-          type: "perEntity",
-          unitTemplate: {
-            titlePattern: "{name} Validation Criteria",
-            purposePattern:
-              "Define business validation expectations for {name}, including acceptable data quality criteria.",
-            keywords: ["validation", "boundary-value", "format-requirement"],
-          },
-        },
-      },
-      {
-        index: 3,
+        index: 1,
         title: "Data Browsing Expectations",
         purpose:
           "Business expectations for how users browse, find, and navigate through lists of data.",
@@ -613,7 +554,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
         },
       },
       {
-        index: 4,
+        index: 2,
         title: "Error Conditions",
         purpose: "Business error scenarios and how the system should respond.",
         unitStrategy: {
