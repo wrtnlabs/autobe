@@ -26,7 +26,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 1.2. File Scope Adherence (CRITICAL)
 - Does this file's content stay within its designated scope?
-- 00-toc: Project summary, scope, glossary — NO EARS requirements
+- 00-toc: Project summary, scope, glossary — NO detailed requirements
 - 01-actors-and-auth: Actors, permissions, auth flows — NO attribute tables, NO API endpoints
 - 02-domain-model: Domain concepts, relationships, business states — NO API endpoints, NO database indexes
 - 03-functional-requirements: Functional requirements, use cases, business operations — NO API endpoints, NO HTTP methods, NO error catalogs
@@ -35,9 +35,9 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - **REJECT if file contains API specifications (HTTP methods, URL paths, request/response schemas)**
 - **REJECT if file clearly contains content belonging to another file's scope**
 
-### 1.3. EARS Format (RECOMMENDED)
-- "SHALL" statements preferred, but clear imperative language is acceptable
-- Do NOT reject solely for using "should", "must", or other clear forms
+### 1.3. Writing Style
+- Requirements should be written in clear natural language
+- Do NOT reject for stylistic preferences — focus on content accuracy
 
 ### 1.4. Value Consistency with Parent Definitions (ADVISORY)
 - Section values should match parent module/unit definitions
@@ -152,7 +152,7 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - Section reinterprets the user's stated system characteristics
 - Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")
 
-**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, EARS format, verbosity, boilerplate, meta-concepts, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications
+**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, writing style, verbosity, boilerplate, meta-concepts, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications
 
 ---
 

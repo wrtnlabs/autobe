@@ -171,7 +171,7 @@ export const transformAnalyzeWriteSectionHistory = (
         ## Your Task
 
         Create detailed sections (#### level) that address ALL the keywords above.
-        Use EARS format for system behavior. Use natural language for permissions and state transitions.
+        Use natural language for all requirements.
         ${
           props.feedback
             ? `

@@ -121,10 +121,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     documentType: "overview",
     description: "Project summary, scope, glossary, and assumptions",
     downstreamPhase: "project-setup",
-    forbiddenPatterns: [
-      /\bTHE\s+system\s+SHALL\b/i, // EARS requirements belong in 03/04
-      /\bTHE\s+system\s+SHOULD\b/i,
-    ],
+    forbiddenPatterns: [],
     modules: [
       {
         index: 0,
@@ -266,7 +263,8 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 1,
         title: "Authentication Flows",
-        purpose: "Registration, login, session management, and token policies.",
+        purpose:
+          "Registration, login, logout, and session management from a user perspective.",
         unitStrategy: {
           type: "fixed",
           units: [
@@ -278,15 +276,13 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
                 "registration",
                 "login",
                 "authentication",
-                "signup",
-                "signin",
               ],
             },
             {
-              titlePattern: "Session and Token Policy",
+              titlePattern: "Session and Logout",
               purposePattern:
-                "Define session duration, token refresh, and expiration policies.",
-              keywords: ["session", "token", "refresh", "expiration", "jwt"],
+                "Define session behavior and logout from a user perspective.",
+              keywords: ["session", "logout", "account-security"],
             },
           ],
         },
@@ -294,20 +290,18 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
       {
         index: 2,
         title: "Account Lifecycle",
-        purpose: "Account state transitions and lifecycle management.",
+        purpose: "Account creation, deletion, and password management.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "Account States and Transitions",
+              titlePattern: "Account Management",
               purposePattern:
-                "Define account states (active, suspended, deleted) and valid transitions.",
+                "Define how users create accounts, delete accounts, and change passwords.",
               keywords: [
-                "account-state",
-                "lifecycle",
-                "suspension",
-                "deletion",
-                "deactivation",
+                "account-creation",
+                "account-deletion",
+                "password-change",
               ],
             },
           ],
@@ -649,7 +643,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "05-non-functional.md",
     documentType: "non-functional",
     description:
-      "Performance SLOs, security policies, data integrity, storage requirements",
+      "Data ownership, privacy, retention, and recovery policies",
     downstreamPhase: "test-infra",
     forbiddenPatterns: [
       /\b(?:GET|POST|PUT|PATCH|DELETE)\s+\/\w+/i, // API endpoint defs → 03
@@ -658,133 +652,32 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     modules: [
       {
         index: 0,
-        title: "Performance Requirements",
-        purpose: "Performance SLOs and scalability targets.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Performance SLOs",
-              purposePattern:
-                "Define response time targets, throughput limits, and scalability requirements.",
-              keywords: [
-                "performance",
-                "slo",
-                "latency",
-                "throughput",
-                "scalability",
-              ],
-            },
-            {
-              titlePattern: "Rate Limiting and Throttling",
-              purposePattern:
-                "Define rate limiting policies and abuse prevention requirements.",
-              keywords: [
-                "rate-limit",
-                "throttling",
-                "abuse-prevention",
-                "cooldown",
-              ],
-            },
-          ],
-        },
-      },
-      {
-        index: 1,
-        title: "Security Requirements",
-        purpose: "Security policies, encryption, and compliance requirements.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Security Policies",
-              purposePattern:
-                "Define security policies including encryption, input validation, and compliance.",
-              keywords: [
-                "security",
-                "encryption",
-                "compliance",
-                "input-validation",
-                "owasp",
-              ],
-            },
-            {
-              titlePattern: "Availability and Reliability",
-              purposePattern:
-                "Define availability targets, reliability expectations, and failover policies.",
-              keywords: [
-                "availability",
-                "uptime",
-                "error-budget",
-                "reliability",
-              ],
-            },
-          ],
-        },
-      },
-      {
-        index: 2,
-        title: "Data Integrity and Storage",
-        purpose: "Data integrity constraints and storage requirements.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Data Integrity and Storage",
-              purposePattern:
-                "Define backup policies, data retention, and storage tier requirements.",
-              keywords: [
-                "data-integrity",
-                "backup",
-                "retention",
-                "storage",
-                "consistency",
-              ],
-            },
-            {
-              titlePattern: "Audit and Observability",
-              purposePattern:
-                "Define audit logging, monitoring, alerting, and observability requirements.",
-              keywords: [
-                "audit",
-                "logging",
-                "monitoring",
-                "alerting",
-                "observability",
-              ],
-            },
-          ],
-        },
-      },
-      {
-        index: 3,
-        title: "Concurrency and Data Consistency",
+        title: "Data Policies",
         purpose:
-          "Concurrency control policies, race condition handling, and data consistency guarantees.",
+          "Data ownership, privacy, retention, and recovery policies from a business perspective.",
         unitStrategy: {
           type: "fixed",
           units: [
             {
-              titlePattern: "Concurrency Control Policies",
+              titlePattern: "Data Ownership and Privacy",
               purposePattern:
-                "Define optimistic/pessimistic locking strategies, conflict resolution, and retry semantics for concurrent operations.",
+                "Define who owns what data, who can access it, and privacy boundaries between users.",
               keywords: [
-                "concurrency",
-                "locking",
-                "conflict-resolution",
-                "race-condition",
-                "retry-semantics",
+                "data-isolation",
+                "ownership",
+                "access-control",
+                "privacy",
               ],
             },
             {
-              titlePattern: "Data Consistency Guarantees",
+              titlePattern: "Data Retention and Recovery",
               purposePattern:
-                "Define consistency models, transactional boundary requirements, and idempotency guarantees.",
+                "Define what happens to deleted data, how long it is retained, and how users can recover it.",
               keywords: [
-                "consistency",
-                "transaction-boundary",
-                "atomicity",
-                "idempotency",
+                "soft-delete",
+                "retention",
+                "recovery",
+                "permanent-deletion",
               ],
             },
           ],

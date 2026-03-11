@@ -22,7 +22,7 @@ import {
  * Transform histories for per-module review of section content.
  *
  * This transformer provides context for reviewing a SINGLE module's section
- * content, validating EARS format, value consistency, prohibited content,
+ * content, validating value consistency, prohibited content,
  * bridge block completeness, and intra-module deduplication. Sibling modules
  * are included as lightweight title-only context for intra-file consistency
  * reference.
@@ -139,7 +139,7 @@ export const transformAnalyzeSectionReviewHistory = (
         2. Does content stay within this file's designated scope?
         3. Are values consistent with parent module/unit definitions?
         4. Is there any prohibited content (schemas, API specs, implementation details)?
-        5. Is EARS format correct and consistent?
+        5. Are requirements written in clear natural language?
         6. Is there no duplicate content within this module?
         7. (For canonical files 01/02/04) Are YAML spec blocks present?
         8. Does content ONLY reference entities, actors, and features from the Authorized Scenario Reference above?
