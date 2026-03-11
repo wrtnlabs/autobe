@@ -1,14 +1,14 @@
 /**
- * Custom error indicating the cyclinic write-compile-correct loop exhausted
- * all retry attempts.
+ * Custom error indicating the cyclinic write-compile-correct loop exhausted all
+ * retry attempts.
  *
  * Thrown by `AutoBeCyclinicController.orchestrate()` when the LLM repeatedly
  * fails to produce code that passes validation within the maximum allowed
  * iterations.
  *
  * Caught alongside `AutoBePreliminaryExhaustedError` and `AutoBeTimeoutError`
- * in orchestration pipelines to trigger force-pass behavior instead of
- * crashing the entire process.
+ * in orchestration pipelines to trigger force-pass behavior instead of crashing
+ * the entire process.
  *
  * @author Samchon
  */
