@@ -17,7 +17,7 @@ import { IAutoBeOrchestrateHistory } from "../../structures/IAutoBeOrchestrateHi
 import { AutoBeCyclinicExhaustedError } from "../../utils/AutoBeCyclinicExhaustedError";
 import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
-import { IAutoBeDatabaseCorrectCyclinicApplication } from "./structures/IAutoBeDatabaseCorrectCyclinicApplication";
+import { IAutoBeDatabaseCorrectApplication } from "./structures/IAutoBeDatabaseCorrectApplication";
 
 // ── Types ──
 
@@ -28,13 +28,13 @@ type PreliminaryKinds =
   | "previousDatabaseSchemas";
 
 type ActionPointerValue =
-  | { type: "write"; data: IAutoBeDatabaseCorrectCyclinicApplication.IWrite }
+  | { type: "write"; data: IAutoBeDatabaseCorrectApplication.IWrite }
   | { type: "complete" }
   | null;
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeDatabaseCorrectCyclinicApplication.IProps>;
+) => IValidation<IAutoBeDatabaseCorrectApplication.IProps>;
 
 const SOURCE = "databaseCorrect" satisfies AutoBeEventSource;
 
@@ -80,7 +80,7 @@ export async function orchestratePrismaCorrect(
   const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     source: SOURCE,
     application:
-      typia.json.application<IAutoBeDatabaseCorrectCyclinicApplication>(),
+      typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     kinds: [
       "analysisSections",
       "previousAnalysisSections",
@@ -107,7 +107,7 @@ export async function orchestratePrismaCorrect(
   // Run cyclinic correction loop
   try {
     return await cyclinic.orchestrate<
-      IAutoBeDatabaseCorrectCyclinicApplication.IWrite,
+      IAutoBeDatabaseCorrectApplication.IWrite,
       IAutoBeDatabaseValidation
     >(
       ctx,
@@ -253,7 +253,7 @@ function createController(props: {
 }): ILlmController {
   const validate: Validator = (input) => {
     const result =
-      typia.validate<IAutoBeDatabaseCorrectCyclinicApplication.IProps>(input);
+      typia.validate<IAutoBeDatabaseCorrectApplication.IProps>(input);
     if (result.success === false) return result;
 
     const request = result.data.request;
@@ -270,7 +270,7 @@ function createController(props: {
 
   const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
     props.cyclinic.getPreliminary().fixApplication(
-      typia.llm.application<IAutoBeDatabaseCorrectCyclinicApplication>({
+      typia.llm.application<IAutoBeDatabaseCorrectApplication>({
         validate: { process: validate },
       }),
     ),
@@ -287,7 +287,7 @@ function createController(props: {
         else if (next.request.type === "complete")
           props.onAction({ type: "complete" });
       },
-    } satisfies IAutoBeDatabaseCorrectCyclinicApplication,
+    } satisfies IAutoBeDatabaseCorrectApplication,
   };
 }
 

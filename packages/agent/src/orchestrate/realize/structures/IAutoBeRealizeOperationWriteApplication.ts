@@ -16,7 +16,7 @@ import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structure
  * - Submit code via `write` for external TypeScript compilation
  * - Finalize via `complete` after a successful write validation
  */
-export interface IAutoBeRealizeOperationCyclinicApplication {
+export interface IAutoBeRealizeOperationWriteApplication {
   /**
    * Process operation function implementation, correction, or preliminary data
    * requests.
@@ -29,10 +29,10 @@ export interface IAutoBeRealizeOperationCyclinicApplication {
    * @param props Request containing preliminary data request, write submission,
    *   or completion confirmation
    */
-  process(props: IAutoBeRealizeOperationCyclinicApplication.IProps): void;
+  process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeRealizeOperationCyclinicApplication {
+export namespace IAutoBeRealizeOperationWriteApplication {
   export interface IProps {
     /**
      * Think before you act.

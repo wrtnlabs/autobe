@@ -11,7 +11,7 @@
  * - Submit test code via `write` for TypeScript compilation validation
  * - Finalize via `complete` after a successful write validation
  */
-export interface IAutoBeTestOperationCyclinicApplication {
+export interface IAutoBeTestOperationWriteApplication {
   /**
    * Process test operation code generation, correction, or finalization.
    *
@@ -22,10 +22,10 @@ export interface IAutoBeTestOperationCyclinicApplication {
    *
    * @param props Request containing write submission or completion confirmation
    */
-  process(props: IAutoBeTestOperationCyclinicApplication.IProps): void;
+  process(props: IAutoBeTestOperationWriteApplication.IProps): void;
 }
 
-export namespace IAutoBeTestOperationCyclinicApplication {
+export namespace IAutoBeTestOperationWriteApplication {
   export interface IProps {
     /**
      * Think before you act.

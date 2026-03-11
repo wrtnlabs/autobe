@@ -31,7 +31,7 @@ import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntr
 import { transformRealizeOperationWriteHistory } from "./histories/transformRealizeOperationWriteHistory";
 import { AutoBeRealizeOperationProgrammer } from "./programmers/AutoBeRealizeOperationProgrammer";
 import { compileRealizeFiles } from "./programmers/compileRealizeFiles";
-import { IAutoBeRealizeOperationCyclinicApplication } from "./structures/IAutoBeRealizeOperationCyclinicApplication";
+import { IAutoBeRealizeOperationWriteApplication } from "./structures/IAutoBeRealizeOperationWriteApplication";
 import { IAutoBeRealizeScenarioResult } from "./structures/IAutoBeRealizeScenarioResult";
 
 export async function orchestrateRealizeOperationWrite(
@@ -80,13 +80,13 @@ type PreliminaryKinds =
   | "realizeTransformers";
 
 type ActionPointerValue =
-  | { type: "write"; data: IAutoBeRealizeOperationCyclinicApplication.IWrite }
+  | { type: "write"; data: IAutoBeRealizeOperationWriteApplication.IWrite }
   | { type: "complete" }
   | null;
 
 type Validator = (
   input: unknown,
-) => IValidation<IAutoBeRealizeOperationCyclinicApplication.IProps>;
+) => IValidation<IAutoBeRealizeOperationWriteApplication.IProps>;
 
 const SOURCE = "realizeWrite" satisfies AutoBeEventSource;
 
@@ -131,7 +131,7 @@ async function execute(
   const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     source: SOURCE,
     application:
-      typia.json.application<IAutoBeRealizeOperationCyclinicApplication>(),
+      typia.json.application<IAutoBeRealizeOperationWriteApplication>(),
     kinds: [
       "analysisSections",
       "databaseSchemas",
@@ -176,7 +176,7 @@ async function execute(
 
   // Run cyclinic loop
   return await cyclinic.orchestrate<
-    IAutoBeRealizeOperationCyclinicApplication.IWrite,
+    IAutoBeRealizeOperationWriteApplication.IWrite,
     AutoBeRealizeOperationFunction
   >(
     ctx,
@@ -302,7 +302,7 @@ function createController(props: {
 }): ILlmController {
   const validate: Validator = (input) => {
     const result =
-      typia.validate<IAutoBeRealizeOperationCyclinicApplication.IProps>(input);
+      typia.validate<IAutoBeRealizeOperationWriteApplication.IProps>(input);
     if (result.success === false) return result;
 
     const request = result.data.request;
@@ -332,7 +332,7 @@ function createController(props: {
 
   const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
     props.cyclinic.getPreliminary().fixApplication(
-      typia.llm.application<IAutoBeRealizeOperationCyclinicApplication>({
+      typia.llm.application<IAutoBeRealizeOperationWriteApplication>({
         validate: { process: validate },
       }),
     ),
@@ -349,7 +349,7 @@ function createController(props: {
         else if (next.request.type === "complete")
           props.onAction({ type: "complete" });
       },
-    } satisfies IAutoBeRealizeOperationCyclinicApplication,
+    } satisfies IAutoBeRealizeOperationWriteApplication,
   };
 }
 

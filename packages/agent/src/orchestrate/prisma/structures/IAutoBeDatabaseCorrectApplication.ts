@@ -18,7 +18,7 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
  * - Submit corrected models via `write` for external validation
  * - Finalize via `complete` after a successful write validation
  */
-export interface IAutoBeDatabaseCorrectCyclinicApplication {
+export interface IAutoBeDatabaseCorrectApplication {
   /**
    * Process database correction, preliminary data requests, or finalization.
    *
@@ -31,10 +31,10 @@ export interface IAutoBeDatabaseCorrectCyclinicApplication {
    * @param props Request containing preliminary data request, write submission,
    *   or completion confirmation
    */
-  process(props: IAutoBeDatabaseCorrectCyclinicApplication.IProps): void;
+  process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
 
-export namespace IAutoBeDatabaseCorrectCyclinicApplication {
+export namespace IAutoBeDatabaseCorrectApplication {
   export interface IProps {
     /**
      * Think before you act.
