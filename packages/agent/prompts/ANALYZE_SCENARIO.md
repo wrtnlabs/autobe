@@ -43,8 +43,7 @@ process({
     language: "en",
     actors: [
       { name: "guest", kind: "guest", description: "Unauthenticated visitors" },
-      { name: "member", kind: "member", description: "Registered users managing todos" },
-      { name: "admin", kind: "admin", description: "System administrators" }
+      { name: "member", kind: "member", description: "Registered users managing todos" }
     ],
     concepts: [
       { name: "User", description: "Registered user of the system", relationships: [] },

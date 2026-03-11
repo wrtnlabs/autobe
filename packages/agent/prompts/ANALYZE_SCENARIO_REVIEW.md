@@ -39,10 +39,10 @@ No concepts should exist that the user never mentioned, implied, or that aren't 
 
 Actors must follow the identity boundary test and match user requirements.
 
-**Default**: `guest` / `member` / `admin` unless user explicitly described different actors.
+**Default**: `guest` / `member` only. Add `admin` ONLY if the user explicitly requested admin functionality.
 
 **Check**:
-- Are there actors the user didn't request? (e.g., `moderator` when user only said "admin")
+- Are there actors the user didn't request? Do NOT add `admin` unless the user explicitly mentioned admin features.
 - Are actor `kind` values correct? (guest=unauthenticated, member=authenticated, admin=system management)
 - Could any actor be represented as a role attribute instead of a separate actor?
 
@@ -109,7 +109,7 @@ process({
 **Scenario Validation:**
 - [ ] Every user-mentioned concept has a corresponding concept entry
 - [ ] No hallucinated concepts (not mentioned or implied by user)
-- [ ] Actors match user requirements (default: guest/member/admin)
+- [ ] Actors match user requirements (default: guest/member only — admin ONLY if user explicitly requested)
 - [ ] Features only from fixed catalog and only if user mentioned them
 
 **Prohibited Content (MUST REJECT if present):**

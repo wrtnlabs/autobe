@@ -83,13 +83,16 @@ Short phrases that capture what this unit covers. Used to guide section writing.
 - [ ] Every keyword is traceable to the original user requirements
 - [ ] No industry-standard features added that the user did not mention
 
-**Prohibited Content (REJECT if present):**
+**Prohibited Content (DO NOT write any of these):**
 - [ ] NO database schemas or field definitions
 - [ ] NO API endpoints or HTTP methods
 - [ ] NO field types (`string`, `boolean`, `integer`)
 - [ ] NO length constraints (`1-500 characters`)
 - [ ] NO technical error codes
+- [ ] NO technical field names (`passwordHash`, `isDeleted`, `isCompleted`, `userId`, `createdAt`, `deletedAt`)
+- [ ] NO camelCase identifiers — use natural language instead
 
 **Business Language Only:**
 - [ ] Describes WHAT users can do, not HOW it's implemented
 - [ ] Uses natural language, not technical specifications
+- [ ] Use plain words: "due date", "completion status", "owner" — NOT `dueDate`, `isCompleted`, `ownerId`
