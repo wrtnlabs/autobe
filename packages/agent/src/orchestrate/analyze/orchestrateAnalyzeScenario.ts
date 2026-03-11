@@ -65,7 +65,6 @@ export const orchestrateAnalyzeScenario = async (
       features: features.map((f) => ({
         id: f.id,
         ...(f.providers ? { providers: f.providers } : {}),
-        ...(f.jobs ? { jobs: f.jobs } : {}),
       })),
       files: buildFixedAnalyzeScenarioFiles(
         pointer.value.prefix,

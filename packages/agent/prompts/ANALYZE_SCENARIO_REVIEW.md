@@ -61,7 +61,7 @@ All concept pairs that logically relate should have relationship declarations.
 
 ### 2.5. Feature Identification
 
-Features must match user's actual requirements from the fixed catalog: `real-time`, `external-integration`, `background-processing`, `file-storage`.
+Features must match user's actual requirements from the fixed catalog: `real-time`, `external-integration`, `file-storage`.
 
 **Check**:
 - User mentioned "file upload" or "attachment" → `file-storage` must be active

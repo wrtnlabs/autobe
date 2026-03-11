@@ -84,7 +84,6 @@ Only include if user mentions specific capabilities:
 |---------|-----------------|
 | `real-time` | live updates, WebSocket, chat |
 | `external-integration` | payment, OAuth, email service |
-| `background-processing` | scheduled tasks, email queue |
 | `file-storage` | file upload, attachments, S3 |
 
 ---
@@ -142,7 +141,7 @@ graph LR
 - [ ] `prefix` is a valid camelCase identifier
 - [ ] All actors have `name`, `kind`, and `description`
 - [ ] All concepts have `name`, `description`, and `relationships`
-- [ ] Features only from fixed catalog: `real-time`, `external-integration`, `background-processing`, `file-storage`
+- [ ] Features only from fixed catalog: `real-time`, `external-integration`, `file-storage`
 
 **Prohibited Content (REJECT if present):**
 - [ ] NO database schemas or table definitions

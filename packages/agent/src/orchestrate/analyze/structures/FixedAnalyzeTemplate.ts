@@ -81,18 +81,12 @@ export interface FixedAnalyzeTemplateUnitTemplate {
 export type FixedAnalyzeTemplateFeatureId =
   | "real-time"
   | "external-integration"
-  | "background-processing"
   | "file-storage";
 
 export interface FixedAnalyzeTemplateFeature {
   id: FixedAnalyzeTemplateFeatureId;
   /** Provider names for external-integration (e.g., ["stripe", "sendgrid"]) */
   providers?: string[];
-  /**
-   * Job names for background-processing (e.g., ["emailQueue",
-   * "reportGeneration"])
-   */
-  jobs?: string[];
 }
 
 // ─────────────────────────────────────────────
@@ -249,7 +243,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
           unitTemplate: {
             titlePattern: "{name} Actor",
             purposePattern:
-              "Define the {name} actor's identity, permissions, and access boundaries. Do NOT describe specific operations — those belong in 03-functional-requirements.",
+              "Define the {name} actor's identity, permissions, and access boundaries. Do NOT describe specific operations (03), data isolation policies (05), or domain concepts (02).",
             keywords: [
               "actor",
               "role",
@@ -367,7 +361,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
             {
               titlePattern: "Lifecycle and Retention",
               purposePattern:
-                "Describe business rules for concept lifecycle and data retention from a user perspective.",
+                "Describe concept lifecycle states and transitions only. Detailed retention/recovery policies belong in 05-non-functional. Operation details belong in 03-functional-requirements.",
               keywords: [
                 "lifecycle",
                 "retention",
@@ -509,7 +503,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
     filename: "04-business-rules.md",
     documentType: "business-rules",
     description:
-      "Data isolation, business rules, data browsing expectations, error scenarios",
+      "Business rules, validation constraints, data browsing expectations, error scenarios",
     downstreamPhase: "service-layer",
     forbiddenPatterns: [
       /```yaml\s*\n\s*entity:/i, // Entity YAML specs → 02
@@ -526,7 +520,7 @@ export const FIXED_ANALYZE_TEMPLATE: FixedAnalyzeTemplateFileTemplate[] = [
           unitTemplate: {
             titlePattern: "{name} Rules",
             purposePattern:
-              "Define business rules, validation logic, and domain constraints for {name}.",
+              "Define validation rules and domain constraints for {name}. Do NOT repeat data isolation (05), lifecycle states (02), or operation flows (03).",
             keywords: [
               "business-rule",
               "validation",
@@ -761,74 +755,6 @@ export const FIXED_ANALYZE_TEMPLATE_CONDITIONAL_MODULES: Record<
                 "degradation",
                 "external-availability",
               ],
-            },
-          ],
-        },
-      },
-    },
-  ],
-  "background-processing": [
-    {
-      targetCategory: "03-functional-requirements",
-      module: {
-        index: 102,
-        title: "Background Processing",
-        purpose:
-          "Asynchronous job definitions, queue specifications, and scheduled task configurations.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Job Specifications",
-              purposePattern:
-                "Define background jobs, queue configurations, retry policies, and scheduling rules for asynchronous processing.",
-              keywords: [
-                "background-job",
-                "queue",
-                "cron",
-                "async",
-                "scheduled-task",
-              ],
-            },
-          ],
-        },
-      },
-    },
-    {
-      targetCategory: "04-business-rules",
-      module: {
-        index: 101,
-        title: "Job Failure Policies",
-        purpose:
-          "Failure handling and dead-letter queue policies for background jobs.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Job Failure and Recovery",
-              purposePattern:
-                "Define failure handling, recovery procedures, and notification requirements for background jobs.",
-              keywords: ["job-failure", "retry", "recovery", "notification"],
-            },
-          ],
-        },
-      },
-    },
-    {
-      targetCategory: "05-non-functional",
-      module: {
-        index: 102,
-        title: "Queue Performance",
-        purpose:
-          "Performance requirements for message queues and background processing.",
-        unitStrategy: {
-          type: "fixed",
-          units: [
-            {
-              titlePattern: "Queue Performance SLOs",
-              purposePattern:
-                "Define performance requirements for background job processing.",
-              keywords: ["queue-throughput", "processing-latency"],
             },
           ],
         },
