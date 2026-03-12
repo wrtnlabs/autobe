@@ -1,7 +1,7 @@
 import { tags } from "typia";
 
-import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeAnalyze } from "../analyze/AutoBeAnalyze";
+import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
