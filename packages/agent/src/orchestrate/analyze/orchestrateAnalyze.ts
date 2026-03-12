@@ -56,10 +56,13 @@ import {
   detectErrorCodeConflicts,
 } from "./utils/buildErrorCodeRegistry";
 import { detectOversizedToc } from "./utils/buildHardValidators";
-import {
-  buildFileProseConflictMap,
-  detectProseConstraintConflicts,
 } from "./utils/detectProseConstraintConflicts";
+import {
+  IFileDecisions,
+  buildFileDecisionConflictMap,
+  detectDecisionConflicts,
+} from "./utils/detectDecisionConflicts";
+import { orchestrateAnalyzeExtractDecisions } from "./orchestrateAnalyzeExtractDecisions";
 import { validateScenarioBasics } from "./utils/validateScenarioBasics";
 
 /**
@@ -836,6 +839,38 @@ async function processStageSection(
         sectionEvents: state.sectionResults!,
       }));
 
+
+    // Pass 2a-pre: LLM-based key decision extraction (parallel per file)
+    analyzeDebug(`section decision-extraction-start attempt=${attempt}`);
+    const fileDecisions: IFileDecisions[] = await Promise.all(
+      filesWithSections
+        .filter(({ file }) => file.filename !== "00-toc.md")
+        .map(({ file, sectionEvents }) =>
+          orchestrateAnalyzeExtractDecisions(ctx, { file, sectionEvents })
+            .catch((e) => {
+              analyzeDebug(
+                `section decision-extraction-error file="${file.filename}" error=${(e as Error).message}`,
+              );
+              return { filename: file.filename, decisions: [] } as IFileDecisions;
+            }),
+        ),
+    );
+    analyzeDebug(
+      `section decision-extraction-done attempt=${attempt} files=${fileDecisions.length} totalDecisions=${fileDecisions.reduce((sum, fd) => sum + fd.decisions.length, 0)}`,
+    );
+
+    // Pass 2a-pre2: Programmatic decision conflict detection
+    const decisionConflicts = detectDecisionConflicts({
+      fileDecisions,
+    });
+    const fileDecisionConflictMap: Map<string, string[]> =
+      buildFileDecisionConflictMap(decisionConflicts);
+    if (decisionConflicts.length > 0) {
+      analyzeDebug(
+        `section decision-conflicts-found count=${decisionConflicts.length}: ${decisionConflicts.map((c) => `${c.topic}.${c.decision}`).join(", ")}`,
+      );
+    }
+
     // Pass 2a: Programmatic cross-file validation (BEFORE LLM review)
     const criticalConflicts = detectConstraintConflicts({
       files: filesWithSections,
@@ -911,6 +946,10 @@ async function processStageSection(
         (c) =>
           `Prose constraint conflict: ${c.entityAttr} — canonical [${c.canonicalValues.join(", ")}] vs prose [${c.proseValues.join(", ")}] in ${c.file}`,
       ),
+      ...decisionConflicts.map(
+        (c) =>
+          `Decision conflict: ${c.topic}.${c.decision} — ${c.values.map((v) => `"${v.value}" in [${v.files.join(", ")}]`).join(" vs ")}`,
+      ),
     ];
     const mechanicalViolationSummary =
       allMechanicalViolations.length > 0
@@ -942,6 +981,7 @@ async function processStageSection(
               };
             }),
           mechanicalViolationSummary,
+          fileDecisions,
           progress: props.crossFileSectionReviewProgress,
           promptCacheKey,
           retry: attempt,
@@ -1011,6 +1051,7 @@ async function processStageSection(
         fileErrorCodeConflictMap.get(filename) ?? [];
       const fileOversizedToc = oversizedTocMap.get(fileIndex) ?? [];
       const fileProseConflicts = fileProseConflictMap.get(filename) ?? [];
+      const fileDecisionConflicts = fileDecisionConflictMap.get(filename) ?? [];
       const hasCriticalConflict =
         fileCriticalConflicts.length > 0 ||
         fileAttrDuplicates.length > 0 ||
@@ -1019,7 +1060,8 @@ async function processStageSection(
         fileStateFieldConflicts.length > 0 ||
         fileErrorCodeConflicts.length > 0 ||
         fileOversizedToc.length > 0 ||
-        fileProseConflicts.length > 0;
+        fileProseConflicts.length > 0 ||
+        fileDecisionConflicts.length > 0;
 
       // Decision logic:
       // 1. per-file reject → reject (unchanged)
@@ -1040,6 +1082,7 @@ async function processStageSection(
         fileErrorCodeConflicts,
         fileOversizedToc,
         fileProseConflicts,
+        fileDecisionConflicts,
       });
 
       if (approved) {
@@ -1091,6 +1134,7 @@ async function processStageSection(
               ...fileAttrDuplicates,
               ...fileEnumConflicts,
               ...fileProseConflicts,
+              ...fileDecisionConflicts,
             ].join("; ")}` +
             (crossFileResult?.feedback ? `\n${crossFileResult.feedback}` : ""),
           issues: [...programmaticIssues, ...structuredCrossFileIssues],
@@ -1316,6 +1360,7 @@ function buildProgrammaticSectionIssues(props: {
   fileErrorCodeConflicts: string[];
   fileOversizedToc: string[];
   fileProseConflicts: string[];
+  fileDecisionConflicts: string[];
 }): AutoBeAnalyzeSectionReviewIssue[] {
   return [
     ...props.fileCriticalConflicts.map((detail) => ({
@@ -1380,6 +1425,14 @@ function buildProgrammaticSectionIssues(props: {
       unitIndex: null,
       fixInstruction:
         "Remove the restated constraint value and use a backtick reference to the canonical definition in 02-domain-model instead. Example: 'THE system SHALL validate `User.bio` per entity constraints (see 02-domain-model)'",
+      evidence: detail,
+    })),
+    ...props.fileDecisionConflicts.map((detail) => ({
+      ruleCode: "cross_file_decision_conflict",
+      moduleIndex: null,
+      unitIndex: null,
+      fixInstruction:
+        "This file contradicts another file on a key behavioral decision. Align with the canonical source file for this topic.",
       evidence: detail,
     })),
   ];

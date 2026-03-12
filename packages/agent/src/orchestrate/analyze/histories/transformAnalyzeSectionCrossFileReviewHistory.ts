@@ -33,6 +33,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
       status: "approved" | "rewritten" | "new";
     }>;
     mechanicalViolationSummary?: string;
+    fileDecisions?: import("../utils/detectDecisionConflicts").IFileDecisions[];
     preliminary: null | AutoBePreliminaryController<"previousAnalysisSections">;
   },
 ): IAutoBeOrchestrateHistory => {
@@ -111,6 +112,25 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
         You do NOT need to flag these — focus only on semantic/logical consistency:
 
         ${props.mechanicalViolationSummary}
+        `
+            : ""
+        }
+
+        ${
+          props.fileDecisions && props.fileDecisions.length > 0
+            ? `
+        ## Extracted Key Decisions Per File
+
+        Below are the key behavioral decisions extracted from each file.
+        Use these to verify cross-file consistency — same topic+decision should have the same value across files.
+
+        ${props.fileDecisions
+          .filter((fd) => fd.decisions.length > 0)
+          .map(
+            (fd) =>
+              `**${fd.filename}**:\n${fd.decisions.map((d) => `- ${d.topic}.${d.decision} = "${d.value}" — ${d.evidence.slice(0, 100)}`).join("\n")}`,
+          )
+          .join("\n\n")}
         `
             : ""
         }
