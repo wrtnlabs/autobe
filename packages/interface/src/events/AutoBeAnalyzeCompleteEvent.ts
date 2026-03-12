@@ -1,4 +1,4 @@
-import { AutoBeAnalyze } from "../histories/contents/AutoBeAnalyze";
+import { AutoBeAnalyze } from "../analyze/AutoBeAnalyze";
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**

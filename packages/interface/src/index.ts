@@ -1,3 +1,4 @@
+export * from "./analyze";
 export * from "./facade";
 export * from "./events";
 export * from "./compiler";

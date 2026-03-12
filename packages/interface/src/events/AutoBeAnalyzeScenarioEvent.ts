@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { AutoBeAnalyze } from "../histories/contents/AutoBeAnalyze";
+import { AutoBeAnalyze } from "../analyze/AutoBeAnalyze";
 import { AutoBeAcquisitionEventBase } from "./base/AutoBeAcquisitionEventBase";
 import { AutoBeAggregateEventBase } from "./base/AutoBeAggregateEventBase";
 import { AutoBeEventBase } from "./base/AutoBeEventBase";

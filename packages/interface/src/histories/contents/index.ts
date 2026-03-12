@@ -6,7 +6,7 @@ export * from "./AutoBeUserMessageTextContent";
 
 export * from "./AutoBeImageDescribeDraft";
 
-export * from "./AutoBeAnalyze";
+export * from "../../analyze/AutoBeAnalyze";
 
 export * from "./AutoBeDatabaseComponent";
 export * from "./AutoBeDatabaseComponentTableDesign";

@@ -1,6 +1,6 @@
 import { tags } from "typia";
 
-import { CamelCasePattern } from "../../typings/CamelCasePattern";
+import { CamelCasePattern } from "../typings/CamelCasePattern";
 
 /**
  * AST type system for requirements analysis phase in the AutoBE pipeline.

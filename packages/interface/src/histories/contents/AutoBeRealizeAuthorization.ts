@@ -1,4 +1,4 @@
-import { AutoBeAnalyze } from "./AutoBeAnalyze";
+import { AutoBeAnalyze } from "../../analyze/AutoBeAnalyze";
 import { AutoBeRealizeAuthorizationDecorator } from "./AutoBeRealizeAuthorizationDecorator";
 import { AutoBeRealizeAuthorizationPayload } from "./AutoBeRealizeAuthorizationPayload";
 import { AutoBeRealizeAuthorizationProvider } from "./AutoBeRealizeAuthorizationProvider";
