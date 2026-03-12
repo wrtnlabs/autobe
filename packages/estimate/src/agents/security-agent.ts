@@ -2,6 +2,8 @@ import { EvaluationContext } from "../types";
 import { BaseAgent } from "./base-agent";
 import { AgentConfig, AgentResult } from "./types";
 
+const MAX_SECURITY_FILES = 30;
+
 /** Security evaluation agent */
 export class SecurityAgent extends BaseAgent {
   readonly name = "SecurityAgent";
@@ -14,12 +16,12 @@ export class SecurityAgent extends BaseAgent {
   async evaluate(context: EvaluationContext): Promise<AgentResult> {
     const startTime = performance.now();
 
-    const targetFiles = [
+    const allFiles = [
       ...context.files.controllers,
       ...context.files.providers,
     ];
 
-    if (targetFiles.length === 0) {
+    if (allFiles.length === 0) {
       return {
         agent: this.name,
         provider: this.config.provider,
@@ -31,6 +33,19 @@ export class SecurityAgent extends BaseAgent {
       };
     }
 
+    let targetFiles: string[];
+    let sampled = false;
+    if (allFiles.length > MAX_SECURITY_FILES) {
+      targetFiles = this.stratifiedSample(
+        context.files.controllers,
+        context.files.providers,
+        MAX_SECURITY_FILES,
+      );
+      sampled = true;
+    } else {
+      targetFiles = allFiles;
+    }
+
     const fileContents = await this.readFiles(targetFiles);
     const chunks = this.splitIntoChunks(
       fileContents,
@@ -39,7 +54,7 @@ export class SecurityAgent extends BaseAgent {
     );
 
     console.log(
-      `  ${this.name}: ${targetFiles.length} files → ${chunks.length} chunk(s)`,
+      `  ${this.name}: ${sampled ? `${targetFiles.length}/${allFiles.length} files (sampled)` : `${targetFiles.length} files`} → ${chunks.length} chunk(s)`,
     );
 
     const systemPrompt = await this.loadPrompt("SECURITY_AGENT.md");
@@ -53,15 +68,50 @@ export class SecurityAgent extends BaseAgent {
           : `Analyze this TypeScript/NestJS code for security vulnerabilities:\n\n${chunk}\n\nRespond ONLY with valid JSON.`,
     );
 
+    const summary = sampled
+      ? `[sampled ${targetFiles.length}/${allFiles.length} files] ${parsed.summary}`
+      : parsed.summary;
+
     return {
       agent: this.name,
       provider: this.config.provider,
       model: this.client.getModel(),
       issues: parsed.issues,
       score: parsed.score,
-      summary: parsed.summary,
+      summary,
       durationMs: Math.round(performance.now() - startTime),
       tokensUsed,
     };
+  }
+
+  /** Stratified random sample preserving controller/provider ratio */
+  private stratifiedSample(
+    controllers: string[],
+    providers: string[],
+    maxFiles: number,
+  ): string[] {
+    const total = controllers.length + providers.length;
+    const controllerCount = Math.max(
+      1,
+      Math.round((controllers.length / total) * maxFiles),
+    );
+    const providerCount = maxFiles - controllerCount;
+
+    return [
+      ...this.seededShuffle(controllers, total).slice(0, controllerCount),
+      ...this.seededShuffle(providers, total).slice(0, providerCount),
+    ];
+  }
+
+  /** Deterministic shuffle using seed (same project → same sample) */
+  private seededShuffle(arr: string[], seed: number): string[] {
+    const copy = [...arr];
+    let s = seed;
+    for (let i = copy.length - 1; i > 0; i--) {
+      s = ((s * 1103515245 + 12345) & 0x7fffffff) >>> 0;
+      const j = s % (i + 1);
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
   }
 }

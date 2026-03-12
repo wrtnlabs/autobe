@@ -481,12 +481,29 @@ export class EvaluationPipeline {
     if (!phases.gate.passed) {
       totalScore = 0;
     } else {
-      const raw = Math.round(
-        phaseStrategies.reduce(
-          (sum, s) => sum + phases[s.key].score * PHASE_WEIGHTS[s.key],
-          0,
-        ),
+      // Calculate weighted score, conditionally including goldenSet
+      const hasGoldenSet = !!phases.goldenSet;
+      const GOLDEN_SET_WEIGHT = 0.15;
+
+      const baseSum = phaseStrategies.reduce(
+        (sum, s) => sum + PHASE_WEIGHTS[s.key],
+        0,
       );
+      // goldenSet present: scale base phases to 0.85, add goldenSet at 0.15
+      // goldenSet absent: normalize base phases to fill 1.0
+      const baseFactor = hasGoldenSet
+        ? (1 - GOLDEN_SET_WEIGHT) / baseSum
+        : 1 / baseSum;
+
+      let rawScore = phaseStrategies.reduce(
+        (sum, s) =>
+          sum + phases[s.key].score * PHASE_WEIGHTS[s.key] * baseFactor,
+        0,
+      );
+      if (hasGoldenSet) {
+        rawScore += phases.goldenSet!.score * GOLDEN_SET_WEIGHT;
+      }
+      const raw = Math.round(rawScore);
       const gatePenalty = (phases.gate.metrics?.penalty as number) || 0;
       totalScore = Math.max(0, raw - gatePenalty);
 

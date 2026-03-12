@@ -55,6 +55,8 @@ export class RuntimeEvaluator extends GateEvaluator {
         healthCheckUrl = `http://localhost:${DOCKER_HEALTH_PORT}/health`;
       } else {
         apiPort = this.detectApiPort(rootPath);
+        this.resolveEnvFile(rootPath);
+        this.installDependencies(rootPath, issues);
         const buildResult = this.buildProject(rootPath);
         issues.push(...buildResult.issues);
 
@@ -204,6 +206,71 @@ export class RuntimeEvaluator extends GateEvaluator {
       if (match) return parseInt(match[1], 10);
     }
     return DEFAULT_API_PORT;
+  }
+
+  private resolveEnvFile(rootPath: string): void {
+    const envLocal = path.join(rootPath, ".env.local");
+    if (!fs.existsSync(envLocal)) return;
+
+    let content = fs.readFileSync(envLocal, "utf-8");
+
+    // Build a map of KEY=VALUE from the file
+    const vars = new Map<string, string>();
+    for (const line of content.split("\n")) {
+      const match = line.match(/^([A-Z_][A-Z0-9_]*)\s*=\s*(.*)$/);
+      if (match) vars.set(match[1], match[2]);
+    }
+
+    // Resolve ${VAR} references (single pass is sufficient for our .env files)
+    let resolved = content;
+    for (const [key, value] of vars) {
+      resolved = resolved.replace(
+        new RegExp(`\\$\\{${key}\\}`, "g"),
+        value,
+      );
+    }
+
+    // Write as .env so dotenv/prisma can pick it up
+    fs.writeFileSync(path.join(rootPath, ".env"), resolved);
+  }
+
+  private installDependencies(rootPath: string, issues: Issue[]): void {
+    const hasPnpmLock = fs.existsSync(
+      path.join(rootPath, "pnpm-lock.yaml"),
+    );
+
+    try {
+      if (hasPnpmLock) {
+        try {
+          execSync("pnpm install --frozen-lockfile", {
+            cwd: rootPath,
+            stdio: "pipe",
+            timeout: BUILD_TIMEOUT_MS,
+          });
+        } catch {
+          execSync("pnpm install", {
+            cwd: rootPath,
+            stdio: "pipe",
+            timeout: BUILD_TIMEOUT_MS,
+          });
+        }
+      } else {
+        execSync("npm install", {
+          cwd: rootPath,
+          stdio: "pipe",
+          timeout: BUILD_TIMEOUT_MS,
+        });
+      }
+    } catch (e) {
+      issues.push(
+        createIssue({
+          severity: "critical",
+          category: "runtime",
+          code: "RT001",
+          message: `Dependency install failed: ${e instanceof Error ? e.message : "unknown"}`,
+        }),
+      );
+    }
   }
 
   private buildProject(rootPath: string): BuildResult {
