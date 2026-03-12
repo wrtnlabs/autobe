@@ -16,10 +16,7 @@ export class SecurityAgent extends BaseAgent {
   async evaluate(context: EvaluationContext): Promise<AgentResult> {
     const startTime = performance.now();
 
-    const allFiles = [
-      ...context.files.controllers,
-      ...context.files.providers,
-    ];
+    const allFiles = [...context.files.controllers, ...context.files.providers];
 
     if (allFiles.length === 0) {
       return {

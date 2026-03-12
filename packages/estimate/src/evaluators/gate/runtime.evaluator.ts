@@ -224,10 +224,7 @@ export class RuntimeEvaluator extends GateEvaluator {
     // Resolve ${VAR} references (single pass is sufficient for our .env files)
     let resolved = content;
     for (const [key, value] of vars) {
-      resolved = resolved.replace(
-        new RegExp(`\\$\\{${key}\\}`, "g"),
-        value,
-      );
+      resolved = resolved.replace(new RegExp(`\\$\\{${key}\\}`, "g"), value);
     }
 
     // Write as .env so dotenv/prisma can pick it up
@@ -235,9 +232,7 @@ export class RuntimeEvaluator extends GateEvaluator {
   }
 
   private installDependencies(rootPath: string, issues: Issue[]): void {
-    const hasPnpmLock = fs.existsSync(
-      path.join(rootPath, "pnpm-lock.yaml"),
-    );
+    const hasPnpmLock = fs.existsSync(path.join(rootPath, "pnpm-lock.yaml"));
 
     try {
       if (hasPnpmLock) {
