@@ -55,10 +55,12 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - 05-non-functional: specific SLO numbers, infrastructure requirements not in user input → REJECT
 - **REJECT files containing requirements not traceable to user input**
 
-### 1.8. Cross-File Verbosity (ADVISORY)
+### 1.8. Cross-File Verbosity (REJECT for excessive cross-file duplication)
 - Same concept explained in detail in multiple files = cross-file duplication
 - Example: "data isolation" described in 01, 02, 04, 05 → define once in canonical file, reference elsewhere
-- Flag with specific consolidation suggestions
+- **REJECT non-canonical files if the same concept is fully defined/explained in 3+ files** — only the canonical file should contain the full definition, other files should reference it briefly
+- Canonical sources: 01 for actors/permissions, 02 for domain concepts, 04 for business rules/errors, 05 for data policies
+- Brief one-sentence references to canonical definitions are acceptable and expected
 
 ---
 
@@ -75,6 +77,7 @@ You receive section titles, keywords, and brief content summaries from ALL files
 - A file references actors or features explicitly marked as out-of-scope
 - A file invents features or concepts not defined in the scenario
 - Two files state different values for the same constraint (REJECT the non-canonical file)
+- Excessive cross-file duplication: same concept fully defined in 3+ files (REJECT non-canonical files)
 
 ---
 

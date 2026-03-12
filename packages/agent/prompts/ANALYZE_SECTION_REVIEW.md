@@ -60,18 +60,20 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - Error conditions should be described in natural language
 - **Advisory**: Flag vague error descriptions but do NOT reject
 
-### 1.7. Intra-File Content Deduplication (ADVISORY)
-- Minor overlap or paraphrased references are acceptable
-- Flag duplicates in feedback, do NOT reject
+### 1.7. Intra-File Content Deduplication (REJECT for substantive repetition)
+- Minor overlap or brief paraphrased references are acceptable
+- **REJECT if the same concept is defined or explained in full in 2+ places within the same file** — one section should define it, others should reference it briefly
+- **REJECT if a non-canonical file repeats the canonical definition verbatim** instead of referencing it (e.g., 03-functional-requirements restating data isolation rules that belong in 05-non-functional)
+- Brief mentions like "as defined in section X" or one-sentence references are NOT duplication
 
 ### 1.8. Keyword Coverage (ADVISORY)
 - Section content should adequately address keywords from parent unit
 - Provide feedback for gaps, do NOT reject
 
-### 1.9. Advisory Checks (flag in feedback only, NEVER reject)
+### 1.9. Advisory and Reject Checks
 - **Meta-concepts**: Flag process-describing concepts — do NOT reject
 - **Verbosity**: Flag filler sentences — do NOT reject. NOTE: Detailed error branching, boundary value specifications, and concurrent operation scenarios are NOT verbosity — they are required depth
-- **Boilerplate sections**: Flag sections existing solely for purpose/scope — do NOT reject
+- **Boilerplate sections**: **REJECT sections that exist solely to describe purpose/scope without any substantive requirements** — every section must contain concrete, actionable requirements
 - **Section count**: Sections with 5-25 requirements are expected for detailed specifications — do NOT flag as excessive
 
 ### 1.10. Hallucination Detection (CRITICAL)
@@ -85,10 +87,11 @@ This agent achieves its goal through function calling. **Function calling is MAN
 - **05-non-functional**: Highest hallucination risk. Reject if it contains specific SLO numbers, timeout thresholds, or infrastructure requirements user did not mention.
 - **REJECT if section contains requirements not traceable to user input**
 
-### 1.11. Verbosity Detection (ADVISORY)
-- 3+ subsections explaining the same idea in different words = excessive verbosity
-- 02-domain-model: 10+ subsections for one concept is verbosity — suggest merging to 1-3
-- Flag in feedback with specific merge suggestions, do NOT reject
+### 1.11. Verbosity Detection (REJECT for excessive repetition)
+- **REJECT if 3+ subsections explain the same idea in different words** — this is excessive verbosity that inflates the document without adding information
+- **REJECT if 02-domain-model has 10+ subsections for a single concept** — merge to 1-3 subsections that each add distinct information
+- When rejecting, provide specific merge suggestions identifying which subsections should be consolidated
+- NOTE: Detailed error branching, boundary value specifications, and concurrent operation scenarios are NOT verbosity — they are required depth. Each subsection must add NEW information not covered by siblings
 
 ---
 
@@ -96,7 +99,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 **APPROVE** when: no non-English text, no prohibited content, no scope violations, no contradiction with scenario/parent, and no invented features.
 
-**APPROVE with feedback** when: value inconsistencies, keyword gaps, verbosity, duplication, missing YAML blocks — provide constructive feedback but APPROVE.
+**APPROVE with feedback** when: value inconsistencies, keyword gaps, minor stylistic issues — provide constructive feedback but APPROVE.
 
 **REJECT** when ANY of:
 - Non-English text detected
@@ -169,8 +172,11 @@ Set `revisedSections` for auto-correctable minor issues while approving.
 - Section contradicts its own parent module/unit definitions
 - Section reinterprets the user's stated system characteristics
 - Section directly contradicts another section in the SAME file on the same behavioral flow (e.g., one section says "auto-login after registration" while another says "separate login required after registration")
+- Excessive verbosity: 3+ subsections restating the same idea in different words (each subsection must add NEW information)
+- Substantive intra-file duplication: same concept fully defined/explained in 2+ places within the file
+- Boilerplate sections with no actionable requirements (pure purpose/scope descriptions)
 
-**Do NOT reject for**: value deviations from parent, duplicate requirements, keyword gaps, writing style, verbosity, boilerplate, meta-concepts, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications
+**Do NOT reject for**: value deviations from parent, keyword gaps, writing style, meta-concepts, high requirement count per section (5-25 is expected), detailed error branching, boundary value specifications
 
 ---
 
