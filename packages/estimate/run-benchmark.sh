@@ -29,7 +29,7 @@ MODELS=(
 )
 
 # Projects to evaluate
-PROJECTS=("todo" "bbs" "reddit" "shopping" "gauzy")
+PROJECTS=("todo" "bbs" "reddit" "shopping" "erp")
 
 # Mode: "scoring" (fast, no server), "agent" (with AI agents), or "full" (agent + runtime + golden set)
 MODE="${1:-scoring}"
@@ -134,7 +134,7 @@ print(str(d.get('totalScore','?')) + '(' + str(d.get('grade','?')) + ')')
 
 echo ""
 echo "┌──────────────────┬────────┬────────┬────────┬──────────┬────────┐"
-printf "│ %-16s │ %-6s │ %-6s │ %-6s │ %-8s │ %-6s │\n" "Model" "todo" "bbs" "reddit" "shopping" "gauzy"
+printf "│ %-16s │ %-6s │ %-6s │ %-6s │ %-8s │ %-6s │\n" "Model" "todo" "bbs" "reddit" "shopping" "erp"
 echo "├──────────────────┼────────┼────────┼────────┼──────────┼────────┤"
 
 for MODEL in "${MODELS[@]}"; do
@@ -143,7 +143,7 @@ for MODEL in "${MODELS[@]}"; do
   B=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/bbs/estimate-report.json")
   R=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/reddit/estimate-report.json")
   S=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/shopping/estimate-report.json")
-  G=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/gauzy/estimate-report.json")
+  G=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/erp/estimate-report.json")
   printf "│ %-16s │ %6s │ %6s │ %6s │ %8s │ %6s │\n" "$MODEL_NAME" "$T" "$B" "$R" "$S" "$G"
 done
 

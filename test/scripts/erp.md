@@ -1,4 +1,4 @@
-# Gauzy ERP — HRM & Time Tracking Platform
+# ERP — HRM & Time Tracking Platform
 
 I want to create an ERP platform focused on human resource management and time tracking.
 

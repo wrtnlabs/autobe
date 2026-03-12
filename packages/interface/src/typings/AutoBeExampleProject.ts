@@ -23,7 +23,7 @@
  * - **account**: User account management system with authentication,
  *   authorization, profiles, and security features, showcasing identity and
  *   access management patterns
- * - **gauzy**: Gauzy-inspired ERP platform covering HRM and time tracking,
+ * - **erp**: ERP platform covering HRM and time tracking,
  *   demonstrating multi-tenancy, RBAC, employee contracts, timesheet approval
  *   workflows, and complex organizational data patterns
  *
@@ -47,4 +47,4 @@ export type AutoBeExampleProject =
   | "shopping"
   | "chat"
   | "account"
-  | "gauzy";
+  | "erp";
