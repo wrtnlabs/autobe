@@ -27,7 +27,7 @@ export interface IAnalysisSectionEntry {
   /** Section title (### level) */
   sectionTitle: string;
 
-  /** Keywords from the parent AutoBeAnalyzeUnit */
+  /** Keywords from the parent AutoBeAnalyze.IUnit */
   keywords: string[];
 
   /** The actual ### section content (~200-600 words) */

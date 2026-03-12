@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointReviewEvent,
@@ -146,7 +146,7 @@ export const orchestrateInterfaceEndpointReview = async (
 };
 
 const createController = (props: {
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"

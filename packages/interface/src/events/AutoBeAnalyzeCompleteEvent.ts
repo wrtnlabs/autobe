@@ -1,5 +1,4 @@
-import { AutoBeAnalyzeActor } from "../histories/contents/AutoBeAnalyzeActor";
-import { AutoBeAnalyzeFile } from "../histories/contents/AutoBeAnalyzeFile";
+import { AutoBeAnalyze } from "../histories/contents/AutoBeAnalyze";
 import { AutoBeCompleteEventBase } from "./base/AutoBeCompleteEventBase";
 
 /**
@@ -42,7 +41,7 @@ export interface AutoBeAnalyzeCompleteEvent extends AutoBeCompleteEventBase<"ana
    * actors help define different user perspectives, access levels, and
    * functional requirements needed for the system being developed.
    */
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
 
   /**
    * Generated requirements analysis report files as key-value pairs.
@@ -57,5 +56,5 @@ export interface AutoBeAnalyzeCompleteEvent extends AutoBeCompleteEventBase<"ana
    * requirements and guide all subsequent development phases in the vibe coding
    * pipeline including database design, API specification, and implementation.
    */
-  files: AutoBeAnalyzeFile[];
+  files: AutoBeAnalyze.IFile[];
 }

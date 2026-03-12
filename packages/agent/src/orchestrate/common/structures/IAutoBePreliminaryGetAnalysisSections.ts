@@ -28,5 +28,7 @@ export interface IAutoBePreliminaryGetAnalysisSections {
    * CRITICAL: DO NOT request the same section IDs that you have already
    * requested in previous calls.
    */
-  sectionIds: (number & tags.Type<"uint32">)[] & tags.MinItems<1>;
+  sectionIds: (number & tags.Type<"uint32">)[] &
+    tags.MinItems<1> &
+    tags.MaxItems<100>;
 }

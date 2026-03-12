@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeFileScenario } from "@autobe/interface";
+import { AutoBeAnalyze } from "@autobe/interface";
 
 /**
  * Fixed 6-category SRS document structure template.
@@ -910,14 +910,14 @@ export const buildFixedAnalyzeExpandedTemplate = (
 };
 
 /**
- * Generate AutoBeAnalyzeFile.Scenario objects from the fixed template,
+ * Generate AutoBeAnalyze.IFile.Scenario objects from the fixed template,
  * optionally expanded with conditional modules based on features. Called after
  * LLM returns actors/entities/features in the scenario phase.
  */
 export const buildFixedAnalyzeScenarioFiles = (
   _prefix: string,
   features: FixedAnalyzeTemplateFeature[] = [],
-): AutoBeAnalyzeFileScenario[] =>
+): AutoBeAnalyze.IFileScenario[] =>
   buildFixedAnalyzeExpandedTemplate(features).map((t) => ({
     reason: `Fixed SRS structure: ${t.description}`,
     filename: t.filename,

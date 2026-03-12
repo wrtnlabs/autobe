@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeActor } from "./AutoBeAnalyzeActor";
+import { AutoBeAnalyze } from "./AutoBeAnalyze";
 import { AutoBeRealizeAuthorizationDecorator } from "./AutoBeRealizeAuthorizationDecorator";
 import { AutoBeRealizeAuthorizationPayload } from "./AutoBeRealizeAuthorizationPayload";
 import { AutoBeRealizeAuthorizationProvider } from "./AutoBeRealizeAuthorizationProvider";
@@ -28,7 +28,7 @@ export interface AutoBeRealizeAuthorization {
    * authorization infrastructure to determine access permissions, apply
    * appropriate guards, and validate user actions.
    */
-  actor: AutoBeAnalyzeActor;
+  actor: AutoBeAnalyze.IActor;
 
   /**
    * Decorator implementation for actor-based authorization.

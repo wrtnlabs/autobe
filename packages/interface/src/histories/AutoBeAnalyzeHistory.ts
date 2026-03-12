@@ -1,8 +1,7 @@
 import { tags } from "typia";
 
 import { AutoBeAgentHistoryBase } from "./AutoBeHistoryBase";
-import { AutoBeAnalyzeActor } from "./contents/AutoBeAnalyzeActor";
-import { AutoBeAnalyzeFile } from "./contents/AutoBeAnalyzeFile";
+import { AutoBeAnalyze } from "./contents/AutoBeAnalyze";
 import { AutoBeProcessAggregateCollection } from "./contents/AutoBeProcessAggregateCollection";
 
 /**
@@ -59,7 +58,7 @@ export interface AutoBeAnalyzeHistory extends AutoBeAgentHistoryBase<"analyze"> 
    * actors help define different user perspectives, access levels, and
    * functional requirements needed for the system being developed.
    */
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
 
   /**
    * Generated requirements analysis report files as key-value pairs.
@@ -74,7 +73,7 @@ export interface AutoBeAnalyzeHistory extends AutoBeAgentHistoryBase<"analyze"> 
    * requirements and guide all subsequent development phases in the vibe coding
    * pipeline.
    */
-  files: AutoBeAnalyzeFile[];
+  files: AutoBeAnalyze.IFile[];
 
   aggregates: AutoBeProcessAggregateCollection<"analyze">;
 

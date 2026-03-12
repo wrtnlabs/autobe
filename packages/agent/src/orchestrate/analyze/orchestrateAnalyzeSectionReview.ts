@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyze,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
@@ -41,7 +41,7 @@ export const orchestrateAnalyzeSectionReview = async (
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     fileIndex: number;
-    file: AutoBeAnalyzeFileScenario;
+    file: AutoBeAnalyze.IFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     moduleIndex: number;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;

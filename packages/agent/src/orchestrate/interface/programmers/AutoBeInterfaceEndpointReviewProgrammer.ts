@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeInterfaceEndpointDesign,
   AutoBeInterfaceEndpointRevise,
 } from "@autobe/interface";
@@ -12,7 +12,7 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
   export const validate = (props: {
     path: string;
     errors: IValidation.IError[];
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     designs: AutoBeInterfaceEndpointDesign[];
     revises: AutoBeInterfaceEndpointRevise[];
   }): void => {
@@ -99,7 +99,7 @@ export namespace AutoBeInterfaceEndpointReviewProgrammer {
 
   export const execute = (props: {
     kind: "base" | "action";
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     designs: AutoBeInterfaceEndpointDesign[];
     revises: AutoBeInterfaceEndpointRevise[];
   }): AutoBeInterfaceEndpointDesign[] => {

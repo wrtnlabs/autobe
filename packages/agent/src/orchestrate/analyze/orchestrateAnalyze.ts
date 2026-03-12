@@ -1,7 +1,6 @@
 import { AgenticaValidationError } from "@agentica/core";
 import {
-  AutoBeAnalyzeFile,
-  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyze,
   AutoBeAnalyzeHistory,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeScenarioReviewEvent,
@@ -70,7 +69,7 @@ import { validateScenarioBasics } from "./utils/validateScenarioBasics";
  * throughout the stage-synchronized pipeline.
  */
 interface IFileState {
-  file: AutoBeAnalyzeFileScenario;
+  file: AutoBeAnalyze.IFileScenario;
   moduleResult: AutoBeAnalyzeWriteModuleEvent | null;
   unitResults: AutoBeAnalyzeWriteUnitEvent[] | null;
   sectionResults: AutoBeAnalyzeWriteSectionEvent[][] | null;
@@ -267,7 +266,7 @@ export const orchestrateAnalyze = async (
   }
 
   // === ASSEMBLE ===
-  const files: AutoBeAnalyzeFile[] = [];
+  const files: AutoBeAnalyze.IFile[] = [];
   for (let fileIndex = 0; fileIndex < fileStates.length; fileIndex++) {
     const state = fileStates[fileIndex]!;
     // TOC uses flat content directly (no module/unit hierarchy)

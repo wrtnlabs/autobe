@@ -1,4 +1,4 @@
-import { AutoBeAnalyzeActor } from "@autobe/interface";
+import { AutoBeAnalyze } from "@autobe/interface";
 
 // ─── Scenario Pre-Check: Structural Soundness Validation ───
 
@@ -15,7 +15,7 @@ export interface IScenarioValidationResult {
  */
 export const validateScenarioBasics = (props: {
   prefix: string;
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   entities: Array<{
     name: string;
     attributes: string[];

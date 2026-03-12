@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeDatabase,
   AutoBeEventSource,
   AutoBeInterfaceEndpointDesign,
@@ -126,7 +126,7 @@ export const orchestrateInterfaceEndpointWrite = async (
     });
     if (pointer.value === null) return out(result)(null);
 
-    const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+    const actors: AutoBeAnalyze.IActor[] = ctx.state().analyze?.actors ?? [];
     const designs: AutoBeInterfaceEndpointDesign[] = new HashMap(
       pointer.value.designs.map((c) => new Pair(c.endpoint, c)),
       AutoBeOpenApiEndpointComparator.hashCode,
@@ -167,7 +167,7 @@ export const orchestrateInterfaceEndpointWrite = async (
 };
 
 const createController = (props: {
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"

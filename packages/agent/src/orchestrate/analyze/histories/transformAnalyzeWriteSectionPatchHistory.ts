@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyze,
   AutoBeAnalyzeModuleSection,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeUnitSection,
@@ -19,7 +19,7 @@ export const transformAnalyzeWriteSectionPatchHistory = (
   _ctx: AutoBeContext,
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
-    file: AutoBeAnalyzeFileScenario;
+    file: AutoBeAnalyze.IFileScenario;
     moduleEvent: AutoBeAnalyzeWriteModuleEvent;
     unitEvent: AutoBeAnalyzeWriteUnitEvent;
     moduleIndex: number;

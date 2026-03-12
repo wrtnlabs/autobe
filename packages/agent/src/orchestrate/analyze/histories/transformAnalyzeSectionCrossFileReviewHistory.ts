@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyze,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
@@ -26,7 +26,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
   props: {
     scenario: AutoBeAnalyzeScenarioEvent;
     allFileSummaries: Array<{
-      file: AutoBeAnalyzeFileScenario;
+      file: AutoBeAnalyze.IFileScenario;
       moduleEvent: AutoBeAnalyzeWriteModuleEvent;
       unitEvents: AutoBeAnalyzeWriteUnitEvent[];
       sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];

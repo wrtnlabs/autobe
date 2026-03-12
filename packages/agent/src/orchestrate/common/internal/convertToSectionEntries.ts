@@ -1,14 +1,14 @@
-import { AutoBeAnalyzeFile } from "@autobe/interface";
+import { AutoBeAnalyze } from "@autobe/interface";
 
 import { IAnalysisSectionEntry } from "../structures/IAnalysisSectionEntry";
 
-let _cachedInput: AutoBeAnalyzeFile[] | null = null;
+let _cachedInput: AutoBeAnalyze.IFile[] | null = null;
 let _cachedResult: IAnalysisSectionEntry[] | null = null;
 
 /**
  * Converts an array of analysis files into a flat array of section entries.
  *
- * Walks the `AutoBeAnalyzeFile.module.units[].sections[]` hierarchy and
+ * Walks the `AutoBeAnalyze.IFile.module.units[].sections[]` hierarchy and
  * produces a flat list with sequential integer IDs for LLM retrieval.
  *
  * Uses referential equality memoization: when the same `files` array reference
@@ -19,7 +19,7 @@ let _cachedResult: IAnalysisSectionEntry[] | null = null;
  * @returns Flat array of section entries with sequential IDs starting from 0
  */
 export function convertToSectionEntries(
-  files: AutoBeAnalyzeFile[],
+  files: AutoBeAnalyze.IFile[],
 ): IAnalysisSectionEntry[] {
   if (_cachedInput === files && _cachedResult !== null) {
     return _cachedResult;

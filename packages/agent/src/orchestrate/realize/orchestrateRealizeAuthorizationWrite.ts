@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeEventSource,
   AutoBeProgressEventBase,
   AutoBeRealizeAuthorization,
@@ -39,7 +39,7 @@ export async function orchestrateRealizeAuthorizationWrite(
     created_at: new Date().toISOString(),
   });
 
-  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyze.IActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
     total: actors.length,
     completed: 0,
@@ -78,7 +78,7 @@ export async function orchestrateRealizeAuthorizationWrite(
 async function process(
   ctx: AutoBeContext,
   props: {
-    actor: AutoBeAnalyzeActor;
+    actor: AutoBeAnalyze.IActor;
     templates: Record<string, string>;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;

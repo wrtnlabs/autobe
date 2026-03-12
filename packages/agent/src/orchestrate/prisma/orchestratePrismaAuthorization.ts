@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeDatabaseComponent,
   AutoBeDatabaseGroup,
   AutoBeEventSource,
@@ -29,7 +29,7 @@ export async function orchestratePrismaAuthorization(
     .at(0);
   if (authorizationGroup === undefined) return null;
 
-  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyze.IActor[] = ctx.state().analyze?.actors ?? [];
   if (actors.length === 0) return null;
 
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
@@ -45,7 +45,7 @@ export async function orchestratePrismaAuthorization(
 async function process(
   ctx: AutoBeContext,
   props: {
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     prefix: string | null;
     group: AutoBeDatabaseGroup;
     instruction: string;
@@ -119,7 +119,7 @@ function createController(props: {
   preliminary: AutoBePreliminaryController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   prefix: string | null;
 }): IAgenticaController.IClass {
   const validate = (

@@ -1,4 +1,7 @@
-import { AutoBeAnalyzeActor, AutoBeAnalyzeHistory } from "@autobe/interface";
+import {
+  AutoBeAnalyze,
+  AutoBeAnalyzeHistory,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
@@ -12,7 +15,7 @@ import { AutoBeInterfaceAuthorizationProgrammer } from "../programmers/AutoBeInt
 export const transformInterfaceAuthorizationHistory = (props: {
   state: AutoBeState;
   prefix: string;
-  actor: AutoBeAnalyzeActor;
+  actor: AutoBeAnalyze.IActor;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"

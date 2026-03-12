@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeFileScenario,
+  AutoBeAnalyze,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
@@ -20,7 +20,7 @@ import {
  * Only the fields needed by the TOC fill are required here.
  */
 interface ITocFileState {
-  file: AutoBeAnalyzeFileScenario;
+  file: AutoBeAnalyze.IFileScenario;
   moduleResult: AutoBeAnalyzeWriteModuleEvent | null;
   unitResults: AutoBeAnalyzeWriteUnitEvent[] | null;
   sectionResults: AutoBeAnalyzeWriteSectionEvent[][] | null;

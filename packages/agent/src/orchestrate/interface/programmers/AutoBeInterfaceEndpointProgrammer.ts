@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeInterfaceEndpointDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -25,7 +25,7 @@ export namespace AutoBeInterfaceEndpointProgrammer {
   export const filter = (props: {
     kind: "base" | "action";
     design: AutoBeInterfaceEndpointDesign;
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
   }): boolean => {
     // Action endpoints: only allow authorizationType: null
     if (props.kind === "action") return props.design.authorizationType === null;
@@ -46,7 +46,7 @@ export namespace AutoBeInterfaceEndpointProgrammer {
     else if (props.design.authorizationType === "session") {
       props.design.authorizationActors =
         props.design.authorizationActors.filter((name) => {
-          const actor: AutoBeAnalyzeActor | undefined = props.actors.find(
+          const actor: AutoBeAnalyze.IActor | undefined = props.actors.find(
             (a) => a.name === name,
           );
           if (actor === undefined) return false;
@@ -64,12 +64,12 @@ export namespace AutoBeInterfaceEndpointProgrammer {
   };
 
   export const fixDesign = (props: {
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     design: AutoBeInterfaceEndpointDesign;
   }): AutoBeInterfaceEndpointDesign => {
     props.design.endpoint.path = fixPath(props.design.endpoint.path);
     if (props.design.authorizationActors.length === 1) {
-      const actor: AutoBeAnalyzeActor | undefined = props.actors.find(
+      const actor: AutoBeAnalyze.IActor | undefined = props.actors.find(
         (a) => a.name === props.design.authorizationActors[0],
       );
       if (actor !== undefined && actor.kind !== "admin") {
@@ -107,7 +107,7 @@ export namespace AutoBeInterfaceEndpointProgrammer {
 
   export const fixApplication = (props: {
     application: ILlmApplication;
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
   }): void => {
     const $defs: Record<string, ILlmSchema> =
       props.application.functions[0].parameters.$defs;
@@ -136,7 +136,7 @@ export namespace AutoBeInterfaceEndpointProgrammer {
 
   export const validateDesign = (props: {
     design: AutoBeInterfaceEndpointDesign;
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     path: string;
     errors: IValidation.IError[];
   }): void => {

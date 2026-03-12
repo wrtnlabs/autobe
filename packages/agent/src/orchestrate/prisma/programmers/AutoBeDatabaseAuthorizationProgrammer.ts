@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeDatabaseComponentTableDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
@@ -15,7 +15,7 @@ export namespace AutoBeDatabaseAuthorizationProgrammer {
     errors: IValidation.IError[];
     path: string;
     prefix: string | null;
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     tables: AutoBeDatabaseComponentTableDesign[];
   }): void => {
     // validate common logic

@@ -1,4 +1,7 @@
-import { AutoBeAnalyzeActor, AutoBeOpenApi } from "@autobe/interface";
+import {
+  AutoBeAnalyze,
+  AutoBeOpenApi,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 import typia, { IValidation } from "typia";
@@ -50,7 +53,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
 
   export const validateOperation = (props: {
     operation: AutoBeOpenApi.IOperation;
-    actor: AutoBeAnalyzeActor;
+    actor: AutoBeAnalyze.IActor;
     prefix: string | null;
     accessor: string;
     errors: IValidation.IError[];
@@ -201,7 +204,7 @@ export namespace AutoBeInterfaceAuthorizationProgrammer {
   };
 
   export const validateAuthorizationTypes = (props: {
-    actor: AutoBeAnalyzeActor;
+    actor: AutoBeAnalyze.IActor;
     operations: AutoBeOpenApi.IOperation[];
     accessor: string;
     errors: IValidation.IError[];

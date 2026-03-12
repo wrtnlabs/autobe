@@ -1,8 +1,6 @@
 import {
-  AutoBeAnalyzeModule,
+  AutoBeAnalyze,
   AutoBeAnalyzeModuleSection,
-  AutoBeAnalyzeSection,
-  AutoBeAnalyzeUnit,
   AutoBeAnalyzeUnitSection,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
@@ -40,7 +38,7 @@ export const assembleContent = (
     const sectionEventsForModule: AutoBeAnalyzeWriteSectionEvent[] | undefined =
       sectionResults[moduleIndex];
 
-    // Module section header
+    // Module header
     lines.push(`# ${moduleSection.title}`);
     lines.push("");
     if (moduleSection.content) {
@@ -87,7 +85,7 @@ export const assembleContent = (
 /**
  * Assemble structured module data from events.
  *
- * This method builds the hierarchical AutoBeAnalyzeModule structure from the
+ * This method builds the hierarchical AutoBeAnalyze.IModule structure from the
  * module, unit, and section events, preserving the three-level hierarchy that
  * would otherwise be lost when assembling into flat markdown.
  */
@@ -95,14 +93,14 @@ export const assembleModule = (
   moduleEvent: AutoBeAnalyzeWriteModuleEvent,
   unitEvents: AutoBeAnalyzeWriteUnitEvent[],
   sectionResults: AutoBeAnalyzeWriteSectionEvent[][],
-): AutoBeAnalyzeModule => {
+): AutoBeAnalyze.IModule => {
   const firstModuleSection = moduleEvent.moduleSections[0];
   if (!firstModuleSection) {
     return { title: "", purpose: "", content: "", units: [] };
   }
 
   // Collect all units across all module sections into a single module
-  const allUnits: AutoBeAnalyzeUnit[] = [];
+  const allUnits: AutoBeAnalyze.IUnit[] = [];
 
   for (
     let moduleIndex: number = 0;
@@ -125,7 +123,7 @@ export const assembleModule = (
         const sectionEvent: AutoBeAnalyzeWriteSectionEvent | undefined =
           sectionEventsForModule?.[unitIndex];
 
-        const sections: AutoBeAnalyzeSection[] =
+        const sections: AutoBeAnalyze.ISection[] =
           sectionEvent?.sectionSections.map((s) => ({
             title: s.title,
             content: s.content,

@@ -1,4 +1,7 @@
-import { AutoBeAnalyzeActor, AutoBeDatabaseComponent } from "@autobe/interface";
+import {
+  AutoBeAnalyze,
+  AutoBeDatabaseComponent,
+} from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { plural } from "pluralize";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
@@ -13,7 +16,7 @@ export const transformPrismaAuthorizationReviewHistory = (props: {
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
   component: AutoBeDatabaseComponent;
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   instruction: string;
   prefix: string | null;
 }): IAutoBeOrchestrateHistory => {

@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeAnalyzeScenarioEntity,
   CamelCasePattern,
 } from "@autobe/interface";
@@ -95,7 +95,7 @@ export namespace IAutoBeAnalyzeScenarioApplication {
      * - `kind`: "guest" | "member" | "admin"
      * - `description`: Actor's permissions and capabilities
      */
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
 
     /**
      * Language for document content. When specified by the user, this takes

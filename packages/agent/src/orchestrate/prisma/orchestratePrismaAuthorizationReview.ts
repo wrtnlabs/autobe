@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeDatabaseAuthorizationReviewEvent,
   AutoBeDatabaseComponent,
   AutoBeEventSource,
@@ -25,7 +25,7 @@ export async function orchestratePrismaAuthorizationReview(
   },
 ): Promise<AutoBeDatabaseComponent> {
   const prefix: string | null = ctx.state().analyze?.prefix ?? null;
-  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyze.IActor[] = ctx.state().analyze?.actors ?? [];
 
   const event: AutoBeDatabaseAuthorizationReviewEvent = await process(ctx, {
     component: props.component,
@@ -40,7 +40,7 @@ export async function orchestratePrismaAuthorizationReview(
 async function process(
   ctx: AutoBeContext,
   props: {
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     component: AutoBeDatabaseComponent;
     instruction: string;
     prefix: string | null;
@@ -123,7 +123,7 @@ function createController(props: {
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
   >;
   prefix: string | null;
-  actors: AutoBeAnalyzeActor[];
+  actors: AutoBeAnalyze.IActor[];
   component: AutoBeDatabaseComponent;
   build: (
     next: IAutoBeDatabaseAuthorizationReviewApplication.IComplete,

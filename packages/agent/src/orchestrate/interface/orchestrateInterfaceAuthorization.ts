@@ -1,6 +1,6 @@
 import { IAgenticaController } from "@agentica/core";
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeEventSource,
   AutoBeInterfaceAuthorization,
   AutoBeInterfaceAuthorizationEvent,
@@ -27,7 +27,7 @@ export async function orchestrateInterfaceAuthorization(
     instruction: string;
   },
 ): Promise<AutoBeInterfaceAuthorization[]> {
-  const actors: AutoBeAnalyzeActor[] = ctx.state().analyze?.actors ?? [];
+  const actors: AutoBeAnalyze.IActor[] = ctx.state().analyze?.actors ?? [];
   const progress: AutoBeProgressEventBase = {
     total: actors.length,
     completed: 0,
@@ -54,7 +54,7 @@ async function process(
   ctx: AutoBeContext,
   props: {
     instruction: string;
-    actor: AutoBeAnalyzeActor;
+    actor: AutoBeAnalyze.IActor;
     progress: AutoBeProgressEventBase;
     promptCacheKey: string;
   },
@@ -128,7 +128,7 @@ async function process(
 
 function createController(props: {
   prefix: string | null;
-  actor: AutoBeAnalyzeActor;
+  actor: AutoBeAnalyze.IActor;
   preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "previousAnalysisSections"

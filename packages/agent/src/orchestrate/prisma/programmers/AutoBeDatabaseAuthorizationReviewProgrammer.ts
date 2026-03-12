@@ -1,5 +1,5 @@
 import {
-  AutoBeAnalyzeActor,
+  AutoBeAnalyze,
   AutoBeDatabaseComponent,
   AutoBeDatabaseComponentTableDesign,
   AutoBeDatabaseComponentTableRevise,
@@ -16,7 +16,7 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
     errors: IValidation.IError[];
     path: string;
     prefix: string | null;
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     revises: AutoBeDatabaseComponentTableRevise[];
     component: AutoBeDatabaseComponent;
   }): void => {
@@ -65,7 +65,7 @@ export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
   export const execute = (props: {
     component: AutoBeDatabaseComponent;
     revises: AutoBeDatabaseComponentTableRevise[];
-    actors: AutoBeAnalyzeActor[];
+    actors: AutoBeAnalyze.IActor[];
     prefix: string | null;
   }): AutoBeDatabaseComponentTableDesign[] => {
     const prefix: string = props.prefix ? `${props.prefix}_` : "";
