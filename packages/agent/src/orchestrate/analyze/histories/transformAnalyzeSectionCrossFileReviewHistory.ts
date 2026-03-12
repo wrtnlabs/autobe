@@ -83,7 +83,7 @@ export const transformAnalyzeSectionCrossFileReviewHistory = (
             const unitSection = unitEvent?.unitSections[unitIndex];
             return `
         #### Unit ${moduleIndex + 1}.${unitIndex + 1}: ${unitSection?.title ?? "Unknown"}
-        **Keywords**: ${unitSection?.keywords.join(", ") ?? "None"}
+        **Keywords**: ${unitSection?.keywords?.join(", ") ?? "None"}
 
         Sections:
         ${sectionEvent.sectionSections

@@ -104,6 +104,7 @@ export const buildConstraintConsistencyReport = (props: {
 const extractConstraints = (
   content: string,
 ): Array<{ key: string; value: string }> => {
+  if (!content) return [];
   const results: Array<{ key: string; value: string }> = [];
   const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
 
@@ -673,6 +674,7 @@ const ENUM_PATTERN = /enum\s*[\(\[\{]([^)\]\}]+)[\)\]\}]/i;
 const extractAttributeSpecs = (
   content: string,
 ): Array<{ key: string; specification: string }> => {
+  if (!content) return [];
   const results: Array<{ key: string; specification: string }> = [];
   const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
 
@@ -714,6 +716,7 @@ const extractAttributeSpecs = (
 const extractEnumSpecs = (
   content: string,
 ): Array<{ key: string; enumSet: string; display: string }> => {
+  if (!content) return [];
   const results: Array<{ key: string; enumSet: string; display: string }> = [];
   const yamlMatches = content.matchAll(YAML_CODE_BLOCK_REGEX);
 
@@ -768,6 +771,7 @@ const extractEnumSpecs = (
 const extractPermissionRulesFromYaml = (
   content: string,
 ): Array<{ actor: string; resource: string; actions: string[] }> => {
+  if (!content) return [];
   const results: Array<{
     actor: string;
     resource: string;
