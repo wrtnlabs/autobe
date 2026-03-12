@@ -59,17 +59,30 @@ All concept pairs that logically relate should have relationship declarations.
 
 **If incomplete**: Report as `incomplete_relationship` with the missing relationship.
 
-### 2.5. Feature Identification
+### 2.5. Feature Identification (CRITICAL — High Hallucination Risk)
 
-Features must match user's actual requirements from the fixed catalog: `real-time`, `external-integration`, `file-storage`.
+Feature flags activate conditional modules across ALL SRS files. A wrongly activated feature causes cascading hallucination in 03, 04, and 05. **This is the highest-impact check.**
+
+**Default is EMPTY**. Most projects (especially simple CRUD apps) should have `features: []`.
+
+**Strict Validation — for EACH activated feature**:
+1. Find the EXACT user words that triggered activation
+2. Match against trigger keywords: "file upload"→file-storage, "payment/Stripe"→external-integration, "real-time/WebSocket/chat"→real-time
+3. If no exact match found → **REJECT as `hallucinated_feature`**
+
+**Common False Positives to REJECT**:
+- Todo/note/task app with only text data → `file-storage` is hallucinated
+- Standard login/signup (email+password) → `external-integration` is hallucinated (built-in auth ≠ external integration)
+- Standard CRUD without live sync → `real-time` is hallucinated
 
 **Check**:
-- User mentioned "file upload" or "attachment" → `file-storage` must be active
-- User mentioned "real-time" or "WebSocket" or "live updates" → `real-time` must be active
-- User never mentioned any special capability → features should be empty array
+- User said "file upload" or "attachment" or "image" → `file-storage` must be active
+- User said "real-time" or "WebSocket" or "live updates" or "chat" → `real-time` must be active
+- User said "payment" or "Stripe" or "OAuth provider" or "email service" → `external-integration` must be active
+- User described standard CRUD with auth → features MUST be empty array `[]`
 - Features NOT in the fixed catalog must not appear
 
-**If wrong**: Report as `missing_feature` or `hallucinated_feature`.
+**REJECT if**: Any feature is activated without matching trigger keywords in user's original input.
 
 ---
 

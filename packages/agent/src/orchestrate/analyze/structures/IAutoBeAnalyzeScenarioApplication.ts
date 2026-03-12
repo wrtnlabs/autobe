@@ -129,12 +129,22 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     /**
      * High-level project features that activate conditional modules.
      *
-     * Selected from a FIXED catalog — the LLM must NOT invent features outside
-     * the predefined list. Each feature activates additional modules in the
-     * appropriate SRS files.
+     * WARNING: Wrong activation causes cascading hallucination across ALL SRS
+     * files. Each feature adds 2-3 conditional modules that downstream LLMs
+     * MUST fill with content — if the user never requested the feature, those
+     * modules get filled with hallucinated requirements.
      *
-     * If the project has no special features beyond REST CRUD, return an empty
-     * array.
+     * DEFAULT IS EMPTY ARRAY []. Most projects need no features.
+     *
+     * Activation rule: Include ONLY if the user used exact trigger keywords:
+     *
+     * - "file-storage": user said "file upload", "attachment", "image upload"
+     * - "real-time": user said "real-time", "WebSocket", "live updates", "chat"
+     * - "external-integration": user said "payment", "Stripe", "OAuth", "email
+     *   service"
+     *
+     * Standard CRUD with auth = features: []. Do NOT activate features based on
+     * inference or general context.
      */
     features: FixedAnalyzeTemplateFeature[];
   }

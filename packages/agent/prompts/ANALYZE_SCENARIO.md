@@ -76,15 +76,24 @@ Describe **business concepts** — the nouns users talk about when describing th
 
 ---
 
-## 6. Features (Optional)
+## 6. Features (STRICT — Default is EMPTY)
 
-Only include if user mentions specific capabilities:
+Features activate conditional modules across ALL 6 SRS files. Wrong activation causes massive hallucination downstream. **Default: empty array `[]`**.
 
-| Feature | Trigger Keywords |
-|---------|-----------------|
-| `real-time` | live updates, WebSocket, chat |
-| `external-integration` | payment, OAuth, email service |
-| `file-storage` | file upload, attachments, S3 |
+**Activation Rule**: Include a feature ONLY if the user used one of its exact trigger keywords. Do NOT infer features from general context.
+
+| Feature | Activate ONLY if user said | Do NOT activate if |
+|---------|---------------------------|-------------------|
+| `real-time` | "live updates", "WebSocket", "real-time", "chat", "push notifications" | User just described a standard CRUD app |
+| `external-integration` | "payment", "Stripe", "OAuth", "email service", "SMS", "third-party API" | User just mentioned login/signup (that's built-in auth, not external integration) |
+| `file-storage` | "file upload", "image upload", "attachments", "S3", "media" | User described text-only data (title, description, dates) |
+
+**Examples**:
+- "Todo app with user auth, CRUD, soft delete" → `features: []` (no trigger keywords)
+- "Shopping mall with Stripe payment" → `features: [{ id: "external-integration", providers: ["stripe"] }]`
+- "Chat app with real-time messaging and file sharing" → `features: [{ id: "real-time" }, { id: "file-storage" }]`
+
+**Self-check**: For each feature you want to activate, quote the exact user words that triggered it. No quote → remove feature.
 
 ---
 
@@ -141,7 +150,9 @@ graph LR
 - [ ] `prefix` is a valid camelCase identifier
 - [ ] All actors have `name`, `kind`, and `description`
 - [ ] All concepts have `name`, `description`, and `relationships`
-- [ ] Features only from fixed catalog: `real-time`, `external-integration`, `file-storage`
+- [ ] Features default to empty array — only activated by EXACT trigger keywords from user
+- [ ] For each activated feature, you can quote the user's exact words that triggered it
+- [ ] A standard CRUD app with auth has NO features — features: []
 
 **Prohibited Content (REJECT if present):**
 - [ ] NO database schemas or table definitions
