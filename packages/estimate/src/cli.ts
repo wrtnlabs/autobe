@@ -547,6 +547,15 @@ function printResults(result: EvaluationResult): void {
   printPhaseScore("logicCompleteness", result.phases.logicCompleteness);
   printPhaseScore("apiCompleteness", result.phases.apiCompleteness);
 
+  if (result.phases.goldenSet) {
+    const gs = result.phases.goldenSet;
+    const passed = (gs.metrics?.passedFeatures as number) ?? 0;
+    const total = (gs.metrics?.totalFeatures as number) ?? 0;
+    console.log(
+      `   ${"Golden Set".padEnd(24)} ${gs.score}/100 (${passed}/${total} passed)`,
+    );
+  }
+
   console.log("─────────────────────────────────────────\n");
 
   console.log("📋 Reference Info (no score impact):");
