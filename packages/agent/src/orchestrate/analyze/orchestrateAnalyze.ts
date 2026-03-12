@@ -56,6 +56,9 @@ import {
   detectErrorCodeConflicts,
 } from "./utils/buildErrorCodeRegistry";
 import { detectOversizedToc } from "./utils/buildHardValidators";
+import {
+  buildFileProseConflictMap,
+  detectProseConstraintConflicts,
 } from "./utils/detectProseConstraintConflicts";
 import {
   IFileDecisions,
