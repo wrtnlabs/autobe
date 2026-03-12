@@ -27,6 +27,7 @@ const PROJECT_INDEXES: Record<AutoBeExampleProject, number> = {
   shopping: 3,
   chat: 4,
   account: 5,
+  erp: 6,
 };
 
 const PHASE_INDEXES: Record<AutoBePhase, number> = {

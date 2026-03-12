@@ -23,6 +23,9 @@
  * - **account**: User account management system with authentication,
  *   authorization, profiles, and security features, showcasing identity and
  *   access management patterns
+ * - **erp**: ERP platform covering HRM and time tracking, demonstrating
+ *   multi-tenancy, RBAC, employee contracts, timesheet approval workflows, and
+ *   complex organizational data patterns
  *
  * These examples serve multiple purposes:
  *
@@ -43,4 +46,5 @@ export type AutoBeExampleProject =
   | "reddit"
   | "shopping"
   | "chat"
-  | "account";
+  | "account"
+  | "erp";
