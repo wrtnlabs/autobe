@@ -17,8 +17,8 @@ import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrat
  * 1. The system prompt for decision extraction
  * 2. The full section content of ONE file
  *
- * Each file is processed independently in parallel, so only one file's
- * content is included per call.
+ * Each file is processed independently in parallel, so only one file's content
+ * is included per call.
  */
 export const transformAnalyzeExtractDecisionsHistory = (
   _ctx: AutoBeContext,

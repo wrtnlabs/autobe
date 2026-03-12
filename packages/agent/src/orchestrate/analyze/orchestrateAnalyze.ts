@@ -22,6 +22,7 @@ import { AutoBePreliminaryExhaustedError } from "../../utils/AutoBePreliminaryEx
 import { AutoBeTimeoutError } from "../../utils/AutoBeTimeoutError";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { fillTocDeterministic } from "./fillTocDeterministic";
+import { orchestrateAnalyzeExtractDecisions } from "./orchestrateAnalyzeExtractDecisions";
 import { orchestrateAnalyzeScenario } from "./orchestrateAnalyzeScenario";
 import { orchestrateAnalyzeScenarioReview } from "./orchestrateAnalyzeScenarioReview";
 import { orchestrateAnalyzeSectionCrossFileReview } from "./orchestrateAnalyzeSectionCrossFileReview";
@@ -57,15 +58,14 @@ import {
 } from "./utils/buildErrorCodeRegistry";
 import { detectOversizedToc } from "./utils/buildHardValidators";
 import {
-  buildFileProseConflictMap,
-  detectProseConstraintConflicts,
-} from "./utils/detectProseConstraintConflicts";
-import {
   IFileDecisions,
   buildFileDecisionConflictMap,
   detectDecisionConflicts,
 } from "./utils/detectDecisionConflicts";
-import { orchestrateAnalyzeExtractDecisions } from "./orchestrateAnalyzeExtractDecisions";
+import {
+  buildFileProseConflictMap,
+  detectProseConstraintConflicts,
+} from "./utils/detectProseConstraintConflicts";
 import { validateScenarioBasics } from "./utils/validateScenarioBasics";
 
 /**
@@ -842,20 +842,21 @@ async function processStageSection(
         sectionEvents: state.sectionResults!,
       }));
 
-
     // Pass 2a-pre: LLM-based key decision extraction (parallel per file)
     analyzeDebug(`section decision-extraction-start attempt=${attempt}`);
     const fileDecisions: IFileDecisions[] = await Promise.all(
       filesWithSections
         .filter(({ file }) => file.filename !== "00-toc.md")
         .map(({ file, sectionEvents }) =>
-          orchestrateAnalyzeExtractDecisions(ctx, { file, sectionEvents })
-            .catch((e) => {
-              analyzeDebug(
-                `section decision-extraction-error file="${file.filename}" error=${(e as Error).message}`,
-              );
-              return { filename: file.filename, decisions: [] } as IFileDecisions;
-            }),
+          orchestrateAnalyzeExtractDecisions(ctx, {
+            file,
+            sectionEvents,
+          }).catch((e) => {
+            analyzeDebug(
+              `section decision-extraction-error file="${file.filename}" error=${(e as Error).message}`,
+            );
+            return { filename: file.filename, decisions: [] } as IFileDecisions;
+          }),
         ),
     );
     analyzeDebug(

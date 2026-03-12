@@ -15,18 +15,18 @@ import {
   IAutoBeAnalyzeExtractDecisionsApplicationComplete,
   IAutoBeAnalyzeExtractDecisionsApplicationProps,
 } from "./structures/IAutoBeAnalyzeExtractDecisionsApplication";
-import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 import { IFileDecisions } from "./utils/detectDecisionConflicts";
+import { isRecord, tryParseStringAsRecord } from "./utils/repairUtils";
 
 /**
  * Extract key decisions from a single file's section content.
  *
- * This orchestrator calls the LLM to read one file's full section content
- * and extract binary/discrete decisions as structured data. The extracted
- * decisions are then used for programmatic cross-file contradiction detection.
+ * This orchestrator calls the LLM to read one file's full section content and
+ * extract binary/discrete decisions as structured data. The extracted decisions
+ * are then used for programmatic cross-file contradiction detection.
  *
- * Called in parallel for each file (excluding 00-toc.md) after per-file
- * review approves.
+ * Called in parallel for each file (excluding 00-toc.md) after per-file review
+ * approves.
  */
 export const orchestrateAnalyzeExtractDecisions = async (
   ctx: AutoBeContext,

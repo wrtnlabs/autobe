@@ -1,16 +1,16 @@
 /**
  * Application interface for the Key Decision Extractor agent.
  *
- * This agent extracts binary/discrete decisions from a single file's
- * section content as structured data. The extracted decisions are then
- * compared programmatically across files to detect contradictions.
+ * This agent extracts binary/discrete decisions from a single file's section
+ * content as structured data. The extracted decisions are then compared
+ * programmatically across files to detect contradictions.
  */
 export interface IAutoBeAnalyzeExtractDecisionsApplication {
   /**
    * Process decision extraction from a single file's sections.
    *
-   * Reads the file content and extracts all binary/discrete decisions
-   * as structured data for cross-file contradiction detection.
+   * Reads the file content and extracts all binary/discrete decisions as
+   * structured data for cross-file contradiction detection.
    *
    * @param props Request containing extracted decisions
    */
@@ -41,11 +41,11 @@ export interface IAutoBeAnalyzeExtractDecisionsApplicationComplete {
   /**
    * All binary/discrete decisions extracted from this file.
    *
-   * Each decision represents a specific behavioral choice that the file
-   * makes. Use normalized topic names, decision names, and values.
+   * Each decision represents a specific behavioral choice that the file makes.
+   * Use normalized topic names, decision names, and values.
    *
-   * Return an empty array if the file has no extractable decisions
-   * (e.g., table of contents).
+   * Return an empty array if the file has no extractable decisions (e.g., table
+   * of contents).
    */
   decisions: IAutoBeAnalyzeExtractedDecision[];
 }
@@ -57,7 +57,8 @@ export interface IAutoBeAnalyzeExtractedDecision {
    *
    * Use lowercase, underscore-separated names.
    *
-   * @example "password_change", "todo_deletion", "edit_history"
+   * @example
+   *   (password_change, "todo_deletion", "edit_history");
    */
   topic: string;
 
@@ -66,8 +67,8 @@ export interface IAutoBeAnalyzeExtractedDecision {
    *
    * Use lowercase, underscore-separated, descriptive names.
    *
-   * @example "requires_current_password", "deletion_method",
-   *   "recorded_values"
+   * @example
+   *   (requires_current_password, "deletion_method", "recorded_values");
    */
   decision: string;
 
@@ -77,16 +78,21 @@ export interface IAutoBeAnalyzeExtractedDecision {
    * For binary decisions: "yes" or "no". For discrete decisions: short
    * descriptive string.
    *
-   * @example "yes", "no", "soft_delete", "hard_delete", "new_values",
-   *   "previous_values"
+   * @example
+   *   (yes,
+   *     "no",
+   *     "soft_delete",
+   *     "hard_delete",
+   *     "new_values",
+   *     "previous_values");
    */
   value: string;
 
   /**
-   * Short quote (1-2 sentences) from the source text supporting this
-   * decision.
+   * Short quote (1-2 sentences) from the source text supporting this decision.
    *
-   * @example "A user may change their password only by providing their
+   * @example
+   *   "A user may change their password only by providing their
    *   current password."
    */
   evidence: string;

@@ -4,8 +4,11 @@
  * A single extracted decision from one file's section content.
  *
  * Decisions are binary/discrete choices embedded in prose, e.g.:
- * - "password change requires current password" → topic: "password_change", decision: "requires_current_password", value: "yes"
- * - "deleted email can be reused" → topic: "deleted_email", decision: "can_be_reused", value: "yes"
+ *
+ * - "password change requires current password" → topic: "password_change",
+ *   decision: "requires_current_password", value: "yes"
+ * - "deleted email can be reused" → topic: "deleted_email", decision:
+ *   "can_be_reused", value: "yes"
  */
 export interface IExtractedDecision {
   /** Normalized topic grouping (e.g., "password_change", "email_reuse") */
@@ -21,9 +24,7 @@ export interface IExtractedDecision {
   evidence: string;
 }
 
-/**
- * Decisions extracted from a single file, returned by the extraction LLM.
- */
+/** Decisions extracted from a single file, returned by the extraction LLM. */
 export interface IFileDecisions {
   /** The filename this was extracted from */
   filename: string;
@@ -33,8 +34,8 @@ export interface IFileDecisions {
 }
 
 /**
- * A conflict between two or more files that state different values
- * for the same topic+decision.
+ * A conflict between two or more files that state different values for the same
+ * topic+decision.
  */
 export interface IDecisionConflict {
   /** The topic of the conflict */
@@ -56,10 +57,11 @@ export interface IDecisionConflict {
 /**
  * Detect decision-level conflicts across all files.
  *
- * Groups all extracted decisions by `topic + decision` key, then finds
- * cases where different files assign different values to the same key.
+ * Groups all extracted decisions by `topic + decision` key, then finds cases
+ * where different files assign different values to the same key.
  *
  * This catches prose-level contradictions like:
+ *
  * - File A: "password change requires current password" (yes)
  * - File B: "password change does not require current password" (no)
  */
@@ -164,9 +166,7 @@ function normalizeKey(s: string): string {
     .replace(/[^a-z0-9_]/g, "");
 }
 
-/**
- * Normalize a value for comparison: lowercase, trim, collapse whitespace.
- */
+/** Normalize a value for comparison: lowercase, trim, collapse whitespace. */
 function normalizeValue(s: string): string {
   return s.toLowerCase().trim().replace(/\s+/g, " ");
 }
