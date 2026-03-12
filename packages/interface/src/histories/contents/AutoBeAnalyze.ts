@@ -6,9 +6,9 @@ import { CamelCasePattern } from "../../typings/CamelCasePattern";
  * AST type system for requirements analysis phase in the AutoBE pipeline.
  *
  * This namespace defines the structured output types that AI agents produce
- * during the Analyze phase, which transforms natural language requirements
- * into structured planning documents. The analysis follows a hierarchical
- * document structure:
+ * during the Analyze phase, which transforms natural language requirements into
+ * structured planning documents. The analysis follows a hierarchical document
+ * structure:
  *
  * ## Document Hierarchy
  *
@@ -38,10 +38,10 @@ export namespace AutoBeAnalyze {
    * Interface representing a user actor definition in the requirements analysis
    * phase.
    *
-   * This interface defines authenticated user actors that will be used throughout
-   * the application's authentication and authorization system. Each actor
-   * represents a distinct type of user who can register, authenticate, and
-   * interact with the system based on their specific permissions and
+   * This interface defines authenticated user actors that will be used
+   * throughout the application's authentication and authorization system. Each
+   * actor represents a distinct type of user who can register, authenticate,
+   * and interact with the system based on their specific permissions and
    * capabilities.
    *
    * The actors defined here serve as the foundation for generating:
@@ -66,17 +66,20 @@ export namespace AutoBeAnalyze {
     /**
      * Actor category classification for system-wide permission hierarchy.
      *
-     * This property categorizes actors into three fundamental permission levels,
-     * establishing a clear hierarchy for authorization decisions throughout the
-     * application. The kind determines baseline access patterns and security
-     * boundaries:
+     * This property categorizes actors into three fundamental permission
+     * levels, establishing a clear hierarchy for authorization decisions
+     * throughout the application. The kind determines baseline access patterns
+     * and security boundaries:
      *
-     * - "guest": Unauthenticated users or those with minimal permissions. Typically
-     *   limited to public resources and registration/login endpoints.
-     * - "member": Authenticated users with standard access permissions. Can access
-     *   personal resources and participate in core application features.
-     * - "admin": System administrators with elevated permissions. Can manage other
-     *   users, access administrative functions, and modify system-wide settings.
+     * - "guest": Unauthenticated users or those with minimal permissions.
+     *   Typically limited to public resources and registration/login
+     *   endpoints.
+     * - "member": Authenticated users with standard access permissions. Can
+     *   access personal resources and participate in core application
+     *   features.
+     * - "admin": System administrators with elevated permissions. Can manage
+     *   other users, access administrative functions, and modify system-wide
+     *   settings.
      */
     kind: "guest" | "member" | "admin";
 
@@ -94,16 +97,16 @@ export namespace AutoBeAnalyze {
    * Scenario metadata for a single analysis file.
    *
    * Describes the planning context (reason, filename, audience, etc.) for a
-   * document to be generated during the Analyze phase. {@link IFile}
-   * extends this interface and adds content/structural fields.
+   * document to be generated during the Analyze phase. {@link IFile} extends
+   * this interface and adds content/structural fields.
    */
   export interface IFileScenario {
     /**
-     * Describe briefly why you made this document, and if you have any plans for
-     * the next one. This helps maintain context between documents and ensures a
-     * logical flow in documentation creation. Example: "To define the core
-     * features and user needs for the e-commerce platform before moving on to
-     * detailed user flow documentation."
+     * Describe briefly why you made this document, and if you have any plans
+     * for the next one. This helps maintain context between documents and
+     * ensures a logical flow in documentation creation. Example: "To define the
+     * core features and user needs for the e-commerce platform before moving on
+     * to detailed user flow documentation."
      */
     reason: string;
 
@@ -119,7 +122,8 @@ export namespace AutoBeAnalyze {
      * helps the AI understand what kind of document to create and what sections
      * or information should be included. Examples:
      *
-     * - "requirement": Functional/non-functional requirements, acceptance criteria
+     * - "requirement": Functional/non-functional requirements, acceptance
+     *   criteria
      * - "user-story": User personas, scenarios, and journey descriptions
      * - "user-flow": Step-by-step user interactions and decision points
      * - "business-model": Revenue streams, cost structure, value propositions
@@ -128,24 +132,26 @@ export namespace AutoBeAnalyze {
     documentType?: string;
 
     /**
-     * Outline or table of contents that guides the document structure. Each item
-     * represents a main section to be covered in the document. The AI will expand
-     * each section with appropriate content while maintaining the specified
-     * structure. Example: ["Executive Summary", "Problem Statement", "Target
-     * Users", "Core Features", "Success Metrics", "Implementation Timeline"]
+     * Outline or table of contents that guides the document structure. Each
+     * item represents a main section to be covered in the document. The AI will
+     * expand each section with appropriate content while maintaining the
+     * specified structure. Example: ["Executive Summary", "Problem Statement",
+     * "Target Users", "Core Features", "Success Metrics", "Implementation
+     * Timeline"]
      */
     outline?: string[];
 
     /**
      * Target audience for this document. Determines the language, technical
-     * depth, and focus areas of the content. If not specified, the document will
-     * be written for a general audience with balanced technical and business
-     * perspectives. Examples:
+     * depth, and focus areas of the content. If not specified, the document
+     * will be written for a general audience with balanced technical and
+     * business perspectives. Examples:
      *
      * - "development team": More technical details, implementation considerations
      * - "business stakeholders": Focus on ROI, business value, market opportunity
      * - "end users": User-friendly language, benefits, and use cases
-     * - "product managers": Balance of user needs, business goals, and feasibility
+     * - "product managers": Balance of user needs, business goals, and
+     *   feasibility
      * - "general": Accessible to all stakeholders (default if not specified)
      */
     audience?: string;
@@ -179,16 +185,17 @@ export namespace AutoBeAnalyze {
     /**
      * Related documents that this document references or builds upon. Helps
      * maintain consistency across documentation and allows the AI to understand
-     * the broader context. These documents should already exist or be planned in
-     * the documentation roadmap. Examples: ["00-project-charter.md",
+     * the broader context. These documents should already exist or be planned
+     * in the documentation roadmap. Examples: ["00-project-charter.md",
      * "01-market-analysis.md", "02-competitor-research.md"]
      */
     relatedDocuments?: string[];
 
     /**
-     * Specific constraints or requirements for the document. These are must-have
-     * elements or considerations that should be included regardless of other
-     * factors. The AI will ensure these constraints are met. Examples:
+     * Specific constraints or requirements for the document. These are
+     * must-have elements or considerations that should be included regardless
+     * of other factors. The AI will ensure these constraints are met.
+     * Examples:
      *
      * - "Must include cost-benefit analysis"
      * - "Focus on mobile-first user experience"
@@ -205,16 +212,16 @@ export namespace AutoBeAnalyze {
     /**
      * Document title (bold text, not a heading).
      *
-     * The main title of the requirements document that appears at the top of the
-     * generated markdown file.
+     * The main title of the requirements document that appears at the top of
+     * the generated markdown file.
      */
     title: string;
 
     /**
      * Executive summary of the document.
      *
-     * A concise overview (2-3 sentences) describing the purpose and scope of the
-     * requirements document.
+     * A concise overview (2-3 sentences) describing the purpose and scope of
+     * the requirements document.
      */
     summary: string;
 
@@ -222,8 +229,9 @@ export namespace AutoBeAnalyze {
      * Markdown file content. Only write the content of the file. Do not include
      * any questions. This should contain only the contents of the file. Do not
      * write down any questions or appreciation. For example, remove a sentence
-     * such as "Is it okay if we proceed with the table of contents? Please let me
-     * know if there is anything to add or exclude from the table of contents!"
+     * such as "Is it okay if we proceed with the table of contents? Please let
+     * me know if there is anything to add or exclude from the table of
+     * contents!"
      *
      * PROHIBITED content in markdown:
      *
@@ -233,21 +241,22 @@ export namespace AutoBeAnalyze {
      * - Meta-commentary about the document writing process
      *
      * The markdown must be a complete, standalone deliverable without any
-     * conversational elements. If clarification is needed, it should be requested
-     * outside the document content.
+     * conversational elements. If clarification is needed, it should be
+     * requested outside the document content.
      */
     content: string;
 
     /**
      * Hierarchical content structure (Module → Unit → Section).
      *
-     * Preserves the three-level hierarchy that the flat `content` markdown loses.
-     * Also serves as the source for the Evidence Layer (`document.sections`),
-     * which is generated by walking this tree and assigning `sectionId`s.
+     * Preserves the three-level hierarchy that the flat `content` markdown
+     * loses. Also serves as the source for the Evidence Layer
+     * (`document.sections`), which is generated by walking this tree and
+     * assigning `sectionId`s.
      *
-     * Document-level metadata (`title`, `summary`) lives directly on
-     * `IFile`; this interface represents a single module with
-     * `title`, `purpose`, `content`, and `units`.
+     * Document-level metadata (`title`, `summary`) lives directly on `IFile`;
+     * this interface represents a single module with `title`, `purpose`,
+     * `content`, and `units`.
      */
     module: IModule;
   }
@@ -255,11 +264,11 @@ export namespace AutoBeAnalyze {
   /**
    * Structured module-level content of an analysis document.
    *
-   * Represents a single module in the three-level hierarchy: **Module (#) → Unit
-   * (##) → Section (###)**.
+   * Represents a single module in the three-level hierarchy: **Module (#) →
+   * Unit (##) → Section (###)**.
    *
-   * Document-level metadata (`title`, `summary`) lives on
-   * {@link IFile}, not here.
+   * Document-level metadata (`title`, `summary`) lives on {@link IFile}, not
+   * here.
    */
   export interface IModule {
     /** Title of the module (# level heading). */
@@ -297,9 +306,9 @@ export namespace AutoBeAnalyze {
    * requirements and specifications. Each unit has its own sections (### level)
    * that provide implementation-ready content.
    *
-   * The keywords property is particularly important as it provides semantic hints
-   * about the topics covered, enabling intelligent search and categorization of
-   * requirements.
+   * The keywords property is particularly important as it provides semantic
+   * hints about the topics covered, enabling intelligent search and
+   * categorization of requirements.
    */
   export interface IUnit {
     /** Title of the unit (## level heading). */
@@ -315,7 +324,8 @@ export namespace AutoBeAnalyze {
     /**
      * Content for the unit.
      *
-     * The main body content that appears after the heading, before any sections.
+     * The main body content that appears after the heading, before any
+     * sections.
      */
     content: string;
 

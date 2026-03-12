@@ -1,7 +1,4 @@
-import {
-  AutoBeAnalyze,
-  AutoBeOpenApi,
-} from "@autobe/interface";
+import { AutoBeAnalyze, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 import typia, { IValidation } from "typia";

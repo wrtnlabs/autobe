@@ -1,7 +1,4 @@
-import {
-  AutoBeAnalyze,
-  AutoBeAnalyzeHistory,
-} from "@autobe/interface";
+import { AutoBeAnalyze, AutoBeAnalyzeHistory } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";

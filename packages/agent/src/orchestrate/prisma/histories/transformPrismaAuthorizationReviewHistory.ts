@@ -1,7 +1,4 @@
-import {
-  AutoBeAnalyze,
-  AutoBeDatabaseComponent,
-} from "@autobe/interface";
+import { AutoBeAnalyze, AutoBeDatabaseComponent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { plural } from "pluralize";
 import { NamingConvention } from "typia/lib/utils/NamingConvention";
