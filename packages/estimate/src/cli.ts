@@ -6,6 +6,8 @@ import * as path from "path";
 import {
   AgentConfig,
   AgentResult,
+  HALLUCINATION_MODEL,
+  HallucinationAgent,
   LLMProvider,
   LLMQualityAgent,
   QUALITY_MODEL,
@@ -254,10 +256,11 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Record agent results to Langfuse trace
     const trace = getActiveTrace();
     if (trace && agentResults.length > 0) {
-      const agentAvgForTrace = agentResults.reduce((sum, r) => {
-        const w = AGENT_WEIGHTS[r.agent] || 1 / agentResults.length;
-        return sum + r.score * w;
-      }, 0);
+      const scoredAgents = agentResults.filter((r) => r.agent in AGENT_WEIGHTS);
+      const agentAvgForTrace = scoredAgents.reduce(
+        (sum, r) => sum + r.score * AGENT_WEIGHTS[r.agent],
+        0,
+      );
       const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
       const agentPortion = agentAvgForTrace * AGENT_WEIGHT_RATIO;
       recordAgentResults(
@@ -275,10 +278,11 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   let adjustedScore = result.totalScore;
   let agentAvg = 0;
   if (agentResults.length > 0 && result.phases.gate.passed) {
-    agentAvg = agentResults.reduce((sum, r) => {
-      const w = AGENT_WEIGHTS[r.agent] || 1 / agentResults.length;
-      return sum + r.score * w;
-    }, 0);
+    const scoredForScore = agentResults.filter((r) => r.agent in AGENT_WEIGHTS);
+    agentAvg = scoredForScore.reduce(
+      (sum, r) => sum + r.score * AGENT_WEIGHTS[r.agent],
+      0,
+    );
 
     const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
     const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
@@ -411,13 +415,19 @@ async function runAgentEvaluations(
     ...baseConfig,
     model: QUALITY_MODEL,
   });
+  const hallucinationAgent = new HallucinationAgent({
+    ...baseConfig,
+    model: HALLUCINATION_MODEL,
+  });
 
-  const [securityResult, llmQualityResult] = await Promise.all([
-    securityAgent.evaluate(context),
-    llmQualityAgent.evaluate(context),
-  ]);
+  const [securityResult, llmQualityResult, hallucinationResult] =
+    await Promise.all([
+      securityAgent.evaluate(context),
+      llmQualityAgent.evaluate(context),
+      hallucinationAgent.evaluate(context),
+    ]);
 
-  return [securityResult, llmQualityResult];
+  return [securityResult, llmQualityResult, hallucinationResult];
 }
 
 function printAgentResults(agentResults: AgentResult[]): void {
@@ -435,7 +445,10 @@ function printAgentResults(agentResults: AgentResult[]): void {
     const warningCount = result.issues.filter(
       (i) => i.severity === "warning",
     ).length;
-    console.log(`   ${result.agent}: ${result.score}/100 ${scoreEmoji}`);
+    const refTag = result.agent in AGENT_WEIGHTS ? "" : " [ref]";
+    console.log(
+      `   ${result.agent}: ${result.score}/100 ${scoreEmoji}${refTag}`,
+    );
     console.log(
       `      Issues: ${result.issues.length} (${criticalCount} critical, ${warningCount} warning)`,
     );

@@ -55,3 +55,4 @@ export interface AgentResult {
 /** Default models per agent role */
 export const SECURITY_MODEL = "anthropic/claude-sonnet-4-6";
 export const QUALITY_MODEL = "deepseek/deepseek-v3.2";
+export const HALLUCINATION_MODEL = "deepseek/deepseek-v3.2";

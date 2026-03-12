@@ -7,6 +7,7 @@ export const AGENT_WEIGHT_RATIO = 0.25;
 export const AGENT_WEIGHTS: Record<string, number> = {
   SecurityAgent: 0.5, // 50% of agent portion
   LLMQualityAgent: 0.5, // 50% of agent portion
+  // HallucinationAgent: reference-only (not scored yet)
 };
 
 /** Evaluation grade */
