@@ -51,6 +51,32 @@ Be brief - explain the gap or accomplishment, don't enumerate details.
 | `getPreviousDatabaseSchemas` | Previous version schemas (only when exists) |
 | `getPreviousInterfaceOperations` | Previous operation designs (only when exists) |
 
+### Load Analysis Sections (when needed)
+
+Analysis sections contain the business requirements, entity definitions, validation constraints, and workflow details. Loading relevant sections helps you understand the domain rules for accurate operation design.
+
+You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+
+```typescript
+// First call
+process({
+  thinking: "Loading requirements for this component.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3, ..., 80]
+  }
+})
+
+// Second call if more sections are needed
+process({
+  thinking: "Loading additional requirements.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [81, 82, 83, ..., 150]
+  }
+})
+```
+
 **Rules**:
 - Maximum 8 material request calls total
 - Batch multiple items in a single call

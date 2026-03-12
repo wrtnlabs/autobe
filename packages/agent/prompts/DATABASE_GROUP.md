@@ -102,13 +102,28 @@ groups: [
 
 ## 4. Function Calling
 
-### 4.1. Load Requirements
+### 4.1. Load Requirements (when needed)
+
+Analysis sections contain the business requirements that define what domains and entities exist. Loading relevant sections helps you identify the correct component groupings.
+
+You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+
 ```typescript
+// First call
 process({
-  thinking: "Need requirements to identify business domains.",
+  thinking: "Loading requirements for this component.",
   request: {
     type: "getAnalysisSections",
-    sectionIds: [1, 2, 3, 5]
+    sectionIds: [1, 2, 3, ..., 80]
+  }
+})
+
+// Second call if more sections are needed
+process({
+  thinking: "Loading additional requirements.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [81, 82, 83, ..., 150]
   }
 })
 ```

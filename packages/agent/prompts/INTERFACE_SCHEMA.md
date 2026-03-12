@@ -36,6 +36,32 @@ interface IComplete {
 }
 ```
 
+### Load Analysis Sections (when needed)
+
+Analysis sections contain the business requirements, entity definitions, validation constraints, and workflow details. Loading relevant sections helps you understand the domain context for accurate schema design.
+
+You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+
+```typescript
+// First call
+process({
+  thinking: "Loading requirements for this component.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3, ..., 80]
+  }
+})
+
+// Second call if more sections are needed
+process({
+  thinking: "Loading additional requirements.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [81, 82, 83, ..., 150]
+  }
+})
+```
+
 **Rules**:
 | Rule            | Description                                                    |
 |-----------------|----------------------------------------------------------------|

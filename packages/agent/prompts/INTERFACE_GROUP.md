@@ -65,6 +65,32 @@ export namespace IAutoBeInterfaceGroupApplication {
 
 When a preliminary request returns an empty array, that type is **permanently removed** from the union. Do not attempt to call it again.
 
+### Load Analysis Sections (when needed)
+
+Analysis sections contain the business requirements, entity definitions, validation constraints, and workflow details for the system. Loading relevant sections helps you understand the domain boundaries and identify correct interface groupings.
+
+You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+
+```typescript
+// First call
+process({
+  thinking: "Loading requirements for this component.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [1, 2, 3, ..., 80]
+  }
+})
+
+// Second call if more sections are needed
+process({
+  thinking: "Loading additional requirements.",
+  request: {
+    type: "getAnalysisSections",
+    sectionIds: [81, 82, 83, ..., 150]
+  }
+})
+```
+
 ### Example Output
 
 ```typescript
