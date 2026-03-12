@@ -1,7 +1,7 @@
-import { useCallback, useRef, useState } from "react";
-import { WebSocketConnector } from "tgrid";
 import type { AutoBeEvent, IAutoBeRpcService } from "@autobe/interface";
 import { AutoBeListener, type IAutoBeEventGroup } from "@autobe/ui";
+import { useCallback, useRef, useState } from "react";
+import { WebSocketConnector } from "tgrid";
 
 import type {
   ConnectionStatus,
@@ -26,9 +26,7 @@ function getPhaseFromEventType(type: string): PipelinePhase | null {
   return null;
 }
 
-function derivePhaseStatuses(
-  eventGroups: IAutoBeEventGroup[],
-): PhaseStatus[] {
+function derivePhaseStatuses(eventGroups: IAutoBeEventGroup[]): PhaseStatus[] {
   const statuses: Record<PipelinePhase, PhaseStatus> = {
     analyze: { phase: "analyze", status: "pending" },
     database: { phase: "database", status: "pending" },
@@ -105,17 +103,13 @@ export function useMonitoring(): UseMonitoringResult {
         object
       >;
 
-      const wsUrl = serverUrl
-        .replace(/^http/, "ws")
-        .replace(/\/$/, "");
+      const wsUrl = serverUrl.replace(/^http/, "ws").replace(/\/$/, "");
       await connector.connect(wsUrl);
 
       setConnectionStatus("connected");
     } catch (err) {
       setConnectionStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Connection failed",
-      );
+      setErrorMessage(err instanceof Error ? err.message : "Connection failed");
       connectorRef.current = null;
       listenerRef.current = null;
     }
@@ -135,10 +129,7 @@ export function useMonitoring(): UseMonitoringResult {
   }, []);
 
   const phaseStatuses = derivePhaseStatuses(eventGroups);
-  const eventCount = eventGroups.reduce(
-    (sum, g) => sum + g.events.length,
-    0,
-  );
+  const eventCount = eventGroups.reduce((sum, g) => sum + g.events.length, 0);
 
   return {
     connectionStatus,

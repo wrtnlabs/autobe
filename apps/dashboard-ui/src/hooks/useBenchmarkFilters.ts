@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+
 import type { BenchmarkData, BenchmarkEntry, Grade } from "../types/benchmark";
 
 interface UseBenchmarkFiltersResult {
