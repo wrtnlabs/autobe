@@ -218,6 +218,34 @@ if (props.body.start_date !== undefined && props.body.start_date !== null) {
 }
 ```
 
+### 4.9. Error 2339: Hallucinated DTO Property
+
+`Property 'X' does not exist on type 'ICreate'` (or `IUpdate`, `IRequest`) — the code accesses a property on `props.body` that was never declared in the DTO interface. **This is NOT a select issue** — the property simply doesn't exist in the type definition.
+
+**Diagnosis**: The original code invented a property that "makes sense" but isn't part of the API contract. The fix is to **remove the access** and derive the value from other sources.
+
+```typescript
+// ❌ ERROR: Property 'orderItemId' does not exist on type 'IShoppingSaleReview.ICreate'
+const item = await MyGlobal.prisma.shopping_order_items.findUniqueOrThrow({
+  where: { id: props.body.orderItemId },  // Not in ICreate
+});
+
+// ✅ FIX: Use path parameter instead
+const sale = await MyGlobal.prisma.shopping_sales.findUniqueOrThrow({
+  where: { id: props.saleId },  // Path parameter from function signature
+  select: { id: true },
+});
+```
+
+| Where the value actually lives | Example |
+|-------------------------------|---------|
+| Path parameter | `props.saleId`, `props.articleId` |
+| Auth context | `props.customer.id`, `props.seller.id` |
+| Database lookup | Query by a known ID from params |
+| Computed from existing fields | Derive from other `props.body.*` properties |
+
+**Key distinction from 4.3**: Section 4.3 fixes TS2339 on Prisma query results (add to `select`). This section fixes TS2339 on `props.body` / `props.customer` (remove the access, use another source).
+
 ## 5. Unrecoverable Errors
 
 When schema-API mismatch is fundamental:
@@ -242,7 +270,8 @@ export async function method__path(props: {...}): Promise<IResponse> {
 | 2322 (Date → string) | `.toISOString()` | - |
 | 2322 (string \| null → string) | `(date ?? contextualDefault).toISOString()` | Analyze field semantics for default |
 | Tag type mismatch | `value satisfies number as number` | - |
-| 2339 (property doesn't exist) | Add to select | Scalar: `true`, Relation: `{ select: {...} }` |
+| 2339 (on query result) | Add to select | Scalar: `true`, Relation: `{ select: {...} }` |
+| 2339 (on `props.body.X`) | Remove access, use path params/auth context | NOT a select issue — property doesn't exist in DTO |
 | 2345 (`T \| null` → `T`) | Check `!== undefined && !== null` | Optional nullable field |
 | 2345 (string → literal) | `as "literal"` | - |
 | Table name in query | Use relation property name | Check Prisma schema |
@@ -265,7 +294,11 @@ export async function method__path(props: {...}): Promise<IResponse> {
 - [ ] Used relation property names (NOT table names or FK columns)
 - [ ] `satisfies Prisma.{table}FindManyArgs` on inline nested selects
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
-- [ ] Select includes all transformed fields
+- [ ] Select includes all accessed fields (relations, scalars, FK columns)
+
+### Parameter Types
+- [ ] No hallucinated `props.body.*` properties — only declared DTO fields
+- [ ] Missing values sourced from path params / auth context / DB queries
 
 ### Code Quality
 - [ ] No import statements

@@ -317,12 +317,12 @@ select: {
 }
 ```
 
-### 6.7. Relation Fields Require Explicit Selection
+### 6.7. Every Accessed Field Requires Explicit Selection
 
-In Prisma, relation fields are NOT available on query results unless explicitly included in `select`. This is the most common source of TS2339 errors.
+In Prisma, **no field** — neither relations nor scalar columns — is available on query results unless explicitly listed in `select`. This is the most common source of TS2339 errors.
 
 ```typescript
-// ❌ ERROR: Property 'seller' does not exist (not selected)
+// ❌ ERROR: Property 'seller' does not exist (relation not selected)
 const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
   where: { id: props.productId },
   select: { id: true, name: true },  // 'seller' not selected
@@ -354,7 +354,79 @@ if (product.shopping_mall_seller_id !== props.seller.id) {
 }
 ```
 
-**Rule**: Every field accessed on a query result MUST appear in its `select`. If you need a relation's data, either select the relation or use the FK column.
+**This applies to FK scalar columns too**:
+
+```typescript
+// ❌ ERROR: Property 'shopping_mall_seller_id' does not exist (FK column not selected)
+const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
+  where: { id: props.productId },
+  select: { id: true, name: true },  // FK column not in select!
+});
+product.shopping_mall_seller_id;  // TS2339!
+
+// ✅ CORRECT: Include the FK column in select
+const product = await MyGlobal.prisma.shopping_mall_products.findUniqueOrThrow({
+  where: { id: props.productId },
+  select: { id: true, name: true, shopping_mall_seller_id: true },
+});
+```
+
+**Rule**: Every field accessed on a query result MUST appear in its `select` clause — this applies equally to relations, scalar columns, and FK columns. If you access `record.X`, then `X: true` (or `X: { select: {...} }` for relations) MUST be in the select.
+
+## 7. Parameter Type Fidelity
+
+**CRITICAL**: Only access properties that actually exist in the function's parameter types. The system provides complete type definitions for `props.body`, `props.customer`, `props.seller`, etc. — if a property is not declared, it does not exist.
+
+### 7.1. Never Hallucinate DTO Properties
+
+```typescript
+// Given: props.body: IShoppingSaleReview.ICreate = { content: string; rating: number }
+
+// ❌ TS2339: Property 'orderItemId' does not exist on type 'ICreate'
+await MyGlobal.prisma.shopping_order_items.findUniqueOrThrow({
+  where: { id: props.body.orderItemId },  // Not in ICreate!
+});
+
+// ❌ TS2339: Property 'vote_type' does not exist on type 'IRequest'
+const voteType = props.body.vote_type;  // Not in IRequest!
+
+// ✅ CORRECT: Only use declared properties
+await MyGlobal.prisma.shopping_sale_reviews.create({
+  data: {
+    id: v4(),
+    content: props.body.content,  // ✅ In ICreate
+    rating: props.body.rating,    // ✅ In ICreate
+    sale: { connect: { id: props.saleId } },  // From path parameter
+    customer: { connect: { id: props.customer.id } },  // From auth context
+    created_at: new Date(),
+  },
+});
+```
+
+### 7.2. Where to Find Missing Values
+
+When business logic needs a value not present in the DTO, derive it from other sources — NEVER invent a DTO property:
+
+| Value needed | Source |
+|-------------|--------|
+| Entity ID (sale, article, etc.) | Path parameter: `props.saleId`, `props.articleId` |
+| Actor identity | Auth context: `props.customer.id`, `props.seller.id` |
+| Related record data | Database query by known ID |
+| Derived/computed value | Calculate from existing DTO fields |
+
+```typescript
+// ❌ WRONG: Inventing props.body.sale_id
+const saleId = props.body.sale_id;  // TS2339
+
+// ✅ CORRECT: Use path parameter
+const saleId = props.saleId;  // Declared in function signature
+
+// ❌ WRONG: Inventing props.body.customer_id
+const customerId = props.body.customer_id;  // TS2339
+
+// ✅ CORRECT: Use auth context
+const customerId = props.customer.id;  // From ActorPayload
+```
 
 ## 8. Pattern B: WITHOUT Collector/Transformer (Manual)
 
@@ -738,6 +810,11 @@ throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
 - [ ] Used Transformer for read side when available (`Transformer.select()` + `Transformer.transform()`)
 - [ ] Checked neighbor Transformers for nested relations in manual code
 - [ ] Transformer.select() assigned directly (NOT `.select().select`)
+
+### Parameter Types
+- [ ] Only accessed properties that exist in the DTO type definition
+- [ ] Never invented DTO properties — used path params/auth context instead
+- [ ] Every `select` clause includes ALL fields accessed on the query result (relations, scalars, FK columns)
 
 ### Manual Code (when no Collector/Transformer)
 - [ ] Verified ALL field/relation names against database schema
