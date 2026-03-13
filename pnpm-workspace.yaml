@@ -11,20 +11,20 @@ catalogs:
   agentica:
     '@agentica/core': ^0.44.0
   samchon:
-    '@nestia/benchmark': ^11.0.0
-    '@nestia/core': ^11.0.0
-    '@nestia/e2e': ^11.0.0
-    '@nestia/editor': ^11.0.0
-    '@nestia/fetcher': ^11.0.0
-    '@nestia/migrate': ^11.0.0
-    '@nestia/sdk': ^11.0.0
+    '@nestia/benchmark': ^11.0.1
+    '@nestia/core': ^11.0.1
+    '@nestia/e2e': ^11.0.1
+    '@nestia/editor': ^11.0.1
+    '@nestia/fetcher': ^11.0.1
+    '@nestia/migrate': ^11.0.1
+    '@nestia/sdk': ^11.0.1
     '@typia/interface': ^12.0.0
     '@typia/unplugin': ^12.0.0
     '@typia/utils': ^12.0.0
     embed-eslint: ^2.0.1
     embed-prisma: ^3.0.0
     embed-typescript: ^2.0.1
-    nestia: ^11.0.0
+    nestia: ^11.0.1
     prisma-markdown: ^4.0.0
     tgrid: ^1.2.1
     tstl: ^3.0.0

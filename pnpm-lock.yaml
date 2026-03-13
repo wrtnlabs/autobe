@@ -31,20 +31,20 @@ catalogs:
       version: 7.5.0
   samchon:
     '@nestia/core':
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     '@nestia/e2e':
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     '@nestia/fetcher':
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     '@nestia/migrate':
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     '@nestia/sdk':
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     '@typia/interface':
       specifier: ^12.0.0
       version: 12.0.0
@@ -64,8 +64,8 @@ catalogs:
       specifier: ^2.0.1
       version: 2.0.1
     nestia:
-      specifier: ^11.0.0
-      version: 11.0.0
+      specifier: ^11.0.1
+      version: 11.0.1
     prisma-markdown:
       specifier: ^4.0.0
       version: 4.0.0
@@ -177,7 +177,7 @@ importers:
         version: link:../../packages/interface
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       openai:
         specifier: catalog:libs
         version: 6.27.0(ws@8.19.0)(zod@4.3.6)
@@ -229,13 +229,13 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+        version: 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/core@11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)
+        version: 11.0.1(@nestia/core@11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -317,7 +317,7 @@ importers:
         version: 8.2.5
       nestia:
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       pm2:
         specifier: ^6.0.10
         version: 6.0.14
@@ -411,7 +411,7 @@ importers:
         version: link:../../packages/interface
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       tgrid:
         specifier: catalog:samchon
         version: 1.2.1
@@ -463,7 +463,7 @@ importers:
         version: link:../../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+        version: 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -488,10 +488,10 @@ importers:
     devDependencies:
       '@nestia/sdk':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/core@11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)
+        version: 11.0.1(@nestia/core@11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)
       nestia:
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -709,13 +709,13 @@ importers:
         version: link:../../packages/rpc
       '@nestia/core':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+        version: 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@nestjs/common':
         specifier: ^11.1.3
         version: 11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -862,10 +862,10 @@ importers:
         version: link:../utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+        version: 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^5.2.2
         version: 5.2.2(prettier@3.8.1)
@@ -1154,16 +1154,16 @@ importers:
         version: link:../packages/utils
       '@nestia/core':
         specifier: catalog:samchon
-        version: 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+        version: 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
       '@nestia/e2e':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@nestia/fetcher':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@nestia/migrate':
         specifier: catalog:samchon
-        version: 11.0.0
+        version: 11.0.1
       '@typia/interface':
         specifier: catalog:samchon
         version: 12.0.0
@@ -2461,31 +2461,31 @@ packages:
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
 
-  '@nestia/core@11.0.0':
-    resolution: {integrity: sha512-XL/aosXXHcY32V0dUMPXdVXYil2CbfAnmUKYW3y/DfTL7g56Cy6XLqg9GCdaw/yPIQLNFExh1D/Z79dWaT6g4g==}
+  '@nestia/core@11.0.1':
+    resolution: {integrity: sha512-hywiza0dywaj2Br7eFj8ucl0ylxvoyUAylBB8Fud4G5M0MEFQnCGJ7WLURfJreVmHpNEnGVAQzvDkqM2NoAnCA==}
     peerDependencies:
-      '@nestia/fetcher': ^11.0.0
+      '@nestia/fetcher': ^11.0.1
       '@nestjs/common': '>=7.0.1'
       '@nestjs/core': '>=7.0.1'
       reflect-metadata: '>=0.1.12'
       rxjs: '>=6.0.3'
       typia: ^12.0.0
 
-  '@nestia/e2e@11.0.0':
-    resolution: {integrity: sha512-IzASW439IQkpeoSxV96udVtVjebFb4Eded4yHVKz8tKqbMY7gj4sq0AlwjTyIyNYC0g0+Nw5Js1YGMLygLm4Ig==}
+  '@nestia/e2e@11.0.1':
+    resolution: {integrity: sha512-6lLqjLEPc2kiI+wYMZqHgUXQdCWwFditD8seTx+J0wRehM8YmUqRpK2Kg6cjqh2cW5TsWj1Cy4U03ZyjgSwFCQ==}
 
-  '@nestia/fetcher@11.0.0':
-    resolution: {integrity: sha512-5A5f43qSRupWtZ6l7PW5gDCi4rKXV570yebZF+PlNAlyZT7/j5xvR6mOUtY1VEuNM0uSylbxhYDBzn7Sj8u9zw==}
+  '@nestia/fetcher@11.0.1':
+    resolution: {integrity: sha512-1cDFHWqrtNEkEWclCH+TjBjnZ7nTm5jyi13Ph5DTnM0KX/89XnkRDVFwXw4yqYZ0YZNOQFCi4HLN+MT3Pl5dXA==}
 
-  '@nestia/migrate@11.0.0':
-    resolution: {integrity: sha512-tMrEuHyfWJKh3bH3dTMBi2csDNddYnc45c9NH+/uhsaJyQZikb2GsRUL3Gmlv2cIe7inUR/IQuTjyh5My/frqw==}
+  '@nestia/migrate@11.0.1':
+    resolution: {integrity: sha512-utUG+h9ocXqsYGbL2IGFbz0Xa+yeGaB4MkN+9giBt0wLgvdqNNnW4zjPfAW5cr1YWkUiC2iH2LM2YXm4EdfAcA==}
     hasBin: true
 
-  '@nestia/sdk@11.0.0':
-    resolution: {integrity: sha512-g/zHDg1Zu0b1YLwrwiI5RJ3DRccIX0MG18eNzzAD6x+6/8/Uquj/1UroHMA9KNEMUxc1iKqnk3HCmD2RvVmzFQ==}
+  '@nestia/sdk@11.0.1':
+    resolution: {integrity: sha512-4/aGnHwt5pnAJpVlQkXOWi/iEabxPXCwhLhxwl/opMTbDr0rVXOg/2S2qVYKfEsrwB5W2t9NvnYBQh1UTOei3A==}
     hasBin: true
     peerDependencies:
-      '@nestia/core': ^11.0.0
+      '@nestia/core': ^11.0.1
 
   '@nestjs/common@11.1.16':
     resolution: {integrity: sha512-JSIeW+USuMJkkcNbiOdcPkVCeI3TSnXstIVEPpp3HiaKnPRuSbUUKm9TY9o/XpIcPHWUOQItAtC5BiAwFdVITQ==}
@@ -6756,8 +6756,8 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nestia@11.0.0:
-    resolution: {integrity: sha512-7+s5Cq7Qz80D26WpG2Dfu6g5kLJQ581syeqgEzrUKhOSxj9r7E33c9FXjygVEDdYwvSuQWmGD5FZstXg71ZgYg==}
+  nestia@11.0.1:
+    resolution: {integrity: sha512-D2dylcAAgmqjMvlBg6V7ifsazQ8+LUVdBpsdt/KbW6tpz8zVqtuuN8KP/XZc8OeDHR6430dVyFH8HTZ2gmZTkw==}
     hasBin: true
 
   netmask@2.0.2:
@@ -10110,9 +10110,9 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nestia/core@11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))':
+  '@nestia/core@11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))':
     dependencies:
-      '@nestia/fetcher': 11.0.0
+      '@nestia/fetcher': 11.0.1
       '@nestjs/common': 11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.1.16(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@typia/core': 12.0.0
@@ -10132,14 +10132,14 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@nestia/e2e@11.0.0': {}
+  '@nestia/e2e@11.0.1': {}
 
-  '@nestia/fetcher@11.0.0':
+  '@nestia/fetcher@11.0.1':
     dependencies:
       '@typia/interface': 12.0.0
       '@typia/utils': 12.0.0
 
-  '@nestia/migrate@11.0.0':
+  '@nestia/migrate@11.0.1':
     dependencies:
       '@trivago/prettier-plugin-sort-imports': 4.3.0(prettier@3.8.1)
       '@typia/core': 12.0.0
@@ -10156,10 +10156,10 @@ snapshots:
       - '@vue/compiler-sfc'
       - supports-color
 
-  '@nestia/sdk@11.0.0(@nestia/core@11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)':
+  '@nestia/sdk@11.0.1(@nestia/core@11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)':
     dependencies:
-      '@nestia/core': 11.0.0(@nestia/fetcher@11.0.0)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
-      '@nestia/fetcher': 11.0.0
+      '@nestia/core': 11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.0(typescript@5.9.3))
+      '@nestia/fetcher': 11.0.1
       '@typia/core': 12.0.0
       '@typia/interface': 12.0.0
       '@typia/utils': 12.0.0
@@ -15230,7 +15230,7 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nestia@11.0.0:
+  nestia@11.0.1:
     dependencies:
       commander: 10.0.1
       comment-json: 4.6.2
