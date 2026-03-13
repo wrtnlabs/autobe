@@ -11,11 +11,7 @@ export default defineConfig({
   format: "esm",
   sourcemap: true,
   noExternal: [
-    "@samchon/openapi",
-    "@samchon/openapi/lib/converters/OpenApiV3_1Emender",
-    "@samchon/openapi/lib/composers/LlmSchemaComposer",
-    "@samchon/openapi/lib/converters/OpenApiV3Downgrader",
-    "@samchon/openapi/lib/utils/OpenApiExclusiveEmender",
+    "@typia/utils",
     "@autobe/compiler",
     "@autobe/agent",
     "@autobe/rpc",

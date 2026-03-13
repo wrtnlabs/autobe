@@ -756,6 +756,12 @@ importers:
       '@prisma/internals':
         specifier: catalog:prisma
         version: 7.2.0(typescript@5.9.3)
+      '@typia/interface':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313
+      '@typia/utils':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313
       openai:
         specifier: catalog:libs
         version: 6.15.0(ws@8.18.3)(zod@4.2.1)
@@ -866,6 +872,12 @@ importers:
       '@typescript-eslint/parser':
         specifier: catalog:typescript
         version: 8.40.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)
+      '@typia/interface':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313
+      '@typia/utils':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313
       embed-eslint:
         specifier: catalog:samchon
         version: 2.0.1(@typescript-eslint/eslint-plugin@8.40.0(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3))(@typescript-eslint/parser@8.40.0(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.34.0(jiti@2.6.1))(typescript@5.9.3)

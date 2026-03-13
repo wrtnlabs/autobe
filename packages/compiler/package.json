@@ -27,6 +27,8 @@
     "@nestia/core": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@typia/interface": "catalog:samchon",
+    "@typia/utils": "catalog:samchon",
     "@typescript-eslint/eslint-plugin": "catalog:typescript",
     "@typescript-eslint/parser": "catalog:typescript",
     "embed-eslint": "catalog:samchon",
