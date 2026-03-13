@@ -8,6 +8,16 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   base: "./",
+  server: {
+    allowedHosts: true,
+    proxy: {
+      "/api/langfuse": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/langfuse/, "/api/public"),
+      },
+    },
+  },
   build: {
     chunkSizeWarningLimit: 1000,
     rollupOptions: {

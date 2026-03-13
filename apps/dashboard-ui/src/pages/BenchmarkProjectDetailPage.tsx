@@ -19,6 +19,7 @@ import { PipelineTokenChart } from "../components/benchmark/PipelineTokenChart";
 import { PipelinePhaseDetailSection } from "../components/benchmark/PipelinePhaseDetailSection";
 import { GateDetailPanel } from "../components/benchmark/GateDetailPanel";
 import { PhaseDetailPanel } from "../components/benchmark/PhaseDetailPanel";
+import { LangfuseTracePanel } from "../components/benchmark/LangfuseTracePanel";
 import type {
   Grade,
   BenchmarkPhaseScore,
@@ -189,6 +190,12 @@ export function BenchmarkProjectDetailPage() {
           combination.
         </Alert>
       )}
+
+      {/* Langfuse LLM Trace */}
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        LLM Call Details
+      </Typography>
+      <LangfuseTracePanel model={entry.model} project={entry.project} />
 
       {/* Evaluation Results */}
       <Typography variant="h5" sx={{ mb: 2, mt: 2 }}>
