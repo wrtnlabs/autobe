@@ -17,7 +17,6 @@
     "@nestia/core": "catalog:samchon",
     "@nestia/e2e": "catalog:samchon",
     "@nestia/migrate": "catalog:samchon",
-    "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
     "tgrid": "catalog:samchon",
     "typia": "catalog:samchon"
