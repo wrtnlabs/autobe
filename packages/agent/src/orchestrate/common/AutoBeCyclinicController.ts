@@ -61,7 +61,8 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
   // ── Schema manipulation ──
 
   /**
-   * Removes `IComplete` from the request union when no write has succeeded.
+   * Removes `IAutoBeCyclinicComplete` from the request union when no write has
+   * succeeded.
    *
    * Same schema mutation pattern as
    * {@link AutoBePreliminaryController.fixApplication}.
@@ -84,9 +85,11 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
     const mapping: Record<string, string> =
       request["x-discriminator"]?.mapping ?? {};
 
-    // Remove IComplete from anyOf
+    // Remove IAutoBeCyclinicComplete from anyOf
     const completeRef = refs.find(
-      (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
+      (c) =>
+        c.$ref.endsWith("/IAutoBeCyclinicComplete") ||
+        c.$ref.endsWith(".IAutoBeCyclinicComplete"),
     );
     if (completeRef !== undefined) {
       const idx = request.anyOf.indexOf(completeRef);

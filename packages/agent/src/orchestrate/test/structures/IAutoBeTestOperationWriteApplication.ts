@@ -1,3 +1,5 @@
+import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
+
 /**
  * Function calling interface for the cyclinic write-compile-correct loop of E2E
  * test operation implementation.
@@ -54,7 +56,7 @@ export namespace IAutoBeTestOperationWriteApplication {
      *   compilation)
      * - `complete`: Finalize after successful write validation
      */
-    request: IWrite | IComplete;
+    request: IWrite | IAutoBeCyclinicComplete;
   }
 
   /**
@@ -99,24 +101,6 @@ export namespace IAutoBeTestOperationWriteApplication {
 
     /** Code review and final refinement process. */
     revise: IReviseProps;
-  }
-
-  /**
-   * Confirm and finalize the test implementation.
-   *
-   * Only available after a write submission has passed TypeScript compilation
-   * validation.
-   */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
-
-    /**
-     * Confirmation that you want to finalize.
-     *
-     * Must be `true` to proceed with finalization.
-     */
-    are_you_sure: boolean;
   }
 
   export interface IReviseProps {

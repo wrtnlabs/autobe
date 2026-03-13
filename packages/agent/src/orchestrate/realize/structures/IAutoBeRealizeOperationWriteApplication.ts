@@ -1,3 +1,4 @@
+import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
@@ -74,7 +75,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBeCyclinicComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
@@ -121,24 +122,6 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      * improvements and corrections applied.
      */
     revise: IReviseProps;
-  }
-
-  /**
-   * Confirm and finalize the operation implementation.
-   *
-   * Only available after a write submission has passed TypeScript compilation
-   * validation. Do not call this before receiving validation success.
-   */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
-
-    /**
-     * Confirmation that you want to finalize.
-     *
-     * Must be `true` to proceed with finalization.
-     */
-    are_you_sure: boolean;
   }
 
   export interface IReviseProps {

@@ -1,5 +1,6 @@
 import { AutoBeDatabase } from "@autobe/interface";
 
+import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -76,7 +77,7 @@ export namespace IAutoBeDatabaseCorrectApplication {
      */
     request:
       | IWrite
-      | IComplete
+      | IAutoBeCyclinicComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -113,23 +114,5 @@ export namespace IAutoBeDatabaseCorrectApplication {
      * business logic and descriptions must be preserved.
      */
     models: AutoBeDatabase.IModel[];
-  }
-
-  /**
-   * Confirm and finalize the database correction.
-   *
-   * Only available after a write submission has passed database validation. Do
-   * not call this before receiving validation success.
-   */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
-
-    /**
-     * Confirmation that you want to finalize.
-     *
-     * Must be `true` to proceed with finalization.
-     */
-    are_you_sure: boolean;
   }
 }
