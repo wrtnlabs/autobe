@@ -56,7 +56,8 @@ export namespace IAutoBeTestOperationWriteApplication {
      * Workflow: Strategic plan → TypeScript implementation → Functional test
      * code
      *
-     * Critical: NO import statements, start directly with 'export async function'
+     * Critical: NO import statements, start directly with 'export async
+     * function'
      */
     draft: string;
 
