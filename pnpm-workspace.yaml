@@ -19,6 +19,7 @@ catalogs:
     '@nestia/migrate': 11.0.0-dev.20260313-5
     '@nestia/sdk': 11.0.0-dev.20260313-5
     '@typia/interface': 12.0.0-dev.20260313-2
+    '@typia/unplugin': 12.0.0-dev.20260313-2
     '@typia/utils': 12.0.0-dev.20260313-2
     embed-eslint: ^2.0.1
     embed-prisma: ^3.0.0

@@ -1,4 +1,4 @@
-import { default as unplugin } from "@ryoppippi/unplugin-typia";
+import { default as unplugin } from "@typia/unplugin";
 import { defineConfig } from "tsdown";
 
 export default defineConfig({
