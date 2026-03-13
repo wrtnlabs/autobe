@@ -73,9 +73,10 @@ export namespace ArchiveLogger {
       content.push(
         `  - source: ${event.source}`,
         `  - function: ${event.function}`,
-        `  - invalid json: ${event.errorMessage}`,
+        `  - arguments: ${event.failure.input}`,
+        `  - errors: ${JSON.stringify(event.failure.errors)}`,
+        `  - partial data: ${JSON.stringify(event.failure.data)}`,
         `  - life: ${event.life}`,
-        `  - arguments: ${event.arguments}`,
       );
     else if (event.type === "preliminary") {
       content.push(
