@@ -1,10 +1,10 @@
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { singular } from "pluralize";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
-import { NamingConvention } from "@typia/utils";
 
 export const transformInterfaceSchemaRenameHistory = (props: {
   tableNames: string[];

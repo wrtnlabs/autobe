@@ -1,9 +1,9 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
-import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeJsonSchemaValidator {
   export const isObjectType = (props: {

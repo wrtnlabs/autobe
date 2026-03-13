@@ -5,9 +5,9 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
-import { Singleton } from "tstl";
 import { IHttpMigrateApplication } from "@typia/interface";
 import { HttpMigration } from "@typia/utils";
+import { Singleton } from "tstl";
 import typia, { OpenApi } from "typia";
 import { v7 } from "uuid";
 

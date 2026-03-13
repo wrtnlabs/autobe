@@ -8,6 +8,7 @@ import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
+import { NamingConvention } from "@typia/utils";
 import { IPointer } from "tstl";
 import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
@@ -22,7 +23,6 @@ import { AutoBeTestOperationProgrammer } from "./programmers/AutoBeTestOperation
 import { IAutoBeTestOperationProcedure } from "./structures/IAutoBeTestOperationProcedure";
 import { IAutoBeTestOperationWriteApplication } from "./structures/IAutoBeTestOperationWriteApplication";
 import { IAutoBeTestScenarioArtifacts } from "./structures/IAutoBeTestScenarioArtifacts";
-import { NamingConvention } from "@typia/utils";
 
 export async function orchestrateTestOperationWrite(
   ctx: AutoBeContext,

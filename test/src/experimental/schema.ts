@@ -5,10 +5,10 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
+import { OpenApi } from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { prepare_interface_agent } from "../agent/internal/prepare_interface_agent";
-import { OpenApi } from "typia";
 
 const main = async (): Promise<void> => {
   const load = async <T>(file: string) => {

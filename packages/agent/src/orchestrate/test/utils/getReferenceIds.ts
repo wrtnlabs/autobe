@@ -1,5 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { OpenApiTypeChecker } from "@typia/utils";
+
 export const getReferenceIds = (props: {
   document: AutoBeOpenApi.IDocument;
   operation: AutoBeOpenApi.IOperation;

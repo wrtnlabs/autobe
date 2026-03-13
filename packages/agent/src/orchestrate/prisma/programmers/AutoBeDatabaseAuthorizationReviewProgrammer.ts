@@ -5,11 +5,11 @@ import {
   AutoBeDatabaseComponentTableRevise,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { plural } from "pluralize";
 import { IValidation } from "typia";
 
 import { AutoBeDatabaseComponentReviewProgrammer } from "./AutoBeDatabaseComponentReviewProgrammer";
-import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
   export const validate = (props: {

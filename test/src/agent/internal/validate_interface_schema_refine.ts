@@ -6,7 +6,6 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
-
 import { OpenApi } from "typia";
 
 import { TestGlobal } from "../../TestGlobal";

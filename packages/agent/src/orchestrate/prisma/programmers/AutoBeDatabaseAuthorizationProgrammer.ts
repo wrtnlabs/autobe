@@ -3,11 +3,11 @@ import {
   AutoBeDatabaseComponentTableDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { plural } from "pluralize";
 import { IValidation } from "typia";
 
 import { AutoBeDatabaseComponentProgrammer } from "./AutoBeDatabaseComponentProgrammer";
-import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /** Validate authorization tables for an actor. */

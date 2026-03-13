@@ -7,6 +7,7 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import path from "path";
 import { IValidation } from "typia";
 
@@ -15,7 +16,6 @@ import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
 import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
 import { AutoBeTestPrepareProgrammer } from "./AutoBeTestPrepareProgrammer";
-import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeTestGenerateProgrammer {
   /* ----------------------------------------------------------------

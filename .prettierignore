@@ -5,6 +5,9 @@ node_modules/
 test/results/
 
 apps/hackathon-server/src/prisma/
+apps/hackathon-api/src/functional/
+apps/playground-api/src/functional/
+
 packages/compiler/src/raw/
 packages/agent/src/constants/AutoBeSystemPromptConstant.ts
 packages/agent/src/constants/AutoBeTemplateFileConstant.ts
