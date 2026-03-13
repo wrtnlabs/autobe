@@ -7,7 +7,7 @@ import {
   AutoBeRealizeCollectorFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@typia/utils";
 import typia from "typia";
 import { v7 } from "uuid";
 

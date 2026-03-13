@@ -3,14 +3,14 @@ import {
   AutoBeTestScenario,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { OpenApi } from "@samchon/openapi";
+import { OpenApiConverter } from "@typia/utils";
 
 import { TestFactory } from "../../../TestFactory";
 
 export const prepare_compiler_test = async (factory: TestFactory) => {
   const compiler: IAutoBeCompiler = factory.createCompiler();
   const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
-    OpenApi.convert(
+    OpenApiConverter.upgradeDocument(
       await fetch(
         "https://raw.githubusercontent.com/samchon/bbs-backend/master/packages/api/swagger.json",
       ).then((r) => r.json()),

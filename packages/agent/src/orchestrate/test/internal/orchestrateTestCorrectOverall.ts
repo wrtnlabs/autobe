@@ -2,8 +2,8 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
+import { ILlmController } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";

@@ -1,10 +1,10 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import {
-  HttpMigration,
   IHttpMigrateApplication,
   OpenApi,
-  OpenApiV3_1,
-} from "@samchon/openapi";
+  OpenApiV3_2,
+} from "@typia/interface";
+import { HttpMigration, OpenApiConverter } from "@typia/utils";
 import { HashMap } from "tstl";
 
 import { StringUtil } from "../StringUtil";
@@ -74,16 +74,16 @@ export function transformOpenApiDocument(
     };
   }
 
-  const document: OpenApi.IDocument = OpenApi.convert({
-    openapi: "3.1.0",
+  const document: OpenApi.IDocument = OpenApiConverter.upgradeDocument({
+    openapi: "3.2.0",
     paths,
     components: input.components,
-  } as OpenApiV3_1.IDocument);
+  } as OpenApiV3_2.IDocument);
   const migrate: IHttpMigrateApplication = HttpMigration.application(document);
   migrate.routes.forEach((r) => {
     if (r.method === "head") return;
     const name: string = dict.get({
-      method: r.method,
+      method: r.method as "post",
       path: r.path,
     });
     if (r.accessor.length >= 2 && r.accessor.at(-2) === name) r.accessor.pop();

@@ -1,7 +1,7 @@
 import { IMicroAgenticaHistoryJson } from "@agentica/core";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { Escaper } from "typia/lib/utils/Escaper";
+import { NamingConvention } from "@typia/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -169,7 +169,7 @@ const traverseReference = (props: {
     for (const [key, value] of Object.entries(props.schema.properties))
       traverseReference({
         ...props,
-        accessor: Escaper.variable(key)
+        accessor: NamingConvention.variable(key)
           ? `${props.accessor}.${key}`
           : `${props.accessor}[${JSON.stringify(key)}]`,
         schema: value,

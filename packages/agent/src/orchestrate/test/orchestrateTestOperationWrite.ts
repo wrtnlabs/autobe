@@ -8,10 +8,9 @@ import {
   AutoBeTestScenario,
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
+import { NamingConvention } from "@typia/utils";
 import { IPointer } from "tstl";
-import typia from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

@@ -1,10 +1,10 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import {
-  HttpMigration,
   IHttpMigrateApplication,
   IHttpMigrateRoute,
   OpenApi,
-} from "@samchon/openapi";
+} from "@typia/interface";
+import { HttpMigration } from "@typia/utils";
 
 import { transformOpenApiDocument } from "./transformOpenApiDocument";
 

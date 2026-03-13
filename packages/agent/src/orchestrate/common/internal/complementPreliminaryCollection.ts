@@ -6,10 +6,9 @@ import {
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { NamingConvention, OpenApiTypeChecker } from "@typia/utils";
 import pluralize from "pluralize";
 import { HashMap, HashSet, Pair } from "tstl";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeRealizeCollectorProgrammer } from "../../realize/programmers/AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "../../realize/programmers/AutoBeRealizeTransformerProgrammer";

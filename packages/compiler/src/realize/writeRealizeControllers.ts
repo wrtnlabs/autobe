@@ -5,8 +5,10 @@ import {
   IAutoBeRealizeControllerProps,
 } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
-import { NestiaMigrateApplication } from "@nestia/migrate";
-import { NestiaMigrateNestMethodProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateNestMethodProgrammer";
+import {
+  NestiaMigrateApplication,
+  NestiaMigrateNestMethodProgrammer,
+} from "@nestia/migrate";
 import path from "path";
 import ts from "typescript";
 

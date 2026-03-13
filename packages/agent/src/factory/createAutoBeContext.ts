@@ -44,7 +44,6 @@ import typia from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
-import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "../context/AutoBeContext";
 import { AutoBeState } from "../context/AutoBeState";
 import { AutoBeTokenUsage } from "../context/AutoBeTokenUsage";
@@ -55,7 +54,6 @@ import { TimedConversation } from "../utils/TimedConversation";
 import { forceRetry } from "../utils/forceRetry";
 import { consentFunctionCall } from "./consentFunctionCall";
 import { getCriticalCompiler } from "./getCriticalCompiler";
-import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { mergeSystemMessages } from "./mergeSystemMessages";
 // import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
@@ -150,15 +148,6 @@ export const createAutoBeContext = (props: {
             ...(props.config ?? {}),
             executor: {
               describe: false,
-            },
-            systemPrompt: {
-              execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
-              validate: (events) => getValidationErrorPrompt(events),
-              jsonParseError: (event) =>
-                AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR.replace(
-                  "${{ERROR_MESSAGE}}",
-                  event.errorMessage,
-                ),
             },
             retry:
               next.retry ??

@@ -31,7 +31,6 @@
     "typings": "lib/index.d.ts"
   },
   "dependencies": {
-    "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
     "typia": "catalog:samchon"
   },

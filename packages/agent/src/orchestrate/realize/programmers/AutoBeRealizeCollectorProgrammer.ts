@@ -7,14 +7,11 @@ import {
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
 import {
-  ILlmApplication,
-  ILlmSchema,
-  IValidation,
   LlmTypeChecker,
+  NamingConvention,
   OpenApiTypeChecker,
-} from "@samchon/openapi";
-import typia from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+} from "@typia/utils";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 

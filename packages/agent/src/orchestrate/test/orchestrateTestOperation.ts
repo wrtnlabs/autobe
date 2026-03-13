@@ -8,8 +8,7 @@ import {
   AutoBeTestPrepareFunction,
   AutoBeTestScenario,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
-import typia from "typia";
+import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";

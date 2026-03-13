@@ -3,15 +3,9 @@ import {
   AutoBeInterfaceEndpointDesign,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  IValidation,
-  LlmTypeChecker,
-} from "@samchon/openapi";
+import { LlmTypeChecker, NamingConvention } from "@typia/utils";
 import { singular } from "pluralize";
-import typia from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 export namespace AutoBeInterfaceEndpointProgrammer {
   /**

@@ -14,13 +14,12 @@
     "@autobe/compiler": "workspace:^",
     "@autobe/interface": "workspace:^",
     "@autobe/rpc": "workspace:^",
-    "@samchon/openapi": "catalog:samchon",
     "openai": "catalog:libs",
     "tgrid": "catalog:samchon",
     "typia": "catalog:samchon"
   },
   "devDependencies": {
-    "@ryoppippi/unplugin-typia": "^2.6.5",
+    "@typia/unplugin": "catalog:samchon",
     "tsdown": "^0.14.0"
   }
 }

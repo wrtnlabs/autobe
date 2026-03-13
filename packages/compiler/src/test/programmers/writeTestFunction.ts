@@ -3,8 +3,9 @@ import {
   AutoBeOpenApiEndpointComparator,
   transformOpenApiDocument,
 } from "@autobe/utils";
-import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
-import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
+import { NestiaMigrateImportProgrammer } from "@nestia/migrate";
+import { IHttpMigrateApplication } from "@typia/interface";
+import { HttpMigration } from "@typia/utils";
 import { HashMap, Pair } from "tstl";
 import ts, { FunctionDeclaration } from "typescript";
 

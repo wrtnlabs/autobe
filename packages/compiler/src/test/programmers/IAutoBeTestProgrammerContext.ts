@@ -1,5 +1,5 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import { NestiaMigrateImportProgrammer } from "@nestia/migrate/lib/programmers/NestiaMigrateImportProgrammer";
+import { NestiaMigrateImportProgrammer } from "@nestia/migrate";
 import { HashMap } from "tstl";
 
 import { IAutoBeTestApiFunction } from "./IAutoBeTestApiFunction";

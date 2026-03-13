@@ -1,6 +1,6 @@
 import { AutoBeTest } from "@autobe/interface";
+import { NamingConvention } from "@typia/utils";
 import ts from "typescript";
-import { Escaper } from "typia/lib/utils/Escaper";
 
 import { IAutoBeTestProgrammerContext } from "./IAutoBeTestProgrammerContext";
 import { writeTestExpression } from "./writeTestExpression";
@@ -44,7 +44,7 @@ export namespace AutoBeTestLiteralProgrammer {
     ts.factory.createObjectLiteralExpression(
       expr.properties.map((e) =>
         ts.factory.createPropertyAssignment(
-          Escaper.variable(e.name)
+          NamingConvention.variable(e.name)
             ? ts.factory.createIdentifier(e.name)
             : ts.factory.createStringLiteral(e.name),
           writeTestExpression(ctx, e.value),

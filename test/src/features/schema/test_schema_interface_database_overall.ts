@@ -6,13 +6,8 @@ import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orche
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeDatabase, AutoBeHistory } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import {
-  ILlmApplication,
-  ILlmFunction,
-  ILlmSchema,
-  LlmTypeChecker,
-} from "@samchon/openapi";
-import typia from "typia";
+import { LlmTypeChecker } from "@typia/utils";
+import typia, { ILlmApplication, ILlmFunction, ILlmSchema } from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 

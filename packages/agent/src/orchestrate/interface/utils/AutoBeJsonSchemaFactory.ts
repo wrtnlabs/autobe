@@ -4,9 +4,8 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
-import { OpenApiV3_1Emender } from "@samchon/openapi/lib/converters/OpenApiV3_1Emender";
-import typia, { tags } from "typia";
+import { OpenApiConverter, OpenApiTypeChecker } from "@typia/utils";
+import typia, { OpenApi, tags } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeInterfaceSchemaProgrammer } from "../programmers/AutoBeInterfaceSchemaProgrammer";
@@ -366,13 +365,11 @@ export namespace AutoBeJsonSchemaFactory {
   ): Schema => {
     const id: string = v7();
     const emended: AutoBeOpenApi.IJsonSchema = (
-      ((
-        OpenApiV3_1Emender.convertComponents({
-          schemas: {
-            [id]: schema,
-          },
-        }) as AutoBeOpenApi.IComponents
-      ).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchema>
+      (OpenApiConverter.upgradeComponents({
+        schemas: {
+          [id]: schema,
+        },
+      }).schemas ?? {}) as Record<string, AutoBeOpenApi.IJsonSchema>
     )[id];
 
     const visited: WeakSet<object> = new WeakSet();

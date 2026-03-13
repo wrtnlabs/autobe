@@ -7,9 +7,9 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import path from "path";
 import { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";

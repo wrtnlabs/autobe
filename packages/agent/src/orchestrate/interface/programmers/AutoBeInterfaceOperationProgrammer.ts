@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { IValidation } from "typia";
-import { Escaper } from "typia/lib/utils/Escaper";
 
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
 
@@ -38,7 +38,7 @@ export namespace AutoBeInterfaceOperationProgrammer {
         `,
       });
     // operation name
-    if (Escaper.variable(props.operation.name) === false)
+    if (NamingConvention.variable(props.operation.name) === false)
       props.errors.push({
         path: `${props.accessor}.name`,
         expected: "<valid_variable_name>",

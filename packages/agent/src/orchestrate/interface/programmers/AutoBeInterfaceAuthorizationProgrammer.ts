@@ -1,8 +1,8 @@
 import { AutoBeAnalyze, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { singular } from "pluralize";
 import typia, { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeInterfaceOperationProgrammer } from "./AutoBeInterfaceOperationProgrammer";
 

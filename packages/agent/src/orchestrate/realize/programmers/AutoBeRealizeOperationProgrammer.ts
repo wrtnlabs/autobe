@@ -6,7 +6,8 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { IValidation, OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@typia/utils";
+import { IValidation } from "typia";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";

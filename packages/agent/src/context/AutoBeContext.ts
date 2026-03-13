@@ -23,7 +23,7 @@ import {
   IAutoBeGetFilesOptions,
   IAutoBeTokenUsageJson,
 } from "@autobe/interface";
-import { ILlmController } from "@samchon/openapi";
+import { ILlmController } from "typia";
 
 import { AutoBeState } from "./AutoBeState";
 import { AutoBeTokenUsage } from "./AutoBeTokenUsage";

@@ -51,7 +51,6 @@
     "@prisma/adapter-pg": "catalog:prisma",
     "@prisma/client": "catalog:prisma",
     "@prisma/client-runtime-utils": "catalog:prisma",
-    "@samchon/openapi": "catalog:samchon",
     "bcryptjs": "^3.0.2",
     "csv-parse": "^6.1.0",
     "dotenv": "^16.5.0",

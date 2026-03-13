@@ -9,7 +9,6 @@
   },
   "devDependencies": {
     "typescript": "catalog:typescript",
-    "@autobe/interface": "workspace:^",
-    "@samchon/openapi": "catalog:samchon"
+    "@autobe/interface": "workspace:^"
   }
 }

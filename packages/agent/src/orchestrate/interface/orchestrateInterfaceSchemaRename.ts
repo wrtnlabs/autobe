@@ -6,9 +6,9 @@ import {
   AutoBeOpenApi,
   AutoBeProgressEventBase,
 } from "@autobe/interface";
-import { ILlmApplication, OpenApi, OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@typia/utils";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { ILlmApplication, OpenApi } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

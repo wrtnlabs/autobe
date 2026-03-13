@@ -1,4 +1,5 @@
-import { OpenApi } from "@samchon/openapi";
+import { OpenApi } from "@typia/interface";
+import { OpenApiConverter } from "@typia/utils";
 import cp from "child_process";
 import fs from "fs";
 import { VariadicSingleton } from "tstl";
@@ -49,7 +50,7 @@ export namespace RepositoryFileSystem {
     project: string,
   ): Promise<OpenApi.IDocument> => {
     await vs.get(account, project);
-    return OpenApi.convert(
+    return OpenApiConverter.upgradeDocument(
       JSON.parse(
         await fs.promises.readFile(
           `${ROOT}/internals/repositories/${account}/${project}/packages/api/swagger.json`,

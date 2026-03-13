@@ -17,7 +17,6 @@ import { AutoBeConfigConstant } from "../constants/AutoBeConfigConstant";
 import { AutoBeSystemPromptConstant } from "../constants/AutoBeSystemPromptConstant";
 import { IAutoBeConfig } from "../structures/IAutoBeConfig";
 import { IAutoBeVendor } from "../structures/IAutoBeVendor";
-import { getValidationErrorPrompt } from "./getValidationErrorPrompt";
 import { mergeSystemMessages } from "./mergeSystemMessages";
 // import { supportFunctionCallFallback } from "./supportFunctionCallFallback";
 import { supportMistral } from "./supportMistral";
@@ -70,15 +69,6 @@ export const consentFunctionCall = async (props: {
       ...(props.config ?? []),
       executor: {
         describe: false,
-      },
-      systemPrompt: {
-        execute: () => AutoBeSystemPromptConstant.AGENTICA_EXECUTE,
-        validate: (events) => getValidationErrorPrompt(events),
-        jsonParseError: (event) =>
-          AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR.replace(
-            "${{ERROR_MESSAGE}}",
-            event.errorMessage,
-          ),
       },
       retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
       // stream: false,

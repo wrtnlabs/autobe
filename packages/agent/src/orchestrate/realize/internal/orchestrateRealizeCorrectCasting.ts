@@ -5,9 +5,8 @@ import {
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../../constants/AutoBeConfigConstant";
