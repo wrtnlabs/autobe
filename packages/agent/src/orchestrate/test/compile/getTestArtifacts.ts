@@ -3,7 +3,7 @@ import {
   AutoBeTestScenario,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@typia/utils";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";

@@ -15,7 +15,7 @@ import {
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { writePrismaApplication } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import { NamingConvention } from "@typia/utils";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

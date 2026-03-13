@@ -1,6 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { OpenApiTypeChecker } from "@typia/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";

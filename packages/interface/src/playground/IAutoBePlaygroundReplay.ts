@@ -248,7 +248,7 @@ export namespace IAutoBePlaygroundReplay {
      * insights into the scope and complexity of the generated application.
      *
      * @example
-     *   { actors: 3, documents: 11 }  // Analyze phase
+     *   {actors: 3, documents: 11} //   Analyze phase
      *   { operations: 34, schemas: 35 }  // Interface phase
      */
     commodity: Record<string, number>;

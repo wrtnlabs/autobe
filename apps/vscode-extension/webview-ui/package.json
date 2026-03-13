@@ -13,7 +13,6 @@
     "@autobe/interface": "workspace:*",
     "@autobe/ui": "workspace:^",
     "@autobe/vscode-extension/interface": "workspace:*",
-    "@samchon/openapi": "catalog:samchon",
     "@tailwindcss/vite": "^4.1.11",
     "@types/react": "catalog:ui",
     "@types/react-dom": "catalog:ui",

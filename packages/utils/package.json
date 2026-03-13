@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "@autobe/interface": "workspace:^",
-    "@samchon/openapi": "catalog:samchon",
+    "@typia/interface": "catalog:samchon",
+    "@typia/utils": "catalog:samchon",
     "tstl": "catalog:samchon",
     "typia": "catalog:samchon"
   },

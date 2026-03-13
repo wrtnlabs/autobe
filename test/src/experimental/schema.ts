@@ -5,7 +5,7 @@ import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
-import { OpenApi } from "@samchon/openapi";
+import { OpenApi } from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 import { prepare_interface_agent } from "../agent/internal/prepare_interface_agent";

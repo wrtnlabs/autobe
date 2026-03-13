@@ -1,7 +1,7 @@
 import { AutoBeOpenApi, IAutoBeInterfaceCompiler } from "@autobe/interface";
 import { invertOpenApiDocument, transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
-import { OpenApi } from "@samchon/openapi";
+import { OpenApi } from "typia";
 
 import { ArrayUtil } from "../utils/ArrayUtil";
 import { FilePrinter } from "../utils/FilePrinter";

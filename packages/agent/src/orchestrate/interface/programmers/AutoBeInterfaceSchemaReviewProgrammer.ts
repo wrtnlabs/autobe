@@ -11,8 +11,8 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
-import typia, { IValidation } from "typia";
+import { LlmTypeChecker } from "@typia/utils";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";

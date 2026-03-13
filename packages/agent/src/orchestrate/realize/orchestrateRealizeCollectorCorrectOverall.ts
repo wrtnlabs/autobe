@@ -4,8 +4,7 @@ import {
   AutoBeRealizeCollectorFunction,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
-import typia from "typia";
+import typia, { ILlmApplication, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";

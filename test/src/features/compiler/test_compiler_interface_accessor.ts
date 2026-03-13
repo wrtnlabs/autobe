@@ -1,6 +1,7 @@
 import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
+import { IHttpMigrateApplication } from "@typia/interface";
+import { HttpMigration } from "@typia/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";

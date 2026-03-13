@@ -7,10 +7,8 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
+import { NamingConvention, OpenApiTypeChecker } from "@typia/utils";
 import { IValidation } from "typia";
-import { Escaper } from "typia/lib/utils/Escaper";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
@@ -55,7 +53,7 @@ export namespace AutoBeTestPrepareProgrammer {
         return {
 ${Object.keys(props.schema.properties).map(
   (key) =>
-    `    ${Escaper.variable(key) ? key : `[${JSON.stringify(key)}]`}: ...,`,
+    `    ${NamingConvention.variable(key) ? key : `[${JSON.stringify(key)}]`}: ...,`,
 )}
         };
       }

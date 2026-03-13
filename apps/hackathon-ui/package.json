@@ -40,7 +40,6 @@
     "@emotion/styled": "catalog:ui",
     "@mui/icons-material": "^7.1.0",
     "@mui/material": "^7.1.0",
-    "@samchon/openapi": "catalog:samchon",
     "react": "catalog:ui",
     "react-dom": "catalog:ui",
     "sonner": "^2.0.7",

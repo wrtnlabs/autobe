@@ -1,6 +1,6 @@
 import { AutoBeDatabase } from "@autobe/interface";
+import { NamingConvention } from "@typia/utils";
 import { plural, singular } from "pluralize";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 export namespace AutoBeDatabaseModelProgrammer {
   export const emend = (model: AutoBeDatabase.IModel): void => {

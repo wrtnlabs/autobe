@@ -6,8 +6,7 @@ import {
   AutoBeRealizeOperationFunction,
   AutoBeRealizeTransformerFunction,
 } from "@autobe/interface";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
-import typia from "typia";
+import typia, { ILlmApplication, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateEmptyCode } from "../../utils/validateEmptyCode";

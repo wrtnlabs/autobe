@@ -1,10 +1,6 @@
 import { AutoBeOpenApi } from "@autobe/interface";
-import {
-  HttpMigration,
-  IHttpMigrateApplication,
-  OpenApi,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
+import { IHttpMigrateApplication, OpenApi } from "@typia/interface";
+import { HttpMigration, OpenApiTypeChecker } from "@typia/utils";
 
 export function invertOpenApiDocument(
   document: OpenApi.IDocument,

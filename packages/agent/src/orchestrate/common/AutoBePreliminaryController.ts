@@ -5,11 +5,11 @@ import {
   AutoBePreliminaryKind,
 } from "@autobe/interface";
 import {
+  IJsonSchemaApplication,
   ILlmApplication,
   IValidation,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
-import { IJsonSchemaApplication } from "typia";
+} from "@typia/interface";
+import { OpenApiTypeChecker } from "@typia/utils";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";

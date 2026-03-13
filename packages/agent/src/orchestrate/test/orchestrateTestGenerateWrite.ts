@@ -6,9 +6,8 @@ import {
   AutoBeTestWriteEvent,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker } from "@autobe/utils";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

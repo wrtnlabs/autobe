@@ -8,8 +8,8 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
-import typia, { IValidation } from "typia";
+import { LlmTypeChecker } from "@typia/utils";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 import { AutoBeJsonSchemaFactory } from "../utils/AutoBeJsonSchemaFactory";
 import { AutoBeInterfaceSchemaProgrammer } from "./AutoBeInterfaceSchemaProgrammer";

@@ -1,6 +1,6 @@
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
-import { OpenApi } from "@samchon/openapi";
+import { OpenApiConverter } from "@typia/utils";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
@@ -11,7 +11,7 @@ export const test_compiler_interface_write = async (
 ): Promise<void> => {
   const compiler: IAutoBeCompiler = factory.createCompiler();
   const document: AutoBeOpenApi.IDocument = await compiler.interface.invert(
-    OpenApi.convert(
+    OpenApiConverter.upgradeDocument(
       await fetch(
         "https://raw.githubusercontent.com/samchon/bbs-backend/master/packages/api/swagger.json",
       ).then((r) => r.json()),

@@ -6,9 +6,8 @@ import {
   IAutoBeCompiler,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";

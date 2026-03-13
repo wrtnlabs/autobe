@@ -28,7 +28,7 @@ const singleton = new Singleton(async (compiler: IAutoBeTestCompiler) => {
     ...external("node_modules/@nestia/e2e/lib/RandomGenerator.d.ts"),
     ...external("node_modules/@nestia/e2e/lib/TestValidator.d.ts"),
     ...external("node_modules/@nestia/fetcher/lib/IConnection.d.ts"),
-    ...external("node_modules/@samchon/openapi/lib/http/HttpError.d.ts"),
+    ...external("node_modules/@typia/utils/lib/http/HttpError.d.ts"),
     ...external("node_modules/typia/lib/module.d.ts"),
     ...external("node_modules/tstl/lib/module.d.ts"),
     ...filter(

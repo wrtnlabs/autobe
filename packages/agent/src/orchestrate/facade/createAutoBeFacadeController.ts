@@ -8,8 +8,7 @@ import {
   AutoBeTestHistory,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmApplication, ILlmController } from "@samchon/openapi";
-import typia from "typia";
+import typia, { ILlmApplication, ILlmController } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateAnalyze } from "../analyze/orchestrateAnalyze";

@@ -1,7 +1,7 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import { NamingConvention } from "@typia/utils";
 import { IValidation } from "typia";
-import { Escaper } from "typia/lib/utils/Escaper";
 
 import { AutoBeJsonSchemaFactory } from "./AutoBeJsonSchemaFactory";
 
@@ -94,13 +94,13 @@ export namespace AutoBeJsonSchemaValidator {
           Note that, this is not a recommendation, but an instruction you must follow.
         `,
       });
-    if (elements.every(Escaper.variable) === false)
+    if (elements.every(NamingConvention.variable) === false)
       props.errors.push({
         path: props.path,
         expected: StringUtil.trim`
           Valid variable name
 
-          ${elements.map((s) => `- ${s}: ${Escaper.variable(s) ? "valid" : "invalid"}`).join("\n")}
+          ${elements.map((s) => `- ${s}: ${NamingConvention.variable(s) ? "valid" : "invalid"}`).join("\n")}
         `,
         value: transform(props.key),
         description: StringUtil.trim`
@@ -510,7 +510,7 @@ export namespace AutoBeJsonSchemaValidator {
       if (key !== "id" && key.endsWith("_id") === false) continue;
 
       const accessor: string = `${props.path}.properties${
-        Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
+        NamingConvention.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`
       }`;
       const inspect = (schema: AutoBeOpenApi.IJsonSchema): boolean =>
         AutoBeOpenApiTypeChecker.isString(schema) ||
@@ -553,9 +553,9 @@ export namespace AutoBeJsonSchemaValidator {
   }): void => {
     if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
     for (const key of Object.keys(props.schema.properties)) {
-      if (Escaper.reserved(key))
+      if (NamingConvention.reserved(key))
         props.errors.push({
-          path: `${props.path}.properties${Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
+          path: `${props.path}.properties${NamingConvention.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
           expected: `none system reserved word`,
           value: key,
           description: StringUtil.trim`
@@ -571,9 +571,9 @@ export namespace AutoBeJsonSchemaValidator {
             must follow.
           `,
         });
-      else if (Escaper.variable(key) === false)
+      else if (NamingConvention.variable(key) === false)
         props.errors.push({
-          path: `${props.path}.properties${Escaper.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
+          path: `${props.path}.properties${NamingConvention.variable(key) ? `.${key}` : `[${JSON.stringify(key)}]`}`,
           expected: `valid variable name`,
           value: key,
           description: StringUtil.trim`

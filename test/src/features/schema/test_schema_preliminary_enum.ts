@@ -9,9 +9,8 @@ import { IAutoBeInterfaceSchemaReviewApplication } from "@autobe/agent/src/orche
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { AutoBeCompiler } from "@autobe/compiler";
 import { TestValidator } from "@nestia/e2e";
-import { ILlmApplication, ILlmSchema } from "@samchon/openapi";
 import OpenAI from "openai";
-import typia from "typia";
+import typia, { ILlmApplication, ILlmSchema } from "typia";
 
 import { TestGlobal } from "../../TestGlobal";
 

@@ -7,14 +7,8 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmSchema,
-  IValidation,
-  LlmTypeChecker,
-  OpenApiTypeChecker,
-} from "@samchon/openapi";
-import typia from "typia";
+import { LlmTypeChecker, OpenApiTypeChecker } from "@typia/utils";
+import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
