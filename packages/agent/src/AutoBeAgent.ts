@@ -20,7 +20,6 @@ import { v7 } from "uuid";
 
 import { AutoBeAgentBase } from "./AutoBeAgentBase";
 import { AutoBeConfigConstant } from "./constants/AutoBeConfigConstant";
-import { AutoBeSystemPromptConstant } from "./constants/AutoBeSystemPromptConstant";
 import { AutoBeContext } from "./context/AutoBeContext";
 import { AutoBeState } from "./context/AutoBeState";
 import { AutoBeTokenUsage } from "./context/AutoBeTokenUsage";
@@ -29,7 +28,6 @@ import { createAgenticaHistory } from "./factory/createAgenticaHistory";
 import { createAutoBeContext } from "./factory/createAutoBeContext";
 import { createAutoBeState } from "./factory/createAutoBeState";
 import { getAutoBeGenerated } from "./factory/getAutoBeGenerated";
-import { getValidationErrorPrompt } from "./factory/getValidationErrorPrompt";
 import { mergeSystemMessages } from "./factory/mergeSystemMessages";
 // import { supportFunctionCallFallback } from "./factory/supportFunctionCallFallback";
 import { supportMistral } from "./factory/supportMistral";
@@ -174,12 +172,6 @@ export class AutoBeAgent extends AutoBeAgentBase implements IAutoBeAgent {
         },
         systemPrompt: {
           execute: () => transformFacadeStateMessage(this.state_),
-          validate: (events) => getValidationErrorPrompt(events),
-          jsonParseError: (event) =>
-            AutoBeSystemPromptConstant.AGENTICA_JSON_PARSE_ERROR.replace(
-              "${{ERROR_MESSAGE}}",
-              event.errorMessage,
-            ),
         },
         retry: props.config?.retry ?? AutoBeConfigConstant.VALIDATION_RETRY,
         // stream: false,

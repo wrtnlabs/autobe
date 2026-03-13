@@ -1,12 +1,12 @@
 import { AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { OpenApiTypeChecker } from "@samchon/openapi";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { getReferenceIds } from "../../test/utils/getReferenceIds";
+import { OpenApiTypeChecker } from "@typia/utils";
 
 // @todo -> RAG
 export const transformInterfacePrerequisiteHistory = (props: {

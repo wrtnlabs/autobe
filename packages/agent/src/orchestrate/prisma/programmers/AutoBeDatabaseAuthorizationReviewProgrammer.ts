@@ -7,9 +7,9 @@ import {
 import { StringUtil } from "@autobe/utils";
 import { plural } from "pluralize";
 import { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeDatabaseComponentReviewProgrammer } from "./AutoBeDatabaseComponentReviewProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeDatabaseAuthorizationReviewProgrammer {
   export const validate = (props: {

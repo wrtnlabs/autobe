@@ -8,10 +8,8 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
-import typia from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -30,6 +28,7 @@ import { IAutoBeInterfaceOperationApplication } from "./structures/IAutoBeInterf
 import { AutoBeJsonSchemaCollection } from "./utils/AutoBeJsonSchemaCollection";
 import { AutoBeJsonSchemaFactory } from "./utils/AutoBeJsonSchemaFactory";
 import { AutoBeJsonSchemaNamingConvention } from "./utils/AutoBeJsonSchemaNamingConvention";
+import { NamingConvention } from "@typia/utils";
 
 export async function orchestrateInterfaceOperation(
   ctx: AutoBeContext,

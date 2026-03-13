@@ -15,7 +15,6 @@ import {
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
 import { writePrismaApplication } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -30,6 +29,7 @@ import { orchestratePrismaGroup } from "./orchestratePrismaGroup";
 import { orchestratePrismaGroupReview } from "./orchestratePrismaGroupReview";
 import { orchestratePrismaSchema } from "./orchestratePrismaSchema";
 import { orchestratePrismaSchemaReview } from "./orchestratePrismaSchemaReview";
+import { NamingConvention } from "@typia/utils";
 
 export const orchestratePrisma = async (
   ctx: AutoBeContext,

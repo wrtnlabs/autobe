@@ -5,9 +5,9 @@ import {
 import { StringUtil } from "@autobe/utils";
 import { plural } from "pluralize";
 import { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeDatabaseComponentProgrammer } from "./AutoBeDatabaseComponentProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeDatabaseAuthorizationProgrammer {
   /** Validate authorization tables for an actor. */

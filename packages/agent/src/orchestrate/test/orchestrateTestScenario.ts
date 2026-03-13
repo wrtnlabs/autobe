@@ -7,10 +7,8 @@ import {
   AutoBeTestScenario,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, IValidation } from "@samchon/openapi";
 import { HashMap, HashSet, IPointer } from "tstl";
-import typia from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
+import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
@@ -25,6 +23,7 @@ import { orchestrateTestScenarioReview } from "./orchestrateTestScenarioReview";
 import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
 import { IAutoBeTestScenarioApplication } from "./structures/IAutoBeTestScenarioApplication";
 import { getPrerequisites } from "./utils/getPrerequisites";
+import { NamingConvention } from "@typia/utils";
 
 /**
  * Orchestrate test scenario generation for all API operations.

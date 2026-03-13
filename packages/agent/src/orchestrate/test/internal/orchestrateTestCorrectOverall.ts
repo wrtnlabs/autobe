@@ -2,7 +2,6 @@ import {
   AutoBeProgressEventBase,
   AutoBeTestValidateEvent,
 } from "@autobe/interface";
-import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
@@ -13,6 +12,7 @@ import { transformTestCorrectOverallHistory } from "../histories/transformTestCo
 import { IAutoBeTestCorrectOverallApplication } from "../structures/IAutoBeTestCorrectOverallApplication";
 import { IAutoBeTestFunctionFailure } from "../structures/IAutoBeTestFunctionFailure";
 import { IAutoBeTestProcedure } from "../structures/IAutoBeTestProcedure";
+import { ILlmController } from "typia";
 
 interface IProgrammer<
   Procedure extends IAutoBeTestProcedure,

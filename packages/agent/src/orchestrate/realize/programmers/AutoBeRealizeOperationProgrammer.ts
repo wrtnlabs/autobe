@@ -6,12 +6,12 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { IValidation, OpenApiTypeChecker } from "@samchon/openapi";
-
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeRealizeScenarioResult } from "../structures/IAutoBeRealizeScenarioResult";
 import { AutoBeRealizeCollectorProgrammer } from "./AutoBeRealizeCollectorProgrammer";
 import { AutoBeRealizeTransformerProgrammer } from "./AutoBeRealizeTransformerProgrammer";
+import { IValidation } from "typia";
+import { OpenApiTypeChecker } from "@typia/utils";
 
 export namespace AutoBeRealizeOperationProgrammer {
   /**

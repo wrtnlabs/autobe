@@ -10,9 +10,8 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBePhase, AutoBeUserConversateContent } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
-import typia from "typia";
+import typia, { ILlmController } from "typia";
 
 import { TestGlobal } from "../TestGlobal";
 

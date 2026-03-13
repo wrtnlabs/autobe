@@ -5,13 +5,9 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { StringUtil, transformOpenApiDocument } from "@autobe/utils";
-import {
-  HttpMigration,
-  IHttpMigrateApplication,
-  OpenApi,
-} from "@samchon/openapi";
 import { Singleton } from "tstl";
 import typia from "typia";
+import { HttpMigration, IHttpMigrateApplication, OpenApi } from "@typia/utils";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";

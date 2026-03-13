@@ -1,6 +1,5 @@
 import { AutoBeAnalyze, AutoBeAnalyzeHistory } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 import { v7 } from "uuid";
 
 import { AutoBeSystemPromptConstant } from "../../../constants/AutoBeSystemPromptConstant";
@@ -8,6 +7,7 @@ import { AutoBeState } from "../../../context/AutoBeState";
 import { IAutoBeOrchestrateHistory } from "../../../structures/IAutoBeOrchestrateHistory";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { AutoBeInterfaceAuthorizationProgrammer } from "../programmers/AutoBeInterfaceAuthorizationProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export const transformInterfaceAuthorizationHistory = (props: {
   state: AutoBeState;

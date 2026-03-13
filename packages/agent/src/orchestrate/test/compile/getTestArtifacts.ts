@@ -3,11 +3,10 @@ import {
   AutoBeTestScenario,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { OpenApiTypeChecker } from "@samchon/openapi";
-
 import { AutoBeContext } from "../../../context/AutoBeContext";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestScenarioArtifacts } from "../structures/IAutoBeTestScenarioArtifacts";
+import { OpenApiTypeChecker } from "@typia/utils";
 
 export async function getTestArtifacts(
   ctx: AutoBeContext,

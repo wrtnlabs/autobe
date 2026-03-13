@@ -4,18 +4,12 @@ import {
   AutoBeOpenApi,
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
-import {
-  ILlmApplication,
-  ILlmFunction,
-  ILlmSchema,
-  IValidation,
-  LlmTypeChecker,
-} from "@samchon/openapi";
 import { plural } from "pluralize";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeDatabaseModelProgrammer } from "../../prisma/programmers/AutoBeDatabaseModelProgrammer";
 import { AutoBeJsonSchemaValidator } from "../utils/AutoBeJsonSchemaValidator";
+import { ILlmApplication, ILlmFunction, ILlmSchema, IValidation } from "typia";
+import { LlmTypeChecker, NamingConvention } from "@typia/utils";
 
 export namespace AutoBeInterfaceSchemaProgrammer {
   export interface IDatabaseSchemaMember {

@@ -2,9 +2,9 @@ import { AutoBeAnalyze, AutoBeOpenApi } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { singular } from "pluralize";
 import typia, { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { AutoBeInterfaceOperationProgrammer } from "./AutoBeInterfaceOperationProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeInterfaceAuthorizationProgrammer {
   export const getTypeName = (props: {

@@ -1,10 +1,10 @@
 import { FileSystemIterator } from "@autobe/filesystem";
 import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
-import { OpenApi } from "@samchon/openapi";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
 import { TestGlobal } from "../../TestGlobal";
+import { OpenApi } from "@typia/utils";
 
 export const test_compiler_interface_write = async (
   factory: TestFactory,

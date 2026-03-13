@@ -7,7 +7,6 @@ import {
   AutoBeRealizeValidateEvent,
   IAutoBeTypeScriptCompileResult,
 } from "@autobe/interface";
-import { ILlmController } from "@samchon/openapi";
 import { IPointer } from "tstl";
 import { v7 } from "uuid";
 
@@ -19,6 +18,7 @@ import { forceRetry } from "../../../utils/forceRetry";
 import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryController";
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
+import { ILlmController } from "typia";
 
 interface IProgrammer<
   RealizeFunction extends AutoBeRealizeFunction,

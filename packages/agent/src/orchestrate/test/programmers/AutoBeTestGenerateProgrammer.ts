@@ -9,13 +9,13 @@ import {
 import { StringUtil } from "@autobe/utils";
 import path from "path";
 import { IValidation } from "typia";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestGenerateProcedure } from "../structures/IAutoBeTestGenerateProcedure";
 import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
 import { AutoBeTestPrepareProgrammer } from "./AutoBeTestPrepareProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeTestGenerateProgrammer {
   /* ----------------------------------------------------------------

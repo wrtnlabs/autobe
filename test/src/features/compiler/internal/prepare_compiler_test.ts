@@ -3,9 +3,9 @@ import {
   AutoBeTestScenario,
   IAutoBeCompiler,
 } from "@autobe/interface";
-import { OpenApi } from "@samchon/openapi";
 
 import { TestFactory } from "../../../TestFactory";
+import { OpenApi } from "@typia/utils";
 
 export const prepare_compiler_test = async (factory: TestFactory) => {
   const compiler: IAutoBeCompiler = factory.createCompiler();

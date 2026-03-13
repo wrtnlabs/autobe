@@ -8,9 +8,8 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator } from "@autobe/utils";
-import { ILlmApplication, ILlmController, IValidation } from "@samchon/openapi";
 import { HashMap, IPointer, Pair } from "tstl";
-import typia from "typia";
+import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";

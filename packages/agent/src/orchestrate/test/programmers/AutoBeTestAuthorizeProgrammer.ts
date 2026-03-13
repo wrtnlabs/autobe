@@ -7,13 +7,12 @@ import {
 } from "@autobe/interface";
 import { StringUtil } from "@autobe/utils";
 import { IValidation } from "typia";
-import { Escaper } from "typia/lib/utils/Escaper";
-import { NamingConvention } from "typia/lib/utils/NamingConvention";
 
 import { validateEmptyCode } from "../../../utils/validateEmptyCode";
 import { IAutoBeTestArtifacts } from "../structures/IAutoBeTestArtifacts";
 import { IAutoBeTestAuthorizeProcedure } from "../structures/IAutoBeTestAuthorizeWriteResult";
 import { AutoBeTestFunctionProgrammer } from "./AutoBeTestFunctionProgrammer";
+import { NamingConvention } from "@typia/utils";
 
 export namespace AutoBeTestAuthorizeProgrammer {
   /* ----------------------------------------------------------------
@@ -78,7 +77,7 @@ export namespace AutoBeTestAuthorizeProgrammer {
       ): Promise<${props.operation.responseBody.typeName}> {
         const joinInput = {
 ${Object.keys(props.schema.properties).map(
-  (k) => `    ${Escaper.variable(k) ? k : `[${JSON.stringify(k)}]`}: ...,`,
+  (k) => `    ${NamingConvention.variable(k) ? k : `[${JSON.stringify(k)}]`}: ...,`,
 )}
         } satisfies ${props.operation.requestBody.typeName};
         return await api.functional.${accessor.join(".")}(

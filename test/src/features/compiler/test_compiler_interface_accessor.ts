@@ -1,9 +1,9 @@
 import { AutoBeOpenApi, IAutoBeCompiler } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import { HttpMigration, IHttpMigrateApplication } from "@samchon/openapi";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
+import { HttpMigration, IHttpMigrateApplication } from "@typia/utils";
 
 export const test_compiler_interface_accessor = async (
   factory: TestFactory,
