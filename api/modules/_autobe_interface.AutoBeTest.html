@@ -5,7 +5,8 @@ enables AI agents to construct complete E2E test functions at the AST level.
 Each type corresponds to specific TypeScript language constructs, allowing
 precise control over generated test code while maintaining type safety and
 business logic accuracy.</p>
-<h2 id="core-purpose" class="tsd-anchor-link">Core Purpose<a href="#core-purpose" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>The system is designed for systematic generation where AI function calls
+<h2 id="core-purpose" class="tsd-anchor-link">Core Purpose<a href="#core-purpose" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>The system is designed for systematic generation where AI function calls
 build test scenarios step-by-step, mapping business requirements to
 executable code. Instead of generating raw TypeScript strings, AI agents
 construct structured AST objects that represent:</p>
@@ -15,7 +16,8 @@ construct structured AST objects that represent:</p>
 <li>Comprehensive validation using TestValidator assertions</li>
 <li>Complex business logic with conditional flows and error handling</li>
 </ul>
-<h2 id="architecture-overview" class="tsd-anchor-link">Architecture Overview<a href="#architecture-overview" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<h2 id="architecture-overview" class="tsd-anchor-link">Architecture Overview<a href="#architecture-overview" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
 <li><strong>IFunction</strong>: Root container representing complete test functions</li>
 <li><strong>Statements</strong>: Building blocks for test logic (API operations, expressions,
 conditionals)</li>
@@ -24,7 +26,8 @@ conditionals)</li>
 <li><strong>Random Generators</strong>: Dynamic test data creation with business constraints</li>
 <li><strong>Predicates</strong>: TestValidator assertions for comprehensive validation</li>
 </ul>
-<h2 id="business-context" class="tsd-anchor-link">Business Context<a href="#business-context" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>In E2E testing, this typically maps to complete business scenarios like:</p>
+<h2 id="business-context" class="tsd-anchor-link">Business Context<a href="#business-context" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>In E2E testing, this typically maps to complete business scenarios like:</p>
 <ul>
 <li>Customer purchase workflows (registration → product selection → payment →
 confirmation)</li>

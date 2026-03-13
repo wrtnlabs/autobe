@@ -3,17 +3,20 @@
 during the Analyze phase, which transforms natural language requirements into
 structured planning documents. The analysis follows a hierarchical document
 structure:</p>
-<h2 id="document-hierarchy" class="tsd-anchor-link">Document Hierarchy<a href="#document-hierarchy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<h2 id="document-hierarchy" class="tsd-anchor-link">Document Hierarchy<a href="#document-hierarchy" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
 <li><strong>IFile</strong>: Complete analysis document with metadata and content</li>
 <li><strong>IModule</strong>: Top-level module (# heading) within a document</li>
 <li><strong>IUnit</strong>: Functional grouping (## heading) within a module</li>
 <li><strong>ISection</strong>: Detailed requirements (### heading) within a unit</li>
 </ul>
-<h2 id="actor-system" class="tsd-anchor-link">Actor System<a href="#actor-system" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<h2 id="actor-system" class="tsd-anchor-link">Actor System<a href="#actor-system" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<ul>
 <li><strong>IActor</strong>: Authenticated user types that drive authorization logic
 throughout the generated application</li>
 </ul>
-<h2 id="pipeline-role" class="tsd-anchor-link">Pipeline Role<a href="#pipeline-role" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>The types defined here serve as the foundation for subsequent phases:</p>
+<h2 id="pipeline-role" class="tsd-anchor-link">Pipeline Role<a href="#pipeline-role" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>The types defined here serve as the foundation for subsequent phases:</p>
 <ul>
 <li>Database schema generation references actors for authentication tables</li>
 <li>API endpoint generation uses actors for access control decorators</li>
