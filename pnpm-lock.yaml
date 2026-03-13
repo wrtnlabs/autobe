@@ -1161,6 +1161,12 @@ importers:
       '@nestia/migrate':
         specifier: catalog:samchon
         version: 11.0.0-dev.20260313-4
+      '@typia/interface':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313-2
+      '@typia/utils':
+        specifier: catalog:samchon
+        version: 12.0.0-dev.20260313-2
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -3790,9 +3796,6 @@ packages:
   '@typia/core@12.0.0-dev.20260313-2':
     resolution: {integrity: sha512-b+Ye6nOObLpcAIJPkffi6onCmHKlERD2GIN18dRFDPgF7ZKyGl/9PUlMoXCnLk3hag3frFNOJBss+eQwUbYo6g==}
 
-  '@typia/interface@12.0.0-dev.20260312-5':
-    resolution: {integrity: sha512-XHbOimrPPLNCvHPA7yEtvbiY1uvTeKwGTh9w7Mc6J8v8qxnFznztmG8GaZASpWfyCGT/zWY8GXHy4HAXsEzBRA==}
-
   '@typia/interface@12.0.0-dev.20260313':
     resolution: {integrity: sha512-B/rN1Xgzc8CBFD6tFIRgeM7JP79mPI1J4lz69nsys6FBcK0W2lzEV3wMp5kJDnFzU4w3RJHCb70nZUxfULrBEg==}
 
@@ -3804,9 +3807,6 @@ packages:
 
   '@typia/transform@12.0.0-dev.20260313-2':
     resolution: {integrity: sha512-5u+nBWjwXHvekAH2LrTSZxXimvFYw2tv2FymcIsFLhUXIhJeBNi/q92zE206wfFhLdN+SVoL6ViJ6EHWjD9fiA==}
-
-  '@typia/utils@12.0.0-dev.20260312-5':
-    resolution: {integrity: sha512-4/LV+XhCGixMLdNxiFY+F2TWzCNrE82dpDdNl+65m2/4uEEOoKYgQGHzKq03Tk34j9rcolSnUwQpm9JacQ6dTQ==}
 
   '@typia/utils@12.0.0-dev.20260313':
     resolution: {integrity: sha512-aEW0SzEINJNs387Eb9yBFLzIEA2KSSnPP2TTqN90d0SvwTSzeSwWiCxqxxMPEmU2n69bBkfO04wZvmGQYxnZ6A==}
@@ -11683,20 +11683,18 @@ snapshots:
 
   '@typia/core@12.0.0-dev.20260312-5':
     dependencies:
-      '@typia/interface': 12.0.0-dev.20260312-5
-      '@typia/utils': 12.0.0-dev.20260312-5
+      '@typia/interface': 12.0.0-dev.20260313-2
+      '@typia/utils': 12.0.0-dev.20260313-2
 
   '@typia/core@12.0.0-dev.20260313':
     dependencies:
-      '@typia/interface': 12.0.0-dev.20260312-5
-      '@typia/utils': 12.0.0-dev.20260312-5
+      '@typia/interface': 12.0.0-dev.20260313-2
+      '@typia/utils': 12.0.0-dev.20260313-2
 
   '@typia/core@12.0.0-dev.20260313-2':
     dependencies:
       '@typia/interface': 12.0.0-dev.20260313-2
       '@typia/utils': 12.0.0-dev.20260313-2
-
-  '@typia/interface@12.0.0-dev.20260312-5': {}
 
   '@typia/interface@12.0.0-dev.20260313': {}
 
@@ -11705,8 +11703,8 @@ snapshots:
   '@typia/transform@12.0.0-dev.20260312-5':
     dependencies:
       '@typia/core': 12.0.0-dev.20260312-5
-      '@typia/interface': 12.0.0-dev.20260312-5
-      '@typia/utils': 12.0.0-dev.20260312-5
+      '@typia/interface': 12.0.0-dev.20260313-2
+      '@typia/utils': 12.0.0-dev.20260313-2
 
   '@typia/transform@12.0.0-dev.20260313-2':
     dependencies:
@@ -11714,13 +11712,9 @@ snapshots:
       '@typia/interface': 12.0.0-dev.20260313-2
       '@typia/utils': 12.0.0-dev.20260313-2
 
-  '@typia/utils@12.0.0-dev.20260312-5':
-    dependencies:
-      '@typia/interface': 12.0.0-dev.20260312-5
-
   '@typia/utils@12.0.0-dev.20260313':
     dependencies:
-      '@typia/interface': 12.0.0-dev.20260312-5
+      '@typia/interface': 12.0.0-dev.20260313-2
 
   '@typia/utils@12.0.0-dev.20260313-2':
     dependencies:
@@ -17421,9 +17415,9 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@typia/core': 12.0.0-dev.20260312-5
-      '@typia/interface': 12.0.0-dev.20260312-5
+      '@typia/interface': 12.0.0-dev.20260313-2
       '@typia/transform': 12.0.0-dev.20260312-5
-      '@typia/utils': 12.0.0-dev.20260312-5
+      '@typia/utils': 12.0.0-dev.20260313-2
       commander: 10.0.1
       comment-json: 4.5.0
       inquirer: 8.2.5

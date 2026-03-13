@@ -6,8 +6,12 @@ import {
   IAutoBeCompiler,
 } from "@autobe/interface";
 import { AutoBeOpenApiTypeChecker, StringUtil } from "@autobe/utils";
+import {
+  LlmTypeChecker,
+  NamingConvention,
+  OpenApiTypeChecker,
+} from "@typia/utils";
 import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
-import { LlmTypeChecker, NamingConvention, OpenApiTypeChecker } from "@typia/utils";
 
 import { AutoBeContext } from "../../../context/AutoBeContext";
 

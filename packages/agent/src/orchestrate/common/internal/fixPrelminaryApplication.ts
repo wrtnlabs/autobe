@@ -4,8 +4,9 @@ import {
   AutoBePreliminaryKind,
 } from "@autobe/interface";
 import { AutoBeOpenApiEndpointComparator, StringUtil } from "@autobe/utils";
-import typia, { ILlmApplication, ILlmFunction, ILlmSchema } from "typia";
 import { LlmTypeChecker } from "@typia/utils";
+import typia, { ILlmApplication, ILlmFunction, ILlmSchema } from "typia";
+
 import { AutoBeState } from "../../../context/AutoBeState";
 import { AutoBePreliminaryController } from "../AutoBePreliminaryController";
 import { IAutoBePreliminaryRequest } from "../structures/AutoBePreliminaryRequest";
