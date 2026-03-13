@@ -3,7 +3,8 @@ import { TestValidator } from "@nestia/e2e";
 import typia from "typia";
 
 import { TestFactory } from "../../TestFactory";
-import { HttpMigration, IHttpMigrateApplication } from "@typia/utils";
+import { IHttpMigrateApplication } from "@typia/interface";
+import { HttpMigration } from "@typia/utils";
 
 export const test_compiler_interface_accessor = async (
   factory: TestFactory,

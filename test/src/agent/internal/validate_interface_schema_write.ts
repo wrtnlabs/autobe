@@ -6,9 +6,10 @@ import { AutoBeExampleProject, AutoBeOpenApi } from "@autobe/interface";
 import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 
+import { OpenApi } from "typia";
+
 import { TestGlobal } from "../../TestGlobal";
 import { validate_interface_operation } from "./validate_interface_operation";
-import { OpenApi } from "@typia/utils";
 
 export const validate_interface_schema_write = async (props: {
   agent: AutoBeAgent;

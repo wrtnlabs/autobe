@@ -8,7 +8,7 @@ import { NestiaMigrateApplication } from "@nestia/migrate";
 
 import { TestGlobal } from "../TestGlobal";
 import { prepare_interface_agent } from "../agent/internal/prepare_interface_agent";
-import { OpenApi } from "@typia/utils";
+import { OpenApi } from "typia";
 
 const main = async (): Promise<void> => {
   const load = async <T>(file: string) => {

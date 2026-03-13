@@ -1,7 +1,6 @@
 import { AutoBeEvent, AutoBeEventOfSerializable } from "@autobe/interface";
 import { TestValidator } from "@nestia/e2e";
-import typia from "typia";
-import { OpenApi } from "@typia/utils";
+import typia, { OpenApi } from "typia";
 
 export const test_typing_event_type_not_plural = (): void => {
   const typeNames: string[] = typia.misc.literals<AutoBeEvent.Type>();

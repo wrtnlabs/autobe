@@ -11,10 +11,11 @@ import {
 import { transformOpenApiDocument } from "@autobe/utils";
 import { NestiaMigrateApplication } from "@nestia/migrate";
 
+import { OpenApi } from "typia";
+
 import { TestGlobal } from "../../TestGlobal";
 import { validate_interface_authorization } from "./validate_interface_authorization";
 import { validate_interface_endpoint } from "./validate_interface_endpoint";
-import { OpenApi } from "@typia/utils";
 
 export const validate_interface_operation = async (props: {
   agent: AutoBeAgent;
