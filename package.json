@@ -1,14 +1,14 @@
 {
   "private": true,
   "name": "@autobe/station",
-  "version": "0.30.0",
+  "version": "0.30.0-dev.20260315",
   "description": "AutoBE Station",
   "packageManager": "pnpm@10.6.4",
   "scripts": {
     "test": "pnpm --filter=./packages/** -r test",
     "build": "pnpm --filter=./packages/** --filter=./apps/** --filter=./test -r build",
     "package:latest": "pnpm --filter=./packages/** -r publish --tag latest",
-    "package:next": "pnpm --filter=./packages/** -r publish --tag next",
+    "package:next": "bash next.bash",
     "playground": "rimraf playground-result && node playground/index.js",
     "prepare": "ts-patch install",
     "release": "pnpm run sync:readme && pnpm run sync:dependencies && bumpp -r",
