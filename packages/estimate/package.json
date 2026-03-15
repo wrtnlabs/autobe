@@ -1,6 +1,6 @@
 {
   "name": "@autobe/estimate",
-  "version": "1.0.0",
+  "version": "0.30.0",
   "description": "Code quality evaluation system for AutoBE generated code",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
