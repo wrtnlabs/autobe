@@ -21,10 +21,7 @@ jobs:
 
       - name: Publish to NPM
         # we need -no-git-checks to avoid git errors https://github.com/pnpm/pnpm/issues/5894
-        run: pnpm package:latest --no-git-checks --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH }}
-          NPM_CONFIG_PROVENANCE: true # Enable provenance
+        run: pnpm package:latest --no-git-checks --provenance
 
   release:
     runs-on: ubuntu-latest
