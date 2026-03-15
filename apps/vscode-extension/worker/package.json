@@ -1,6 +1,6 @@
 {
   "name": "@autobe/vscode-extension/worker",
-  "version": "0.30.0",
+  "version": "0.30.0-dev.20260315",
   "private": true,
   "description": "",
   "main": "index.js",
