@@ -9,7 +9,7 @@ packages:
   - website
 catalogs:
   agentica:
-    '@agentica/core': ^0.44.0
+    '@agentica/core': ^0.44.1
   samchon:
     '@nestia/benchmark': ^11.0.1
     '@nestia/core': ^11.0.1
@@ -18,9 +18,9 @@ catalogs:
     '@nestia/fetcher': ^11.0.1
     '@nestia/migrate': ^11.0.1
     '@nestia/sdk': ^11.0.1
-    '@typia/interface': ^12.0.0
-    '@typia/unplugin': ^12.0.0
-    '@typia/utils': ^12.0.0
+    '@typia/interface': ^12.0.1
+    '@typia/unplugin': ^12.0.1
+    '@typia/utils': ^12.0.1
     embed-eslint: ^2.0.1
     embed-prisma: ^3.0.0
     embed-typescript: ^2.0.1
@@ -28,7 +28,7 @@ catalogs:
     prisma-markdown: ^4.0.0
     tgrid: ^1.2.1
     tstl: ^3.0.0
-    typia: ^12.0.0
+    typia: ^12.0.1
   typescript:
     '@typescript-eslint/eslint-plugin': 8.40.0
     '@typescript-eslint/parser': 8.40.0

@@ -9,7 +9,7 @@
     "@nestia/fetcher": "^11.0.1",
     "@types/node": "^22.15.3",
     "typescript": "~5.9.3",
-    "typia": "^12.0.0",
+    "typia": "^12.0.1",
     "tstl": "^3.0.0"
   }
 }
