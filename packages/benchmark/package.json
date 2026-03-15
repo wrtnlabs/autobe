@@ -1,6 +1,6 @@
 {
   "name": "@autobe/benchmark",
-  "version": "0.30.0-dev.20260315",
+  "version": "0.30.0",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {

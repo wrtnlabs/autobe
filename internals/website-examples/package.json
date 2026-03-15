@@ -1,6 +1,6 @@
 {
   "name": "@autobe/website-examples",
-  "version": "0.30.0-dev.20260315",
+  "version": "0.30.0",
   "description": "Website Example Codes",
   "scripts": {
     "build": "tsc"
