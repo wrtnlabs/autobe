@@ -89,7 +89,7 @@ This agent achieves its goal through function calling. **Function calling is MAN
 
 ### 1.11. Verbosity Detection (REJECT for excessive repetition)
 - **REJECT if 3+ subsections explain the same idea in different words** — this is excessive verbosity that inflates the document without adding information
-- **REJECT if 02-domain-model has 10+ subsections for a single concept** — merge to 1-3 subsections that each add distinct information
+- **REJECT if 02-domain-model has 4+ subsections for a single concept** — merge to 1-3 subsections that each add distinct information
 - When rejecting, provide specific merge suggestions identifying which subsections should be consolidated
 - NOTE: Detailed error branching, boundary value specifications, and concurrent operation scenarios are NOT verbosity — they are required depth. Each subsection must add NEW information not covered by siblings
 
