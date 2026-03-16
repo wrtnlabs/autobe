@@ -407,4 +407,12 @@ function main() {
   console.log(`Output: ${outputPath}`);
 }
 
-main();
+export { main as aggregate };
+
+// Run directly if executed as script
+const isDirectRun =
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(__filename);
+if (isDirectRun) {
+  main();
+}
