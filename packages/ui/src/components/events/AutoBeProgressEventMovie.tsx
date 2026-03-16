@@ -175,20 +175,10 @@ function getState(event: AutoBeProgressEventMovie.IProps["event"]): IState {
           title: "Analyze Write Module",
           description: "Generating module section structure",
         };
-      case "analyzeModuleReview":
-        return {
-          title: "Analyze Module Review",
-          description: "Reviewing module section structure",
-        };
       case "analyzeWriteUnit":
         return {
           title: "Analyze Write Unit",
           description: "Generating unit section content",
-        };
-      case "analyzeUnitReview":
-        return {
-          title: "Analyze Unit Review",
-          description: "Reviewing unit section content",
         };
       case "analyzeWriteSection":
         return {

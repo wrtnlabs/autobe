@@ -58,9 +58,6 @@ export const transformAnalyzeExtractDecisionsHistory = (
         text: StringUtil.trim`
           ## File: ${props.file.filename}
 
-          **Title**: ${props.file.title}
-          **Description**: ${props.file.description}
-
           ## Full Section Content
 
           ${fileContent}

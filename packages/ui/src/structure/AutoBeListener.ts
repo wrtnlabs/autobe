@@ -50,9 +50,7 @@ export class AutoBeListener {
       // ANALYZE
       analyzeStart: async (event) => {
         this.dict_.delete("analyzeWriteModule");
-        this.dict_.delete("analyzeModuleReview");
         this.dict_.delete("analyzeWriteUnit");
-        this.dict_.delete("analyzeUnitReview");
         this.dict_.delete("analyzeWriteSection");
         this.dict_.delete("analyzeSectionReview");
         this.insert(event);
@@ -63,13 +61,7 @@ export class AutoBeListener {
       analyzeWriteModule: async (event) => {
         this.accumulate(event);
       },
-      analyzeModuleReview: async (event) => {
-        this.accumulate(event);
-      },
       analyzeWriteUnit: async (event) => {
-        this.accumulate(event);
-      },
-      analyzeUnitReview: async (event) => {
         this.accumulate(event);
       },
       analyzeWriteSection: async (event) => {
@@ -83,9 +75,7 @@ export class AutoBeListener {
       },
       analyzeComplete: async (event) => {
         this.dict_.delete("analyzeWriteModule");
-        this.dict_.delete("analyzeModuleReview");
         this.dict_.delete("analyzeWriteUnit");
-        this.dict_.delete("analyzeUnitReview");
         this.dict_.delete("analyzeWriteSection");
         this.dict_.delete("analyzeSectionReview");
         this.state_.setAnalyze(event);

@@ -1,11 +1,9 @@
 import {
   AutoBeAnalyzeCompleteEvent,
-  AutoBeAnalyzeModuleReviewEvent,
   AutoBeAnalyzeScenarioEvent,
   AutoBeAnalyzeScenarioReviewEvent,
   AutoBeAnalyzeSectionReviewEvent,
   AutoBeAnalyzeStartEvent,
-  AutoBeAnalyzeUnitReviewEvent,
   AutoBeAnalyzeWriteModuleEvent,
   AutoBeAnalyzeWriteSectionEvent,
   AutoBeAnalyzeWriteUnitEvent,
@@ -196,22 +194,6 @@ export interface IAutoBeRpcListener {
    * content with EARS-formatted requirements.
    */
   analyzeWriteSection?(event: AutoBeAnalyzeWriteSectionEvent): Promise<void>;
-
-  /**
-   * Optional handler for module review progress events.
-   *
-   * Called when the Analyze agent reviews generated module sections and reports
-   * review progress.
-   */
-  analyzeModuleReview?(event: AutoBeAnalyzeModuleReviewEvent): Promise<void>;
-
-  /**
-   * Optional handler for unit review progress events.
-   *
-   * Called when the Analyze agent reviews generated unit sections and reports
-   * review progress.
-   */
-  analyzeUnitReview?(event: AutoBeAnalyzeUnitReviewEvent): Promise<void>;
 
   /**
    * Optional handler for section review progress events.

@@ -33,8 +33,6 @@ export * from "./AutoBeAnalyzeWriteModuleEvent";
 export * from "./AutoBeAnalyzeWriteUnitEvent";
 export * from "./AutoBeAnalyzeWriteSectionEvent";
 // ANALYZE (Review)
-export * from "./AutoBeAnalyzeModuleReviewEvent";
-export * from "./AutoBeAnalyzeUnitReviewEvent";
 export * from "./AutoBeAnalyzeSectionReviewEvent";
 export * from "./AutoBeAnalyzeScenarioReviewEvent";
 

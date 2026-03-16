@@ -219,8 +219,6 @@ export const validateErrorCodes = (props: {
   return { canonical, references, undefinedReferences, parseErrors };
 };
 
-// ─── Legacy exports (kept for backward compatibility) ───
-
 /**
  * Detect error code conflicts across files.
  *
@@ -303,22 +301,4 @@ export const buildFileErrorCodeConflictMap = (
   }
 
   return map;
-};
-
-/** @deprecated Bridge block registry removed. Use validateErrorCodes() instead. */
-export const buildErrorCodeRegistry = (props: {
-  files: Array<{
-    file: AutoBeAnalyze.IFileScenario;
-    sectionEvents: AutoBeAnalyzeWriteSectionEvent[][];
-  }>;
-}): IErrorCodeRegistryEntry[] => {
-  const result = validateErrorCodes(props);
-  return result.canonical;
-};
-
-/** @deprecated Bridge block injection removed. */
-export const formatErrorCodeRegistryForPrompt = (
-  _registry: IErrorCodeRegistryEntry[],
-): string => {
-  return "";
 };
