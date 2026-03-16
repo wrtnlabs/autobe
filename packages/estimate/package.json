@@ -11,23 +11,28 @@
   "bugs": {
     "url": "https://github.com/wrtnlabs/autobe/issues"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index.ts",
   "bin": {
-    "estimate": "./dist/bin/estimate.js"
+    "estimate": "./src/bin/estimate.js"
   },
   "files": [
     "dist",
+    "src",
     "package.json",
     "LICENSE",
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+      "estimate": "./dist/bin/estimate.js"
+    }
   },
   "scripts": {
     "build": "tsc",
-    "estimate": "tsx dist/bin/estimate.js",
+    "estimate": "ts-node src/bin/estimate.ts",
     "benchmark": "./run-benchmark.sh",
     "test": "vitest --passWithNoTests",
     "lint": "eslint src --ext .ts"
