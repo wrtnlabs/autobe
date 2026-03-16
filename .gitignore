@@ -26,4 +26,12 @@ website/LICENSE
 .DS_Store
 
 .claude
+!internals/template/realize/.claude
 *.temp.MD
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.pem

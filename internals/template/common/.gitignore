@@ -14,3 +14,9 @@ src/prisma
 .npmrc
 package-lock.json
 pnpm-lock.yaml
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.pem
