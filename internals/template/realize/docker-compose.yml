@@ -1,0 +1,63 @@
+services:
+  # ============================================
+  # PostgreSQL (pgvector)
+  # ============================================
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: autobe-db
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE:-wrtnlabs}
+      POSTGRES_USER: ${POSTGRES_USERNAME:-autobe}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-autobe} -d ${POSTGRES_DATABASE:-wrtnlabs}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # API Server (includes DB init: prisma push + seed)
+  # ============================================
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autobe-server
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-37001}:${API_PORT:-37001}"
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_URL: postgresql://${POSTGRES_USERNAME:-autobe}:${POSTGRES_PASSWORD:-12345678}@postgres:5432/${POSTGRES_DATABASE:-wrtnlabs}?schema=${POSTGRES_SCHEMA:-autobe}
+      DATABASE_URL: postgresql://${POSTGRES_USERNAME:-autobe}:${POSTGRES_PASSWORD:-12345678}@postgres:5432/${POSTGRES_DATABASE:-wrtnlabs}?schema=${POSTGRES_SCHEMA:-autobe}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - swagger_json:/app/packages/api
+
+  # ============================================
+  # Swagger UI
+  # ============================================
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: autobe-swagger
+    restart: unless-stopped
+    ports:
+      - "37810:8080"
+    environment:
+      SWAGGER_JSON: /swagger/swagger.json
+    volumes:
+      - swagger_json:/swagger:ro
+    depends_on:
+      - server
+
+volumes:
+  pgdata:
+  swagger_json:
