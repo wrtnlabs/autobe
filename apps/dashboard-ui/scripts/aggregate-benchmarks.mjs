@@ -317,6 +317,7 @@ function main() {
 
       try {
         const raw = fs.readFileSync(reportPath, "utf-8");
+        const reportStat = fs.statSync(reportPath);
         const report = JSON.parse(raw);
 
         const gateMetrics = extractGateMetrics(report.phases.gate);
@@ -351,6 +352,7 @@ function main() {
           summary: report.summary,
           meta: {
             evaluatedAt: report.meta.evaluatedAt,
+            reportUpdatedAt: reportStat.mtime.toISOString(),
             totalDurationMs: report.meta.totalDurationMs,
             evaluatedFiles: report.meta.evaluatedFiles,
           },

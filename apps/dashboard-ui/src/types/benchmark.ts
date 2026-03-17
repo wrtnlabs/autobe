@@ -67,6 +67,7 @@ export interface BenchmarkSummary {
 
 export interface BenchmarkMeta {
   evaluatedAt: string;
+  reportUpdatedAt?: string;
   totalDurationMs: number;
   evaluatedFiles: number;
 }

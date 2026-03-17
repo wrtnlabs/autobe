@@ -11,32 +11,56 @@ const REPORTS_DIR = path.resolve(
   "../../../packages/estimate/reports/benchmark",
 );
 
+const POLL_INTERVAL = 3000; // 3 seconds
+
 /**
- * Vite plugin that watches the benchmark reports directory and
+ * Vite plugin that polls the benchmark reports directory and
  * auto-regenerates benchmark-summary.json when files change.
  * Triggers a full page reload via Vite's HMR.
  */
 export default function watchBenchmarksPlugin() {
-  let watcher = null;
-  let debounceTimer = null;
+  let pollTimer = null;
   let server = null;
+  let lastSnapshot = "";
 
-  function regenerate() {
+  function getSnapshot() {
+    if (!fs.existsSync(REPORTS_DIR)) return "";
+    const entries = [];
     try {
-      console.log("[watch-benchmarks] Reports changed, regenerating...");
-      aggregate();
-      console.log("[watch-benchmarks] benchmark-summary.json updated");
-      if (server) {
-        server.ws.send({ type: "full-reload" });
+      const models = fs.readdirSync(REPORTS_DIR);
+      for (const model of models) {
+        const modelDir = path.join(REPORTS_DIR, model);
+        if (!fs.statSync(modelDir).isDirectory()) continue;
+        const projects = fs.readdirSync(modelDir);
+        for (const project of projects) {
+          const reportFile = path.join(modelDir, project, "estimate-report.json");
+          if (fs.existsSync(reportFile)) {
+            const stat = fs.statSync(reportFile);
+            entries.push(`${model}/${project}:${stat.mtimeMs}`);
+          }
+        }
       }
-    } catch (err) {
-      console.error("[watch-benchmarks] Regeneration failed:", err.message);
+    } catch {
+      // ignore read errors
     }
+    return entries.sort().join("|");
   }
 
-  function debouncedRegenerate() {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(regenerate, 1000);
+  function poll() {
+    const current = getSnapshot();
+    if (current !== lastSnapshot) {
+      lastSnapshot = current;
+      try {
+        console.log("[watch-benchmarks] Reports changed, regenerating...");
+        aggregate();
+        console.log("[watch-benchmarks] benchmark-summary.json updated");
+        if (server) {
+          server.ws.send({ type: "full-reload" });
+        }
+      } catch (err) {
+        console.error("[watch-benchmarks] Regeneration failed:", err.message);
+      }
+    }
   }
 
   return {
@@ -47,27 +71,20 @@ export default function watchBenchmarksPlugin() {
       // Initial generation
       try {
         aggregate();
+        lastSnapshot = getSnapshot();
         console.log("[watch-benchmarks] Initial benchmark-summary.json generated");
       } catch (err) {
         console.error("[watch-benchmarks] Initial generation failed:", err.message);
       }
 
-      // Watch reports directory recursively
-      if (fs.existsSync(REPORTS_DIR)) {
-        watcher = fs.watch(REPORTS_DIR, { recursive: true }, (eventType, filename) => {
-          if (filename && filename.endsWith(".json")) {
-            debouncedRegenerate();
-          }
-        });
-        console.log(`[watch-benchmarks] Watching ${REPORTS_DIR}`);
-      } else {
-        console.warn(`[watch-benchmarks] Reports dir not found: ${REPORTS_DIR}`);
-      }
+      // Poll for changes every 3 seconds
+      pollTimer = setInterval(poll, POLL_INTERVAL);
+      console.log(`[watch-benchmarks] Polling ${REPORTS_DIR} every ${POLL_INTERVAL / 1000}s`);
     },
     closeBundle() {
-      if (watcher) {
-        watcher.close();
-        watcher = null;
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
       }
     },
   };

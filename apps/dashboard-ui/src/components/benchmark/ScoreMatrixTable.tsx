@@ -51,6 +51,28 @@ function getModelAvg(
   return { avg: Math.round(sum / modelEntries.length), count: modelEntries.length };
 }
 
+function getModelLastUpdated(
+  entries: BenchmarkEntry[],
+  model: string,
+): string | null {
+  const modelEntries = entries.filter((e) => e.model === model);
+  let latest: string | null = null;
+  for (const e of modelEntries) {
+    const date = e.meta.reportUpdatedAt ?? e.meta.evaluatedAt;
+    if (!latest || date > latest) latest = date;
+  }
+  return latest;
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const mins = String(d.getMinutes()).padStart(2, "0");
+  return `${month}/${day} ${hours}:${mins}`;
+}
+
 function scoreToGrade(score: number): Grade {
   if (score >= 90) return "A";
   if (score >= 80) return "B";
@@ -94,7 +116,17 @@ export function ScoreMatrixTable({
                 sx={{ cursor: "pointer" }}
                 onClick={() => navigate(`/benchmark/${encodeURIComponent(model)}`)}
               >
-                <TableCell sx={{ fontWeight: 500 }}>{model}</TableCell>
+                <TableCell sx={{ fontWeight: 500 }}>
+                  {model}
+                  {(() => {
+                    const lastUpdated = getModelLastUpdated(entries, model);
+                    return lastUpdated ? (
+                      <Typography variant="caption" display="block" color="text.secondary" sx={{ fontSize: "0.65rem" }}>
+                        {formatDate(lastUpdated)}
+                      </Typography>
+                    ) : null;
+                  })()}
+                </TableCell>
                 {projects.map((project) => {
                   const entry = matrix.get(`${model}::${project}`);
                   if (!entry) {
