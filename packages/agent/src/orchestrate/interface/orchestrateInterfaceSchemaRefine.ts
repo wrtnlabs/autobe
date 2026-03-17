@@ -36,8 +36,7 @@ export async function orchestrateInterfaceSchemaRefine(
     .filter(
       ([k, v]) =>
         AutoBeJsonSchemaValidator.isPreset(k) === false &&
-        AutoBeOpenApiTypeChecker.isObject(v) &&
-        Object.keys(v.properties).length !== 0,
+        AutoBeOpenApiTypeChecker.isObject(v),
     )
     .map(([k]) => k);
   props.progress.total += typeNames.length;

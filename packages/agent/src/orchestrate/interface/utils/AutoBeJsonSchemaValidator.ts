@@ -52,6 +52,7 @@ export namespace AutoBeJsonSchemaValidator {
     validateReferenceId(props);
     validatePropertyNames(props);
     validateNumericRanges(props);
+    validateEmptyProperties(props);
 
     vo(props.typeName, props.schema);
     AutoBeOpenApiTypeChecker.skim({
@@ -720,6 +721,43 @@ export namespace AutoBeJsonSchemaValidator {
             `,
           });
       },
+    });
+  };
+
+  const validateEmptyProperties = (props: IProps): void => {
+    if (AutoBeOpenApiTypeChecker.isObject(props.schema) === false) return;
+    if (Object.keys(props.schema.properties).length !== 0) return;
+    if (
+      isObjectType({
+        operations: props.operations,
+        typeName: props.typeName,
+      }) === false
+    )
+      return;
+
+    props.errors.push({
+      path: props.path,
+      expected: "At least 1 property in properties",
+      value: props.schema,
+      description: StringUtil.trim`
+        Schema ${JSON.stringify(props.typeName)} has zero properties but is used
+        as a request body or response body in API operations.
+
+        Empty properties will cause TypeScript compilation errors (TS2339) in the
+        downstream Realize stage because implementation code will try to access
+        properties that don't exist on the type.
+
+        You MUST define at least one property in the schema. Load the database
+        schema and add the appropriate properties based on the DTO type:
+        - ICreate: User-provided business fields (exclude id, timestamps, actor FKs)
+        - IUpdate: All mutable business fields (all optional)
+        - ISummary: Essential display fields for list views
+        - IEntity (root): All public fields including relations
+        - IRequest: Pagination and filter parameters
+        - IJoin/ILogin: Credentials and session context fields
+
+        Note that, this is not a recommendation, but an instruction you must follow.
+      `,
     });
   };
 }

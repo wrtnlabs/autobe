@@ -164,6 +164,19 @@ Each DTO property receives exactly one refinement operation.
 
 While enriching, also inspect and fix:
 
+### 4.0. Empty Schema Recovery
+
+If the input schema has `properties: {}` (zero properties), this indicates upstream generation failure. You MUST reconstruct the schema from the database:
+
+1. Load the database schema via `getDatabaseSchemas` preliminary request
+2. Identify the DTO type from the type name suffix (`.ICreate`, `.ISummary`, `.IUpdate`, `.IRequest`, `.IJoin`, `.ILogin`, or root entity)
+3. Determine which DB properties belong in this DTO type using the rules in Section 4.1 and Section 2.2
+4. Add ALL applicable properties via `create` operations in `revises`
+5. Add all excluded DB properties to `excludes` with reasons
+6. Apply security rules (Section 4.4) for Actor DTOs
+
+**CRITICAL**: Do NOT output an empty `revises` array when the input schema has zero properties. Every DTO needs properties to function — an empty schema will cause TS2339 compilation errors downstream.
+
 ### 4.1. Content Completeness
 - Compare schema against DB model and requirements
 - Add missing DB-mapped fields AND requirements-driven computed fields
