@@ -2,9 +2,6 @@
 set -e
 
 # ── Configuration ──────────────────────────────────────────
-# Override these with environment variables if needed:
-#   ESTIMATE_BASE=/custom/path ./run-benchmark.sh
-
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # Load .env from estimate package
@@ -15,24 +12,51 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
-# Base directory for test results (default: test/results in monorepo root)
-ESTIMATE_BASE="${ESTIMATE_BASE:-$(cd "$SCRIPT_DIR/../.." && pwd)/test/results}"
+# autobe-examples directory (auto-discover models/projects)
+EXAMPLES_DIR="${EXAMPLES_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)/../autobe-examples}"
 
 # Estimate package directory
 ESTIMATE_DIR="$SCRIPT_DIR"
 
-# Models to benchmark (format: "display-name:openrouter-model-id")
-MODELS=(
-  "gpt-4.1-mini:openai/gpt-4.1-mini"
-  "gpt-4.1:openai/gpt-4.1"
-  "qwen3-80b:qwen/qwen3-next-80b-a3b-instruct"
-)
-
-# Projects to evaluate
-PROJECTS=("todo" "bbs" "reddit" "shopping" "erp")
-
 # Mode: "scoring" (fast, no server), "agent" (with AI agents), or "full" (agent + runtime + golden set)
-MODE="${1:-scoring}"
+MODE="${MODE:-scoring}"
+
+# Filters (optional)
+FILTER_VENDOR=""
+FILTER_MODEL=""
+FILTER_PROJECT=""
+
+# ── Parse arguments ───────────────────────────────────────
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --mode)      MODE="$2"; shift 2 ;;
+    --vendor)    FILTER_VENDOR="$2"; shift 2 ;;
+    --model)     FILTER_MODEL="$2"; shift 2 ;;
+    --project)   FILTER_PROJECT="$2"; shift 2 ;;
+    --examples)  EXAMPLES_DIR="$2"; shift 2 ;;
+    --help|-h)
+      echo "Usage: ./run-benchmark.sh [options]"
+      echo ""
+      echo "Options:"
+      echo "  --mode <scoring|agent|full>  Evaluation mode (default: scoring)"
+      echo "  --vendor <name>              Run only this vendor (e.g., openai, qwen)"
+      echo "  --model <name>               Run only this model (e.g., kimi-k2.5)"
+      echo "  --project <name>             Run only this project (e.g., reddit)"
+      echo "  --examples <path>            Path to autobe-examples directory"
+      echo "  -h, --help                   Show this help"
+      echo ""
+      echo "Examples:"
+      echo "  ./run-benchmark.sh                           # all models, scoring mode"
+      echo "  ./run-benchmark.sh --mode agent              # all models, with AI agents"
+      echo "  ./run-benchmark.sh --vendor openai            # all openai models only"
+      echo "  ./run-benchmark.sh --model kimi-k2.5         # specific model only"
+      echo "  ./run-benchmark.sh --project reddit          # specific project only"
+      echo "  ./run-benchmark.sh --vendor qwen --project todo"
+      exit 0
+      ;;
+    *) echo "Unknown option: $1"; exit 1 ;;
+  esac
+done
 
 # ── Validation ─────────────────────────────────────────────
 
@@ -44,107 +68,171 @@ if [ "$MODE" = "agent" ] || [ "$MODE" = "full" ]; then
   fi
 fi
 
-if [ ! -d "$ESTIMATE_BASE" ]; then
-  echo "ERROR: Base directory not found: $ESTIMATE_BASE"
-  echo "  Set ESTIMATE_BASE environment variable to your test results path"
-  echo "  Example: ESTIMATE_BASE=~/autobe-examples ./run-benchmark.sh"
+EXAMPLES_DIR="$(cd "$EXAMPLES_DIR" 2>/dev/null && pwd)" || {
+  echo "ERROR: Examples directory not found: $EXAMPLES_DIR"
+  echo "  Set EXAMPLES_DIR or use --examples <path>"
+  exit 1
+}
+
+echo "Scanning: $EXAMPLES_DIR"
+
+# ── Discover targets ──────────────────────────────────────
+
+VALID_PROJECTS="todo bbs reddit shopping"
+TARGETS=()
+MODELS_FOUND=()
+
+for vendor_dir in "$EXAMPLES_DIR"/*/; do
+  vendor=$(basename "$vendor_dir")
+  [[ "$vendor" == ".git" || "$vendor" == "raw" || "$vendor" == "node_modules" ]] && continue
+
+  # Apply vendor filter
+  [[ -n "$FILTER_VENDOR" && "$vendor" != "$FILTER_VENDOR" ]] && continue
+
+  for model_dir in "$vendor_dir"*/; do
+    model=$(basename "$model_dir")
+
+    # Apply model filter
+    [[ -n "$FILTER_MODEL" && "$model" != "$FILTER_MODEL" ]] && continue
+
+    for project_dir in "$model_dir"*/; do
+      project=$(basename "$project_dir")
+
+      # Only valid projects
+      echo "$VALID_PROJECTS" | grep -qw "$project" || continue
+
+      # Apply project filter
+      [[ -n "$FILTER_PROJECT" && "$project" != "$FILTER_PROJECT" ]] && continue
+
+      TARGETS+=("$model:$project:$project_dir")
+
+      # Track unique models for summary table
+      if ! printf '%s\n' "${MODELS_FOUND[@]}" | grep -qx "$model"; then
+        MODELS_FOUND+=("$model")
+      fi
+    done
+  done
+done
+
+if [ ${#TARGETS[@]} -eq 0 ]; then
+  echo "ERROR: No targets found"
+  [[ -n "$FILTER_VENDOR" ]] && echo "  --vendor filter: $FILTER_VENDOR"
+  [[ -n "$FILTER_MODEL" ]] && echo "  --model filter: $FILTER_MODEL"
+  [[ -n "$FILTER_PROJECT" ]] && echo "  --project filter: $FILTER_PROJECT"
   exit 1
 fi
+
+echo "Found ${#TARGETS[@]} target(s):"
+for t in "${TARGETS[@]}"; do
+  model="${t%%:*}"
+  rest="${t#*:}"
+  project="${rest%%:*}"
+  echo "  • $model/$project"
+done
+echo ""
 
 # ── Build check ────────────────────────────────────────────
 
 if [ ! -f "$ESTIMATE_DIR/dist/bin/estimate.js" ]; then
   echo "Building estimate package..."
-  (cd "$ESTIMATE_DIR" && npx tsc --build)
+  (cd "$ESTIMATE_DIR" && npx tsc)
 fi
 
 # ── Run benchmarks ─────────────────────────────────────────
 
 PASSED=0
 FAILED=0
-SKIPPED=0
 TOTAL=0
-TOTAL_COUNT=$((${#MODELS[@]} * ${#PROJECTS[@]}))
+TOTAL_COUNT=${#TARGETS[@]}
 
-for MODEL in "${MODELS[@]}"; do
-  MODEL_NAME="${MODEL%%:*}"
-  MODEL_PATH="${MODEL##*:}"
-  for PROJECT in "${PROJECTS[@]}"; do
-    TOTAL=$((TOTAL + 1))
+for entry in "${TARGETS[@]}"; do
+  model="${entry%%:*}"
+  rest="${entry#*:}"
+  project="${rest%%:*}"
+  input="${rest#*:}"
 
-    # Try multiple path patterns
-    INPUT=""
-    for CANDIDATE in \
-      "$ESTIMATE_BASE/$MODEL_PATH/$PROJECT/realize" \
-      "$ESTIMATE_BASE/$MODEL_PATH/$PROJECT" \
-      "$ESTIMATE_BASE/$MODEL_NAME/$PROJECT/realize" \
-      "$ESTIMATE_BASE/$MODEL_NAME/$PROJECT"; do
-      if [ -d "$CANDIDATE/src" ]; then
-        INPUT="$CANDIDATE"
-        break
-      fi
-    done
+  TOTAL=$((TOTAL + 1))
+  OUTPUT="$ESTIMATE_DIR/reports/benchmark/$model/$project"
 
-    if [ -z "$INPUT" ]; then
-      echo "SKIP [$TOTAL/$TOTAL_COUNT]: $MODEL_NAME/$PROJECT — no src/ found"
-      SKIPPED=$((SKIPPED + 1))
-      continue
-    fi
+  echo "[$TOTAL/$TOTAL_COUNT] $model / $project ($MODE)"
 
-    OUTPUT="$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/$PROJECT"
+  ARGS="-i $input -o $OUTPUT --continue-on-gate-failure --project $project"
+  if [ "$MODE" = "agent" ]; then
+    ARGS="$ARGS --use-agent"
+  elif [ "$MODE" = "full" ]; then
+    ARGS="$ARGS --use-agent --run-tests --golden"
+  fi
 
-    echo "[$TOTAL/$TOTAL_COUNT] $MODEL_NAME / $PROJECT ($MODE)"
-    echo "  Input: $INPUT"
+  if node "$ESTIMATE_DIR/dist/bin/estimate.js" $ARGS 2>&1 | tail -3; then
+    PASSED=$((PASSED + 1))
+  else
+    echo "  ERROR: evaluation failed"
+    FAILED=$((FAILED + 1))
+  fi
 
-    ARGS="-i $INPUT -o $OUTPUT"
-    if [ "$MODE" = "agent" ]; then
-      ARGS="$ARGS --use-agent"
-    elif [ "$MODE" = "full" ]; then
-      ARGS="$ARGS --use-agent --run-tests --golden --project $PROJECT"
-    fi
-
-    if npx tsx "$ESTIMATE_DIR/dist/bin/estimate.js" $ARGS 2>&1 | tail -3; then
-      PASSED=$((PASSED + 1))
-    else
-      echo "  ERROR: evaluation failed"
-      FAILED=$((FAILED + 1))
-    fi
-
-    echo "────────────────────────────────────────"
-  done
+  echo "────────────────────────────────────────"
 done
 
 echo ""
-echo "Benchmark complete: $PASSED passed, $FAILED failed, $SKIPPED skipped (total $TOTAL)"
+echo "Benchmark complete: $PASSED passed, $FAILED failed (total $TOTAL)"
 
 # ── Summary table ──────────────────────────────────────────
 
 read_score() {
   local report="$1"
   if [ -f "$report" ]; then
-    python3 -c "
-import json
-d = json.load(open('$report'))
-print(str(d.get('totalScore','?')) + '(' + str(d.get('grade','?')) + ')')
-" 2>/dev/null || echo "?"
+    node -e "
+      const r = require('$report');
+      process.stdout.write(r.totalScore + '(' + r.grade + ')');
+    " 2>/dev/null || echo "?"
   else
     echo "--"
   fi
 }
 
-echo ""
-echo "┌──────────────────┬────────┬────────┬────────┬──────────┬────────┐"
-printf "│ %-16s │ %-6s │ %-6s │ %-6s │ %-8s │ %-6s │\n" "Model" "todo" "bbs" "reddit" "shopping" "erp"
-echo "├──────────────────┼────────┼────────┼────────┼──────────┼────────┤"
-
-for MODEL in "${MODELS[@]}"; do
-  MODEL_NAME="${MODEL%%:*}"
-  T=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/todo/estimate-report.json")
-  B=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/bbs/estimate-report.json")
-  R=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/reddit/estimate-report.json")
-  S=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/shopping/estimate-report.json")
-  G=$(read_score "$ESTIMATE_DIR/reports/benchmark/$MODEL_NAME/erp/estimate-report.json")
-  printf "│ %-16s │ %6s │ %6s │ %6s │ %8s │ %6s │\n" "$MODEL_NAME" "$T" "$B" "$R" "$S" "$G"
+# Collect all projects that exist
+ALL_PROJECTS=()
+for p_name in todo bbs reddit shopping; do
+  for m in "${MODELS_FOUND[@]}"; do
+    if [ -f "$ESTIMATE_DIR/reports/benchmark/$m/$p_name/estimate-report.json" ]; then
+      if ! printf '%s\n' "${ALL_PROJECTS[@]}" | grep -qx "$p_name"; then
+        ALL_PROJECTS+=("$p_name")
+      fi
+      break
+    fi
+  done
 done
 
-echo "└──────────────────┴────────┴────────┴────────┴──────────┴────────┘"
+# Print header
+HEADER="│ $(printf '%-24s' 'Model') │"
+SEPARATOR="├$(printf '%.0s─' {1..26})┤"
+TOP="┌$(printf '%.0s─' {1..26})┬"
+BOTTOM="└$(printf '%.0s─' {1..26})┴"
+
+for proj in "${ALL_PROJECTS[@]}"; do
+  HEADER="$HEADER $(printf '%-10s' "$proj") │"
+  SEPARATOR="$SEPARATOR$(printf '%.0s─' {1..12})┤"
+  TOP="$TOP$(printf '%.0s─' {1..12})┬"
+  BOTTOM="$BOTTOM$(printf '%.0s─' {1..12})┴"
+done
+
+# Fix trailing characters
+TOP="${TOP%┬}┐"
+SEPARATOR="${SEPARATOR%┤}┤"
+BOTTOM="${BOTTOM%┴}┘"
+
+echo ""
+echo "$TOP"
+echo "$HEADER"
+echo "$SEPARATOR"
+
+for m in "${MODELS_FOUND[@]}"; do
+  ROW="│ $(printf '%-24s' "$m") │"
+  for proj in "${ALL_PROJECTS[@]}"; do
+    SCORE=$(read_score "$ESTIMATE_DIR/reports/benchmark/$m/$proj/estimate-report.json")
+    ROW="$ROW $(printf '%10s' "$SCORE") │"
+  done
+  echo "$ROW"
+done
+
+echo "$BOTTOM"

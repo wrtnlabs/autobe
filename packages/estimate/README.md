@@ -7,14 +7,14 @@ A CLI tool that evaluates code quality for AutoBE-generated projects.
 ```bash
 # 1. Build (only needed once)
 cd packages/estimate
-npx tsc --build
+corepack pnpm build
 
 # 2. Set up environment
 cp .env.example .env
 # Fill in OPENROUTER_API_KEY if you want AI agent evaluation
 
 # 3. Run a single evaluation
-npx tsx dist/bin/estimate.js -i /path/to/project -o ./reports
+node dist/bin/estimate.js -i /path/to/project -o ./reports --project todo
 
 # 4. Run the full benchmark suite
 ./run-benchmark.sh
@@ -23,7 +23,7 @@ npx tsx dist/bin/estimate.js -i /path/to/project -o ./reports
 ## CLI Usage
 
 ```bash
-npx tsx dist/bin/estimate.js -i <path> -o <path> [options]
+node dist/bin/estimate.js -i <path> -o <path> [options]
 ```
 
 | Option | Description |
@@ -32,13 +32,13 @@ npx tsx dist/bin/estimate.js -i <path> -o <path> [options]
 | `-o, --output <path>` | Directory to save reports (required) |
 | `-v, --verbose` | Show detailed logs |
 | `--continue-on-gate-failure` | Continue evaluation even if gate fails |
-| `--use-agent` | Enable AI agent evaluation (30% of score) |
+| `--use-agent` | Enable AI agent evaluation (25% of score) |
 | `--provider <provider>` | LLM provider: `claude`, `openai`, `openrouter` |
 | `--api-key <key>` | API key (or set `OPENROUTER_API_KEY` env var) |
 | `--auto-fix` | Auto-fix simple issues (TS1161, TS7006) |
 | `--run-tests` | Start Docker server and run e2e tests |
 | `--golden` | Run Golden Set evaluation |
-| `--project <project>` | Project type for Golden Set: `todo`, `bbs`, `reddit`, `shopping` |
+| `--project <project>` | Project type: `todo`, `bbs`, `reddit`, `shopping` |
 
 ## Scoring System
 
@@ -50,14 +50,14 @@ If the code doesn't compile, you get a 0.
 - **TypeScript compilation**: Uses `AutoBeTypeScriptCompiler` (in-memory)
 - **Prisma schema validation**: Uses `AutoBeDatabaseCompiler` (in-memory)
 
-### Scoring Phases (70% of total)
+### Scoring Phases (75% of total without agents, 100% without)
 
 | Phase | Weight | What we check |
 |-------|--------|---------------|
-| Document Quality | 10% | Presence of `docs/analysis/`, README |
+| Document Quality | 5% | Presence of `docs/analysis/`, README |
 | Requirements Coverage | 25% | Controllers, providers, DTOs coverage |
-| Test Coverage | 30% | Test count, assertion quality, stub detection |
-| Logic Completeness | 25% | TODOs, FIXMEs, empty methods, stub returns |
+| Test Coverage | 25% | Route-level test coverage, assertion quality, stub detection |
+| Logic Completeness | 35% | TODOs, FIXMEs, empty methods, stub returns |
 | API Completeness | 10% | Endpoint implementation, provider delegation |
 
 ### Penalties
@@ -79,12 +79,21 @@ If the code doesn't compile, you get a 0.
 - **JSDoc**: Missing documentation comments
 - **Schema Sync**: Empty interfaces (SYNC001) + Prisma-Structure property mismatches (SYNC002)
 
-### AI Agent Evaluation (30% of total)
+### AI Agent Evaluation (25% of total)
 
 Enable with `--use-agent`:
 
-- **SecurityAgent**: OWASP Top 10 security analysis
+- **SecurityAgent**: OWASP Top 10 security analysis (stratified file sampling, max 30 files)
 - **LLMQualityAgent**: Detects hallucinations, incomplete implementations, logic errors
+- **HallucinationAgent** `[ref]`: DeepEval-based ground truth comparison (reference-only, not scored)
+
+### Runtime & Golden Set Evaluation
+
+Enable with `--run-tests --golden --project <name>`:
+
+- **RuntimeEvaluator**: Builds project, starts server, runs e2e tests
+- **Golden Set**: Compares API responses against known-good endpoints
+- Golden set weight: 15% (existing phases scaled to 85%)
 
 ### Scoring Formula
 
@@ -94,7 +103,8 @@ Penalties       = warning + duplication + jsdoc + schemaSync + mapping (max ~65)
 Adjusted Phase  = Raw Phase - Penalties
 
 Without agents:  Final Score = Adjusted Phase (100%)
-With agents:     Final Score = (Adjusted Phase * 70%) + (Agent Average * 30%)
+With agents:     Final Score = (Adjusted Phase * 75%) + (Agent Average * 25%)
+With golden set: Final Score = (Above * 85%) + (Golden Set * 15%)
 ```
 
 ## Grading
@@ -109,7 +119,7 @@ With agents:     Final Score = (Adjusted Phase * 70%) + (Agent Average * 30%)
 
 ## Benchmarking
 
-Run evaluations across all models and projects:
+Auto-discovers models and projects from `autobe-examples/` directory:
 
 ```bash
 cd packages/estimate
@@ -118,10 +128,22 @@ cd packages/estimate
 ./run-benchmark.sh
 
 # With AI agents (requires OPENROUTER_API_KEY)
-./run-benchmark.sh agent
+./run-benchmark.sh --mode agent
 
 # Full mode (agents + runtime tests + golden set)
-./run-benchmark.sh full
+./run-benchmark.sh --mode full
+
+# Filter by vendor
+./run-benchmark.sh --vendor openai
+
+# Filter by model
+./run-benchmark.sh --model kimi-k2.5
+
+# Filter by project
+./run-benchmark.sh --project reddit
+
+# Combined filters
+./run-benchmark.sh --vendor qwen --project todo --mode agent
 ```
 
 Results are saved to `reports/benchmark/<model>/<project>/`.
@@ -131,7 +153,7 @@ Results are saved to `reports/benchmark/<model>/<project>/`.
 Compare multiple projects side by side:
 
 ```bash
-npx tsx dist/bin/estimate.js compare \
+node dist/bin/estimate.js compare \
   -p "model-a:/path/to/a" "model-b:/path/to/b" \
   -o ./reports/comparison
 ```
@@ -159,7 +181,7 @@ Each evaluation produces two files:
 ## Sample Output
 
 ```
-Scoring Phases (70% of total score):
+Scoring Phases (75% of total score):
 -------------------------------------
    Gate:                    Pass
    Document Quality         100/100
@@ -169,13 +191,11 @@ Scoring Phases (70% of total score):
    API Completeness         100/100
 -------------------------------------
 
-Reference Info (no score impact):
+AI Agents (25% of total score):
 -------------------------------------
-   Complexity:    2 complex functions (max: 22)
-   Duplication:   102 duplicate blocks
-   Naming:        0 issues
-   JSDoc:         36 missing
-   Schema Sync:   0/35 empty types, 0 mismatched
+   SecurityAgent:      85/100
+   LLMQualityAgent:    72/100
+   HallucinationAgent: 90/100 [ref]
 -------------------------------------
 
 Final Score: 85/100 (Grade: B)
@@ -193,7 +213,7 @@ Final Score: 85/100 (Grade: B)
 - Rate limits are retried automatically
 
 **Build not working**
-- Run `npx tsc --build` first
+- Run `corepack pnpm build` first
 - Make sure `dist/` directory exists
 
 ## License
