@@ -1,7 +1,4 @@
-import {
-  IAutoBePlaygroundHeader,
-  IAutoBePlaygroundVendor,
-} from "@autobe/interface";
+import { IAutoBePlaygroundVendor } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
 import { useRef } from "react";
@@ -29,7 +26,7 @@ export function AutoBePlaygroundApplication() {
       semaphore: playgroundConfig.semaphore ?? 16,
     };
 
-    const headers: IAutoBePlaygroundHeader = {
+    const headers = {
       vendor: vendorConfig,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       locale: playgroundConfig.locale ?? window.navigator.language,
