@@ -243,37 +243,20 @@ export class EvaluationPipeline {
       errorRatio * 100 * GATE_PENALTY_PER_PERCENT,
     );
 
-    // Gate fail if too many syntax warnings (e.g., unresolved modules)
-    const syntaxWarningCount = syntaxResult.issues.filter(
-      (i) => i.severity === "warning",
-    ).length;
-    if (syntaxWarningCount > 100 || syntaxWarningCount / totalFiles > 0.3) {
-      return this.createGateFailure(issues, "syntax-warnings", startTime, {
-        totalFiles,
-        filesWithErrors,
-        syntaxWarningCount,
-        reason: `Too many syntax warnings: ${syntaxWarningCount} warnings across ${totalFiles} files`,
-      });
-    }
-
     // Type check
     this.log("  - Checking types...");
     const typeResult = await new TypeEvaluator().evaluate(context);
     issues.push(...typeResult.issues);
 
-    const typeIssueCount = typeResult.issues.filter(
-      (i) => i.severity === "critical" || i.severity === "warning",
+    const typeCriticalCount = typeResult.issues.filter(
+      (i) => i.severity === "critical",
     ).length;
-    const typeWarningCount = typeResult.issues.filter(
-      (i) => i.severity === "warning",
-    ).length;
-    if (typeIssueCount > 100 || typeWarningCount / totalFiles > 0.3) {
+    if (typeCriticalCount > 0 && typeCriticalCount / totalFiles > 0.3) {
       return this.createGateFailure(issues, "type-errors", startTime, {
         totalFiles,
         filesWithErrors,
-        typeErrorCount: typeIssueCount,
-        typeWarningCount,
-        reason: `Too many type errors: ${typeIssueCount} critical/warning (${typeWarningCount} warnings across ${totalFiles} files)`,
+        typeCriticalCount,
+        reason: `Too many critical type errors: ${typeCriticalCount} across ${totalFiles} files`,
       });
     }
 
@@ -300,6 +283,9 @@ export class EvaluationPipeline {
     }
 
     // Final gate score combines syntax + type penalties
+    const typeWarningCount = typeResult.issues.filter(
+      (i) => i.severity === "warning",
+    ).length;
     const typePenalty = Math.min(
       10,
       Math.round((typeWarningCount / totalFiles) * 10),
@@ -320,7 +306,7 @@ export class EvaluationPipeline {
         filesWithErrors,
         errorRatio: Math.round(errorRatio * 100),
         penalty: totalPenalty,
-        typeErrorCount: typeIssueCount,
+        typeCriticalCount,
         typeWarningCount,
         softPass: filesWithErrors > 0 || typeWarningCount > 0,
       },
