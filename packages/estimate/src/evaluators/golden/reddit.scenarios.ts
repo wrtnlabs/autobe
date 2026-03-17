@@ -465,7 +465,7 @@ export async function runRedditScenarios(
   // 18. Community feed
   const communityFeedEndpoint = findEndpoint(routes, {
     pathKeywords: ["posts"],
-    mustContain: "communit",
+    mustContain: "community",
     method: "GET",
   });
   if (!communityFeedEndpoint || !communityId) {

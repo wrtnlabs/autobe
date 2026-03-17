@@ -100,14 +100,8 @@ export function createProgram(): Command {
       false,
     )
     .option("-v, --verbose", "Enable verbose output", false)
-    .option(
-      "--model <name>",
-      "Run only a specific model (e.g., kimi-k2.5)",
-    )
-    .option(
-      "--project <name>",
-      "Run only a specific project (e.g., reddit)",
-    )
+    .option("--model <name>", "Run only a specific model (e.g., kimi-k2.5)")
+    .option("--project <name>", "Run only a specific project (e.g., reddit)")
     .action(async (options) => {
       await runBatch(options);
     });
@@ -421,9 +415,9 @@ function discoverTargets(examplesDir: string): BatchTarget[] {
 
   for (const vendor of vendors) {
     const vendorPath = path.join(examplesDir, vendor);
-    const models = fs.readdirSync(vendorPath).filter((d) =>
-      fs.statSync(path.join(vendorPath, d)).isDirectory(),
-    );
+    const models = fs
+      .readdirSync(vendorPath)
+      .filter((d) => fs.statSync(path.join(vendorPath, d)).isDirectory());
 
     for (const model of models) {
       const modelPath = path.join(vendorPath, model);
@@ -468,7 +462,9 @@ async function runBatch(options: BatchCommandOptions): Promise<void> {
   }
 
   if (targets.length === 0) {
-    p.log.error("No targets found. Check --examples path or --model/--project filters.");
+    p.log.error(
+      "No targets found. Check --examples path or --model/--project filters.",
+    );
     process.exit(1);
   }
 
@@ -477,7 +473,12 @@ async function runBatch(options: BatchCommandOptions): Promise<void> {
     p.log.info(`  • ${t.model}/${t.project}`);
   }
 
-  const results: Array<{ model: string; project: string; score: number; grade: string }> = [];
+  const results: Array<{
+    model: string;
+    project: string;
+    score: number;
+    grade: string;
+  }> = [];
   let completed = 0;
 
   for (const target of targets) {
