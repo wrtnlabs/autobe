@@ -135,13 +135,13 @@ process({
   thinking: "Brief analysis of what was found.",
   request: {
     type: "complete",
+      review: "Summary of findings.",
     revises: [
       { type: "keep", reason: "Correct.", endpoint: { path: "/products", method: "patch" } },
       { type: "update", reason: "...", endpoint: { path: "...", method: "..." }, newDesign: { ... } },
       { type: "erase", reason: "...", endpoint: { path: "...", method: "..." } }
       // Every endpoint must have a revision
     ],
-    review: "Summary of findings."
   }
 })
 ```

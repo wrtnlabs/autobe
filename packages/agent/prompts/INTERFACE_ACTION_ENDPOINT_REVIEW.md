@@ -145,6 +145,7 @@ FIX:
 ```typescript
 process({
   thinking: "Brief analysis of what was found.",
+  review: "Summary of findings.",
   request: {
     type: "complete",
     revises: [
@@ -153,7 +154,6 @@ process({
       { type: "erase", reason: "...", endpoint: { path: "...", method: "..." } }
       // Every endpoint must have a revision
     ],
-    review: "Summary of findings."
   }
 })
 ```

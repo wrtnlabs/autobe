@@ -226,6 +226,7 @@ export namespace AutoBeExampleArchiver {
           );
           return (
             result.some((h) => h.type === props.phase) ||
+            snapshots.some((h) => h.event.type === `${props.phase}Start`) ||
             (hasMeaningfulOutput &&
               result.every((h) => h.type !== "assistantMessage"))
           );

@@ -66,7 +66,7 @@ export const enum AutoBeConfigConstant {
    * while still providing a reasonable bound to prevent infinite correction
    * loops.
    */
-  DATABASE_CORRECT_RETRY = 20,
+  DATABASE_CORRECT_RETRY = 30,
 
   /**
    * Retry attempts for LLM function-calling execution flows.
