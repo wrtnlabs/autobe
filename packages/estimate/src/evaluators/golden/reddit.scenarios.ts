@@ -21,6 +21,7 @@ export async function runRedditScenarios(
   let communityId: string | null = null;
   let postId: string | null = null;
   let commentId: string | null = null;
+  let otherUserId: string | null = null;
 
   // ── Auth ─────────────────────────────────────────────────
 
@@ -70,12 +71,58 @@ export async function runRedditScenarios(
     }
   }
 
-  // 3. Update profile
+  // 3. Change password
+  const pwEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["password", "passwd"],
+      method: "PATCH",
+    }) ||
+    findEndpoint(routes, {
+      pathKeywords: ["password", "passwd"],
+      method: "PUT",
+    });
+  if (!pwEndpoint) {
+    results.push(fail(3, "Change password", "endpoint not found"));
+  } else {
+    const res = await http.patch(
+      pwEndpoint.url,
+      {
+        current_password: password,
+        new_password: randomPassword(),
+        password,
+        newPassword: randomPassword(),
+      },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(3, "Change password")
+        : fail(3, "Change password", `status ${res.status}`),
+    );
+  }
+
+  // 4. Get user profile
+  const profileGetEndpoint = findEndpoint(routes, {
+    pathKeywords: ["profile"],
+    method: "GET",
+  });
+  if (!profileGetEndpoint) {
+    results.push(fail(4, "Get user profile", "endpoint not found"));
+  } else {
+    const res = await http.get(profileGetEndpoint.url, true);
+    results.push(
+      res.ok
+        ? pass(4, "Get user profile")
+        : fail(4, "Get user profile", `status ${res.status}`),
+    );
+  }
+
+  // 5. Update profile
   const profileEndpoint =
     findEndpoint(routes, { pathKeywords: ["profile"], method: "PATCH" }) ||
     findEndpoint(routes, { pathKeywords: ["profile"], method: "PUT" });
   if (!profileEndpoint) {
-    results.push(fail(3, "Update profile", "endpoint not found"));
+    results.push(fail(5, "Update profile", "endpoint not found"));
   } else {
     const res = await http.patch(
       profileEndpoint.url,
@@ -84,20 +131,48 @@ export async function runRedditScenarios(
     );
     results.push(
       res.ok
-        ? pass(3, "Update profile")
-        : fail(3, "Update profile", `status ${res.status}`),
+        ? pass(5, "Update profile")
+        : fail(5, "Update profile", `status ${res.status}`),
     );
+  }
+
+  // Create a second user for moderator/ban tests
+  const otherEmail = randomEmail();
+  const otherPassword = randomPassword();
+  const otherHttp = new HttpRunner();
+  if (joinEndpoint && loginEndpoint) {
+    const signupRes = await http.post(joinEndpoint.url, {
+      email: otherEmail,
+      password: otherPassword,
+      username: randomUsername(),
+      display_name: "Other User",
+    });
+    otherUserId = signupRes.body?.id || signupRes.body?.data?.id || null;
+    const otherLogin = await http.post(loginEndpoint.url, {
+      email: otherEmail,
+      password: otherPassword,
+    });
+    const otherToken =
+      otherLogin.body?.token?.access ||
+      otherLogin.body?.access_token ||
+      otherLogin.body?.token;
+    if (otherToken)
+      otherHttp.setToken(
+        typeof otherToken === "string"
+          ? otherToken
+          : otherToken?.access || otherToken,
+      );
   }
 
   // ── Communities ──────────────────────────────────────────
 
-  // 4. Create community
+  // 6. Create community
   const communityCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["communities"],
     method: "POST",
   });
   if (!communityCreateEndpoint) {
-    results.push(fail(4, "Create community", "endpoint not found"));
+    results.push(fail(6, "Create community", "endpoint not found"));
   } else {
     const res = await http.post(
       communityCreateEndpoint.url,
@@ -109,29 +184,45 @@ export async function runRedditScenarios(
     );
     if (res.ok) {
       communityId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(4, "Create community"));
+      results.push(pass(6, "Create community"));
     } else {
-      results.push(fail(4, "Create community", `status ${res.status}`));
+      results.push(fail(6, "Create community", `status ${res.status}`));
     }
   }
 
-  // 5. List communities
+  // 7. List communities
   const communityListEndpoint = findEndpoint(routes, {
     pathKeywords: ["communities"],
     method: "GET",
   });
   if (!communityListEndpoint) {
-    results.push(fail(5, "List communities", "endpoint not found"));
+    results.push(fail(7, "List communities", "endpoint not found"));
   } else {
     const res = await http.get(communityListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(5, "List communities")
-        : fail(5, "List communities", `status ${res.status}`),
+        ? pass(7, "List communities")
+        : fail(7, "List communities", `status ${res.status}`),
     );
   }
 
-  // 6. Subscribe to community
+  // 8. Get community detail
+  if (!communityListEndpoint || !communityId) {
+    results.push(fail(8, "Get community detail", "no communityId or endpoint"));
+  } else {
+    const url = http.resolvePath(communityListEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.get(url, true);
+    results.push(
+      res.ok
+        ? pass(8, "Get community detail")
+        : fail(8, "Get community detail", `status ${res.status}`),
+    );
+  }
+
+  // 9. Subscribe to community
   const subscribeEndpoint = findEndpoint(routes, {
     pathKeywords: ["subscribe", "subscription"],
     method: "POST",
@@ -139,7 +230,7 @@ export async function runRedditScenarios(
   if (!subscribeEndpoint || !communityId) {
     results.push(
       fail(
-        6,
+        9,
         "Subscribe to community",
         subscribeEndpoint ? "no communityId" : "endpoint not found",
       ),
@@ -152,12 +243,12 @@ export async function runRedditScenarios(
     const res = await http.post(url, {}, true);
     results.push(
       res.ok
-        ? pass(6, "Subscribe to community")
-        : fail(6, "Subscribe to community", `status ${res.status}`),
+        ? pass(9, "Subscribe to community")
+        : fail(9, "Subscribe to community", `status ${res.status}`),
     );
   }
 
-  // 7. Unsubscribe from community
+  // 10. Unsubscribe from community
   const unsubscribeEndpoint = findEndpoint(routes, {
     pathKeywords: ["subscribe", "subscription"],
     method: "DELETE",
@@ -165,7 +256,7 @@ export async function runRedditScenarios(
   if (!unsubscribeEndpoint || !communityId) {
     results.push(
       fail(
-        7,
+        10,
         "Unsubscribe from community",
         unsubscribeEndpoint ? "no communityId" : "endpoint not found",
       ),
@@ -186,20 +277,152 @@ export async function runRedditScenarios(
     }
     results.push(
       res.ok
-        ? pass(7, "Unsubscribe from community")
-        : fail(7, "Unsubscribe from community", `status ${res.status}`),
+        ? pass(10, "Unsubscribe from community")
+        : fail(10, "Unsubscribe from community", `status ${res.status}`),
+    );
+  }
+
+  // 11. Add moderator
+  const modAddEndpoint = findEndpoint(routes, {
+    pathKeywords: ["moderator"],
+    method: "POST",
+  });
+  if (!modAddEndpoint || !communityId || !otherUserId) {
+    results.push(
+      fail(
+        11,
+        "Add moderator",
+        !modAddEndpoint ? "endpoint not found" : "no IDs",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(modAddEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.post(url, { user_id: otherUserId }, true);
+    results.push(
+      res.ok
+        ? pass(11, "Add moderator")
+        : fail(11, "Add moderator", `status ${res.status}`),
+    );
+  }
+
+  // 12. List moderators
+  const modListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["moderator"],
+    method: "GET",
+  });
+  if (!modListEndpoint || !communityId) {
+    results.push(
+      fail(
+        12,
+        "List moderators",
+        modListEndpoint ? "no communityId" : "endpoint not found",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(modListEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.get(url, true);
+    results.push(
+      res.ok
+        ? pass(12, "List moderators")
+        : fail(12, "List moderators", `status ${res.status}`),
+    );
+  }
+
+  // 13. Remove moderator
+  const modRemoveEndpoint = findEndpoint(routes, {
+    pathKeywords: ["moderator"],
+    method: "DELETE",
+  });
+  if (!modRemoveEndpoint || !communityId || !otherUserId) {
+    results.push(
+      fail(
+        13,
+        "Remove moderator",
+        !modRemoveEndpoint ? "endpoint not found" : "no IDs",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(modRemoveEndpoint.url, {
+      id: communityId,
+      communityId,
+      userId: otherUserId,
+    });
+    const res = await http.delete(url, true);
+    results.push(
+      res.ok
+        ? pass(13, "Remove moderator")
+        : fail(13, "Remove moderator", `status ${res.status}`),
+    );
+  }
+
+  // 14. Ban user from community
+  const banEndpoint = findEndpoint(routes, {
+    pathKeywords: ["ban"],
+    method: "POST",
+  });
+  if (!banEndpoint || !communityId || !otherUserId) {
+    results.push(
+      fail(
+        14,
+        "Ban user from community",
+        !banEndpoint ? "endpoint not found" : "no IDs",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(banEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.post(
+      url,
+      { user_id: otherUserId, reason: "Test ban" },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(14, "Ban user from community")
+        : fail(14, "Ban user from community", `status ${res.status}`),
+    );
+  }
+
+  // 15. Unban user from community
+  const unbanEndpoint = findEndpoint(routes, {
+    pathKeywords: ["ban"],
+    method: "DELETE",
+  });
+  if (!unbanEndpoint || !communityId || !otherUserId) {
+    results.push(
+      fail(15, "Unban user", !unbanEndpoint ? "endpoint not found" : "no IDs"),
+    );
+  } else {
+    const url = http.resolvePath(unbanEndpoint.url, {
+      id: communityId,
+      communityId,
+      userId: otherUserId,
+    });
+    const res = await http.delete(url, true);
+    results.push(
+      res.ok
+        ? pass(15, "Unban user")
+        : fail(15, "Unban user", `status ${res.status}`),
     );
   }
 
   // ── Posts ────────────────────────────────────────────────
 
-  // 8. Create post
+  // 16. Create post
   const postCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["posts"],
     method: "POST",
   });
   if (!postCreateEndpoint) {
-    results.push(fail(8, "Create post", "endpoint not found"));
+    results.push(fail(16, "Create post", "endpoint not found"));
   } else {
     const body: Record<string, unknown> = {
       title: "Golden Set Test Post",
@@ -210,13 +433,13 @@ export async function runRedditScenarios(
     const res = await http.post(postCreateEndpoint.url, body, true);
     if (res.ok) {
       postId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(8, "Create post"));
+      results.push(pass(16, "Create post"));
     } else {
-      results.push(fail(8, "Create post", `status ${res.status}`));
+      results.push(fail(16, "Create post", `status ${res.status}`));
     }
   }
 
-  // 9. Get post detail
+  // 17. Get post detail
   const postGetEndpoint = findEndpoint(routes, {
     pathKeywords: ["posts"],
     method: "GET",
@@ -224,7 +447,7 @@ export async function runRedditScenarios(
   if (!postGetEndpoint || !postId) {
     results.push(
       fail(
-        9,
+        17,
         "Get post detail",
         postGetEndpoint ? "no postId" : "endpoint not found",
       ),
@@ -234,12 +457,39 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(9, "Get post detail")
-        : fail(9, "Get post detail", `status ${res.status}`),
+        ? pass(17, "Get post detail")
+        : fail(17, "Get post detail", `status ${res.status}`),
     );
   }
 
-  // 10. Edit post
+  // 18. Community feed
+  const communityFeedEndpoint = findEndpoint(routes, {
+    pathKeywords: ["posts"],
+    mustContain: "communit",
+    method: "GET",
+  });
+  if (!communityFeedEndpoint || !communityId) {
+    results.push(
+      fail(
+        18,
+        "Community feed",
+        communityFeedEndpoint ? "no communityId" : "endpoint not found",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(communityFeedEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.get(url, true);
+    results.push(
+      res.ok
+        ? pass(18, "Community feed")
+        : fail(18, "Community feed", `status ${res.status}`),
+    );
+  }
+
+  // 19. Edit post
   const postEditEndpoint = findEndpoint(routes, {
     pathKeywords: ["posts"],
     method: "PATCH",
@@ -247,7 +497,7 @@ export async function runRedditScenarios(
   if (!postEditEndpoint || !postId) {
     results.push(
       fail(
-        10,
+        19,
         "Edit post",
         postEditEndpoint ? "no postId" : "endpoint not found",
       ),
@@ -257,12 +507,12 @@ export async function runRedditScenarios(
     const res = await http.patch(url, { title: "Updated Post Title" }, true);
     results.push(
       res.ok
-        ? pass(10, "Edit post")
-        : fail(10, "Edit post", `status ${res.status}`),
+        ? pass(19, "Edit post")
+        : fail(19, "Edit post", `status ${res.status}`),
     );
   }
 
-  // 11. Vote on post
+  // 20. Vote on post
   const postVoteEndpoint =
     findEndpoint(routes, {
       pathKeywords: ["votes", "vote"],
@@ -272,7 +522,7 @@ export async function runRedditScenarios(
   if (!postVoteEndpoint || !postId) {
     results.push(
       fail(
-        11,
+        20,
         "Vote on post",
         postVoteEndpoint ? "no postId" : "endpoint not found",
       ),
@@ -282,14 +532,42 @@ export async function runRedditScenarios(
     const res = await http.post(url, { value: 1 }, true);
     results.push(
       res.ok
-        ? pass(11, "Vote on post")
-        : fail(11, "Vote on post", `status ${res.status}`),
+        ? pass(20, "Vote on post")
+        : fail(20, "Vote on post", `status ${res.status}`),
+    );
+  }
+
+  // 21. Remove vote from post
+  const postVoteRemoveEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["votes", "vote"],
+      mustContain: "post",
+      method: "DELETE",
+    }) || findEndpoint(routes, { pathKeywords: ["votes"], method: "DELETE" });
+  if (!postVoteRemoveEndpoint || !postId) {
+    results.push(
+      fail(
+        21,
+        "Remove vote",
+        postVoteRemoveEndpoint ? "no postId" : "endpoint not found",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(postVoteRemoveEndpoint.url, {
+      id: postId,
+      postId,
+    });
+    const res = await http.delete(url, true);
+    results.push(
+      res.ok
+        ? pass(21, "Remove vote")
+        : fail(21, "Remove vote", `status ${res.status}`),
     );
   }
 
   // ── Comments ─────────────────────────────────────────────
 
-  // 12. Write comment on post
+  // 22. Write comment on post
   const commentCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["comments"],
     method: "POST",
@@ -297,7 +575,7 @@ export async function runRedditScenarios(
   if (!commentCreateEndpoint || !postId) {
     results.push(
       fail(
-        12,
+        22,
         "Write comment",
         commentCreateEndpoint ? "no postId" : "endpoint not found",
       ),
@@ -314,13 +592,41 @@ export async function runRedditScenarios(
     );
     if (res.ok) {
       commentId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(12, "Write comment"));
+      results.push(pass(22, "Write comment"));
     } else {
-      results.push(fail(12, "Write comment", `status ${res.status}`));
+      results.push(fail(22, "Write comment", `status ${res.status}`));
     }
   }
 
-  // 13. Edit comment
+  // 23. Vote on comment
+  const commentVoteEndpoint = findEndpoint(routes, {
+    pathKeywords: ["votes", "vote"],
+    mustContain: "comment",
+    method: "POST",
+  });
+  if (!commentVoteEndpoint || !postId || !commentId) {
+    results.push(
+      fail(
+        23,
+        "Vote on comment",
+        !commentVoteEndpoint ? "endpoint not found" : "no IDs",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(commentVoteEndpoint.url, {
+      id: postId,
+      postId,
+      commentId,
+    });
+    const res = await http.post(url, { value: 1 }, true);
+    results.push(
+      res.ok
+        ? pass(23, "Vote on comment")
+        : fail(23, "Vote on comment", `status ${res.status}`),
+    );
+  }
+
+  // 24. Edit comment
   const commentEditEndpoint = findEndpoint(routes, {
     pathKeywords: ["comments"],
     method: "PATCH",
@@ -328,7 +634,7 @@ export async function runRedditScenarios(
   if (!commentEditEndpoint || !postId || !commentId) {
     results.push(
       fail(
-        13,
+        24,
         "Edit comment",
         !commentEditEndpoint ? "endpoint not found" : "no IDs",
       ),
@@ -342,12 +648,12 @@ export async function runRedditScenarios(
     const res = await http.patch(url, { content: "Updated comment" }, true);
     results.push(
       res.ok
-        ? pass(13, "Edit comment")
-        : fail(13, "Edit comment", `status ${res.status}`),
+        ? pass(24, "Edit comment")
+        : fail(24, "Edit comment", `status ${res.status}`),
     );
   }
 
-  // 14. Delete comment
+  // 25. Delete comment
   const commentDeleteEndpoint = findEndpoint(routes, {
     pathKeywords: ["comments"],
     method: "DELETE",
@@ -355,7 +661,7 @@ export async function runRedditScenarios(
   if (!commentDeleteEndpoint || !postId || !commentId) {
     results.push(
       fail(
-        14,
+        25,
         "Delete comment",
         !commentDeleteEndpoint ? "endpoint not found" : "no IDs",
       ),
@@ -369,46 +675,107 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(14, "Delete comment")
-        : fail(14, "Delete comment", `status ${res.status}`),
+        ? pass(25, "Delete comment")
+        : fail(25, "Delete comment", `status ${res.status}`),
     );
   }
 
   // ── Feeds ────────────────────────────────────────────────
 
-  // 15. Home feed
+  // 26. Home feed
   const homeFeedEndpoint = findEndpoint(routes, {
     pathKeywords: ["home", "feed"],
     method: "GET",
   });
   if (!homeFeedEndpoint) {
-    results.push(fail(15, "Home feed", "endpoint not found"));
+    results.push(fail(26, "Home feed", "endpoint not found"));
   } else {
     const res = await http.get(homeFeedEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(15, "Home feed")
-        : fail(15, "Home feed", `status ${res.status}`),
+        ? pass(26, "Home feed")
+        : fail(26, "Home feed", `status ${res.status}`),
     );
   }
 
-  // 16. Popular feed
+  // 27. Popular feed
   const popularFeedEndpoint = findEndpoint(routes, {
     pathKeywords: ["popular"],
     method: "GET",
   });
   if (!popularFeedEndpoint) {
-    results.push(fail(16, "Popular feed", "endpoint not found"));
+    results.push(fail(27, "Popular feed", "endpoint not found"));
   } else {
     const res = await http.get(popularFeedEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(16, "Popular feed")
-        : fail(16, "Popular feed", `status ${res.status}`),
+        ? pass(27, "Popular feed")
+        : fail(27, "Popular feed", `status ${res.status}`),
     );
   }
 
-  // 17. Delete post
+  // ── Reports ──────────────────────────────────────────────
+
+  // 28. Report post
+  const reportEndpoint = findEndpoint(routes, {
+    pathKeywords: ["report"],
+    method: "POST",
+  });
+  if (!reportEndpoint || !postId) {
+    results.push(
+      fail(
+        28,
+        "Report post",
+        reportEndpoint ? "no postId" : "endpoint not found",
+      ),
+    );
+  } else {
+    const res = await otherHttp.post(
+      reportEndpoint.url,
+      {
+        target_type: "post",
+        target_id: postId,
+        post_id: postId,
+        reason: "Test report",
+      },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(28, "Report post")
+        : fail(28, "Report post", `status ${res.status}`),
+    );
+  }
+
+  // 29. List reports (moderator)
+  const reportListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["report"],
+    method: "GET",
+  });
+  if (!reportListEndpoint || !communityId) {
+    results.push(
+      fail(
+        29,
+        "List reports",
+        reportListEndpoint ? "no communityId" : "endpoint not found",
+      ),
+    );
+  } else {
+    const url = http.resolvePath(reportListEndpoint.url, {
+      id: communityId,
+      communityId,
+    });
+    const res = await http.get(url, true);
+    results.push(
+      res.ok
+        ? pass(29, "List reports")
+        : fail(29, "List reports", `status ${res.status}`),
+    );
+  }
+
+  // ── Cleanup ──────────────────────────────────────────────
+
+  // 30. Delete post
   const postDeleteEndpoint = findEndpoint(routes, {
     pathKeywords: ["posts"],
     method: "DELETE",
@@ -416,7 +783,7 @@ export async function runRedditScenarios(
   if (!postDeleteEndpoint || !postId) {
     results.push(
       fail(
-        17,
+        30,
         "Delete post",
         postDeleteEndpoint ? "no postId" : "endpoint not found",
       ),
@@ -429,18 +796,18 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(17, "Delete post")
-        : fail(17, "Delete post", `status ${res.status}`),
+        ? pass(30, "Delete post")
+        : fail(30, "Delete post", `status ${res.status}`),
     );
   }
 
-  // 18. User withdrawal
+  // 31. User withdrawal
   const withdrawEndpoint = findEndpoint(routes, {
     pathKeywords: ["withdraw", "leave", "secede", "deactivate"],
     method: "DELETE",
   });
   if (!withdrawEndpoint) {
-    results.push(fail(18, "User withdrawal", "endpoint not found"));
+    results.push(fail(31, "User withdrawal", "endpoint not found"));
   } else {
     const wEmail = randomEmail();
     const wPassword = randomPassword();
@@ -467,11 +834,11 @@ export async function runRedditScenarios(
       const res = await wHttp.delete(withdrawEndpoint.url, true);
       results.push(
         res.ok
-          ? pass(18, "User withdrawal")
-          : fail(18, "User withdrawal", `status ${res.status}`),
+          ? pass(31, "User withdrawal")
+          : fail(31, "User withdrawal", `status ${res.status}`),
       );
     } else {
-      results.push(fail(18, "User withdrawal", "auth endpoints missing"));
+      results.push(fail(31, "User withdrawal", "auth endpoints missing"));
     }
   }
 
