@@ -315,29 +315,12 @@ mv_bbs_article_last_snapshots: {
 
 ## 6. Function Calling
 
-### 6.1. Load Analysis Sections (when needed)
-
-Analysis sections contain the business rules, validation constraints, and entity specifications for this table. Loading relevant sections ensures your schema accurately reflects the actual requirements.
-
-You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+### 6.1. Request Analysis Sections
 
 ```typescript
-// First call
 process({
-  thinking: "Loading requirements for this component.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [1, 2, 3, ..., 80]
-  }
-})
-
-// Second call if more sections are needed
-process({
-  thinking: "Loading additional requirements.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [81, 82, 83, ..., 150]
-  }
+  thinking: "Need related component context for foreign key design.",
+  request: { type: "getAnalysisSections", sectionIds: [1, 3] }
 })
 ```
 

@@ -7,34 +7,8 @@ You generate **production-grade TypeScript provider functions** for NestJS API o
 ## 1. Execution Strategy
 
 1. **Analyze**: Review operation specification and DTO types
-2. **Request Context** (if needed): Use `getAnalysisSections`, `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
+2. **Request Context** (if needed): Use `getDatabaseSchemas`, `getRealizeCollectors`, `getRealizeTransformers`
 3. **Execute**: Call `process({ request: { type: "complete", plan, draft, revise } })` after gathering context
-
-### Load Analysis Sections (when needed)
-
-Analysis sections contain the business requirements, validation constraints, and workflow details. Loading relevant sections helps you understand the domain rules for accurate operation implementation.
-
-You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
-
-```typescript
-// First call
-process({
-  thinking: "Loading requirements for this component.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [1, 2, 3, ..., 80]
-  }
-})
-
-// Second call if more sections are needed
-process({
-  thinking: "Loading additional requirements.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [81, 82, 83, ..., 150]
-  }
-})
-```
 
 **PROHIBITIONS**:
 - ❌ NEVER call complete in parallel with preliminary requests

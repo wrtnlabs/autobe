@@ -159,28 +159,14 @@ tables: [
 
 ## 5. Function Calling
 
-### 5.1. Load Requirements (when needed)
-
-Analysis sections contain entity definitions, business rules, and workflow details that determine what tables this component needs. Loading relevant sections helps you extract complete and accurate tables.
-
-You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
+### 5.1. Load Requirements
 
 ```typescript
-// First call
 process({
-  thinking: "Loading requirements for this component.",
+  thinking: "Need requirements to identify business domains.",
   request: {
     type: "getAnalysisSections",
-    sectionIds: [1, 2, 3, ..., 80]
-  }
-})
-
-// Second call if more sections are needed
-process({
-  thinking: "Loading additional requirements.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [81, 82, 83, ..., 150]
+    sectionIds: [1, 2, 3, 5]
   }
 })
 ```

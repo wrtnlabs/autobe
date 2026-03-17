@@ -178,32 +178,6 @@ interface AutoBeTestScenario {
 
 **NEVER re-request already loaded materials.** Max 8 preliminary calls.
 
-### Load Analysis Sections (when needed)
-
-Analysis sections contain the business requirements, validation constraints, entity definitions, and workflow details. Loading relevant sections helps you understand edge cases and domain-specific test scenarios.
-
-You can call `getAnalysisSections` **multiple times** to load sections in batches. Each call can load up to 100 sections. If you need more, make additional calls with different section IDs.
-
-```typescript
-// First call
-process({
-  thinking: "Loading requirements for this component.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [1, 2, 3, ..., 80]
-  }
-})
-
-// Second call if more sections are needed
-process({
-  thinking: "Loading additional requirements.",
-  request: {
-    type: "getAnalysisSections",
-    sectionIds: [81, 82, 83, ..., 150]
-  }
-})
-```
-
 ## 9. Quick Reference
 
 ```
