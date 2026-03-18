@@ -80,17 +80,27 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     ).length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 
+    // Ratio-based scoring: critical issues relative to total files checked
+    const totalFiles = Math.max(filesToCheck.length, 1);
+    const criticalRatio = criticalCount / totalFiles;
+
     let score: number;
     if (criticalCount === 0 && issues.length === 0) {
       score = 100;
     } else if (criticalCount === 0) {
-      score = Math.max(70, 100 - warningCount * 2);
-    } else if (criticalCount <= 3) {
-      score = Math.max(50, 80 - criticalCount * 10);
-    } else if (criticalCount <= 10) {
-      score = Math.max(20, 50 - criticalCount * 3);
+      score = Math.max(75, 100 - warningCount * 2);
+    } else if (criticalRatio <= 0.01) {
+      // ≤1% of files have critical issues
+      score = Math.max(80, Math.round(95 - criticalRatio * 1500));
+    } else if (criticalRatio <= 0.05) {
+      // 1~5% of files have critical issues
+      score = Math.max(60, Math.round(85 - criticalRatio * 500));
+    } else if (criticalRatio <= 0.15) {
+      // 5~15% of files have critical issues
+      score = Math.max(25, Math.round(60 - criticalRatio * 200));
     } else {
-      score = 0;
+      // >15% of files have critical issues
+      score = Math.max(0, Math.round(25 - criticalRatio * 100));
     }
 
     return {
@@ -105,6 +115,8 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
         totalIncomplete: issues.length,
         criticalCount,
         warningCount,
+        totalFiles,
+        criticalRatio: `${(criticalRatio * 100).toFixed(1)}%`,
         todoCount: issues.filter((i) => i.code === "LOGIC002").length,
         fixmeCount: issues.filter((i) => i.code === "LOGIC003").length,
         emptyMethods: issues.filter((i) => i.code === "LOGIC008").length,

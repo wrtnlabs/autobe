@@ -597,20 +597,21 @@ export class EvaluationPipeline {
         }
       }
 
-      // Empty interface + mismatch penalty
+      // Empty interface + mismatch penalty (ratio-based)
       {
         let syncPenalty = 0;
-        if (reference.schemaSync.emptyTypes >= 5) {
-          syncPenalty += Math.min(
-            5,
-            Math.round(reference.schemaSync.emptyTypes / 10),
-          );
+        const syncTotal = Math.max(reference.schemaSync.totalTypes, 1);
+        const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
+        const mismatchRatio =
+          reference.schemaSync.mismatchedProperties / syncTotal;
+
+        // Empty types: penalize when >15% of types are empty
+        if (emptyRatio > 0.15) {
+          syncPenalty += Math.min(5, Math.round(emptyRatio * 10));
         }
-        if (reference.schemaSync.mismatchedProperties >= 3) {
-          syncPenalty += Math.min(
-            5,
-            Math.round(reference.schemaSync.mismatchedProperties / 5),
-          );
+        // Mismatched properties: penalize when >5% of types have mismatches
+        if (mismatchRatio > 0.05) {
+          syncPenalty += Math.min(5, Math.round(mismatchRatio * 10));
         }
         if (syncPenalty > 0) {
           totalScore = Math.max(0, totalScore - syncPenalty);
@@ -621,7 +622,7 @@ export class EvaluationPipeline {
           };
           if (this.verbose) {
             console.log(
-              `  Schema sync penalty: -${syncPenalty} (${reference.schemaSync.emptyTypes} empty types, ${reference.schemaSync.mismatchedProperties} mismatched)`,
+              `  Schema sync penalty: -${syncPenalty} (empty: ${reference.schemaSync.emptyTypes}/${syncTotal} = ${(emptyRatio * 100).toFixed(1)}%, mismatch: ${reference.schemaSync.mismatchedProperties}/${syncTotal} = ${(mismatchRatio * 100).toFixed(1)}%)`,
             );
           }
         }
