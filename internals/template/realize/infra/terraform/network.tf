@@ -11,14 +11,14 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-# 인터넷 게이트웨이
+# Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = { Name = "autobe-dev-igw" }
 }
 
-# 퍼블릭 서브넷 (EC2 + RDS)
+# Public Subnets (EC2 + RDS)
 resource "aws_subnet" "public" {
   count                   = 2
   vpc_id                  = aws_vpc.main.id
@@ -29,7 +29,7 @@ resource "aws_subnet" "public" {
   tags = { Name = "autobe-dev-public-${count.index + 1}" }
 }
 
-# 퍼블릭 라우트 테이블
+# Public Route Table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -41,14 +41,14 @@ resource "aws_route_table" "public" {
   tags = { Name = "autobe-dev-public-rt" }
 }
 
-# 퍼블릭 서브넷에 라우트 테이블 연결
+# Associate Route Table with Public Subnets
 resource "aws_route_table_association" "public" {
   count          = 2
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
-# RDS 서브넷 그룹
+# RDS Subnet Group
 resource "aws_db_subnet_group" "main" {
   name       = "autobe-dev-db-subnet"
   subnet_ids = aws_subnet.public[*].id
@@ -56,7 +56,7 @@ resource "aws_db_subnet_group" "main" {
   tags = { Name = "autobe-dev-db-subnet-group" }
 }
 
-# EC2 보안 그룹
+# EC2 Security Group
 resource "aws_security_group" "ec2" {
   name_prefix = "autobe-dev-ec2-"
   description = "Security group for dev EC2 instance"
@@ -96,7 +96,7 @@ resource "aws_security_group" "ec2" {
   tags = { Name = "autobe-dev-ec2-sg" }
 }
 
-# RDS 보안 그룹
+# RDS Security Group
 resource "aws_security_group" "rds" {
   name_prefix = "autobe-dev-rds-"
   description = "Security group for dev RDS instance"

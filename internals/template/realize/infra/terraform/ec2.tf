@@ -1,4 +1,4 @@
-# SSH 키페어 생성
+# Generate SSH key pair
 resource "tls_private_key" "ec2" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -15,7 +15,7 @@ resource "local_file" "ec2_private_key" {
   file_permission = "0400"
 }
 
-# Amazon Linux 2023 AMI 조회
+# Lookup Amazon Linux 2023 AMI
 data "aws_ami" "amazon_linux_2023" {
   most_recent = true
   owners      = ["amazon"]

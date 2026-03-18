@@ -6,7 +6,7 @@ locals {
     if length(line) > 0 && !startswith(line, "#") && length(split("=", line)) >= 2
   }
 
-  # .env에서 읽어온 값들
+  # Values read from .env file
   aws_region        = lookup(local.env_map, "AWS_REGION", "ap-northeast-2")
   postgres_database = lookup(local.env_map, "POSTGRES_DATABASE", "wrtnlabs")
   postgres_username = lookup(local.env_map, "POSTGRES_USERNAME", "autobe")
@@ -15,8 +15,8 @@ locals {
   api_port          = lookup(local.env_map, "API_PORT", "37001")
 }
 
-# EC2에 전송할 .env 내용
-# 로컬 .env를 베이스로, terraform이 관리하는 동적 값만 덮어씀
+# .env content to send to EC2
+# Uses local .env as base, only overrides dynamic values managed by terraform
 locals {
   deploy_overrides = {
     "POSTGRES_HOST" = aws_db_instance.main.address

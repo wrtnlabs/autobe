@@ -1,10 +1,10 @@
-# 로컬에서 소스 압축 → EC2로 전송 → EC2에서 빌드/배포
+# Compress source locally → Transfer to EC2 → Build/Deploy on EC2
 resource "null_resource" "deploy" {
   triggers = {
     always_run = timestamp()
   }
 
-  # 1. 로컬에서 프로젝트를 tar.gz로 압축
+  # 1. Compress project to tar.gz locally
   provisioner "local-exec" {
     working_dir = "${path.module}/../.."
     command     = "COPYFILE_DISABLE=1 tar -czf /tmp/autobe-app-deploy.tar.gz --exclude=node_modules --exclude=.git --exclude=lib --exclude=dist --exclude=.context --exclude=template ."
@@ -18,19 +18,19 @@ resource "null_resource" "deploy" {
     timeout     = "5m"
   }
 
-  # 2. tar.gz를 EC2로 전송
+  # 2. Transfer tar.gz to EC2
   provisioner "file" {
     source      = "/tmp/autobe-app-deploy.tar.gz"
     destination = "/opt/autobe/app-deploy.tar.gz"
   }
 
-  # 3. .env를 EC2로 직접 전송 (RDS 엔드포인트 등 동적 값 포함)
+  # 3. Send .env directly to EC2 (includes dynamic values like RDS endpoint)
   provisioner "file" {
     content     = local.deploy_env
     destination = "/opt/autobe/.env"
   }
 
-  # 4. deploy.sh를 EC2로 전송
+  # 4. Transfer deploy.sh to EC2
   provisioner "file" {
     content = templatefile("${path.module}/templates/deploy.sh.tpl", {
       api_port = local.api_port
@@ -38,7 +38,7 @@ resource "null_resource" "deploy" {
     destination = "/opt/autobe/deploy.sh"
   }
 
-  # 5. 배포 실행
+  # 5. Execute deployment
   provisioner "remote-exec" {
     inline = [
       "chmod +x /opt/autobe/deploy.sh",
