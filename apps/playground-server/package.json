@@ -5,12 +5,13 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "pnpm run build:prisma && rimraf lib && tsc",
-    "build:prisma": "rimraf src/prisma && prisma generate",
+    "build:env": "ts-node build/env.ts",
+    "build:prisma": "pnpm run build:env && rimraf src/prisma && prisma generate",
     "build:sdk": "nestia sdk",
     "postbuild": "node ../../internals/config/assertBuild.js",
     "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
-    "prepare": "pnpm run build:prisma",
+    "prepare": "pnpm run build:env && pnpm run build:prisma",
     "start": "ts-node src/executable/server.ts",
     "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
