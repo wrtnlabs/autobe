@@ -11,9 +11,9 @@ import typia from "typia";
 export namespace AutoBeReplayComputer {
   export const SIGNIFICANT_PROJECTS: AutoBeExampleProject[] = [
     "todo",
-    "bbs",
     "reddit",
     "shopping",
+    "erp",
   ];
 
   export const emoji = (
@@ -33,7 +33,7 @@ export namespace AutoBeReplayComputer {
   ): IAutoBePlaygroundBenchmarkScore => {
     // list up significant projects
     summaries = summaries.filter((s) =>
-      ["todo", "bbs", "reddit", "shopping"].includes(s.project),
+      ["todo", "reddit", "shopping", "erp"].includes(s.project),
     );
 
     const individual = (project: AutoBeExampleProject): number => {
@@ -44,9 +44,9 @@ export namespace AutoBeReplayComputer {
     return {
       aggregate: round(summaries.map(compute).reduce((a, b) => a + b, 0) / 4),
       todo: individual("todo"),
-      bbs: individual("bbs"),
       reddit: individual("reddit"),
       shopping: individual("shopping"),
+      erp: individual("erp"),
     };
   };
 

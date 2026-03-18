@@ -79,9 +79,9 @@ export namespace AutoBeReplayDocumentation {
       Project | Score | Analyze | Prisma | Interface | Test | Realize
       :-------|------:|:-------:|:------:|:----------|:----:|:-------:
       ${row("todo")}
-      ${row("bbs")}
       ${row("reddit")}
       ${row("shopping")}
+      ${row("erp")}
 
       ${exp.replays
         .map((r) =>
