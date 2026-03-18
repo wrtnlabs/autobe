@@ -123,23 +123,30 @@ Given structures this complex, a 6.75% first-attempt success rate is no surprise
 
 The answer is a **validation feedback loop** — a cycle of verification, feedback, and correction.
 
-When a function call fails, the system doesn't just say "wrong." Typia (a library we'll cover in detail shortly) takes the LLM's raw JSON output and inserts `// ❌` inline annotations at every exact point where an error occurred:
+When a function call fails, the system doesn't just say "wrong." Typia (a library we'll cover in detail shortly) takes the LLM's raw JSON output and inserts `// ❌` inline annotations at every exact point where an error occurred. Here's an example from [Typia's documentation](https://typia.io/docs/llm/application/#validation-feedback):
 
 ```json
 {
-  "schemas": {
-    "properties": {
-      "type": "str" // ❌ [{"path":"$input.schemas.properties.type","expected":"string & (\"boolean\" | \"number\" | \"string\" | \"object\" | \"array\")"}]
+  "order": {
+    "payment": {
+      "type": "card",
+      "cardNumber": 12345678 // ❌ [{"path":"$input.order.payment.cardNumber","expected":"string"}]
+    },
+    "product": {
+      "name": "Laptop",
+      "price": -100, // ❌ [{"path":"$input.order.product.price","expected":"number & Minimum<0>"}]
+      "quantity": 2.5 // ❌ [{"path":"$input.order.product.quantity","expected":"number & Type<\"uint32\">"}]
+    },
+    "customer": {
+      "name": "John Doe",
+      "email": "invalid-email", // ❌ [{"path":"$input.order.customer.email","expected":"string & Format<\"email\">"}]
+      "vip": "yes" // ❌ [{"path":"$input.order.customer.vip","expected":"boolean"}]
     }
-  },
-  "product": {
-    "price": -100, // ❌ [{"path":"$input.product.price","expected":"number & Minimum<0>"}]
-    "quantity": 2.5 // ❌ [{"path":"$input.product.quantity","expected":"number & Type<\"uint32\">"}]
   }
 }
 ```
 
-Next to `"type": "str"`, it says exactly what went wrong and that the value must be one of `boolean`, `number`, `string`, etc. Next to `"price": -100`, it says the value must be 0 or greater. Next to `"quantity": 2.5`, it says the value must be a positive integer.
+`cardNumber` should be a string, not a number. `price` must be ≥ 0. `quantity` must be a positive integer. `email` isn't a valid email. `vip` should be a boolean. Five errors, each with the exact path and expected type.
 
 With this feedback, the LLM doesn't need to regenerate everything from scratch. It can precisely correct only the flagged fields and retry.
 
@@ -149,28 +156,53 @@ Compiler validation → precise diagnostics → LLM correction → revalidation.
 
 The `qwen3.5` series presents an even more dramatic case.
 
-These models have a peculiar behavior: whenever a union type (a field that can hold one of several kinds) appears, they double-stringify objects. In plain terms, they wrap an object that should go inside JSON with an extra layer of string encoding:
-
-```json
-{
-  "payment": "{\"type\":\"card\",\"cardNumber\":\"1234-5678\"}"
-}
-```
-
-The `payment` field should contain the object `{ type: "card", cardNumber: "1234-5678" }`. But Qwen 3.5 converts the entire object into a string before inserting it. Like putting a letter in an envelope, then stuffing that envelope into another envelope.
-
-Because of this, the raw success rate for every function call involving union types was **0%**.
-
-Typia's type coercion solved this. By consulting the JSON Schema, it knows "this field is supposed to be an object" and automatically parses the stringified value back into a proper object:
+Here's a function calling application from [Typia's documentation](https://typia.io/docs/llm/application/#lenient-json-parsing):
 
 ```typescript
-// Before (Qwen 3.5 output):
-{ payment: '{"type":"card","cardNumber":"1234-5678"}' }
-// After (type coercion applied):
-{ payment: { type: "card", cardNumber: "1234-5678" } }
+interface IOrder {
+  payment: IPayment;
+  product: {
+    name: string;
+    price: number & tags.Minimum<0>;
+    quantity: number & tags.Type<"uint32">;
+  };
+  customer: {
+    name: string;
+    email: string & tags.Format<"email">;
+    vip: boolean;
+  };
+}
+type IPayment =
+  | { type: "card"; cardNumber: string }
+  | { type: "bank"; accountNumber: string };
 ```
 
-No changes to the model itself. The model's output was corrected at the infrastructure level. This is how Qwen 3.5 went from 0% to 100%.
+And here's what the LLM actually returns:
+
+```typescript
+const llmOutput = `
+  > I'd be happy to help you with your order! 😊
+  \`\`\`json
+  {
+    "order": {
+      "payment": "{\\"type\\":\\"card\\",\\"cardNumber\\":\\"1234-5678",
+      "product": {
+        name: "Laptop",
+        price: 1300,
+        quantity: 2,
+      },
+      "customer": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        vip: tru
+  \`\`\``;
+```
+
+Markdown wrapping, explanation prefix, unquoted keys, trailing commas, `tru` instead of `true`, unclosed brackets — and `payment` is double-stringified because `IPayment` is an `anyOf`. Seven problems in a single output.
+
+The double-stringify is the one that makes success rate **0%**. Other errors are occasional; `anyOf` double-stringify is **100% consistent** — every `anyOf` field, every time. This isn't Qwen-specific; Anthropic's Claude models do the same thing with `oneOf`. Every model family has its union-type blind spot.
+
+Typia's `parse()` handles all of this in a single call — broken JSON recovery, type coercion, double-stringify unwrapping. No changes to the model. This is how Qwen 3.5 went from 0% to 100%.
 
 ### 1.6. Four Models, All at 100%
 
