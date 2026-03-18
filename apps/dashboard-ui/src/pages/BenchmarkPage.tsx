@@ -18,6 +18,7 @@ import { GradeDistributionChart } from "../components/benchmark/GradeDistributio
 import type { Grade } from "../types/benchmark";
 
 const ALL_GRADES: Grade[] = ["A", "B", "C", "D", "F"];
+const PROJECT_ORDER = ["todo", "reddit", "shopping", "gauzy"];
 
 export function BenchmarkPage() {
   const { data, loading, error } = useBenchmarkData();
@@ -69,8 +70,17 @@ export function BenchmarkPage() {
 
   const activeModels =
     selectedModels.length > 0 ? selectedModels : data.models;
+  const sortedProjects = [...data.projects].sort(
+    (a, b) => (PROJECT_ORDER.indexOf(a) === -1 ? 999 : PROJECT_ORDER.indexOf(a)) -
+              (PROJECT_ORDER.indexOf(b) === -1 ? 999 : PROJECT_ORDER.indexOf(b)),
+  );
   const activeProjects =
-    selectedProjects.length > 0 ? selectedProjects : data.projects;
+    selectedProjects.length > 0
+      ? [...selectedProjects].sort(
+          (a, b) => (PROJECT_ORDER.indexOf(a) === -1 ? 999 : PROJECT_ORDER.indexOf(a)) -
+                    (PROJECT_ORDER.indexOf(b) === -1 ? 999 : PROJECT_ORDER.indexOf(b)),
+        )
+      : sortedProjects;
 
   return (
     <Box>
@@ -121,7 +131,7 @@ export function BenchmarkPage() {
           <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60 }}>
             Projects:
           </Typography>
-          {data.projects.map((project) => (
+          {sortedProjects.map((project) => (
             <Chip
               key={project}
               label={project}

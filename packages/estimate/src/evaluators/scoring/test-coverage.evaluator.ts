@@ -55,6 +55,10 @@ const ACTION_TO_METHOD: Record<string, string> = {
   store: "POST",
   register: "POST",
   sign: "POST",
+  login: "POST",
+  refresh: "POST",
+  restore: "POST",
+  verify: "POST",
   // GET
   index: "GET",
   get: "GET",
@@ -67,6 +71,7 @@ const ACTION_TO_METHOD: Record<string, string> = {
   update: "PATCH",
   patch: "PATCH",
   modify: "PATCH",
+  process: "PATCH",
   // DELETE
   erase: "DELETE",
   remove: "DELETE",
@@ -76,6 +81,22 @@ const ACTION_TO_METHOD: Record<string, string> = {
   replace: "PUT",
   upsert: "PUT",
 };
+
+/**
+ * Infer HTTP method from a compound action name like
+ * `updateTodoEditHistoryEntryChange` or `restoreFromTrash`.
+ * Falls back to ACTION_TO_METHOD lookup on the full name,
+ * then tries the first camelCase word as a prefix.
+ */
+function inferMethodFromAction(action: string): string {
+  if (ACTION_TO_METHOD[action]) return ACTION_TO_METHOD[action];
+  // Extract the first camelCase word: "restoreFromTrash" → "restore"
+  const prefixMatch = action.match(/^([a-z]+)/);
+  if (prefixMatch && ACTION_TO_METHOD[prefixMatch[1]]) {
+    return ACTION_TO_METHOD[prefixMatch[1]];
+  }
+  return "UNKNOWN";
+}
 
 /** Test quality analysis result */
 interface TestQuality {
@@ -224,7 +245,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
           const action = segments[segments.length - 1];
           const pathSegments = segments.slice(0, -1);
-          const inferredMethod = ACTION_TO_METHOD[action] ?? "UNKNOWN";
+          const inferredMethod = inferMethodFromAction(action);
           const inferredPath = "/" + pathSegments.join("/");
 
           targets.push({
@@ -254,12 +275,12 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
     for (const route of routes) {
       definedMethods.add(route.method);
-      const routeSegments = this.normalizePathSegments(route.fullPath);
+      const routeSegments = this.normalizeRouteSegments(route.fullPath);
 
       const coveringTests: string[] = [];
       for (const target of testTargets) {
         if (target.inferredMethod !== route.method) continue;
-        const targetSegments = this.normalizePathSegments(target.inferredPath);
+        const targetSegments = this.normalizeTestSegments(target.inferredPath);
         if (this.segmentsMatch(routeSegments, targetSegments)) {
           coveringTests.push(target.filePath);
           testedMethods.add(route.method);
@@ -302,19 +323,74 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     };
   }
 
-  private normalizePathSegments(pathStr: string): string[] {
-    return pathStr
-      .split("/")
-      .filter((s) => s.length > 0 && !s.startsWith(":"))
-      .map((s) => s.toLowerCase());
+  /**
+   * Normalize a segment string for comparison.
+   * Strips hyphens and underscores so `password-resets` and `password_resets`
+   * both become `passwordresets`.
+   */
+  private static normalizeSegment(s: string): string {
+    return s.toLowerCase().replace(/[-_]/g, "");
   }
 
+  /**
+   * Normalize a route path into comparable segments.
+   * Path parameters like `:id` are kept as a wildcard marker `*`.
+   */
+  private normalizeRouteSegments(pathStr: string): string[] {
+    return pathStr
+      .split("/")
+      .filter((s) => s.length > 0)
+      .map((s) =>
+        s.startsWith(":") ? "*" : TestCoverageEvaluator.normalizeSegment(s),
+      );
+  }
+
+  /**
+   * Normalize a test accessor path into comparable segments.
+   * e.g. `.functional.multiUserTodo.member.todos.todoId.at()`
+   *   → ["multiusertodo", "member", "todos", "todoid"]
+   */
+  private normalizeTestSegments(pathStr: string): string[] {
+    return pathStr
+      .split("/")
+      .filter((s) => s.length > 0)
+      .map((s) => TestCoverageEvaluator.normalizeSegment(s));
+  }
+
+  /**
+   * Match route segments against test segments.
+   *
+   * Route wildcards (`*`, from `:param`) are skippable because the SDK
+   * functional accessor does NOT include path parameters — they are passed
+   * as function arguments instead.
+   *
+   * Example:
+   *   Route: `/todos/:todoId/editHistory` → `["todos", "*", "edithistory"]`
+   *   Test:  `.functional.todos.editHistory.index()` → `["todos", "edithistory"]`
+   *   → Match succeeds (wildcard skipped).
+   */
   private segmentsMatch(
     routeSegments: string[],
     targetSegments: string[],
   ): boolean {
-    if (routeSegments.length !== targetSegments.length) return false;
-    return routeSegments.every((seg, i) => seg === targetSegments[i]);
+    let ri = 0;
+    let ti = 0;
+    while (ri < routeSegments.length && ti < targetSegments.length) {
+      if (routeSegments[ri] === "*") {
+        // Wildcard: try skip (param not in SDK path) or consume one test segment
+        ri++;
+        continue;
+      }
+      if (routeSegments[ri] !== targetSegments[ti]) return false;
+      ri++;
+      ti++;
+    }
+    // Remaining route segments must all be wildcards
+    while (ri < routeSegments.length) {
+      if (routeSegments[ri] !== "*") return false;
+      ri++;
+    }
+    return ti === targetSegments.length;
   }
 
   private computeRouteBasedScore(

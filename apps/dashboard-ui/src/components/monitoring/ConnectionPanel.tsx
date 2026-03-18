@@ -95,7 +95,22 @@ export function ConnectionPanel({
       </Box>
       {errorMessage && (
         <Alert severity="error" sx={{ mt: 1 }}>
-          {errorMessage}
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {errorMessage}
+          </Typography>
+          {errorMessage.toLowerCase().includes("connection refused") && (
+            <Typography variant="caption" sx={{ display: "block", mt: 0.5 }}>
+              The AutoBE RPC server is not running. To monitor pipelines in real-time, start
+              the AutoBE playground server first. Pipelines running via CLI cannot be monitored
+              from this page.
+            </Typography>
+          )}
+          {errorMessage.toLowerCase().includes("timeout") && (
+            <Typography variant="caption" sx={{ display: "block", mt: 0.5 }}>
+              Connection timed out. Please verify the server URL is correct and that
+              the server is running.
+            </Typography>
+          )}
         </Alert>
       )}
       {status === "disconnected" && (

@@ -209,27 +209,60 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
   }
 
+  private static readonly CONTROL_KEYWORDS = new Set([
+    "if",
+    "else",
+    "for",
+    "while",
+    "switch",
+    "catch",
+    "try",
+    "do",
+  ]);
+
   /** Detect stub return values: return {} or return [] as only statement */
   private checkStubReturns(
     content: string,
     filePath: string,
     issues: Issue[],
   ): void {
-    // Match methods whose body is just `return {};` or `return [];` or `return null;`
-    const stubReturnPattern =
-      /(?:async\s+)?(?:\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{\s*return\s+(?:\{\}|\[\]|null|undefined|0|false|''|"")\s*;?\s*\}/g;
-    let match;
-    while ((match = stubReturnPattern.exec(content)) !== null) {
-      const line = content.substring(0, match.index).split("\n").length;
-      issues.push(
-        createIssue({
-          severity: "critical",
-          category: "completeness",
-          code: "LOGIC010",
-          message: "Stub return value — method returns empty object/array/null",
-          location: { file: filePath, line },
-        }),
-      );
+    // Uses brace-counting to extract the full function body, then checks
+    // whether the ENTIRE body is a single stub return statement.
+    // This avoids false positives on guard clauses like `if (...) { return null; }`.
+    const funcStart =
+      /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
+    const stubValues =
+      /^\s*return\s+(?:\{\}|\[\]|null|undefined|0|false|''|"")\s*;?\s*$/;
+
+    let m;
+    while ((m = funcStart.exec(content)) !== null) {
+      const name = m[1];
+      if (LogicCompletenessEvaluator.CONTROL_KEYWORDS.has(name)) continue;
+
+      const bodyStart = m.index + m[0].length;
+      let depth = 1;
+      let i = bodyStart;
+      while (i < content.length && depth > 0) {
+        if (content[i] === "{") depth++;
+        else if (content[i] === "}") depth--;
+        i++;
+      }
+      if (depth !== 0) continue;
+
+      const body = content.substring(bodyStart, i - 1).trim();
+      if (stubValues.test(body)) {
+        const line = content.substring(0, m.index).split("\n").length;
+        issues.push(
+          createIssue({
+            severity: "critical",
+            category: "completeness",
+            code: "LOGIC010",
+            message:
+              "Stub return value — method returns empty object/array/null",
+            location: { file: filePath, line },
+          }),
+        );
+      }
     }
   }
 }

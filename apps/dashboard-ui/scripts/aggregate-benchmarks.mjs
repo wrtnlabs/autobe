@@ -69,12 +69,32 @@ function extractPhaseDetail(phase) {
 
 // Map benchmark model names → test/results vendor/model paths
 const MODEL_TO_RESULTS_PATH = {
+  // Qwen models
+  "qwen3-next-80b-a3b-instruct": "qwen/qwen3-next-80b-a3b-instruct",
   "qwen3-80b": "qwen/qwen3-next-80b-a3b-instruct",
   "qwen3-coder": "qwen/qwen3-coder-next",
   "qwen3-30b": "qwen/qwen3-30b-a3b-thinking-2507",
+  "qwen3.5-35b-a3b": "qwen/qwen3.5-35b-a3b",
+  "qwen3.5-122b-a10b": "qwen/qwen3.5-122b-a10b",
+  "qwen3.5-397b-a17b": "qwen/qwen3.5-397b-a17b",
+  // OpenAI models
   "gpt-4.1-mini": "openai/gpt-4.1-mini",
-  "gpt-4.1": "openai/gpt-4.1",
   "gpt-4.1-mini-v2": "openai/gpt-4.1-mini",
+  "gpt-4.1": "openai/gpt-4.1",
+  "gpt-5.4": "openai/gpt-5.4",
+  "gpt-5.4-nano": "openai/gpt-5.4-nano",
+  "gpt-5.4-mini": "openai/gpt-5.4-mini",
+  // Bytedance
+  "seed-2.0-mini": "bytedance-seed/seed-2.0-mini",
+  // Moonshot
+  "kimi-k2.5": "moonshotai/kimi-k2-0905",
+  // Anthropic
+  "claude-sonnet-4.6": "anthropic/claude-sonnet-4.6",
+  // DeepSeek
+  "deepseek-v3.1-terminus-exacto": "deepseek/deepseek-v3.1-terminus-exacto",
+  "deepseek-v3.2": "deepseek/deepseek-v3.2",
+  // Z-AI
+  "glm-5": "z-ai/glm-5",
 };
 
 const PIPELINE_PHASES = ["analyze", "database", "interface", "test", "realize"];
