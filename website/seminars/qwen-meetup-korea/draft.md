@@ -62,7 +62,7 @@ The entire pipeline works this way:
 
 | Phase | What the LLM fills | Compiler validation |
 |-------|-------------------|-------------------|
-| Requirements | [`AutoBeAnalyzeDocument`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/analyze/AutoBeAnalyzeDocument.ts) — structured SRS | Structure check |
+| Requirements | [`AutoBeAnalyze`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/analyze/AutoBeAnalyze.ts) — structured SRS | Structure check |
 | Database | [`AutoBeDatabase`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — Prisma schema structure | Prisma compiler |
 | API design | [`AutoBeOpenApi`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI spec structure | OpenAPI compiler |
 | Tests | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ expression types | TypeScript compiler |
