@@ -4,7 +4,7 @@ import { tags } from "typia";
  * Interface representing a stored AI vendor configuration.
  *
  * This interface defines a persisted vendor configuration entity stored in the
- * database. Each vendor record contains the model, endpoint, and concurrency
+ * database. Each vendor record contains the endpoint and concurrency
  * settings needed to connect with an AI service provider. The API key is stored
  * encrypted in the database and is never exposed in API responses.
  *
@@ -26,14 +26,6 @@ export interface IAutoBePlaygroundVendor {
    * such as "My OpenAI", "Local Ollama", "Claude via OpenRouter", etc.
    */
   name: string;
-
-  /**
-   * AI model identifier specifying which model to use.
-   *
-   * The exact model name or identifier for the AI provider, such as
-   * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
-   */
-  model: string;
 
   /**
    * Optional custom base URL for the AI vendor's API endpoint.
@@ -70,9 +62,6 @@ export namespace IAutoBePlaygroundVendor {
     /** Human-readable label for this vendor configuration. */
     name: string;
 
-    /** AI model identifier. */
-    model: string;
-
     /**
      * API key for the AI vendor's services.
      *
@@ -100,9 +89,6 @@ export namespace IAutoBePlaygroundVendor {
   export interface IUpdate {
     /** Human-readable label. */
     name?: string;
-
-    /** AI model identifier. */
-    model?: string;
 
     /**
      * New API key. If provided, the server re-encrypts it before storage.

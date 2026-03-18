@@ -18,7 +18,7 @@ export namespace AutoBePlaygroundSessionSocketProvider {
   }): Promise<void> => {
     const session: IAutoBePlaygroundSession.ISummary = await findSession(props);
     const connection: IEntity =
-      await AutoBePlaygroundSessionConnectionProvider.emplace({
+      await AutoBePlaygroundSessionConnectionProvider.open({
         session,
         acceptor: props.acceptor,
       });

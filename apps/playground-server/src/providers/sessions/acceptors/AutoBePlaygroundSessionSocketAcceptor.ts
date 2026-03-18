@@ -19,7 +19,7 @@ import typia from "typia";
 
 import { AutoBePlaygroundGlobal } from "../../../AutoBePlaygroundGlobal";
 import { IEntity } from "../../../structures/IEntity";
-import { AutoBePlaygroundVendorProvider } from "../../AutoBePlaygroundVendorProvider";
+import { AutoBePlaygroundVendorProvider } from "../../vendors/AutoBePlaygroundVendorProvider";
 import { AutoBePlaygroundSessionConnectionProvider } from "../AutoBePlaygroundSessionConnectionProvider";
 import { AutoBePlaygroundSessionEventProvider } from "../AutoBePlaygroundSessionEventProvider";
 import { AutoBePlaygroundSessionHistoryProvider } from "../AutoBePlaygroundSessionHistoryProvider";
@@ -94,7 +94,7 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
               apiKey,
               baseURL: props.session.vendor.baseURL ?? undefined,
             }),
-            model: props.session.vendor.model,
+            model: props.session.model,
             semaphore: props.session.vendor.semaphore,
           },
           config: {
@@ -163,12 +163,14 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
 
     // START COMMUNICATION
     const enable = (value: boolean) =>
-      AutoBePlaygroundGlobal.prisma.autobe_playground_session_aggregates.update({
-        where: {
-          autobe_playground_session_id: props.session.id,
+      AutoBePlaygroundGlobal.prisma.autobe_playground_session_aggregates.update(
+        {
+          where: {
+            autobe_playground_session_id: props.session.id,
+          },
+          data: { enabled: value },
         },
-        data: { enabled: value },
-      });
+      );
     await props.acceptor.accept(
       new AutoBeRpcService({
         agent,
@@ -196,7 +198,7 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     );
     props.acceptor.ping(500);
     void props.acceptor.join().then(() => {
-      void AutoBePlaygroundSessionConnectionProvider.disconnect(
+      void AutoBePlaygroundSessionConnectionProvider.close(
         props.connection.id,
       ).catch(() => {});
     });

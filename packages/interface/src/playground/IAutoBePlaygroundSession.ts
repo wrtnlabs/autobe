@@ -38,6 +38,14 @@ export namespace IAutoBePlaygroundSession {
     /** Vendor configuration used for this session. */
     vendor: IAutoBePlaygroundVendor;
 
+    /**
+     * AI model identifier specifying which model to use.
+     *
+     * The exact model name or identifier for the AI provider, such as
+     * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
+     */
+    model: string;
+
     /** Optional user-provided title for this session. */
     title: string | null;
 
@@ -61,6 +69,32 @@ export namespace IAutoBePlaygroundSession {
   }
 
   /**
+   * Request parameters for searching and filtering sessions.
+   *
+   * Extends basic pagination with search and filter capabilities.
+   */
+  export interface IRequest {
+    /** Search keyword for session title. */
+    search?: string | null;
+
+    /** Filter by vendor ID. */
+    vendor_id?: (string & tags.Format<"uuid">) | null;
+
+    /** Filter by model identifier. */
+    model?: string | null;
+
+    /** Page number. */
+    page?: null | (number & tags.Type<"uint32">);
+
+    /**
+     * Limitation of records per a page.
+     *
+     * @default 100
+     */
+    limit?: null | (number & tags.Type<"uint32">);
+  }
+
+  /**
    * Properties for creating a new vibe coding session.
    *
    * References a stored vendor configuration by ID. The vendor's decrypted
@@ -69,6 +103,14 @@ export namespace IAutoBePlaygroundSession {
   export interface ICreate {
     /** ID of the stored vendor configuration to use. */
     vendor_id: string & tags.Format<"uuid">;
+
+    /**
+     * AI model identifier specifying which model to use.
+     *
+     * The exact model name or identifier for the AI provider, such as
+     * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
+     */
+    model: string;
 
     /** Locale for AI assistant responses. */
     locale: string;

@@ -3,14 +3,14 @@ import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
 import { Controller, Get } from "@nestjs/common";
 import { tags } from "typia";
 
-import { AutoBePlaygroundVendorProvider } from "../providers/AutoBePlaygroundVendorProvider";
+import { AutoBePlaygroundVendorProvider } from "../providers/vendors/AutoBePlaygroundVendorProvider";
 
 @Controller("autobe/playground/vendors")
 export class AutoBePlaygroundVendorController {
   /**
    * Register a new AI vendor configuration.
    *
-   * Stores the vendor's model, endpoint, and concurrency settings. The API key
+   * Stores the vendor's endpoint and concurrency settings. The API key
    * is encrypted before persistence and never returned in any response.
    *
    * @author Samchon

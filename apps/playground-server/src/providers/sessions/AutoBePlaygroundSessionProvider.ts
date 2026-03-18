@@ -10,7 +10,8 @@ import { v7 } from "uuid";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { PaginationUtil } from "../../utils/PaginationUtil";
-import { AutoBePlaygroundVendorProvider } from "../AutoBePlaygroundVendorProvider";
+import { AutoBePlaygroundVendorModelProvider } from "../vendors/AutoBePlaygroundVendorModelProvider";
+import { AutoBePlaygroundVendorProvider } from "../vendors/AutoBePlaygroundVendorProvider";
 import { AutoBePlaygroundSessionEventProvider } from "./AutoBePlaygroundSessionEventProvider";
 import { AutoBePlaygroundSessionHistoryProvider } from "./AutoBePlaygroundSessionHistoryProvider";
 
@@ -23,6 +24,7 @@ export namespace AutoBePlaygroundSessionProvider {
     ): IAutoBePlaygroundSession => ({
       id: input.id,
       vendor: AutoBePlaygroundVendorProvider.json.transform(input.vendor),
+      model: input.model,
       title: input.title ?? null,
       locale: input.locale,
       timezone: input.timezone,
@@ -56,6 +58,7 @@ export namespace AutoBePlaygroundSessionProvider {
     ): IAutoBePlaygroundSession.ISummary => ({
       id: input.id,
       vendor: AutoBePlaygroundVendorProvider.json.transform(input.vendor),
+      model: input.model,
       title: input.title ?? null,
       locale: input.locale,
       timezone: input.timezone,
@@ -74,14 +77,23 @@ export namespace AutoBePlaygroundSessionProvider {
   }
 
   export const index = (props: {
-    body: IPage.IRequest;
+    body: IAutoBePlaygroundSession.IRequest;
   }): Promise<IPage<IAutoBePlaygroundSession.ISummary>> =>
     PaginationUtil.paginate({
       schema: AutoBePlaygroundGlobal.prisma.autobe_playground_sessions,
       payload: summarize.select(),
       transform: summarize.transform,
     })({
-      where: { deleted_at: null },
+      where: {
+        deleted_at: null,
+        ...(props.body.search
+          ? { title: { contains: props.body.search } }
+          : {}),
+        ...(props.body.vendor_id
+          ? { autobe_playground_vendor_id: props.body.vendor_id }
+          : {}),
+        ...(props.body.model ? { model: props.body.model } : {}),
+      },
       orderBy: [{ created_at: "desc" }],
     })(props.body);
 
@@ -122,11 +134,18 @@ export namespace AutoBePlaygroundSessionProvider {
       },
     );
 
+    // Auto-register model under vendor
+    await AutoBePlaygroundVendorModelProvider.emplace({
+      vendorId: props.body.vendor_id,
+      model: props.body.model,
+    });
+
     const record =
       await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
         data: {
           id: v7(),
           autobe_playground_vendor_id: props.body.vendor_id,
+          model: props.body.model,
           locale: props.body.locale,
           timezone: props.body.timezone,
           title: props.body.title ?? null,

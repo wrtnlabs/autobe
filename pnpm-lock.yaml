@@ -546,9 +546,6 @@ importers:
       '@prisma/client':
         specifier: catalog:prisma
         version: 7.5.0(prisma@7.5.0(@types/react@19.2.14)(better-sqlite3@12.8.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3))(typescript@5.9.3)
-      '@prisma/client-runtime-utils':
-        specifier: catalog:prisma
-        version: 7.5.0
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -577,9 +574,21 @@ importers:
       '@nestia/sdk':
         specifier: catalog:samchon
         version: 11.0.1(@nestia/core@11.0.1(@nestia/fetcher@11.0.1)(@nestjs/common@11.1.16(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.16)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typia@12.0.1(typescript@5.9.3)))(@types/node@24.12.0)(typescript@5.9.3)
+      '@types/inquirer':
+        specifier: 8.2.5
+        version: 8.2.5
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
+      chalk:
+        specifier: 4.1.2
+        version: 4.1.2
+      commander:
+        specifier: ^14.0.0
+        version: 14.0.3
+      inquirer:
+        specifier: 8.2.5
+        version: 8.2.5
       nestia:
         specifier: catalog:samchon
         version: 11.0.1

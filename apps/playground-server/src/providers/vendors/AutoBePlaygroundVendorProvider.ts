@@ -3,8 +3,8 @@ import { AesPkcs5 } from "@nestia/fetcher";
 import { Prisma } from "@prisma/sdk";
 import { v7 } from "uuid";
 
-import { AutoBePlaygroundGlobal } from "../AutoBePlaygroundGlobal";
-import { PaginationUtil } from "../utils/PaginationUtil";
+import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
+import { PaginationUtil } from "../../utils/PaginationUtil";
 
 export namespace AutoBePlaygroundVendorProvider {
   export namespace json {
@@ -15,7 +15,6 @@ export namespace AutoBePlaygroundVendorProvider {
     ): IAutoBePlaygroundVendor => ({
       id: input.id,
       name: input.name,
-      model: input.model,
       baseURL: input.base_url,
       semaphore: input.semaphore,
       created_at: input.created_at.toISOString(),
@@ -25,7 +24,6 @@ export namespace AutoBePlaygroundVendorProvider {
         select: {
           id: true,
           name: true,
-          model: true,
           base_url: true,
           semaphore: true,
           created_at: true,
@@ -66,7 +64,6 @@ export namespace AutoBePlaygroundVendorProvider {
         data: {
           id: v7(),
           name: props.body.name,
-          model: props.body.model,
           encrypted_api_key: encrypt(props.body.apiKey),
           base_url: props.body.baseURL ?? null,
           semaphore: props.body.semaphore ?? 16,
@@ -91,7 +88,6 @@ export namespace AutoBePlaygroundVendorProvider {
       where: { id: props.id },
       data: {
         ...(props.body.name !== undefined ? { name: props.body.name } : {}),
-        ...(props.body.model !== undefined ? { model: props.body.model } : {}),
         ...(props.body.apiKey !== undefined
           ? { encrypted_api_key: encrypt(props.body.apiKey) }
           : {}),
@@ -132,10 +128,18 @@ export namespace AutoBePlaygroundVendorProvider {
 
 const encrypt = (plaintext: string): string => {
   const env = AutoBePlaygroundGlobal.env;
-  return AesPkcs5.encrypt(plaintext, env.PLAYGROUND_ENCRYPTION_KEY, env.PLAYGROUND_ENCRYPTION_IV);
+  return AesPkcs5.encrypt(
+    plaintext,
+    env.PLAYGROUND_ENCRYPTION_KEY,
+    env.PLAYGROUND_ENCRYPTION_IV,
+  );
 };
 
 const decrypt = (ciphertext: string): string => {
   const env = AutoBePlaygroundGlobal.env;
-  return AesPkcs5.decrypt(ciphertext, env.PLAYGROUND_ENCRYPTION_KEY, env.PLAYGROUND_ENCRYPTION_IV);
+  return AesPkcs5.decrypt(
+    ciphertext,
+    env.PLAYGROUND_ENCRYPTION_KEY,
+    env.PLAYGROUND_ENCRYPTION_IV,
+  );
 };

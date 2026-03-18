@@ -14,7 +14,6 @@ model autobe_playground_vendors {
   //----
   id                String    @id
   name              String
-  model             String
   encrypted_api_key String
   base_url          String?
   semaphore         Int       @default(16)
@@ -25,8 +24,27 @@ model autobe_playground_vendors {
   // RELATIONS
   //----
   sessions autobe_playground_sessions[]
+  models   autobe_playground_vendor_models[]
 
   @@index([created_at])
+}
+
+model autobe_playground_vendor_models {
+  //----
+  // COLUMNS
+  //----
+  id                          String   @id
+  autobe_playground_vendor_id String
+  model                       String
+  created_at                  DateTime
+
+  //----
+  // RELATIONS
+  //----
+  vendor autobe_playground_vendors @relation(fields: [autobe_playground_vendor_id], references: [id])
+
+  @@unique([autobe_playground_vendor_id, model])
+  @@index([autobe_playground_vendor_id, created_at])
 }
 
 model autobe_playground_sessions {
@@ -35,6 +53,7 @@ model autobe_playground_sessions {
   //----
   id                          String    @id
   autobe_playground_vendor_id String
+  model                       String
   locale                      String
   timezone                    String
   title                       String?

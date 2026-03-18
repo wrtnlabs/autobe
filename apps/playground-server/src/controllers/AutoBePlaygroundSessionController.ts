@@ -8,38 +8,19 @@ import { AutoBePlaygroundSessionProvider } from "../providers/sessions/AutoBePla
 @Controller("autobe/playground/sessions")
 export class AutoBePlaygroundSessionController {
   /**
-   * Create a new vibe coding session.
-   *
-   * Initializes a session bound to the specified vendor configuration. An
-   * aggregate record for tracking phase progress and token usage is
-   * automatically created alongside the session.
-   *
-   * @author Samchon
-   * @param body Session creation properties
-   * @returns Newly created session with full detail
-   * @tag Session
-   */
-  @TypedRoute.Post()
-  public async create(
-    @TypedBody() body: IAutoBePlaygroundSession.ICreate,
-  ): Promise<IAutoBePlaygroundSession> {
-    return AutoBePlaygroundSessionProvider.create({ body });
-  }
-
-  /**
    * List sessions with pagination.
    *
    * Returns a paginated list of session summaries sorted by creation date in
    * descending order. Soft-deleted sessions are excluded.
    *
    * @author Samchon
-   * @param body Pagination request parameters
+   * @param body Search and pagination request parameters
    * @returns Paginated session summary list
    * @tag Session
    */
   @TypedRoute.Patch()
   public async index(
-    @TypedBody() body: IPage.IRequest,
+    @TypedBody() body: IAutoBePlaygroundSession.IRequest,
   ): Promise<IPage<IAutoBePlaygroundSession.ISummary>> {
     return AutoBePlaygroundSessionProvider.index({ body });
   }
@@ -60,6 +41,25 @@ export class AutoBePlaygroundSessionController {
     @TypedParam("id") id: string & tags.Format<"uuid">,
   ): Promise<IAutoBePlaygroundSession> {
     return AutoBePlaygroundSessionProvider.at({ id });
+  }
+
+  /**
+   * Create a new vibe coding session.
+   *
+   * Initializes a session bound to the specified vendor configuration. An
+   * aggregate record for tracking phase progress and token usage is
+   * automatically created alongside the session.
+   *
+   * @author Samchon
+   * @param body Session creation properties
+   * @returns Newly created session with full detail
+   * @tag Session
+   */
+  @TypedRoute.Post()
+  public async create(
+    @TypedBody() body: IAutoBePlaygroundSession.ICreate,
+  ): Promise<IAutoBePlaygroundSession> {
+    return AutoBePlaygroundSessionProvider.create({ body });
   }
 
   /**

@@ -8,10 +8,11 @@
     "build:prisma": "rimraf src/prisma && prisma generate",
     "build:sdk": "nestia sdk",
     "postbuild": "node ../../internals/config/assertBuild.js",
-    "dev": "rimraf lib && tsc --watch",
+    "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
     "prepare": "pnpm run build:prisma",
-    "start": "ts-node src/executable/server.ts"
+    "start": "ts-node src/executable/server.ts",
+    "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
@@ -63,7 +64,11 @@
   },
   "devDependencies": {
     "@nestia/sdk": "catalog:samchon",
+    "@types/inquirer": "8.2.5",
     "@types/uuid": "^10.0.0",
+    "chalk": "4.1.2",
+    "commander": "^14.0.0",
+    "inquirer": "8.2.5",
     "nestia": "catalog:samchon",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",

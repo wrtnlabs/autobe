@@ -24,7 +24,7 @@ export class AutoBePlaygroundSessionSocketController {
   @WebSocketRoute(":id/connect")
   public async connect(
     @WebSocketRoute.Acceptor()
-    acceptor: WebSocketAcceptor<void, IAutoBeRpcService, IAutoBeRpcListener>,
+    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>,
     @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
   ): Promise<void> {
     try {
@@ -47,7 +47,7 @@ export class AutoBePlaygroundSessionSocketController {
   @WebSocketRoute(":id/replay")
   public async replay(
     @WebSocketRoute.Acceptor()
-    acceptor: WebSocketAcceptor<void, IAutoBeRpcService, IAutoBeRpcListener>,
+    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>,
     @WebSocketRoute.Param("id") id: string & tags.Format<"uuid">,
   ): Promise<void> {
     try {

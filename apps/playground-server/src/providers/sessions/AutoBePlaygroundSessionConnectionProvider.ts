@@ -6,7 +6,7 @@ import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { IEntity } from "../../structures/IEntity";
 
 export namespace AutoBePlaygroundSessionConnectionProvider {
-  export const emplace = async (props: {
+  export const open = async (props: {
     session: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<IEntity> => {
@@ -24,7 +24,7 @@ export namespace AutoBePlaygroundSessionConnectionProvider {
     return connection;
   };
 
-  export const disconnect = async (id: string): Promise<void> => {
+  export const close = async (id: string): Promise<void> => {
     await AutoBePlaygroundGlobal.prisma.autobe_playground_session_connections.update(
       {
         where: { id },
