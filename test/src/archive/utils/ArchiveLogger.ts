@@ -280,7 +280,13 @@ export namespace ArchiveLogger {
         `  - operations: ${event.operations.map((o) => `${o.method.toUpperCase()} ${o.path}`)}`,
       );
     else if (event.type === "interfaceSchema")
-      content.push(`  - typeName: ${event.typeName}`);
+      content.push(
+        `  - typeName: ${event.typeName}`,
+        JSON.stringify(event.schema, null, 2)
+          .split("\n")
+          .map((line) => `    ${line}`)
+          .join("\n"),
+      );
     else if (event.type === "interfaceSchemaCasting")
       content.push(
         `  - typeName: ${event.typeName}`,

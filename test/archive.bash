@@ -76,10 +76,22 @@ pnpm run archive:go --vendor openai/gpt-5.4 --project reddit > archive.openai-gp
 pnpm run archive:go --vendor openai/gpt-5.4 --project shopping > archive.openai-gpt-5.4.shopping.log
 pnpm run archive:go --vendor openai/gpt-5.4 --project erp > archive.openai-gpt-5.4.erp.log
 
+# openai/gpt-5.4-mini (0.75) -> working
+pnpm run archive:go --vendor openai/gpt-5.4-mini --project todo > archive.openai-gpt-5.4-mini.todo.log
+pnpm run archive:go --vendor openai/gpt-5.4-mini --project reddit > archive.openai-gpt-5.4-mini.reddit.log
+pnpm run archive:go --vendor openai/gpt-5.4-mini --project shopping > archive.openai-gpt-5.4-mini.shopping.log
+pnpm run archive:go --vendor openai/gpt-5.4-mini --project erp > archive.openai-gpt-5.4-mini.erp.log
+
+# openai/gpt-5.4-nano (0.25)
+pnpm run archive:go --vendor openai/gpt-5.4-nano --project todo > archive.openai-gpt-5.4-nano.todo.log
+pnpm run archive:go --vendor openai/gpt-5.4-nano --project reddit > archive.openai-gpt-5.4-nano.reddit.log
+pnpm run archive:go --vendor openai/gpt-5.4-nano --project shopping > archive.openai-gpt-5.4-nano.shopping.log
+pnpm run archive:go --vendor openai/gpt-5.4-nano --project erp > archive.openai-gpt-5.4-nano.erp.log
+
 #######################################################
 # ANTHROPIC
 #######################################################
-# anthropic/claude-sonnet-4.6
+# anthropic/claude-sonnet-4.6 (3.00) -> working
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.6 --project todo > archive.anthropic-claude-sonnet-4.6.todo.log
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.6 --project reddit > archive.anthropic-claude-sonnet-4.6.reddit.log
 pnpm run archive:go --vendor anthropic/claude-sonnet-4.6 --project shopping > archive.anthropic-claude-sonnet-4.6.shopping.log
