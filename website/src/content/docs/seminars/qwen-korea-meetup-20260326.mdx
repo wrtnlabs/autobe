@@ -4,7 +4,7 @@ title: AutoBE > Seminars > Qwen Korea Meetup 2026
 
 import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
 
-# Function Calling All-In
+# Function Calling Harness
 
 > Qwen Meetup Korea — 2026.03.26
 
@@ -85,40 +85,47 @@ import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
 
 ---
 
-### TL;DR
+6.75%.
 
-1. [AutoBe](https://github.com/wrtnlabs/autobe)
-   - A backend AI agent built entirely on function calling
-   - The LLM never writes code — it fills typed structures, and the compiler converts them to code
-   - 100% compilation success across all 4 Qwen models
-2. [Typia](https://github.com/samchon/typia)
-   - Infrastructure that automates the entire function calling lifecycle
-   - Schema generation → lenient parsing → type coercion → validation feedback
-   - qwen3-coder-next: 6.75% → 100%, qwen3.5 series: 0% → 100%
-3. The Case for Function Calling
-   - A methodology for domains that demand precision
-   - Constraints through structural absence, model-neutral, mechanically verifiable
-4. Why Qwen
-   - Local models are essential for R&D
-   - Small models make the best QA engineers
-   - Open ecosystem
-5. The LLM doesn't need to be accurate — it just needs to be correctable
+That's the probability that `qwen3-coder-next` produces a valid result on its first attempt when generating API data types for a shopping mall backend. 93 out of 100 fail.
+
+AutoBe's final compilation success rate: 100%. Across all four Qwen models.
+
+The difference isn't a better model. It isn't a smarter prompt. It's a **harness**.
+
+A climbing harness doesn't make you stronger — it makes your strength safe. A test harness doesn't make code correct — it makes bugs visible. A function calling harness doesn't make the LLM smarter — it makes the LLM's mistakes correctable.
+
+Type schema constrains the output. Compiler validates the result. Structured feedback pinpoints the errors. The LLM corrects and retries. This deterministic loop around a probabilistic model is the harness.
 
 ---
 
-## 1. AutoBe
+### TL;DR
 
-6.75%.
+1. [AutoBe](https://github.com/wrtnlabs/autobe) — The Harness in Action
+   - The LLM never writes code — it fills typed structures; the compiler converts them to code
+   - Type schema → function calling → compiler validation → feedback → retry
+   - 100% compilation success across all 4 Qwen models, including without system prompts
+2. [Typia](https://github.com/samchon/typia) — Inside the Harness
+   - Infrastructure that automates the entire function calling lifecycle
+   - Schema generation → lenient parsing → type coercion → validation feedback
+   - One type drives everything: the schema, the validator, and the prompt
+3. Why Harness, Not Prompt
+   - Types eliminate ambiguity; schemas constrain through absence, not prohibition
+   - Model-neutral, mechanically verifiable, deterministically convergent
+4. Qwen — Stress-Testing the Harness
+   - Small models are the best QA engineers for the harness
+   - Open weights make unlimited experimentation possible
+5. The LLM doesn't need to be accurate — it just needs to be harnessed
 
-That's the probability that `qwen3-coder-next` produces a valid result on its first attempt when asked to generate API data types (input/output structures for products, orders, payments, etc.) for a shopping mall backend. Out of 100 tries, 93 fail.
+---
 
-And yet AutoBe's final compilation success rate is 100%. Across all four Qwen models.
+## 1. AutoBe — The Harness in Action
 
 ### 1.1. What AutoBe Does
 
-[AutoBe](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates production-ready backends from natural language conversation. It's developed by [Wrtn Technologies](https://wrtn.io).
+[AutoBe](https://github.com/wrtnlabs/autobe) is an open-source AI agent that generates production-ready backends from natural language. Developed by [Wrtn Technologies](https://wrtn.io).
 
-"Build me a shopping mall backend. I need product listings, a shopping cart, orders, and payments." — Say this, and AutoBe generates all of the following:
+"Build me a shopping mall backend. I need product listings, a shopping cart, orders, and payments." Say this, and AutoBe generates:
 
 - Requirements analysis (SRS)
 - Database schema (Prisma ERD)
@@ -127,17 +134,17 @@ And yet AutoBe's final compilation success rate is 100%. Across all four Qwen mo
 - Complete implementation code
 - Type-safe SDK
 
-Every line of generated code compiles. What comes out is a real, working backend built on TypeScript + NestJS + Prisma.
+Every line compiles. The output is a working backend built on TypeScript + NestJS + Prisma.
 
 <AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
 
-### 1.2. The LLM Never Writes Code Directly
+### 1.2. The LLM Never Writes Code
 
-Most AI coding agents tell the LLM "write this code," then save whatever text it outputs straight to a source file. AutoBe doesn't work that way.
+Most AI coding agents tell the LLM "write this code," then save whatever text it returns straight to a source file. AutoBe doesn't work that way.
 
-Instead, AutoBe uses **function calling**. Rather than letting the LLM generate freeform text, it hands the LLM a predefined structure (a JSON Schema) and says "fill in the blanks." Think of it as giving someone a form and asking them to complete it.
+AutoBe uses **function calling**. Instead of generating freeform text, the LLM receives a predefined structure — a JSON Schema — and fills it in. A form, not a blank page.
 
-Once the LLM fills in the form and returns structured data, AutoBe's compiler reads that data and converts it into actual code. **The LLM fills structures; the compiler writes code.**
+Once the LLM fills the form and returns structured data, AutoBe's compiler converts that data into actual code. **The LLM fills structures; the compiler writes code.**
 
 The entire pipeline works this way:
 
@@ -149,15 +156,13 @@ The entire pipeline works this way:
 | Tests | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ expression types | TypeScript compiler |
 | Implementation | Modular code (Collector/Transformer/Operation) | TypeScript compiler |
 
-At every phase, the LLM fills a structure, and a compiler validates it. This is AutoBe's **all-in function calling strategy**.
+Every phase: the LLM fills a structure, a compiler validates it. This is AutoBe's function calling harness.
 
-### 1.3. What the LLM Has to Fill Is Far from Simple
+### 1.3. The Forms Are Far from Simple
 
-The "forms" the LLM has to fill are anything but trivial. Two examples will give you a sense of the precision required.
+The structures the LLM must fill are anything but trivial.
 
-First, the **DTO schema type** that the LLM must generate during API design. A DTO (Data Transfer Object) describes the data structures in API requests and responses — things like "a product's price is a positive integer, its name is a string, and its category list is an array of strings."
-
-The type that defines these DTO schemas is `IJsonSchema`. It's a union of 10 distinct kinds (constant, boolean, integer, number, string, array, object...) with recursive nesting — arrays contain more `IJsonSchema`, objects map to more `IJsonSchema`:
+The **DTO schema type** that the LLM generates during API design describes the data structures in API requests and responses — "a product's price is a positive integer, its name is a string, its category list is an array of strings." The type that defines these DTO schemas is `IJsonSchema`. A union of 10 distinct kinds with recursive nesting:
 
 ```typescript
 export type IJsonSchema =
@@ -173,9 +178,9 @@ export type IJsonSchema =
   | IJsonSchema.INull;
 ```
 
-10 variants, infinitely recursive nesting. The 6.75% figure from earlier? That's the raw function calling success rate for this exact type.
+10 variants, infinitely recursive nesting. The 6.75% figure is the raw function calling success rate for this exact type.
 
-The test phase takes complexity up another level. To generate E2E test code, the LLM has to express logic like "call this API, check that the response status is 200, verify that the body's items array has length greater than 0." The type that captures this is `IExpression`:
+The test phase takes complexity up another level. E2E test code requires expressing logic like "call this API, check that the response status is 200, verify that the body's items array has length greater than 0." The type that captures this is `IExpression`:
 
 ```typescript
 export type IExpression =
@@ -196,15 +201,13 @@ export type IExpression =
   | IConditionalPredicate    | IErrorPredicate;                  // assertions
 ```
 
-Over 30 variants, recursively nested. This is essentially programming-language-level complexity, and the LLM must generate it through a single function call.
+Over 30 variants, recursively nested. Programming-language-level complexity, through a single function call.
 
-### 1.4. How 6.75% Becomes 100%
+### 1.4. The Harness: How 6.75% Becomes 100%
 
-Given structures this complex, a 6.75% first-attempt success rate is no surprise. The real question is how to turn 6.75% into 100%.
+With structures this complex, 6.75% on the first attempt is expected. The question is what happens next.
 
-The answer is a **validation feedback loop** — a cycle of verification, feedback, and correction.
-
-When a function call fails, the system doesn't just say "wrong." Typia (a library we'll cover in detail shortly) takes the LLM's raw JSON output and inserts `// ❌` inline annotations at every exact point where an error occurred. Here's an example from [Typia's documentation](https://typia.io/docs/llm/application/#validation-feedback):
+When a function call fails, the system doesn't just say "wrong." Typia takes the LLM's raw JSON output and inserts `// ❌` inline annotations at every exact point where an error occurred. Here's an example from [Typia's documentation](https://typia.io/docs/llm/application/#validation-feedback):
 
 ```json
 {
@@ -227,11 +230,9 @@ When a function call fails, the system doesn't just say "wrong." Typia (a librar
 }
 ```
 
-`cardNumber` should be a string, not a number. `price` must be ≥ 0. `quantity` must be a positive integer. `email` isn't a valid email. `vip` should be a boolean. Five errors, each with the exact path and expected type.
+`cardNumber` should be a string, not a number. `price` must be ≥ 0. `quantity` must be a positive integer. `email` isn't a valid email. `vip` should be a boolean. Five errors, each with exact path and expected type.
 
-With this feedback, the LLM doesn't need to regenerate everything from scratch. It can precisely correct only the flagged fields and retry.
-
-Compiler validation → precise diagnostics → LLM correction → revalidation. This loop repeats until it succeeds. Whether it takes one attempt or ten, the end result is 100%.
+The LLM reads this feedback, corrects only the flagged fields, and retries. Compiler validation → precise diagnostics → LLM correction → revalidation. This loop **is** the harness. Whether it takes one attempt or ten, the end result is 100%.
 
 ### 1.5. Qwen 3.5: From 0% to 100%
 
@@ -258,7 +259,7 @@ type IPayment =
   | { type: "bank"; accountNumber: string };
 ```
 
-And here's what the LLM actually returns:
+Here's what the LLM actually returns:
 
 ```typescript
 const llmOutput = `
@@ -279,15 +280,15 @@ const llmOutput = `
   \`\`\``;
 ```
 
-Markdown wrapping, explanation prefix, unquoted keys, trailing commas, `tru` instead of `true`, unclosed brackets — and `payment` is **double-stringified** because `IPayment` is an `anyOf` (JSON Schema's way of saying "one of several types"). Double-stringify means the LLM wrote the object as a JSON string inside a string — instead of `{"type": "card", ...}` (an object), it produced `"{\"type\": \"card\", ...}"` (a string containing JSON). Seven problems in a single output.
+Markdown wrapping, explanation prefix, unquoted keys, trailing commas, `tru` instead of `true`, unclosed brackets — and `payment` is **double-stringified**. Instead of `{"type": "card", ...}` (an object), the LLM produced `"{\"type\": \"card\", ...}"` (a string containing JSON). Seven problems in a single output.
 
-The double-stringify is the one that makes success rate **0%**. Other errors are occasional; `anyOf` double-stringify is **100% consistent** — every `anyOf` field, every time. This isn't Qwen-specific; Anthropic's Claude models do the same thing with `oneOf`. Every model family has its union-type blind spot.
+The double-stringify makes the success rate **0%**. Other errors are occasional; `anyOf` double-stringify is **100% consistent** — every `anyOf` field, every time. This isn't Qwen-specific; Anthropic's Claude does the same with `oneOf`. Every model family has its union-type blind spot.
 
-Typia's `parse()` handles all of this in a single call — broken JSON recovery, type coercion, double-stringify unwrapping. No changes to the model. This is how Qwen 3.5 went from 0% to 100%.
+Typia's `parse()` handles all of this in a single call — broken JSON recovery, type coercion, double-stringify unwrapping. No changes to the model. No prompt tuning. The harness absorbed it. This is how Qwen 3.5 went from 0% to 100%.
 
 ### 1.6. Four Models, All at 100%
 
-AutoBe currently tests against four Qwen models. All of them pass compilation.
+AutoBe currently tests against four Qwen models. All pass compilation.
 
 | Model | Active parameters | Characteristics |
 |-------|-----------------|-----------------|
@@ -296,37 +297,37 @@ AutoBe currently tests against four Qwen models. All of them pass compilation.
 | `qwen/qwen3.5-122b-a10b` | 10B / 122B | Mid-size MoE |
 | `qwen/qwen3.5-35b-a3b` | 3B / 35B | Compact MoE |
 
-From 397B down to 35B. Even a compact model with just 3B active parameters can generate a complete shopping mall backend. Same pipeline, same schemas, same results.
+From 397B down to 35B. Even a compact model with 3B active parameters can generate a complete shopping mall backend. Same harness, same schemas, same result.
 
-### 1.7. It Runs Without System Prompts
+### 1.7. The Harness Runs Without Prompts
 
 One anecdote.
 
-AI agents typically have system prompts — documents that instruct the LLM in natural language: "You are a backend development expert. Follow these rules when writing code..." In most AI agents, the system prompt is the crown jewel.
+AI agents typically ship with system prompts — lengthy documents that instruct the LLM in natural language: "You are a backend development expert. Follow these rules when writing code..." In most AI agents, the system prompt is the crown jewel.
 
 Once, we shipped a build where the system prompt was completely missing. The agent ran on nothing but function calling schemas and validation logic. No natural language instructions whatsoever.
 
 Nobody noticed. Output quality was identical.
 
-This wasn't a one-time fluke. It happened multiple times, and the result was the same every time.
+This wasn't a one-time fluke. It happened multiple times, same result every time.
 
-**The types were the best prompt, and validation feedback was the best orchestration.**
+The implication is stark. The thing that mattered wasn't what we told the LLM in English. It was the type schemas that constrained its output, and the validation loop that corrected its mistakes.
+
+**The types were the best prompt. The harness was the best orchestration.**
 
 ---
 
-## 2. Typia — The Infrastructure Behind All of This
+## 2. Typia — Inside the Harness
 
 The things that kept appearing naturally throughout Section 1 — schema conversion, broken JSON recovery, type coercion, precise error feedback — who does all of that?
 
-To use function calling in production, there's no shortage of problems to solve. How do you generate the JSON Schema to send to the LLM? What do you do when the LLM returns broken JSON? How do you correct wrong types? How do you communicate errors in a format the LLM can understand?
-
-[Typia](https://github.com/samchon/typia) handles all of this in a single library.
+[Typia](https://github.com/samchon/typia) handles all of it in a single library. It is the harness's engine.
 
 ### 2.1. From TypeScript Types to Function Calling Schemas
 
-Function calling requires a JSON Schema that tells the LLM "give me data in this structure." Normally, developers write these schemas by hand — define the type, write a matching schema separately, then make sure the two don't drift apart over time.
+Function calling requires a JSON Schema that tells the LLM "give me data in this structure." Normally, developers write these schemas by hand — define the type, write a matching schema separately, keep the two in sync forever.
 
-Typia automates this. Define a TypeScript type, and Typia **automatically generates** its JSON Schema **at compile time**. Not through runtime reflection, but by directly leveraging the TypeScript compiler's type analyzer:
+Typia automates this. Define a TypeScript type, and Typia **automatically generates** its JSON Schema **at compile time** — not through runtime reflection, but by directly leveraging the TypeScript compiler's type analyzer:
 
 ```typescript
 import typia, { tags } from "typia";
@@ -359,19 +360,19 @@ const schema = typia.llm.parameters<IMember>();
 // }
 ```
 
-Two things to note here.
+Two things to note.
 
-First, **JSDoc comments become `description` fields.** The LLM reads these descriptions to decide what values to generate. "Only adults aged 19 or older can register" is automatically included in the schema, giving the LLM the context it needs.
+First, **JSDoc comments become `description` fields.** The LLM reads these descriptions to decide what values to generate. "Only adults aged 19 or older can register" is automatically included in the schema — the type informs the model.
 
-Second, **type constraints become validation rules.** `ExclusiveMinimum<18>` becomes a "> 18" validation rule; `Format<"email">` becomes an email format check. A single type definition produces both LLM guidance and validation rules simultaneously.
+Second, **type constraints become validation rules.** `ExclusiveMinimum<18>` becomes a "> 18" rule; `Format<"email">` becomes an email format check. One type definition produces both LLM guidance and validation rules simultaneously.
 
-When schemas are written by hand, they inevitably drift from the types over time. Typia eliminates this problem entirely. **The type is the schema.**
+Hand-written schemas inevitably drift from types over time. Typia eliminates this problem. **The type is the schema.** This is the harness's first guarantee: the constraints the LLM sees and the constraints the validator enforces are always identical, because they come from the same source.
 
 At the class level, `typia.llm.application<T>()` converts all public methods into function calling schemas, with `parse()`, `coerce()`, and `validate()` methods automatically built into each function.
 
-### 2.2. Lenient JSON Parsing: Cleaning Up the LLM's Broken JSON
+### 2.2. Lenient Parsing: Cleaning Up Broken JSON
 
-LLMs don't produce perfect JSON. Why? Because an LLM is a language model that generates text token by token — not a JSON generator. It forgets to close brackets, misplaces commas, prepends "Here is your answer:" before the JSON, and wraps everything in Markdown code blocks.
+LLMs don't produce perfect JSON. An LLM is a language model that generates text token by token — not a JSON generator. It forgets to close brackets, misplaces commas, prepends "Here is your answer:" before the JSON, and wraps everything in Markdown code blocks.
 
 `JSON.parse()` rejects all of these. Typia's `ILlmFunction.parse()` handles every case:
 
@@ -411,19 +412,21 @@ const result = func.parse(llmOutput);
 // — 8 problems at once, all handled by a single parse() call.
 ```
 
-Most JSON repair tools (jsonrepair, dirty-json, LangChain's `parse_partial_json`, etc.) work at the **string level** — fix trailing commas, close brackets, strip Markdown, then pass the result to `JSON.parse()`. The output is a syntactically valid JSON string. But a double-stringified value like `"{\\"type\\":\\"card\\"}"` passes through unscathed — it's already valid JSON (it's a string). Without knowing the schema, there's no way to know it should be an object.
+Most JSON repair tools (jsonrepair, dirty-json, LangChain's `parse_partial_json`) work at the **string level** — fix trailing commas, close brackets, strip Markdown, then pass to `JSON.parse()`. A double-stringified value like `"{\\"type\\":\\"card\\"}"` passes through unscathed — it's already valid JSON (it's a string). Without knowing the schema, there's no way to know it should be an object.
 
-Typia's `parse()` works differently. It doesn't repair a string and hand it off — it parses greedily while **consulting the schema**. When it encounters a string value where the schema expects an object, it re-enters `parse()` on that string, applying the same lenient recovery. The result feeds into type coercion, which may find another string-where-object-expected, triggering yet another round. Parsing and coercion call each other recursively, unwinding layers of stringify naturally — double, triple, however deep.
+Typia's `parse()` works differently. It parses greedily while **consulting the schema**. When it encounters a string where the schema expects an object, it re-enters `parse()` on that string, applying the same lenient recovery. Parsing and coercion call each other recursively, unwinding layers of stringify naturally — double, triple, however deep.
 
 This is why Section 1.5's seven problems are solved in "a single `parse()` call." It's not seven separate fixes applied sequentially. It's a **schema-driven recursive cycle** where parsing and coercion are inseparable. And it's why double-stringify — the problem that made Qwen 3.5's success rate 0% — can't be solved by string-level repair. You need the schema to know what's supposed to be an object.
 
-### 2.3. Schema-Based Type Coercion: Correction That Knows the Schema
+This is the harness's second layer: it doesn't just validate correct output — it **recovers** broken output.
 
-LLMs frequently get types wrong, not just structure. They write `"42"` (a string) where `42` (a number) is expected, and `"true"` (a string) where `true` (a boolean) is expected. A human would see these as equivalent, but to a program they're completely different types.
+### 2.3. Schema-Based Type Coercion
 
-Naive type casting can't solve this. Whether `"42"` should be a number or remain a string depends entirely on whether the schema for that field says `number` or `string`.
+LLMs frequently get types wrong, not just structure. `"42"` (a string) where `42` (a number) is expected. `"true"` (a string) where `true` (a boolean) is expected. A human would see these as equivalent; to a program they're completely different types.
 
-Typia's `ILlmFunction.coerce()` consults the JSON Schema and converts values to the type the schema expects:
+Naive casting can't solve this. Whether `"42"` should be a number or remain a string depends entirely on the schema for that field.
+
+Typia's `ILlmFunction.coerce()` consults the JSON Schema and converts values accordingly:
 
 | LLM output | Expected type | Result |
 |-----------|--------------|--------|
@@ -433,7 +436,7 @@ Typia's `ILlmFunction.coerce()` consults the JSON Schema and converts values to 
 | `"{\"x\": 1}"` | `object` | `{ x: 1 }` (recursive parsing) |
 | `"[1, 2, 3]"` | `array` | `[1, 2, 3]` (recursive parsing) |
 
-Here's what this looks like in practice:
+In practice:
 
 ```typescript
 const fromLlm = {
@@ -458,17 +461,17 @@ const result = func.coerce(fromLlm);
 // result.order.payment === { type: "card", cardNumber: "1234-5678" }  (object)
 ```
 
-For union types (structures where one of several types is selected), Typia structurally analyzes the data to identify the correct variant, then applies that variant's coercion rules — no discriminator required.
+For union types, Typia structurally analyzes the data to identify the correct variant, then applies that variant's coercion rules — no discriminator required.
 
-**This is the mechanism behind the Qwen 3.5 series' 0% → 100% from Section 1.** The model's tendency to double-stringify objects in union types was solved at the infrastructure level using schema information.
+**This is the mechanism behind Qwen 3.5's 0% → 100%.** The model's tendency to double-stringify objects in union types was absorbed by the harness at the infrastructure level.
 
 When the SDK has already parsed the JSON (Anthropic SDK, Vercel AI, LangChain, MCP, etc.), use `coerce()` instead of `parse()`.
 
 ### 2.4. Validation and Precise Feedback
 
-Even after parsing and type coercion, the values themselves can be wrong. A negative number for a price, a non-email string in an email field, a decimal where an integer is required.
+Even after parsing and coercion, the values themselves can be wrong. A negative price, a non-email string in an email field, a decimal where an integer is required.
 
-Typia's `ILlmFunction.validate()` detects these schema violations and pinpoints not just that something is wrong, but **exactly where and why**:
+Typia's `ILlmFunction.validate()` detects these schema violations and pinpoints **exactly where and why**:
 
 ```typescript
 const result = func.validate(input);
@@ -480,9 +483,9 @@ const result = func.validate(input);
 // }
 ```
 
-"The price inside product inside order must be a number ≥ 0, but you gave -100." That's the level of precision.
+"The price inside product inside order must be ≥ 0, but you gave -100."
 
-`LlmJson.stringify()` then inserts these errors as `// ❌` inline annotations directly onto the LLM's original JSON output:
+`LlmJson.stringify()` then renders these errors as `// ❌` inline annotations directly onto the LLM's original JSON:
 
 ```json
 {
@@ -497,6 +500,7 @@ const result = func.validate(input);
       "quantity": 2.5 // ❌ [{"path":"$input.order.product.quantity","expected":"number & Type<\"uint32\">"}]
     },
     "customer": {
+      "name": "John Doe",
       "email": "invalid-email", // ❌ [{"path":"$input.order.customer.email","expected":"string & Format<\"email\">"}]
       "vip": "yes" // ❌ [{"path":"$input.order.customer.vip","expected":"boolean"}]
     }
@@ -504,11 +508,11 @@ const result = func.validate(input);
 }
 ```
 
-The LLM can see exactly where and why it went wrong, right on top of its own JSON. With this feedback, there's no need to rewrite everything — just correct the five flagged fields and retry.
+The LLM sees exactly where it went wrong, right on top of its own JSON. No need to rewrite everything — correct the five flagged fields and retry. This is the harness's feedback channel: precise, structured, actionable.
 
-### 2.5. The Full Loop: Parse → Coerce → Validate → Feedback → Retry
+### 2.5. The Complete Harness Loop
 
-Combining everything introduced so far into a single loop, we get the complete picture of the validation feedback loop from Section 1:
+Combining everything into a single loop:
 
 ```typescript
 async function callWithFeedback(
@@ -545,11 +549,13 @@ async function callWithFeedback(
 }
 ```
 
-`parse()` rescues broken JSON and performs first-pass type correction. `validate()` catches schema violations. `LlmJson.stringify()` renders errors in a format the LLM can read. The LLM reads this feedback and corrects itself. **This is the complete engine that turns 6.75% into 100%.**
+`parse()` rescues broken JSON and performs first-pass type correction. `validate()` catches schema violations. `LlmJson.stringify()` renders errors in a format the LLM can read. The LLM corrects itself and retries.
+
+This is the complete harness. The engine that turns 6.75% into 100%.
 
 ### 2.6. One Type Does It All
 
-To sum up: define a single TypeScript type, and Typia handles the rest:
+Define a single TypeScript type, and Typia handles the rest:
 
 1. **Generates the schema** — `typia.llm.parameters<T>()`, `typia.llm.application<T>()`
 2. **Parses** — `ILlmFunction.parse()` (broken JSON recovery + type coercion)
@@ -559,28 +565,28 @@ To sum up: define a single TypeScript type, and Typia handles the rest:
 
 No other tool provides this complete pipeline. Individual pieces exist elsewhere — JSON repair libraries handle broken syntax, Pydantic offers validation, some frameworks have retry loops. But the schema-driven recursive cycle of parse ↔ coerce, combined with structural variant identification and inline error feedback, exists only in Typia.
 
-**The type is the schema, the validator, and the prompt.**
+**The type is the schema, the validator, and the prompt. The harness is everything around it.**
 
 ---
 
-## 3. The Case for Function Calling
+## 3. Why Harness, Not Prompt
 
-So far, we've seen **how** function calling works through AutoBe and Typia. Now let's talk about **why** function calling is an effective methodology for domains that demand precision and correctness.
+Prompt engineering tinkers with the inside of the model. The harness makes the outside rock-solid.
+
+Sections 1 and 2 showed **how** the harness works. Now: **why** this approach is fundamentally more effective than the alternative.
 
 ### 3.1. Natural Language vs. Types
 
-Natural language is, well, natural. It evolved organically over millennia of human society, and ambiguity is a feature, not a bug. Metaphor, nuance, politeness, humor — all of it runs on ambiguity. "Just make it look nice" works as an instruction between humans.
+Natural language evolved to be ambiguous. Metaphor, nuance, politeness, humor — all run on ambiguity. "Just make it look nice" works between humans.
 
-Programming languages are designed. Someone intentionally built them to eliminate room for interpretation. "Just make it look nice" doesn't compile. Ambiguity is a bug.
+Programming languages were designed to eliminate ambiguity. "Just make it look nice" doesn't compile.
 
-**When people communicate in natural language, they misunderstand each other and argue. When they communicate in types and schemas, there's no misunderstanding.**
-
-Let's contrast an LLM prompt with a type schema.
+**When people communicate in natural language, they misunderstand each other. When they communicate in types, there is no misunderstanding.**
 
 Expressing constraints via prompt:
 > "The age field must be a positive integer greater than 18. Don't use string types for numeric fields. All required fields must be present..."
 
-Several problems are visible. Does "greater than 18" mean >18 or ≥18? There's no way to verify whether the LLM followed these rules without inspecting the output. And as the schema grows more complex, rules like these multiply endlessly.
+Does "greater than 18" mean >18 or ≥18? There's no way to verify whether the LLM followed these rules without inspecting the output. And as the schema grows, rules like these multiply endlessly.
 
 Expressing constraints via types:
 ```typescript
@@ -592,67 +598,69 @@ interface IMember {
 
 `ExclusiveMinimum<18>` means >18. It's an integer. It's required. Unambiguous and mechanically verifiable.
 
-In domains that demand precise results, defining a schema and annotating each field is far clearer, easier, and more verifiable than writing a natural language prompt.
+The harness replaces natural language instructions with type constraints. In domains that demand precision, this is strictly superior.
 
 ### 3.2. The Pink Elephant Problem
 
-If you've ever built a prompt-based AI agent, you've written prohibition rules:
+If you've built a prompt-based AI agent, you've written prohibition rules:
 
 - "Do not create utility functions"
 - "Do not use the `any` type"
 - "Do not create circular dependencies"
 
-When someone says "don't think of a pink elephant," a pink elephant is the first thing that comes to mind. When you tell an LLM "don't do X," X is placed at the center of its attention. To avoid a forbidden pattern, the model must first recall that pattern — which paradoxically increases the probability of generating it. This is inherent to the token prediction mechanism.
+"Don't think of a pink elephant." A pink elephant is the first thing that comes to mind. When you tell an LLM "don't do X," X is placed at the center of its attention. To avoid a forbidden pattern, the model must first recall that pattern — which paradoxically increases the probability of generating it. This is inherent to token prediction.
 
-Even knowing this problem, you can't avoid prohibition rules in prompts. "Don't do X" is the only tool natural language has for expressing constraints. I've never seen a prompt-based AI agent that doesn't use prohibition rules.
+Even knowing this, you can't avoid prohibition rules in prompts. "Don't do X" is the only tool natural language has for expressing constraints.
 
-**In schemas, this problem doesn't exist.**
+**In schemas, this problem vanishes.**
 
-You don't need to say "don't use the `any` type" — if `any` isn't in the schema, the LLM physically can't produce it. You don't need to say "don't create utility functions" — if there's no slot for utility functions in the schema, that's the end of it. If the field type is limited to `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"` — seven options — there's no path for the LLM to write `"varchar"`.
+You don't need to say "don't use the `any` type" — if `any` isn't in the schema, the LLM physically can't produce it. You don't need to say "don't create utility functions" — if there's no slot for utility functions, that's the end of it. If the field type is limited to `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"` — seven options — there's no path for the LLM to write `"varchar"`.
 
-Not prohibition, but **absence**. Prompts try to forbid what you don't want; schemas only permit what you do. This is why function calling is particularly effective in domains that demand precise output.
+Not prohibition, but **absence**. Prompts forbid what you don't want. Schemas permit only what you do.
+
+This is the harness's deepest advantage: it doesn't fight the model's tendencies — it makes unwanted outputs structurally impossible.
 
 ### 3.3. Model Neutrality
 
-Prompt engineering is inherently model-dependent. A prompt optimized for GPT behaves differently on Claude, and differently again on Qwen. When a new model comes out or you want to experiment with a different one, it's not uncommon to rewrite prompts from scratch.
+Prompt engineering is inherently model-dependent. A prompt optimized for GPT behaves differently on Claude, and differently again on Qwen. When a new model drops, prompt rewrites are routine.
 
-Function calling schemas are model-neutral. JSON Schema is JSON Schema. It means the same thing regardless of which model reads it, and the validation feedback loop absorbs any performance differences between models. A strong model gets it right in 1–2 attempts; a weaker model takes 3–4; both converge to 100%.
+The harness is model-neutral. JSON Schema is JSON Schema — it means the same thing regardless of which model reads it. The validation feedback loop absorbs performance differences between models. A strong model converges in 1–2 attempts; a weaker model takes 3–4; both reach 100%.
 
 AutoBe running Qwen, GLM, DeepSeek, and OpenAI models on **the same schemas, the same pipeline**, achieving 100% compilation across the board, is proof of this neutrality. We've never done model-specific prompt tuning.
 
 This changes the nature of model selection. It goes from "can this model do this task?" — a capability question — to "which model is the most cost-effective?" — a **cost optimization problem**: `average retries × tokens per attempt × price per token`.
 
-### 3.4. The Core: Verifiability and the Feedback Loop
+The harness decouples correctness from the model.
 
-One thread runs through everything we've discussed.
+### 3.4. The Core: Verifiability
 
-The most powerful advantage of function calling is that **it brings LLM output into the domain of software engineering**.
+One thread runs through everything.
 
-If you let an LLM generate freeform text, determining whether that output is correct becomes yet another AI problem. Parsing is fuzzy. Validation is fuzzy. Correction is fuzzy. Everything is uncertain.
+The harness's fundamental advantage is that **it brings LLM output into the domain of software engineering**.
 
-With function calling, the output is structured data. From that moment on, you can use the tools of software engineering:
+Freeform text output makes correctness an AI problem. Parsing is fuzzy. Validation is fuzzy. Correction is fuzzy.
+
+Structured output makes correctness an engineering problem:
 
 1. **Verification is deterministic** — JSON Schema validation yields a clear pass/fail
-2. **Feedback is precise** — "field X should be type Y, but you gave Z" can be identified exactly
+2. **Feedback is precise** — "field X should be type Y, but you gave Z"
 3. **Correction converges** — precise feedback enables the model to fix only the affected parts
 
-These three form a deterministic chain. The model is still probabilistic and still makes mistakes, but **the loop outside the model is deterministic**, so the process converges to 100%.
+The model is still probabilistic. It still makes mistakes. But **the harness around the model is deterministic**, so the process converges to 100%.
 
-> **Typed Schema + Deterministic Validator + Structured Error Feedback = Reliable LLM Output**
+> **Type Schema + Deterministic Validator + Structured Feedback = Harness**
 
-If prompt engineering is about tinkering with the inside of the model, function calling is about making the outside of the model rock-solid. In domains that demand precision, the effectiveness of the latter approach is proven by results: 6.75% → 100%.
+Prompt engineering tries to make the probabilistic part reliable. The harness makes the deterministic part airtight. In domains that demand precision, the latter wins: 6.75% → 100%.
 
-**The LLM doesn't need to be accurate. It just needs to be correctable. And correctability is not a property of the model — it's a property of the validation infrastructure.**
+### 3.5. The Harness Is Universal
 
-### 3.5. Application Spectrum: How Far Can This Go?
+Is this pattern limited to coding? No. It applies to any domain where output is mechanically verifiable.
 
-So is this pattern — function calling + validation feedback — limited to coding? No. It forms a spectrum based on verifiability.
+#### 3.5.1. Where the Harness Applies
 
-#### 3.5.1. Domains Where All Output Is Verifiable
+AutoBe's Database, Interface, Test, and Realize phases all sit here. The compiler serves as the validator, guaranteeing 100% correctness.
 
-AutoBe's Database, Interface, Test, and Realize phases fall here. The compiler serves as the validator, guaranteeing 100% correctness.
-
-This isn't unique to software. Any field where "correct or incorrect" can be mechanically determined supports the same structure, with a natural hierarchy based on verification cost:
+This isn't unique to software. Any field where "correct or incorrect" can be mechanically determined supports the same harness, with a natural hierarchy based on verification cost:
 
 | Domain | Fast (ms) | Medium (sec) | Deep (min+) |
 |--------|----------|-------------|------------|
@@ -662,11 +670,11 @@ This isn't unique to software. Any field where "correct or incorrect" can be mec
 | Interior Design | Dimension / clearance | Code compliance, clash detection | Lighting / HVAC simulation |
 | Control Systems | Transfer function validity | Stability / margin analysis | Time-domain simulation |
 
-The feedback loop naturally exploits this hierarchy: run the cheapest validator first, fix the errors, then move to the next level.
+The harness naturally exploits this hierarchy: run the cheapest validator first, fix the errors, then move to the next level.
 
-#### 3.5.2. The Pattern in Practice
+#### 3.5.2. The Harness in Other Domains
 
-The table above shows the hierarchy in overview. Here's what the pattern looks like as concrete types — each from an engineering field with validators refined over decades.
+The table above shows the hierarchy in overview. Here's what the harness looks like as concrete types — each from a field with validators refined over decades.
 
 **Semiconductors** — Physical rules in chip design are non-negotiable:
 
@@ -685,7 +693,7 @@ interface IBlock {
 }
 ```
 
-DRC (Design Rule Check, fast), LVS (Layout vs. Schematic, medium), SPICE simulation (slow). Costs vary by tier, but all are deterministic validations. The feedback loop starts with the cheapest — DRC.
+DRC (fast), LVS (medium), SPICE simulation (slow). All deterministic. The harness starts with DRC.
 
 **Chemical Process** — Conservation laws are absolute validators:
 
@@ -707,7 +715,7 @@ interface IUnitOperation {
 }
 ```
 
-Mass conservation (Σ inlet = Σ outlet), energy balance, thermodynamic consistency — these are the laws of physics, not opinions. Tools like ASPEN and HYSYS have provided deterministic validation for over 40 years. Mass balance check (fast) → energy balance (medium) → full process simulation (deep).
+Mass conservation (Σ inlet = Σ outlet), energy balance, thermodynamic consistency — the laws of physics, not opinions. Tools like ASPEN and HYSYS have provided deterministic validation for over 40 years. Mass balance (fast) → energy balance (medium) → full process simulation (deep).
 
 **Interior Design** — Beneath the aesthetics, hard constraints define the space:
 
@@ -737,7 +745,7 @@ interface IFixture {
 }
 ```
 
-People think of interior design as purely aesthetic, but it's built on hard constraints: minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency egress distances. BIM tools like Revit have provided clash detection for decades. Dimension and clearance checks (fast) → building code compliance and collision detection (medium) → lighting (lux) and HVAC simulation (deep).
+Minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency egress distances. BIM tools like Revit have provided clash detection for decades. Dimension checks (fast) → building code compliance (medium) → lighting and HVAC simulation (deep).
 
 **Control Systems** — Stability is mathematically provable:
 
@@ -757,92 +765,96 @@ interface ITransferFunction {
 }
 ```
 
-A control system is either stable or it isn't — and this can be proven mathematically. Bode plots, Nyquist diagrams, pole placement: over 60 years of established analysis tools. Transfer function validity (fast) → stability and gain/phase margin analysis (medium) → full time-domain simulation (deep).
+Bode plots, Nyquist diagrams, pole placement: over 60 years of analysis tools. Transfer function validity (fast) → stability and gain/phase margin (medium) → time-domain simulation (deep).
 
-Look at these types again. Every one has a `type` field with enumerated variants — `"logic" | "memory" | ...`, `"reactor" | "distillation" | ...`, `"bedroom" | "living" | ...`, `"PID" | "MPC" | ...`. Several nest recursively. These are the same union + tree structures as AutoBe's `IJsonSchema` and `IExpression`. This isn't coincidence — it's the nature of engineering data. Appendix A.3 explains why.
+Look at these types. Every one has a `type` field with enumerated variants — `"logic" | "memory" | ...`, `"reactor" | "distillation" | ...`, `"bedroom" | "living" | ...`, `"PID" | "MPC" | ...`. Several nest recursively. These are the same union + tree structures as AutoBe's `IJsonSchema` and `IExpression`. This isn't coincidence — it's the nature of engineering data. Appendix A.3 explains why.
 
-> **Note**: These domain examples are AI-recommended — all are engineering fields where deterministic validators have been established for decades, so the pattern fits in principle. That said, I'm a developer, not a domain expert — take the specifics with a grain of salt.
-
----
-
-#### 3.5.3. Where This Doesn't Apply
-
-Conversely, this pattern doesn't fit domains where deterministic validators can't be built. Creative writing, emotional intelligence, strategic decision-making. There's no validator for "a good novel" or "a wise business decision." I'll acknowledge that honestly.
+> **Note**: These domain examples are AI-recommended — all are engineering fields where deterministic validators have existed for decades, so the harness fits in principle. That said, I'm a developer, not a domain expert — take the specifics with a grain of salt.
 
 ---
 
-## 4. Why Qwen
+#### 3.5.3. Where the Harness Doesn't Apply
+
+Conversely, the harness doesn't fit domains where deterministic validators can't be built. Creative writing, emotional intelligence, strategic decision-making. There's no validator for "a good novel" or "a wise business decision."
+
+The harness is powerful, but it has clear boundaries. Honest about that.
+
+---
+
+## 4. Qwen — Stress-Testing the Harness
+
+A harness is only as good as its stress tests.
 
 ### 4.1. Function Calling Performance: Best in Class for Small/Medium Models
 
-Let me start with the most direct answer to "why Qwen?"
+AutoBe's entire pipeline is function calling. Whether a model writes good prose or carries on a smooth conversation is irrelevant. The only criterion is how accurately it fills complex JSON Schemas.
 
-AutoBe's entire pipeline is function calling. Whether a model writes good prose or carries on a smooth conversation doesn't matter. The only criterion is how accurately it fills complex JSON Schemas.
+Qwen is not the only open-weight model that does function calling well. GLM, Kimi, and others deliver strong performance at large scales. But at the **small and medium scale**, Qwen was the only one that could handle function calling of this complexity.
 
-Qwen is not the only open-weight model that does function calling well. GLM, Kimi, and others deliver strong function calling performance at large model scales. But at the **small and medium scale**, Qwen was the only one that could handle function calling of this complexity.
-
-Even a compact 3B-active-parameter MoE model supports tool choice and processes complex schemas containing 10+ variant recursive unions. For AutoBe, this small/medium-scale performance was decisive — the reasons why continue in the following sections.
+Even a compact 3B-active-parameter MoE model supports tool choice and processes complex schemas containing 10+ variant recursive unions. For AutoBe, this small/medium-scale performance was decisive — the reasons continue below.
 
 ### 4.2. R&D Cost: Users vs. Developers
 
-For customers **using** AutoBe, model cost isn't an issue. Even the most expensive model is cheaper than actually hiring a backend developer.
+For customers **using** AutoBe, model cost is a non-issue. Even the most expensive model is cheaper than hiring a backend developer.
 
-But for us **developing** AutoBe, it's different. Every time we design a new type or add a new validation rule, we need to run the entire pipeline end to end. Thousands of generate-compile-feedback cycles. Using commercial models every time would be financially ruinous.
+For us **developing** AutoBe, it's different. Every new type design or validation rule requires running the entire pipeline end to end. Thousands of generate-compile-feedback cycles. Commercial models at this scale would be financially ruinous.
 
-Local models make this R&D cycle possible. We can experiment without limit, without worrying about cost. The journey from 6.75% to 100% required hundreds of experiment cycles, and that was only possible because the models were local.
+Local models make the R&D cycle possible. Experiment without limit, without cost anxiety. The journey from 6.75% to 100% required hundreds of experiment cycles — only possible because the models were local.
 
 ### 4.3. Small Models Make the Best QA Engineers
 
-Large models make fewer mistakes. That's an advantage — and simultaneously a disadvantage.
+Large models make fewer mistakes. That's an advantage — and simultaneously a blind spot.
 
-Even when our validation has blind spots we haven't thought of, large models rarely trigger those failures. They "guess correctly" through ambiguous parts of the schema and get it right. Our mistakes stay hidden.
+Even when our harness has gaps we haven't thought of, large models rarely trigger those failures. They "guess correctly" through ambiguous parts of the schema. Our mistakes stay hidden.
 
-Switch to a small model, and the story changes. These are separate models from the four in Section 1.6 — smaller or non-coding-optimized variants we used specifically for QA:
+Switch to a small model, and the story changes:
 
 | Model | Active / Total | Success rate | What it found |
 |-------|---------------|------------|---------------|
 | `qwen3-30b-a3b-thinking` | 3B / 30B | ~10% | Fundamental schema ambiguities, missing required fields |
 | `qwen3-next-80b-a3b-instruct` | 3B / 80B | ~20% | Subtle type mismatches in complex nested relationships |
 
-The 10% success rate was the most valuable result. Every failure pointed to a gap in our system, and each fix strengthened the pipeline not just for weak models, but for **all models**.
+The 10% success rate was the most valuable result. Every failure pointed to a gap in the harness, and each fix strengthened the pipeline for **all models**.
 
-AI is probabilistic. Large models make mistakes **less often**, not **never**. Counterexamples that surface with small models will eventually occur with large models too — just rarely. In production, "rarely" is an outage.
+AI is probabilistic. Large models make mistakes **less often**, not **never**. Edge cases that surface with small models will eventually occur with large models too — just rarely. In production, "rarely" is an outage.
 
-**When the schema is precise enough that even a 35B model can't misinterpret it, the probability of a strong model getting it wrong converges to effectively zero.**
+**When the harness is tight enough that even a 35B model can't find a gap, the probability of any model failing converges to effectively zero.**
+
+Small models are the harness's best stress testers.
 
 ### 4.4. No Vendor Lock-In
 
-Price changes, model deprecation, and rate limits for commercial APIs are entirely at the vendor's discretion. The model you use today could disappear tomorrow.
+Price changes, model deprecation, and rate limits for commercial APIs are at the vendor's discretion. The model you use today could disappear tomorrow.
 
-AutoBe's function calling schemas are designed to be model-neutral. We don't use model-specific prompt tricks. JSON Schema and type-based validation are industry standards — the code stays the same even when the model changes.
+AutoBe's function calling schemas are model-neutral. No model-specific prompt tricks. JSON Schema and type-based validation are industry standards — the harness stays the same when the model changes.
 
 ### 4.5. Open Source + Open Weights: A Virtuous Cycle
 
-AutoBe is open source (AGPL 3.0), and Qwen is open-weight. Both are part of the open ecosystem.
+AutoBe is open source (AGPL 3.0). Qwen is open-weight. Both are part of the open ecosystem.
 
-This combination is what made thousands of experiments possible, what made edge case discovery possible, and what made system hardening possible. With commercial models, experimentation at this scale would have been financially impossible.
+This combination is what made thousands of experiments possible, edge case discovery possible, harness hardening possible. With commercial models, experimentation at this scale would have been financially impossible.
 
-The open ecosystem creates a virtuous cycle of mutual reinforcement:
-- AutoBe hardens its system using Qwen
-- The hardened system proves Qwen's production-level viability
+The open ecosystem creates a virtuous cycle:
+- AutoBe hardens its harness using Qwen
+- The hardened harness proves Qwen's production-level viability
 - Improvements to Qwen raise AutoBe's overall performance
-- AutoBe's discoveries (like the double-stringify issue) can contribute to Qwen's improvement
+- AutoBe's discoveries (like double-stringify) can contribute to Qwen's improvement
 
 ---
 
 ## 5. Closing
 
-AutoBe achieved 100% compilation success across all four Qwen models through an all-in function calling strategy.
+AutoBe achieved 100% compilation across all four Qwen models. Not through better prompts. Through a harness.
 
-What made it possible was neither smarter prompts nor more sophisticated orchestration. It was the type-based infrastructure Typia provides — automatic schema generation, lenient parsing, type coercion, validation feedback — deterministically overcoming the model's probabilistic limitations.
+The harness is three things: type schemas that constrain the output, compilers that validate it, and structured feedback that corrects it. Together they form a deterministic loop around a probabilistic model.
 
-When you communicate in types, there's no misunderstanding. When you constrain with schemas, there's no pink elephant. When you have a deterministic validation loop, even 6.75% becomes 100%.
+This pattern isn't limited to code generation. Any engineering domain with deterministic validators — semiconductors, chemical processes, control systems — can build the same harness.
 
-This pattern isn't limited to coding. It's transferable to any engineering field where deterministic validators exist.
+When you communicate in types, there's no misunderstanding. When you constrain with schemas, there's no pink elephant. When you have a deterministic harness, even 6.75% becomes 100%.
 
-And what made all of this experimentation and validation possible was Qwen — an open-weight model.
+Don't build a better prompt. Build a better harness.
 
-The LLM doesn't need to be accurate. It just needs to be correctable.
+**The LLM doesn't need to be accurate. It just needs to be harnessed.**
 
 ---
 
@@ -854,11 +866,11 @@ The LLM doesn't need to be accurate. It just needs to be correctable.
 
 ## Appendix: Technical Deep Dives
 
-Union types appear throughout this talk, from start to finish. The 10 variants of `IJsonSchema` (Section 1.3), the 30+ variants of `IExpression` (Section 1.3), Qwen 3.5's double-stringify issue (Section 1.5), type coercion (Section 2.3), validation feedback (Section 2.4). Sections A.1–A.4 dive deep into why union types are the make-or-break challenge for function calling infrastructure. Section A.5 explores a separate capability that Typia's schema-driven parsing makes possible.
+Union types appear throughout this talk. The 10 variants of `IJsonSchema` (Section 1.3), the 30+ variants of `IExpression` (Section 1.3), Qwen 3.5's double-stringify issue (Section 1.5), type coercion (Section 2.3), validation feedback (Section 2.4). Sections A.1–A.4 explore why union types are the make-or-break challenge for the harness. Section A.5 explores a capability that schema-driven parsing makes possible beyond validation.
 
 ### A.1. What Is a Discriminated Union?
 
-A union type represents "one of several kinds." For example, if a payment method can be either a card or a bank transfer:
+A union type represents "one of several kinds." If a payment method can be either a card or a bank transfer:
 
 ```typescript
 type Payment =
@@ -866,19 +878,19 @@ type Payment =
   | { type: "bank_transfer"; bankCode: string; accountNumber: string }
 ```
 
-A **discriminated** union is a union that has a **discriminator field** — a single field whose value determines which variant the data belongs to. In the example above, `type` is the discriminator. If `type` is `"card"`, the data has `cardNumber` and `cvc`; if it's `"bank_transfer"`, it has `bankCode` and `accountNumber`. **A single discriminator value determines the rest of the structure.**
+A **discriminated** union has a **discriminator field** — a single field whose value determines the variant. Here, `type` is the discriminator. If `type` is `"card"`, the data has `cardNumber` and `cvc`; if it's `"bank_transfer"`, it has `bankCode` and `accountNumber`. **One discriminator value determines the rest of the structure.**
 
-Why does this matter? When an LLM generates data for a union type and makes a mistake, correcting it requires knowing "which variant was this data intended to be?" first. A discriminator makes this identification straightforward — check one field, know the variant. Without one, intent must be inferred from the data's shape, which is harder but still possible with the right infrastructure.
+Why does this matter for the harness? When the LLM generates data for a union type and makes a mistake, correcting it requires knowing "which variant was intended?" A discriminator makes identification straightforward — check one field, know the variant. Without one, intent must be inferred from the data's shape — harder, but possible with the right infrastructure.
 
 AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants) are all discriminated unions, and Typia's ability to structurally identify variants and generate precise per-field feedback is the core mechanism behind 6.75% → 100%.
 
 ### A.2. Typia's `x-discriminator` — Adding Intelligence to `anyOf`
 
-The JSON Schema standard offers two ways to represent union types: `anyOf` (matches any) and `oneOf` (matches exactly one). But neither carries **"which field distinguishes the variants"** — they just say "match one of these schemas."
+JSON Schema offers `anyOf` (matches any) and `oneOf` (matches exactly one) for unions. Neither carries **"which field distinguishes the variants"** — they just say "match one of these schemas."
 
 OpenAPI 3.x has a `discriminator`, but it's exclusive to `oneOf`, and most LLMs don't handle `oneOf` reliably.
 
-Typia solves this with a plugin property called `x-discriminator`. It uses `anyOf` — which LLMs broadly support — while attaching discriminator metadata:
+Typia solves this with `x-discriminator`. It uses `anyOf` — which LLMs broadly support — while attaching discriminator metadata:
 
 ```json
 // Schema generated by Typia (simplified)
@@ -897,41 +909,41 @@ Typia solves this with a plugin property called `x-discriminator`. It uses `anyO
 }
 ```
 
-This serves a distinct purpose from Typia's internal processing. Typia's `coerce()` and `validate()` identify the correct variant through **structural analysis** of the data itself — matching property names, types, and shapes against each variant's schema. This works with or without a discriminator.
+This serves a distinct purpose from Typia's internal processing. Typia's `coerce()` and `validate()` identify the correct variant through **structural analysis** — matching property names, types, and shapes against each variant's schema. This works with or without a discriminator.
 
-`x-discriminator` is **LLM-facing**. It tells the model "use the `type` field to select a variant," reducing the chance of the LLM generating structurally ambiguous data in the first place. Better input from the LLM means fewer corrections needed downstream.
+`x-discriminator` is **LLM-facing**. It tells the model "use the `type` field to select a variant," reducing the chance of structurally ambiguous data in the first place.
 
 The two work in tandem:
 
-1. **`x-discriminator` reduces errors at the source** — the LLM reads the hint and generates data that more clearly belongs to one variant
-2. **Typia's structural analysis handles the rest** — `coerce()` identifies the variant and applies variant-specific coercion (including double-stringify unwrapping for Qwen 3.5). `validate()` identifies the variant and produces precise per-field errors — not "doesn't match any of 10 variants," but "card variant's cardNumber should be string, but you gave number"
+1. **`x-discriminator` reduces errors at the source** — the LLM reads the hint and generates clearer data
+2. **Structural analysis handles the rest** — `coerce()` identifies the variant and applies variant-specific coercion (including double-stringify unwrapping for Qwen 3.5). `validate()` identifies the variant and produces precise per-field errors — not "doesn't match any of 10 variants," but "card variant's cardNumber should be string, but you gave number"
 
-**`x-discriminator` makes the LLM smarter; Typia's structural engine makes the infrastructure robust.** This is why the type coercion from Section 2.3 and validation feedback from Section 2.4 work reliably on union types.
+**`x-discriminator` makes the LLM smarter. Structural analysis makes the harness robust.** This is why coercion and validation work reliably on union types.
 
 ### A.3. The World Is Made of Recursive Unions
 
-Engineering manages complexity through **hierarchical decomposition** — break a big system into smaller parts, break those into smaller parts still. A chip is blocks; blocks are sub-blocks. A plant is sections; sections are units. A building is floors; floors are rooms. This decomposition is a tree. And at each level, the parts come in different kinds — a block can be logic, memory, or IO; a unit can be a reactor, distillation column, or heat exchanger. The moment a tree's nodes have kinds, it becomes a **recursive union type**.
+Engineering manages complexity through **hierarchical decomposition** — break a big system into smaller parts, break those into smaller parts still. A chip is blocks; blocks are sub-blocks. A plant is sections; sections are units. A building is floors; floors are rooms. This decomposition is a tree. At each level, the parts come in different kinds — a block can be logic, memory, or IO; a unit can be a reactor, distillation column, or heat exchanger. The moment a tree's nodes have kinds, it becomes a **recursive union type**.
 
-The engineering domains from Section 3 are no exception:
+The domains from Section 3 are no exception:
 
 - Semiconductors: `IBlock` → `sub_blocks: IBlock[]` (chip → block → sub-block)
 - Chemical Process: plants → sections → units → sub-units (recursive process hierarchy)
 - Interior Design: buildings → floors → rooms → zones (recursive spatial decomposition)
 - Control Systems: cascade control — outer loop's output becomes inner loop's setpoint (recursive nesting)
 
-These are structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). They're all ASTs — abstract syntax trees. This isn't a coincidence specific to these four fields. **Hierarchical decomposition is how engineers manage complexity, and hierarchical decomposition produces recursive union types.** Any deterministic engineering domain that structures its data — which is virtually all of them — will share this structure.
+Structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). They're all ASTs — abstract syntax trees. **Hierarchical decomposition is how engineers manage complexity, and hierarchical decomposition produces recursive union types.** Any deterministic engineering domain will share this structure.
 
-In Section 3, we said "if a domain's output is verifiable, the function calling + validation feedback pattern is transferable." But if the data structures of those domains are all recursive unions, then **conquering union types is the prerequisite for that transfer**.
+If the harness is transferable to any domain with deterministic validators, and those domains all share recursive union data structures, then **conquering union types is the prerequisite for building the harness**.
 
-If coercion doesn't work on union types, Qwen 3.5's double-stringify problem will surface in chip design too. If validation feedback doesn't work on union types, "doesn't match any of 30 variants" won't get the feedback loop to converge. If you can't identify which variant the data was intended to be, correction itself is impossible.
+If coercion doesn't work on unions, Qwen 3.5's double-stringify will surface in chip design too. If validation feedback doesn't work on unions, "doesn't match any of 30 variants" won't drive convergence. If you can't identify the intended variant, correction is impossible.
 
-Typia's structural variant identification, schema-based coercion, and precise per-field validation are the solution for this universal structure. AutoBe's 6.75% → 100% is not just an achievement in code generation. **It's the establishment of 100% reliability on the universal structure of recursive unions — an achievement transferable to every structured domain that shares this structure.**
+Typia's structural variant identification, schema-based coercion, and precise per-field validation are the solution for this universal structure. AutoBe's 6.75% → 100% is not just an achievement in code generation. **It establishes reliability on the universal structure of recursive unions — transferable to every domain that shares this structure.**
 
 ### A.4. Why Not Zod?
 
-Zod is the most popular runtime validation library in the TypeScript ecosystem. "Why don't you use Zod?" is a question we get often.
+Zod is the most popular runtime validation library in TypeScript. "Why not Zod?" is a question we get often.
 
-Let's see what happens when you try to define AutoBe-scale 30+ variant recursive discriminated unions in Zod:
+Here's what happens when you define AutoBe-scale 30+ variant recursive discriminated unions in Zod:
 
 ```typescript
 const ExpressionSchema: z.ZodType<IExpression> = z.lazy(() =>
@@ -951,7 +963,7 @@ Three problems.
 
 **First, you must define TypeScript types and Zod schemas separately.**
 
-Zod's official documentation states this explicitly: "you can define a recursive schema in Zod, but because of a limitation of TypeScript, their type can't be statically inferred." When you use `z.lazy()`, `z.infer` doesn't work, so you must define a TypeScript interface separately and pass it manually via `z.ZodType<T>`:
+Zod's documentation states this explicitly: "you can define a recursive schema in Zod, but because of a limitation of TypeScript, their type can't be statically inferred." With `z.lazy()`, `z.infer` doesn't work, so you define a TypeScript interface separately and pass it via `z.ZodType<T>`:
 
 ```typescript
 // 1. Define the TypeScript type first
@@ -972,49 +984,45 @@ const ExpressionSchema: z.ZodType<IExpression> = z.lazy(() =>
 );
 ```
 
-For a 30+ variant recursive union, this dual definition runs to hundreds of lines. Over time the two drift apart, and there's nothing to catch the mismatch.
+For a 30+ variant recursive union, this dual definition runs to hundreds of lines. Over time the two drift apart, and nothing catches the mismatch.
 
 **Second, even with dual definitions, it won't compile.**
 
-As the depth of recursive unions increases, you hit TypeScript's generic instantiation limit:
+As recursive union depth increases, you hit TypeScript's generic instantiation limit:
 
 > TS2589: Type instantiation is excessively deep and possibly infinite.
 
-Why does this happen with Zod but not with native TypeScript types? The difference is how the type checker resolves recursive references.
+With native TypeScript types, recursive references are **name lookups** — pointers back to the same definition. 30 variants referencing `IExpression`? 30 pointer lookups. **O(N) — linear.**
 
-When TypeScript encounters `IExpression` in a native type alias, the recursive reference is a **name lookup** — a pointer back to the same definition. 30 variants referencing `IExpression` in their fields? 30 pointer lookups. **O(N) — linear.**
+In Zod, `z.discriminatedUnion` is a deeply nested generic. TypeScript must **structurally expand** each variant's output type through Zod's conditional types. `z.lazy()` forces re-entry into the full union — N variants × K recursive fields, each triggering another expansion. For N=30, K=2, depth 3 alone is 216,000 type resolutions. **O((N·K)^d) — exponential.**
 
-In Zod, `z.discriminatedUnion` is a deeply nested generic. TypeScript must **structurally expand** each variant's output type through Zod's internal conditional types. When it hits `ExpressionSchema` inside a variant, `z.lazy()` forces re-entry into the full union — N variants × K recursive fields, each triggering another full expansion. Depth 0: N. Depth 1: N·K. Depth 2: (N·K)². For N=30, K=2, depth 3 alone is 216,000 type resolutions. **O((N·K)^d) — exponential.**
+This is the most recurrently reported error in Zod's tracker. [#577](https://github.com/colinhacks/zod/issues/577), [#5064](https://github.com/colinhacks/zod/issues/5064), [#5256](https://github.com/colinhacks/zod/issues/5256) — all recursive schemas, all TS2589, all unresolved in Zod v4. [Discussion #1459](https://github.com/colinhacks/zod/discussions/1459) shows the same error with complex discriminated unions that aren't even recursive — the generic expansion alone is expensive enough.
 
-This is the most recurrently reported error in Zod's issue tracker. [#577](https://github.com/colinhacks/zod/issues/577), [#5064](https://github.com/colinhacks/zod/issues/5064), [#5256](https://github.com/colinhacks/zod/issues/5256) — all recursive schemas, all TS2589, all unresolved in Zod v4. [Discussion #1459](https://github.com/colinhacks/zod/discussions/1459) even shows the same error with complex discriminated unions that aren't recursive at all — the generic expansion is expensive enough on its own.
+The practical consequence extends to the IDE. The TypeScript language server runs the same type checker for autocompletion and hover types. A 30+ variant recursive Zod schema triggers the same exponential expansion — memory spikes to gigabytes, the IDE freezes, not just in the schema file but in every file that imports it.
 
-The practical consequence goes beyond compilation. The TypeScript language server runs the same type checker for IDE features — autocompletion, hover types, error highlighting. With a 30+ variant recursive Zod schema, the language server enters the same exponential expansion, memory spikes to gigabytes, and the IDE freezes — not just in the file where the schema is defined, but in every file that imports it. The development environment becomes unusable.
+**Third, even after enduring all of that, the harness is fundamentally impossible to build.**
 
-**Third, even after enduring all of that, validation feedback is fundamentally impossible.**
+This is the critical problem.
 
-This is the most critical problem.
+When validation fails on a union type, Zod can't determine "which variant was intended." In a 10-variant union, errors either flood out for all variants ([#792](https://github.com/colinhacks/zod/issues/792)), or — on discriminator mismatch — other field errors are silently hidden ([#2202](https://github.com/colinhacks/zod/issues/2202)). In Zod v4, this regressed further: on discriminator mismatch, it returns an empty error array and "No matching discriminator" ([#4909](https://github.com/colinhacks/zod/issues/4909), [#5670](https://github.com/colinhacks/zod/issues/5670)).
 
-When validation fails on a union type, Zod can't determine "which variant was this value intended to be." In a 10-variant union, errors either flood out for all variants at once ([#792](https://github.com/colinhacks/zod/issues/792)), or — if the discriminator doesn't match — errors for other fields are silently hidden ([#2202](https://github.com/colinhacks/zod/issues/2202)). In Zod v4, this actually regressed: on discriminator mismatch, it returns an empty error array and "No matching discriminator" ([#4909](https://github.com/colinhacks/zod/issues/4909), [#5670](https://github.com/colinhacks/zod/issues/5670)).
+From the LLM's perspective: if it intended a `callExpression` variant but got the `arguments` field's type wrong, it needs "arguments should be an IExpression array, but you gave a string." Zod says "doesn't match any of 10 variants." Feedback that doesn't tell you what to fix isn't feedback. Without precise feedback, the harness loop can't converge.
 
-Think about it from the LLM's perspective. If it intended a `callExpression` variant but got the `arguments` field's type wrong, it needs feedback like "arguments should be an IExpression array, but you gave a string." But Zod says "doesn't match any of 10 variants." Feedback that doesn't tell you what to fix isn't feedback at all.
+Typia structurally identifies the intended variant by analyzing the data's shape, then generates precise per-field errors against that variant's schema. This is the prerequisite for the harness to work, and Zod lacks this mechanism entirely.
 
-Typia structurally identifies the intended variant by analyzing the data's shape, then generates precise per-field errors against that variant's schema. This is the prerequisite for the validation feedback loop to converge, and Zod lacks this mechanism entirely.
+**With Zod: dual definitions, compilation failure, no feedback loop. The harness simply cannot be built on Zod.**
 
-**In summary: with Zod, you get dual definitions, compilation failure, and — even then — no feedback loop.** The very engine behind AutoBe's 6.75% → 100% simply cannot exist on top of Zod.
-
-With Typia, a single TypeScript interface is all you need:
+With Typia, a single interface is all you need:
 
 ```typescript
 const result = typia.validate<AutoBeTest.IExpression>(llmOutput);
 ```
 
-It operates at the compiler level, so it handles types of any complexity. No separate schema definitions, no generic depth limits, no incomplete error messages.
+It operates at the compiler level. No separate schemas, no generic depth limits, no incomplete errors.
 
 ### A.5. Beyond the Token Limit: Incremental Structured Output
 
-Function calling has an unspoken constraint: **the entire JSON must fit in a single response.** If the model's max output is 32K tokens and the target JSON is 100K tokens, the output gets truncated mid-JSON. With `JSON.parse()`, a truncated JSON is a failed JSON. The entire generation is wasted.
-
-This is the structured output equivalent of non-incremental compilation — if any part fails, you throw everything away and start from scratch.
+Function calling has an unspoken constraint: **the entire JSON must fit in a single response.** If the model's max output is 32K tokens and the target JSON is 100K tokens, the output gets truncated mid-JSON. With `JSON.parse()`, truncated JSON is failed JSON. The entire generation is wasted.
 
 Typia's schema-driven lenient parsing changes this equation. Because `parse()` auto-closes unclosed brackets, completes incomplete values, and applies type coercion recursively — a truncated JSON isn't a failure. It's a `DeepPartial<T>`: a typed object where completed fields are valid and missing fields are identifiable by the schema.
 
@@ -1032,6 +1040,8 @@ Turn N: → All fields present → validate() passes → T
 
 At each turn, `parse()` recovers the truncated output, `coerce()` ensures correct types on what exists, and `validate()` can run on completed subtrees before the whole object is finished. Errors surface incrementally, not at the end.
 
-This is incremental compilation applied to structured output. A traditional compiler recompiles everything on each run; an incremental compiler reuses previous results and only processes what changed. Similarly, traditional function calling discards truncated output and retries from scratch; Typia's approach reuses every valid field and only asks the LLM to fill what's missing.
+This is incremental compilation applied to structured output. Traditional function calling discards truncated output and retries from scratch. Typia's approach reuses every valid field and only asks the LLM to fill what's missing.
 
-The implication is that **function calling's output size is no longer bounded by `max_output_tokens`.** A 200K-token JSON — far beyond any single model response — can be built incrementally across multiple turns, with type safety maintained at every step. The schema tells you what you have and what you need; the lenient parser ensures nothing is wasted.
+**Function calling's output size is no longer bounded by `max_output_tokens`.** A 200K-token JSON can be built incrementally across multiple turns, with type safety maintained at every step. The schema tells you what you have and what you need; the lenient parser ensures nothing is wasted.
+
+Yet another thing the harness makes possible.
