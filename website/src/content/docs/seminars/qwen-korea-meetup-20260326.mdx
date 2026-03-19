@@ -1,6 +1,87 @@
-# Function Calling All-In: How AutoBe Achieved 100% Compilation Success with Qwen
+---
+title: AutoBE > Seminars > Qwen Korea Meetup 2026
+---
 
-> Draft for Qwen Meetup Korea
+import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+
+# Function Calling All-In
+
+> Qwen Meetup Korea — 2026.03.26
+
+<style>{`
+  .pptx-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.75rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #f8fafc;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+  }
+  .pptx-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    background: linear-gradient(135deg, #263348 0%, #3d5068 100%);
+    border-color: rgba(255,255,255,0.18);
+    color: #f8fafc;
+  }
+  .pptx-banner:hover .pptx-arrow {
+    opacity: 0.9;
+  }
+  .pptx-banner .pptx-icon {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    background: #D24726;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .pptx-banner .pptx-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .pptx-banner .pptx-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .pptx-banner .pptx-file {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    font-weight: 400;
+    font-family: monospace;
+  }
+  .pptx-banner .pptx-arrow {
+    margin-left: auto;
+    font-size: 1.5rem;
+    opacity: 0.4;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+`}</style>
+
+<a className="pptx-banner" href="/seminars/qwen-korea-meetup-20260326.pptx" download>
+  <span className="pptx-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <text x="18" y="26" textAnchor="middle" fill="white" fontSize="26" fontWeight="bold" fontFamily="Arial, sans-serif">P</text>
+    </svg>
+  </span>
+  <span className="pptx-body">
+    <span className="pptx-title">Qwen Korea Meetup</span>
+    <span className="pptx-file">qwen-korea-meetup-20260326.pptx</span>
+  </span>
+  <span className="pptx-arrow">↓</span>
+</a>
 
 ---
 
@@ -48,7 +129,7 @@ And yet AutoBe's final compilation success rate is 100%. Across all four Qwen mo
 
 Every line of generated code compiles. What comes out is a real, working backend built on TypeScript + NestJS + Prisma.
 
-![](https://autobe.dev/images/demonstrate/replay-qwen-qwen3.5-122b-a10b.png)
+<AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
 
 ### 1.2. The LLM Never Writes Code Directly
 
@@ -198,7 +279,7 @@ const llmOutput = `
   \`\`\``;
 ```
 
-Markdown wrapping, explanation prefix, unquoted keys, trailing commas, `tru` instead of `true`, unclosed brackets — and `payment` is double-stringified because `IPayment` is an `anyOf`. Seven problems in a single output.
+Markdown wrapping, explanation prefix, unquoted keys, trailing commas, `tru` instead of `true`, unclosed brackets — and `payment` is **double-stringified** because `IPayment` is an `anyOf` (JSON Schema's way of saying "one of several types"). Double-stringify means the LLM wrote the object as a JSON string inside a string — instead of `{"type": "card", ...}` (an object), it produced `"{\"type\": \"card\", ...}"` (a string containing JSON). Seven problems in a single output.
 
 The double-stringify is the one that makes success rate **0%**. Other errors are occasional; `anyOf` double-stringify is **100% consistent** — every `anyOf` field, every time. This isn't Qwen-specific; Anthropic's Claude models do the same thing with `oneOf`. Every model family has its union-type blind spot.
 
@@ -210,7 +291,7 @@ AutoBe currently tests against four Qwen models. All of them pass compilation.
 
 | Model | Active parameters | Characteristics |
 |-------|-----------------|-----------------|
-| `qwen/qwen3-coder-next` | — | Coding-focused, tool choice support |
+| `qwen/qwen3-coder-next` | 3B / 80B | Coding-focused, tool choice support |
 | `qwen/qwen3.5-397b-a17b` | 17B / 397B | Largest MoE |
 | `qwen/qwen3.5-122b-a10b` | 10B / 122B | Mid-size MoE |
 | `qwen/qwen3.5-35b-a3b` | 3B / 35B | Compact MoE |
@@ -330,6 +411,12 @@ const result = func.parse(llmOutput);
 // — 8 problems at once, all handled by a single parse() call.
 ```
 
+Most JSON repair tools (jsonrepair, dirty-json, LangChain's `parse_partial_json`, etc.) work at the **string level** — fix trailing commas, close brackets, strip Markdown, then pass the result to `JSON.parse()`. The output is a syntactically valid JSON string. But a double-stringified value like `"{\\"type\\":\\"card\\"}"` passes through unscathed — it's already valid JSON (it's a string). Without knowing the schema, there's no way to know it should be an object.
+
+Typia's `parse()` works differently. It doesn't repair a string and hand it off — it parses greedily while **consulting the schema**. When it encounters a string value where the schema expects an object, it re-enters `parse()` on that string, applying the same lenient recovery. The result feeds into type coercion, which may find another string-where-object-expected, triggering yet another round. Parsing and coercion call each other recursively, unwinding layers of stringify naturally — double, triple, however deep.
+
+This is why Section 1.5's seven problems are solved in "a single `parse()` call." It's not seven separate fixes applied sequentially. It's a **schema-driven recursive cycle** where parsing and coercion are inseparable. And it's why double-stringify — the problem that made Qwen 3.5's success rate 0% — can't be solved by string-level repair. You need the schema to know what's supposed to be an object.
+
 ### 2.3. Schema-Based Type Coercion: Correction That Knows the Schema
 
 LLMs frequently get types wrong, not just structure. They write `"42"` (a string) where `42` (a number) is expected, and `"true"` (a string) where `true` (a boolean) is expected. A human would see these as equivalent, but to a program they're completely different types.
@@ -371,7 +458,7 @@ const result = func.coerce(fromLlm);
 // result.order.payment === { type: "card", cardNumber: "1234-5678" }  (object)
 ```
 
-For discriminated unions (structures where one of several types is selected), `x-discriminator` identifies the correct variant first, then applies that variant's coercion rules.
+For union types (structures where one of several types is selected), Typia structurally analyzes the data to identify the correct variant, then applies that variant's coercion rules — no discriminator required.
 
 **This is the mechanism behind the Qwen 3.5 series' 0% → 100% from Section 1.** The model's tendency to double-stringify objects in union types was solved at the infrastructure level using schema information.
 
@@ -470,6 +557,8 @@ To sum up: define a single TypeScript type, and Typia handles the rest:
 4. **Validates** — `ILlmFunction.validate()` (schema violation detection)
 5. **Generates feedback** — `LlmJson.stringify()` (LLM-readable `// ❌` inline diagnostics)
 
+No other tool provides this complete pipeline. Individual pieces exist elsewhere — JSON repair libraries handle broken syntax, Pydantic offers validation, some frameworks have retry loops. But the schema-driven recursive cycle of parse ↔ coerce, combined with structural variant identification and inline error feedback, exists only in Typia.
+
 **The type is the schema, the validator, and the prompt.**
 
 ---
@@ -527,7 +616,7 @@ Not prohibition, but **absence**. Prompts try to forbid what you don't want; sch
 
 Prompt engineering is inherently model-dependent. A prompt optimized for GPT behaves differently on Claude, and differently again on Qwen. When a new model comes out or you want to experiment with a different one, it's not uncommon to rewrite prompts from scratch.
 
-Function calling schemas are model-neutral. JSON Schema is JSON Schema. It means the same thing regardless of which model reads it, and the validation feedback loop absorbs any performance differences between models. A strong model gets it right in 1–2 attempts; a weaker model takes 10–15; both converge to 100%.
+Function calling schemas are model-neutral. JSON Schema is JSON Schema. It means the same thing regardless of which model reads it, and the validation feedback loop absorbs any performance differences between models. A strong model gets it right in 1–2 attempts; a weaker model takes 3–4; both converge to 100%.
 
 AutoBe running Qwen, GLM, DeepSeek, and OpenAI models on **the same schemas, the same pipeline**, achieving 100% compilation across the board, is proof of this neutrality. We've never done model-specific prompt tuning.
 
@@ -569,53 +658,15 @@ This isn't unique to software. Any field where "correct or incorrect" can be mec
 |--------|----------|-------------|------------|
 | Software | Type check | Compilation | Test execution |
 | Semiconductors | DRC | LVS | SPICE simulation |
-| Accounting | Arithmetic check | Account code validity | Regulatory audit |
-| Law | Structural check | Logical consistency | Jurisdiction rules |
+| Chemical Process | Mass balance | Energy balance | Process simulation |
+| Interior Design | Dimension / clearance | Code compliance, clash detection | Lighting / HVAC simulation |
+| Control Systems | Transfer function validity | Stability / margin analysis | Time-domain simulation |
 
 The feedback loop naturally exploits this hierarchy: run the cheapest validator first, fix the errors, then move to the next level.
 
-#### 3.5.2. Domains Where Abstraction and Rigor Coexist
+#### 3.5.2. The Pattern in Practice
 
-In practice, the space between "fully verifiable" and "completely unverifiable" is much wider. The pattern here is: let part of the output be freeform, and verify the rest strictly.
-
-AutoBe's Analyze phase (requirements analysis) is a case in point. The structure of the SRS is validated by types, but the quality of its content can't be fully verified. Still, imposing structure alone delivers significant value. This isn't hypothetical — AutoBe already does this.
-
-This pattern is transferable to other fields. Here are several examples, expressed as types.
-
-**Law** — The AI develops legal arguments freely, but conclusions are classified in structured form:
-
-```typescript
-interface ILegalAnalysis {
-  reasoning: string;                 // Abstract: AI develops arguments freely
-  applicableClauses: IClause[];      // Rigorous: clauses classified by type
-  classification: ILegalCategory;    // Rigorous: legal classification
-}
-
-interface IClause {
-  type: "obligation" | "condition" | "warranty" | "indemnity"
-      | "termination" | "confidentiality" | "limitation";
-  title: string;
-  description: string;
-  subclauses: IClause[];  // Recursive structure
-}
-```
-
-`reasoning` is free text — no validation. But the existence of clauses and the validity of `type` classifications are deterministically verifiable. A reviewer doesn't need to read the entire argument — just check "does this clause actually belong in this category?"
-
-**Accounting** — Financial statements are a set of deterministic rules:
-
-```typescript
-interface ILineItem {
-  account_code: string & Pattern<"^[0-9]{4}$">;
-  description: string;
-  amount: number;
-  classification: "current_asset" | "non_current_asset"
-    | "current_liability" | "non_current_liability"
-    | "equity" | "revenue" | "expense";
-}
-```
-
-Balance sheet equilibrium (assets = liabilities + equity), account code validity, subtotal arithmetic — all can be turned into validators. Even if the AI writes `description` freely, whether totals add up and codes are valid can be verified instantly.
+The table above shows the hierarchy in overview. Here's what the pattern looks like as concrete types — each from an engineering field with validators refined over decades.
 
 **Semiconductors** — Physical rules in chip design are non-negotiable:
 
@@ -636,36 +687,83 @@ interface IBlock {
 
 DRC (Design Rule Check, fast), LVS (Layout vs. Schematic, medium), SPICE simulation (slow). Costs vary by tier, but all are deterministic validations. The feedback loop starts with the cheapest — DRC.
 
-**Medicine** — Diagnosis can be structured as a decision tree:
+**Chemical Process** — Conservation laws are absolute validators:
 
 ```typescript
-type IDecisionNode =
-  | IDecisionNode.ITest
-  | IDecisionNode.IDiagnosis
-  | IDecisionNode.IBranch;
+interface IProcessStream {
+  temperature: number & Minimum<0>;          // Kelvin
+  pressure: number & Minimum<0>;             // Pa
+  composition: IComponent[];                 // sum must equal 1.0
+  phase: "liquid" | "vapor" | "solid" | "two_phase";
+  flow_rate: number & Minimum<0>;            // kg/s
+}
 
-namespace IDecisionNode {
-  export interface IDiagnosis {
-    type: "diagnosis";
-    icd_code: string & Pattern<"^[A-Z][0-9]{2}(\\.[0-9]{1,4})?$">;
-    confidence: number & Minimum<0> & Maximum<1>;
-    recommended_treatment: string;
-  }
-
-  export interface IBranch {
-    type: "branch";
-    condition: string;
-    if_true: IDecisionNode;   // Recursive
-    if_false: IDecisionNode;  // Recursive
-  }
+interface IUnitOperation {
+  type: "reactor" | "distillation" | "heat_exchanger"
+    | "compressor" | "pump" | "mixer" | "splitter";
+  inlet_streams: IProcessStream[];
+  outlet_streams: IProcessStream[];          // mass balance: Σin = Σout
+  energy_duty: number;                       // energy balance
 }
 ```
 
-ICD code (International Classification of Diseases) validity, decision tree completeness (no dead ends), clinical guideline compliance. The medical soundness of the diagnosis logic requires expert judgment, but structural integrity is mechanically verifiable.
+Mass conservation (Σ inlet = Σ outlet), energy balance, thermodynamic consistency — these are the laws of physics, not opinions. Tools like ASPEN and HYSYS have provided deterministic validation for over 40 years. Mass balance check (fast) → energy balance (medium) → full process simulation (deep).
+
+**Interior Design** — Beneath the aesthetics, hard constraints define the space:
+
+```typescript
+interface IRoom {
+  type: "bedroom" | "living" | "kitchen" | "bathroom"
+    | "office" | "hallway" | "storage";
+  dimensions: IDimension3D;
+  openings: IOpening[];
+  fixtures: IFixture[];
+}
+
+interface IOpening {
+  type: "door" | "window" | "sliding_door" | "arch";
+  width: number & Minimum<0>;      // door ≥ 900mm (accessibility)
+  height: number & Minimum<0>;
+  position: IPoint3D;
+  swing_direction?: "inward" | "outward" | "sliding";
+}
+
+interface IFixture {
+  type: "cabinet" | "counter" | "appliance"
+    | "furniture" | "lighting" | "plumbing";
+  position: IPoint3D;
+  dimensions: IDimension3D;
+  clearance_required: number;       // min clear space (mm)
+}
+```
+
+People think of interior design as purely aesthetic, but it's built on hard constraints: minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency egress distances. BIM tools like Revit have provided clash detection for decades. Dimension and clearance checks (fast) → building code compliance and collision detection (medium) → lighting (lux) and HVAC simulation (deep).
+
+**Control Systems** — Stability is mathematically provable:
+
+```typescript
+interface IControlLoop {
+  type: "PID" | "MPC" | "LQR" | "feedforward" | "cascade";
+  plant_model: ITransferFunction;
+  setpoint: number;
+  sampling_rate: number & Minimum<0>;        // Hz
+  constraints: IConstraint[];
+}
+
+interface ITransferFunction {
+  numerator: number[];                       // polynomial coefficients
+  denominator: number[];                     // degree ≥ numerator
+  delay: number & Minimum<0>;               // transport delay (sec)
+}
+```
+
+A control system is either stable or it isn't — and this can be proven mathematically. Bode plots, Nyquist diagrams, pole placement: over 60 years of established analysis tools. Transfer function validity (fast) → stability and gain/phase margin analysis (medium) → full time-domain simulation (deep).
+
+Look at these types again. Every one has a `type` field with enumerated variants — `"logic" | "memory" | ...`, `"reactor" | "distillation" | ...`, `"bedroom" | "living" | ...`, `"PID" | "MPC" | ...`. Several nest recursively. These are the same union + tree structures as AutoBe's `IJsonSchema` and `IExpression`. This isn't coincidence — it's the nature of engineering data. Appendix A.3 explains why.
+
+> **Note**: These domain examples are AI-recommended — all are engineering fields where deterministic validators have been established for decades, so the pattern fits in principle. That said, I'm a developer, not a domain expert — take the specifics with a grain of salt.
 
 ---
-
-Full disclosure: I'm a developer, not a domain expert in any of these fields. I can't guarantee 100%. But the core logic is the same: **if a domain has rules that determine correct from incorrect, this pattern is applicable.** Just as AutoBe proved this with code and compilers, I believe it's transferable to any field where logic and verifiability exist.
 
 #### 3.5.3. Where This Doesn't Apply
 
@@ -699,12 +797,12 @@ Large models make fewer mistakes. That's an advantage — and simultaneously a d
 
 Even when our validation has blind spots we haven't thought of, large models rarely trigger those failures. They "guess correctly" through ambiguous parts of the schema and get it right. Our mistakes stay hidden.
 
-Switch to a small 35B-class model, and the story changes. Counterexamples come pouring out:
+Switch to a small model, and the story changes. These are separate models from the four in Section 1.6 — smaller or non-coding-optimized variants we used specifically for QA:
 
-| Model | Success rate | What it found |
-|-------|------------|---------------|
-| `qwen3-30b-a3b-thinking` | ~10% | Fundamental schema ambiguities, missing required fields |
-| `qwen3-next-80b-a3b-instruct` | ~20% | Subtle type mismatches in complex nested relationships |
+| Model | Active / Total | Success rate | What it found |
+|-------|---------------|------------|---------------|
+| `qwen3-30b-a3b-thinking` | 3B / 30B | ~10% | Fundamental schema ambiguities, missing required fields |
+| `qwen3-next-80b-a3b-instruct` | 3B / 80B | ~20% | Subtle type mismatches in complex nested relationships |
 
 The 10% success rate was the most valuable result. Every failure pointed to a gap in our system, and each fix strengthened the pipeline not just for weak models, but for **all models**.
 
@@ -740,7 +838,7 @@ What made it possible was neither smarter prompts nor more sophisticated orchest
 
 When you communicate in types, there's no misunderstanding. When you constrain with schemas, there's no pink elephant. When you have a deterministic validation loop, even 6.75% becomes 100%.
 
-This pattern isn't limited to coding. It's transferable to any field where logic and structural integrity exist.
+This pattern isn't limited to coding. It's transferable to any engineering field where deterministic validators exist.
 
 And what made all of this experimentation and validation possible was Qwen — an open-weight model.
 
@@ -754,9 +852,9 @@ The LLM doesn't need to be accurate. It just needs to be correctable.
 
 ---
 
-## Appendix: Deep Dive on Union Types
+## Appendix: Technical Deep Dives
 
-Union types appear throughout this talk, from start to finish. The 10 variants of `IJsonSchema` (Section 1.3), the 30+ variants of `IExpression` (Section 1.3), Qwen 3.5's double-stringify issue (Section 1.5), type coercion (Section 2.3), validation feedback (Section 2.4). How well you handle union types determines the quality of your function calling infrastructure.
+Union types appear throughout this talk, from start to finish. The 10 variants of `IJsonSchema` (Section 1.3), the 30+ variants of `IExpression` (Section 1.3), Qwen 3.5's double-stringify issue (Section 1.5), type coercion (Section 2.3), validation feedback (Section 2.4). Sections A.1–A.4 dive deep into why union types are the make-or-break challenge for function calling infrastructure. Section A.5 explores a separate capability that Typia's schema-driven parsing makes possible.
 
 ### A.1. What Is a Discriminated Union?
 
@@ -770,9 +868,9 @@ type Payment =
 
 A **discriminated** union is a union that has a **discriminator field** — a single field whose value determines which variant the data belongs to. In the example above, `type` is the discriminator. If `type` is `"card"`, the data has `cardNumber` and `cvc`; if it's `"bank_transfer"`, it has `bankCode` and `accountNumber`. **A single discriminator value determines the rest of the structure.**
 
-Why does this matter? When an LLM generates data for a union type and makes a mistake, correcting it requires knowing "which variant was this data intended to be?" first. Without a discriminator, intent can't be determined. Without determining intent, precise feedback is impossible.
+Why does this matter? When an LLM generates data for a union type and makes a mistake, correcting it requires knowing "which variant was this data intended to be?" first. A discriminator makes this identification straightforward — check one field, know the variant. Without one, intent must be inferred from the data's shape, which is harder but still possible with the right infrastructure.
 
-AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants) are all discriminated unions, and Typia's ability to leverage these discriminators for precise type coercion and validation feedback is the core mechanism behind 6.75% → 100%.
+AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants) are all discriminated unions, and Typia's ability to structurally identify variants and generate precise per-field feedback is the core mechanism behind 6.75% → 100%.
 
 ### A.2. Typia's `x-discriminator` — Adding Intelligence to `anyOf`
 
@@ -799,30 +897,35 @@ Typia solves this with a plugin property called `x-discriminator`. It uses `anyO
 }
 ```
 
-This enables three things:
+This serves a distinct purpose from Typia's internal processing. Typia's `coerce()` and `validate()` identify the correct variant through **structural analysis** of the data itself — matching property names, types, and shapes against each variant's schema. This works with or without a discriminator.
 
-1. **When the LLM reads the schema**: It sees `x-discriminator`'s `propertyName` and gets the hint "use the `type` field to select a variant"
-2. **When Typia coerces types**: `coerce()` identifies the variant via the discriminator value, then applies coercion rules specific to that variant's schema. This is also how Qwen 3.5's double-stringify issue is resolved
-3. **When Typia generates errors**: `validate()` identifies the variant via the discriminator, then produces precise per-field errors for that specific variant. Not "doesn't match any of 10 variants," but "card variant's cardNumber should be string, but you gave number"
+`x-discriminator` is **LLM-facing**. It tells the model "use the `type` field to select a variant," reducing the chance of the LLM generating structurally ambiguous data in the first place. Better input from the LLM means fewer corrections needed downstream.
 
-**With `anyOf` alone, neither precise coercion nor precise feedback is possible for union types. `x-discriminator` is what makes it possible.** This is why the type coercion from Section 2.3 and validation feedback from Section 2.4 work on union types as well.
+The two work in tandem:
+
+1. **`x-discriminator` reduces errors at the source** — the LLM reads the hint and generates data that more clearly belongs to one variant
+2. **Typia's structural analysis handles the rest** — `coerce()` identifies the variant and applies variant-specific coercion (including double-stringify unwrapping for Qwen 3.5). `validate()` identifies the variant and produces precise per-field errors — not "doesn't match any of 10 variants," but "card variant's cardNumber should be string, but you gave number"
+
+**`x-discriminator` makes the LLM smarter; Typia's structural engine makes the infrastructure robust.** This is why the type coercion from Section 2.3 and validation feedback from Section 2.4 work reliably on union types.
 
 ### A.3. The World Is Made of Recursive Unions
 
-Let's revisit the domain types from Section 3:
+Engineering manages complexity through **hierarchical decomposition** — break a big system into smaller parts, break those into smaller parts still. A chip is blocks; blocks are sub-blocks. A plant is sections; sections are units. A building is floors; floors are rooms. This decomposition is a tree. And at each level, the parts come in different kinds — a block can be logic, memory, or IO; a unit can be a reactor, distillation column, or heat exchanger. The moment a tree's nodes have kinds, it becomes a **recursive union type**.
 
-- Law: `IClause` → `subclauses: IClause[]` (recursive)
-- Semiconductors: `IBlock` → `sub_blocks: IBlock[]` (recursive)
-- Medicine: `IDecisionNode` → `if_true: IDecisionNode` (recursive)
-- Accounting: Chart of accounts is a tree of major → intermediate → minor categories (recursive)
+The engineering domains from Section 3 are no exception:
 
-These are all structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). They're ASTs — abstract syntax trees. Data in structured domains is ultimately a tree, and the moment a tree's nodes come in multiple kinds, it becomes a **recursive union type**.
+- Semiconductors: `IBlock` → `sub_blocks: IBlock[]` (chip → block → sub-block)
+- Chemical Process: plants → sections → units → sub-units (recursive process hierarchy)
+- Interior Design: buildings → floors → rooms → zones (recursive spatial decomposition)
+- Control Systems: cascade control — outer loop's output becomes inner loop's setpoint (recursive nesting)
+
+These are structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). They're all ASTs — abstract syntax trees. This isn't a coincidence specific to these four fields. **Hierarchical decomposition is how engineers manage complexity, and hierarchical decomposition produces recursive union types.** Any deterministic engineering domain that structures its data — which is virtually all of them — will share this structure.
 
 In Section 3, we said "if a domain's output is verifiable, the function calling + validation feedback pattern is transferable." But if the data structures of those domains are all recursive unions, then **conquering union types is the prerequisite for that transfer**.
 
-If coercion doesn't work on union types, Qwen 3.5's double-stringify problem will surface in chip design too. If validation feedback doesn't work on union types, "doesn't match any of 30 variants" won't get the feedback loop to converge. If you can't identify the variant via a discriminator, correction itself is impossible.
+If coercion doesn't work on union types, Qwen 3.5's double-stringify problem will surface in chip design too. If validation feedback doesn't work on union types, "doesn't match any of 30 variants" won't get the feedback loop to converge. If you can't identify which variant the data was intended to be, correction itself is impossible.
 
-Typia's `x-discriminator`, schema-based coercion, and discriminator-aware validation are the solution for this universal structure. AutoBe's 6.75% → 100% is not just an achievement in code generation. **It's the establishment of 100% reliability on the universal structure of recursive unions — an achievement transferable to every structured domain that shares this structure.**
+Typia's structural variant identification, schema-based coercion, and precise per-field validation are the solution for this universal structure. AutoBe's 6.75% → 100% is not just an achievement in code generation. **It's the establishment of 100% reliability on the universal structure of recursive unions — an achievement transferable to every structured domain that shares this structure.**
 
 ### A.4. Why Not Zod?
 
@@ -877,7 +980,15 @@ As the depth of recursive unions increases, you hit TypeScript's generic instant
 
 > TS2589: Type instantiation is excessively deep and possibly infinite.
 
-This is the most recurrently reported error in Zod's issue tracker. [#577](https://github.com/colinhacks/zod/issues/577), [#5064](https://github.com/colinhacks/zod/issues/5064), [#5256](https://github.com/colinhacks/zod/issues/5256) — this error appears with recursive schemas, and it remains unresolved in Zod v4. [Discussion #1459](https://github.com/colinhacks/zod/discussions/1459) even shows the same error with complex discriminated unions that aren't recursive at all. At the scale of `IExpression`'s 30+ variant recursive union, IDE autocompletion freezes and the type checker gives up.
+Why does this happen with Zod but not with native TypeScript types? The difference is how the type checker resolves recursive references.
+
+When TypeScript encounters `IExpression` in a native type alias, the recursive reference is a **name lookup** — a pointer back to the same definition. 30 variants referencing `IExpression` in their fields? 30 pointer lookups. **O(N) — linear.**
+
+In Zod, `z.discriminatedUnion` is a deeply nested generic. TypeScript must **structurally expand** each variant's output type through Zod's internal conditional types. When it hits `ExpressionSchema` inside a variant, `z.lazy()` forces re-entry into the full union — N variants × K recursive fields, each triggering another full expansion. Depth 0: N. Depth 1: N·K. Depth 2: (N·K)². For N=30, K=2, depth 3 alone is 216,000 type resolutions. **O((N·K)^d) — exponential.**
+
+This is the most recurrently reported error in Zod's issue tracker. [#577](https://github.com/colinhacks/zod/issues/577), [#5064](https://github.com/colinhacks/zod/issues/5064), [#5256](https://github.com/colinhacks/zod/issues/5256) — all recursive schemas, all TS2589, all unresolved in Zod v4. [Discussion #1459](https://github.com/colinhacks/zod/discussions/1459) even shows the same error with complex discriminated unions that aren't recursive at all — the generic expansion is expensive enough on its own.
+
+The practical consequence goes beyond compilation. The TypeScript language server runs the same type checker for IDE features — autocompletion, hover types, error highlighting. With a 30+ variant recursive Zod schema, the language server enters the same exponential expansion, memory spikes to gigabytes, and the IDE freezes — not just in the file where the schema is defined, but in every file that imports it. The development environment becomes unusable.
 
 **Third, even after enduring all of that, validation feedback is fundamentally impossible.**
 
@@ -887,7 +998,7 @@ When validation fails on a union type, Zod can't determine "which variant was th
 
 Think about it from the LLM's perspective. If it intended a `callExpression` variant but got the `arguments` field's type wrong, it needs feedback like "arguments should be an IExpression array, but you gave a string." But Zod says "doesn't match any of 10 variants." Feedback that doesn't tell you what to fix isn't feedback at all.
 
-Typia first identifies the variant using the discriminator field (`type`), then generates precise per-field errors against that variant's schema. This is the prerequisite for the validation feedback loop to converge, and Zod lacks this mechanism entirely.
+Typia structurally identifies the intended variant by analyzing the data's shape, then generates precise per-field errors against that variant's schema. This is the prerequisite for the validation feedback loop to converge, and Zod lacks this mechanism entirely.
 
 **In summary: with Zod, you get dual definitions, compilation failure, and — even then — no feedback loop.** The very engine behind AutoBe's 6.75% → 100% simply cannot exist on top of Zod.
 
@@ -898,3 +1009,29 @@ const result = typia.validate<AutoBeTest.IExpression>(llmOutput);
 ```
 
 It operates at the compiler level, so it handles types of any complexity. No separate schema definitions, no generic depth limits, no incomplete error messages.
+
+### A.5. Beyond the Token Limit: Incremental Structured Output
+
+Function calling has an unspoken constraint: **the entire JSON must fit in a single response.** If the model's max output is 32K tokens and the target JSON is 100K tokens, the output gets truncated mid-JSON. With `JSON.parse()`, a truncated JSON is a failed JSON. The entire generation is wasted.
+
+This is the structured output equivalent of non-incremental compilation — if any part fails, you throw everything away and start from scratch.
+
+Typia's schema-driven lenient parsing changes this equation. Because `parse()` auto-closes unclosed brackets, completes incomplete values, and applies type coercion recursively — a truncated JSON isn't a failure. It's a `DeepPartial<T>`: a typed object where completed fields are valid and missing fields are identifiable by the schema.
+
+```
+Turn 1: LLM generates 32K tokens → truncated mid-JSON
+         → Typia parse() → DeepPartial<T>
+         → Schema diff: "these fields are still missing"
+
+Turn 2: "Fill in the remaining fields" + previous DeepPartial<T>
+         → LLM generates next chunk → Typia parse()
+         → DeepPartial<T> updated, validate() on completed subtrees
+
+Turn N: → All fields present → validate() passes → T
+```
+
+At each turn, `parse()` recovers the truncated output, `coerce()` ensures correct types on what exists, and `validate()` can run on completed subtrees before the whole object is finished. Errors surface incrementally, not at the end.
+
+This is incremental compilation applied to structured output. A traditional compiler recompiles everything on each run; an incremental compiler reuses previous results and only processes what changed. Similarly, traditional function calling discards truncated output and retries from scratch; Typia's approach reuses every valid field and only asks the LLM to fill what's missing.
+
+The implication is that **function calling's output size is no longer bounded by `max_output_tokens`.** A 200K-token JSON — far beyond any single model response — can be built incrementally across multiple turns, with type safety maintained at every step. The schema tells you what you have and what you need; the lenient parser ensures nothing is wasted.
