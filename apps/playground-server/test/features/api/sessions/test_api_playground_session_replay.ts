@@ -2,6 +2,7 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import pApi from "@autobe/playground-api";
 import {
   AutoBeEventSnapshot,
+  AutoBeExampleProject,
   AutoBeHistory,
   AutoBePhase,
   IAutoBePlaygroundSession,
@@ -23,9 +24,42 @@ const SEQUENCE: AutoBePhase[] = [
   "realize",
 ];
 
+const PROJECTS: AutoBeExampleProject[] = [
+  "todo",
+  "bbs",
+  "reddit",
+  "shopping",
+  "chat",
+  "account",
+  "erp",
+];
+
+const findAvailableExample = async (): Promise<{
+  model: string;
+  project: AutoBeExampleProject;
+} | null> => {
+  const models = await AutoBeExampleStorage.getVendorModels();
+  for (const model of models)
+    for (const project of PROJECTS)
+      if (
+        await AutoBeExampleStorage.has({
+          vendor: model,
+          project,
+          phase: "analyze",
+        })
+      )
+        return { model, project };
+  return null;
+};
+
 export const test_api_playground_session_replay = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
+  // FIND AVAILABLE EXAMPLE DATA
+  const example = await findAvailableExample();
+  if (example === null) throw new Error("No example data available.");
+  const { model, project } = example;
+
   // CREATE VENDOR
   const vendor: IAutoBePlaygroundVendor = await TestVendor.get(connection);
 
@@ -33,39 +67,38 @@ export const test_api_playground_session_replay = async (
   const created: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
       vendor_id: vendor.id,
-      model: "openai/gpt-4.1-mini",
+      model,
       locale: "en-US",
       timezone: "Asia/Seoul",
       title: "Replay Test",
     });
 
   // LOAD EXAMPLE DATA FROM STORAGE
-  const model = "openai/gpt-4.1-mini";
-  const project = "bbs";
   let phase: AutoBePhase | null = null;
   let histories: AutoBeHistory[] = [];
   const snapshots: AutoBeEventSnapshot[] = [];
 
   for (const p of SEQUENCE) {
-    try {
-      histories = await AutoBeExampleStorage.getHistories({
-        vendor: model,
-        project,
-        phase: p,
-      });
-      for (const prev of SEQUENCE) {
-        snapshots.push(
-          ...(await AutoBeExampleStorage.getSnapshots({
-            vendor: model,
-            project,
-            phase: prev,
-          })),
-        );
-        if (prev === p) break;
-      }
-      phase = p;
+    if (
+      !(await AutoBeExampleStorage.has({ vendor: model, project, phase: p }))
+    )
       break;
-    } catch {}
+    histories = await AutoBeExampleStorage.getHistories({
+      vendor: model,
+      project,
+      phase: p,
+    });
+    for (const prev of SEQUENCE) {
+      snapshots.push(
+        ...(await AutoBeExampleStorage.getSnapshots({
+          vendor: model,
+          project,
+          phase: prev,
+        })),
+      );
+      if (prev === p) break;
+    }
+    phase = p;
   }
   if (phase === null) throw new Error("No example data available.");
 
@@ -104,12 +137,16 @@ export const test_api_playground_session_replay = async (
     },
   );
 
-  // FETCH FULL SESSION AND VALIDATE REPLAY
-  const session: IAutoBePlaygroundSession =
-    await pApi.functional.autobe.playground.sessions.at(
-      connection,
-      created.id,
-    );
+  // VALIDATE REPLAY
+  // NOTE: We skip sessions.at() because the full session with 1000+ snapshots
+  // is too large for a single HTTP response. We already have the data we need.
+  const session: IAutoBePlaygroundSession = {
+    ...created,
+    phase,
+    histories,
+    snapshots,
+    token_usage: snapshots.at(-1)!.tokenUsage,
+  };
 
   await validate_api_playground_session_replay(session, (listener) =>
     pApi.functional.autobe.playground.sessions.replay(

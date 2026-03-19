@@ -37,7 +37,11 @@ export namespace ArgumentParser {
             reject(exp);
           }
         });
-        commander.program.parseAsync().catch(reject);
+        commander.program
+          .parseAsync(
+            process.argv.filter((a, i) => !(i === 2 && a === "--")),
+          )
+          .catch(reject);
       });
 
     const select =

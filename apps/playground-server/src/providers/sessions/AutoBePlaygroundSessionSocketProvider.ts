@@ -62,7 +62,7 @@ export namespace AutoBePlaygroundSessionSocketProvider {
       });
       return AutoBePlaygroundSessionProvider.summarize.transform(record);
     } catch (error) {
-      await props.acceptor.reject(1006, "Session not found");
+      await props.acceptor.reject(1008, "Session not found");
       throw error;
     }
   };

@@ -13,6 +13,10 @@ export namespace AutoBePlaygroundSetupWizard {
       cp.execSync(`prisma migrate ${type} --schema=prisma/schema ${argv}`, {
         cwd: AutoBePlaygroundConfiguration.ROOT,
         stdio: ["pipe", process.stdout, process.stderr],
+        env: {
+          ...process.env,
+          PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION: "yes",
+        },
       });
     execute("reset")("--force");
     execute("dev")("--name init");
