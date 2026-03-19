@@ -59,7 +59,6 @@ model autobe_playground_sessions {
   title                       String?
   created_at                  DateTime
   completed_at                DateTime?
-  deleted_at                  DateTime?
 
   //----
   // RELATIONS

@@ -17,6 +17,35 @@ export namespace AutoBePlaygroundSessionSocketProvider {
     acceptor: WebSocketAcceptor<void, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
     const session: IAutoBePlaygroundSession.ISummary = await findSession(props);
+
+    // Block connect for sessions whose vendor has been soft-deleted
+    if (session.vendor.deleted_at !== null) {
+      await props.acceptor.reject(
+        1008,
+        "Vendor has been deleted; only replay is allowed",
+      );
+      return;
+    }
+
+    // Block duplicate connections to the same session
+    const activeConnection =
+      await AutoBePlaygroundGlobal.prisma.autobe_playground_session_connections.findFirst(
+        {
+          where: {
+            autobe_playground_session_id: session.id,
+            disconnected_at: null,
+          },
+          select: { id: true },
+        },
+      );
+    if (activeConnection !== null) {
+      await props.acceptor.reject(
+        1008,
+        "Session already has an active connection",
+      );
+      return;
+    }
+
     const connection: IEntity =
       await AutoBePlaygroundSessionConnectionProvider.open({
         session,

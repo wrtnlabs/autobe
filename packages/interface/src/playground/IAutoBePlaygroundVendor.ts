@@ -50,6 +50,15 @@ export interface IAutoBePlaygroundVendor {
    * Timestamp when this vendor configuration was created.
    */
   created_at: string & tags.Format<"date-time">;
+
+  /**
+   * Timestamp when this vendor configuration was soft-deleted.
+   *
+   * When a vendor is deleted, it is not physically removed from the database
+   * but marked with a deletion timestamp. Sessions belonging to a deleted
+   * vendor can only be replayed, not actively connected.
+   */
+  deleted_at: null | (string & tags.Format<"date-time">);
 }
 export namespace IAutoBePlaygroundVendor {
   /**

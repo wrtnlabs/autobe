@@ -18,6 +18,7 @@ export namespace AutoBePlaygroundVendorProvider {
       baseURL: input.base_url,
       semaphore: input.semaphore,
       created_at: input.created_at.toISOString(),
+      deleted_at: input.deleted_at?.toISOString() ?? null,
     });
     export const select = () =>
       ({
@@ -27,6 +28,7 @@ export namespace AutoBePlaygroundVendorProvider {
           base_url: true,
           semaphore: true,
           created_at: true,
+          deleted_at: true,
         },
       }) satisfies Prisma.autobe_playground_vendorsFindManyArgs;
   }
@@ -118,7 +120,7 @@ export namespace AutoBePlaygroundVendorProvider {
     const record =
       await AutoBePlaygroundGlobal.prisma.autobe_playground_vendors.findFirstOrThrow(
         {
-          where: { id, deleted_at: null },
+          where: { id },
           select: { encrypted_api_key: true },
         },
       );

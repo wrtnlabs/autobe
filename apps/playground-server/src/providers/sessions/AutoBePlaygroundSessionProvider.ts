@@ -85,7 +85,6 @@ export namespace AutoBePlaygroundSessionProvider {
       transform: summarize.transform,
     })({
       where: {
-        deleted_at: null,
         ...(props.body.search
           ? { title: { contains: props.body.search } }
           : {}),
@@ -106,7 +105,7 @@ export namespace AutoBePlaygroundSessionProvider {
     const record =
       await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.findFirstOrThrow(
         {
-          where: { id: props.id, deleted_at: null },
+          where: { id: props.id },
           ...props.payload,
         },
       );
@@ -178,9 +177,8 @@ export namespace AutoBePlaygroundSessionProvider {
 
   export const erase = async (props: { id: string }): Promise<void> => {
     await find({ id: props.id, payload: { select: { id: true } } });
-    await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.update({
+    await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.delete({
       where: { id: props.id },
-      data: { deleted_at: new Date() },
     });
   };
 }

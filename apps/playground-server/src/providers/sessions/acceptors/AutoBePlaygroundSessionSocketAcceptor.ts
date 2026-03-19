@@ -122,6 +122,9 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     }
 
     // REPLAY NEVER ALLOWS CONVERSATION
+    // Small delay to ensure client has processed the WebSocket accept
+    // and is ready to receive RPC calls (TGrid race condition)
+    await sleep_for(100);
     void listener.enable(false).catch(() => {});
     return { histories, snapshots };
   };

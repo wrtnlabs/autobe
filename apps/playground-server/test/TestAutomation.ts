@@ -75,6 +75,7 @@ export namespace TestAutomation {
     if (exceptions.length === 0) {
       console.log("Success");
       console.log("Elapsed time", report.time.toLocaleString(), `ms`);
+      process.exit(0);
     } else {
       if (options.trace !== false)
         for (const exp of exceptions) console.log(exp);
