@@ -1,5 +1,4 @@
 import { AutoBeExampleStorage } from "@autobe/benchmark";
-import pApi from "@autobe/playground-api";
 import {
   AutoBeEventSnapshot,
   AutoBeExampleProject,
@@ -8,6 +7,7 @@ import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { v7 } from "uuid";
 
 import { AutoBePlaygroundGlobal } from "../../../../src/AutoBePlaygroundGlobal";
@@ -79,9 +79,7 @@ export const test_api_playground_session_replay = async (
   const snapshots: AutoBeEventSnapshot[] = [];
 
   for (const p of SEQUENCE) {
-    if (
-      !(await AutoBeExampleStorage.has({ vendor: model, project, phase: p }))
-    )
+    if (!(await AutoBeExampleStorage.has({ vendor: model, project, phase: p })))
       break;
     histories = await AutoBeExampleStorage.getHistories({
       vendor: model,

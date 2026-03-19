@@ -1,8 +1,8 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundVendor,
   IAutoBePlaygroundVendorModel,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 
 export const test_api_playground_vendor_model_erase = async (

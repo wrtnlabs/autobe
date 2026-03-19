@@ -17,7 +17,8 @@ export namespace AutoBePlaygroundConfiguration {
       : path.resolve(__dirname + "/..");
   })().replaceAll("\\", "/");
 
-  export const API_PORT = () => Number(AutoBePlaygroundGlobal.env.PLAYGROUND_API_PORT);
+  export const API_PORT = () =>
+    Number(AutoBePlaygroundGlobal.env.PLAYGROUND_API_PORT);
 }
 
 ExceptionManager.insert(Prisma.PrismaClientKnownRequestError, (exp) => {

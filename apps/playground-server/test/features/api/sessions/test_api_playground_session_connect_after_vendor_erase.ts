@@ -1,9 +1,9 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
   IAutoBeRpcListener,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 import { IPointer, sleep_for } from "tstl";
 import { v7 } from "uuid";
@@ -45,10 +45,7 @@ export const test_api_playground_session_connect_after_vendor_erase = async (
   );
 
   // Soft-delete the vendor
-  await pApi.functional.autobe.playground.vendors.erase(
-    connection,
-    vendor.id,
-  );
+  await pApi.functional.autobe.playground.vendors.erase(connection, vendor.id);
 
   const enabled: IPointer<boolean | null> = { value: null };
   const listener: IAutoBeRpcListener = {
@@ -68,12 +65,11 @@ export const test_api_playground_session_connect_after_vendor_erase = async (
   );
 
   // Replay should SUCCEED even with garbage API key + deleted vendor
-  const { connector } =
-    await pApi.functional.autobe.playground.sessions.replay(
-      connection,
-      session.id,
-      listener,
-    );
+  const { connector } = await pApi.functional.autobe.playground.sessions.replay(
+    connection,
+    session.id,
+    listener,
+  );
 
   // Wait for enable(false) RPC call to arrive
   while (enabled.value === null) await sleep_for(100);

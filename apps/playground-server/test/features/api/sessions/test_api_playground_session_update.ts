@@ -1,8 +1,8 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 
 import { TestVendor } from "../../../internal/TestVendor";
@@ -30,9 +30,6 @@ export const test_api_playground_session_update = async (
   );
 
   const read: IAutoBePlaygroundSession =
-    await pApi.functional.autobe.playground.sessions.at(
-      connection,
-      session.id,
-    );
+    await pApi.functional.autobe.playground.sessions.at(connection, session.id);
   TestValidator.equals("title", read.title, "Updated Session Title");
 };

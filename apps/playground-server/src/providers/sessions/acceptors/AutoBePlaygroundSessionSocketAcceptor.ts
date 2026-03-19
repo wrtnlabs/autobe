@@ -80,7 +80,6 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
         session: props.session,
       });
 
-
     // Decrypt vendor API key
     const apiKey = await AutoBePlaygroundVendorProvider.decryptApiKey(
       props.session.vendor.id,

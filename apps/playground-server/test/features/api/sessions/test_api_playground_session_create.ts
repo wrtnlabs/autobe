@@ -1,9 +1,9 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
   IPage,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 
 import { TestVendor } from "../../../internal/TestVendor";
@@ -31,10 +31,7 @@ export const test_api_playground_session_create = async (
   TestValidator.equals("phase", session.phase, null);
 
   const read: IAutoBePlaygroundSession =
-    await pApi.functional.autobe.playground.sessions.at(
-      connection,
-      session.id,
-    );
+    await pApi.functional.autobe.playground.sessions.at(connection, session.id);
   TestValidator.equals("read.id", read.id, session.id);
 
   const page: IPage<IAutoBePlaygroundSession.ISummary> =

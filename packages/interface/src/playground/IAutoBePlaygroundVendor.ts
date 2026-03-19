@@ -4,8 +4,8 @@ import { tags } from "typia";
  * Interface representing a stored AI vendor configuration.
  *
  * This interface defines a persisted vendor configuration entity stored in the
- * database. Each vendor record contains the endpoint and concurrency
- * settings needed to connect with an AI service provider. The API key is stored
+ * database. Each vendor record contains the endpoint and concurrency settings
+ * needed to connect with an AI service provider. The API key is stored
  * encrypted in the database and is never exposed in API responses.
  *
  * Users register vendor configurations once, then reference them by ID when
@@ -14,16 +14,14 @@ import { tags } from "typia";
  * @author Samchon
  */
 export interface IAutoBePlaygroundVendor {
-  /**
-   * Unique identifier for this vendor configuration.
-   */
+  /** Unique identifier for this vendor configuration. */
   id: string & tags.Format<"uuid">;
 
   /**
    * Human-readable label for this vendor configuration.
    *
-   * A descriptive name to distinguish between multiple vendor setups,
-   * such as "My OpenAI", "Local Ollama", "Claude via OpenRouter", etc.
+   * A descriptive name to distinguish between multiple vendor setups, such as
+   * "My OpenAI", "Local Ollama", "Claude via OpenRouter", etc.
    */
   name: string;
 
@@ -46,9 +44,7 @@ export interface IAutoBePlaygroundVendor {
    */
   semaphore: number & tags.Type<"uint32">;
 
-  /**
-   * Timestamp when this vendor configuration was created.
-   */
+  /** Timestamp when this vendor configuration was created. */
   created_at: string & tags.Format<"date-time">;
 
   /**
@@ -74,8 +70,8 @@ export namespace IAutoBePlaygroundVendor {
     /**
      * API key for the AI vendor's services.
      *
-     * Provided in plaintext; the server encrypts it with AES-CBC
-     * before persisting to the database.
+     * Provided in plaintext; the server encrypts it with AES-CBC before
+     * persisting to the database.
      */
     apiKey: string;
 
@@ -84,6 +80,7 @@ export namespace IAutoBePlaygroundVendor {
 
     /**
      * Maximum concurrent API requests.
+     *
      * @default 16
      */
     semaphore?: number & tags.Type<"uint32">;
@@ -92,16 +89,14 @@ export namespace IAutoBePlaygroundVendor {
   /**
    * Properties for updating an existing vendor configuration.
    *
-   * All fields are optional; only provided fields will be updated.
-   * If apiKey is provided, it will be re-encrypted before storage.
+   * All fields are optional; only provided fields will be updated. If apiKey is
+   * provided, it will be re-encrypted before storage.
    */
   export interface IUpdate {
     /** Human-readable label. */
     name?: string;
 
-    /**
-     * New API key. If provided, the server re-encrypts it before storage.
-     */
+    /** New API key. If provided, the server re-encrypts it before storage. */
     apiKey?: string;
 
     /** Custom base URL. */

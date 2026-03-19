@@ -1,9 +1,9 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
   IAutoBeRpcListener,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 import { IPointer, sleep_for } from "tstl";
 
@@ -54,10 +54,7 @@ export const test_api_playground_vendor_soft_delete = async (
 
   // 2) Verify deleted_at is set in session's vendor record
   const read: IAutoBePlaygroundSession =
-    await pApi.functional.autobe.playground.sessions.at(
-      connection,
-      session.id,
-    );
+    await pApi.functional.autobe.playground.sessions.at(connection, session.id);
   TestValidator.predicate(
     "vendor.deleted_at is set",
     () => read.vendor.deleted_at !== null,

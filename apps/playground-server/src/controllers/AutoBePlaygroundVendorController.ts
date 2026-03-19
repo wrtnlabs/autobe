@@ -10,8 +10,8 @@ export class AutoBePlaygroundVendorController {
   /**
    * Register a new AI vendor configuration.
    *
-   * Stores the vendor's endpoint and concurrency settings. The API key
-   * is encrypted before persistence and never returned in any response.
+   * Stores the vendor's endpoint and concurrency settings. The API key is
+   * encrypted before persistence and never returned in any response.
    *
    * @author Samchon
    * @param body Vendor creation properties

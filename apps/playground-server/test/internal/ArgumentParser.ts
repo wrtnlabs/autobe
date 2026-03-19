@@ -38,9 +38,7 @@ export namespace ArgumentParser {
           }
         });
         commander.program
-          .parseAsync(
-            process.argv.filter((a, i) => !(i === 2 && a === "--")),
-          )
+          .parseAsync(process.argv.filter((a, i) => !(i === 2 && a === "--")))
           .catch(reject);
       });
 

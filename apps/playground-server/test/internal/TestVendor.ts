@@ -1,5 +1,5 @@
-import pApi from "@autobe/playground-api";
 import { IAutoBePlaygroundVendor } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 
 export namespace TestVendor {
   let vendor: IAutoBePlaygroundVendor | null = null;

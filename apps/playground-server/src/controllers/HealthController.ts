@@ -6,9 +6,8 @@ export class HealthController {
   /**
    * Health check API.
    *
-   * @tag Monitor
-   *
    * @author Samchon
+   * @tag Monitor
    */
   @core.TypedRoute.Get()
   public get(): void {}

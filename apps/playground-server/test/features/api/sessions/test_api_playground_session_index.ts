@@ -1,9 +1,9 @@
-import pApi from "@autobe/playground-api";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
   IPage,
 } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 
 import { TestVendor } from "../../../internal/TestVendor";
