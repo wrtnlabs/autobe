@@ -1,6 +1,6 @@
 import type { MetaRecord } from "nextra";
 
 const meta: MetaRecord = {
-  "qwen-korea-meetup-20260326": "Qwen Korea Meetup",
+  "20260326-qwen-meetup-korea": "Qwen Meetup Korea",
 };
 export default meta;
