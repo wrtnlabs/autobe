@@ -4,43 +4,34 @@ import {
   AutoBeChatMain,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
+  IConfigField,
   SearchParamsProvider,
-  createAutoBeConfigFields,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
+import { AutoBePlaygroundSidebar } from "./AutoBePlaygroundSidebar";
+
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
 ) {
   //----
-  // VARIABLES
-  //----
   // STATES
+  //----
   const [, setError] = useState<Error | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [storageStrategy] = useState<IAutoBeAgentSessionStorageStrategy>(
     props.storageStrategyFactory(),
   );
 
-  // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields({
-    key: "serverUrl",
-    label: "Server URL",
-    type: "text",
-    storageKey: "autobe_server_url",
-    placeholder: "http://127.0.0.1:5890",
-    default: "http://127.0.0.1:5890",
-    required: true,
-  });
-
   //----
   // RENDERERS
   //----
-
   const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   const isMobile = !isMinWidthLg;
+
   return (
     <div
       style={{
@@ -73,7 +64,6 @@ export function AutoBePlaygroundChatMovie(
               storageStrategy={storageStrategy}
               serviceFactory={props.serviceFactory}
             >
-              {/* Flex container for sidebar and main content */}
               <div
                 style={{
                   display: "flex",
@@ -82,23 +72,17 @@ export function AutoBePlaygroundChatMovie(
                   height: "100%",
                 }}
               >
-                {/* <AutoBeChatSidebar
+                <AutoBePlaygroundSidebar
                   storageStrategy={storageStrategy}
-                  isCollapsed={isMobile ? false : sidebarCollapsed}
+                  isCollapsed={isMobile ? true : sidebarCollapsed}
                   onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  onDeleteSession={(id) => {
-                    storageStrategy.deleteSession({ id });
-                  }}
-                /> */}
+                />
                 <AutoBeChatMain
                   isUnusedConfig={props.isUnusedConfig ?? false}
                   isMobile={isMobile}
                   setError={setError}
-                  configFields={configFields}
-                  requiredFields={["serverUrl", "openApiKey"]} // Playground requires serverUrl
-                  style={{
-                    backgroundColor: "lightblue",
-                  }}
+                  configFields={PLAYGROUND_CONFIG_FIELDS}
+                  requiredFields={["vendorName"]}
                 />
               </div>
             </AutoBeAgentProvider>
@@ -116,3 +100,48 @@ export namespace AutoBePlaygroundChatMovie {
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
   }
 }
+
+const PLAYGROUND_CONFIG_FIELDS: IConfigField[] = [
+  {
+    key: "vendorName",
+    label: "Vendor Name",
+    type: "text",
+    storageKey: "autobe_vendor_name",
+    placeholder: "My OpenAI",
+    default: "default",
+    required: true,
+  },
+  {
+    key: "aiModel",
+    label: "AI Model",
+    type: "text",
+    storageKey: "autobe_ai_model",
+    placeholder: "gpt-4.1",
+    default: "gpt-4.1",
+    suggestions: [
+      "gpt-4.1",
+      "gpt-4.1-mini",
+      "qwen/qwen3-235b-a22b-2507",
+      "qwen/qwen3-next-80b-a3b-instruct",
+    ],
+  },
+  {
+    key: "baseUrl",
+    label: "Base URL",
+    type: "text",
+    storageKey: "autobe_base_url",
+    placeholder: "https://api.openai.com/v1",
+    suggestions: [
+      "https://api.openai.com/v1",
+      "https://openrouter.ai/api/v1",
+    ],
+  },
+  {
+    key: "openApiKey",
+    label: "API Key (only for new vendors)",
+    type: "text",
+    storageKey: "autobe_openapi_key_encrypted",
+    placeholder: "sk-... (leave empty if vendor already registered)",
+    encrypted: true,
+  },
+];

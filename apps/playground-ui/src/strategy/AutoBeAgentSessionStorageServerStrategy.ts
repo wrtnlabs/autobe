@@ -1,174 +1,108 @@
-import { AutoBeHistory, IAutoBeTokenUsageJson } from "@autobe/interface";
+import { IAutoBePlaygroundSession } from "@autobe/interface";
+import pApi from "@autobe/playground-api";
 import {
   AutoBeAgentSession_INIT,
   IAutoBeAgentSession,
   IAutoBeAgentSessionStorageStrategy,
-  IAutoBeEventGroup,
 } from "@autobe/ui";
+import type { tags } from "typia";
 
-export class AutoBeAgentSessionStorageIndexedDBStrategy implements IAutoBeAgentSessionStorageStrategy {
-  static get supported(): boolean {
-    /** @reference https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB */
-    const idb: IDBFactory = window.indexedDB;
-    return idb !== undefined;
-  }
+import { getConnection } from "../utils/connection";
 
-  private connection: IDBOpenDBRequest;
-  private AutoBeAgentSession_INITializedPromise: Promise<void>;
-  private AutoBeAgentSession_INITialized: boolean;
-  private readonly dbName: string;
+/**
+ * Server-backed session storage strategy.
+ *
+ * All persistence is handled by the playground backend server via REST API.
+ * Write operations (appendHistory, appendEvent, setTokenUsage) are no-ops
+ * because the WebSocket acceptor already persists these server-side.
+ */
+export class AutoBeAgentSessionStorageServerStrategy
+  implements IAutoBeAgentSessionStorageStrategy
+{
+  // Server already persists histories via WebSocket acceptor — no-op
+  async appendHistory(): Promise<void> {}
 
-  constructor(dbName: string = "autobe_agent_storage") {
-    this.dbName = dbName;
-    this.AutoBeAgentSession_INITialized = false;
+  // Server already persists events via WebSocket acceptor — no-op
+  async appendEvent(): Promise<void> {}
 
-    const req = window.indexedDB.open(this.dbName, 2);
-    this.AutoBeAgentSession_INITializedPromise = new Promise(
-      (resolve, reject) => {
-        req.onerror = (event) => {
-          reject(event);
-          console.error("Error opening database", event);
-        };
-        req.onupgradeneeded = function (event) {
-          console.log("Database upgraded", event);
-          const db: IDBDatabase = this.result;
-          if (!db.objectStoreNames.contains("sessions")) {
-            db.createObjectStore("sessions", { keyPath: "id" });
-          }
-        };
-        req.onsuccess = (event) => {
-          console.log("Database opened successfully", event);
-          this.AutoBeAgentSession_INITialized = true;
-          resolve();
-        };
-      },
-    );
-    this.connection = req;
-  }
+  // Server already persists token usage via aggregate table — no-op
+  async setTokenUsage(): Promise<void> {}
 
-  private async getObjectStore(name: string, mode: "readonly" | "readwrite") {
-    await this.AutoBeAgentSession_INITializedPromise;
-    if (!this.AutoBeAgentSession_INITialized) {
-      throw new Error("Database not AutoBeAgentSession_INITialized");
-    }
-    return this.connection.result.transaction(name, mode).objectStore(name);
-  }
-
-  async appendHistory(props: {
-    id: string;
-    history: AutoBeHistory[];
-  }): Promise<void> {
-    const store = await this.getObjectStore("sessions", "readwrite");
-    const prev = await promisifyIDBRequest(store.get(props.id));
-    if (prev === undefined) {
-      store.add({
+  async getSession(
+    props: Pick<IAutoBeAgentSession, "id">,
+  ): Promise<IAutoBeAgentSession> {
+    try {
+      const session = await pApi.functional.autobe.playground.sessions.at(
+        getConnection(),
+        props.id as string & tags.Format<"uuid">,
+      );
+      return transformSession(session);
+    } catch {
+      return {
         id: props.id,
-        title: AutoBeAgentSession_INIT.title,
-        history: props.history,
-        tokenUsage: AutoBeAgentSession_INIT.tokenUsage,
-        events: [],
+        ...AutoBeAgentSession_INIT,
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
-      return;
+      };
     }
-
-    await promisifyIDBRequest(
-      store.put({
-        ...prev,
-        history: [...prev.history, ...props.history],
-      }),
-    );
-  }
-
-  async appendEvent(props: {
-    id: string;
-    events: IAutoBeEventGroup[];
-  }): Promise<void> {
-    const store = await this.getObjectStore("sessions", "readwrite");
-    const prev = await promisifyIDBRequest(store.get(props.id));
-    if (prev === undefined) {
-      store.add({
-        id: props.id,
-        title: AutoBeAgentSession_INIT.title,
-        history: AutoBeAgentSession_INIT.history,
-        tokenUsage: AutoBeAgentSession_INIT.tokenUsage,
-        events: props.events,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      return;
-    }
-
-    await promisifyIDBRequest(
-      store.put({
-        ...prev,
-        events: [...prev.events, ...props.events],
-      }),
-    );
-  }
-
-  async setTokenUsage(props: {
-    id: string;
-    tokenUsage: IAutoBeTokenUsageJson;
-  }): Promise<void> {
-    const store = await this.getObjectStore("sessions", "readwrite");
-    const prev = await promisifyIDBRequest(store.get(props.id));
-    if (prev === undefined) {
-      store.add({
-        id: props.id,
-        title: AutoBeAgentSession_INIT.title,
-        history: AutoBeAgentSession_INIT.history,
-        tokenUsage: props.tokenUsage,
-        events: AutoBeAgentSession_INIT.events,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      return;
-    }
-
-    await promisifyIDBRequest(
-      store.put({
-        ...prev,
-        tokenUsage: props.tokenUsage,
-        updatedAt: new Date(),
-      }),
-    );
-  }
-
-  async getSession(props: { id: string }) {
-    const store = await this.getObjectStore("sessions", "readonly");
-    const prev = await promisifyIDBRequest(store.get(props.id));
-    return undefined;
-    return prev;
   }
 
   async getSessionList(): Promise<IAutoBeAgentSession[]> {
-    const store = await this.getObjectStore("sessions", "readonly");
-    const prev = await promisifyIDBRequest(store.getAll());
-    return prev;
+    try {
+      const page = await pApi.functional.autobe.playground.sessions.index(
+        getConnection(),
+        { limit: 1000 },
+      );
+      return page.data.map(transformSummary);
+    } catch {
+      return [];
+    }
   }
 
-  async deleteSession(props: { id: string }): Promise<void> {
-    const store = await this.getObjectStore("sessions", "readwrite");
-    await promisifyIDBRequest(store.delete(props.id));
+  async deleteSession(
+    props: Pick<IAutoBeAgentSession, "id">,
+  ): Promise<void> {
+    await pApi.functional.autobe.playground.sessions.erase(
+      getConnection(),
+      props.id as string & tags.Format<"uuid">,
+    );
   }
 
   async editSessionTitle(
     props: Pick<IAutoBeAgentSession, "id" | "title">,
   ): Promise<void> {
-    const store = await this.getObjectStore("sessions", "readwrite");
-    const prev = await promisifyIDBRequest(store.get(props.id));
-    if (prev === undefined) {
-      return;
-    }
-    await promisifyIDBRequest(store.put({ ...prev, title: props.title }));
+    await pApi.functional.autobe.playground.sessions.update(
+      getConnection(),
+      props.id as string & tags.Format<"uuid">,
+      { title: props.title || null },
+    );
   }
 }
 
-const promisifyIDBRequest = <T>(request: IDBRequest<T>): Promise<T> => {
-  return new Promise<T>((resolve, reject) => {
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-};
+function transformSummary(
+  s: IAutoBePlaygroundSession.ISummary,
+): IAutoBeAgentSession {
+  return {
+    id: s.id,
+    title: s.title ?? s.model,
+    history: [],
+    tokenUsage: s.token_usage,
+    createdAt: new Date(s.created_at),
+    updatedAt: new Date(s.completed_at ?? s.created_at),
+    events: [],
+  };
+}
+
+function transformSession(
+  s: IAutoBePlaygroundSession,
+): IAutoBeAgentSession {
+  return {
+    id: s.id,
+    title: s.title ?? s.model,
+    history: s.histories,
+    tokenUsage: s.token_usage,
+    createdAt: new Date(s.created_at),
+    updatedAt: new Date(s.completed_at ?? s.created_at),
+    events: [],
+  };
+}

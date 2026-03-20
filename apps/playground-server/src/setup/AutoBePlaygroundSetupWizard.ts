@@ -2,6 +2,7 @@ import cp from "child_process";
 
 import { AutoBePlaygroundConfiguration } from "../AutoBePlaygroundConfiguration";
 import { AutoBePlaygroundGlobal } from "../AutoBePlaygroundGlobal";
+import { AutoBePlaygroundConfigProvider } from "../providers/config/AutoBePlaygroundConfigProvider";
 
 export namespace AutoBePlaygroundSetupWizard {
   export async function schema(): Promise<void> {
@@ -22,5 +23,7 @@ export namespace AutoBePlaygroundSetupWizard {
     execute("dev")("--name init");
   }
 
-  export async function seed(): Promise<void> {}
+  export async function seed(): Promise<void> {
+    await AutoBePlaygroundConfigProvider.seed();
+  }
 }

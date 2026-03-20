@@ -97,29 +97,77 @@ export namespace IAutoBePlaygroundSession {
   /**
    * Properties for creating a new vibe coding session.
    *
-   * References a stored vendor configuration by ID. The vendor's decrypted API
-   * key will be used when establishing the AI agent connection.
+   * Accepts either real session properties (with vendor_id and model)
+   * or mock session properties (with mock vendor/project from example
+   * storage). When mock is provided, a virtual vendor is auto-created
+   * and the session uses {@link AutoBeMockAgent} on connect.
    */
-  export interface ICreate {
-    /** ID of the stored vendor configuration to use. */
-    vendor_id: string & tags.Format<"uuid">;
+  export type ICreate = ICreate.IProps | ICreate.IMock;
+  export namespace ICreate {
+    /**
+     * Create a real session bound to a stored vendor configuration.
+     *
+     * The vendor's decrypted API key will be used when establishing the
+     * AI agent connection.
+     */
+    export interface IProps {
+      /** ID of the stored vendor configuration to use. */
+      vendor_id: string & tags.Format<"uuid">;
+
+      /**
+       * AI model identifier specifying which model to use.
+       *
+       * The exact model name or identifier for the AI provider, such as
+       * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
+       */
+      model: string;
+
+      /**
+       * Locale for AI assistant responses.
+       *
+       * When omitted, falls back to the global playground configuration.
+       */
+      locale?: string | null;
+
+      /**
+       * IANA timezone identifier.
+       *
+       * When omitted, falls back to the global playground configuration.
+       */
+      timezone?: string | null;
+
+      /** Optional title for this session. */
+      title?: string | null;
+    }
 
     /**
-     * AI model identifier specifying which model to use.
+     * Create a mock session from pre-recorded example data.
      *
-     * The exact model name or identifier for the AI provider, such as
-     * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
+     * A virtual vendor is auto-created with a sentinel API key. When the
+     * frontend connects via WebSocket, the server detects the virtual
+     * vendor and creates an {@link AutoBeMockAgent} that replays events
+     * with realistic timing.
      */
-    model: string;
+    export interface IMock {
+      /** Mock configuration from example data. */
+      mock: {
+        /**
+         * Example vendor/model slug.
+         *
+         * Corresponds to a directory name under `autobe-examples/raw/`,
+         * e.g. `"openai/gpt-4.1"`, `"anthropic/claude-sonnet-4-20250514"`.
+         */
+        vendor: string;
 
-    /** Locale for AI assistant responses. */
-    locale: string;
-
-    /** IANA timezone identifier. */
-    timezone: string;
-
-    /** Optional title for this session. */
-    title?: string | null;
+        /**
+         * Example project name.
+         *
+         * One of the predefined example projects: "todo", "bbs", "reddit",
+         * "shopping", "chat", "account", "erp", etc.
+         */
+        project: string;
+      };
+    }
   }
 
   /** Properties for updating an existing session. */

@@ -1,10 +1,14 @@
-import { AutoBeAgent } from "@autobe/agent";
+import { AutoBeAgent, AutoBeMockAgent, AutoBeTokenUsage } from "@autobe/agent";
 import { AutoBeConfigConstant } from "@autobe/agent/src/constants/AutoBeConfigConstant";
+import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeEventOfSerializable,
   AutoBeEventSnapshot,
+  AutoBeExampleProject,
   AutoBeHistory,
+  AutoBePhase,
   IAutoBeAgent,
+  IAutoBePlaygroundReplay,
   IAutoBePlaygroundSession,
   IAutoBeRpcListener,
   IAutoBeRpcService,
@@ -23,6 +27,7 @@ import { AutoBePlaygroundVendorProvider } from "../../vendors/AutoBePlaygroundVe
 import { AutoBePlaygroundSessionConnectionProvider } from "../AutoBePlaygroundSessionConnectionProvider";
 import { AutoBePlaygroundSessionEventProvider } from "../AutoBePlaygroundSessionEventProvider";
 import { AutoBePlaygroundSessionHistoryProvider } from "../AutoBePlaygroundSessionHistoryProvider";
+import { AutoBePlaygroundSessionProvider } from "../AutoBePlaygroundSessionProvider";
 import { AutoBePlaygroundSessionCompiler } from "./AutoBePlaygroundSessionCompiler";
 
 export namespace AutoBePlaygroundSessionSocketAcceptor {
@@ -84,38 +89,49 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     const apiKey = await AutoBePlaygroundVendorProvider.decryptApiKey(
       props.session.vendor.id,
     );
-    const agent: AutoBeAgent = await startCommunication({
-      ...props,
-      histories,
-      factory: async () =>
-        new AutoBeAgent({
-          vendor: {
-            api: new OpenAI({
-              apiKey,
-              baseURL: props.session.vendor.baseURL ?? undefined,
-            }),
-            model: props.session.model,
-            semaphore: props.session.vendor.semaphore,
-          },
-          config: {
-            locale: props.session.locale,
-            timezone: props.session.timezone,
-            timeout:
-              AutoBePlaygroundGlobal.env.PLAYGROUND_TIMEOUT === "NULL"
-                ? null
-                : Number(
-                    AutoBePlaygroundGlobal.env.PLAYGROUND_TIMEOUT ??
-                      AutoBeConfigConstant.TIMEOUT,
-                  ),
-          },
-          compiler: () => AutoBePlaygroundSessionCompiler.get(),
-          histories,
-        }),
-    });
+    const agent: IAutoBeAgent =
+      apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
+        ? await startCommunication({
+            ...props,
+            histories,
+            factory: async () =>
+              new AutoBeMockAgent({
+                replay: await buildReplayFromExamples(props.session),
+                compiler: () => AutoBePlaygroundSessionCompiler.get(),
+              }),
+          })
+        : await startCommunication({
+            ...props,
+            histories,
+            factory: async () =>
+              new AutoBeAgent({
+                vendor: {
+                  api: new OpenAI({
+                    apiKey,
+                    baseURL: props.session.vendor.baseURL ?? undefined,
+                  }),
+                  model: props.session.model,
+                  semaphore: props.session.vendor.semaphore,
+                },
+                config: {
+                  locale: props.session.locale,
+                  timezone: props.session.timezone,
+                  timeout:
+                    AutoBePlaygroundGlobal.env.PLAYGROUND_TIMEOUT === "NULL"
+                      ? null
+                      : Number(
+                          AutoBePlaygroundGlobal.env.PLAYGROUND_TIMEOUT ??
+                            AutoBeConfigConstant.TIMEOUT,
+                        ),
+                },
+                compiler: () => AutoBePlaygroundSessionCompiler.get(),
+                histories,
+              }),
+          });
 
     const listener: Driver<IAutoBeRpcListener> = props.acceptor.getDriver();
     for (const s of snapshots) {
-      agent.getTokenUsage().assign(s.tokenUsage);
+      (agent.getTokenUsage() as AutoBeTokenUsage).assign(s.tokenUsage);
       void (listener as any)[s.event.type](s.event).catch(() => {});
       await sleep_for(10);
     }
@@ -206,5 +222,73 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
       ).catch(() => {});
     });
     return agent;
+  };
+
+  /**
+   * Build an {@link IAutoBePlaygroundReplay} from example storage.
+   *
+   * The model field of mock sessions encodes both vendor slug and project
+   * as `"vendor/model#project"` (e.g. `"openai/gpt-4.1#bbs"`).
+   */
+  const buildReplayFromExamples = async (
+    session: IAutoBePlaygroundSession.ISummary,
+  ): Promise<IAutoBePlaygroundReplay> => {
+    const separatorIndex = session.model.lastIndexOf("#");
+    const vendor: string =
+      separatorIndex >= 0 ? session.model.slice(0, separatorIndex) : session.model;
+    const project = (
+      separatorIndex >= 0 ? session.model.slice(separatorIndex + 1) : ""
+    ) as AutoBeExampleProject;
+
+    const safeGetSnapshots = async (
+      phase: AutoBePhase,
+    ): Promise<AutoBeEventSnapshot[] | null> => {
+      const exists = await AutoBeExampleStorage.has({
+        vendor,
+        project,
+        phase,
+      });
+      if (!exists) return null;
+      return AutoBeExampleStorage.getSnapshots({ vendor, project, phase });
+    };
+
+    // Find the last available phase for loading histories
+    const PHASES: AutoBePhase[] = [
+      "realize",
+      "test",
+      "interface",
+      "database",
+      "analyze",
+    ];
+    let historiesPhase: AutoBePhase | null = null;
+    for (const phase of PHASES) {
+      const exists = await AutoBeExampleStorage.has({
+        vendor,
+        project,
+        phase,
+      });
+      if (exists) {
+        historiesPhase = phase;
+        break;
+      }
+    }
+
+    return {
+      vendor,
+      project,
+      histories:
+        historiesPhase !== null
+          ? await AutoBeExampleStorage.getHistories({
+              vendor,
+              project,
+              phase: historiesPhase,
+            })
+          : [],
+      analyze: await safeGetSnapshots("analyze"),
+      database: await safeGetSnapshots("database"),
+      interface: await safeGetSnapshots("interface"),
+      test: await safeGetSnapshots("test"),
+      realize: await safeGetSnapshots("realize"),
+    };
   };
 }

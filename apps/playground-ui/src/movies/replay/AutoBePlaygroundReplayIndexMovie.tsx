@@ -1,21 +1,22 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import { IAutoBePlaygroundSession } from "@autobe/interface";
 import { Container } from "@mui/material";
 
 import { AutoBePlaygroundReplayVendorMovie } from "./AutoBePlaygroundReplayVendorMovie";
 
 export const AutoBePlaygroundReplayIndexMovie = ({
-  replays,
+  sessions,
 }: AutoBePlaygroundReplayIndexMovie.IProps) => {
-  const groupedReplays: Record<string, IAutoBePlaygroundReplay.ISummary[]> =
-    replays.reduce(
-      (acc, replay) => {
-        if (!acc[replay.vendor]) {
-          acc[replay.vendor] = [];
+  const groupedSessions: Record<string, IAutoBePlaygroundSession.ISummary[]> =
+    sessions.reduce(
+      (acc, session) => {
+        const vendorName = session.vendor.name;
+        if (!acc[vendorName]) {
+          acc[vendorName] = [];
         }
-        acc[replay.vendor].push(replay);
+        acc[vendorName].push(session);
         return acc;
       },
-      {} as Record<string, IAutoBePlaygroundReplay.ISummary[]>,
+      {} as Record<string, IAutoBePlaygroundSession.ISummary[]>,
     );
   return (
     <div
@@ -29,12 +30,12 @@ export const AutoBePlaygroundReplayIndexMovie = ({
         maxWidth="lg"
         sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}
       >
-        {Object.entries(groupedReplays).map(([vendor, vendorReplays]) => {
+        {Object.entries(groupedSessions).map(([vendor, vendorSessions]) => {
           return (
             <AutoBePlaygroundReplayVendorMovie
               key={vendor}
               vendor={vendor}
-              replays={vendorReplays}
+              sessions={vendorSessions}
             />
           );
         })}
@@ -45,6 +46,6 @@ export const AutoBePlaygroundReplayIndexMovie = ({
 
 export namespace AutoBePlaygroundReplayIndexMovie {
   export interface IProps {
-    replays: IAutoBePlaygroundReplay.ISummary[];
+    sessions: IAutoBePlaygroundSession.ISummary[];
   }
 }

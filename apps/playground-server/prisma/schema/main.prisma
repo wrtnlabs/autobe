@@ -133,6 +133,17 @@ model autobe_playground_session_events {
   @@index([autobe_playground_session_connection_id, created_at])
 }
 
+model autobe_playground_configs {
+  //----
+  // COLUMNS
+  //----
+  id                String  @id
+  locale            String
+  timezone          String
+  default_vendor_id String?
+  default_model     String?
+}
+
 model autobe_playground_session_aggregates {
   //----
   // COLUMNS

@@ -10,12 +10,21 @@ import { v7 } from "uuid";
 
 import { AutoBePlaygroundGlobal } from "../../AutoBePlaygroundGlobal";
 import { PaginationUtil } from "../../utils/PaginationUtil";
+import { AutoBePlaygroundConfigProvider } from "../config/AutoBePlaygroundConfigProvider";
 import { AutoBePlaygroundVendorModelProvider } from "../vendors/AutoBePlaygroundVendorModelProvider";
 import { AutoBePlaygroundVendorProvider } from "../vendors/AutoBePlaygroundVendorProvider";
 import { AutoBePlaygroundSessionEventProvider } from "./AutoBePlaygroundSessionEventProvider";
 import { AutoBePlaygroundSessionHistoryProvider } from "./AutoBePlaygroundSessionHistoryProvider";
 
 export namespace AutoBePlaygroundSessionProvider {
+  /**
+   * Sentinel API key used to identify virtual/mock vendor sessions.
+   *
+   * When the socket acceptor detects this API key during the connect flow,
+   * it creates an `AutoBeMockAgent` instead of a real `AutoBeAgent`.
+   */
+  export const VIRTUAL_API_KEY = "virtual-seed-no-api-key";
+
   export namespace json {
     export const transform = (
       input: Prisma.autobe_playground_sessionsGetPayload<
@@ -125,29 +134,84 @@ export namespace AutoBePlaygroundSessionProvider {
   export const create = async (props: {
     body: IAutoBePlaygroundSession.ICreate;
   }): Promise<IAutoBePlaygroundSession> => {
+    if ("mock" in props.body) {
+      return createMock(props.body);
+    }
+    return createReal(props.body);
+  };
+
+  const createReal = async (
+    body: IAutoBePlaygroundSession.ICreate.IProps,
+  ): Promise<IAutoBePlaygroundSession> => {
     // Validate vendor exists
     await AutoBePlaygroundGlobal.prisma.autobe_playground_vendors.findFirstOrThrow(
       {
-        where: { id: props.body.vendor_id, deleted_at: null },
+        where: { id: body.vendor_id, deleted_at: null },
         select: { id: true },
       },
     );
 
     // Auto-register model under vendor
     await AutoBePlaygroundVendorModelProvider.emplace({
-      vendorId: props.body.vendor_id,
-      model: props.body.model,
+      vendorId: body.vendor_id,
+      model: body.model,
     });
+
+    // Resolve locale/timezone from global config when not provided
+    const config = await AutoBePlaygroundConfigProvider.get();
+    const locale = body.locale ?? config.locale;
+    const timezone = body.timezone ?? config.timezone;
 
     const record =
       await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
         data: {
           id: v7(),
-          autobe_playground_vendor_id: props.body.vendor_id,
-          model: props.body.model,
-          locale: props.body.locale,
-          timezone: props.body.timezone,
-          title: props.body.title ?? null,
+          autobe_playground_vendor_id: body.vendor_id,
+          model: body.model,
+          locale,
+          timezone,
+          title: body.title ?? null,
+          created_at: new Date(),
+          completed_at: null,
+          aggregate: {
+            create: {
+              id: v7(),
+              phase: null,
+              enabled: true,
+              token_usage: JSON.stringify(new AutoBeTokenUsage().toJSON()),
+            },
+          },
+        },
+        ...json.select(),
+      });
+    return json.transform(record);
+  };
+
+  const createMock = async (
+    body: IAutoBePlaygroundSession.ICreate.IMock,
+  ): Promise<IAutoBePlaygroundSession> => {
+    const { vendor: vendorSlug, project } = body.mock;
+
+    // Auto-create a virtual vendor with sentinel API key
+    const vendor = await AutoBePlaygroundVendorProvider.create({
+      body: {
+        name: `virtual: ${vendorSlug}`,
+        apiKey: VIRTUAL_API_KEY,
+        baseURL: null,
+        semaphore: 16,
+      },
+    });
+
+    // Create session — AutoBeMockAgent populates data on connect
+    const record =
+      await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
+        data: {
+          id: v7(),
+          autobe_playground_vendor_id: vendor.id,
+          model: `${vendorSlug}#${project}`,
+          locale: "en",
+          timezone: "UTC",
+          title: `[Mock] ${vendorSlug} / ${project}`,
           created_at: new Date(),
           completed_at: null,
           aggregate: {
