@@ -420,6 +420,8 @@ This is the harness's second layer: it doesn't just validate correct output — 
 
 ### 2.3. Schema-Based Type Coercion
 
+Section 2.2's `parse()` handles type coercion automatically when working with raw LLM text. But when an SDK has already parsed the JSON — Anthropic SDK, Vercel AI, LangChain, MCP — the syntax is fine; only the types are wrong. That's what `coerce()` is for.
+
 LLMs frequently get types wrong, not just structure. `"42"` (a string) where `42` (a number) is expected. `"true"` (a string) where `true` (a boolean) is expected. A human would see these as equivalent; to a program they're completely different types.
 
 Naive casting can't solve this. Whether `"42"` should be a number or remain a string depends entirely on the schema for that field.
@@ -462,8 +464,6 @@ const result = func.coerce(fromLlm);
 For union types, Typia structurally analyzes the data to identify the correct variant, then applies that variant's coercion rules — no discriminator required.
 
 **This is the mechanism behind Qwen 3.5's 0% → 100%.** The model's tendency to double-stringify objects in union types was absorbed by the harness at the infrastructure level.
-
-When the SDK has already parsed the JSON (Anthropic SDK, Vercel AI, LangChain, MCP, etc.), use `coerce()` instead of `parse()`.
 
 ### 2.4. Validation and Precise Feedback
 
