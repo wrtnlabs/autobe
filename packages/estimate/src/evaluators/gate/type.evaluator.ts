@@ -33,6 +33,11 @@ interface ParsedModel {
   fields: ParsedField[];
 }
 
+interface ParsedEnum {
+  name: string;
+  values: string[];
+}
+
 /**
  * Type Evaluator Checks TypeScript type errors using AutoBeTypeScriptCompiler
  * (in-memory)
@@ -151,7 +156,9 @@ export class TypeEvaluator extends GateEvaluator {
     };
   }
 
-  /** Parse Prisma schema files and extract model definitions with typed fields. */
+  /** Parse Prisma schema files and extract model definitions with typed fields.
+   *  Uses brace-counting instead of `[^}]+` regex because JSDoc comments
+   *  like `{@link Foo.id}` contain `}` that would prematurely end the match. */
   private parsePrismaModels(schemaFiles: string[]): ParsedModel[] {
     const models: ParsedModel[] = [];
 
@@ -163,17 +170,30 @@ export class TypeEvaluator extends GateEvaluator {
         continue;
       }
 
-      const modelRegex = /^model\s+(\w+)\s*\{([^}]+)\}/gm;
-      let modelMatch: RegExpExecArray | null;
+      // Find model declarations and extract body via brace-counting
+      const modelStartRegex = /^model\s+(\w+)\s*\{/gm;
+      let startMatch: RegExpExecArray | null;
 
-      while ((modelMatch = modelRegex.exec(content)) !== null) {
-        const modelName = modelMatch[1];
-        const modelBody = modelMatch[2];
+      while ((startMatch = modelStartRegex.exec(content)) !== null) {
+        const modelName = startMatch[1];
+        const bodyStart = startMatch.index + startMatch[0].length;
+
+        // Brace-count to find the matching closing brace
+        let depth = 1;
+        let i = bodyStart;
+        while (i < content.length && depth > 0) {
+          if (content[i] === "{") depth++;
+          else if (content[i] === "}") depth--;
+          i++;
+        }
+        if (depth !== 0) continue;
+
+        const modelBody = content.substring(bodyStart, i - 1);
         const fields: ParsedField[] = [];
 
         for (const line of modelBody.split("\n")) {
           const trimmed = line.trim();
-          // Skip empty lines, comments, and @@ directives
+          // Skip empty lines, comments (// and ///), and @@ directives
           if (
             !trimmed ||
             trimmed.startsWith("//") ||
@@ -207,10 +227,64 @@ export class TypeEvaluator extends GateEvaluator {
     return models;
   }
 
+  /** Parse Prisma schema files and extract enum definitions.
+   *  Uses brace-counting for consistency with parsePrismaModels. */
+  private parsePrismaEnums(schemaFiles: string[]): ParsedEnum[] {
+    const enums: ParsedEnum[] = [];
+
+    for (const schemaFile of schemaFiles) {
+      let content: string;
+      try {
+        content = fs.readFileSync(schemaFile, "utf-8");
+      } catch {
+        continue;
+      }
+
+      const enumStartRegex = /^enum\s+(\w+)\s*\{/gm;
+      let startMatch: RegExpExecArray | null;
+
+      while ((startMatch = enumStartRegex.exec(content)) !== null) {
+        const enumName = startMatch[1];
+        const bodyStart = startMatch.index + startMatch[0].length;
+
+        let depth = 1;
+        let i = bodyStart;
+        while (i < content.length && depth > 0) {
+          if (content[i] === "{") depth++;
+          else if (content[i] === "}") depth--;
+          i++;
+        }
+        if (depth !== 0) continue;
+
+        const enumBody = content.substring(bodyStart, i - 1);
+        const values: string[] = [];
+
+        for (const line of enumBody.split("\n")) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("@@")) {
+            continue;
+          }
+          // Enum values are simple identifiers
+          const valueMatch = trimmed.match(/^(\w+)/);
+          if (valueMatch) {
+            values.push(valueMatch[1]);
+          }
+        }
+
+        if (values.length > 0) {
+          enums.push({ name: enumName, values });
+        }
+      }
+    }
+
+    return enums;
+  }
+
   /** Resolve a Prisma field type to a TypeScript type string. */
   private resolveFieldType(
     field: ParsedField,
     modelNames: Set<string>,
+    enumNames: Set<string>,
   ): string {
     const tsType = PRISMA_TYPE_MAP[field.type];
     let baseType: string;
@@ -219,8 +293,10 @@ export class TypeEvaluator extends GateEvaluator {
       baseType = tsType;
     } else if (modelNames.has(field.type)) {
       baseType = field.type;
+    } else if (enumNames.has(field.type)) {
+      baseType = field.type;
     } else {
-      // Unknown type (enums, custom types) — use string as safe fallback
+      // Unknown type — use string as safe fallback
       baseType = "string";
     }
 
@@ -245,7 +321,9 @@ export class TypeEvaluator extends GateEvaluator {
    */
   private generatePrismaStub(schemaFiles: string[]): string {
     const models = this.parsePrismaModels(schemaFiles);
+    const enums = this.parsePrismaEnums(schemaFiles);
     const modelNames = new Set(models.map((m) => m.name));
+    const enumNames = new Set(enums.map((e) => e.name));
 
     const lines: string[] = [
       "// Auto-generated Prisma client stub for type evaluation",
@@ -253,11 +331,20 @@ export class TypeEvaluator extends GateEvaluator {
       "",
     ];
 
+    // Generate enum types
+    for (const enumDef of enums) {
+      lines.push(`export enum ${enumDef.name} {`);
+      for (const value of enumDef.values) {
+        lines.push(`  ${value} = "${value}",`);
+      }
+      lines.push("}", "");
+    }
+
     // Generate model interfaces with typed fields
     for (const model of models) {
       lines.push(`export interface ${model.name} {`);
       for (const field of model.fields) {
-        const tsType = this.resolveFieldType(field, modelNames);
+        const tsType = this.resolveFieldType(field, modelNames, enumNames);
         lines.push(`  ${field.name}: ${tsType};`);
       }
       lines.push("}", "");
@@ -312,6 +399,7 @@ export class TypeEvaluator extends GateEvaluator {
       "interface PrismaDelegate<T> {",
       "  findMany(args?: PrismaFindArgs): Promise<T[]>;",
       "  findFirst(args?: PrismaFindArgs): Promise<T | null>;",
+      "  findFirstOrThrow(args?: PrismaFindArgs): Promise<T>;",
       "  findUnique(args?: PrismaFindArgs): Promise<T | null>;",
       "  findUniqueOrThrow(args?: PrismaFindArgs): Promise<T>;",
       "  create(args: PrismaMutateArgs): Promise<T>;",

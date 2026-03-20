@@ -2,198 +2,145 @@
 
 export default function AutoBeLandingTechMovie() {
   return (
-    <section className="py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-6">Technical Innovation</h2>
-          <p className="text-xl text-gray-300">
-            Why AutoBE achieves 100% compilation success where others fail
-          </p>
-        </div>
+    <section className="landing-section">
+      <div className="landing-container">
+        <div className="max-w-5xl mx-auto">
+          <div className="pb-8 mb-10 border-b border-white/10">
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
+              Technical
+            </p>
+            <h2 className="mt-3 text-3xl md:text-4xl font-semibold tracking-tight text-white">
+              Technical innovation
+            </h2>
+            <p className="mt-3 text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl">
+              Why AutoBE achieves 100% compilation success where others fail.
+            </p>
+          </div>
 
-        <div className="space-y-8">
-          {/* AI-Friendly Compilers */}
-          <div className="bg-gradient-to-r from-blue-500/5 to-purple-500/5 border border-gray-600/30 rounded-3xl p-12">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <h3 className="text-3xl font-bold mb-6">
-                  AI-Friendly Compilers
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <span className="text-white text-sm">✕</span>
+          <div className="space-y-14">
+            <div className="pt-10 border-t border-white/10">
+              <div className="grid md:grid-cols-12 gap-10 items-start">
+                <div className="md:col-span-7">
+                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-white">
+                    AI-friendly compilers
+                  </h3>
+                  <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-xl">
+                    Instead of emitting code as raw text, AutoBE generates AST
+                    first and validates it with compilers before producing
+                    TypeScript.
+                  </p>
+
+                  <div className="mt-7 space-y-5">
+                    <div>
+                      <p className="text-sm font-semibold text-white">
+                        Traditional AI tools
+                      </p>
+                      <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                        Generate code as text → higher chance of syntax errors
+                        and drift.
+                      </p>
                     </div>
                     <div>
-                      <p className="font-semibold text-white">
-                        Traditional AI Tools
+                      <p className="text-sm font-semibold text-white">
+                        AutoBE approach
                       </p>
-                      <p className="text-gray-400 text-sm">
-                        Generate code as text → Often contains syntax errors
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4 mt-1">
-                      <span className="text-white text-sm">✓</span>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-white">
-                        AutoBE Approach
-                      </p>
-                      <p className="text-gray-400 text-sm">
-                        AI generates AST → Compiler validates → Perfect code
-                        generation
+                      <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                        AI generates AST → compiler validates → generator emits
+                        correct TypeScript.
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="bg-black/20 rounded-2xl p-6">
-                <div className="text-sm text-green-400 mb-2">
-                  // AutoBE Process
-                </div>
-                <div className="text-gray-300 font-mono text-sm space-y-1">
-                  <div>1. AI → Abstract Syntax Tree</div>
-                  <div>2. Compiler → Validates Structure</div>
-                  <div>3. Generator → Perfect TypeScript</div>
-                  <div className="text-green-400 mt-2">
-                    ✓ 100% Compilation Success
+
+                <div className="md:col-span-5">
+                  <div className="rounded-2xl border border-white/10 p-6">
+                    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
+                      Process
+                    </p>
+                    <div className="mt-3 text-slate-300 font-mono text-sm space-y-1.5">
+                      <div>1. AI → Abstract Syntax Tree</div>
+                      <div>2. Compiler → validates structure</div>
+                      <div>3. Generator → emits TypeScript</div>
+                      <div className="text-slate-200 mt-2">
+                        100% compilation success
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Automatic SDK Generation */}
-          <div className="bg-gradient-to-r from-purple-500/5 to-indigo-500/5 border border-gray-600/30 rounded-3xl p-12">
-            <div className="space-y-8">
-              <div>
-                <h3 className="text-3xl font-bold mb-6">
-                  Automatic SDK Generation
-                </h3>
-                <p className="text-gray-300 mb-4">
-                  Every backend comes with a{" "}
-                  <span className="text-purple-400 font-semibold">
-                    type-safe client SDK
-                  </span>{" "}
-                  - zero configuration, 100% type safety
-                </p>
-                <p className="text-gray-300 mb-8">
-                  The SDK powers both frontend integration and E2E test
-                  generation, creating a robust feedback loop that ensures
-                  backend stability
-                </p>
-              </div>
+            <div className="pt-10 border-t border-white/10">
+              <div className="grid md:grid-cols-12 gap-10 items-start">
+                <div className="md:col-span-7">
+                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-white">
+                    Automatic SDK generation
+                  </h3>
+                  <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-xl">
+                    Every backend ships with a type-safe client SDK — no manual
+                    typing, no boilerplate, and end-to-end type safety for both
+                    apps and tests.
+                  </p>
 
-              <div className="bg-black/20 rounded-2xl p-6">
-                <pre className="text-gray-300 font-mono text-xs lg:text-sm">
-                  <span className="text-blue-300">import</span> api, {"{"}{" "}
-                  <span className="text-cyan-300">IPost</span> {"}"}{" "}
-                  <span className="text-blue-300">from</span>{" "}
-                  <span className="text-green-400">"autobe-generated-sdk"</span>
-                  ;{"\n"}
-                  {"\n"}
-                  <span className="text-gray-500">
-                    // Type-safe API calls with full autocomplete
-                  </span>
-                  {"\n"}
-                  <span className="text-blue-300">const</span> connection:{" "}
-                  <span className="text-cyan-300">api.IConnection</span> = {"{"}
-                  {"\n"}
-                  {"  "}host:{" "}
-                  <span className="text-green-400">
-                    "http://localhost:1234"
-                  </span>
-                  ,{"\n"}
-                  {"}"};{"\n"}
-                  <span className="text-blue-300">await</span>{" "}
-                  api.functional.users.
-                  <span className="text-yellow-300">
-                    login
-                  </span>(connection, {"{"}
-                  {"\n"}
-                  {"  "}body: {"{"}
-                  {"\n"}
-                  {"    "}email:{" "}
-                  <span className="text-green-400">"user@example.com"</span>,
-                  {"\n"}
-                  {"    "}password:{" "}
-                  <span className="text-green-400">"secure-password"</span>,
-                  {"\n"}
-                  {"  "}
-                  {"}"},{"\n"}
-                  {"}"});{"\n"}
-                  {"\n"}
-                  <span className="text-gray-500">
-                    // TypeScript catches errors at compile time
-                  </span>
-                  {"\n"}
-                  <span className="text-blue-300">const</span> post:{" "}
-                  <span className="text-cyan-300">IPost</span> ={" "}
-                  <span className="text-blue-300">await</span>{" "}
-                  api.functional.posts.
-                  <span className="text-yellow-300">
-                    create
-                  </span>(connection, {"{"}
-                  {"\n"}
-                  {"  "}body: {"{"}
-                  {"\n"}
-                  {"    "}title:{" "}
-                  <span className="text-green-400">"Hello World"</span>,{"\n"}
-                  {"    "}content:{" "}
-                  <span className="text-green-400">"My first post"</span>,{"\n"}
-                  {"    "}
-                  <span className="text-gray-500">
-                    // authorId: "123" {"<-"} TypeScript error if this field is
-                    missing!
-                  </span>
-                  {"\n"}
-                  {"  "}
-                  {"}"},{"\n"}
-                  {"}"});
-                </pre>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
-                  <span className="text-purple-400 mr-3">📦</span>
-                  <div>
-                    <p className="font-semibold text-white">
-                      Zero Configuration
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Auto-generated with your backend
-                    </p>
+                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10">
+                    {[
+                      {
+                        title: "Zero configuration",
+                        desc: "Auto-generated with your backend.",
+                      },
+                      {
+                        title: "100% type safety",
+                        desc: "TypeScript-first SDK and validation.",
+                      },
+                      {
+                        title: "Frontend ready",
+                        desc: "Works with React, Vue, Angular.",
+                      },
+                      {
+                        title: "E2E test integration",
+                        desc: "Powers AI-generated test suites.",
+                      },
+                    ].map((item, idx) => (
+                      <div
+                        key={item.title}
+                        className={[
+                          "pt-5 border-t border-white/10",
+                          idx % 2 === 1
+                            ? "sm:border-l sm:border-white/10 sm:pl-8"
+                            : "",
+                        ].join(" ")}
+                      >
+                        <p className="text-sm font-semibold text-white">
+                          {item.title}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-400 leading-relaxed">
+                          {item.desc}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
-                  <span className="text-purple-400 mr-3">🔒</span>
-                  <div>
-                    <p className="font-semibold text-white">100% Type Safety</p>
-                    <p className="text-gray-400 text-sm">
-                      Full TypeScript support & validation
+
+                <div className="md:col-span-5">
+                  <div className="rounded-2xl border border-white/10 p-6 overflow-x-auto">
+                    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
+                      Example
                     </p>
-                  </div>
-                </div>
-                <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
-                  <span className="text-purple-400 mr-3">⚡</span>
-                  <div>
-                    <p className="font-semibold text-white">Frontend Ready</p>
-                    <p className="text-gray-400 text-sm">
-                      Works with React, Vue, Angular
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start bg-purple-500/5 border border-purple-600/20 rounded-xl p-4 transition-all duration-300 hover:bg-purple-500/10 hover:border-purple-600/40 hover:scale-[1.02]">
-                  <span className="text-purple-400 mr-3">🧪</span>
-                  <div>
-                    <p className="font-semibold text-white">
-                      E2E Test Integration
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Powers AI-generated test suites
-                    </p>
+                    <pre className="mt-3 text-slate-200/90 font-mono text-xs lg:text-sm leading-relaxed">
+{`import api, { IPost } from "autobe-generated-sdk";
+
+const connection: api.IConnection = {
+  host: "http://localhost:1234",
+};
+
+await api.functional.users.login(connection, {
+  body: { email: "user@example.com", password: "secure-password" },
+});
+
+const post: IPost = await api.functional.posts.create(connection, {
+  body: { title: "Hello World", content: "My first post" },
+});`}
+                    </pre>
                   </div>
                 </div>
               </div>

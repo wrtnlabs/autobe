@@ -322,13 +322,17 @@ export class RuntimeEvaluator extends GateEvaluator {
     }
 
     // 3. Set noEmitOnError: false so tsc emits despite type errors
+    //    tsconfig.json may contain comments (JSONC), so strip them before parsing.
     const tsconfigPath = path.join(rootPath, "tsconfig.json");
     let tsconfigRestored = false;
     let originalTsconfig = "";
     if (fs.existsSync(tsconfigPath)) {
       originalTsconfig = fs.readFileSync(tsconfigPath, "utf-8");
       try {
-        const tsconfig = JSON.parse(originalTsconfig);
+        const stripped = originalTsconfig
+          .replace(/\/\/.*$/gm, "")
+          .replace(/\/\*[\s\S]*?\*\//g, "");
+        const tsconfig = JSON.parse(stripped);
         if (tsconfig.compilerOptions?.noEmitOnError !== false) {
           tsconfig.compilerOptions = tsconfig.compilerOptions || {};
           tsconfig.compilerOptions.noEmitOnError = false;

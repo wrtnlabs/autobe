@@ -948,5 +948,135 @@ export async function runShoppingScenarios(
     );
   }
 
+  // ── Negative Tests ─────────────────────────────────────
+
+  // 37. Unauthenticated product create returns 401
+  if (productCreateEndpoint) {
+    const anonHttp = new HttpRunner();
+    const res = await anonHttp.post(
+      productCreateEndpoint.url,
+      { name: "Should Fail", price: 100 },
+      false,
+    );
+    results.push(
+      res.status === 401
+        ? pass(37, "Unauthenticated product create returns 401")
+        : fail(
+            37,
+            "Unauthenticated product create returns 401",
+            `expected 401 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(37, "Unauthenticated product create returns 401", "endpoint not found"),
+    );
+  }
+
+  // 38. Invalid customer login returns error status
+  if (customerLoginEndpoint) {
+    const res = await http.post(customerLoginEndpoint.url, {
+      email: "nonexistent@invalid.test",
+      password: "WrongPassword123!",
+    });
+    results.push(
+      res.status === 401 || res.status === 403 || res.status === 404
+        ? pass(38, "Invalid customer login returns error status")
+        : fail(
+            38,
+            "Invalid customer login returns error status",
+            `expected 401/403/404 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(38, "Invalid customer login returns error status", "endpoint not found"),
+    );
+  }
+
+  // 39. Get non-existent product returns 404
+  {
+    const productGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["products"],
+      method: "GET",
+    });
+    if (productGetEndpoint) {
+      const fakeId = "00000000-0000-0000-0000-000000000000";
+      const url = http.resolvePath(productGetEndpoint.url, {
+        id: fakeId,
+        productId: fakeId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.status === 404
+          ? pass(39, "Get non-existent product returns 404")
+          : fail(
+              39,
+              "Get non-existent product returns 404",
+              `expected 404 but got ${res.status}`,
+            ),
+      );
+    } else {
+      results.push(
+        fail(39, "Get non-existent product returns 404", "endpoint not found"),
+      );
+    }
+  }
+
+  // 40. Place order with empty cart returns 400/422
+  {
+    const orderEndpoint = findEndpoint(routes, {
+      pathKeywords: ["orders", "checkout"],
+      method: "POST",
+    });
+    if (orderEndpoint) {
+      const freshEmail = randomEmail();
+      const freshPassword = randomPassword();
+      const freshHttp = new HttpRunner();
+      const joinEndpoint = findEndpoint(routes, {
+        pathKeywords: ["join", "signup", "register"],
+        mustContain: "customer",
+        method: "POST",
+      }) || findEndpoint(routes, { pathKeywords: ["join", "signup", "register"], method: "POST" });
+      if (joinEndpoint && customerLoginEndpoint) {
+        await freshHttp.post(joinEndpoint.url, {
+          email: freshEmail,
+          password: freshPassword,
+          display_name: "Empty Cart User",
+        });
+        const loginRes = await freshHttp.post(customerLoginEndpoint.url, {
+          email: freshEmail,
+          password: freshPassword,
+        });
+        const token =
+          loginRes.body?.token?.access ||
+          loginRes.body?.access_token ||
+          loginRes.body?.token;
+        if (token)
+          freshHttp.setToken(
+            typeof token === "string" ? token : token?.access || token,
+          );
+        const res = await freshHttp.post(orderEndpoint.url, {}, true);
+        results.push(
+          res.status === 400 || res.status === 422 || res.status === 409
+            ? pass(40, "Place order with empty cart returns error")
+            : fail(
+                40,
+                "Place order with empty cart returns error",
+                `expected 400/422/409 but got ${res.status}`,
+              ),
+        );
+      } else {
+        results.push(
+          fail(40, "Place order with empty cart returns error", "auth endpoints missing"),
+        );
+      }
+    } else {
+      results.push(
+        fail(40, "Place order with empty cart returns error", "endpoint not found"),
+      );
+    }
+  }
+
   return results;
 }

@@ -83,6 +83,7 @@ export class HallucinationAgent extends BaseAgent {
       summary: parsed.summary,
       durationMs: Math.round(performance.now() - startTime),
       tokensUsed,
+      deepEvalScores: parsed.deepEvalScores,
     };
   }
 

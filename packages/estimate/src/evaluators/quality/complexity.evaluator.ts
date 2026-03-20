@@ -66,7 +66,7 @@ export class ComplexityEvaluator extends BaseEvaluator {
       true,
     );
 
-    const visit = (node: ts.Node) => {
+    const visit = (node: ts.Node, insideFunction: boolean = false) => {
       const isFunction =
         ts.isFunctionDeclaration(node) ||
         ts.isMethodDeclaration(node) ||
@@ -74,7 +74,13 @@ export class ComplexityEvaluator extends BaseEvaluator {
         ts.isFunctionExpression(node);
 
       if (!isFunction) {
-        ts.forEachChild(node, visit);
+        ts.forEachChild(node, (child) => visit(child, insideFunction));
+        return;
+      }
+
+      // Skip nested arrow functions / function expressions inside a method
+      // to avoid double-counting. Only report top-level functions and class methods.
+      if (insideFunction && (ts.isArrowFunction(node) || ts.isFunctionExpression(node))) {
         return;
       }
 
@@ -111,7 +117,7 @@ export class ComplexityEvaluator extends BaseEvaluator {
         );
       }
 
-      ts.forEachChild(node, visit);
+      ts.forEachChild(node, (child) => visit(child, true));
     };
 
     visit(sourceFile);

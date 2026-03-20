@@ -602,5 +602,77 @@ export async function runBbsScenarios(
     }
   }
 
+  // ── Negative Tests ─────────────────────────────────────
+
+  // 24. Unauthenticated article create returns 401
+  if (articleCreateEndpoint) {
+    const anonHttp = new HttpRunner();
+    const res = await anonHttp.post(
+      articleCreateEndpoint.url,
+      { title: "Should Fail", content: "Anon" },
+      false,
+    );
+    results.push(
+      res.status === 401
+        ? pass(24, "Unauthenticated article create returns 401")
+        : fail(
+            24,
+            "Unauthenticated article create returns 401",
+            `expected 401 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(24, "Unauthenticated article create returns 401", "endpoint not found"),
+    );
+  }
+
+  // 25. Invalid login returns error status
+  if (loginEndpoint) {
+    const res = await http.post(loginEndpoint.url, {
+      email: "nonexistent@invalid.test",
+      password: "WrongPassword123!",
+    });
+    results.push(
+      res.status === 401 || res.status === 403 || res.status === 404
+        ? pass(25, "Invalid login returns error status")
+        : fail(
+            25,
+            "Invalid login returns error status",
+            `expected 401/403/404 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(25, "Invalid login returns error status", "endpoint not found"),
+    );
+  }
+
+  // 26. Get non-existent article returns 404
+  {
+    const getEndpoint = findEndpoint(routes, {
+      pathKeywords: ["articles"],
+      method: "GET",
+    });
+    if (getEndpoint) {
+      const fakeId = "00000000-0000-0000-0000-000000000000";
+      const url = http.resolvePath(getEndpoint.url, { id: fakeId, articleId: fakeId });
+      const res = await http.get(url, true);
+      results.push(
+        res.status === 404
+          ? pass(26, "Get non-existent article returns 404")
+          : fail(
+              26,
+              "Get non-existent article returns 404",
+              `expected 404 but got ${res.status}`,
+            ),
+      );
+    } else {
+      results.push(
+        fail(26, "Get non-existent article returns 404", "endpoint not found"),
+      );
+    }
+  }
+
   return results;
 }

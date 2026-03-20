@@ -47,35 +47,59 @@ export namespace RouteCoverage {
   }
 }
 
-/** Action name → HTTP method mapping */
-const ACTION_TO_METHOD: Record<string, string> = {
+/** Action name → HTTP method(s) mapping. Some actions map to multiple methods
+ *  (e.g. "update" can be PUT or PATCH depending on the generator). */
+const ACTION_TO_METHODS: Record<string, string[]> = {
   // POST
-  join: "POST",
-  create: "POST",
-  store: "POST",
-  register: "POST",
-  sign: "POST",
+  join: ["POST"],
+  create: ["POST"],
+  store: ["POST"],
+  register: ["POST"],
+  sign: ["POST"],
+  login: ["POST"],
+  refresh: ["POST"],
+  restore: ["POST"],
+  verify: ["POST"],
   // GET
-  index: "GET",
-  get: "GET",
-  at: "GET",
-  find: "GET",
-  search: "GET",
-  list: "GET",
-  read: "GET",
-  // PATCH
-  update: "PATCH",
-  patch: "PATCH",
-  modify: "PATCH",
+  index: ["GET"],
+  get: ["GET"],
+  at: ["GET"],
+  find: ["GET"],
+  search: ["GET"],
+  list: ["GET"],
+  read: ["GET"],
+  // PUT / PATCH — "update" may be either depending on the code generator
+  update: ["PUT", "PATCH"],
+  patch: ["PATCH"],
+  modify: ["PUT", "PATCH"],
+  process: ["PATCH"],
   // DELETE
-  erase: "DELETE",
-  remove: "DELETE",
-  destroy: "DELETE",
+  erase: ["DELETE"],
+  remove: ["DELETE"],
+  destroy: ["DELETE"],
   // PUT
-  put: "PUT",
-  replace: "PUT",
-  upsert: "PUT",
+  put: ["PUT"],
+  replace: ["PUT"],
+  upsert: ["PUT"],
 };
+
+/**
+ * Infer HTTP method(s) from a compound action name like
+ * `updateTodoEditHistoryEntryChange` or `restoreFromTrash`.
+ * Falls back to ACTION_TO_METHODS lookup on the full name,
+ * then tries the first camelCase word as a prefix.
+ * Returns an array of possible methods.
+ */
+function inferMethodsFromAction(action: string): string[] {
+  if (ACTION_TO_METHODS[action]) return ACTION_TO_METHODS[action];
+  // Extract the first camelCase word: "restoreFromTrash" → "restore"
+  const prefixMatch = action.match(/^([a-z]+)/);
+  if (prefixMatch && ACTION_TO_METHODS[prefixMatch[1]]) {
+    return ACTION_TO_METHODS[prefixMatch[1]];
+  }
+  return ["UNKNOWN"];
+}
+
 
 /** Test quality analysis result */
 interface TestQuality {
@@ -224,15 +248,53 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
           const action = segments[segments.length - 1];
           const pathSegments = segments.slice(0, -1);
-          const inferredMethod = ACTION_TO_METHOD[action] ?? "UNKNOWN";
-          const inferredPath = "/" + pathSegments.join("/");
+          const inferredMethods = inferMethodsFromAction(action);
 
-          targets.push({
-            filePath,
-            accessorSegments: segments,
-            inferredMethod,
-            inferredPath,
-          });
+          // Primary target: action excluded from path (e.g. `.todos.create` → path=/todos, POST)
+          const inferredPath = "/" + pathSegments.join("/");
+          for (const inferredMethod of inferredMethods) {
+            targets.push({
+              filePath,
+              accessorSegments: segments,
+              inferredMethod,
+              inferredPath,
+            });
+          }
+
+          // Secondary target: action IS a path segment (e.g. `.auth.member.join` where
+          // route is `/auth/member/join` with POST). Include action in path so it can
+          // match routes where the action name appears as the URL suffix.
+          const actionNorm = TestCoverageEvaluator.normalizeSegment(action);
+          const methodKeywords = [
+            "at",
+            "index",
+            "get",
+            "find",
+            "search",
+            "list",
+            "read",
+            "create",
+            "store",
+            "update",
+            "patch",
+            "modify",
+            "erase",
+            "remove",
+            "destroy",
+            "put",
+            "replace",
+            "upsert",
+          ];
+          if (!methodKeywords.includes(actionNorm)) {
+            for (const inferredMethod of inferredMethods) {
+              targets.push({
+                filePath,
+                accessorSegments: segments,
+                inferredMethod,
+                inferredPath: "/" + segments.join("/"),
+              });
+            }
+          }
         }
         callPattern.lastIndex = 0;
       } catch {
@@ -302,6 +364,11 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     };
   }
 
+  /** Normalize a single path/action segment to lowercase */
+  private static normalizeSegment(segment: string): string {
+    return segment.toLowerCase();
+  }
+
   private normalizePathSegments(pathStr: string): string[] {
     return pathStr
       .split("/")
@@ -313,8 +380,17 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     routeSegments: string[],
     targetSegments: string[],
   ): boolean {
-    if (routeSegments.length !== targetSegments.length) return false;
-    return routeSegments.every((seg, i) => seg === targetSegments[i]);
+    // Non-wildcard segments in route must exactly equal the test segments
+    // (wildcards are skipped because SDK accessors don't include path params).
+    const routeFixed = routeSegments.filter((s) => s !== "*");
+    if (routeFixed.length !== targetSegments.length) return false;
+
+    let fi = 0;
+    for (const seg of routeFixed) {
+      if (seg !== targetSegments[fi]) return false;
+      fi++;
+    }
+    return true;
   }
 
   private computeRouteBasedScore(
@@ -505,7 +581,9 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    return Math.min(80, Math.round(score * 0.85));
+    // Apply mild discount (0.9x) for fallback mode since route-level analysis
+    // is unavailable, but don't hard-cap at 80 which unfairly penalizes models.
+    return Math.min(100, Math.round(score * 0.9));
   }
 
   // ── Runtime evaluation (unchanged) ────────────────────

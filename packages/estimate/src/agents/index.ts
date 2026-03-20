@@ -9,4 +9,5 @@ export type {
   AgentConfig,
   AgentIssue,
   AgentResult,
+  DeepEvalScores,
 } from "./types";

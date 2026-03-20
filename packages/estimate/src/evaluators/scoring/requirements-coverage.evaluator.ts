@@ -111,13 +111,19 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
         .toLowerCase()
         .replace("controller", "");
 
-      // Check if any provider matches this controller's domain
-      const hasProvider = providerNames.some(
-        (p) =>
-          p.includes(ctrlName) ||
-          ctrlName.includes(p) ||
-          this.extractDomain(ctrlName) === this.extractDomain(p),
-      );
+      // Check if any provider matches this controller's domain.
+      // Require non-empty domain strings and a minimum overlap length
+      // to prevent false positives from short names like "get" or "at".
+      const ctrlDomain = this.extractDomain(ctrlName);
+      const hasProvider = providerNames.some((p) => {
+        // Direct substring match (both directions) — require ≥4 char overlap
+        if (ctrlName.length >= 4 && p.includes(ctrlName)) return true;
+        if (p.length >= 4 && ctrlName.includes(p)) return true;
+        // Domain-based match — only when both domains are non-empty
+        const pDomain = this.extractDomain(p);
+        if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
+        return false;
+      });
 
       if (hasProvider) {
         mapped++;
@@ -151,13 +157,16 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     };
   }
 
-  /** Extract domain keyword from a filename */
+  /** Extract domain keyword from a filename.
+   *  Returns empty string if the remaining domain is too short (< 3 chars)
+   *  to prevent overly aggressive matching (e.g. "get" → "" instead of matching everything). */
   private extractDomain(name: string): string {
-    // Remove common prefixes/suffixes and get the core domain
-    return name
+    const domain = name
       .replace(/^(get|post|patch|put|delete|create|update|remove)/i, "")
       .replace(/(controller|provider|service|module)$/i, "")
       .trim();
+    // Require minimum length to avoid matching on empty/trivial strings
+    return domain.length >= 3 ? domain : "";
   }
 
   private computeRequirementsScore(
@@ -166,9 +175,9 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
   ): number {
     let score = 0;
 
-    // Controllers exist (max 20)
+    // Controllers exist (max 10, reduced from 20)
     if (counts.controllerCount > 0) {
-      score += 20;
+      score += 10;
     } else {
       issues.push(
         createIssue({
@@ -180,9 +189,9 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Providers exist (max 20)
+    // Providers exist (max 10, reduced from 20)
     if (counts.providerCount > 0) {
-      score += 20;
+      score += 10;
     } else {
       issues.push(
         createIssue({
@@ -194,12 +203,12 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Controller-Provider mapping (max 25)
-    score += Math.round(counts.mappingRatio * 25);
+    // Controller-Provider mapping (max 45, increased from 25 — primary discriminator)
+    score += Math.round(counts.mappingRatio * 45);
 
-    // Structures exist (max 15)
+    // Structures exist (max 10, reduced from 15)
     if (counts.structureCount > 0) {
-      score += 15;
+      score += 10;
     } else {
       issues.push(
         createIssue({
@@ -219,9 +228,9 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       else if (ratio >= 1) score += 5;
     }
 
-    // Requirements docs exist (max 10)
+    // Requirements docs exist (max 5, reduced from 10)
     if (counts.hasRequirementsDocs) {
-      score += 10;
+      score += 5;
     } else {
       issues.push(
         createIssue({
@@ -233,18 +242,38 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Low mapping ratio penalty: below 50%, linearly reduce score
-    if (counts.mappingRatio < 0.5 && counts.controllerCount > 0) {
-      const penalty = Math.round(((0.5 - counts.mappingRatio) / 0.5) * 40);
-      score = Math.max(0, score - penalty);
-      issues.push(
-        createIssue({
-          severity: "critical",
-          category: "requirements",
-          code: "REQ006",
-          message: `Low controller-provider mapping ratio: ${Math.round(counts.mappingRatio * 100)}% — ${Math.round((1 - counts.mappingRatio) * 100)}% of API endpoints have no business logic`,
-        }),
-      );
+    // Mapping quality tiers with graduated penalties
+    if (counts.controllerCount > 0) {
+      if (counts.mappingRatio < 0.3) {
+        // Very low mapping: severe penalty
+        const penalty = Math.round(((0.3 - counts.mappingRatio) / 0.3) * 30);
+        score = Math.max(0, score - penalty);
+        issues.push(
+          createIssue({
+            severity: "critical",
+            category: "requirements",
+            code: "REQ006",
+            message: `Very low controller-provider mapping: ${Math.round(counts.mappingRatio * 100)}% — most API endpoints have no matching business logic`,
+          }),
+        );
+      } else if (counts.mappingRatio < 0.6) {
+        // Low mapping: moderate penalty
+        const penalty = Math.round(((0.6 - counts.mappingRatio) / 0.3) * 15);
+        score = Math.max(0, score - penalty);
+        issues.push(
+          createIssue({
+            severity: "warning",
+            category: "requirements",
+            code: "REQ006",
+            message: `Low controller-provider mapping: ${Math.round(counts.mappingRatio * 100)}% — many API endpoints may lack business logic`,
+          }),
+        );
+      }
+    }
+
+    // Bonus for high mapping (>80%)
+    if (counts.mappingRatio >= 0.8) {
+      score += 10;
     }
 
     return Math.min(100, score);

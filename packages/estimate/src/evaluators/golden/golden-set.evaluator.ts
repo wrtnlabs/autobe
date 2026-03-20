@@ -1,16 +1,36 @@
 import type { EvaluationContext, Issue, PhaseResult } from "../../types";
 import { createIssue } from "../../types";
 import { runBbsScenarios } from "./bbs.scenarios";
+import { runGauzyScenarios } from "./gauzy.scenarios";
 import { HttpRunner } from "./http-runner";
 import { runRedditScenarios } from "./reddit.scenarios";
+import type { ScenarioResult } from "./scenario-helpers";
 import { runShoppingScenarios } from "./shopping.scenarios";
-import { type ScenarioResult, runTodoScenarios } from "./todo.scenarios";
+import { runTodoScenarios } from "./todo.scenarios";
 import { buildRouteMap } from "./url-resolver";
 
-export type GoldenProject = "todo" | "bbs" | "reddit" | "shopping";
+export type GoldenProject = "todo" | "bbs" | "reddit" | "shopping" | "gauzy";
 
 export class GoldenSetEvaluator {
   readonly name = "GoldenSetEvaluator";
+
+  private aggregateTimings(
+    results: ScenarioResult[],
+  ): Record<string, number> {
+    const timings = results
+      .map((r) => r.durationMs)
+      .filter((d): d is number => d !== undefined);
+    if (timings.length === 0) return {};
+    const sorted = [...timings].sort((a, b) => a - b);
+    return {
+      avgResponseMs: Math.round(
+        timings.reduce((a, b) => a + b, 0) / timings.length,
+      ),
+      p50ResponseMs: sorted[Math.floor(sorted.length * 0.5)],
+      p95ResponseMs: sorted[Math.floor(sorted.length * 0.95)],
+      maxResponseMs: sorted[sorted.length - 1],
+    };
+  }
 
   async evaluate(
     context: EvaluationContext,
@@ -58,6 +78,9 @@ export class GoldenSetEvaluator {
       case "shopping":
         results = await runShoppingScenarios(routes, http);
         break;
+      case "gauzy":
+        results = await runGauzyScenarios(routes, http);
+        break;
     }
 
     const total = results.length;
@@ -75,6 +98,19 @@ export class GoldenSetEvaluator {
           }),
         );
       }
+      // Report schema validation warnings (non-blocking)
+      if (result.schemaWarnings && result.schemaWarnings.length > 0) {
+        for (const warning of result.schemaWarnings) {
+          issues.push(
+            createIssue({
+              severity: "warning",
+              category: "runtime",
+              code: "GS003",
+              message: `[SCHEMA] ${result.name}: ${warning}`,
+            }),
+          );
+        }
+      }
     }
 
     return {
@@ -89,6 +125,7 @@ export class GoldenSetEvaluator {
         totalFeatures: total,
         passedFeatures: passed,
         failedFeatures: total - passed,
+        ...this.aggregateTimings(results),
       },
     };
   }

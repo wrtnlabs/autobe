@@ -8,6 +8,7 @@ export { runBbsScenarios } from "./bbs.scenarios";
 export { runRedditScenarios } from "./reddit.scenarios";
 export { runShoppingScenarios } from "./shopping.scenarios";
 export { runTodoScenarios } from "./todo.scenarios";
+export { runGauzyScenarios } from "./gauzy.scenarios";
 export type { ScenarioResult } from "./scenario-helpers";
 export {
   randomEmail,

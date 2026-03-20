@@ -15,7 +15,12 @@ import {
   SecurityAgent,
 } from "./agents";
 import { EvaluationPipeline } from "./core/pipeline";
-import { generateJsonReport, generateMarkdownReport } from "./reporters";
+import {
+  formatCorrelationMarkdown,
+  generateCorrelationReport,
+  generateJsonReport,
+  generateMarkdownReport,
+} from "./reporters";
 import { flushLangfuse, getActiveTrace, recordAgentResults } from "./telemetry";
 import type {
   EvaluationContext,
@@ -71,7 +76,7 @@ export function createProgram(): Command {
     .option("--golden", "Run Golden Set evaluation", false)
     .option(
       "--project <project>",
-      "Project type for Golden Set (todo|bbs|reddit|shopping)",
+      "Project type for Golden Set (todo|bbs|reddit|shopping|gauzy)",
     )
     .action(async (options) => {
       await runCLI(options);
@@ -399,7 +404,7 @@ interface BatchTarget {
   inputPath: string;
 }
 
-const VALID_PROJECTS = new Set(["todo", "bbs", "reddit", "shopping"]);
+const VALID_PROJECTS = new Set(["todo", "bbs", "reddit", "shopping", "gauzy"]);
 
 function discoverTargets(examplesDir: string): BatchTarget[] {
   const targets: BatchTarget[] = [];
@@ -548,6 +553,48 @@ async function runBatch(options: BatchCommandOptions): Promise<void> {
   const summaryPath = path.resolve(options.output, "batch-summary.json");
   fs.writeFileSync(summaryPath, JSON.stringify(results, null, 2));
   p.log.success(`Summary saved: ${summaryPath}`);
+
+  // Cross-phase correlation analysis
+  const fullResults: EvaluationResult[] = [];
+  for (const target of targets) {
+    const reportPath = path.join(
+      path.resolve(options.output, target.model, target.project),
+      "estimate-report.json",
+    );
+    try {
+      if (fs.existsSync(reportPath)) {
+        fullResults.push(JSON.parse(fs.readFileSync(reportPath, "utf-8")));
+      }
+    } catch {
+      // skip unreadable reports
+    }
+  }
+
+  if (fullResults.length >= 3) {
+    const correlationReport = generateCorrelationReport(fullResults);
+    const correlationMd = formatCorrelationMarkdown(correlationReport);
+    const correlationPath = path.resolve(options.output, "correlation-report.md");
+    const correlationJsonPath = path.resolve(
+      options.output,
+      "correlation-report.json",
+    );
+    fs.writeFileSync(correlationPath, correlationMd);
+    fs.writeFileSync(
+      correlationJsonPath,
+      JSON.stringify(correlationReport, null, 2),
+    );
+    p.log.success(`Correlation report: ${correlationPath}`);
+
+    // Print key insights
+    if (correlationReport.insights.length > 0) {
+      console.log("\n📊 Cross-Phase Insights:");
+      for (const insight of correlationReport.insights.slice(0, 5)) {
+        console.log(`  • ${insight.description}`);
+      }
+      console.log("");
+    }
+  }
+
   p.outro(`Done — ${results.length} evaluations completed`);
 }
 
@@ -657,6 +704,12 @@ function printAgentResults(agentResults: AgentResult[]): void {
       console.log(
         `      Tokens: ${t.input.toLocaleString()} in / ${t.output.toLocaleString()} out` +
           (totalCost > 0 ? ` ($${totalCost.toFixed(4)})` : ""),
+      );
+    }
+    if (result.deepEvalScores) {
+      const d = result.deepEvalScores;
+      console.log(
+        `      DeepEval: Faith=${d.faithfulness} Rel=${d.relevancy} Prec=${d.contextualPrecision}`,
       );
     }
     const summaryText =
@@ -788,6 +841,19 @@ function printResults(result: EvaluationResult): void {
     `   Schema Sync:   ${result.reference.schemaSync.emptyTypes}/${result.reference.schemaSync.totalTypes} empty types, ${result.reference.schemaSync.mismatchedProperties} mismatched`,
   );
   console.log("─────────────────────────────────────────\n");
+
+  if (result.performanceMetrics) {
+    const pm = result.performanceMetrics;
+    console.log("📏 Performance Metrics:");
+    console.log("─────────────────────────────────────────");
+    console.log(`   Code Size:     ${pm.totalSizeKB} KB (${pm.totalLines} lines)`);
+    console.log(`   Files:         ${pm.totalFiles} (avg ${pm.avgLinesPerFile} lines/file)`);
+    console.log(`   Largest:       ${pm.largestFile} (${pm.largestFileSizeKB} KB)`);
+    console.log(
+      `   Breakdown:     ${pm.controllers} ctrl, ${pm.providers} prov, ${pm.structures} struct, ${pm.tests} test`,
+    );
+    console.log("─────────────────────────────────────────\n");
+  }
 
   if (result.summary.criticalCount > 0) {
     console.log(`❌ Critical Issues: ${result.summary.criticalCount}`);

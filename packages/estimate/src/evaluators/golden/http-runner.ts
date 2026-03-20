@@ -4,6 +4,8 @@ export interface HttpResponse {
   status: number;
   body: any;
   ok: boolean;
+  /** Response time in milliseconds */
+  durationMs: number;
 }
 
 export class HttpRunner {
@@ -68,6 +70,7 @@ export class HttpRunner {
     };
     if (useToken && this.token)
       headers["Authorization"] = `Bearer ${this.token}`;
+    const start = performance.now();
     try {
       const res = await fetch(`${this.baseUrl}${url}`, {
         method,
@@ -85,9 +88,15 @@ export class HttpRunner {
         status: res.status,
         body: responseBody,
         ok: res.status >= 200 && res.status < 300,
+        durationMs: Math.round(performance.now() - start),
       };
     } catch {
-      return { status: 0, body: null, ok: false };
+      return {
+        status: 0,
+        body: null,
+        ok: false,
+        durationMs: Math.round(performance.now() - start),
+      };
     }
   }
 }

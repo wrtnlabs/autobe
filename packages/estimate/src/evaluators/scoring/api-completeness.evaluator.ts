@@ -35,6 +35,10 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
       (sum, r) => sum + r.noProviderEndpoints,
       0,
     );
+    const passthroughEndpoints = results.reduce(
+      (sum, r) => sum + r.passthroughEndpoints,
+      0,
+    );
 
     let score = 0;
 
@@ -94,6 +98,26 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
           }),
         );
       }
+
+      // Passthrough penalty: endpoints that just forward to provider without logic
+      if (passthroughEndpoints > 0) {
+        const passthroughRatio = passthroughEndpoints / totalEndpoints;
+        if (passthroughRatio > 0.5) {
+          // More than half are passthrough → deduct from implementation score
+          const passthroughPenalty = Math.round(
+            (passthroughRatio - 0.5) * 40,
+          );
+          score = Math.max(0, score - passthroughPenalty);
+        }
+        issues.push(
+          createIssue({
+            severity: "warning",
+            category: "api",
+            code: "API007",
+            message: `${passthroughEndpoints} of ${totalEndpoints} endpoints are pure passthrough (single delegation, no validation/transformation)`,
+          }),
+        );
+      }
     }
 
     score = Math.min(100, Math.max(0, score));
@@ -112,6 +136,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         stubEndpoints,
         implementedEndpoints,
         noProviderEndpoints,
+        passthroughEndpoints,
         completionRate:
           totalEndpoints > 0
             ? Math.round(
@@ -133,6 +158,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
     implementedEndpoints: number;
     stubEndpoints: number;
     noProviderEndpoints: number;
+    passthroughEndpoints: number;
   }> {
     try {
       const content = await fs.promises.readFile(filePath, "utf-8");
@@ -149,6 +175,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
       let implementedEndpoints = 0;
       let stubEndpoints = 0;
       let noProviderEndpoints = 0;
+      let passthroughEndpoints = 0;
 
       const visit = (node: ts.Node) => {
         if (ts.isMethodDeclaration(node)) {
@@ -181,22 +208,65 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                 // Stub return
                 stubEndpoints++;
               } else {
-                // Check for real implementation
+                // Check for real implementation — require meaningful logic,
+                // not just a single delegation call
+                const lines = bodyText.split("\n").filter(
+                  (l) => l.trim().length > 0 && !l.trim().startsWith("//"),
+                );
+                const statementCount = lines.filter(
+                  (l) => /[;{}]/.test(l),
+                ).length;
+
+                // Single-line passthrough: `{ return (await)? this.xxx.yyy(...); }`
+                const isSinglePassthrough =
+                  /^\{\s*return\s+(?:await\s+)?this\.\w+\.\w+\s*\([^)]*\)\s*;?\s*\}$/s.test(
+                    bodyText,
+                  );
+
+                // Real logic requires: multiple statements, conditionals, loops,
+                // variable assignments, or error handling with actual logic
+                const hasConditional = /\b(if|switch|[?:])\s*\(/.test(bodyText);
+                const hasLoop = /\b(for|while)\s*\(/.test(bodyText);
+                const hasVariableWork =
+                  /\b(const|let|var)\s+\w+\s*=/.test(bodyText);
+                const hasTryCatchWithLogic =
+                  bodyText.includes("try") &&
+                  /catch\s*\([^)]*\)\s*\{[^}]*\S/.test(bodyText);
+                const hasMultipleStatements = statementCount >= 3;
+
                 const hasRealLogic =
-                  bodyText.includes("await") ||
-                  (bodyText.includes("this.") && bodyText.includes("(")) ||
-                  bodyText.includes("try");
+                  !isSinglePassthrough &&
+                  (hasConditional ||
+                    hasLoop ||
+                    hasTryCatchWithLogic ||
+                    (hasVariableWork && hasMultipleStatements) ||
+                    (hasMultipleStatements && bodyText.includes("await")));
+
+                if (isSinglePassthrough) {
+                  passthroughEndpoints++;
+                }
 
                 if (hasRealLogic) {
                   implementedEndpoints++;
                 }
 
-                // Check for provider/service delegation
+                // Check for provider/service delegation.
+                const LOGGING_PATTERN =
+                  /this\.(logger|log|logging)\.\w+\s*\(/i;
+                const hasNonLoggingDelegation =
+                  /this\.\w+\.\w+\s*\(/i.test(bodyText) &&
+                  bodyText
+                    .split("\n")
+                    .some(
+                      (line) =>
+                        /this\.\w+\.\w+\s*\(/i.test(line) &&
+                        !LOGGING_PATTERN.test(line),
+                    );
                 const delegatesToProvider =
-                  /this\.\w*(provider|service|repository|usecase)/i.test(
+                  /this\.\w*(provider|service|repository|usecase|gateway|handler|manager|facade)/i.test(
                     bodyText,
                   ) ||
-                  /this\.\w+\.\w+\s*\(/i.test(bodyText) ||
+                  hasNonLoggingDelegation ||
                   /return\s+.*this\./i.test(bodyText) ||
                   /await\s+this\./i.test(bodyText);
 
@@ -218,6 +288,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         implementedEndpoints,
         stubEndpoints,
         noProviderEndpoints,
+        passthroughEndpoints,
       };
     } catch {
       return {
@@ -227,14 +298,27 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         implementedEndpoints: 0,
         stubEndpoints: 0,
         noProviderEndpoints: 0,
+        passthroughEndpoints: 0,
       };
     }
   }
 
-  /** Check if method body is a stub (returns empty/null) */
+  /** Check if method body is a stub (returns empty/null/random) */
   private isStubBody(bodyText: string): boolean {
-    return /^\{\s*return\s+(?:\{\}|\[\]|null|undefined)\s*;?\s*\}$/.test(
-      bodyText,
-    );
+    // Classic stubs: return {}, return [], return null, return undefined
+    if (
+      /^\{\s*return\s+(?:\{\}|\[\]|null|undefined)\s*;?\s*\}$/.test(bodyText)
+    ) {
+      return true;
+    }
+    // typia.random<T>() stub: generates random data instead of real logic
+    if (
+      /^\{\s*return\s+typia\s*\.\s*random\s*<[^>]*>\s*\(\s*\)\s*;?\s*\}$/.test(
+        bodyText,
+      )
+    ) {
+      return true;
+    }
+    return false;
   }
 }

@@ -8,6 +8,7 @@ import {
   AgentIssue,
   AgentParseResult,
   AgentResult,
+  DeepEvalScores,
 } from "./types";
 
 /** Base class for AI evaluation agents */
@@ -35,11 +36,23 @@ export abstract class BaseAgent {
         jsonStr = jsonStr.replace(/```\n?/g, "");
       }
       const parsed = JSON.parse(jsonStr.trim());
-      return {
+      const result: AgentParseResult = {
         issues: parsed.issues || [],
         score: typeof parsed.score === "number" ? parsed.score : 100,
         summary: parsed.summary || "No summary provided",
       };
+      if (parsed.deepEvalScores) {
+        const d = parsed.deepEvalScores;
+        result.deepEvalScores = {
+          faithfulness: typeof d.faithfulness === "number" ? d.faithfulness : 0,
+          relevancy: typeof d.relevancy === "number" ? d.relevancy : 0,
+          contextualPrecision:
+            typeof d.contextualPrecision === "number"
+              ? d.contextualPrecision
+              : 0,
+        };
+      }
+      return result;
     } catch (_error) {
       console.error(`  ⚠ ${this.constructor.name}: JSON parse failed`);
       return {
@@ -148,10 +161,13 @@ export abstract class BaseAgent {
       3, // max 3 concurrent requests
     );
 
+    const deepEvalSamples: DeepEvalScores[] = [];
+
     for (const { parsed, tokensUsed } of chunkResults) {
       allIssues.push(...parsed.issues);
       scores.push(parsed.score);
       summaries.push(parsed.summary);
+      if (parsed.deepEvalScores) deepEvalSamples.push(parsed.deepEvalScores);
 
       if (tokensUsed) {
         totalInput += tokensUsed.input;
@@ -169,6 +185,25 @@ export abstract class BaseAgent {
       scores.reduce((a, b) => a + b, 0) / scores.length,
     );
 
+    // Average DeepEval sub-scores across chunks
+    const mergedDeepEval: DeepEvalScores | undefined =
+      deepEvalSamples.length > 0
+        ? {
+            faithfulness: Math.round(
+              deepEvalSamples.reduce((s, d) => s + d.faithfulness, 0) /
+                deepEvalSamples.length,
+            ),
+            relevancy: Math.round(
+              deepEvalSamples.reduce((s, d) => s + d.relevancy, 0) /
+                deepEvalSamples.length,
+            ),
+            contextualPrecision: Math.round(
+              deepEvalSamples.reduce((s, d) => s + d.contextualPrecision, 0) /
+                deepEvalSamples.length,
+            ),
+          }
+        : undefined;
+
     return {
       parsed: {
         issues: uniqueIssues,
@@ -177,6 +212,7 @@ export abstract class BaseAgent {
           summaries.length > 1
             ? `[${chunks.length} chunks, ${allIssues.length}→${uniqueIssues.length} issues] ${summaries[0]}`
             : summaries[0] || "No summary",
+        deepEvalScores: mergedDeepEval,
       },
       tokensUsed: {
         input: totalInput,

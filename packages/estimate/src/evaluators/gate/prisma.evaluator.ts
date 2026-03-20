@@ -29,16 +29,16 @@ export class PrismaEvaluator extends GateEvaluator {
 
     if (Object.keys(prismaFiles).length === 0) {
       return {
-        passed: true,
+        passed: false,
         issues: [
           createIssue({
-            severity: "warning",
+            severity: "critical",
             category: "prisma",
             code: "P000",
             message: "Failed to read Prisma schema files",
           }),
         ],
-        metrics: { skipped: true },
+        metrics: { valid: false },
       };
     }
 
@@ -84,13 +84,11 @@ export class PrismaEvaluator extends GateEvaluator {
       };
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Unknown error";
-      const isFileNotFound =
-        msg.includes("ENOENT") || msg.includes("no such file");
       return {
-        passed: true,
+        passed: false,
         issues: [
           createIssue({
-            severity: isFileNotFound ? "warning" : "critical",
+            severity: "critical",
             category: "prisma-error",
             code: "P001",
             message: `Prisma compilation exception: ${this.cleanErrorMessage(msg)}`,

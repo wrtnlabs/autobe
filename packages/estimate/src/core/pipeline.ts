@@ -11,6 +11,7 @@ import {
   DuplicationEvaluator,
   JsDocEvaluator,
   NamingEvaluator,
+  PerformanceEvaluator,
   SchemaSyncEvaluator,
 } from "../evaluators/quality";
 import {
@@ -45,6 +46,7 @@ import {
   scoreToGrade,
 } from "../types";
 import { buildContext } from "./context-builder";
+import { computeDiff, loadCache, saveCache } from "./incremental";
 
 const { version } = require("../../package.json");
 
@@ -105,6 +107,20 @@ export class EvaluationPipeline {
     this.log(`  - Structures: ${this.context.files.structures.length}`);
     this.log(`  - Tests: ${this.context.files.tests.length}`);
     this.log(`  - Prisma: ${this.context.files.prismaSchemas.length}`);
+
+    // Incremental diff (informational — does not skip phases yet)
+    const cache = loadCache(input.inputPath);
+    if (cache) {
+      const diff = computeDiff(this.context, cache);
+      this.log(
+        `\n[Incremental] ${diff.changed.length} changed, ${diff.added.length} added, ${diff.removed.length} removed, ${diff.unchangedCount} unchanged`,
+      );
+      if (diff.requiresFullEval) {
+        this.log("  → Full re-evaluation required (schema change or >30% changed)");
+      }
+    } else {
+      this.log("\n[Incremental] No cache found — full evaluation");
+    }
 
     // Langfuse trace (null if not configured)
     const trace = createEvalTrace({
@@ -180,7 +196,10 @@ export class EvaluationPipeline {
 
     // ── Reference info ───────────────────────────────────
     this.log("\n[Reference] Collecting code quality metrics...");
-    const reference = await this.collectReferenceInfo(this.context);
+    const [reference, perfMetrics] = await Promise.all([
+      this.collectReferenceInfo(this.context),
+      new PerformanceEvaluator().collectMetrics(this.context),
+    ]);
 
     const result = this.buildResult(
       input,
@@ -188,10 +207,27 @@ export class EvaluationPipeline {
       phases,
       reference,
       startTime,
+      {
+        totalSizeKB: perfMetrics.totalSizeKB,
+        totalFiles: perfMetrics.totalFiles,
+        totalLines: perfMetrics.totalLines,
+        avgLinesPerFile: perfMetrics.avgLinesPerFile,
+        largestFile: perfMetrics.largestFile?.file ?? "N/A",
+        largestFileSizeKB: perfMetrics.largestFile
+          ? Math.round(perfMetrics.largestFile.sizeBytes / 1024)
+          : 0,
+        controllers: perfMetrics.fileCounts.controllers,
+        providers: perfMetrics.fileCounts.providers,
+        structures: perfMetrics.fileCounts.structures,
+        tests: perfMetrics.fileCounts.tests,
+      },
     );
 
     // Record all scores on trace
     if (trace) recordScores(trace, result);
+
+    // Save incremental cache for next run
+    saveCache(this.context);
 
     return result;
   }
@@ -289,6 +325,18 @@ export class EvaluationPipeline {
     const prismaResult = await new PrismaEvaluator().evaluate(context);
     issues.push(...prismaResult.issues);
 
+    // Prisma penalty: critical/warning issues from Prisma validation
+    const prismaCriticalCount = prismaResult.issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
+    const prismaWarningCount = prismaResult.issues.filter(
+      (i) => i.severity === "warning",
+    ).length;
+    const prismaPenalty = Math.min(
+      40,
+      prismaCriticalCount * 10 + prismaWarningCount * 2,
+    );
+
     // Runtime check
     this.log("  - Starting server and running e2e tests...");
     if (input.options?.runTests) {
@@ -320,11 +368,18 @@ export class EvaluationPipeline {
     const typeWarningCount = typeResult.issues.filter(
       (i) => i.severity === "warning" && !isInfraWarning(i),
     ).length;
-    const typePenalty = Math.min(
-      10,
-      Math.round((typeWarningCount / totalFiles) * 10),
-    );
-    const totalPenalty = syntaxPenalty + typePenalty;
+    // Scale penalty by warning-to-file ratio:
+    //   ratio < 0.1  → mild penalty (up to 10)
+    //   ratio 0.1–1  → moderate penalty (up to 30)
+    //   ratio > 1    → severe penalty (up to 50)
+    const warningRatio = totalFiles > 0 ? typeWarningCount / totalFiles : 0;
+    const typePenalty =
+      warningRatio <= 0.1
+        ? Math.round(warningRatio * 100)
+        : warningRatio <= 1
+          ? Math.min(30, Math.round(10 + (warningRatio - 0.1) * 22))
+          : Math.min(50, Math.round(30 + (warningRatio - 1) * 10));
+    const totalPenalty = syntaxPenalty + typePenalty + prismaPenalty;
     const gateScore = Math.max(0, 100 - totalPenalty);
 
     return {
@@ -342,7 +397,9 @@ export class EvaluationPipeline {
         penalty: totalPenalty,
         typeCriticalCount,
         typeWarningCount,
-        softPass: filesWithErrors > 0 || typeWarningCount > 0,
+        prismaCriticalCount,
+        prismaWarningCount,
+        softPass: filesWithErrors > 0 || typeWarningCount > 0 || prismaCriticalCount > 0,
       },
     };
   }
@@ -474,6 +531,7 @@ export class EvaluationPipeline {
     phases: EvaluationPhases,
     reference: ReferenceInfo,
     startTime: number,
+    performanceMetrics?: Record<string, number | string>,
   ): EvaluationResult {
     const scoringIssues = [
       phases.gate.issues,
@@ -523,13 +581,16 @@ export class EvaluationPipeline {
       if (hasGoldenSet) {
         rawScore += phases.goldenSet!.score * GOLDEN_SET_WEIGHT;
       }
-      const raw = Math.round(rawScore);
-      const gatePenalty = (phases.gate.metrics?.penalty as number) || 0;
-      totalScore = Math.max(0, raw - gatePenalty);
+      // Apply gate as a multiplier instead of direct subtraction to avoid
+      // double-penalizing (gate penalty + warning penalty on same issues).
+      // Gate score 100 → no reduction, gate score 65 → raw * 0.65
+      // Single Math.round at the end to avoid ±1 rounding drift.
+      const gateMultiplier = (phases.gate.score ?? 100) / 100;
+      totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 
       const penaltyData: NonNullable<EvaluationResult["penalties"]> = {};
 
-      // Warning penalty: starts at 30%, max -20
+      // Warning penalty: scaled threshold based on project size, max -20
       // Exclude infrastructure warnings (SDK mismatches) from penalty calculation
       const INFRA_WARNING_PATTERNS = [
         "NestiaSimulator",
@@ -537,15 +598,25 @@ export class EvaluationPipeline {
         "MyGlobal",
         "unsupported extension",
       ];
+      // Also exclude TS-code warnings (already penalized via gate multiplier)
+      const isTypescriptWarning = (w: Issue) => /^TS\d+$/.test(w.code);
       const realWarnings = warnings.filter(
-        (w) => !INFRA_WARNING_PATTERNS.some((p) => w.message.includes(p)),
+        (w) =>
+          !INFRA_WARNING_PATTERNS.some((p) => w.message.includes(p)) &&
+          !isTypescriptWarning(w),
       );
       const totalFiles = context.files.typescript.length || 1;
       const warningRatio = realWarnings.length / totalFiles;
-      if (warningRatio > 0.3) {
+      // Scale threshold by project size: small projects (<50 files) use 0.3,
+      // large projects (200+ files) use 0.5 — more warnings are natural at scale
+      const warningThreshold = Math.min(
+        0.5,
+        0.3 + Math.max(0, totalFiles - 50) * 0.001,
+      );
+      if (warningRatio > warningThreshold) {
         const warningPenalty = Math.min(
           20,
-          Math.round((warningRatio - 0.3) * 8),
+          Math.round((warningRatio - warningThreshold) * 8),
         );
         totalScore = Math.max(0, totalScore - warningPenalty);
         penaltyData.warning = {
@@ -554,7 +625,7 @@ export class EvaluationPipeline {
         };
         if (this.verbose) {
           console.log(
-            `  Warning penalty: -${warningPenalty} (${realWarnings.length} warnings / ${totalFiles} files = ${penaltyData.warning.ratio})`,
+            `  Warning penalty: -${warningPenalty} (${realWarnings.length} warnings / ${totalFiles} files = ${penaltyData.warning.ratio}, threshold=${(warningThreshold * 100).toFixed(0)}%)`,
           );
         }
       }
@@ -597,20 +668,25 @@ export class EvaluationPipeline {
         }
       }
 
-      // Empty interface + mismatch penalty
+      // Empty interface + mismatch penalty (ratio-based, scaled by project size)
       {
         let syncPenalty = 0;
-        if (reference.schemaSync.emptyTypes >= 5) {
-          syncPenalty += Math.min(
-            5,
-            Math.round(reference.schemaSync.emptyTypes / 10),
-          );
+        const syncTotal = Math.max(reference.schemaSync.totalTypes, 1);
+        const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
+        const mismatchRatio =
+          reference.schemaSync.mismatchedProperties / syncTotal;
+
+        // Scale thresholds by project size: larger projects naturally have more edge cases
+        const emptyThreshold = Math.min(0.25, 0.15 + Math.max(0, syncTotal - 30) * 0.001);
+        const mismatchThreshold = Math.min(0.15, 0.05 + Math.max(0, syncTotal - 30) * 0.001);
+
+        // Empty types: penalize when above threshold
+        if (emptyRatio > emptyThreshold) {
+          syncPenalty += Math.min(5, Math.round(emptyRatio * 10));
         }
-        if (reference.schemaSync.mismatchedProperties >= 3) {
-          syncPenalty += Math.min(
-            5,
-            Math.round(reference.schemaSync.mismatchedProperties / 5),
-          );
+        // Mismatched properties: penalize when above threshold
+        if (mismatchRatio > mismatchThreshold) {
+          syncPenalty += Math.min(5, Math.round(mismatchRatio * 10));
         }
         if (syncPenalty > 0) {
           totalScore = Math.max(0, totalScore - syncPenalty);
@@ -621,19 +697,24 @@ export class EvaluationPipeline {
           };
           if (this.verbose) {
             console.log(
-              `  Schema sync penalty: -${syncPenalty} (${reference.schemaSync.emptyTypes} empty types, ${reference.schemaSync.mismatchedProperties} mismatched)`,
+              `  Schema sync penalty: -${syncPenalty} (empty: ${reference.schemaSync.emptyTypes}/${syncTotal} = ${(emptyRatio * 100).toFixed(1)}%, mismatch: ${reference.schemaSync.mismatchedProperties}/${syncTotal} = ${(mismatchRatio * 100).toFixed(1)}%)`,
             );
           }
         }
       }
 
-      // Suggestion overflow penalty (e.g., 2000+ TS2339 suggestions)
+      // Suggestion overflow penalty — threshold scales with project size
       {
         const suggestionCount = suggestions.length;
-        if (suggestionCount > 500) {
+        // Small projects: 500, large projects (200+ files): up to 1000
+        const suggestionThreshold = Math.min(
+          1000,
+          500 + Math.max(0, totalFiles - 50) * 3,
+        );
+        if (suggestionCount > suggestionThreshold) {
           const suggestionPenalty = Math.min(
             10,
-            Math.round((suggestionCount - 500) / 200),
+            Math.round((suggestionCount - suggestionThreshold) / 200),
           );
           totalScore = Math.max(0, totalScore - suggestionPenalty);
           penaltyData.suggestionOverflow = {
@@ -642,7 +723,7 @@ export class EvaluationPipeline {
           };
           if (this.verbose) {
             console.log(
-              `  Suggestion overflow penalty: -${suggestionPenalty} (${suggestionCount} suggestions)`,
+              `  Suggestion overflow penalty: -${suggestionPenalty} (${suggestionCount} suggestions, threshold=${suggestionThreshold})`,
             );
           }
         }
@@ -673,6 +754,7 @@ export class EvaluationPipeline {
         evaluatedFiles: context.files.typescript.length,
       },
       penalties,
+      performanceMetrics,
     };
   }
 

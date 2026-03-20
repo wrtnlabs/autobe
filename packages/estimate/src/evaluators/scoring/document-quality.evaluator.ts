@@ -55,16 +55,18 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
         }),
       );
     } else {
-      if (hasDocsFolder) score += 20;
-      if (hasReadme) score += 10;
+      if (hasDocsFolder) score += 10;
+      if (hasReadme) score += 5;
 
-      if (docFiles.length >= 5) score += 15;
-      else if (docFiles.length >= 3) score += 10;
-      else if (docFiles.length >= 1) score += 5;
+      if (docFiles.length >= 10) score += 15;
+      else if (docFiles.length >= 5) score += 10;
+      else if (docFiles.length >= 3) score += 7;
+      else if (docFiles.length >= 1) score += 3;
 
-      if (totalDocLength >= 50000) score += 15;
-      else if (totalDocLength >= 20000) score += 10;
-      else if (totalDocLength >= 5000) score += 5;
+      if (totalDocLength >= 100000) score += 15;
+      else if (totalDocLength >= 50000) score += 10;
+      else if (totalDocLength >= 20000) score += 7;
+      else if (totalDocLength >= 5000) score += 3;
 
       const qualityScore = this.analyzeContentQuality(
         docsResult.contents,
@@ -138,37 +140,38 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     if (contents.size === 0) return 0;
     let score = 0;
 
-    // Header quality - require more headers for full score
+    // Header quality — require rich structure (max 10)
     let filesWithRichHeaders = 0;
     for (const [, content] of contents) {
       const headerCount = (content.match(/^#{1,3}\s+\S/gm) || []).length;
-      if (headerCount >= 5) filesWithRichHeaders++;
-      else if (headerCount >= 2) filesWithRichHeaders += 0.5;
+      if (headerCount >= 8) filesWithRichHeaders++;
+      else if (headerCount >= 5) filesWithRichHeaders += 0.7;
+      else if (headerCount >= 2) filesWithRichHeaders += 0.3;
     }
     const headerRatio = filesWithRichHeaders / contents.size;
     score += Math.round(headerRatio * 10);
 
-    // Requirement coverage - require more keywords for full score
+    // Requirement coverage — require domain-specific terminology (max 10)
     const requirementPatterns =
       /\b(shall|must|should|endpoint|api|database|schema|model|entity|table|column|field|interface|controller|provider|service|authentication|authorization)\b/gi;
     let filesWithRichRequirements = 0;
     for (const [, content] of contents) {
       const matches = content.match(requirementPatterns) || [];
-      if (matches.length >= 20) filesWithRichRequirements++;
-      else if (matches.length >= 10) filesWithRichRequirements += 0.5;
+      if (matches.length >= 30) filesWithRichRequirements++;
+      else if (matches.length >= 15) filesWithRichRequirements += 0.5;
+      else if (matches.length >= 5) filesWithRichRequirements += 0.2;
     }
     const reqRatio = filesWithRichRequirements / contents.size;
     score += Math.round(reqRatio * 10);
 
     // Boilerplate penalty
-    const boilerplatePatterns =
-      /\b(lorem ipsum|placeholder|todo|tbd|coming soon|work in progress)\b/gi;
+    const boilerplatePattern =
+      /\b(lorem ipsum|placeholder|todo|tbd|coming soon|work in progress)\b/i;
     let boilerplateFiles = 0;
     for (const [, content] of contents) {
-      if (boilerplatePatterns.test(content) || content.trim().length < 200) {
+      if (boilerplatePattern.test(content) || content.trim().length < 200) {
         boilerplateFiles++;
       }
-      boilerplatePatterns.lastIndex = 0;
     }
     if (boilerplateFiles > 0) {
       issues.push(
@@ -179,23 +182,35 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
           message: `${boilerplateFiles} doc file(s) contain boilerplate or minimal content`,
         }),
       );
+      // Direct penalty for boilerplate (max -10)
+      score -= Math.min(10, Math.round((boilerplateFiles / contents.size) * 15));
     }
 
-    // Real content ratio - penalize boilerplate more heavily
-    const boilerplateRatio = boilerplateFiles / contents.size;
-    score += Math.round((1 - boilerplateRatio) * 5);
-
-    // Content depth bonus - average word count per file
+    // Content depth bonus — average word count per file (max 10)
     let totalWords = 0;
     for (const [, content] of contents) {
       totalWords += content.split(/\s+/).length;
     }
     const avgWords = totalWords / contents.size;
-    if (avgWords >= 500) score += 5;
-    else if (avgWords >= 200) score += 3;
-    else if (avgWords >= 100) score += 1;
+    if (avgWords >= 1000) score += 10;
+    else if (avgWords >= 500) score += 7;
+    else if (avgWords >= 200) score += 4;
+    else if (avgWords >= 100) score += 2;
 
-    return score;
+    // Content diversity — check for varied topic coverage (max 10)
+    const topicPatterns = [
+      /\b(erd|entity.?relationship|database\s+design)\b/i,
+      /\b(api|endpoint|route|rest|http)\b/i,
+      /\b(security|auth|permission|role|guard)\b/i,
+      /\b(test|spec|scenario|coverage)\b/i,
+      /\b(deploy|environment|config|docker|ci.?cd)\b/i,
+      /\b(error|exception|handling|validation)\b/i,
+    ];
+    const allContent = Array.from(contents.values()).join("\n");
+    const topicsCovered = topicPatterns.filter((p) => p.test(allContent)).length;
+    score += Math.round((topicsCovered / topicPatterns.length) * 10);
+
+    return Math.max(0, score);
   }
 
   private analyzeReadmeQuality(content: string, issues: Issue[]): number {
@@ -203,20 +218,31 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
 
     let score = 0;
 
-    if (content.length >= 2000) score += 5;
-    else if (content.length >= 500) score += 3;
-    else if (content.length >= 100) score += 1;
+    // Length (max 5)
+    if (content.length >= 3000) score += 5;
+    else if (content.length >= 1500) score += 3;
+    else if (content.length >= 500) score += 2;
+    else score += 1;
 
+    // Headers (max 5)
     const headers = (content.match(/^#{1,3}\s+\S/gm) || []).length;
-    if (headers >= 5) score += 5;
-    else if (headers >= 3) score += 3;
+    if (headers >= 8) score += 5;
+    else if (headers >= 5) score += 3;
+    else if (headers >= 2) score += 2;
     else if (headers >= 1) score += 1;
 
+    // Useful sections (max 5)
     const usefulSections =
-      /\b(installation|setup|getting started|usage|api|architecture|endpoints|configuration|environment|deployment)\b/gi;
+      /\b(installation|setup|getting started|usage|api|architecture|endpoints|configuration|environment|deployment|prerequisites|running|build)\b/gi;
     const sectionMatches = content.match(usefulSections) || [];
-    if (sectionMatches.length >= 3) score += 5;
-    else if (sectionMatches.length >= 1) score += 3;
+    if (sectionMatches.length >= 5) score += 5;
+    else if (sectionMatches.length >= 3) score += 3;
+    else if (sectionMatches.length >= 1) score += 1;
+
+    // Code blocks presence (max 5) — good READMEs have examples
+    const codeBlocks = (content.match(/```/g) || []).length / 2;
+    if (codeBlocks >= 3) score += 5;
+    else if (codeBlocks >= 1) score += 3;
 
     if (headers === 0 && content.length < 500) {
       issues.push(

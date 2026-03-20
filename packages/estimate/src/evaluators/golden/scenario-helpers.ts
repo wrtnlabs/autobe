@@ -3,6 +3,10 @@ export interface ScenarioResult {
   name: string;
   passed: boolean;
   reason?: string;
+  /** Optional schema validation warnings (not blocking, but reported) */
+  schemaWarnings?: string[];
+  /** Response time in milliseconds (from last HTTP call in scenario) */
+  durationMs?: number;
 }
 
 export function randomEmail(): string {

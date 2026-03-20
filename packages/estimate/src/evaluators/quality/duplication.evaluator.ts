@@ -48,19 +48,35 @@ export class DuplicationEvaluator extends BaseEvaluator {
       }
     }
 
-    // Find duplicates
+    // Find duplicates — only report blocks found in multiple files,
+    // or in the same file but with non-overlapping locations (gap > MIN_LINES).
     const issues: Issue[] = [];
     const reportedHashes = new Set<string>();
     for (const [hash, locations] of codeBlocks) {
-      if (locations.length > 1 && !reportedHashes.has(hash)) {
+      if (locations.length <= 1 || reportedHashes.has(hash)) continue;
+
+      // Deduplicate overlapping locations within the same file
+      const uniqueLocations: CodeBlockLocation[] = [];
+      for (const loc of locations) {
+        const overlaps = uniqueLocations.some(
+          (u) =>
+            u.file === loc.file &&
+            Math.abs(u.line - loc.line) < this.MIN_LINES,
+        );
+        if (!overlaps) {
+          uniqueLocations.push(loc);
+        }
+      }
+
+      if (uniqueLocations.length > 1) {
         reportedHashes.add(hash);
         issues.push(
           createIssue({
             severity: "warning",
             category: "duplication",
             code: "D001",
-            message: `Duplicate code block found in ${locations.length} locations`,
-            location: locations[0],
+            message: `Duplicate code block found in ${uniqueLocations.length} locations`,
+            location: uniqueLocations[0],
           }),
         );
       }

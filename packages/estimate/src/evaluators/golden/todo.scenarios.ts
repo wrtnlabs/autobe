@@ -456,5 +456,99 @@ export async function runTodoScenarios(
     }
   }
 
+  // ── Negative Tests ─────────────────────────────────────
+
+  // 15. Unauthenticated access returns 401
+  if (todoCreateEndpoint) {
+    const anonHttp = new HttpRunner();
+    const res = await anonHttp.post(
+      todoCreateEndpoint.url,
+      { title: "Should Fail" },
+      false,
+    );
+    results.push(
+      res.status === 401
+        ? pass(15, "Unauthenticated create returns 401")
+        : fail(
+            15,
+            "Unauthenticated create returns 401",
+            `expected 401 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(15, "Unauthenticated create returns 401", "endpoint not found"),
+    );
+  }
+
+  // 16. Invalid login credentials return 401/403
+  if (loginEndpoint) {
+    const res = await http.post(loginEndpoint.url, {
+      email: "nonexistent@invalid.test",
+      password: "WrongPassword123!",
+    });
+    results.push(
+      res.status === 401 || res.status === 403 || res.status === 404
+        ? pass(16, "Invalid login returns error status")
+        : fail(
+            16,
+            "Invalid login returns error status",
+            `expected 401/403/404 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(16, "Invalid login returns error status", "endpoint not found"),
+    );
+  }
+
+  // 17. Create todo with empty body returns 400/422
+  if (todoCreateEndpoint) {
+    const res = await http.post(todoCreateEndpoint.url, {}, true);
+    results.push(
+      res.status === 400 || res.status === 422 || res.status === 403
+        ? pass(17, "Create todo with empty body returns validation error")
+        : fail(
+            17,
+            "Create todo with empty body returns validation error",
+            `expected 400/422 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(
+        17,
+        "Create todo with empty body returns validation error",
+        "endpoint not found",
+      ),
+    );
+  }
+
+  // 18. Get non-existent todo returns 404
+  {
+    const getTodoEndpoint = findEndpoint(routes, {
+      pathKeywords: ["todos"],
+      method: "GET",
+    });
+    if (getTodoEndpoint) {
+      const fakeId = "00000000-0000-0000-0000-000000000000";
+      const url = http.resolvePath(getTodoEndpoint.url, { todoId: fakeId, id: fakeId });
+      const res = await http.get(url, true);
+      results.push(
+        res.status === 404
+          ? pass(18, "Get non-existent todo returns 404")
+          : fail(
+              18,
+              "Get non-existent todo returns 404",
+              `expected 404 but got ${res.status}`,
+            ),
+      );
+    } else {
+      results.push(
+        fail(18, "Get non-existent todo returns 404", "endpoint not found"),
+      );
+    }
+  }
+
   return results;
 }

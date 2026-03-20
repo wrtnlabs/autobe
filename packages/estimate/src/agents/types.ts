@@ -32,12 +32,23 @@ export interface AgentParseResult {
   issues: AgentIssue[];
   score: number;
   summary: string;
+  deepEvalScores?: DeepEvalScores;
 }
 
 /** Result from a chunk evaluation (parsed + optional token usage) */
 export interface AgentChunkResult {
   parsed: AgentParseResult;
   tokensUsed?: TokenUsage;
+}
+
+/** DeepEval-style sub-scores for hallucination detection */
+export interface DeepEvalScores {
+  /** Does the code faithfully follow the OpenAPI/Prisma spec? (0-100) */
+  faithfulness: number;
+  /** Is every piece of generated code relevant to the requirements? (0-100) */
+  relevancy: number;
+  /** Does the code use the correct spec sections for each feature? (0-100) */
+  contextualPrecision: number;
 }
 
 /** Agent evaluation result */
@@ -50,6 +61,8 @@ export interface AgentResult {
   summary: string;
   durationMs: number;
   tokensUsed?: TokenUsage;
+  /** DeepEval sub-scores (HallucinationAgent only) */
+  deepEvalScores?: DeepEvalScores;
 }
 
 /** Default models per agent role */

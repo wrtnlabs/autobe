@@ -2,30 +2,35 @@ import * as path from "path";
 
 import type { AgentResult } from "../agents";
 import type { EvaluationResult, Issue, PhaseResult } from "../types";
-import { PHASE_NAMES } from "../types";
+import { AGENT_WEIGHT_RATIO, PHASE_NAMES, PHASE_WEIGHTS } from "../types";
 
 interface ExtendedResult extends EvaluationResult {
   agentEvaluations?: AgentResult[];
 }
 
-const WEIGHTS: Record<string, string> = {
-  documentQuality: "20%",
-  requirementsCoverage: "25%",
-  testCoverage: "20%",
-  logicCompleteness: "20%",
-  apiCompleteness: "15%",
-};
-
-/** Maximum number of issues to display in a table before truncating */
-const MAX_DISPLAY_ISSUES = 20;
-
-const SCORING_PHASES = [
+/** Display weights derived from PHASE_WEIGHTS (auto-normalized to 100%) */
+const SCORING_PHASE_KEYS = [
   "documentQuality",
   "requirementsCoverage",
   "testCoverage",
   "logicCompleteness",
   "apiCompleteness",
 ] as const;
+const baseSum = SCORING_PHASE_KEYS.reduce(
+  (sum, k) => sum + PHASE_WEIGHTS[k],
+  0,
+);
+const WEIGHTS: Record<string, string> = Object.fromEntries(
+  SCORING_PHASE_KEYS.map((k) => [
+    k,
+    `${Math.round((PHASE_WEIGHTS[k] / baseSum) * 100)}%`,
+  ]),
+);
+
+/** Maximum number of issues to display in a table before truncating */
+const MAX_DISPLAY_ISSUES = 20;
+
+const SCORING_PHASES = SCORING_PHASE_KEYS;
 
 export function generateMarkdownReport(result: ExtendedResult): string {
   return `
@@ -60,32 +65,27 @@ function renderOverallScore(result: ExtendedResult): string {
   let breakdown = "";
   if (hasAgents) {
     const phaseScore = Math.round(
-      [
-        "documentQuality",
-        "requirementsCoverage",
-        "testCoverage",
-        "logicCompleteness",
-        "apiCompleteness",
-      ].reduce(
+      SCORING_PHASE_KEYS.reduce(
         (sum, key) =>
           sum +
           ((result.phases[key as keyof typeof result.phases] as PhaseResult)
             .score *
-            parseFloat(WEIGHTS[key])) /
-            100,
+            PHASE_WEIGHTS[key]) /
+            baseSum,
         0,
       ) * 100,
     );
     const agentAvg =
       agents.reduce((sum, a) => sum + a.score, 0) / agents.length;
+    const phaseW = 1 - AGENT_WEIGHT_RATIO;
 
     breakdown = `
 ### Score Breakdown
 
 | Component | Score | Weight | Contribution |
 |-----------|-------|--------|-------------|
-| Phase Score | ${phaseScore}/100 | 70% | ${(phaseScore * 0.7).toFixed(1)} |
-| Agent Score | ${agentAvg.toFixed(1)}/100 | 30% | ${(agentAvg * 0.3).toFixed(1)} |
+| Phase Score | ${phaseScore}/100 | ${Math.round(phaseW * 100)}% | ${(phaseScore * phaseW).toFixed(1)} |
+| Agent Score | ${agentAvg.toFixed(1)}/100 | ${Math.round(AGENT_WEIGHT_RATIO * 100)}% | ${(agentAvg * AGENT_WEIGHT_RATIO).toFixed(1)} |
 | **Total** | | | **${result.totalScore}/100** |
 `;
   }
@@ -289,7 +289,7 @@ function renderAgentEvaluations(agents?: AgentResult[]): string {
   const agentSections = agents.map(renderAgentSection).join("\n\n");
 
   return `
-## AI Agent Evaluations (30% of total score)
+## AI Agent Evaluations (${Math.round(AGENT_WEIGHT_RATIO * 100)}% of total score)
 
 These evaluations are performed by AI agents and contribute 30% to the total score.
 
@@ -366,6 +366,12 @@ function renderSummary(result: ExtendedResult): string {
     }
     if (result.penalties.jsdoc) {
       penaltyRows += `| JSDoc Penalty | -${result.penalties.jsdoc.amount} (${result.penalties.jsdoc.missing} missing, ${result.penalties.jsdoc.ratio}) |\n`;
+    }
+    if (result.penalties.schemaSync) {
+      penaltyRows += `| Schema Sync Penalty | -${result.penalties.schemaSync.amount} (${result.penalties.schemaSync.emptyTypes} empty types, ${result.penalties.schemaSync.mismatchedProperties} mismatched) |\n`;
+    }
+    if (result.penalties.suggestionOverflow) {
+      penaltyRows += `| Suggestion Overflow | -${result.penalties.suggestionOverflow.amount} (${result.penalties.suggestionOverflow.count} suggestions) |\n`;
     }
   }
 

@@ -94,17 +94,25 @@ async function loadIgnorePatterns(rootPath: string): Promise<string[]> {
   return [...new Set(patterns)];
 }
 
-/** Scan AutoBE project structure using declarative mapping */
+/** Scan AutoBE project structure using declarative mapping.
+ *  Supports both `src/` and `lib/` layouts (some models output to `lib/`). */
 async function scanProjectStructure(
   rootPath: string,
 ): Promise<AutoBEProjectStructure> {
+  // Detect source root: prefer src/, fall back to lib/
+  const sourceRoot = fs.existsSync(path.join(rootPath, "src"))
+    ? "src"
+    : fs.existsSync(path.join(rootPath, "lib"))
+      ? "lib"
+      : "src";
+
   const dirMap = {
     analysisDir: path.join("docs", "analysis"),
     erdPath: path.join("docs", "ERD.md"),
     prismaSchemaDir: path.join("prisma", "schema"),
-    structuresDir: path.join("src", "api", "structures"),
-    controllersDir: path.join("src", "controllers"),
-    providersDir: path.join("src", "providers"),
+    structuresDir: path.join(sourceRoot, "api", "structures"),
+    controllersDir: path.join(sourceRoot, "controllers"),
+    providersDir: path.join(sourceRoot, "providers"),
     testDir: path.join("test", "features", "api"),
   } as const satisfies Partial<Record<keyof AutoBEProjectStructure, string>>;
 
@@ -201,8 +209,12 @@ async function discoverSourceFiles(
     string[]
   >;
 
-  // Discover ALL TypeScript files under src/ (includes decorators, utils, guards, etc.)
-  const srcDir = path.join(project.rootPath, "src");
+  // Discover ALL TypeScript files under src/ or lib/ (includes decorators, utils, guards, etc.)
+  const srcDir = fs.existsSync(path.join(project.rootPath, "src"))
+    ? path.join(project.rootPath, "src")
+    : fs.existsSync(path.join(project.rootPath, "lib"))
+      ? path.join(project.rootPath, "lib")
+      : path.join(project.rootPath, "src");
   const allTypescript = fs.existsSync(srcDir)
     ? await glob("**/*.ts", {
         cwd: srcDir,

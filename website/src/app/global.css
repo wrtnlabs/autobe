@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "nextra-theme-docs/style.css";
+
+html,
+body {
+  background: rgb(9, 15, 27);
+  color: rgb(248, 250, 252);
+  color-scheme: dark;
+}

@@ -842,5 +842,77 @@ export async function runRedditScenarios(
     }
   }
 
+  // ── Negative Tests ─────────────────────────────────────
+
+  // 32. Unauthenticated post create returns 401
+  if (postCreateEndpoint) {
+    const anonHttp = new HttpRunner();
+    const res = await anonHttp.post(
+      postCreateEndpoint.url,
+      { title: "Should Fail", content: "Anon" },
+      false,
+    );
+    results.push(
+      res.status === 401
+        ? pass(32, "Unauthenticated post create returns 401")
+        : fail(
+            32,
+            "Unauthenticated post create returns 401",
+            `expected 401 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(32, "Unauthenticated post create returns 401", "endpoint not found"),
+    );
+  }
+
+  // 33. Invalid login returns error status
+  if (loginEndpoint) {
+    const res = await http.post(loginEndpoint.url, {
+      email: "nonexistent@invalid.test",
+      password: "WrongPassword123!",
+    });
+    results.push(
+      res.status === 401 || res.status === 403 || res.status === 404
+        ? pass(33, "Invalid login returns error status")
+        : fail(
+            33,
+            "Invalid login returns error status",
+            `expected 401/403/404 but got ${res.status}`,
+          ),
+    );
+  } else {
+    results.push(
+      fail(33, "Invalid login returns error status", "endpoint not found"),
+    );
+  }
+
+  // 34. Get non-existent post returns 404
+  {
+    const postGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["posts"],
+      method: "GET",
+    });
+    if (postGetEndpoint) {
+      const fakeId = "00000000-0000-0000-0000-000000000000";
+      const url = http.resolvePath(postGetEndpoint.url, { id: fakeId, postId: fakeId });
+      const res = await http.get(url, true);
+      results.push(
+        res.status === 404
+          ? pass(34, "Get non-existent post returns 404")
+          : fail(
+              34,
+              "Get non-existent post returns 404",
+              `expected 404 but got ${res.status}`,
+            ),
+      );
+    } else {
+      results.push(
+        fail(34, "Get non-existent post returns 404", "endpoint not found"),
+      );
+    }
+  }
+
   return results;
 }

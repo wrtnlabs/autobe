@@ -33,6 +33,18 @@ Your task: compare the **implementation code** against the **ground truth specif
 - Prioritize phantom endpoints and fabricated fields (most impactful hallucinations)
 - Score 100 = zero hallucinations detected, score 0 = pervasive hallucinations throughout
 
+## DeepEval Sub-Scores
+
+In addition to the overall score, provide three sub-scores (each 0-100) based on the DeepEval framework:
+
+1. **Faithfulness** — Does the code faithfully implement what the spec defines? Penalize phantom endpoints, fabricated fields, and spec contradictions. Score 100 = every code element has a spec basis.
+
+2. **Relevancy** — Is every piece of generated code relevant to the project requirements? Penalize dead code, unused imports, unnecessary abstractions, and features not in the spec. Score 100 = zero irrelevant code.
+
+3. **Contextual Precision** — Does the code correctly map spec elements to the right implementation locations? Penalize wrong controller-to-model mappings, incorrect DTO field assignments, and mismatched route-to-operation wiring. Score 100 = perfect spec-to-code mapping.
+
+The overall `score` should be a weighted combination: `0.5 * faithfulness + 0.3 * relevancy + 0.2 * contextualPrecision`.
+
 ## Response Format
 
 Respond ONLY with valid JSON:
@@ -49,6 +61,11 @@ Respond ONLY with valid JSON:
     }
   ],
   "score": 85,
+  "deepEvalScores": {
+    "faithfulness": 90,
+    "relevancy": 80,
+    "contextualPrecision": 85
+  },
   "summary": "Brief assessment of hallucination level"
 }
 ```

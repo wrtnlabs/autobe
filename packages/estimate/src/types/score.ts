@@ -5,10 +5,20 @@ export const GATE_ERROR_THRESHOLD = 0.05;
 export const GATE_PENALTY_PER_PERCENT = 5;
 export const AGENT_WEIGHT_RATIO = 0.25;
 export const AGENT_WEIGHTS: Record<string, number> = {
-  SecurityAgent: 0.5, // 50% of agent portion
-  LLMQualityAgent: 0.5, // 50% of agent portion
-  // HallucinationAgent: reference-only (not scored yet)
+  SecurityAgent: 0.4, // 40% of agent portion — OWASP security audit
+  LLMQualityAgent: 0.3, // 30% of agent portion — AI code quality patterns
+  HallucinationAgent: 0.3, // 30% of agent portion — spec compliance (OpenAPI + Prisma)
 };
+
+// Validate AGENT_WEIGHTS sum to 1.0 at module load
+{
+  const _weightSum = Object.values(AGENT_WEIGHTS).reduce((a, b) => a + b, 0);
+  if (Math.abs(_weightSum - 1.0) > 0.001) {
+    console.warn(
+      `[estimate] AGENT_WEIGHTS sum to ${_weightSum}, expected 1.0. Scores may be inaccurate.`,
+    );
+  }
+}
 
 /** Evaluation grade */
 export type Grade = "A" | "B" | "C" | "D" | "F";
@@ -193,6 +203,8 @@ export interface EvaluationResult {
   meta: EvaluationResult.Meta;
   penalties?: EvaluationPenalties;
   agentEvaluations?: AgentResult[];
+  /** Code size and performance metrics (reference only) */
+  performanceMetrics?: Record<string, number | string>;
 }
 export namespace EvaluationResult {
   export interface Phases {
