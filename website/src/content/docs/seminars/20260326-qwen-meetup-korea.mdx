@@ -4,83 +4,14 @@ title: AutoBE > Seminars > Qwen Meetup Korea 2026
 
 import { Tabs } from "nextra/components";
 import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+import PptxBanner from "../../../components/PptxBanner";
 
 # Function Calling Harness
 
-<style>{`
-  .pptx-banner {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1.25rem 1.5rem;
-    margin-top: 1.25rem;
-    margin-bottom: 1.75rem;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    color: #f8fafc;
-    text-decoration: none;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    transition: transform 0.2s, box-shadow 0.2s, background 0.2s, border-color 0.2s;
-    border: 1px solid rgba(255,255,255,0.08);
-    cursor: pointer;
-  }
-  .pptx-banner:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-    background: linear-gradient(135deg, #263348 0%, #3d5068 100%);
-    border-color: rgba(255,255,255,0.18);
-    color: #f8fafc;
-  }
-  .pptx-banner:hover .pptx-arrow {
-    opacity: 0.9;
-  }
-  .pptx-banner .pptx-icon {
-    flex-shrink: 0;
-    width: 64px;
-    height: 64px;
-    background: #D24726;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .pptx-banner .pptx-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  .pptx-banner .pptx-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    line-height: 1.3;
-  }
-  .pptx-banner .pptx-file {
-    font-size: 0.8rem;
-    opacity: 0.5;
-    font-weight: 400;
-    font-family: monospace;
-  }
-  .pptx-banner .pptx-arrow {
-    margin-left: auto;
-    font-size: 1.5rem;
-    opacity: 0.4;
-    flex-shrink: 0;
-    transition: opacity 0.2s;
-  }
-`}</style>
-
-<a className="pptx-banner" href="/seminars/20260326-qwen-meetup-korea.pptx" download>
-  <span className="pptx-icon">
-    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
-      <text x="18" y="26" textAnchor="middle" fill="white" fontSize="26" fontWeight="bold" fontFamily="Arial, sans-serif">P</text>
-    </svg>
-  </span>
-  <span className="pptx-body">
-    <span className="pptx-title">Qwen Meetup Korea</span>
-    <span className="pptx-file">20260326-qwen-meetup-korea.pptx</span>
-  </span>
-  <span className="pptx-arrow">↓</span>
-</a>
+<PptxBanner
+  title="Qwen Meetup Korea"
+  href="/seminars/20260326-qwen-meetup-korea.pptx"
+/>
 
 > **TL;DR**
 > 
@@ -99,17 +30,29 @@ import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
 > 4. Qwen — 스몰 모델이 최고의 QA 엔지니어인 이유
 >    - 작은 모델일수록 시스템의 허점을 잘 찾아낸다
 >    - R&D 비용 절감, 벤더 비종속, 오픈 생태계의 선순환
-> 5. LLM은 정확할 필요 없다 — 교정 가능하기만 하면 된다
+> 5. 모델을 바꾸지 마라 — 구조를 바꿔라
 
 ## 1. Preface
 
 6.75%.
 
-`qwen3-coder-next`가 쇼핑몰 백엔드의 API 데이터 타입을 생성할 때, 첫 시도에서 유효한 결과를 내놓을 확률입니다. 100번 중 93번이 실패합니다.
+쇼핑몰 백엔드의 API 데이터 타입을 `qwen3-coder-next`에게 맡기면, 첫 시도에서 유효한 결과가 나올 확률입니다. 100번 중 93번이 실패합니다.
 
-AutoBe의 최종 컴파일 성공률: 100%. 4개 Qwen 모델 전부.
+[AutoBe](https://github.com/wrtnlabs/autobe)라는 오픈소스 AI 에이전트가 있습니다. 자연어 대화 한 번이면 요구사항 분석, 데이터베이스, API 명세, E2E 테스트, 구현 코드까지 전부 만들어냅니다. 여기에 방금 그 6.75% 모델을 물리면? 최종 컴파일 성공률 **100%**. Qwen 모델 4종 전부.
 
-차이를 만든 것은 더 좋은 모델이 아닙니다. 더 똑똑한 프롬프트도 아닙니다. 타입 스키마가 출력을 제약하고, 컴파일러가 결과를 검증하고, 구조화된 피드백이 오류를 정확히 짚어주고, LLM이 교정하고 재시도하는 — 확률적 모델을 감싸는 결정론적 루프입니다. 모델 안이 아니라, 모델 바깥의 구조가 결정적이었습니다.
+비결은 더 좋은 모델도, 더 똑똑한 프롬프트도 아닙니다. **하네스(harness)**입니다. 타입 스키마로 출력을 제약하고, 컴파일러로 결과를 검증하고, 틀리면 어디서 왜 틀렸는지 구조화된 피드백으로 짚어주고, LLM이 그걸 보고 스스로 교정합니다. 수렴할 때까지 반복합니다.
+
+확률적 모델을 감싸는 결정론적 루프 — 모델 안이 아니라, 모델 바깥의 엔지니어링이 성패를 갈랐습니다.
+
+이 발표는 그 엔지니어링을 해부합니다.
+
+**2장**에서 AutoBe의 아키텍처를 봅니다. 5단계 파이프라인이 4종 AST와 4단 컴파일러를 거치며, 자기 치유 루프가 LLM의 실수를 체계적으로 교정하는 구조입니다.
+
+**3장**에서 그 구조의 심장부인 Typia를 파헤칩니다. TypeScript 컴파일러가 소스 코드의 타입 하나를 분석해서 스키마, 파서, 검증기, 피드백 생성기를 전부 만들어냅니다. Qwen 3.5의 0%를 100%로 뒤집은 구체적 메커니즘이 여기에 있습니다.
+
+**4장**에서 한 발 물러나 더 큰 질문을 던집니다. 이 패턴이 백엔드 너머에도 통하는가? 반도체, 화학공정, 건축, 제어시스템 — 검증기가 존재하는 공학 분야라면 어디든.
+
+그리고 **5장**에서 왜 이 이야기가 Qwen Meetup에 있는지를 답합니다. 작은 모델은 약점이 아닙니다. 하네스 시스템의 최고의 QA 엔지니어입니다.
 
 ---
 
@@ -130,27 +73,17 @@ AutoBe의 최종 컴파일 성공률: 100%. 4개 Qwen 모델 전부.
 
 생성된 코드의 모든 줄이 컴파일됩니다. 결과물은 TypeScript + NestJS 기반의 완전히 동작하는 백엔드입니다.
 
+<br/>
+
 <AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
 
-### 2.2. 워터폴 + 나선형 파이프라인
-
-AutoBe는 5단계 워터폴 파이프라인을 따릅니다. 각 단계는 이전 단계의 결과물 위에 구축됩니다.
-
-**Requirements → Analyze → Database → Interface → Test → Realize**
-
-각 단계에는 40개 이상의 전문 AI 에이전트가 협업합니다. 단순한 일직선이 아닙니다 — 단계 내부에서 나선형 루프가 돌며, 실패 시 자동으로 재생성과 교정을 반복합니다. 이 나선형 루프가 100% 컴파일을 가능하게 하는 핵심 메커니즘입니다.
-
-단계 간의 의존성은 Step Counter 패턴으로 관리됩니다. 각 단계는 자신의 완료 횟수를 기록하고, 하위 단계는 자신이 어느 시점의 상위 결과물을 기반으로 만들어졌는지를 추적합니다. 상위 단계가 다시 실행되면, 하위 단계는 자동으로 무효화됩니다. 데이터베이스 스키마를 수정하면 API 명세, 테스트, 구현 코드가 자동으로 다시 생성되어야 한다는 것을 시스템이 스스로 인지합니다.
-
-### 2.3. LLM은 코드를 쓰지 않는다
+### 2.2. LLM은 코드를 쓰지 않는다
 
 대부분의 AI 코딩 에이전트는 LLM에게 "이 코드를 작성해"라고 지시하고, 반환된 텍스트를 그대로 소스 파일에 저장합니다. AutoBe는 다릅니다.
 
-AutoBe는 **function calling**을 사용합니다. LLM은 자유 형식 텍스트를 생성하는 대신, 미리 정의된 구조 — JSON Schema — 를 채웁니다. 빈 페이지가 아닌 양식(form)을 작성하는 것입니다.
+AutoBe는 **function calling**을 사용합니다. LLM은 자유 형식 텍스트를 생성하는 대신, 미리 정의된 구조 — JSON Schema — 를 채웁니다. 빈 페이지가 아니라 양식(form)을 작성하는 것입니다. LLM이 양식을 채우면, 컴파일러가 검증하고 실제 코드로 변환합니다. **LLM은 구조를 채우고, 컴파일러가 코드를 작성합니다.**
 
-LLM이 양식을 채워 구조화된 데이터를 반환하면, AutoBe의 컴파일러가 그 데이터를 실제 코드로 변환합니다. **LLM은 구조를 채우고, 컴파일러가 코드를 작성합니다.**
-
-전체 파이프라인이 이 방식으로 동작합니다:
+이 방식이 5단계 워터폴 파이프라인 전체에 걸쳐 적용됩니다.
 
 | 단계 | LLM이 채우는 구조 | 컴파일러 검증 |
 |------|-------------------|--------------|
@@ -160,9 +93,11 @@ LLM이 양식을 채워 구조화된 데이터를 반환하면, AutoBe의 컴파
 | 테스트 | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30개 이상 표현식 타입 | AutoBeTest 컴파일러 |
 | 구현 | 모듈화된 코드 (Collector/Transformer/Operation) | TypeScript 컴파일러 |
 
-모든 단계에서 LLM은 구조를 채우고, 컴파일러가 검증합니다. 각 AST는 LLM이 생성할 수 있는 값의 범위를 엄격히 제한합니다 — 예를 들어 `AutoBeDatabase`의 필드 타입은 `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"` 7가지뿐이어서, LLM이 `"varchar"` 같은 임의의 타입을 생성할 수 없습니다.
+각 AST는 LLM이 생성할 수 있는 값의 범위를 엄격히 제한합니다 — 예를 들어 `AutoBeDatabase`의 필드 타입은 `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"` 7가지뿐이어서, LLM이 `"varchar"` 같은 임의의 타입을 생성할 수 없습니다.
 
-### 2.4. 4단 컴파일러 검증
+40개 이상의 전문 AI 에이전트가 이 파이프라인을 수행합니다. 단순한 일직선이 아닙니다 — 단계 내부에서 나선형 루프가 돌며, 실패 시 자동으로 재생성과 교정을 반복합니다. 단계 간 의존성은 Step Counter 패턴으로 관리됩니다 — 상위 단계가 다시 실행되면 하위 단계가 자동으로 무효화되어, 데이터베이스 스키마 수정 시 API 명세부터 구현 코드까지 연쇄적으로 재생성됩니다.
+
+### 2.3. 4단 컴파일러 검증
 
 AutoBe의 100% 컴파일 보장은 4단 검증 시스템에서 나옵니다. 각 단계는 서로 다른 추상화 수준에서 검증합니다.
 
@@ -194,7 +129,7 @@ OpenAPI v3.2 명세의 유효성을 검증합니다. 데이터베이스 스키�
 
 네 컴파일러 모두, 실패 시 "어디서, 무엇이, 왜 잘못되었는지"를 구조화된 형태로 반환합니다. 이 진단 정보가 다음 절의 자기 치유 루프를 가능하게 합니다.
 
-### 2.5. 자기 치유 루프
+### 2.4. 자기 치유 루프
 
 컴파일 실패는 끝이 아닙니다. AutoBe의 핵심 메커니즘은 **자기 치유 루프**입니다.
 
@@ -220,7 +155,7 @@ OpenAPI v3.2 명세의 유효성을 검증합니다. 데이터베이스 스키�
 
 여기에 Typia의 validation feedback이 function calling 수준에서의 정밀한 오류 교정을 더합니다. AutoBe의 컴파일러가 코드 수준에서의 최종 검증을 담당하고, Typia가 function calling 수준에서의 구조 검증을 담당합니다. 이 두 계층의 결합이 100% 컴파일의 원동력입니다. Typia의 역할에 대해서는 3장에서 자세히 다룹니다.
 
-### 2.6. 채울 양식은 단순하지 않다
+### 2.5. 채울 양식은 단순하지 않다
 
 LLM이 채워야 하는 구조는 결코 단순하지 않습니다.
 
@@ -265,7 +200,7 @@ export type IExpression =
 
 30개 이상 변종의 재귀 중첩. 프로그래밍 언어 수준의 복잡성을 단일 function call로 처리해야 합니다.
 
-### 2.7. 스키마 스펙이 곧 프롬프트다
+### 2.6. 스키마 스펙이 곧 프롬프트다
 
 기존 AI 에이전트에서 "프롬프트"란 자연어 지시문입니다. "당신은 백엔드 개발 전문가입니다. 코드 작성 시 다음 규칙을 따르세요..."
 
@@ -275,7 +210,7 @@ AutoBe에서 프롬프트 역할을 하는 것은 자연어가 아니라 **스�
 
 **스키마 스펙이 곧 새 시대의 프롬프트입니다.**
 
-### 2.8. 4개 Qwen 모델, 모두 100%
+### 2.7. 4개 Qwen 모델, 모두 100%
 
 AutoBe는 현재 4개의 Qwen 모델을 대상으로 테스트합니다. 모두 컴파일에 성공합니다.
 
@@ -294,7 +229,9 @@ AutoBe는 현재 4개의 Qwen 모델을 대상으로 테스트합니다. 모두 
 
 2장에서 자연스럽게 등장했던 것들 — 스키마 생성, 깨진 JSON 복구, 타입 교정, 정밀 오류 피드백 — 이 모든 것을 누가 담당할까요?
 
-[Typia](https://github.com/samchon/typia)가 하나의 라이브러리로 전부 처리합니다. `qwen3-coder-next`의 6.75% 성공률, `qwen3.5`의 0% 성공률을 어떻게 100%로 만드는지, 그 내부를 세밀하게 살펴봅시다.
+[Typia](https://github.com/samchon/typia)입니다. Typia는 단순한 런타임 라이브러리가 아닙니다. TypeScript 컴파일러의 타입 분석기를 직접 활용하는 **컴파일러 라이브러리**입니다. 소스 코드의 타입 정의를 컴파일 타임에 분석하여, JSON Schema · 검증기 · 파서 · 피드백 생성기를 자동으로 만들어냅니다. 타입 하나 정의하면 나머지는 컴파일러가 전부 해결합니다.
+
+`qwen3-coder-next`의 6.75% 성공률, `qwen3.5`의 0% 성공률을 어떻게 100%로 만드는지, 그 내부를 세밀하게 살펴봅시다.
 
 ### 3.1. TypeScript 타입에서 Function Calling 스키마까지
 
@@ -401,9 +338,8 @@ class ShoppingOrderController {
 const app = typia.llm.application<ShoppingOrderController>();
 const func = app.functions[0];
 
-// 모든 공개 메서드에 parse(), coerce(), validate()가 내장
+// 모든 공개 메서드에 parse(), validate()가 내장
 const data = func.parse(llmOutput);        // 깨진 JSON 복구 + 타입 교정
-const coerced = func.coerce(sdkParsed);    // SDK 파싱된 객체의 타입 교정
 const result = func.validate(data);        // 스키마 위반 감지
 if (result.success === false) {
   const feedback = LlmJson.stringify(result); // LLM 가독 피드백 생성
@@ -411,6 +347,8 @@ if (result.success === false) {
 ```
 
 **타입이 곧 스키마입니다.** LLM이 보는 제약과 검증기가 적용하는 제약이 항상 동일합니다 — 같은 소스에서 나오니까요.
+
+이것이 핵심입니다. Typia 컴파일러가 소스 코드의 타입을 분석하여 생성한 이 스키마가, 이후에 나올 모든 런타임 기능의 동력입니다. `parse()`가 깨진 JSON을 복구하고 타입을 교정할 때 참조하는 스키마, `validate()`가 오류를 진단할 때 비교 대상으로 사용하는 스키마 — 전부 컴파일 타임에 타입으로부터 자동 생성된 같은 스키마입니다. 수동 작성이 아니라 컴파일러 출력이기에, 타입과 스키마가 어긋날 수 없습니다.
 
 ### 3.2. 6.75%의 원인: 구조의 복잡성
 
@@ -506,7 +444,17 @@ declare class OrderService {
 
 핵심적인 차이점이 있습니다. 대부분의 JSON 복구 도구(jsonrepair, dirty-json, LangChain의 `parse_partial_json`)는 **문자열 수준**에서 작동합니다 — 후행 쉼표 정리, 괄호 닫기, Markdown 제거 후 `JSON.parse()`로 넘깁니다. 이중 문자열화(double-stringified)된 값 `"{\"type\":\"card\"}"` 는 이미 유효한 JSON (문자열)이므로 그대로 통과합니다. 스키마 없이는 이것이 객체여야 한다는 것을 알 수 없습니다.
 
-Typia의 `parse()`는 다릅니다. **스키마를 참조하며** 탐욕적으로(greedily) 파싱합니다. 스키마가 객체를 기대하는 곳에서 문자열을 만나면, 그 문자열에 대해 `parse()`를 재귀적으로 호출합니다. 파싱과 교정이 서로를 재귀적으로 호출하며 — **스키마 기반 재귀 순환** — 겹겹이 쌓인 stringify를 자연스럽게 풀어냅니다. 이중이든 삼중이든.
+Typia의 `parse()`는 다릅니다. 3.1절에서 컴파일러가 타입으로부터 생성한 **스키마를 참조하며** 탐욕적으로(greedily) 파싱합니다. 스키마가 객체를 기대하는 곳에서 문자열을 만나면, 그 문자열에 대해 `parse()`를 재귀적으로 호출합니다. 파싱과 교정이 서로를 재귀적으로 호출하며 — **스키마 기반 재귀 순환** — 겹겹이 쌓인 stringify를 자연스럽게 풀어냅니다. 이중이든 삼중이든.
+
+`parse()`는 JSON 복구뿐 아니라 **스키마 기반 타입 교정**도 동시에 수행합니다. LLM은 타입을 자주 틀립니다 — `"42"` (문자열)이 와야 할 곳에 `42` (숫자), `"true"` (문자열)이 와야 할 곳에 `true` (불리언). 단순 캐스팅으로는 해결이 안 됩니다. `"42"`가 숫자가 되어야 하는지, 문자열로 남아야 하는지는 해당 필드의 스키마에 전적으로 달려 있고, 그 스키마는 Typia 컴파일러가 TypeScript 타입으로부터 자동 생성한 것입니다.
+
+| LLM 출력 | 스키마 기대 타입 | `parse()` 교정 결과 |
+|----------|---------|------|
+| `"42"` | `number` 또는 `integer` | `42` |
+| `"true"` / `"false"` | `boolean` | `true` / `false` |
+| `"null"` | `null` | `null` |
+| `"{\"x\": 1}"` | `object` | `{ x: 1 }` (재귀 파싱) |
+| `"[1, 2, 3]"` | `array` | `[1, 2, 3]` (재귀 파싱) |
 
 ### 3.4. Qwen 3.5의 0% 문제: Double-Stringify
 
@@ -537,21 +485,25 @@ LLM이 실제로 반환하는 것:
 
 ```typescript
 const llmOutput = `
-  > I'd be happy to help you with your order! 😊
+  > LLM sometimes returns some prefix text with markdown JSON code block.
+ 
+  I'd be happy to help you with your order! 😊
+ 
   \`\`\`json
   {
     "order": {
-      "payment": "{\\"type\\":\\"card\\",\\"cardNumber\\":\\"1234-5678",
+      "payment": "{\"type\":\"card\",\"cardNumber\":\"1234-5678", // unclosed string & bracket
       "product": {
-        name: "Laptop",
-        price: 1300,
-        quantity: 2,
+        name: "Laptop", // unquoted key
+        price: "1299.99", // wrong type (string instead of number)
+        quantity: 2, // trailing comma
       },
       "customer": {
+        // incomplete keyword + unclosed brackets
         "name": "John Doe",
         "email": "john@example.com",
         vip: tru
-  \`\`\``;
+  \`\`\`
 ```
 
 Markdown 감싸기, 설명 접두사, 따옴표 없는 키, 후행 쉼표, `tru` (`true` 대신), 닫히지 않은 괄호 — 그리고 `payment`가 **이중 문자열화(double-stringified)**되어 있습니다. `{"type": "card", ...}` (객체) 대신 `"{\"type\": \"card\", ...}"` (JSON을 담은 문자열)를 생성한 것입니다. 하나의 출력에 7가지 문제.
@@ -560,86 +512,7 @@ Markdown 감싸기, 설명 접두사, 따옴표 없는 키, 후행 쉼표, `tru`
 
 Typia의 `parse()`가 이 모든 것을 단일 호출로 처리합니다 — 깨진 JSON 복구, 타입 교정, 이중 문자열화 해제. 모델 변경 없음. 프롬프트 튜닝 없음. 이것이 Qwen 3.5가 0%에서 100%로 간 방법입니다.
 
-### 3.5. Schema 기반 타입 교정
-
-3.3절의 `parse()`는 원시 LLM 텍스트에서 타입 교정을 자동 수행합니다. 하지만 SDK(Anthropic SDK, Vercel AI, LangChain, MCP)가 이미 JSON을 파싱한 경우에는? 문법은 정상이고 타입만 틀립니다. 이것이 `coerce()`의 역할입니다.
-
-LLM은 구조만이 아니라 타입도 자주 틀립니다. `"42"` (문자열)이 와야 할 곳에 `42` (숫자). `"true"` (문자열)이 와야 할 곳에 `true` (불리언). 사람은 동일하게 보지만 프로그램에게는 완전히 다른 타입입니다.
-
-단순 캐스팅으로는 해결이 안 됩니다. `"42"`가 숫자가 되어야 하는지, 문자열로 남아야 하는지는 **해당 필드의 스키마**에 전적으로 달려 있습니다.
-
-Typia의 `ILlmFunction.coerce()`는 JSON Schema를 참조하여 값을 변환합니다:
-
-| LLM 출력 | 기대 타입 | 결과 |
-|----------|---------|------|
-| `"42"` | `number` 또는 `integer` | `42` |
-| `"true"` / `"false"` | `boolean` | `true` / `false` |
-| `"null"` | `null` | `null` |
-| `"{\"x\": 1}"` | `object` | `{ x: 1 }` (재귀 파싱) |
-| `"[1, 2, 3]"` | `array` | `[1, 2, 3]` (재귀 파싱) |
-
-실제 사용 예:
-
-```typescript
-import typia, { ILlmApplication, ILlmFunction, tags } from "typia";
-
-const app: ILlmApplication = typia.llm.application<OrderService>();
-const func: ILlmFunction = app.functions[0];
-
-// Anthropic, Vercel AI, LangChain, MCP already parse JSON internally.
-// However, types are often wrong:
-const fromSdk = {
-  order: {
-    payment: '{"type":"card","cardNumber":"1234-5678', // stringified (unclosed)
-    product: {
-      name: "Laptop",
-      price: "1299.99", // string instead of number
-      quantity: "2", // string instead of number
-    },
-    customer: {
-      name: "John Doe",
-      email: "john@example.com",
-      vip: "true", // string instead of boolean
-    },
-  },
-};
-
-const result = func.coerce(fromSdk);
-console.log(result);
-
-interface IOrder {
-  payment: IPayment;
-  product: {
-    name: string;
-    price: number & tags.Minimum<0>;
-    quantity: number & tags.Type<"uint32">;
-  };
-  customer: {
-    name: string;
-    email: string & tags.Format<"email">;
-    vip: boolean;
-  };
-}
-
-type IPayment =
-  | { type: "card"; cardNumber: string }
-  | { type: "bank"; accountNumber: string };
-
-declare class OrderService {
-  /**
-   * Create a new order.
-   *
-   * @param props Order properties
-   */
-  createOrder(props: { order: IOrder }): { id: string };
-}
-```
-
-유니온 타입의 경우, Typia는 데이터의 구조를 분석하여 올바른 변종을 식별한 뒤 해당 변종의 교정 규칙을 적용합니다 — 별도의 discriminator가 필요 없습니다.
-
-**이것이 Qwen 3.5의 0% → 100%를 가능하게 한 메커니즘입니다.** 유니온 타입에서 객체를 이중 문자열화하는 모델의 경향이 인프라 수준에서 흡수되었습니다.
-
-### 3.6. Validation Feedback: 정밀한 오류 피드백
+### 3.5. Validation Feedback: 정밀한 오류 피드백
 
 파싱과 교정을 거쳐도 값 자체가 틀릴 수 있습니다. 음수 가격, 이메일이 아닌 문자열, 정수여야 하는 곳의 소수.
 
@@ -733,7 +606,7 @@ declare class OrderService {
 
 LLM은 자신의 JSON 위에서 정확히 어디가 틀렸는지 봅니다. 전체를 다시 쓸 필요 없이 표시된 5개 필드만 고치면 됩니다. 정밀하고, 구조화되고, 즉각 조치 가능한 피드백입니다.
 
-### 3.7. 완전한 피드백 루프
+### 3.6. 완전한 피드백 루프
 
 모든 것을 하나의 루프로 결합합니다:
 
@@ -776,7 +649,7 @@ async function callWithFeedback(
 
 이것이 6.75%를 100%로 만드는 완전한 루프입니다.
 
-### 3.8. 하네스 엔지니어링: AutoBe + Typia의 결합
+### 3.7. 하네스 엔지니어링: AutoBe + Typia의 결합
 
 여기서 비로소 **하네스(harness)**라는 개념이 완성됩니다.
 
@@ -787,7 +660,7 @@ AutoBe와 Typia의 결합이 이 하네스를 구성합니다:
 **Typia 계층** (function calling 수준):
 - 타입 → 스키마 자동 생성
 - 깨진 JSON 복구 (lenient parsing)
-- 스키마 기반 타입 교정 (coercion)
+- 스키마 기반 타입 교정 (type coercion)
 - 정밀 오류 피드백 (validation feedback)
 
 **AutoBe 계층** (시스템 수준):
@@ -798,12 +671,12 @@ AutoBe와 Typia의 결합이 이 하네스를 구성합니다:
 
 Typia가 function calling의 입출력을 견고하게 만들고, AutoBe가 시스템 전체의 정합성을 보장합니다. 이 두 계층의 결합이 확률적 모델을 감싸는 결정론적 루프 — 하네스 — 를 완성합니다.
 
-하나의 TypeScript 타입을 정의하면 Typia가 나머지를 전부 처리합니다:
+하나의 TypeScript 타입을 정의하면 Typia **컴파일러**가 나머지를 전부 처리합니다:
 
-1. **스키마 생성** — `typia.llm.parameters<T>()`, `typia.llm.application<T>()`
-2. **파싱** — `ILlmFunction.parse()` (깨진 JSON 복구 + 타입 교정)
-3. **교정** — `ILlmFunction.coerce()` (SDK 파싱된 객체의 타입 교정)
-4. **검증** — `ILlmFunction.validate()` (스키마 위반 감지)
+1. **컴파일 타임: 소스 코드 분석** — TypeScript 타입을 분석하여 JSON Schema · 검증기 · 파서 코드를 자동 생성
+2. **스키마 생성** — `typia.llm.parameters<T>()`, `typia.llm.application<T>()`
+3. **파싱 + 타입 교정** — `ILlmFunction.parse()` (컴파일러가 생성한 스키마로 깨진 JSON 복구, 타입 교정, double-stringify 해제를 한 번에)
+4. **검증** — `ILlmFunction.validate()` (같은 스키마로 위반 감지)
 5. **피드백 생성** — `LlmJson.stringify()` (LLM 가독 `// ❌` 인라인 진단)
 
 **타입이 곧 스키마이자, 검증기이자, 프롬프트입니다. 하네스는 그 주위의 모든 것입니다.**
@@ -1091,9 +964,7 @@ AutoBe는 4개 Qwen 모델 전부에서 100% 컴파일을 달성했습니다. �
 
 타입으로 소통하면 오해가 없습니다. 스키마로 제약하면 분홍 코끼리가 없습니다. 결정론적 루프가 있으면 6.75%도 100%가 됩니다.
 
-더 좋은 프롬프트를 만들지 마세요. 더 좋은 하네스를 만드세요.
-
-**LLM은 정확할 필요 없습니다. 교정 가능하기만 하면 됩니다.**
+**모델을 바꾸지 마십시오. 구조를 바꾸십시오.**
 
 ---
 
@@ -1105,7 +976,7 @@ AutoBe는 4개 Qwen 모델 전부에서 100% 컴파일을 달성했습니다. �
 
 ## 부록: 기술 심화
 
-유니온 타입이 이 발표 전반에 등장합니다. `IJsonSchema`의 10개 변종 (2.7절), `IExpression`의 30개 이상 변종 (2.7절), Qwen 3.5의 double-stringify 문제 (3.4절), 타입 교정 (3.5절), validation feedback (3.6절). A.1–A.4절은 유니온 타입이 왜 핵심 도전인지를 탐구합니다. A.5절은 스키마 기반 파싱이 가능하게 하는 검증 너머의 능력을 탐구합니다.
+유니온 타입이 이 발표 전반에 등장합니다. `IJsonSchema`의 10개 변종 (2.6절), `IExpression`의 30개 이상 변종 (2.6절), Qwen 3.5의 double-stringify 문제 (3.4절), 타입 교정 (3.3절), validation feedback (3.5절). A.1–A.4절은 유니온 타입이 왜 핵심 도전인지를 탐구합니다. A.5절은 스키마 기반 파싱이 가능하게 하는 검증 너머의 능력을 탐구합니다.
 
 ### A.1. Discriminated Union이란?
 
