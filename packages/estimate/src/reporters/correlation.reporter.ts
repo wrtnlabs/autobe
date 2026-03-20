@@ -23,7 +23,10 @@ export interface CorrelationReport {
   /** Actionable insights derived from correlation data */
   insights: CorrelationInsight[];
   /** Phase score summary across all results */
-  phaseStats: Record<string, { mean: number; stddev: number; min: number; max: number }>;
+  phaseStats: Record<
+    string,
+    { mean: number; stddev: number; min: number; max: number }
+  >;
 }
 
 const SCORING_PHASES = [
@@ -82,10 +85,7 @@ function stddev(arr: number[]): number {
 }
 
 /** Extract phase score from evaluation result */
-function getPhaseScore(
-  result: EvaluationResult,
-  phase: ScoringPhase,
-): number {
+function getPhaseScore(result: EvaluationResult, phase: ScoringPhase): number {
   const phaseResult = result.phases[phase] as PhaseResult | undefined;
   return phaseResult?.score ?? 0;
 }
@@ -113,7 +113,10 @@ export function generateCorrelationReport(
   }
 
   // Collect score vectors per phase
-  const vectors: Record<ScoringPhase, number[]> = {} as any;
+  const vectors: Record<ScoringPhase, number[]> = {} as Record<
+    ScoringPhase,
+    number[]
+  >;
   for (const phase of SCORING_PHASES) {
     vectors[phase] = validResults.map((r) => getPhaseScore(r, phase));
   }
@@ -219,9 +222,7 @@ function deriveInsights(
 }
 
 /** Format correlation report as markdown */
-export function formatCorrelationMarkdown(
-  report: CorrelationReport,
-): string {
+export function formatCorrelationMarkdown(report: CorrelationReport): string {
   const lines: string[] = [];
   lines.push("# Cross-Phase Correlation Analysis\n");
 

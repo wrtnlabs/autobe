@@ -14,6 +14,7 @@ Nam = "Nam"
 tru = "tru"
 fals = "fals"
 nul = "nul"
+xdescribe = "xdescribe"
 
 [files]
 extend-exclude = [

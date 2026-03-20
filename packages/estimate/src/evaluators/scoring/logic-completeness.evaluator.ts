@@ -63,7 +63,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     {
       pattern: /\bxdescribe\s*\(/gi,
       code: "LOGIC015",
-      message: "Skipped test suite (xdescribe) found — entire suite disabled",
+      message: "Skipped test suite (xdescribe) found — entire suite disabled", // typos:ignore
     },
     {
       pattern: /\bdescribe\.skip\s*\(/gi,
@@ -209,7 +209,10 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     "do",
   ]);
 
-  /** Known NestJS lifecycle / decorator callback names that are legitimately empty */
+  /**
+   * Known NestJS lifecycle / decorator callback names that are legitimately
+   * empty
+   */
   private static readonly LIFECYCLE_METHODS = new Set([
     "onModuleInit",
     "onModuleDestroy",
@@ -218,8 +221,10 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     "beforeApplicationShutdown",
   ]);
 
-  /** Detect empty method bodies: async methodName(...) { }
-   *  Skips arrow-function callbacks, decorator arguments, and NestJS lifecycle hooks. */
+  /**
+   * Detect empty method bodies: async methodName(...) { } Skips arrow-function
+   * callbacks, decorator arguments, and NestJS lifecycle hooks.
+   */
   private checkEmptyMethods(
     content: string,
     filePath: string,
@@ -237,7 +242,10 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
       // Skip NestJS lifecycle hooks (legitimately empty)
       if (LogicCompletenessEvaluator.LIFECYCLE_METHODS.has(name)) continue;
       // Skip if preceded by `=>`, `=`, or `,` — likely a callback or object method
-      const before = content.substring(Math.max(0, match.index - 20), match.index);
+      const before = content.substring(
+        Math.max(0, match.index - 20),
+        match.index,
+      );
       if (/[=>,]\s*$/.test(before)) continue;
       // Skip if preceded by `@` decorator line (e.g. @Module({ ... }))
       if (/@\w+\s*\(\s*$/.test(before)) continue;
@@ -255,8 +263,10 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
   }
 
-  /** Detect empty catch blocks: catch (...) { }
-   *  Skips catch blocks with intentional-empty comments. */
+  /**
+   * Detect empty catch blocks: catch (...) { } Skips catch blocks with
+   * intentional-empty comments.
+   */
   private checkEmptyCatch(
     content: string,
     filePath: string,
@@ -310,16 +320,17 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
   }
 
-  /** Detect passthrough methods whose entire body is a single delegation call.
-   *  e.g. `async create(input) { return this.service.create(input); }`
-   *  These indicate the provider/controller has no real business logic. */
+  /**
+   * Detect passthrough methods whose entire body is a single delegation call.
+   * e.g. `async create(input) { return this.service.create(input); }` These
+   * indicate the provider/controller has no real business logic.
+   */
   private checkPassthroughMethods(
     content: string,
     filePath: string,
     issues: Issue[],
   ): void {
-    const funcStart =
-      /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
+    const funcStart = /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
     // Single return+await delegation: the body is only `return (await)? this.xxx.yyy(...);`
     const passthroughBody =
       /^\s*return\s+(?:await\s+)?this\.\w+\.\w+\s*\([^)]*\)\s*;?\s*$/;
@@ -363,15 +374,16 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
   }
 
-  /** Detect boilerplate similarity: when many methods in a single file share
-   *  near-identical body structure (same AST shape, different identifiers). */
+  /**
+   * Detect boilerplate similarity: when many methods in a single file share
+   * near-identical body structure (same AST shape, different identifiers).
+   */
   private checkBoilerplateSimilarity(
     content: string,
     filePath: string,
     issues: Issue[],
   ): void {
-    const funcStart =
-      /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
+    const funcStart = /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
 
     const bodySignatures: string[] = [];
     let m;
@@ -432,8 +444,11 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
   }
 
-  /** Detect providers whose methods are all thin Prisma wrappers.
-   *  e.g. every method body is just `return this.prisma.xxx.findMany/create/update/delete(...)` */
+  /**
+   * Detect providers whose methods are all thin Prisma wrappers. e.g. every
+   * method body is just `return
+   * this.prisma.xxx.findMany/create/update/delete(...)`
+   */
   private checkPrismaOnlyProvider(
     content: string,
     filePath: string,
@@ -442,8 +457,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     // Only check provider files
     if (!/provider/i.test(filePath)) return;
 
-    const funcStart =
-      /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
+    const funcStart = /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
     // Prisma CRUD pattern: body is only `return (await)? this.prisma.xxx.method(...);`
     const prismaOnly =
       /^\s*return\s+(?:await\s+)?this\.\w*(?:prisma|repository)\w*\.\w+\.\w+\s*\(/;

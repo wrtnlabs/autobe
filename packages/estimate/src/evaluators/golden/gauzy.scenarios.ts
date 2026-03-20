@@ -20,8 +20,8 @@ export async function runGauzyScenarios(
   let employeeId: string | null = null;
   let projectId: string | null = null;
   let taskId: string | null = null;
-  let contractId: string | null = null;
-  let timelogId: string | null = null;
+  let _contractId: string | null = null;
+  let _timelogId: string | null = null;
   let timesheetId: string | null = null;
 
   // ── Auth & Organization ─────────────────────────────────
@@ -107,10 +107,17 @@ export async function runGauzyScenarios(
   });
   if (!orgGetEndpoint || !orgId) {
     results.push(
-      fail(4, "Get organization detail", orgGetEndpoint ? "no orgId" : "endpoint not found"),
+      fail(
+        4,
+        "Get organization detail",
+        orgGetEndpoint ? "no orgId" : "endpoint not found",
+      ),
     );
   } else {
-    const url = http.resolvePath(orgGetEndpoint.url, { id: orgId, organizationId: orgId });
+    const url = http.resolvePath(orgGetEndpoint.url, {
+      id: orgId,
+      organizationId: orgId,
+    });
     const res = await http.get(url, true);
     results.push(
       res.ok
@@ -129,7 +136,10 @@ export async function runGauzyScenarios(
       fail(5, "Update organization settings", "endpoint or orgId not found"),
     );
   } else {
-    const url = http.resolvePath(orgUpdateEndpoint.url, { id: orgId, organizationId: orgId });
+    const url = http.resolvePath(orgUpdateEndpoint.url, {
+      id: orgId,
+      organizationId: orgId,
+    });
     const res = await http.patch(url, { name: "Gauzy Corp Updated" }, true);
     results.push(
       res.ok
@@ -145,8 +155,7 @@ export async function runGauzyScenarios(
     findEndpoint(routes, {
       pathKeywords: ["employees", "invite"],
       method: "POST",
-    }) ||
-    findEndpoint(routes, { pathKeywords: ["employees"], method: "POST" });
+    }) || findEndpoint(routes, { pathKeywords: ["employees"], method: "POST" });
   if (!employeeInviteEndpoint) {
     results.push(fail(6, "Invite employee", "endpoint not found"));
   } else {
@@ -264,7 +273,7 @@ export async function runGauzyScenarios(
       true,
     );
     if (res.ok) {
-      contractId = res.body?.id || res.body?.data?.id || null;
+      _contractId = res.body?.id || res.body?.data?.id || null;
       results.push(pass(9, "Create employee contract"));
     } else {
       results.push(fail(9, "Create employee contract", `status ${res.status}`));
@@ -444,7 +453,7 @@ export async function runGauzyScenarios(
       true,
     );
     if (res.ok) {
-      timelogId = res.body?.id || res.body?.data?.id || null;
+      _timelogId = res.body?.id || res.body?.data?.id || null;
       results.push(pass(17, "Create timelog"));
     } else {
       results.push(fail(17, "Create timelog", `status ${res.status}`));
@@ -554,8 +563,7 @@ export async function runGauzyScenarios(
     findEndpoint(routes, {
       pathKeywords: ["timer", "start"],
       method: "POST",
-    }) ||
-    findEndpoint(routes, { pathKeywords: ["timers"], method: "POST" });
+    }) || findEndpoint(routes, { pathKeywords: ["timers"], method: "POST" });
   if (!timerStartEndpoint) {
     results.push(fail(22, "Start timer", "endpoint not found"));
   } else {
@@ -585,7 +593,9 @@ export async function runGauzyScenarios(
     results.push(fail(23, "Stop timer", "endpoint not found"));
   } else {
     const res = await http.post(timerStopEndpoint.url, {}, true);
-    const res2 = res.ok ? res : await http.patch(timerStopEndpoint.url, {}, true);
+    const res2 = res.ok
+      ? res
+      : await http.patch(timerStopEndpoint.url, {}, true);
     results.push(
       res2.ok
         ? pass(23, "Stop timer")
@@ -714,7 +724,11 @@ export async function runGauzyScenarios(
     );
   } else {
     results.push(
-      fail(29, "Unauthenticated project create returns 401", "endpoint not found"),
+      fail(
+        29,
+        "Unauthenticated project create returns 401",
+        "endpoint not found",
+      ),
     );
   }
 

@@ -2,8 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 
 /**
- * Validates API responses against OpenAPI spec schemas.
- * Checks that response bodies contain expected fields defined in the spec.
+ * Validates API responses against OpenAPI spec schemas. Checks that response
+ * bodies contain expected fields defined in the spec.
  */
 
 interface OpenApiSchema {
@@ -18,10 +18,7 @@ interface OpenApiPathOp {
   responses?: Record<
     string,
     {
-      content?: Record<
-        string,
-        { schema?: OpenApiSchema }
-      >;
+      content?: Record<string, { schema?: OpenApiSchema }>;
     }
   >;
 }
@@ -73,7 +70,7 @@ function resolveRef(
 }
 
 /** Get expected response schema for a path+method from spec */
-function getResponseSchema(
+function _getResponseSchema(
   spec: Record<string, unknown>,
   apiPath: string,
   method: string,
@@ -94,8 +91,7 @@ function getResponseSchema(
     const response = op.responses[code];
     if (!response?.content) continue;
     const jsonContent =
-      response.content["application/json"] ||
-      response.content["*/*"];
+      response.content["application/json"] || response.content["*/*"];
     if (jsonContent?.schema) {
       let schema = jsonContent.schema;
       if (schema.$ref) {
@@ -132,9 +128,9 @@ export function validateResponse(
 }
 
 /**
- * Validate that a response body has reasonable structure.
- * Checks for common patterns: arrays should have elements with consistent keys,
- * objects should have non-null values for key fields.
+ * Validate that a response body has reasonable structure. Checks for common
+ * patterns: arrays should have elements with consistent keys, objects should
+ * have non-null values for key fields.
  */
 export function validateResponseStructure(
   body: unknown,
@@ -180,8 +176,8 @@ export function validateResponseStructure(
 }
 
 /**
- * Validate data consistency between create and read operations.
- * Checks that fields sent in create request appear in subsequent read.
+ * Validate data consistency between create and read operations. Checks that
+ * fields sent in create request appear in subsequent read.
  */
 export function validateDataConsistency(
   sentData: Record<string, unknown>,
