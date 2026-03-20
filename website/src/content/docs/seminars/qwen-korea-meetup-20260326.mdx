@@ -95,7 +95,7 @@ The difference isn't a better model. It isn't a smarter prompt. It's a **harness
 
 A climbing harness doesn't make you stronger — it makes your strength safe. A test harness doesn't make code correct — it makes bugs visible. A function calling harness doesn't make the LLM smarter — it makes the LLM's mistakes correctable.
 
-Type schema constrains the output. Compiler validates the result. Structured feedback pinpoints the errors. The LLM corrects and retries. This deterministic loop around a probabilistic model is the harness.
+Type schema constrains the output. Compiler validates the result. Structured feedback pinpoints the errors. The LLM corrects and retries. This deterministic loop around a probabilistic model is the harness. It matters more than the model inside it.
 
 ---
 
@@ -366,9 +366,7 @@ First, **JSDoc comments become `description` fields.** The LLM reads these descr
 
 Second, **type constraints become validation rules.** `ExclusiveMinimum<18>` becomes a "> 18" rule; `Format<"email">` becomes an email format check. One type definition produces both LLM guidance and validation rules simultaneously.
 
-Hand-written schemas inevitably drift from types over time. Typia eliminates this problem. **The type is the schema.** This is the harness's first guarantee: the constraints the LLM sees and the constraints the validator enforces are always identical, because they come from the same source.
-
-At the class level, `typia.llm.application<T>()` converts all public methods into function calling schemas, with `parse()`, `coerce()`, and `validate()` methods automatically built into each function.
+Hand-written schemas inevitably drift from types over time. Typia eliminates this problem. **The type is the schema.** This is the harness's first guarantee: the constraints the LLM sees and the constraints the validator enforces are always identical, because they come from the same source. At the class level, `typia.llm.application<T>()` scales this to entire APIs — every public method becomes a function calling schema with `parse()`, `coerce()`, and `validate()` built in.
 
 ### 2.2. Lenient Parsing: Cleaning Up Broken JSON
 
@@ -775,9 +773,13 @@ Look at these types. Every one has a `type` field with enumerated variants — `
 
 #### 3.5.3. Where the Harness Doesn't Apply
 
-Conversely, the harness doesn't fit domains where deterministic validators can't be built. Creative writing, emotional intelligence, strategic decision-making. There's no validator for "a good novel" or "a wise business decision."
+The harness has clear boundaries.
 
-The harness is powerful, but it has clear boundaries. Honest about that.
+First, **domains without deterministic validators.** Creative writing, emotional intelligence, strategic decision-making. There's no validator for "a good novel" or "a wise business decision." Without a validator, there's no feedback loop. Without a feedback loop, there's no harness.
+
+Second, **when the cost of building the harness exceeds the cost of living with uncertainty.** A harness requires upfront investment: precise type design, compiler integration, feedback formatting. For a one-off task with loose correctness requirements, a well-crafted prompt may be the right tool. The harness pays off when you need repeatable, verifiable correctness at scale — exactly the situation AutoBe faces with code generation.
+
+The harness is not a universal solution. It's a solution for domains where correctness is non-negotiable and mechanically verifiable. In those domains, it's unmatched.
 
 ---
 
@@ -1044,4 +1046,4 @@ This is incremental compilation applied to structured output. Traditional functi
 
 **Function calling's output size is no longer bounded by `max_output_tokens`.** A 200K-token JSON can be built incrementally across multiple turns, with type safety maintained at every step. The schema tells you what you have and what you need; the lenient parser ensures nothing is wasted.
 
-Yet another thing the harness makes possible.
+The harness doesn't just validate. It enables. When structured output can be built incrementally, the ceiling on what function calling can produce disappears entirely.
