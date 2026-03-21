@@ -410,8 +410,10 @@ const func: ILlmFunction = app.functions[0];
 // LLM sometimes returns malformed JSON with wrong types
 const llmOutput = dedent`
   > LLM sometimes returns some prefix text with markdown JSON code block.
-    I'd be happy to help you with your order! 😊
-    \`\`\`json
+
+  I'd be happy to help you with your order! 😊
+  
+  \`\`\`json
   {
     "order": {
       "payment": "{\\"type\\":\\"card\\",\\"cardNumber\\":\\"1234-5678", // unclosed string & bracket
