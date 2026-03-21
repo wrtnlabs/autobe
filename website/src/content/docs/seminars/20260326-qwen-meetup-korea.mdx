@@ -48,13 +48,15 @@ import PptxBanner from "../../../components/PptxBanner";
 
 6.75%.
 
-That's the probability of getting a valid result on the first try when you ask `qwen3-coder-next` to generate API data types for a shopping mall backend. 93 out of 100 attempts fail.
+That's the first-try function calling success rate when `qwen3-coder-next` is asked to generate API data types for a shopping mall backend. 93 out of 100 attempts produce invalid structured output.
 
-There's an open-source AI agent called [AutoBe](https://github.com/wrtnlabs/autobe). A single natural language conversation produces requirements analysis, database schema, API specification, E2E tests, and implementation code — all of it. Hook up that 6.75% model and what happens? Final compilation success rate: **100%**. All four Qwen models.
+This isn't surprising. [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797) measured GPT-4o at 28% accuracy on nested tool call sequences. [JSONSchemaBench (ICLR 2025)](https://arxiv.org/abs/2501.10868) tested constrained decoding frameworks on 10,000 real-world schemas and found 3–41% coverage on the hardest ones. BoundaryML went further, [arguing](https://boundaryml.com/blog/structured-outputs-create-false-confidence) that structured outputs actively degrade model reasoning — that forcing JSON format makes the model *dumber*. The consensus is clear: function calling works for flat, simple schemas. For anything with recursive nesting or deep structural complexity, don't bother.
 
-The secret isn't a better model or a smarter prompt. It's a **harness**. Constrain outputs with type schemas, verify results with compilers, pinpoint exactly where and why something went wrong through structured feedback, and the LLM corrects itself. Repeat until convergence.
+But if you want to make AI output deterministic — parse it, validate it, and correct it in a loop until it converges — there is no alternative to structured output. Free-form text can't be mechanically verified. Natural language can't be compiled. Without structure, there's no feedback loop, and without a feedback loop, there's no guarantee. So we didn't have the luxury of giving up on function calling. We had to make it work on the exact kind of complex, recursive schemas the industry had written off.
 
-A deterministic loop wrapping a probabilistic model — it was the engineering outside the model, not inside, that made the difference.
+[AutoBe](https://github.com/wrtnlabs/autobe) is the result. It's an open-source AI agent that takes a single natural language conversation and generates a complete backend — requirements analysis, database schema, API specification, E2E tests, and implementation code. Hook up that 6.75% model and what happens? Final compilation success rate: **100%**. All four Qwen models.
+
+The answer wasn't a better model or a smarter prompt. It was a **harness** — type schemas that constrain outputs, compilers that verify results, and structured feedback that pinpoints exactly where and why something went wrong so the LLM can correct itself. A deterministic loop wrapping a probabilistic model. The engineering outside the model, not inside, that made the difference.
 
 This talk dissects that engineering.
 
@@ -239,9 +241,11 @@ From 397B to 35B. Even a small model with 3B active parameters generates a compl
 
 ## 3. Typia — The Infrastructure That Turns 0% into 100%
 
-Everything that naturally appeared in Chapter 2 — schema generation, broken JSON recovery, type coercion, precise error feedback — who handles all of it?
+Chapter 2 described what AutoBe builds — but not how it survives 6.75%. Schema generation, broken JSON recovery, type coercion, precise error feedback — every piece of infrastructure that makes function calling work on complex types despite the industry consensus that it can't. Who handles all of it?
 
-[Typia](https://github.com/samchon/typia). Typia is not a simple runtime library. It's a **compiler library** that directly leverages the TypeScript compiler's type analyzer. It analyzes type definitions from source code at compile time to automatically generate JSON Schema, validators, parsers, and feedback generators. Define one type, and the compiler handles the rest.
+[Typia](https://github.com/samchon/typia). Making function calling reliable on recursive union types required going deeper than runtime libraries can reach. Runtime reflection can't see TypeScript types — they're erased at compilation. Zod-style schema builders choke on recursive unions (Appendix A.4 explains why). The only path was to operate at the **compiler level** itself — analyze types directly from source code and generate every piece of infrastructure from that single source of truth.
+
+That's what Typia is. A **compiler library** that directly leverages the TypeScript compiler's type analyzer to automatically generate JSON Schema, validators, parsers, and feedback generators at compile time. Define one type, and the compiler handles the rest. It's the result of choosing to solve the problem at the deepest layer available, because every shallower approach hit a wall.
 
 Let's examine in detail how it turns `qwen3-coder-next`'s 6.75% success rate and `qwen3.5`'s 0% success rate into 100%.
 
@@ -667,7 +671,17 @@ This is where the concept of **harness** is finally complete.
 
 A climbing harness doesn't make you stronger — it makes your strength safe. A test harness doesn't make code correct — it makes bugs visible. A function calling harness doesn't make the LLM smarter — it makes **the LLM's mistakes correctable**.
 
-The combination of AutoBe and Typia constitutes this harness:
+The combination of AutoBe and Typia constitutes this harness. Each layer was added because the previous one wasn't enough.
+
+We started with raw `JSON.parse()`. It broke constantly — unclosed brackets, trailing commas, Markdown wrappers. So we built **lenient parsing**. That got us from 0% to "at least we can read the output."
+
+But parsed JSON had wrong types everywhere. `"42"` instead of `42`, `"true"` instead of `true`. Without a schema, there's no way to know which is correct. So we built **schema-based type coercion** — the same schema the compiler generated from types now guided the parser.
+
+Coercion fixed type mismatches, but values themselves were still wrong — negative prices, invalid emails, decimals where integers should be. The LLM had no idea what it got wrong. So we built **validation feedback** — `// ❌` inline comments showing exactly where and why each field failed.
+
+Feedback fixed individual function calls, but the system as a whole still had consistency gaps — a valid DTO schema referencing a database field that didn't exist, valid test code calling an API endpoint with wrong parameters. So we built **4-tier compiler validation** — each tier catching a different class of inconsistency.
+
+No layer was planned in advance. Each was the minimum response to a specific failure mode:
 
 **Typia Layer** (function calling level):
 - Type → automatic schema generation
@@ -697,7 +711,13 @@ Define a single TypeScript type and the Typia **compiler** handles the rest:
 
 ## 4. In Praise of Function Calling
 
-Chapters 2 and 3 showed **how** it works. Now: **why** function calling is this powerful.
+Chapters 2 and 3 showed **how** it works. Now: **why** function calling is this powerful — and why the widespread skepticism, while accurate about the symptoms, misses the root cause.
+
+"Structured outputs create false confidence." "Your agent demo works perfectly... then you deploy with 50 real endpoints and everything falls apart." These aren't strawmen — they're published findings and the lived experience of engineers who tried structured output on complex schemas and watched it crumble.
+
+The criticism is accurate when you use structured output *without a harness*. Constrained decoding alone does degrade reasoning. Strict mode alone does fail on complex types. `JSON.parse()` alone does discard salvageable output. Every criticism describes what happens when you treat function calling as a feature to toggle on, rather than as infrastructure to build around.
+
+This chapter argues that the failures the industry observed are not evidence against function calling, but evidence that the harness was missing.
 
 ### 4.1. Natural Language vs Types
 
@@ -968,7 +988,11 @@ The open ecosystem creates a virtuous cycle:
 
 ## 6. Conclusion
 
-AutoBe achieved 100% compilation across all four Qwen models. Not through better prompts, but through robust structure.
+We started at 6.75%. The industry said complex function calling doesn't work, and our results agreed.
+
+But there was no alternative — deterministic AI output requires structured output — so we built the harness, one failure mode at a time. Lenient parsing because JSON broke. Type coercion because types were wrong. Validation feedback because values were wrong. Compiler pipelines because the system needed consistency.
+
+AutoBe achieved 100% compilation across all four Qwen models. Not through better prompts, but through the accumulated engineering of every way things went wrong.
 
 Three things: type schemas that constrain outputs, compilers that verify results, and structured feedback that corrects errors. These three form a deterministic loop wrapping probabilistic models.
 
