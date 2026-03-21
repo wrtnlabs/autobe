@@ -59,6 +59,15 @@ pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project sh
 pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project erp > archive.z-ai-glm-5-turbo.erp.log
 
 ######################################################
+# MINIMAX
+######################################################
+# minimax/minimax-m2.7 (0.30) -> working
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project todo > archive.minimax-minimax-m2.7.todo.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project reddit > archive.minimax-minimax-m2.7.reddit.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project shopping > archive.minimax-minimax-m2.7.shopping.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project erp > archive.minimax-minimax-m2.7.erp.log
+
+######################################################
 # DEEPSEEK
 ######################################################
 # deepseek/deepseek-v3.2 (0.25) -> working
