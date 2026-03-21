@@ -35,6 +35,15 @@ import PptxBanner from "../../../components/PptxBanner";
 >    - AutoBe's self-healing harness turns that into 100% compilation success
 >    - If you can verify, you converge
 
+{
+// function calling success rate 6.75% comes from
+// https://github.com/wrtnlabs/autobe-examples/tree/58b9fe0847dfa84ca428482651391387594540b2/qwen/qwen3-coder-next/shopping#function-calling
+//
+// in actually, the 1st attemp was not 6.75%, but 4.60% estimated
+// and after openrouter announced exacto mode,
+// success rate became higher
+}
+
 ## 1. Preface
 
 6.75%.
@@ -1157,3 +1166,49 @@ This is incremental compilation applied to structured output. Traditional functi
 **Function calling's output size is no longer limited by `max_output_tokens`.** A 200K-token JSON can be progressively built over multiple turns, with type safety maintained at every step. The schema knows what you have and what you need, and the lenient parser ensures nothing is wasted.
 
 Once structured output can be built incrementally, the upper bound on what function calling can produce disappears.
+
+### A.6. Current Function Calling Success Rates
+
+The 6.75% figure cited throughout this talk was an early estimate. Since then, [OpenRouter](https://openrouter.ai) introduced **Exacto mode** — a server-side enforcement of structured output — and success rates have improved noticeably. Here are the current measurements across six models and two of AutoBe's most complex function calling targets.
+
+**Important methodological note**: the "1st success rate" column was **not directly measured**. What we observe is the total number of trials and successes across the entire self-healing loop. From these aggregate numbers, the first-try success probability is **estimated** using the following formula:
+
+```math
+p_1 = \frac{1}{1 + \sqrt{\mu} \cdot (\mu - 1)}, \quad \mu = \frac{N_{trial}}{N_{success}}
+```
+
+where `N_trial` is the total number of function call attempts and `N_success` is the number that eventually produced valid output. `μ` represents the average number of attempts per success — when `μ = 1`, every attempt succeeds on the first try (`p₁ = 100%`); as `μ` grows, `p₁` drops rapidly.
+
+#### `IAutoBeInterfaceSchemaRefineApplication.IProps`
+
+This is the function calling target for **DTO schema generation** — the 10-variant recursive `IJsonSchema` union from Section 2.5. The type that originally yielded the 6.75% estimate.
+
+| Model | Trials | Successes | Overall Rate | Est. 1st Success Rate |
+|-------|-------:|----------:|-------------:|----------------------:|
+| `qwen/qwen3-coder-next` | 619 | 166 | 26.82% | 15.95% |
+| `qwen/qwen3.5-122b-a10b` | 370 | 115 | 31.08% | 20.09% |
+| `moonshotai/kimi-k2.5` | 382 | 177 | 46.34% | 37.02% |
+| `z-ai/glm-5` | 169 | 96 | 56.80% | 49.78% |
+| `openai/gpt-5.4` | 338 | 144 | 42.60% | 32.64% |
+| `anthropic/claude-sonnet-4.6` | 360 | 151 | 41.94% | 31.88% |
+
+`qwen3-coder-next`'s estimated first-try rate rose from 6.75% to **15.95%** — more than doubled. Exacto mode's structured output enforcement catches many of the malformed JSON issues (unclosed brackets, trailing commas) at the API level before they ever reach AutoBe's pipeline.
+
+#### `IAutoBeInterfaceEndpointReviewApplication.IProps`
+
+This is the function calling target for **endpoint review** — validating whether API endpoint designs are consistent with the database schema.
+
+| Model | Trials | Successes | Overall Rate | Est. 1st Success Rate |
+|-------|-------:|----------:|-------------:|----------------------:|
+| `qwen/qwen3-coder-next` | 188 | 46 | 24.47% | 13.81% |
+| `qwen/qwen3.5-122b-a10b` | 56 | 56 | 100.00% | 100.00% |
+| `moonshotai/kimi-k2.5` | 116 | 38 | 32.76% | 21.80% |
+| `z-ai/glm-5` | 67 | 53 | 79.10% | 77.10% |
+| `openai/gpt-5.4` | 212 | 21 | 9.91% | 3.34% |
+| `anthropic/claude-sonnet-4.6` | 24 | 24 | 100.00% | 100.00% |
+
+Notable results: `qwen3.5-122b-a10b` and `claude-sonnet-4.6` achieved **100% first-try success** on endpoint review — every single attempt was valid. Meanwhile, `gpt-5.4` scored the lowest at 3.34%, demonstrating that model size and brand do not predict function calling performance on complex schemas.
+
+The core thesis holds: even with improved first-try rates, no model achieves 100% across all function calling targets. The harness remains essential. What changed is the **starting point** of the loop — and a higher starting point means fewer retries, lower cost, and faster convergence.
+
+All experiments were conducted via [OpenRouter](https://openrouter.ai) with Exacto mode enabled. Raw results are available in the [autobe-examples repository](https://github.com/wrtnlabs/autobe-examples).
