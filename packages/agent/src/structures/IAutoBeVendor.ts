@@ -54,6 +54,18 @@ export interface IAutoBeVendor {
    */
   model: OpenAI.ChatModel | ({} & string);
 
+  /**
+   * Optional human-readable label for this vendor/model configuration.
+   *
+   * This is a display or grouping name that is distinct from the underlying
+   * `model` identifier, and is intended for use in logs, UIs, selection menus,
+   * or archive views where a more descriptive name is helpful (for example,
+   * "Primary GPT-4", "Fast Drafting Model", or "Internal Llama Cluster").
+   *
+   * When omitted, callers should fall back to displaying or logging the
+   * `model` value itself, or another sensible default derived from the model
+   * identifier.
+   */
   label?: string | undefined;
 
   /**
