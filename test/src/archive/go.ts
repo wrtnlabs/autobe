@@ -33,6 +33,7 @@ const main = async (): Promise<void> => {
   if (project === null) throw new Error("Project argument is required.");
   typia.assertGuard<AutoBeExampleProject>(project);
 
+  const label: string = TestGlobal.getArguments("label")?.[0] ?? vendor;
   const phases: AutoBePhase[] = (() => {
     const from: string | null = TestGlobal.getArguments("from")?.[0] ?? null;
     const to: string | null = TestGlobal.getArguments("to")?.[0] ?? null;
@@ -91,7 +92,7 @@ const main = async (): Promise<void> => {
           }),
       },
       {
-        vendors: [vendor],
+        vendors: [label],
         projects: [project],
         imagePath: imagePath ?? undefined,
         phases,

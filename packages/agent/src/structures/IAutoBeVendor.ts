@@ -54,6 +54,8 @@ export interface IAutoBeVendor {
    */
   model: OpenAI.ChatModel | ({} & string);
 
+  label?: string | undefined;
+
   /**
    * Optional request configuration for API calls.
    *
