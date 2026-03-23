@@ -63,20 +63,18 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         : Array.isArray(content)
           ? content
           : [content];
-    // THE USER-MESSAGE
-    const userMessage: AutoBeUserMessageHistory = {
-      id: v7(),
-      type: "userMessage",
-      contents: contents.map((c) =>
-        createAutoBeUserMessageContent({ content: c }),
-      ),
-      created_at: new Date().toISOString(),
-    };
-    void this.dispatch(userMessage).catch(() => {});
-
     // ALREADY REALIZED CASE
     const state: AutoBeState = createAutoBeState(this.histories_);
     if (state.realize !== null) {
+      const userMessage: AutoBeUserMessageHistory = {
+        id: v7(),
+        type: "userMessage",
+        contents: contents.map((c) =>
+          createAutoBeUserMessageContent({ content: c }),
+        ),
+        created_at: new Date().toISOString(),
+      };
+      void this.dispatch(userMessage).catch(() => {});
       await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
         id: v7(),
@@ -97,7 +95,14 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       const snapshots: AutoBeEventSnapshot[] | null =
         this.getEventSnapshots(type);
       if (snapshots === null) {
-        this.histories_.push(userMessage);
+        this.histories_.push({
+          id: v7(),
+          type: "userMessage",
+          contents: contents.map((c) =>
+            createAutoBeUserMessageContent({ content: c }),
+          ),
+          created_at: new Date().toISOString(),
+        });
         this.histories_.push({
           id: v7(),
           type: "assistantMessage",
@@ -111,13 +116,42 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         });
         return;
       }
+      // Find original user message from replay history (precedes the phase entry)
+      const phaseIndex = this.props_.replay.histories.findIndex(
+        (h) => h.type === type,
+      );
+      const originalUserMessage: AutoBeHistory | undefined =
+        phaseIndex > 0
+          ? this.props_.replay.histories[phaseIndex - 1]
+          : undefined;
+      if (originalUserMessage?.type === "userMessage")
+        void this.dispatch(originalUserMessage).catch(() => {});
       for (const s of snapshots) {
+        // Skip conversation events — userMessage is dispatched above from
+        // the original replay history, and assistantMessage is not needed
+        // during phase snapshot playback.
+        if (
+          s.event.type === "userMessage" ||
+          s.event.type === "assistantMessage"
+        )
+          continue;
         const time: number = sleepMap[s.event.type] ?? 500;
         await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
       }
-      this.histories_.push(userMessage);
+      this.histories_.push(
+        originalUserMessage?.type === "userMessage"
+          ? originalUserMessage
+          : {
+              id: v7(),
+              type: "userMessage",
+              contents: contents.map((c) =>
+                createAutoBeUserMessageContent({ content: c }),
+              ),
+              created_at: new Date().toISOString(),
+            },
+      );
       this.histories_.push(
         this.props_.replay.histories.find((h) => h.type === type)!,
       );

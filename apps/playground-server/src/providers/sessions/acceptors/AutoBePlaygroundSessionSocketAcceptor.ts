@@ -282,9 +282,15 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
       ["realize", "realize"],
     ];
 
+    const CONVERSATION_TYPES: Set<string> = new Set([
+      "userMessage",
+      "assistantMessage",
+    ]);
+
     let currentPhase: AutoBePhase | null = null;
     for (const s of snapshots) {
       const type = s.event.type;
+      if (CONVERSATION_TYPES.has(type)) continue;
       for (const [prefix, phase] of PHASE_PREFIXES) {
         if (type.startsWith(prefix)) {
           currentPhase = phase;
