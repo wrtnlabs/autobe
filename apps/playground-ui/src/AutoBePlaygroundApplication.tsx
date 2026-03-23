@@ -25,7 +25,9 @@ import { getGlobalConfig } from "./utils/globalConfig";
 export function AutoBePlaygroundApplication() {
   const theme = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(() =>
+    window.location.hash === "#examples" ? 1 : 0,
+  );
 
   // Examples state
   const [benchmarks, setBenchmarks] = useState<
@@ -125,7 +127,14 @@ export function AutoBePlaygroundApplication() {
           </Typography>
           <Tabs
             value={tab}
-            onChange={(_, v) => setTab(v)}
+            onChange={(_, v) => {
+              setTab(v);
+              window.history.replaceState(
+                null,
+                "",
+                `${window.location.pathname}${window.location.search}${v === 1 ? "#examples" : "#chat"}`,
+              );
+            }}
             sx={{
               "& .MuiTab-root": {
                 color: alpha(theme.palette.common.white, 0.7),
