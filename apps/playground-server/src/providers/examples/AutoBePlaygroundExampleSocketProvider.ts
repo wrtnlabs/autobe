@@ -35,7 +35,10 @@ export namespace AutoBePlaygroundExampleSocketProvider {
     project: string;
     delay?: number | undefined;
   }): Promise<void> => {
-    const replayData = await buildReplay(props.vendor, props.project);
+    const replayData: IAutoBePlaygroundReplay | null = await buildReplay(
+      props.vendor,
+      props.project,
+    );
     if (replayData === null) {
       await props.acceptor.reject(
         1008,
@@ -43,12 +46,12 @@ export namespace AutoBePlaygroundExampleSocketProvider {
       );
       return;
     }
-    const agent = new AutoBeMockAgent({
+
+    const agent: AutoBeMockAgent = new AutoBeMockAgent({
       replay: replayData,
       compiler: () => AutoBePlaygroundSessionCompiler.get(),
       delay: props.delay !== undefined ? () => props.delay : undefined,
     });
-
     await props.acceptor.accept(
       new AutoBeRpcService({
         agent,
@@ -58,27 +61,12 @@ export namespace AutoBePlaygroundExampleSocketProvider {
       }),
     );
     props.acceptor.ping(500);
-
-    // Read-only replay — push all snapshot events directly
-    const listener = props.acceptor.getDriver();
     await sleep_for(100);
-    void listener.enable(false).catch(() => {});
 
-    const phases: AutoBePhase[] = [
-      "analyze",
-      "database",
-      "interface",
-      "test",
-      "realize",
-    ];
-    for (const phase of phases) {
-      const snapshots = replayData[phase];
-      if (snapshots === null) continue;
-      for (const s of snapshots) {
-        if (props.delay) await sleep_for(props.delay);
-        void (listener as any)[s.event.type](s.event).catch(() => {});
-      }
-    }
+    void props.acceptor
+      .getDriver()
+      .enable(true)
+      .catch(() => {});
 
     // Wait for disconnect
     await props.acceptor.join();
