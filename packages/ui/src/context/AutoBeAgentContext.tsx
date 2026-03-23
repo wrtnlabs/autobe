@@ -169,7 +169,13 @@ export function AutoBeAgentProvider({
           return null;
         }
         refreshSessionList();
-        setEventGroups(v.events);
+        // Avoid wiping live websocket replay events with empty storage data.
+        // Some strategies only persist histories/token usage and leave events
+        // empty, so replacing current groups here can erase already-delivered
+        // replay messages such as early userMessage events.
+        if (v.events.length > 0) {
+          setEventGroups(v.events);
+        }
         setTokenUsage(v.tokenUsage);
       })
       .catch(console.error);

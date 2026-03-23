@@ -116,13 +116,19 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         });
         return;
       }
-      // Find original user message from replay history (precedes the phase entry)
+      // Find the nearest user message that led into this phase.
+      // There may be assistant messages between the user request and the
+      // resulting phase history, so we search backwards instead of assuming
+      // the immediately previous entry is always a user message.
       const phaseIndex = this.props_.replay.histories.findIndex(
         (h) => h.type === type,
       );
       const originalUserMessage: AutoBeHistory | undefined =
         phaseIndex > 0
-          ? this.props_.replay.histories[phaseIndex - 1]
+          ? this.props_.replay.histories
+              .slice(0, phaseIndex)
+              .reverse()
+              .find((h) => h.type === "userMessage")
           : undefined;
       if (originalUserMessage?.type === "userMessage")
         void this.dispatch(originalUserMessage).catch(() => {});
