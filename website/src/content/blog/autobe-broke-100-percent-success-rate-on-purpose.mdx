@@ -1,0 +1,166 @@
+---
+title: "[AutoBe] We Built an AI That Writes Full Backend Apps — Then Broke Its 100% Success Rate on Purpose"
+description: "How we rebuilt AutoBE from a one-shot prototype builder to a modular development platform, recovering from 40% to near-100% compilation success through RAG optimization, weak-model testing, and type-driven validation."
+date: "2026-02-26"
+author: "Jeongho Nam"
+ogImage: "https://media2.dev.to/dynamic/image/width=800%2Cheight=%2Cfit=scale-down%2Cgravity=auto%2Cformat=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fttv46fap8j4z8wt0nr6l.png"
+devtoUrl: "https://dev.to/samchon/autobe-we-built-an-ai-that-writes-full-backend-apps-then-broke-its-100-success-rate-on-purpose-5757"
+tags:
+  - typescript
+  - backend
+  - ai
+  - opensource
+---
+
+## TL;DR
+
+**AutoBe** is an open-source AI agent generating complete backend applications (TypeScript + NestJS + Prisma) from natural language descriptions.
+
+Key achievements:
+- Initial implementation using Korean SI methodology achieved 100% compilation and near-100% runtime success
+- Rebuilt architecture around modularity to support incremental development rather than one-shot generation
+- Success rate initially dropped to 40% but recovered through three critical improvements
+- Raw function calling success of 6.75% achieves 100% completion via validation feedback
+- Supports adding, removing, and modifying features on completed projects
+
+**Resources:**
+- [Repository](https://github.com/wrtnlabs/autobe)
+- [Generated Examples](https://github.com/wrtnlabs/autobe-examples)
+
+## 1. The Original Success (And Its Hidden Problem)
+
+### The Initial Approach
+
+We adopted a Korean SI (System Integration) methodology emphasizing complete independence: each API function and test function must be developed completely independently. This meant:
+- No shared utility functions
+- No code reuse between endpoints
+- Self-contained operations
+
+This approach achieved impressive results: 100% compilation success and near-100% runtime success with all E2E tests passing and APIs returning correct results.
+
+### The Real-World Problem
+
+However, when deployed commercially, the architecture revealed fundamental limitations. Requirements inevitably changed — clients restructured systems, modified workflows, shifted permission models. Each modification rippled across the codebase.
+
+The core issue: AutoBe functioned as a "one-shot prototype builder." Changing requirements meant regenerating entire applications from scratch. Adding a notification system three weeks post-launch? Restart completely. Remove a feature? Start over.
+
+The generated code was disposable rather than maintainable. This made AutoBe a demonstration tool rather than a production development platform.
+
+## 2. The Decision: Embrace Modularity
+
+We chose radical reconstruction: redesigning AutoBe to generate modular, reusable code organized into three layers:
+
+1. **Collectors:** Transform request DTOs into Prisma create/update inputs
+2. **Transformers:** Convert Prisma results back to response DTOs
+3. **Operations:** Orchestrate business logic using collectors and transformers
+
+This architecture enables requirement changes to affect only relevant modules — updating a collector once automatically fixes all dependent operations.
+
+### The Immediate Consequence
+
+**Compilation success plummeted to under 40%.**
+
+Introducing code dependencies between modules created complex new challenges:
+- Circular dependency detection
+- Import ordering validation
+- Type inference across boundaries
+- Interface compatibility between modules
+
+The AI agents, previously optimized for isolated functions, suddenly required understanding of relationships and module interactions. The margin for error collapsed, and compiler feedback became overwhelmed by cascading errors.
+
+## 3. The Road Back to 100%
+
+Recovery required months of focused work addressing three critical areas:
+
+### 3.1 RAG Optimization for Context Management
+
+The breakthrough: AI agents drowning in context couldn't locate relevant information. A 30B model receiving a complete 100-page specification would lose coherence and hallucinate.
+
+The solution implemented a hybrid RAG system combining vector embeddings (cosine similarity) with BM25 keyword matching. When generating modules, the system retrieves only relevant requirement sections rather than entire specifications.
+
+Result: Local LLMs that previously failed on anything beyond a toy project started handling complex, multi-entity backends.
+
+### 3.2 Stress-Testing with Intentionally Weak Models
+
+Rather than testing only with strong models that compensate for schema ambiguities, we deliberately stressed the system with weak models. A weak model exposes every gap mercilessly.
+
+Test results using local LLMs:
+
+| Model | Success Rate | What It Exposed |
+|-------|--------------|-----------------|
+| qwen3-30b-a3b-thinking | ~10% | Fundamental AST schema ambiguities, malformed structures |
+| qwen3-next-80b-a3b-instruct | ~20% | Subtle type mismatches in complex relationships |
+
+The ~10% failure rate with weaker models proved invaluable — every failure revealed schema ambiguities, vague diagnostics, or validation blind spots. Each fix tightened the system for all models.
+
+### 3.3 Killing the System Prompt
+
+The counterintuitive discovery: minimize the system prompt to almost nothing and relocate instructions into two unambiguous locations.
+
+**Function Calling Schemas:** Rather than prose instructions, strict type definitions with precise annotations constrain output. AutoBe defines dedicated AST types for each generation phase — the AI fills typed structures that compilers convert to code.
+
+**Validation Feedback Messages:** When compilation fails, diagnostic messages guide correction. Each message precisely identifies what went wrong and the correct form.
+
+The dramatic result: `qwen3-coder-next`'s raw function calling success rate for DTO schema generation is just 15% on a Reddit-scale project... that drops to 6.75% on larger backends. Yet the interface phase finishes with 100% success.
+
+Validation feedback transforms a 6.75% raw success rate into 100% through iterative self-correction with structured diagnostics.
+
+Discovery: On more than one occasion, we accidentally shipped agent builds with the system prompt completely missing — no instructions at all, just the bare function calling schemas and validation logic. Nobody noticed.
+
+## 4. The Results
+
+Current local LLM performance on compilation success (error-free functions / total):
+
+| Model | todo | bbs | reddit | shopping |
+|-------|------|-----|--------|----------|
+| z-ai/glm-5 | 100 | 100 | 100 | 100 |
+| deepseek/deepseek-v3.1-terminus-exacto | 100 | 87 | 99 | 100 |
+| qwen/qwen3-coder-next | 100 | 100 | 96 | 92 |
+| qwen/qwen3-next-80b-a3b-instruct | 95 | 94 | 88 | 91 |
+| qwen/qwen3-30b-a3b-thinking | 96 | 90 | 71 | 79 |
+
+Runtime success (E2E test pass rates) has not recovered — remaining priority.
+
+### 4.1 Developer Experience
+
+Real-world deployment showed the difference. An administrative system required continuous requirement changes: department hierarchy restructuring from flat to tree, multi-level approval workflows, permission scope modifications twice.
+
+With old architecture, each change demanded complete regeneration. With modularity, only affected modules regenerated while others remained intact. The system grew incrementally rather than restarting repeatedly.
+
+### 4.2 From Prototype Builder to Living Project
+
+The architectural change enables **incremental development** on completed projects:
+- **Add features:** Generate new modules; existing ones remain untouched
+- **Remove features:** Delete affected modules; update dependent operations
+- **Modify behavior:** Regenerate only impacted modules; validate integration with rest
+
+The old AutoBe generated code. The new AutoBe maintains code. That's the difference between a toy and a tool.
+
+## 5. Lessons Learned
+
+**Success Metrics Can Mislead:** 100% compilation success masked maintainability problems. Real value requires measuring practical workflow impact, not just technical metrics.
+
+**Weak Models Are Best QA Engineers:** For production, strong models serve better. For system hardening, weak models expose every gap — every discovered edge case becomes an improved schema for all models.
+
+**Types Beat Prose:** Type definitions are unambiguous where prose creates interpretation gaps. Constraints expressed as types rather than sentences work consistently across all models.
+
+**RAG Isn't Just About Retrieval:** Strategic context curation — providing right information at right time — matters more than comprehensive information overload.
+
+**Modularity Compounds:** Initial costs (40% success, months rebuilding) yield long-term benefits. Each compiler, schema, and validation improvement compounds across all future generations.
+
+## 6. What's Next
+
+Current priorities:
+- **100% runtime success:** Achieving correct business logic beyond compilation
+- **Multi-language support:** Modular architecture enables target language variation
+- **Incremental regeneration:** Update only modules affected by requirement changes
+
+## 7. Conclusion
+
+The journey illustrated a key principle: the right architecture matters more than the right numbers.
+
+Maintaining original success rates would have created impressive benchmarks but left the tool fundamentally limited. Rebuilding toward modularity cost months and initially reduced metrics, but delivered true maintainability.
+
+The approach shifted from generating disposable prototypes to sustaining living projects. Rather than rebuilding on requirements changes, AutoBe now identifies affected modules, regenerates only those, and validates integration.
+
+The path forward builds on types over prompts — creating systems where improved schemas and validation simultaneously benefit all models.

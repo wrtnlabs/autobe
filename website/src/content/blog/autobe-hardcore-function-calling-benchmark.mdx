@@ -1,0 +1,39 @@
+---
+title: "[AutoBe] Hardcore function calling benchmark in backend coding agent"
+description: "AutoBE leverages LLM function calling throughout every phase rather than relying on plain text generation, including compiler AST structures with infinite depths — establishing the most extreme function calling benchmark ever."
+date: "2026-02-02"
+author: "Jeongho Nam"
+ogImage: "https://media2.dev.to/dynamic/image/width=1080,height=1080,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fhozni1jenah5fce3azxg.png"
+devtoUrl: "https://dev.to/samchon/autobe-hardcore-function-calling-benchmark-in-backend-coding-agent-42ko"
+tags:
+  - agents
+  - ai
+  - backend
+  - llm
+---
+
+## Hardcore Benchmark
+
+[AutoBE](https://github.com/wrtnlabs/autobe) is an open-source initiative that generates backend applications through extensive function calling. The project leverages LLM function calling throughout every phase rather than relying on plain text generation, including compiler AST structures with infinite depths. This approach establishes the most extreme function calling benchmark ever.
+
+The project includes three primary AST structures:
+- DB Compiler's AST
+- API specification's AST
+- Test function's AST
+
+These structures handle complex nested schemas for JSON schema handling across multiple type categories including constants, booleans, integers, strings, arrays, objects, and references.
+
+## Limitations
+
+Different models produce significantly varying outputs for identical tasks. For instance, while `anthropic/claude-sonnet-4.5` and `openai/gpt-5.1` generate 630 and 2,000 test functions respectively for the same topic, `qwen/qwen3-next-80b-a3b` creates only 360.
+
+The current benchmark is simply uncontrolled and only indicates whether or not each AI model can properly construct extremely complex types.
+
+AutoBE remains incomplete — though generated applications guarantee 100% compilation success, they don't guarantee 100% runtime success.
+
+## Promise
+
+We have previously achieved 100% build success with local models. We are committed to expanding benchmark coverage across various local and commercial LLMs while refining controlled variables in future evaluations.
+
+- [AutoBE GitHub](https://github.com/wrtnlabs/autobe)
+- [Benchmark Results](https://github.com/wrtnlabs/autobe-examples)

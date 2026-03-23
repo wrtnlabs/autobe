@@ -1,0 +1,89 @@
+---
+title: "[AutoBE] We made AI-friendly Compilers for Vibe Coding, achieving 100% build success"
+description: "AutoBE employs a five-phase waterfall model with dedicated agents and specialized compilers — a Prisma compiler, OpenAPI validator, and TypeScript compiler — ensuring sequential quality assurance and 100% build success."
+date: "2025-07-23"
+author: "Jeongho Nam"
+ogImage: "https://media2.dev.to/dynamic/image/width=1080,height=1080,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fasf8mq5d56566b31szom.png"
+devtoUrl: "https://dev.to/samchon/autobe-we-made-ai-friendly-compilers-for-vibe-coding-491k"
+tags:
+  - programming
+  - typescript
+  - opensource
+  - ai
+---
+
+## Preface
+
+[GitHub Repository](https://github.com/wrtnlabs/autobe) | [Generation Result](https://github.com/wrtnlabs/autobe-example-bbs)
+
+Wrtn Technologies introduces AutoBE, an open-source vibe coding agent that automatically generates backend applications. The standout feature is guaranteed 100% compilation success through proprietary compiler systems that validate AI-generated Abstract Syntax Trees and provide detailed correction feedback.
+
+> AI Function Calling is a technology where AI generates structured data according to predefined function schemas, producing JSON data adhering to specific types and formats.
+
+## Waterfall Compiler System
+
+### Outline
+
+AutoBE employs a five-phase waterfall model with dedicated agents: Analyze (requirements), Prisma (database schema), Interface (API design), Test (E2E testing), and Realize (implementation). Each phase's output undergoes validation through specialized compilers — a Prisma compiler, OpenAPI validator, and TypeScript compiler — ensuring sequential quality assurance.
+
+### Prisma DB Schema Compiler
+
+The database compiler creates `AutoBePrisma.IFile` AST structures through AI function calling, then validates them for logical and type errors. Detected issues — including duplication, circular references, non-existent references, index errors, type mismatches, and naming conflicts — are returned to the AI with detailed explanations for correction.
+
+Once validated, the system generates Prisma schemas with detailed comments, Entity Relationship Diagrams, and accompanying documentation via the prisma-markdown tool.
+
+### OpenAPI Document Compiler
+
+The API compiler similarly constructs `AutoBeOpenApi.IDocument` through AI function calling and validates it comprehensively. After successful validation, it converts to official OpenAPI v3.1 specifications and generates TypeScript/NestJS source code with mock endpoints using `typia.random<T>()`.
+
+All generated code includes detailed JSDoc comments describing endpoints, parameters, and return values.
+
+### E2E Test Function Compiler
+
+For TypeScript/NestJS stacks, the test compiler differs slightly: the AI devises test scenarios, writes draft code, self-reviews, and produces final implementations. The TypeScript compiler validates this code; compilation failures trigger detailed feedback for AI correction.
+
+Generated tests include comprehensive comments explaining scenarios, API call sequences, and expected verification outcomes.
+
+## Additional Resources
+
+### TypeScript Compiler
+
+AutoBE embeds the TypeScript compiler for validating both AI-generated and internally-generated TypeScript code.
+
+### AI Function Calling Compiler
+
+The project utilizes the [typia](https://typia.io) library — a TypeScript compiler plugin — to automatically generate AI function calling schemas from TypeScript source code. This solves the complexity problem: compiler AST structures are too intricate for manual JSON schema definition, especially given inconsistent JSON schema specifications across AI vendors (OpenAI, Gemini, and Claude each use different approaches).
+
+`typia.llm.application<Class, Model>()` generates both function calling schemas and validator functions for type validation feedback.
+
+## Backend Stack
+
+### TypeScript / NestJS / Prisma
+
+AutoBE currently supports this combination exclusively. TypeScript was chosen for its open-source, extensible compiler with a robust type system. NestJS, paired with Nestia (which auto-generates client SDKs), enables type-safe E2E testing. Prisma provides structured schema definitions and type-safe query generation.
+
+### Other Languages and Frameworks
+
+The architecture theoretically supports other languages, but language-specific expansion requires substantial investment in understanding each language's type system, compiler characteristics, and framework structure while maintaining the 100% compilation success guarantee.
+
+## Development Status and Roadmap
+
+AutoBE is in alpha with incomplete features:
+
+- **Realize agent incomplete:** The implementation phase isn't finished; beta release scheduled for August 31, 2025
+- **Unoptimized prompts:** Generated code compiles and functions correctly but may not match intended functionality
+- **No RAG optimization:** Current API token consumption approximates $30 for applications with 200 endpoints using GPT-4.1; future optimization will reduce this
+
+## Conclusion
+
+AutoBE distinguishes itself by combining compiler technology with AI, enabling structurally safe code generation rather than relying on text-based approaches. The compiler-validates-AI-output cycle attempts fundamental quality improvement beyond convenience enhancement.
+
+The project remains in alpha development, with future IDE plugin integration planned alongside the v1 release.
+
+## Appendix: AutoBE vs AWS Kiro
+
+AWS Kiro represents a significant AI development tools milestone through IDE plugin implementation. The comparison reveals AutoBE's early-stage status: Kiro has achieved market maturity with proven adoption, while AutoBE remains in alpha with incomplete realize agent and unoptimized prompts.
+
+Rather than competition, the team views this as learning opportunity — studying Kiro's user experience design, IDE integration patterns, and workflow optimization while leveraging AutoBE's compiler-based architecture and guaranteed compilation success.
+
+The planned IDE plugin for VSCode will integrate AutoBE's waterfall compiler system, enabling in-IDE backend application generation with real-time compiler feedback.
