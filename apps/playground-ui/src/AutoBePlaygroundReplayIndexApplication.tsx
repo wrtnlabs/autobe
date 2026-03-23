@@ -1,11 +1,10 @@
 import {
-  IAutoBePlaygroundExample,
+  IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundSession,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import {
   AddCircleOutline,
-  PlayArrow,
   ReplayOutlined,
   Science,
   Settings,
@@ -15,10 +14,6 @@ import {
   AppBar,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
   CircularProgress,
   Container,
   Dialog,
@@ -41,6 +36,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
+import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
 import { AutoBePlaygroundReplayIndexMovie } from "./movies/replay/AutoBePlaygroundReplayIndexMovie";
 import { AutoBePlaygroundSettingsMovie } from "./movies/settings/AutoBePlaygroundSettingsMovie";
 import { getConnection } from "./utils/connection";
@@ -56,9 +52,9 @@ export function AutoBePlaygroundReplayIndexApplication() {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Examples state
-  const [examples, setExamples] = useState<IAutoBePlaygroundExample[] | null>(
-    null,
-  );
+  const [benchmarks, setBenchmarks] = useState<
+    IAutoBePlaygroundBenchmark[] | null
+  >(null);
 
   // Mock dialog state
   const [mockOpen, setMockOpen] = useState(false);
@@ -78,7 +74,7 @@ export function AutoBePlaygroundReplayIndexApplication() {
     const list = await pApi.functional.autobe.playground.examples.index(
       getConnection(),
     );
-    setExamples(list);
+    setBenchmarks(list);
   }, []);
 
   useEffect(() => {
@@ -100,17 +96,19 @@ export function AutoBePlaygroundReplayIndexApplication() {
   }, [loadSessions, loadExamples]);
 
   // Mock dialog helpers
-  const mockExamples = examples ?? [];
-  const uniqueVendors = [...new Set(mockExamples.map((e) => e.vendor))];
-  const availableProjects = mockExamples
-    .filter((e) => e.vendor === mockVendor)
-    .map((e) => e.project);
+  const benchmarkList = benchmarks ?? [];
+  const uniqueVendors = benchmarkList.map((b) => b.vendor);
+  const selectedBenchmark = benchmarkList.find((b) => b.vendor === mockVendor);
+  const availableProjects = selectedBenchmark
+    ? selectedBenchmark.replays.map((r) => r.project)
+    : [];
 
   const handleOpenMockDialog = () => {
     setMockOpen(true);
-    if (mockExamples.length > 0 && !mockVendor) {
-      setMockVendor(mockExamples[0].vendor);
-      setMockProject(mockExamples[0].project);
+    if (benchmarkList.length > 0 && !mockVendor) {
+      const first = benchmarkList[0];
+      setMockVendor(first.vendor);
+      if (first.replays.length > 0) setMockProject(first.replays[0].project);
     }
   };
 
@@ -129,16 +127,7 @@ export function AutoBePlaygroundReplayIndexApplication() {
     }
   };
 
-  const loading = sessions === null || examples === null;
-
-  // Group examples by vendor
-  const examplesByVendor = (examples ?? []).reduce(
-    (acc, ex) => {
-      (acc[ex.vendor] ??= []).push(ex);
-      return acc;
-    },
-    {} as Record<string, IAutoBePlaygroundExample[]>,
-  );
+  const loading = sessions === null || benchmarks === null;
 
   return (
     <div
@@ -285,118 +274,8 @@ export function AutoBePlaygroundReplayIndexApplication() {
           )}
 
           {/* Examples Tab */}
-          {tab === 1 && (
-            <Box
-              sx={{
-                width: "100%",
-                height: "100%",
-                overflow: "auto",
-                bgcolor: theme.palette.background.default,
-              }}
-            >
-              <Container maxWidth="lg" sx={{ py: 4 }}>
-                {Object.keys(examplesByVendor).length === 0 ? (
-                  <Typography
-                    sx={{
-                      textAlign: "center",
-                      color: theme.palette.text.secondary,
-                      mt: 8,
-                    }}
-                  >
-                    No examples available.
-                  </Typography>
-                ) : (
-                  <Stack spacing={4}>
-                    {Object.entries(examplesByVendor).map(
-                      ([vendor, items]) => (
-                        <Box key={vendor}>
-                          <Typography
-                            variant="h6"
-                            sx={{ mb: 2, fontWeight: 600 }}
-                          >
-                            {vendor}
-                          </Typography>
-                          <Box
-                            sx={{
-                              display: "grid",
-                              gridTemplateColumns: {
-                                xs: "1fr",
-                                sm: "1fr 1fr",
-                                md: "1fr 1fr 1fr",
-                                lg: "1fr 1fr 1fr 1fr",
-                              },
-                              gap: 2,
-                            }}
-                          >
-                            {items.map((ex) => (
-                              <Card
-                                key={`${ex.vendor}/${ex.project}`}
-                                variant="outlined"
-                              >
-                                <CardContent sx={{ pb: 1 }}>
-                                  <Typography
-                                    variant="subtitle1"
-                                    sx={{ fontWeight: 600 }}
-                                  >
-                                    {ex.project}
-                                  </Typography>
-                                  <Box
-                                    sx={{
-                                      mt: 1,
-                                      display: "flex",
-                                      flexWrap: "wrap",
-                                      gap: 0.5,
-                                    }}
-                                  >
-                                    {ex.phases.map((phase) => (
-                                      <Chip
-                                        key={phase}
-                                        label={phase}
-                                        size="small"
-                                        color="primary"
-                                        variant="outlined"
-                                      />
-                                    ))}
-                                  </Box>
-                                </CardContent>
-                                <CardActions>
-                                  <Button
-                                    size="small"
-                                    startIcon={<PlayArrow />}
-                                    href={`/replay/get?example-vendor=${encodeURIComponent(ex.vendor)}&example-project=${encodeURIComponent(ex.project)}`}
-                                  >
-                                    Replay
-                                  </Button>
-                                  <Button
-                                    size="small"
-                                    startIcon={<AddCircleOutline />}
-                                    onClick={async () => {
-                                      const session =
-                                        await pApi.functional.autobe.playground.sessions.create(
-                                          getConnection(),
-                                          {
-                                            mock: {
-                                              vendor: ex.vendor,
-                                              project: ex.project,
-                                            },
-                                          },
-                                        );
-                                      window.location.href = `/?session-id=${session.id}`;
-                                    }}
-                                  >
-                                    Mock Chat
-                                  </Button>
-                                </CardActions>
-                              </Card>
-                            ))}
-                          </Box>
-                        </Box>
-                      ),
-                    )}
-                  </Stack>
-                )}
-              </Container>
-            </Box>
+          {tab === 1 && benchmarks && (
+            <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
           )}
 
           {/* Settings Tab */}
@@ -414,7 +293,7 @@ export function AutoBePlaygroundReplayIndexApplication() {
         <DialogTitle>Create Mock Session</DialogTitle>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
-            {mockExamples.length === 0 ? (
+            {benchmarkList.length === 0 ? (
               <Box
                 sx={{ display: "flex", justifyContent: "center", py: 2 }}
               >
@@ -429,10 +308,11 @@ export function AutoBePlaygroundReplayIndexApplication() {
                     label="Vendor / Model"
                     onChange={(e) => {
                       setMockVendor(e.target.value);
-                      const first = mockExamples.find(
-                        (ex) => ex.vendor === e.target.value,
+                      const bench = benchmarkList.find(
+                        (b) => b.vendor === e.target.value,
                       );
-                      if (first) setMockProject(first.project);
+                      if (bench && bench.replays.length > 0)
+                        setMockProject(bench.replays[0].project);
                     }}
                   >
                     {uniqueVendors.map((v) => (

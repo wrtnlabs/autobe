@@ -10,8 +10,8 @@ import { PlainFetcher } from "@nestia/fetcher";
 /**
  * Health check API.
  *
- * @tag Monitor
  * @author Samchon
+ * @tag Monitor
  *
  * @controller HealthController.get
  * @path GET /monitors/health

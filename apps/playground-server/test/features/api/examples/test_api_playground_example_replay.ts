@@ -1,6 +1,6 @@
 import {
   AutoBeEvent,
-  IAutoBePlaygroundExample,
+  IAutoBePlaygroundReplay,
   IAutoBeRpcListener,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
@@ -12,14 +12,13 @@ export const test_api_playground_example_replay = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
   // Find an available example
-  const examples: IAutoBePlaygroundExample[] =
+  const benchmarks =
     await pApi.functional.autobe.playground.examples.index(connection);
-  if (examples.length === 0) throw new Error("No example data available.");
+  if (benchmarks.length === 0) throw new Error("No benchmark data available.");
+  if (benchmarks[0].replays.length === 0)
+    throw new Error("No example data available.");
 
-  const example = examples[0];
-  const vendorParts = example.vendor.split("/");
-  const provider = vendorParts[0];
-  const model = vendorParts.slice(1).join("/");
+  const example: IAutoBePlaygroundReplay.ISummary = benchmarks[0].replays[0];
 
   // Set up listener to collect events
   const enabled: IPointer<boolean | null> = { value: null };
@@ -42,9 +41,10 @@ export const test_api_playground_example_replay = async (
   const { connector } =
     await pApi.functional.autobe.playground.examples.replay(
       connection,
-      provider,
-      model,
-      example.project,
+      {
+        vendor: example.vendor,
+        project: example.project,
+      },
       listener,
     );
 
@@ -67,10 +67,13 @@ export const test_api_playground_example_replay = async (
     TestValidator.equals("enabled", enabled.value, false);
 
     // Validate that each available phase has a complete event
-    for (const phase of example.phases)
+    const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
+    for (const phase of PHASES) {
+      if (example[phase] === null) continue;
       TestValidator.predicate(`${phase}Complete event`, () =>
         eventList.some((e) => e.type === `${phase}Complete`),
       );
+    }
   } finally {
     await connector.close();
   }

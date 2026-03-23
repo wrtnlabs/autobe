@@ -120,11 +120,12 @@ export namespace at {
 /**
  * Create a new vibe coding session.
  *
- * Initializes a session bound to the specified vendor configuration. An
- * aggregate record for tracking phase progress and token usage is
- * automatically created alongside the session.
+ * Accepts either real or mock session creation. For real sessions, provide
+ * `vendor_id` and `model`. For mock sessions, provide a `mock` object with
+ * vendor slug and project name — a virtual vendor is auto-created and the
+ * session uses {@link AutoBeMockAgent} on connect.
  *
- * @param body Session creation properties
+ * @param body Session creation properties (real or mock)
  * @author Samchon
  * @returns Newly created session with full detail
  * @tag Session

@@ -42,13 +42,15 @@ export function AutoBePlaygroundChatMovie(
         position: "relative",
       }}
     >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {props.title ?? "AutoBE Playground"}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      {!props.hideAppBar && (
+        <AppBar position="relative" component="div">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              {props.title ?? "AutoBE Playground"}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
       <div
         style={{
           width: "100%",
@@ -72,11 +74,13 @@ export function AutoBePlaygroundChatMovie(
                   height: "100%",
                 }}
               >
-                <AutoBePlaygroundSidebar
-                  storageStrategy={storageStrategy}
-                  isCollapsed={isMobile ? true : sidebarCollapsed}
-                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                />
+                {!props.hideSidebar && (
+                  <AutoBePlaygroundSidebar
+                    storageStrategy={storageStrategy}
+                    isCollapsed={isMobile ? true : sidebarCollapsed}
+                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  />
+                )}
                 <AutoBeChatMain
                   isUnusedConfig={props.isUnusedConfig ?? false}
                   isMobile={isMobile}
@@ -95,6 +99,8 @@ export function AutoBePlaygroundChatMovie(
 export namespace AutoBePlaygroundChatMovie {
   export interface IProps {
     title?: string;
+    hideAppBar?: boolean;
+    hideSidebar?: boolean;
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;

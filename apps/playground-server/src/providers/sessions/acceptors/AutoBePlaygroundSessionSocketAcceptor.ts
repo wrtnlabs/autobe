@@ -18,7 +18,7 @@ import { AutoBeRpcService } from "@autobe/rpc";
 import { ArrayUtil } from "@nestia/e2e";
 import OpenAI from "openai";
 import { Driver, WebSocketAcceptor } from "tgrid";
-import { sleep_for } from "tstl";
+import { randint, sleep_for } from "tstl";
 import typia from "typia";
 
 import { AutoBePlaygroundGlobal } from "../../../AutoBePlaygroundGlobal";
@@ -68,7 +68,55 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     connection: IEntity;
     acceptor: WebSocketAcceptor<unknown, IAutoBeRpcService, IAutoBeRpcListener>;
   }): Promise<void> => {
-    await startReplay(props);
+    const histories: AutoBeHistory[] =
+      await AutoBePlaygroundSessionHistoryProvider.getAll({
+        session: props.session,
+      });
+    const snapshots: AutoBeEventSnapshot[] =
+      await AutoBePlaygroundSessionEventProvider.getAll({
+        session: props.session,
+      });
+
+    // Build replay data — always use AutoBeMockAgent for replay
+    const apiKey = await AutoBePlaygroundVendorProvider.decryptApiKey(
+      props.session.vendor.id,
+    );
+    const replayData: IAutoBePlaygroundReplay =
+      apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
+        ? await buildReplayFromExamples(props.session)
+        : buildReplayFromSnapshots(props.session, histories, snapshots);
+
+    const agent = new AutoBeMockAgent({
+      replay: replayData,
+      compiler: () => AutoBePlaygroundSessionCompiler.get(),
+    });
+
+    await props.acceptor.accept(
+      new AutoBeRpcService({
+        agent,
+        listener: props.acceptor.getDriver(),
+        onStart: () => {},
+        onComplete: () => {},
+      }),
+    );
+    props.acceptor.ping(500);
+
+    // Use AutoBeMockAgent.conversate() for proper event pacing
+    const PHASES: AutoBePhase[] = [
+      "analyze",
+      "database",
+      "interface",
+      "test",
+      "realize",
+    ];
+    for (const phase of PHASES) {
+      if (replayData[phase] === null) continue;
+      await agent.conversate("continue");
+    }
+
+    await sleep_for(100);
+    void props.acceptor.getDriver().enable(false).catch(() => {});
+    await props.acceptor.join();
   };
 
   const startReplay = async (props: {
@@ -133,7 +181,8 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     for (const s of snapshots) {
       (agent.getTokenUsage() as AutoBeTokenUsage).assign(s.tokenUsage);
       void (listener as any)[s.event.type](s.event).catch(() => {});
-      await sleep_for(10);
+      const base = AutoBeMockAgent.SLEEP_MAP[s.event.type] ?? 500;
+      await sleep_for(randint(base * 0.2, base * 1.8));
     }
 
     // REPLAY NEVER ALLOWS CONVERSATION
@@ -222,6 +271,58 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
       ).catch(() => {});
     });
     return agent;
+  };
+
+  /**
+   * Build an {@link IAutoBePlaygroundReplay} from stored DB snapshots.
+   *
+   * Groups the flat snapshot array by phase based on event type prefix.
+   */
+  const buildReplayFromSnapshots = (
+    session: IAutoBePlaygroundSession.ISummary,
+    histories: AutoBeHistory[],
+    snapshots: AutoBeEventSnapshot[],
+  ): IAutoBePlaygroundReplay => {
+    const phaseMap: Record<AutoBePhase, AutoBeEventSnapshot[]> = {
+      analyze: [],
+      database: [],
+      interface: [],
+      test: [],
+      realize: [],
+    };
+
+    const PHASE_PREFIXES: Array<[string, AutoBePhase]> = [
+      ["analyze", "analyze"],
+      ["database", "database"],
+      ["interface", "interface"],
+      ["test", "test"],
+      ["realize", "realize"],
+    ];
+
+    let currentPhase: AutoBePhase | null = null;
+    for (const s of snapshots) {
+      const type = s.event.type;
+      for (const [prefix, phase] of PHASE_PREFIXES) {
+        if (type.startsWith(prefix)) {
+          currentPhase = phase;
+          break;
+        }
+      }
+      if (currentPhase !== null) {
+        phaseMap[currentPhase].push(s);
+      }
+    }
+
+    return {
+      vendor: session.vendor.name,
+      project: session.model,
+      histories,
+      analyze: phaseMap.analyze.length > 0 ? phaseMap.analyze : null,
+      database: phaseMap.database.length > 0 ? phaseMap.database : null,
+      interface: phaseMap.interface.length > 0 ? phaseMap.interface : null,
+      test: phaseMap.test.length > 0 ? phaseMap.test : null,
+      realize: phaseMap.realize.length > 0 ? phaseMap.realize : null,
+    };
   };
 
   /**

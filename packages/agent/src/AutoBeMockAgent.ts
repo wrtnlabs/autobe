@@ -171,6 +171,14 @@ export namespace AutoBeMockAgent {
     ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
     replay: IAutoBePlaygroundReplay;
   }
+
+  /**
+   * Per-event-type base sleep duration (ms) used for replay pacing.
+   *
+   * Actual delay should be randomized around this value, e.g.
+   * `randint(time * 0.2, time * 1.8)`.
+   */
+  export const SLEEP_MAP: Record<AutoBeEvent.Type, number> = sleepMap;
 }
 
 const sleepMap: Record<AutoBeEvent.Type, number> = {

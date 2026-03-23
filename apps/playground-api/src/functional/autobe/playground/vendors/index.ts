@@ -14,8 +14,8 @@ export * as models from "./models/index";
 /**
  * Register a new AI vendor configuration.
  *
- * Stores the vendor's endpoint and concurrency settings. The API key
- * is encrypted before persistence and never returned in any response.
+ * Stores the vendor's endpoint and concurrency settings. The API key is
+ * encrypted before persistence and never returned in any response.
  *
  * @param body Vendor creation properties
  * @author Samchon

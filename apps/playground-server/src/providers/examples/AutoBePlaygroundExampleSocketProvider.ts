@@ -1,4 +1,4 @@
-import { AutoBeMockAgent, AutoBeTokenUsage } from "@autobe/agent";
+import { AutoBeMockAgent } from "@autobe/agent";
 import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeEventSnapshot,
@@ -9,7 +9,7 @@ import {
   IAutoBeRpcService,
 } from "@autobe/interface";
 import { AutoBeRpcService } from "@autobe/rpc";
-import { Driver, WebSocketAcceptor } from "tgrid";
+import { WebSocketAcceptor } from "tgrid";
 import { sleep_for } from "tstl";
 
 import { AutoBePlaygroundSessionCompiler } from "../sessions/acceptors/AutoBePlaygroundSessionCompiler";
@@ -65,22 +65,17 @@ export namespace AutoBePlaygroundExampleSocketProvider {
     );
     props.acceptor.ping(500);
 
-    // Stream all phase snapshots to the client (per-event pacing)
-    const listener: Driver<IAutoBeRpcListener> =
-      props.acceptor.getDriver();
+    // Use AutoBeMockAgent.conversate() for proper event pacing.
+    // Each call advances one phase with sleepMap-based delays,
+    // and events are forwarded to the client via AutoBeRpcService.
     for (const phase of PHASES_ASC) {
-      const snapshots = replayData[phase];
-      if (snapshots === null) continue;
-      for (const s of snapshots) {
-        (agent.getTokenUsage() as AutoBeTokenUsage).assign(s.tokenUsage);
-        void (listener as any)[s.event.type](s.event).catch(() => {});
-        await sleep_for(10);
-      }
+      if (replayData[phase] === null) continue;
+      await agent.conversate("continue");
     }
 
     // Disable input — replay is read-only
     await sleep_for(100);
-    void listener.enable(false).catch(() => {});
+    void props.acceptor.getDriver().enable(false).catch(() => {});
 
     // Wait for disconnect
     await props.acceptor.join();

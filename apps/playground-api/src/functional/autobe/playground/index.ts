@@ -5,6 +5,6 @@
  */
 //================================================================
 export * as config from "./config/index";
-export * as examples from "./examples/index";
 export * as vendors from "./vendors/index";
 export * as sessions from "./sessions/index";
+export * as examples from "./examples/index";

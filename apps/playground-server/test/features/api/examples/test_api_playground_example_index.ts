@@ -1,46 +1,43 @@
-import { IAutoBePlaygroundExample } from "@autobe/interface";
+import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
 
 export const test_api_playground_example_index = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
-  const examples: IAutoBePlaygroundExample[] =
+  const benchmarks: IAutoBePlaygroundBenchmark[] =
     await pApi.functional.autobe.playground.examples.index(connection);
 
-  // Must have at least one example available (from autobe-examples storage)
+  // Must have at least one benchmark available
   TestValidator.predicate(
-    "has examples",
-    () => examples.length > 0,
+    "has benchmarks",
+    () => benchmarks.length > 0,
   );
 
-  // Each example must have valid structure
-  for (const example of examples) {
+  // Each benchmark must have valid structure
+  for (const benchmark of benchmarks) {
     TestValidator.predicate(
       "vendor is non-empty",
-      () => example.vendor.length > 0,
+      () => benchmark.vendor.length > 0,
     );
     TestValidator.predicate(
-      "project is non-empty",
-      () => example.project.length > 0,
+      "has replays",
+      () => benchmark.replays.length > 0,
     );
-    TestValidator.predicate(
-      "has at least one phase",
-      () => example.phases.length > 0,
-    );
-
-    // Phases must be valid
-    const validPhases = ["analyze", "database", "interface", "test", "realize"];
-    for (const phase of example.phases) {
+    for (const replay of benchmark.replays) {
       TestValidator.predicate(
-        `valid phase: ${phase}`,
-        () => validPhases.includes(phase),
+        "replay vendor matches",
+        () => replay.vendor === benchmark.vendor,
+      );
+      TestValidator.predicate(
+        "replay project is non-empty",
+        () => replay.project.length > 0,
       );
     }
   }
 
-  // Verify no duplicate vendor+project combinations
-  const keys = examples.map((e) => `${e.vendor}/${e.project}`);
-  const uniqueKeys = new Set(keys);
-  TestValidator.equals("no duplicates", keys.length, uniqueKeys.size);
+  // Verify no duplicate vendors
+  const vendors = benchmarks.map((b) => b.vendor);
+  const uniqueVendors = new Set(vendors);
+  TestValidator.equals("no duplicate vendors", vendors.length, uniqueVendors.size);
 };

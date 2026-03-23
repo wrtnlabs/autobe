@@ -1,34 +1,20 @@
-import {
-  IAutoBePlaygroundExample,
-  IAutoBePlaygroundSession,
-} from "@autobe/interface";
+import { IAutoBePlaygroundSession } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import {
   IAutoBeAgentSessionStorageStrategy,
   useAutoBeAgentSessionList,
   useSearchParams,
 } from "@autobe/ui";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Delete,
-  PlayArrow,
-  Science,
-  Storage,
-} from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, Delete } from "@mui/icons-material";
 import {
   Box,
   Chip,
   CircularProgress,
-  Divider,
   IconButton,
   List,
   ListItemButton,
   ListItemText,
   Stack,
-  Tab,
-  Tabs,
-  Tooltip,
   Typography,
   alpha,
   useTheme,
@@ -45,17 +31,9 @@ export const AutoBePlaygroundSidebar = (
   const { searchParams } = useSearchParams();
   const activeSessionId = searchParams.get("session-id") ?? null;
 
-  const [tab, setTab] = useState(0);
-
-  // Sessions
   const [sessions, setSessions] = useState<
     IAutoBePlaygroundSession.ISummary[] | null
   >(null);
-
-  // Examples
-  const [examples, setExamples] = useState<IAutoBePlaygroundExample[] | null>(
-    null,
-  );
 
   const loadSessions = useCallback(async () => {
     try {
@@ -70,48 +48,19 @@ export const AutoBePlaygroundSidebar = (
     }
   }, []);
 
-  const loadExamples = useCallback(async () => {
-    try {
-      const list = await pApi.functional.autobe.playground.examples.index(
-        getConnection(),
-      );
-      setExamples(list);
-    } catch (err) {
-      console.error("Failed to load examples:", err);
-      setExamples([]);
-    }
-  }, []);
-
   useEffect(() => {
     loadSessions();
-    loadExamples();
-  }, [loadSessions, loadExamples]);
+  }, [loadSessions]);
 
   const handleSessionSelect = (id: string) => {
     window.location.href = `/?session-id=${id}`;
   };
 
-  const handleSessionDelete = async (
-    e: React.MouseEvent,
-    id: string,
-  ) => {
+  const handleSessionDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     await props.storageStrategy.deleteSession({ id });
     await loadSessions();
     refreshSessionList();
-  };
-
-  const handleExampleClick = async (ex: IAutoBePlaygroundExample) => {
-    try {
-      const session =
-        await pApi.functional.autobe.playground.sessions.create(
-          getConnection(),
-          { mock: { vendor: ex.vendor, project: ex.project } },
-        );
-      window.location.href = `/?session-id=${session.id}`;
-    } catch (err) {
-      console.error("Failed to create mock session:", err);
-    }
   };
 
   const width = props.isCollapsed ? 48 : 300;
@@ -147,77 +96,15 @@ export const AutoBePlaygroundSidebar = (
         </IconButton>
       </Box>
 
-      {props.isCollapsed ? (
-        /* Collapsed: icon indicators */
-        <Stack spacing={0.5} alignItems="center" sx={{ px: 0.5 }}>
-          <Tooltip title="Sessions" placement="right">
-            <IconButton
-              size="small"
-              color={tab === 0 ? "primary" : "default"}
-              onClick={() => {
-                setTab(0);
-                props.onToggle();
-              }}
-            >
-              <Storage fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Examples" placement="right">
-            <IconButton
-              size="small"
-              color={tab === 1 ? "primary" : "default"}
-              onClick={() => {
-                setTab(1);
-                props.onToggle();
-              }}
-            >
-              <Science fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      ) : (
-        <>
-          {/* Tabs */}
-          <Tabs
-            value={tab}
-            onChange={(_, v) => setTab(v)}
-            variant="fullWidth"
-            sx={{
-              minHeight: 36,
-              "& .MuiTab-root": { minHeight: 36, py: 0.5, fontSize: "0.8rem" },
-            }}
-          >
-            <Tab
-              icon={<Storage sx={{ fontSize: 16 }} />}
-              iconPosition="start"
-              label="Sessions"
-            />
-            <Tab
-              icon={<Science sx={{ fontSize: 16 }} />}
-              iconPosition="start"
-              label="Examples"
-            />
-          </Tabs>
-          <Divider />
-
-          {/* Content */}
-          <Box sx={{ flex: 1, overflow: "auto" }}>
-            {tab === 0 && (
-              <SessionsPanel
-                sessions={sessions}
-                activeSessionId={activeSessionId}
-                onSelect={handleSessionSelect}
-                onDelete={handleSessionDelete}
-              />
-            )}
-            {tab === 1 && (
-              <ExamplesPanel
-                examples={examples}
-                onClick={handleExampleClick}
-              />
-            )}
-          </Box>
-        </>
+      {!props.isCollapsed && (
+        <Box sx={{ flex: 1, overflow: "auto" }}>
+          <SessionsPanel
+            sessions={sessions}
+            activeSessionId={activeSessionId}
+            onSelect={handleSessionSelect}
+            onDelete={handleSessionDelete}
+          />
+        </Box>
       )}
     </Box>
   );
@@ -338,115 +225,5 @@ const SessionsPanel = (props: {
         );
       })}
     </List>
-  );
-};
-
-/* ------------------------------------------------------------------ */
-/*  Examples Panel                                                     */
-/* ------------------------------------------------------------------ */
-const ExamplesPanel = (props: {
-  examples: IAutoBePlaygroundExample[] | null;
-  onClick: (ex: IAutoBePlaygroundExample) => void;
-}) => {
-  const theme = useTheme();
-
-  if (props.examples === null) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress size={24} />
-      </Box>
-    );
-  }
-
-  if (props.examples.length === 0) {
-    return (
-      <Typography
-        variant="body2"
-        sx={{ textAlign: "center", color: "text.secondary", py: 4 }}
-      >
-        No examples available
-      </Typography>
-    );
-  }
-
-  // Group by vendor
-  const byVendor = props.examples.reduce(
-    (acc, ex) => {
-      (acc[ex.vendor] ??= []).push(ex);
-      return acc;
-    },
-    {} as Record<string, IAutoBePlaygroundExample[]>,
-  );
-
-  return (
-    <Box sx={{ py: 0.5 }}>
-      {Object.entries(byVendor).map(([vendor, items]) => (
-        <Box key={vendor}>
-          <Typography
-            variant="caption"
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              display: "block",
-              fontWeight: 600,
-              color: "text.secondary",
-              textTransform: "uppercase",
-              letterSpacing: 0.5,
-              fontSize: "0.65rem",
-            }}
-          >
-            {vendor}
-          </Typography>
-          <List dense disablePadding>
-            {items.map((ex) => (
-              <ListItemButton
-                key={`${ex.vendor}/${ex.project}`}
-                onClick={() => props.onClick(ex)}
-                sx={{ py: 0.75, px: 1.5 }}
-              >
-                <PlayArrow
-                  sx={{
-                    fontSize: 16,
-                    mr: 1,
-                    color: theme.palette.primary.main,
-                  }}
-                />
-                <ListItemText
-                  primary={
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize: "0.82rem", fontWeight: 500 }}
-                    >
-                      {ex.project}
-                    </Typography>
-                  }
-                  secondary={
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      sx={{ mt: 0.25, flexWrap: "wrap", gap: 0.25 }}
-                    >
-                      {ex.phases.map((phase) => (
-                        <Chip
-                          key={phase}
-                          label={phase}
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            height: 16,
-                            fontSize: "0.6rem",
-                            textTransform: "capitalize",
-                          }}
-                        />
-                      ))}
-                    </Stack>
-                  }
-                />
-              </ListItemButton>
-            ))}
-          </List>
-        </Box>
-      ))}
-    </Box>
   );
 };

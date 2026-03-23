@@ -1,48 +1,25 @@
-import { AutoBeExampleStorage } from "@autobe/benchmark";
-import {
-  AutoBeExampleProject,
-  AutoBePhase,
-  IAutoBePlaygroundExample,
-} from "@autobe/interface";
-import typia from "typia";
+import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
+import fs from "fs";
+import path from "path";
+import { Singleton } from "tstl";
 
-const PHASES: AutoBePhase[] = [
-  "analyze",
-  "database",
-  "interface",
-  "test",
-  "realize",
-];
+import { AutoBePlaygroundConfiguration } from "../../AutoBePlaygroundConfiguration";
 
-const PROJECTS: AutoBeExampleProject[] = typia.misc.literals<AutoBeExampleProject>();
+const benchmarkData = new Singleton((): IAutoBePlaygroundBenchmark[] => {
+  const file = path.resolve(
+    AutoBePlaygroundConfiguration.ROOT,
+    "../../website/src/data/benchmark.json",
+  );
+  return JSON.parse(fs.readFileSync(file, "utf-8"));
+});
 
 export namespace AutoBePlaygroundExampleProvider {
   /**
-   * List all available examples from the benchmark example storage.
+   * List all available examples from the benchmark storage.
    *
-   * Scans vendor models and projects, returning only combinations that
-   * have at least one phase with recorded data.
+   * Reads pre-computed benchmark data from `website/src/data/benchmark.json`
+   * and returns vendor-grouped benchmarks as-is.
    */
-  export const index = async (): Promise<IAutoBePlaygroundExample[]> => {
-    const vendors: string[] = await AutoBeExampleStorage.getVendorModels();
-    const result: IAutoBePlaygroundExample[] = [];
-
-    for (const vendor of vendors) {
-      for (const project of PROJECTS) {
-        const phases: AutoBePhase[] = [];
-        for (const phase of PHASES) {
-          const exists = await AutoBeExampleStorage.has({
-            vendor,
-            project,
-            phase,
-          });
-          if (exists) phases.push(phase);
-        }
-        if (phases.length > 0) {
-          result.push({ vendor, project, phases });
-        }
-      }
-    }
-    return result;
-  };
+  export const index = async (): Promise<IAutoBePlaygroundBenchmark[]> =>
+    benchmarkData.get();
 }

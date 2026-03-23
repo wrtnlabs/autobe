@@ -65,13 +65,13 @@ export const AutoBePlaygroundReplayGetMovie = () => {
           const host = getServerUrl();
 
           if (isExample) {
-            const [provider, model] = params.vendor.split("/");
             const { connector, driver } =
               await pApi.functional.autobe.playground.examples.replay(
                 { host },
-                provider,
-                model,
-                params.project,
+                {
+                  vendor: params.vendor,
+                  project: params.project,
+                },
                 listener.getListener(),
               );
             return {
@@ -135,6 +135,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
         title={next.title}
         serviceFactory={next.serviceFactory}
         isUnusedConfig={true}
+        hideSidebar={true}
         storageStrategyFactory={next.storageStrategyFactory}
       />
     );
@@ -339,12 +340,16 @@ type ReplayParams =
 
 const getReplayParams = (): ReplayParams | null => {
   const query = new URLSearchParams(window.location.search);
-  const sessionId = query.get("session-id");
-  if (sessionId) return { type: "session", sessionId };
 
+  // Check example params first — SearchParamsProvider may inject a
+  // session-id into the URL after the initial connection, so on refresh
+  // we must prefer the original example-vendor/project params.
   const vendor = query.get("example-vendor");
   const project = query.get("example-project");
   if (vendor && project) return { type: "example", vendor, project };
+
+  const sessionId = query.get("session-id");
+  if (sessionId) return { type: "session", sessionId };
 
   return null;
 };

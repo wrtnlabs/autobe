@@ -1,14 +1,36 @@
+import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
-import { useEffect, useRef } from "react";
+import {
+  Chat,
+  Science,
+} from "@mui/icons-material";
+import {
+  AppBar,
+  Tab,
+  Tabs,
+  Toolbar,
+  Typography,
+  alpha,
+  useTheme,
+} from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
+import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
 import { AutoBeAgentSessionStorageServerStrategy } from "./strategy/AutoBeAgentSessionStorageServerStrategy";
-import { getServerUrl } from "./utils/connection";
+import { getConnection, getServerUrl } from "./utils/connection";
 import { getGlobalConfig } from "./utils/globalConfig";
 
 export function AutoBePlaygroundApplication() {
+  const theme = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [tab, setTab] = useState(0);
+
+  // Examples state
+  const [benchmarks, setBenchmarks] = useState<
+    IAutoBePlaygroundBenchmark[] | null
+  >(null);
 
   // Seed localStorage with global config defaults on first visit
   useEffect(() => {
@@ -18,6 +40,18 @@ export function AutoBePlaygroundApplication() {
       }
     });
   }, []);
+
+  // Load benchmarks
+  const loadBenchmarks = useCallback(async () => {
+    const list = await pApi.functional.autobe.playground.examples.index(
+      getConnection(),
+    );
+    setBenchmarks(list);
+  }, []);
+
+  useEffect(() => {
+    loadBenchmarks().catch(console.error);
+  }, [loadBenchmarks]);
 
   // Playground service factory
   const serviceFactory = async (
@@ -80,16 +114,59 @@ export function AutoBePlaygroundApplication() {
       style={{
         width: "100%",
         height: "100%",
-        overflow: "auto",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <AutoBePlaygroundChatMovie
-        title="AutoBE Playground"
-        serviceFactory={serviceFactory}
-        storageStrategyFactory={() =>
-          new AutoBeAgentSessionStorageServerStrategy()
-        }
-      />
+      <AppBar position="relative" component="div">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            AutoBE Playground
+          </Typography>
+          <Tabs
+            value={tab}
+            onChange={(_, v) => setTab(v)}
+            sx={{
+              "& .MuiTab-root": {
+                color: alpha(theme.palette.common.white, 0.7),
+                minHeight: 64,
+              },
+              "& .MuiTab-root.Mui-selected": {
+                color: theme.palette.common.white,
+              },
+              "& .MuiTabs-indicator": {
+                bgcolor: theme.palette.common.white,
+              },
+            }}
+          >
+            <Tab
+              icon={<Chat sx={{ fontSize: 18 }} />}
+              iconPosition="start"
+              label="Chat"
+            />
+            <Tab
+              icon={<Science sx={{ fontSize: 18 }} />}
+              iconPosition="start"
+              label="Examples"
+            />
+          </Tabs>
+        </Toolbar>
+      </AppBar>
+
+      <div style={{ width: "100%", flex: 1, overflow: "hidden" }}>
+        {tab === 0 && (
+          <AutoBePlaygroundChatMovie
+            hideAppBar
+            serviceFactory={serviceFactory}
+            storageStrategyFactory={() =>
+              new AutoBeAgentSessionStorageServerStrategy()
+            }
+          />
+        )}
+        {tab === 1 && benchmarks && (
+          <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
+        )}
+      </div>
     </div>
   );
 }

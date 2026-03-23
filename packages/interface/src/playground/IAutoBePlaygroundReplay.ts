@@ -256,5 +256,23 @@ export namespace IAutoBePlaygroundReplay {
     aggregates: AutoBeProcessAggregateCollection;
   }
 
+  /**
+   * Query parameters for identifying a specific example replay.
+   *
+   * Used as WebSocket query parameters to locate the pre-recorded
+   * benchmark data for a specific vendor/project combination.
+   */
+  export interface IQuery {
+    /**
+     * AI vendor/model identifier (e.g. "openai/gpt-4.1").
+     */
+    vendor: string;
+
+    /**
+     * Example project name (e.g. "bbs", "todo").
+     */
+    project: string;
+  }
+
   export type Collection = Record<string, IAutoBePlaygroundReplay.ISummary[]>;
 }

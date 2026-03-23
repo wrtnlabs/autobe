@@ -12,9 +12,9 @@ import type { Primitive, tags } from "typia";
 /**
  * List models registered under a vendor.
  *
- * Returns all model entries for the specified vendor, sorted by creation
- * date in descending order. Model entries are automatically created when
- * a session is created with a new model for this vendor.
+ * Returns all model entries for the specified vendor, sorted by creation date
+ * in descending order. Model entries are automatically created when a session
+ * is created with a new model for this vendor.
  *
  * @param vendorId Target vendor's {@link IAutoBePlaygroundVendor.id }
  * @author Samchon
@@ -57,8 +57,8 @@ export namespace index {
 /**
  * Remove a model from a vendor's model list.
  *
- * Permanently deletes the model entry. Sessions that used this model
- * are not affected.
+ * Permanently deletes the model entry. Sessions that used this model are not
+ * affected.
  *
  * @param vendorId Target vendor's {@link IAutoBePlaygroundVendor.id }
  * @param id Target model entry's {@link IAutoBePlaygroundVendorModel.id }
