@@ -26,7 +26,7 @@ export async function runTodoScenarios(
     method: "POST",
   });
   if (!joinEndpoint) {
-    results.push(fail(1, "User signup", "endpoint not found"));
+    results.push(fail(1, "User signup", "endpoint not found", "auth"));
   } else {
     const res = await http.post(joinEndpoint.url, {
       email,
@@ -35,8 +35,8 @@ export async function runTodoScenarios(
     });
     results.push(
       res.ok
-        ? pass(1, "User signup")
-        : fail(1, "User signup", `status ${res.status}`),
+        ? pass(1, "User signup", "auth")
+        : fail(1, "User signup", `status ${res.status}`, "auth"),
     );
   }
 
@@ -46,7 +46,7 @@ export async function runTodoScenarios(
     method: "POST",
   });
   if (!loginEndpoint) {
-    results.push(fail(2, "User login", "endpoint not found"));
+    results.push(fail(2, "User login", "endpoint not found", "auth"));
   } else {
     const res = await http.post(loginEndpoint.url, { email, password });
     if (res.ok) {
@@ -56,12 +56,12 @@ export async function runTodoScenarios(
         typeof token === "string" ? token : token?.access || token;
       if (tokenStr) {
         http.setToken(tokenStr);
-        results.push(pass(2, "User login"));
+        results.push(pass(2, "User login", "auth"));
       } else {
-        results.push(fail(2, "User login", "no token in response"));
+        results.push(fail(2, "User login", "no token in response", "auth"));
       }
     } else {
-      results.push(fail(2, "User login", `status ${res.status}`));
+      results.push(fail(2, "User login", `status ${res.status}`, "auth"));
     }
   }
 
@@ -97,15 +97,16 @@ export async function runTodoScenarios(
       : null;
     results.push(
       wRes?.ok
-        ? pass(3, "User withdrawal")
+        ? pass(3, "User withdrawal", "cleanup")
         : fail(
             3,
             "User withdrawal",
             withdrawEndpoint ? `status ${wRes?.status}` : "endpoint not found",
+            "cleanup",
           ),
     );
   } else {
-    results.push(fail(3, "User withdrawal", "setup failed"));
+    results.push(fail(3, "User withdrawal", "setup failed", "cleanup"));
   }
 
   // 4. Password change
@@ -119,7 +120,7 @@ export async function runTodoScenarios(
       method: "PUT",
     });
   if (!pwEndpoint) {
-    results.push(fail(4, "Password change", "endpoint not found"));
+    results.push(fail(4, "Password change", "endpoint not found", "auth"));
   } else {
     const res = await http.patch(
       pwEndpoint.url,
@@ -133,8 +134,8 @@ export async function runTodoScenarios(
     );
     results.push(
       res.ok
-        ? pass(4, "Password change")
-        : fail(4, "Password change", `status ${res.status}`),
+        ? pass(4, "Password change", "auth")
+        : fail(4, "Password change", `status ${res.status}`, "auth"),
     );
   }
 
@@ -147,7 +148,7 @@ export async function runTodoScenarios(
       method: "PATCH",
     });
   if (!profileEndpoint) {
-    results.push(fail(5, "Update display name", "endpoint not found"));
+    results.push(fail(5, "Update display name", "endpoint not found", "crud"));
   } else {
     const res = await http.patch(
       profileEndpoint.url,
@@ -156,8 +157,8 @@ export async function runTodoScenarios(
     );
     results.push(
       res.ok
-        ? pass(5, "Update display name")
-        : fail(5, "Update display name", `status ${res.status}`),
+        ? pass(5, "Update display name", "crud")
+        : fail(5, "Update display name", `status ${res.status}`, "crud"),
     );
   }
 
@@ -167,7 +168,7 @@ export async function runTodoScenarios(
     method: "POST",
   });
   if (!todoCreateEndpoint) {
-    results.push(fail(6, "Create todo", "endpoint not found"));
+    results.push(fail(6, "Create todo", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       todoCreateEndpoint.url,
@@ -179,9 +180,9 @@ export async function runTodoScenarios(
     );
     if (res.ok) {
       todoId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(6, "Create todo"));
+      results.push(pass(6, "Create todo", "crud"));
     } else {
-      results.push(fail(6, "Create todo", `status ${res.status}`));
+      results.push(fail(6, "Create todo", `status ${res.status}`, "crud"));
     }
   }
 
@@ -190,7 +191,9 @@ export async function runTodoScenarios(
     findEndpoint(routes, { pathKeywords: ["todos"], method: "GET" }) ||
     findEndpoint(routes, { pathKeywords: ["todos"], method: "PATCH" });
   if (!todoListEndpoint) {
-    results.push(fail(7, "List todos with pagination", "endpoint not found"));
+    results.push(
+      fail(7, "List todos with pagination", "endpoint not found", "query"),
+    );
   } else {
     const res =
       todoListEndpoint.method === "PATCH"
@@ -204,8 +207,13 @@ export async function runTodoScenarios(
         res.body?.page);
     results.push(
       hasData
-        ? pass(7, "List todos with pagination")
-        : fail(7, "List todos with pagination", `status ${res.status}`),
+        ? pass(7, "List todos with pagination", "query")
+        : fail(
+            7,
+            "List todos with pagination",
+            `status ${res.status}`,
+            "query",
+          ),
     );
   }
 
@@ -229,6 +237,7 @@ export async function runTodoScenarios(
         8,
         "Toggle todo completion",
         toggleEndpoint ? "no todoId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -239,8 +248,8 @@ export async function runTodoScenarios(
       : await http.patch(url, { completed: true }, true);
     results.push(
       res2.ok
-        ? pass(8, "Toggle todo completion")
-        : fail(8, "Toggle todo completion", `status ${res2.status}`),
+        ? pass(8, "Toggle todo completion", "crud")
+        : fail(8, "Toggle todo completion", `status ${res2.status}`, "crud"),
     );
   }
 
@@ -275,6 +284,7 @@ export async function runTodoScenarios(
           : !todoUpdateEndpoint
             ? "update endpoint not found"
             : "history endpoint not found",
+        "workflow",
       ),
     );
   } else {
@@ -292,11 +302,12 @@ export async function runTodoScenarios(
     const histories = Array.isArray(res.body) ? res.body : res.body?.data;
     results.push(
       res.ok && Array.isArray(histories) && histories.length >= 1
-        ? pass(9, "Edit history auto-created on update")
+        ? pass(9, "Edit history auto-created on update", "workflow")
         : fail(
             9,
             "Edit history auto-created on update",
             `histories length: ${histories?.length}`,
+            "workflow",
           ),
     );
   }
@@ -304,7 +315,7 @@ export async function runTodoScenarios(
   // 10. Get edit history in chronological order
   if (!historyEndpoint || !todoId) {
     results.push(
-      fail(10, "Get edit history", "endpoint not found or no todoId"),
+      fail(10, "Get edit history", "endpoint not found or no todoId", "query"),
     );
   } else {
     const historyUrl = http.resolvePath(historyEndpoint.url, { todoId });
@@ -314,8 +325,8 @@ export async function runTodoScenarios(
         : await http.get(historyUrl, true);
     results.push(
       res.ok
-        ? pass(10, "Get edit history")
-        : fail(10, "Get edit history", `status ${res.status}`),
+        ? pass(10, "Get edit history", "query")
+        : fail(10, "Get edit history", `status ${res.status}`, "query"),
     );
   }
 
@@ -330,6 +341,7 @@ export async function runTodoScenarios(
         11,
         "Delete todo moves to trash",
         todoDeleteEndpoint ? "no todoId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -337,8 +349,13 @@ export async function runTodoScenarios(
     const res = await http.delete(deleteUrl, true);
     results.push(
       res.ok
-        ? pass(11, "Delete todo moves to trash")
-        : fail(11, "Delete todo moves to trash", `status ${res.status}`),
+        ? pass(11, "Delete todo moves to trash", "crud")
+        : fail(
+            11,
+            "Delete todo moves to trash",
+            `status ${res.status}`,
+            "crud",
+          ),
     );
   }
 
@@ -347,7 +364,7 @@ export async function runTodoScenarios(
     findEndpoint(routes, { pathKeywords: ["trash"], method: "GET" }) ||
     findEndpoint(routes, { pathKeywords: ["trash"], method: "PATCH" });
   if (!trashListEndpoint) {
-    results.push(fail(12, "List trash", "endpoint not found"));
+    results.push(fail(12, "List trash", "endpoint not found", "query"));
   } else {
     const res =
       trashListEndpoint.method === "PATCH"
@@ -355,8 +372,8 @@ export async function runTodoScenarios(
         : await http.get(trashListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(12, "List trash")
-        : fail(12, "List trash", `status ${res.status}`),
+        ? pass(12, "List trash", "query")
+        : fail(12, "List trash", `status ${res.status}`, "query"),
     );
   }
 
@@ -386,6 +403,7 @@ export async function runTodoScenarios(
         13,
         "Restore todo from trash",
         restoreEndpoint ? "no trashTodoId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -398,14 +416,16 @@ export async function runTodoScenarios(
     const res2 = res.ok ? res : await http.patch(restoreUrl, {}, true);
     results.push(
       res2.ok
-        ? pass(13, "Restore todo from trash")
-        : fail(13, "Restore todo from trash", `status ${res2.status}`),
+        ? pass(13, "Restore todo from trash", "crud")
+        : fail(13, "Restore todo from trash", `status ${res2.status}`, "crud"),
     );
   }
 
   // 14. Cannot access another user's todo
   if (!joinEndpoint || !loginEndpoint || !todoId) {
-    results.push(fail(14, "Cannot access another user's todo", "setup failed"));
+    results.push(
+      fail(14, "Cannot access another user's todo", "setup failed", "negative"),
+    );
   } else {
     const otherEmail = randomEmail();
     const otherPassword = randomPassword();
@@ -438,11 +458,12 @@ export async function runTodoScenarios(
       const res = await otherHttp.get(url, true);
       results.push(
         res.status === 403 || res.status === 404
-          ? pass(14, "Cannot access another user's todo")
+          ? pass(14, "Cannot access another user's todo", "negative")
           : fail(
               14,
               "Cannot access another user's todo",
               `expected 403/404 but got ${res.status}`,
+              "negative",
             ),
       );
     } else {
@@ -451,6 +472,7 @@ export async function runTodoScenarios(
           14,
           "Cannot access another user's todo",
           "get todo endpoint not found",
+          "negative",
         ),
       );
     }
@@ -468,16 +490,22 @@ export async function runTodoScenarios(
     );
     results.push(
       res.status === 401
-        ? pass(15, "Unauthenticated create returns 401")
+        ? pass(15, "Unauthenticated create returns 401", "negative")
         : fail(
             15,
             "Unauthenticated create returns 401",
             `expected 401 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(15, "Unauthenticated create returns 401", "endpoint not found"),
+      fail(
+        15,
+        "Unauthenticated create returns 401",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -489,16 +517,22 @@ export async function runTodoScenarios(
     });
     results.push(
       res.status === 401 || res.status === 403 || res.status === 404
-        ? pass(16, "Invalid login returns error status")
+        ? pass(16, "Invalid login returns error status", "negative")
         : fail(
             16,
             "Invalid login returns error status",
             `expected 401/403/404 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(16, "Invalid login returns error status", "endpoint not found"),
+      fail(
+        16,
+        "Invalid login returns error status",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -507,11 +541,16 @@ export async function runTodoScenarios(
     const res = await http.post(todoCreateEndpoint.url, {}, true);
     results.push(
       res.status === 400 || res.status === 422 || res.status === 403
-        ? pass(17, "Create todo with empty body returns validation error")
+        ? pass(
+            17,
+            "Create todo with empty body returns validation error",
+            "negative",
+          )
         : fail(
             17,
             "Create todo with empty body returns validation error",
             `expected 400/422 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
@@ -520,6 +559,7 @@ export async function runTodoScenarios(
         17,
         "Create todo with empty body returns validation error",
         "endpoint not found",
+        "negative",
       ),
     );
   }
@@ -532,20 +572,29 @@ export async function runTodoScenarios(
     });
     if (getTodoEndpoint) {
       const fakeId = "00000000-0000-0000-0000-000000000000";
-      const url = http.resolvePath(getTodoEndpoint.url, { todoId: fakeId, id: fakeId });
+      const url = http.resolvePath(getTodoEndpoint.url, {
+        todoId: fakeId,
+        id: fakeId,
+      });
       const res = await http.get(url, true);
       results.push(
         res.status === 404
-          ? pass(18, "Get non-existent todo returns 404")
+          ? pass(18, "Get non-existent todo returns 404", "negative")
           : fail(
               18,
               "Get non-existent todo returns 404",
               `expected 404 but got ${res.status}`,
+              "negative",
             ),
       );
     } else {
       results.push(
-        fail(18, "Get non-existent todo returns 404", "endpoint not found"),
+        fail(
+          18,
+          "Get non-existent todo returns 404",
+          "endpoint not found",
+          "negative",
+        ),
       );
     }
   }

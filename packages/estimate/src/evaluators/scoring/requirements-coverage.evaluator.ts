@@ -157,9 +157,11 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     };
   }
 
-  /** Extract domain keyword from a filename.
-   *  Returns empty string if the remaining domain is too short (< 3 chars)
-   *  to prevent overly aggressive matching (e.g. "get" → "" instead of matching everything). */
+  /**
+   * Extract domain keyword from a filename. Returns empty string if the
+   * remaining domain is too short (< 3 chars) to prevent overly aggressive
+   * matching (e.g. "get" → "" instead of matching everything).
+   */
   private extractDomain(name: string): string {
     const domain = name
       .replace(/^(get|post|patch|put|delete|create|update|remove)/i, "")

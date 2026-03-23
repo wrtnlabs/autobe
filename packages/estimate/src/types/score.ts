@@ -50,11 +50,12 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.05, // 5% (always 100, low discrimination)
-  requirementsCoverage: 0.25, // 25%
-  testCoverage: 0.25, // 25% (evaluator maturing, restore to 30% later)
-  logicCompleteness: 0.35, // 35% (best discriminator of real quality)
+  documentQuality: 0.05, // 5%
+  requirementsCoverage: 0.2, // 20%
+  testCoverage: 0.2, // 20%
+  logicCompleteness: 0.3, // 30% (best discriminator of real quality)
   apiCompleteness: 0.1, // 10%
+  goldenSet: 0.15, // 15% (runtime functional testing)
   // Legacy (not used in score)
   requirements: 0,
   database: 0,
@@ -65,8 +66,24 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   quality: 0,
   safety: 0,
   llmSpecific: 0,
-  goldenSet: 0,
 };
+
+// Validate active PHASE_WEIGHTS sum to 1.0 at module load
+{
+  const _activeWeightSum = [
+    PHASE_WEIGHTS.documentQuality,
+    PHASE_WEIGHTS.requirementsCoverage,
+    PHASE_WEIGHTS.testCoverage,
+    PHASE_WEIGHTS.logicCompleteness,
+    PHASE_WEIGHTS.apiCompleteness,
+    PHASE_WEIGHTS.goldenSet,
+  ].reduce((a, b) => a + b, 0);
+  if (Math.abs(_activeWeightSum - 1.0) > 0.001) {
+    console.warn(
+      `[estimate] Active PHASE_WEIGHTS sum to ${_activeWeightSum}, expected 1.0. Scores may be inaccurate.`,
+    );
+  }
+}
 
 /** Phase display names */
 export const PHASE_NAMES: Record<Phase, string> = {

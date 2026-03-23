@@ -55,6 +55,19 @@ export function BenchmarkPage() {
     );
   }
 
+  if (data.entries.length === 0) {
+    return (
+      <Box>
+        <Typography variant="h4" sx={{ mb: 2 }}>Benchmark Dashboard</Typography>
+        <Alert severity="info">
+          No benchmark data yet. Run the estimate batch to generate results:
+          <br />
+          <code>cd packages/estimate && node -r ts-node/register run-batch-estimate.js</code>
+        </Alert>
+      </Box>
+    );
+  }
+
   const toggleFilter = <T,>(
     current: T[],
     value: T,

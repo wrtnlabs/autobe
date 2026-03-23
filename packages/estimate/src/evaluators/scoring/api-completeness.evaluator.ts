@@ -104,9 +104,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         const passthroughRatio = passthroughEndpoints / totalEndpoints;
         if (passthroughRatio > 0.5) {
           // More than half are passthrough → deduct from implementation score
-          const passthroughPenalty = Math.round(
-            (passthroughRatio - 0.5) * 40,
-          );
+          const passthroughPenalty = Math.round((passthroughRatio - 0.5) * 40);
           score = Math.max(0, score - passthroughPenalty);
         }
         issues.push(
@@ -210,11 +208,13 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
               } else {
                 // Check for real implementation — require meaningful logic,
                 // not just a single delegation call
-                const lines = bodyText.split("\n").filter(
-                  (l) => l.trim().length > 0 && !l.trim().startsWith("//"),
-                );
-                const statementCount = lines.filter(
-                  (l) => /[;{}]/.test(l),
+                const lines = bodyText
+                  .split("\n")
+                  .filter(
+                    (l) => l.trim().length > 0 && !l.trim().startsWith("//"),
+                  );
+                const statementCount = lines.filter((l) =>
+                  /[;{}]/.test(l),
                 ).length;
 
                 // Single-line passthrough: `{ return (await)? this.xxx.yyy(...); }`
@@ -227,8 +227,9 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                 // variable assignments, or error handling with actual logic
                 const hasConditional = /\b(if|switch|[?:])\s*\(/.test(bodyText);
                 const hasLoop = /\b(for|while)\s*\(/.test(bodyText);
-                const hasVariableWork =
-                  /\b(const|let|var)\s+\w+\s*=/.test(bodyText);
+                const hasVariableWork = /\b(const|let|var)\s+\w+\s*=/.test(
+                  bodyText,
+                );
                 const hasTryCatchWithLogic =
                   bodyText.includes("try") &&
                   /catch\s*\([^)]*\)\s*\{[^}]*\S/.test(bodyText);
@@ -251,8 +252,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                 }
 
                 // Check for provider/service delegation.
-                const LOGGING_PATTERN =
-                  /this\.(logger|log|logging)\.\w+\s*\(/i;
+                const LOGGING_PATTERN = /this\.(logger|log|logging)\.\w+\s*\(/i;
                 const hasNonLoggingDelegation =
                   /this\.\w+\.\w+\s*\(/i.test(bodyText) &&
                   bodyText

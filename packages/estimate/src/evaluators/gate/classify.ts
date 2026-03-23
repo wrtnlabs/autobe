@@ -6,8 +6,7 @@ const CRITICAL_CODES = new Set([
 ]);
 
 const WARNING_CODES = new Set([
-  2304, 2305, 2306, 2307, 2314, 2322, 2339, 2345, 2551, 2554, 2561, 7006,
-  7031,
+  2304, 2305, 2306, 2307, 2314, 2322, 2339, 2345, 2551, 2554, 2561, 7006, 7031,
 ]);
 
 // Infrastructure noise — does not affect gate or penalties

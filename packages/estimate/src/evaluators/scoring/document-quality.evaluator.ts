@@ -183,7 +183,10 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
         }),
       );
       // Direct penalty for boilerplate (max -10)
-      score -= Math.min(10, Math.round((boilerplateFiles / contents.size) * 15));
+      score -= Math.min(
+        10,
+        Math.round((boilerplateFiles / contents.size) * 15),
+      );
     }
 
     // Content depth bonus — average word count per file (max 10)
@@ -207,7 +210,9 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       /\b(error|exception|handling|validation)\b/i,
     ];
     const allContent = Array.from(contents.values()).join("\n");
-    const topicsCovered = topicPatterns.filter((p) => p.test(allContent)).length;
+    const topicsCovered = topicPatterns.filter((p) =>
+      p.test(allContent),
+    ).length;
     score += Math.round((topicsCovered / topicPatterns.length) * 10);
 
     return Math.max(0, score);

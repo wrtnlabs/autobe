@@ -9,15 +9,13 @@ import AutoBeDemoPhaseMovie from "./AutoBeDemoPhaseMovie";
 export default function AutoBeDemoProjectMovie(
   props: AutoBeDemoProjectMovie.IProps,
 ) {
-  // Use project name directly from replay data
   const replay: IAutoBePlaygroundReplay.ISummary | null =
     AutoBeDemoStorage.getProject(props);
 
   if (replay === null) {
     return (
-      <div className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[200px]">
-        <div className="text-4xl mb-3">📦</div>
-        <p className="text-gray-400">No project data available</p>
+      <div className="rounded-2xl p-6 border border-neutral-800/50 flex flex-col items-center justify-center min-h-[200px]">
+        <p className="text-sm text-neutral-600">No project data available</p>
       </div>
     );
   }
@@ -25,7 +23,6 @@ export default function AutoBeDemoProjectMovie(
   const projectTitle =
     replay.project.charAt(0).toUpperCase() + replay.project.slice(1);
 
-  // Generate URL based on vendor and project
   const url = `https://github.com/wrtnlabs/autobe-examples/tree/main/${replay.vendor.replaceAll(":", "-")}/${replay.project}`;
 
   const tokenUsage = replay.aggregates.total.tokenUsage;
@@ -34,21 +31,18 @@ export default function AutoBeDemoProjectMovie(
   const cachedTokens = formatTokens(tokenUsage.input.cached);
   const outputTokens = formatTokens(tokenUsage.output.total);
 
-  // Calculate function calling success rate
   const successRate = (
     (replay.aggregates.total.metric.success /
       replay.aggregates.total.metric.attempt) *
     100
   ).toFixed(2);
 
-  // Detect container width to show/hide time column
   const containerRef = useRef<HTMLAnchorElement>(null);
   const [showTimeColumn, setShowTimeColumn] = useState(false);
 
   useEffect(() => {
     const checkWidth = () => {
       if (containerRef.current) {
-        // Show time column only if container is wider than 400px
         setShowTimeColumn(containerRef.current.offsetWidth > 400);
       }
     };
@@ -56,7 +50,6 @@ export default function AutoBeDemoProjectMovie(
     checkWidth();
     window.addEventListener("resize", checkWidth);
 
-    // Use ResizeObserver for more accurate detection
     const resizeObserver = new ResizeObserver(checkWidth);
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
@@ -74,31 +67,16 @@ export default function AutoBeDemoProjectMovie(
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-white/5 border border-gray-600/30 rounded-2xl p-6 transition-all duration-300 hover:bg-white/10 hover:border-gray-500/50 hover:shadow-xl hover:shadow-blue-500/10 hover:scale-[1.02]"
+      className="block rounded-2xl p-6 border border-neutral-800/50 transition-all duration-300 hover:border-neutral-700/60"
     >
-      <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-2xl font-bold">{projectTitle}</h3>
-        <div className="flex items-center gap-2 group cursor-pointer">
-          <span className="text-xs text-gray-400 bg-gray-700/30 group-hover:bg-gray-600/40 px-3 py-1.5 rounded-lg transition-all">
-            {replay.vendor}
-          </span>
-          <svg
-            className="w-4 h-4 text-white/60 group-hover:text-white group-hover:scale-110 transition-all"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </div>
+      <div className="mb-5 flex items-center justify-between">
+        <h3 className="text-base font-semibold text-white">{projectTitle}</h3>
+        <span className="text-[11px] text-neutral-600 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800/50">
+          {replay.vendor}
+        </span>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-5">
         <table className="w-full">
           <tbody>
             {(
@@ -118,38 +96,29 @@ export default function AutoBeDemoProjectMovie(
         </table>
       </div>
 
-      <div className="border-t border-gray-600 pt-4">
-        {/* Function Calling Success Rate */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center text-sm text-gray-400">
-            <span className="mr-2">✓</span>
-            <span>Function Calling Success Rate</span>
-          </div>
-          <span className="text-green-400 font-bold">{successRate}%</span>
+      <div className="border-t border-neutral-800/40 pt-4 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-neutral-600">Success Rate</span>
+          <span className="text-xs text-neutral-300 font-medium">
+            {successRate}%
+          </span>
         </div>
 
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center text-sm text-gray-400">
-            <span className="mr-2">⏱</span>
-            <span>Elapsed Time</span>
-          </div>
-          <span className="text-blue-400 font-bold">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-neutral-600">Elapsed Time</span>
+          <span className="text-xs text-neutral-300 font-medium">
             {formatElapsedTime(replay.elapsed)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm text-gray-400">
-            <span className="mr-2">🧠</span>
-            <span>Total Tokens</span>
-          </div>
+          <span className="text-xs text-neutral-600">Total Tokens</span>
           <div className="text-right">
-            <div className="font-bold text-white">{totalTokens}</div>
-            <div className="text-xs text-gray-400">
-              <div>
-                in: {inputTokens} ({cachedTokens} cached)
-              </div>
-              <div>out: {outputTokens}</div>
+            <span className="text-xs text-neutral-300 font-medium">
+              {totalTokens}
+            </span>
+            <div className="text-[11px] text-neutral-700">
+              in: {inputTokens} ({cachedTokens} cached) · out: {outputTokens}
             </div>
           </div>
         </div>
@@ -164,7 +133,6 @@ export namespace AutoBeDemoProjectMovie {
   }
 }
 
-// Convert elapsed time from milliseconds to human readable format
 function formatElapsedTime(ms: number): string {
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
@@ -183,7 +151,6 @@ function formatElapsedTime(ms: number): string {
   }
 }
 
-// Format token numbers with K/M suffix
 function formatTokens(num: number): string {
   if (num >= 1000000) {
     return `${(num / 1000000).toFixed(2)}M`;

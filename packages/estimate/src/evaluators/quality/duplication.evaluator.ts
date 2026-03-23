@@ -60,8 +60,7 @@ export class DuplicationEvaluator extends BaseEvaluator {
       for (const loc of locations) {
         const overlaps = uniqueLocations.some(
           (u) =>
-            u.file === loc.file &&
-            Math.abs(u.line - loc.line) < this.MIN_LINES,
+            u.file === loc.file && Math.abs(u.line - loc.line) < this.MIN_LINES,
         );
         if (!overlaps) {
           uniqueLocations.push(loc);

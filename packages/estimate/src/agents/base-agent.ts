@@ -63,7 +63,7 @@ export abstract class BaseAgent {
     }
   }
 
-  /** Chat with retry on parse failure */
+  /** Chat with retry on parse failure (exponential backoff) */
   protected async chatWithRetry(
     systemPrompt: string,
     userPrompt: string,
@@ -85,6 +85,7 @@ export abstract class BaseAgent {
             await new Promise((r) => setTimeout(r, delay));
             continue;
           }
+          // All retries exhausted — mark as API failure
           break;
         }
 
@@ -99,6 +100,7 @@ export abstract class BaseAgent {
             await new Promise((r) => setTimeout(r, delay));
             continue;
           }
+          // Last attempt parse failure → mark as failed (-1), not score=0
           lastError = "JSON parse failed on final attempt";
           break;
         }
@@ -249,6 +251,11 @@ export abstract class BaseAgent {
     const avgScore = Math.round(
       scores.reduce((a, b) => a + b, 0) / scores.length,
     );
+    if (failedChunks > 0) {
+      console.log(
+        `  ⚠ ${this.name}: ${failedChunks}/${chunks.length} chunks failed, averaging ${scores.length} successful chunks`,
+      );
+    }
 
     // Average DeepEval sub-scores across chunks
     const mergedDeepEval: DeepEvalScores | undefined =

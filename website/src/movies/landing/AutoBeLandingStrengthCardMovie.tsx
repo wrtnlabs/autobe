@@ -1,32 +1,35 @@
 "use client";
 
 interface FeatureCardProps {
+  num: string;
   title: string;
   subtitle: string;
   description: string;
   footer: string;
+  span?: boolean;
 }
 
 export default function AutoBeLandingStrengthCardMovie({
+  num,
   title,
   subtitle,
   description,
   footer,
+  span,
 }: FeatureCardProps) {
   return (
-    <div className="text-left">
-      <h3 className="text-base md:text-lg font-semibold text-white tracking-tight">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm text-slate-300">{subtitle}</p>
-      <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-sm">
+    <div
+      className={`group rounded-2xl border border-neutral-800/50 transition-all duration-300 hover:border-neutral-700/60 p-8 ${
+        span ? "lg:col-span-2" : ""
+      }`}
+    >
+      <div className="text-[10px] font-mono text-neutral-700 mb-4">{num}</div>
+      <h3 className="text-base font-semibold mb-2 text-white">{title}</h3>
+      <p className="text-xs text-neutral-400 mb-3">{subtitle}</p>
+      <p className="text-xs text-neutral-500 leading-relaxed mb-5">
         {description}
       </p>
-      <div className="mt-5 pt-4 border-t border-white/10">
-        <p className="text-xs text-slate-400 font-semibold tracking-[0.14em] uppercase">
-          {footer}
-        </p>
-      </div>
+      <p className="text-[11px] text-neutral-700 font-mono">{footer}</p>
     </div>
   );
 }

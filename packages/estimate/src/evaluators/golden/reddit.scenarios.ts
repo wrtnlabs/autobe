@@ -1,5 +1,6 @@
 import { HttpRunner } from "./http-runner";
 import {
+  type ScenarioCategory,
   type ScenarioResult,
   fail,
   pass,
@@ -31,7 +32,7 @@ export async function runRedditScenarios(
     method: "POST",
   });
   if (!joinEndpoint) {
-    results.push(fail(1, "User signup", "endpoint not found"));
+    results.push(fail(1, "User signup", "endpoint not found", "auth"));
   } else {
     const res = await http.post(joinEndpoint.url, {
       email,
@@ -41,8 +42,8 @@ export async function runRedditScenarios(
     });
     results.push(
       res.ok
-        ? pass(1, "User signup")
-        : fail(1, "User signup", `status ${res.status}`),
+        ? pass(1, "User signup", "auth")
+        : fail(1, "User signup", `status ${res.status}`, "auth"),
     );
   }
 
@@ -52,7 +53,7 @@ export async function runRedditScenarios(
     method: "POST",
   });
   if (!loginEndpoint) {
-    results.push(fail(2, "User login", "endpoint not found"));
+    results.push(fail(2, "User login", "endpoint not found", "auth"));
   } else {
     const res = await http.post(loginEndpoint.url, { email, password });
     if (res.ok) {
@@ -62,12 +63,12 @@ export async function runRedditScenarios(
         typeof token === "string" ? token : token?.access || token;
       if (tokenStr) {
         http.setToken(tokenStr);
-        results.push(pass(2, "User login"));
+        results.push(pass(2, "User login", "auth"));
       } else {
-        results.push(fail(2, "User login", "no token in response"));
+        results.push(fail(2, "User login", "no token in response", "auth"));
       }
     } else {
-      results.push(fail(2, "User login", `status ${res.status}`));
+      results.push(fail(2, "User login", `status ${res.status}`, "auth"));
     }
   }
 
@@ -82,7 +83,7 @@ export async function runRedditScenarios(
       method: "PUT",
     });
   if (!pwEndpoint) {
-    results.push(fail(3, "Change password", "endpoint not found"));
+    results.push(fail(3, "Change password", "endpoint not found", "auth"));
   } else {
     const res = await http.patch(
       pwEndpoint.url,
@@ -96,8 +97,8 @@ export async function runRedditScenarios(
     );
     results.push(
       res.ok
-        ? pass(3, "Change password")
-        : fail(3, "Change password", `status ${res.status}`),
+        ? pass(3, "Change password", "auth")
+        : fail(3, "Change password", `status ${res.status}`, "auth"),
     );
   }
 
@@ -107,13 +108,13 @@ export async function runRedditScenarios(
     method: "GET",
   });
   if (!profileGetEndpoint) {
-    results.push(fail(4, "Get user profile", "endpoint not found"));
+    results.push(fail(4, "Get user profile", "endpoint not found", "auth"));
   } else {
     const res = await http.get(profileGetEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(4, "Get user profile")
-        : fail(4, "Get user profile", `status ${res.status}`),
+        ? pass(4, "Get user profile", "auth")
+        : fail(4, "Get user profile", `status ${res.status}`, "auth"),
     );
   }
 
@@ -122,7 +123,7 @@ export async function runRedditScenarios(
     findEndpoint(routes, { pathKeywords: ["profile"], method: "PATCH" }) ||
     findEndpoint(routes, { pathKeywords: ["profile"], method: "PUT" });
   if (!profileEndpoint) {
-    results.push(fail(5, "Update profile", "endpoint not found"));
+    results.push(fail(5, "Update profile", "endpoint not found", "auth"));
   } else {
     const res = await http.patch(
       profileEndpoint.url,
@@ -131,8 +132,8 @@ export async function runRedditScenarios(
     );
     results.push(
       res.ok
-        ? pass(5, "Update profile")
-        : fail(5, "Update profile", `status ${res.status}`),
+        ? pass(5, "Update profile", "auth")
+        : fail(5, "Update profile", `status ${res.status}`, "auth"),
     );
   }
 
@@ -172,7 +173,7 @@ export async function runRedditScenarios(
     method: "POST",
   });
   if (!communityCreateEndpoint) {
-    results.push(fail(6, "Create community", "endpoint not found"));
+    results.push(fail(6, "Create community", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       communityCreateEndpoint.url,
@@ -184,9 +185,9 @@ export async function runRedditScenarios(
     );
     if (res.ok) {
       communityId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(6, "Create community"));
+      results.push(pass(6, "Create community", "crud"));
     } else {
-      results.push(fail(6, "Create community", `status ${res.status}`));
+      results.push(fail(6, "Create community", `status ${res.status}`, "crud"));
     }
   }
 
@@ -196,19 +197,21 @@ export async function runRedditScenarios(
     method: "GET",
   });
   if (!communityListEndpoint) {
-    results.push(fail(7, "List communities", "endpoint not found"));
+    results.push(fail(7, "List communities", "endpoint not found", "query"));
   } else {
     const res = await http.get(communityListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(7, "List communities")
-        : fail(7, "List communities", `status ${res.status}`),
+        ? pass(7, "List communities", "query")
+        : fail(7, "List communities", `status ${res.status}`, "query"),
     );
   }
 
   // 8. Get community detail
   if (!communityListEndpoint || !communityId) {
-    results.push(fail(8, "Get community detail", "no communityId or endpoint"));
+    results.push(
+      fail(8, "Get community detail", "no communityId or endpoint", "query"),
+    );
   } else {
     const url = http.resolvePath(communityListEndpoint.url, {
       id: communityId,
@@ -217,8 +220,8 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(8, "Get community detail")
-        : fail(8, "Get community detail", `status ${res.status}`),
+        ? pass(8, "Get community detail", "query")
+        : fail(8, "Get community detail", `status ${res.status}`, "query"),
     );
   }
 
@@ -233,6 +236,7 @@ export async function runRedditScenarios(
         9,
         "Subscribe to community",
         subscribeEndpoint ? "no communityId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -243,8 +247,8 @@ export async function runRedditScenarios(
     const res = await http.post(url, {}, true);
     results.push(
       res.ok
-        ? pass(9, "Subscribe to community")
-        : fail(9, "Subscribe to community", `status ${res.status}`),
+        ? pass(9, "Subscribe to community", "crud")
+        : fail(9, "Subscribe to community", `status ${res.status}`, "crud"),
     );
   }
 
@@ -259,6 +263,7 @@ export async function runRedditScenarios(
         10,
         "Unsubscribe from community",
         unsubscribeEndpoint ? "no communityId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -277,8 +282,13 @@ export async function runRedditScenarios(
     }
     results.push(
       res.ok
-        ? pass(10, "Unsubscribe from community")
-        : fail(10, "Unsubscribe from community", `status ${res.status}`),
+        ? pass(10, "Unsubscribe from community", "crud")
+        : fail(
+            10,
+            "Unsubscribe from community",
+            `status ${res.status}`,
+            "crud",
+          ),
     );
   }
 
@@ -293,6 +303,7 @@ export async function runRedditScenarios(
         11,
         "Add moderator",
         !modAddEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -303,8 +314,8 @@ export async function runRedditScenarios(
     const res = await http.post(url, { user_id: otherUserId }, true);
     results.push(
       res.ok
-        ? pass(11, "Add moderator")
-        : fail(11, "Add moderator", `status ${res.status}`),
+        ? pass(11, "Add moderator", "crud")
+        : fail(11, "Add moderator", `status ${res.status}`, "crud"),
     );
   }
 
@@ -319,6 +330,7 @@ export async function runRedditScenarios(
         12,
         "List moderators",
         modListEndpoint ? "no communityId" : "endpoint not found",
+        "query",
       ),
     );
   } else {
@@ -329,8 +341,8 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(12, "List moderators")
-        : fail(12, "List moderators", `status ${res.status}`),
+        ? pass(12, "List moderators", "query")
+        : fail(12, "List moderators", `status ${res.status}`, "query"),
     );
   }
 
@@ -345,6 +357,7 @@ export async function runRedditScenarios(
         13,
         "Remove moderator",
         !modRemoveEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -356,8 +369,8 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(13, "Remove moderator")
-        : fail(13, "Remove moderator", `status ${res.status}`),
+        ? pass(13, "Remove moderator", "crud")
+        : fail(13, "Remove moderator", `status ${res.status}`, "crud"),
     );
   }
 
@@ -372,6 +385,7 @@ export async function runRedditScenarios(
         14,
         "Ban user from community",
         !banEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -386,8 +400,8 @@ export async function runRedditScenarios(
     );
     results.push(
       res.ok
-        ? pass(14, "Ban user from community")
-        : fail(14, "Ban user from community", `status ${res.status}`),
+        ? pass(14, "Ban user from community", "crud")
+        : fail(14, "Ban user from community", `status ${res.status}`, "crud"),
     );
   }
 
@@ -398,7 +412,12 @@ export async function runRedditScenarios(
   });
   if (!unbanEndpoint || !communityId || !otherUserId) {
     results.push(
-      fail(15, "Unban user", !unbanEndpoint ? "endpoint not found" : "no IDs"),
+      fail(
+        15,
+        "Unban user",
+        !unbanEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
+      ),
     );
   } else {
     const url = http.resolvePath(unbanEndpoint.url, {
@@ -409,8 +428,8 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(15, "Unban user")
-        : fail(15, "Unban user", `status ${res.status}`),
+        ? pass(15, "Unban user", "crud")
+        : fail(15, "Unban user", `status ${res.status}`, "crud"),
     );
   }
 
@@ -422,7 +441,7 @@ export async function runRedditScenarios(
     method: "POST",
   });
   if (!postCreateEndpoint) {
-    results.push(fail(16, "Create post", "endpoint not found"));
+    results.push(fail(16, "Create post", "endpoint not found", "crud"));
   } else {
     const body: Record<string, unknown> = {
       title: "Golden Set Test Post",
@@ -433,9 +452,9 @@ export async function runRedditScenarios(
     const res = await http.post(postCreateEndpoint.url, body, true);
     if (res.ok) {
       postId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(16, "Create post"));
+      results.push(pass(16, "Create post", "crud"));
     } else {
-      results.push(fail(16, "Create post", `status ${res.status}`));
+      results.push(fail(16, "Create post", `status ${res.status}`, "crud"));
     }
   }
 
@@ -450,6 +469,7 @@ export async function runRedditScenarios(
         17,
         "Get post detail",
         postGetEndpoint ? "no postId" : "endpoint not found",
+        "query",
       ),
     );
   } else {
@@ -457,8 +477,8 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(17, "Get post detail")
-        : fail(17, "Get post detail", `status ${res.status}`),
+        ? pass(17, "Get post detail", "query")
+        : fail(17, "Get post detail", `status ${res.status}`, "query"),
     );
   }
 
@@ -474,6 +494,7 @@ export async function runRedditScenarios(
         18,
         "Community feed",
         communityFeedEndpoint ? "no communityId" : "endpoint not found",
+        "query",
       ),
     );
   } else {
@@ -484,8 +505,8 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(18, "Community feed")
-        : fail(18, "Community feed", `status ${res.status}`),
+        ? pass(18, "Community feed", "query")
+        : fail(18, "Community feed", `status ${res.status}`, "query"),
     );
   }
 
@@ -500,6 +521,7 @@ export async function runRedditScenarios(
         19,
         "Edit post",
         postEditEndpoint ? "no postId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -507,8 +529,8 @@ export async function runRedditScenarios(
     const res = await http.patch(url, { title: "Updated Post Title" }, true);
     results.push(
       res.ok
-        ? pass(19, "Edit post")
-        : fail(19, "Edit post", `status ${res.status}`),
+        ? pass(19, "Edit post", "crud")
+        : fail(19, "Edit post", `status ${res.status}`, "crud"),
     );
   }
 
@@ -525,6 +547,7 @@ export async function runRedditScenarios(
         20,
         "Vote on post",
         postVoteEndpoint ? "no postId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -532,8 +555,8 @@ export async function runRedditScenarios(
     const res = await http.post(url, { value: 1 }, true);
     results.push(
       res.ok
-        ? pass(20, "Vote on post")
-        : fail(20, "Vote on post", `status ${res.status}`),
+        ? pass(20, "Vote on post", "crud")
+        : fail(20, "Vote on post", `status ${res.status}`, "crud"),
     );
   }
 
@@ -550,6 +573,7 @@ export async function runRedditScenarios(
         21,
         "Remove vote",
         postVoteRemoveEndpoint ? "no postId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -560,8 +584,8 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(21, "Remove vote")
-        : fail(21, "Remove vote", `status ${res.status}`),
+        ? pass(21, "Remove vote", "crud")
+        : fail(21, "Remove vote", `status ${res.status}`, "crud"),
     );
   }
 
@@ -578,6 +602,7 @@ export async function runRedditScenarios(
         22,
         "Write comment",
         commentCreateEndpoint ? "no postId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -592,9 +617,9 @@ export async function runRedditScenarios(
     );
     if (res.ok) {
       commentId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(22, "Write comment"));
+      results.push(pass(22, "Write comment", "crud"));
     } else {
-      results.push(fail(22, "Write comment", `status ${res.status}`));
+      results.push(fail(22, "Write comment", `status ${res.status}`, "crud"));
     }
   }
 
@@ -610,6 +635,7 @@ export async function runRedditScenarios(
         23,
         "Vote on comment",
         !commentVoteEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -621,8 +647,8 @@ export async function runRedditScenarios(
     const res = await http.post(url, { value: 1 }, true);
     results.push(
       res.ok
-        ? pass(23, "Vote on comment")
-        : fail(23, "Vote on comment", `status ${res.status}`),
+        ? pass(23, "Vote on comment", "crud")
+        : fail(23, "Vote on comment", `status ${res.status}`, "crud"),
     );
   }
 
@@ -637,6 +663,7 @@ export async function runRedditScenarios(
         24,
         "Edit comment",
         !commentEditEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -648,8 +675,8 @@ export async function runRedditScenarios(
     const res = await http.patch(url, { content: "Updated comment" }, true);
     results.push(
       res.ok
-        ? pass(24, "Edit comment")
-        : fail(24, "Edit comment", `status ${res.status}`),
+        ? pass(24, "Edit comment", "crud")
+        : fail(24, "Edit comment", `status ${res.status}`, "crud"),
     );
   }
 
@@ -664,6 +691,7 @@ export async function runRedditScenarios(
         25,
         "Delete comment",
         !commentDeleteEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -675,8 +703,8 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(25, "Delete comment")
-        : fail(25, "Delete comment", `status ${res.status}`),
+        ? pass(25, "Delete comment", "crud")
+        : fail(25, "Delete comment", `status ${res.status}`, "crud"),
     );
   }
 
@@ -688,13 +716,13 @@ export async function runRedditScenarios(
     method: "GET",
   });
   if (!homeFeedEndpoint) {
-    results.push(fail(26, "Home feed", "endpoint not found"));
+    results.push(fail(26, "Home feed", "endpoint not found", "query"));
   } else {
     const res = await http.get(homeFeedEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(26, "Home feed")
-        : fail(26, "Home feed", `status ${res.status}`),
+        ? pass(26, "Home feed", "query")
+        : fail(26, "Home feed", `status ${res.status}`, "query"),
     );
   }
 
@@ -704,13 +732,13 @@ export async function runRedditScenarios(
     method: "GET",
   });
   if (!popularFeedEndpoint) {
-    results.push(fail(27, "Popular feed", "endpoint not found"));
+    results.push(fail(27, "Popular feed", "endpoint not found", "query"));
   } else {
     const res = await http.get(popularFeedEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(27, "Popular feed")
-        : fail(27, "Popular feed", `status ${res.status}`),
+        ? pass(27, "Popular feed", "query")
+        : fail(27, "Popular feed", `status ${res.status}`, "query"),
     );
   }
 
@@ -727,6 +755,7 @@ export async function runRedditScenarios(
         28,
         "Report post",
         reportEndpoint ? "no postId" : "endpoint not found",
+        "workflow",
       ),
     );
   } else {
@@ -742,8 +771,8 @@ export async function runRedditScenarios(
     );
     results.push(
       res.ok
-        ? pass(28, "Report post")
-        : fail(28, "Report post", `status ${res.status}`),
+        ? pass(28, "Report post", "workflow")
+        : fail(28, "Report post", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -758,6 +787,7 @@ export async function runRedditScenarios(
         29,
         "List reports",
         reportListEndpoint ? "no communityId" : "endpoint not found",
+        "workflow",
       ),
     );
   } else {
@@ -768,8 +798,8 @@ export async function runRedditScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(29, "List reports")
-        : fail(29, "List reports", `status ${res.status}`),
+        ? pass(29, "List reports", "workflow")
+        : fail(29, "List reports", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -786,6 +816,7 @@ export async function runRedditScenarios(
         30,
         "Delete post",
         postDeleteEndpoint ? "no postId" : "endpoint not found",
+        "cleanup",
       ),
     );
   } else {
@@ -796,8 +827,8 @@ export async function runRedditScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(30, "Delete post")
-        : fail(30, "Delete post", `status ${res.status}`),
+        ? pass(30, "Delete post", "cleanup")
+        : fail(30, "Delete post", `status ${res.status}`, "cleanup"),
     );
   }
 
@@ -807,7 +838,7 @@ export async function runRedditScenarios(
     method: "DELETE",
   });
   if (!withdrawEndpoint) {
-    results.push(fail(31, "User withdrawal", "endpoint not found"));
+    results.push(fail(31, "User withdrawal", "endpoint not found", "cleanup"));
   } else {
     const wEmail = randomEmail();
     const wPassword = randomPassword();
@@ -834,11 +865,13 @@ export async function runRedditScenarios(
       const res = await wHttp.delete(withdrawEndpoint.url, true);
       results.push(
         res.ok
-          ? pass(31, "User withdrawal")
-          : fail(31, "User withdrawal", `status ${res.status}`),
+          ? pass(31, "User withdrawal", "cleanup")
+          : fail(31, "User withdrawal", `status ${res.status}`, "cleanup"),
       );
     } else {
-      results.push(fail(31, "User withdrawal", "auth endpoints missing"));
+      results.push(
+        fail(31, "User withdrawal", "auth endpoints missing", "cleanup"),
+      );
     }
   }
 
@@ -854,16 +887,22 @@ export async function runRedditScenarios(
     );
     results.push(
       res.status === 401
-        ? pass(32, "Unauthenticated post create returns 401")
+        ? pass(32, "Unauthenticated post create returns 401", "negative")
         : fail(
             32,
             "Unauthenticated post create returns 401",
             `expected 401 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(32, "Unauthenticated post create returns 401", "endpoint not found"),
+      fail(
+        32,
+        "Unauthenticated post create returns 401",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -875,16 +914,22 @@ export async function runRedditScenarios(
     });
     results.push(
       res.status === 401 || res.status === 403 || res.status === 404
-        ? pass(33, "Invalid login returns error status")
+        ? pass(33, "Invalid login returns error status", "negative")
         : fail(
             33,
             "Invalid login returns error status",
             `expected 401/403/404 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(33, "Invalid login returns error status", "endpoint not found"),
+      fail(
+        33,
+        "Invalid login returns error status",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -896,20 +941,29 @@ export async function runRedditScenarios(
     });
     if (postGetEndpoint) {
       const fakeId = "00000000-0000-0000-0000-000000000000";
-      const url = http.resolvePath(postGetEndpoint.url, { id: fakeId, postId: fakeId });
+      const url = http.resolvePath(postGetEndpoint.url, {
+        id: fakeId,
+        postId: fakeId,
+      });
       const res = await http.get(url, true);
       results.push(
         res.status === 404
-          ? pass(34, "Get non-existent post returns 404")
+          ? pass(34, "Get non-existent post returns 404", "negative")
           : fail(
               34,
               "Get non-existent post returns 404",
               `expected 404 but got ${res.status}`,
+              "negative",
             ),
       );
     } else {
       results.push(
-        fail(34, "Get non-existent post returns 404", "endpoint not found"),
+        fail(
+          34,
+          "Get non-existent post returns 404",
+          "endpoint not found",
+          "negative",
+        ),
       );
     }
   }

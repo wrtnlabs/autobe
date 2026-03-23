@@ -93,16 +93,23 @@ async function main() {
           console.log(`  [agent] Running SecurityAgent + LLMQualityAgent + HallucinationAgent...`);
           try {
             agentResults = await runAgentEvaluations(context);
-            const scoredAgents = agentResults.filter(r => r.agent in AGENT_WEIGHTS);
-            agentAvg = scoredAgents.reduce((sum, r) => sum + r.score * AGENT_WEIGHTS[r.agent], 0);
+            // Exclude failed agents (score < 0) and re-normalize weights
+            const successAgents = agentResults.filter(r => r.agent in AGENT_WEIGHTS && r.score >= 0);
+            if (successAgents.length > 0) {
+              const weightSum = successAgents.reduce((sum, r) => sum + AGENT_WEIGHTS[r.agent], 0);
+              agentAvg = successAgents.reduce((sum, r) => sum + r.score * (AGENT_WEIGHTS[r.agent] / weightSum), 0);
 
-            const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
-            const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
-            adjustedScore = Math.round(phasesPortion + agentPortion);
+              const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
+              const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
+              adjustedScore = Math.round(phasesPortion + agentPortion);
 
-            // Two-tier agent cap
-            if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
-            else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
+              // Two-tier agent cap (only when all weighted agents succeeded)
+              const allWeightedAgents = agentResults.filter(r => r.agent in AGENT_WEIGHTS);
+              if (successAgents.length === allWeightedAgents.length) {
+                if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
+                else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
+              }
+            }
 
             const totalCost = agentResults.reduce((sum, r) => {
               const c = r.tokensUsed;

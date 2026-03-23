@@ -18,7 +18,7 @@ export function useBenchmarkData(): UseBenchmarkDataResult {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/benchmark-summary.json");
+      const res = await fetch("./benchmark-summary.json");
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       const json: BenchmarkData = await res.json();
       setData(json);

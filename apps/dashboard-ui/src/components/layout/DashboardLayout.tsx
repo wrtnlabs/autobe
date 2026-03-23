@@ -11,6 +11,7 @@ import {
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import HomeIcon from "@mui/icons-material/Home";
 
 import { useThemeMode } from "../../theme/ThemeContext";
 
@@ -41,6 +42,13 @@ export function DashboardLayout() {
         }}
       >
         <Toolbar>
+          <IconButton
+            href="/"
+            sx={{ mr: 0.5, color: "text.secondary" }}
+            title="Back to Home"
+          >
+            <HomeIcon />
+          </IconButton>
           <DashboardIcon sx={{ mr: 1, color: "primary.main" }} />
           <Typography
             variant="h6"

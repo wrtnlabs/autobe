@@ -1,35 +1,121 @@
 import type { EvaluationContext, Issue, PhaseResult } from "../../types";
-import { createIssue } from "../../types";
+import { PHASE_WEIGHTS, createIssue } from "../../types";
 import { runBbsScenarios } from "./bbs.scenarios";
 import { runGauzyScenarios } from "./gauzy.scenarios";
 import { HttpRunner } from "./http-runner";
 import { runRedditScenarios } from "./reddit.scenarios";
-import type { ScenarioResult } from "./scenario-helpers";
+import type { ScenarioCategory, ScenarioResult } from "./scenario-helpers";
 import { runShoppingScenarios } from "./shopping.scenarios";
 import { runTodoScenarios } from "./todo.scenarios";
 import { buildRouteMap } from "./url-resolver";
 
 export type GoldenProject = "todo" | "bbs" | "reddit" | "shopping" | "gauzy";
 
+/** Category weights for scoring (total = 1.0, excluding cleanup) */
+const CATEGORY_WEIGHTS: Record<ScenarioCategory, number> = {
+  auth: 0.25,
+  crud: 0.35,
+  query: 0.15,
+  negative: 0.15,
+  workflow: 0.1,
+  cleanup: 0,
+};
+
+/** Proportion of final score from each dimension */
+const CATEGORY_SCORE_RATIO = 0.7;
+const RESPONSE_TIME_RATIO = 0.15;
+const DATA_CONSISTENCY_RATIO = 0.15;
+
 export class GoldenSetEvaluator {
   readonly name = "GoldenSetEvaluator";
 
-  private aggregateTimings(
-    results: ScenarioResult[],
-  ): Record<string, number> {
+  private aggregateTimings(results: ScenarioResult[]): {
+    metrics: Record<string, number>;
+    p95: number;
+  } {
     const timings = results
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
-    if (timings.length === 0) return {};
+    if (timings.length === 0) return { metrics: {}, p95: 0 };
     const sorted = [...timings].sort((a, b) => a - b);
+    const p95 = sorted[Math.floor(sorted.length * 0.95)];
     return {
-      avgResponseMs: Math.round(
-        timings.reduce((a, b) => a + b, 0) / timings.length,
-      ),
-      p50ResponseMs: sorted[Math.floor(sorted.length * 0.5)],
-      p95ResponseMs: sorted[Math.floor(sorted.length * 0.95)],
-      maxResponseMs: sorted[sorted.length - 1],
+      metrics: {
+        avgResponseMs: Math.round(
+          timings.reduce((a, b) => a + b, 0) / timings.length,
+        ),
+        p50ResponseMs: sorted[Math.floor(sorted.length * 0.5)],
+        p95ResponseMs: p95,
+        maxResponseMs: sorted[sorted.length - 1],
+      },
+      p95,
     };
+  }
+
+  /** Calculate category-weighted score (70% of total) */
+  private computeCategoryScore(results: ScenarioResult[]): {
+    score: number;
+    categoryMetrics: Record<string, unknown>;
+  } {
+    const byCategory = new Map<
+      ScenarioCategory,
+      { passed: number; total: number }
+    >();
+
+    for (const r of results) {
+      const cat = r.category ?? "crud";
+      const entry = byCategory.get(cat) ?? { passed: 0, total: 0 };
+      entry.total++;
+      if (r.passed) entry.passed++;
+      byCategory.set(cat, entry);
+    }
+
+    // Compute active weights (redistribute weight of missing categories)
+    let activeWeightSum = 0;
+    for (const [cat, weight] of Object.entries(CATEGORY_WEIGHTS)) {
+      if (weight > 0 && byCategory.has(cat as ScenarioCategory)) {
+        activeWeightSum += weight;
+      }
+    }
+
+    let score = 0;
+    const categoryMetrics: Record<string, unknown> = {};
+
+    for (const [cat, entry] of byCategory) {
+      const rawWeight = CATEGORY_WEIGHTS[cat] ?? 0;
+      const normalizedWeight =
+        activeWeightSum > 0 ? rawWeight / activeWeightSum : 0;
+      const catScore = entry.total > 0 ? (entry.passed / entry.total) * 100 : 0;
+      score += catScore * normalizedWeight;
+      categoryMetrics[cat] = {
+        passed: entry.passed,
+        total: entry.total,
+        score: Math.round(catScore),
+        weight: Math.round(normalizedWeight * 100),
+      };
+    }
+
+    return { score, categoryMetrics };
+  }
+
+  /** Calculate response time score (15% of total) */
+  private computeResponseTimeScore(p95: number): number {
+    if (p95 <= 0) return 100;
+    if (p95 < 500) return 100;
+    if (p95 < 1000) return 80;
+    if (p95 < 2000) return 60;
+    if (p95 < 5000) return 30;
+    return 0;
+  }
+
+  /** Calculate data consistency score (15% of total) */
+  private computeConsistencyScore(results: ScenarioResult[]): number {
+    if (results.length === 0) return 100;
+    const withWarnings = results.filter(
+      (r) => r.schemaWarnings && r.schemaWarnings.length > 0,
+    ).length;
+    const warningRatio = withWarnings / results.length;
+    return Math.max(0, Math.round(100 - warningRatio * 200));
   }
 
   async evaluate(
@@ -85,7 +171,19 @@ export class GoldenSetEvaluator {
 
     const total = results.length;
     const passed = results.filter((r) => r.passed).length;
-    const score = Math.round((passed / total) * 100);
+
+    // Multi-dimensional scoring
+    const { score: categoryScore, categoryMetrics } =
+      this.computeCategoryScore(results);
+    const { metrics: timingMetrics, p95 } = this.aggregateTimings(results);
+    const responseTimeScore = this.computeResponseTimeScore(p95);
+    const consistencyScore = this.computeConsistencyScore(results);
+
+    const score = Math.round(
+      categoryScore * CATEGORY_SCORE_RATIO +
+        responseTimeScore * RESPONSE_TIME_RATIO +
+        consistencyScore * DATA_CONSISTENCY_RATIO,
+    );
 
     for (const result of results) {
       if (!result.passed) {
@@ -98,7 +196,6 @@ export class GoldenSetEvaluator {
           }),
         );
       }
-      // Report schema validation warnings (non-blocking)
       if (result.schemaWarnings && result.schemaWarnings.length > 0) {
         for (const warning of result.schemaWarnings) {
           issues.push(
@@ -118,14 +215,19 @@ export class GoldenSetEvaluator {
       passed: passed === total,
       score,
       maxScore: 100,
-      weightedScore: score,
+      weightedScore: score * PHASE_WEIGHTS.goldenSet,
       issues,
       durationMs: Math.round(performance.now() - startTime),
       metrics: {
         totalFeatures: total,
         passedFeatures: passed,
         failedFeatures: total - passed,
-        ...this.aggregateTimings(results),
+        passRate: Math.round((passed / total) * 100),
+        categoryScore: Math.round(categoryScore),
+        responseTimeScore,
+        consistencyScore,
+        ...timingMetrics,
+        categories: JSON.stringify(categoryMetrics),
       },
     };
   }

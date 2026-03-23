@@ -275,6 +275,20 @@ function extractPipelineData(testResultsDir, model, project) {
   };
 }
 
+const PROJECT_ORDER = ["todo", "bbs", "reddit", "shopping", "erp"];
+
+function sortProjects(projects) {
+  return projects.sort((a, b) => {
+    const ai = PROJECT_ORDER.indexOf(a);
+    const bi = PROJECT_ORDER.indexOf(b);
+    // Known projects first in defined order, unknown ones at the end alphabetically
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+    return a.localeCompare(b);
+  });
+}
+
 function main() {
   const reportsDir = path.resolve(
     __dirname,
@@ -396,7 +410,7 @@ function main() {
   const output = {
     entries,
     models: Array.from(models).sort(),
-    projects: Array.from(projects).sort(),
+    projects: sortProjects(Array.from(projects)),
     generatedAt: new Date().toISOString(),
   };
 

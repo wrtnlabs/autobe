@@ -16,45 +16,116 @@ export async function runGauzyScenarios(
 
   const ownerEmail = randomEmail();
   const ownerPassword = randomPassword();
+  const userEmail = randomEmail();
+  const userPassword = randomPassword();
   let orgId: string | null = null;
   let employeeId: string | null = null;
+  let departmentId: string | null = null;
   let projectId: string | null = null;
   let taskId: string | null = null;
-  let _contractId: string | null = null;
-  let _timelogId: string | null = null;
+  let contractId: string | null = null;
+  let timelogId: string | null = null;
   let timesheetId: string | null = null;
+  let roleId: string | null = null;
+  let invitationId: string | null = null;
+  let reportId: string | null = null;
+  let projectTagId: string | null = null;
 
-  // ── Auth & Organization ─────────────────────────────────
+  // ── Auth & Registration ───────────────────────────────
 
-  // 1. Owner signup
-  const joinEndpoint = findEndpoint(routes, {
-    pathKeywords: ["join", "signup", "register"],
-    method: "POST",
-  });
-  if (!joinEndpoint) {
-    results.push(fail(1, "Owner signup", "endpoint not found"));
+  // 1. User signup (user/join)
+  const userJoinEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["join"],
+      mustContain: "user",
+      method: "POST",
+    }) ||
+    findEndpoint(routes, {
+      pathKeywords: ["join", "signup", "register"],
+      method: "POST",
+    });
+  if (!userJoinEndpoint) {
+    results.push(fail(1, "User signup", "endpoint not found", "auth"));
   } else {
-    const res = await http.post(joinEndpoint.url, {
+    const res = await http.post(userJoinEndpoint.url, {
+      email: userEmail,
+      password: userPassword,
+      display_name: "Test User",
+    });
+    results.push(
+      res.ok
+        ? pass(1, "User signup", "auth")
+        : fail(1, "User signup", `status ${res.status}`, "auth"),
+    );
+  }
+
+  // 2. User login
+  const userLoginEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["login"],
+      mustContain: "user",
+      method: "POST",
+    }) || findEndpoint(routes, { pathKeywords: ["login"], method: "POST" });
+  if (!userLoginEndpoint) {
+    results.push(fail(2, "User login", "endpoint not found", "auth"));
+  } else {
+    const res = await http.post(userLoginEndpoint.url, {
+      email: userEmail,
+      password: userPassword,
+    });
+    if (res.ok) {
+      const token =
+        res.body?.token?.access || res.body?.access_token || res.body?.token;
+      const tokenStr =
+        typeof token === "string" ? token : token?.access || token;
+      if (tokenStr) {
+        http.setToken(tokenStr);
+        results.push(pass(2, "User login", "auth"));
+      } else {
+        results.push(fail(2, "User login", "no token in response", "auth"));
+      }
+    } else {
+      results.push(fail(2, "User login", `status ${res.status}`, "auth"));
+    }
+  }
+
+  // 3. OrgOwner signup (orgOwner/join)
+  const orgOwnerJoinEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["join"],
+      mustContain: "orgOwner",
+      method: "POST",
+    }) ||
+    findEndpoint(routes, {
+      pathKeywords: ["join", "signup", "register"],
+      method: "POST",
+    });
+  if (!orgOwnerJoinEndpoint) {
+    results.push(fail(3, "OrgOwner signup", "endpoint not found", "auth"));
+  } else {
+    const res = await http.post(orgOwnerJoinEndpoint.url, {
       email: ownerEmail,
       password: ownerPassword,
       display_name: "Gauzy Owner",
     });
     results.push(
       res.ok
-        ? pass(1, "Owner signup")
-        : fail(1, "Owner signup", `status ${res.status}`),
+        ? pass(3, "OrgOwner signup", "auth")
+        : fail(3, "OrgOwner signup", `status ${res.status}`, "auth"),
     );
   }
 
-  // 2. Owner login
-  const loginEndpoint = findEndpoint(routes, {
-    pathKeywords: ["login"],
-    method: "POST",
-  });
-  if (!loginEndpoint) {
-    results.push(fail(2, "Owner login", "endpoint not found"));
+  // 4. OrgOwner login
+  const orgOwnerLoginEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["login"],
+      mustContain: "orgOwner",
+      method: "POST",
+    }) || findEndpoint(routes, { pathKeywords: ["login"], method: "POST" });
+  if (!orgOwnerLoginEndpoint) {
+    results.push(fail(4, "OrgOwner login", "endpoint not found", "auth"));
   } else {
-    const res = await http.post(loginEndpoint.url, {
+    const res = await http.post(orgOwnerLoginEndpoint.url, {
       email: ownerEmail,
       password: ownerPassword,
     });
@@ -65,22 +136,42 @@ export async function runGauzyScenarios(
         typeof token === "string" ? token : token?.access || token;
       if (tokenStr) {
         http.setToken(tokenStr);
-        results.push(pass(2, "Owner login"));
+        results.push(pass(4, "OrgOwner login", "auth"));
       } else {
-        results.push(fail(2, "Owner login", "no token in response"));
+        results.push(fail(4, "OrgOwner login", "no token in response", "auth"));
       }
     } else {
-      results.push(fail(2, "Owner login", `status ${res.status}`));
+      results.push(fail(4, "OrgOwner login", `status ${res.status}`, "auth"));
     }
   }
 
-  // 3. Create organization
+  // 5. Token refresh
+  const refreshEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["refresh"],
+      mustContain: "orgOwner",
+      method: "POST",
+    }) || findEndpoint(routes, { pathKeywords: ["refresh"], method: "POST" });
+  if (!refreshEndpoint) {
+    results.push(fail(5, "Token refresh", "endpoint not found", "auth"));
+  } else {
+    const res = await http.post(refreshEndpoint.url, {}, true);
+    results.push(
+      res.ok || res.status === 201
+        ? pass(5, "Token refresh", "auth")
+        : fail(5, "Token refresh", `status ${res.status}`, "auth"),
+    );
+  }
+
+  // ── Organization CRUD ─────────────────────────────────
+
+  // 6. Create organization
   const orgCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["organizations", "orgs"],
     method: "POST",
   });
   if (!orgCreateEndpoint) {
-    results.push(fail(3, "Create organization", "endpoint not found"));
+    results.push(fail(6, "Create organization", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       orgCreateEndpoint.url,
@@ -94,13 +185,15 @@ export async function runGauzyScenarios(
     );
     if (res.ok) {
       orgId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(3, "Create organization"));
+      results.push(pass(6, "Create organization", "crud"));
     } else {
-      results.push(fail(3, "Create organization", `status ${res.status}`));
+      results.push(
+        fail(6, "Create organization", `status ${res.status}`, "crud"),
+      );
     }
   }
 
-  // 4. Get organization detail
+  // 7. Get organization detail
   const orgGetEndpoint = findEndpoint(routes, {
     pathKeywords: ["organizations", "orgs"],
     method: "GET",
@@ -108,9 +201,10 @@ export async function runGauzyScenarios(
   if (!orgGetEndpoint || !orgId) {
     results.push(
       fail(
-        4,
+        7,
         "Get organization detail",
         orgGetEndpoint ? "no orgId" : "endpoint not found",
+        "query",
       ),
     );
   } else {
@@ -121,148 +215,371 @@ export async function runGauzyScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(4, "Get organization detail")
-        : fail(4, "Get organization detail", `status ${res.status}`),
+        ? pass(7, "Get organization detail", "query")
+        : fail(7, "Get organization detail", `status ${res.status}`, "query"),
     );
   }
 
-  // 5. Update organization settings
+  // 8. Update organization
   const orgUpdateEndpoint = findEndpoint(routes, {
     pathKeywords: ["organizations", "orgs"],
-    method: "PATCH",
+    method: "PUT",
   });
   if (!orgUpdateEndpoint || !orgId) {
     results.push(
-      fail(5, "Update organization settings", "endpoint or orgId not found"),
+      fail(8, "Update organization", "endpoint or orgId not found", "crud"),
     );
   } else {
     const url = http.resolvePath(orgUpdateEndpoint.url, {
       id: orgId,
       organizationId: orgId,
     });
-    const res = await http.patch(url, { name: "Gauzy Corp Updated" }, true);
+    const res = await http.put(
+      url,
+      { name: "Gauzy Corp Updated", currency: "USD" },
+      true,
+    );
     results.push(
       res.ok
-        ? pass(5, "Update organization settings")
-        : fail(5, "Update organization settings", `status ${res.status}`),
+        ? pass(8, "Update organization", "crud")
+        : fail(8, "Update organization", `status ${res.status}`, "crud"),
     );
   }
 
-  // ── Employee Management ─────────────────────────────────
+  // 9. List organizations
+  const orgListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["organizations", "orgs"],
+    method: "PATCH",
+  });
+  if (!orgListEndpoint) {
+    results.push(fail(9, "List organizations", "endpoint not found", "query"));
+  } else {
+    const res = await http.patch(orgListEndpoint.url, {}, true);
+    results.push(
+      res.ok
+        ? pass(9, "List organizations", "query")
+        : fail(9, "List organizations", `status ${res.status}`, "query"),
+    );
+  }
 
-  // 6. Invite employee
-  const employeeInviteEndpoint =
-    findEndpoint(routes, {
-      pathKeywords: ["employees", "invite"],
-      method: "POST",
-    }) || findEndpoint(routes, { pathKeywords: ["employees"], method: "POST" });
-  if (!employeeInviteEndpoint) {
-    results.push(fail(6, "Invite employee", "endpoint not found"));
+  // ── Department Management ─────────────────────────────
+
+  // 10. Create department
+  const deptCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["departments"],
+    method: "POST",
+  });
+  if (!deptCreateEndpoint) {
+    results.push(fail(10, "Create department", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
-      employeeInviteEndpoint.url,
+      deptCreateEndpoint.url,
+      {
+        name: "Engineering",
+        description: "Software engineering department",
+        organization_id: orgId,
+      },
+      true,
+    );
+    if (res.ok) {
+      departmentId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(10, "Create department", "crud"));
+    } else {
+      results.push(
+        fail(10, "Create department", `status ${res.status}`, "crud"),
+      );
+    }
+  }
+
+  // 11. List departments
+  const deptListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["departments"],
+    method: "PATCH",
+  });
+  if (!deptListEndpoint) {
+    results.push(fail(11, "List departments", "endpoint not found", "query"));
+  } else {
+    const res = await http.patch(deptListEndpoint.url, {}, true);
+    results.push(
+      res.ok
+        ? pass(11, "List departments", "query")
+        : fail(11, "List departments", `status ${res.status}`, "query"),
+    );
+  }
+
+  // 12. Get department detail
+  if (departmentId) {
+    const deptGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["departments"],
+      method: "GET",
+    });
+    if (!deptGetEndpoint) {
+      results.push(
+        fail(12, "Get department detail", "endpoint not found", "query"),
+      );
+    } else {
+      const url = http.resolvePath(deptGetEndpoint.url, {
+        id: departmentId,
+        departmentId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(12, "Get department detail", "query")
+          : fail(12, "Get department detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(12, "Get department detail", "no departmentId", "query"));
+  }
+
+  // ── Employee Management ───────────────────────────────
+
+  // 13. Create employee
+  const employeeCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["employees"],
+    method: "POST",
+  });
+  if (!employeeCreateEndpoint) {
+    results.push(fail(13, "Create employee", "endpoint not found", "crud"));
+  } else {
+    const res = await http.post(
+      employeeCreateEndpoint.url,
       {
         email: randomEmail(),
         display_name: "Test Employee",
         position: "Developer",
         employment_type: "full-time",
         department: "Engineering",
+        organization_id: orgId,
       },
       true,
     );
     if (res.ok) {
       employeeId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(6, "Invite employee"));
+      results.push(pass(13, "Create employee", "crud"));
     } else {
-      results.push(fail(6, "Invite employee", `status ${res.status}`));
+      results.push(fail(13, "Create employee", `status ${res.status}`, "crud"));
     }
   }
 
-  // 7. List employees
-  const employeeListEndpoint =
-    findEndpoint(routes, { pathKeywords: ["employees"], method: "GET" }) ||
-    findEndpoint(routes, { pathKeywords: ["employees"], method: "PATCH" });
+  // 14. List employees
+  const employeeListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["employees"],
+    method: "PATCH",
+  });
   if (!employeeListEndpoint) {
-    results.push(fail(7, "List employees", "endpoint not found"));
+    results.push(fail(14, "List employees", "endpoint not found", "query"));
   } else {
-    const res =
-      employeeListEndpoint.method === "PATCH"
-        ? await http.patch(employeeListEndpoint.url, { page: 1 }, true)
-        : await http.get(employeeListEndpoint.url, true);
+    const res = await http.patch(employeeListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(7, "List employees")
-        : fail(7, "List employees", `status ${res.status}`),
+        ? pass(14, "List employees", "query")
+        : fail(14, "List employees", `status ${res.status}`, "query"),
     );
   }
 
-  // 8. Deactivate employee
+  // 15. Get employee detail
   if (employeeId) {
-    const deactivateEndpoint =
-      findEndpoint(routes, {
-        pathKeywords: ["employees", "deactivate"],
-        method: "PATCH",
-      }) ||
-      findEndpoint(routes, {
-        pathKeywords: ["employees"],
-        method: "DELETE",
-      });
-    if (!deactivateEndpoint) {
-      results.push(fail(8, "Deactivate employee", "endpoint not found"));
+    const employeeGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["employees"],
+      method: "GET",
+    });
+    if (!employeeGetEndpoint) {
+      results.push(
+        fail(15, "Get employee detail", "endpoint not found", "query"),
+      );
     } else {
-      const url = http.resolvePath(deactivateEndpoint.url, {
+      const url = http.resolvePath(employeeGetEndpoint.url, {
         id: employeeId,
         employeeId,
       });
-      const res =
-        deactivateEndpoint.method === "DELETE"
-          ? await http.delete(url, true)
-          : await http.patch(url, { active: false }, true);
+      const res = await http.get(url, true);
       results.push(
         res.ok
-          ? pass(8, "Deactivate employee")
-          : fail(8, "Deactivate employee", `status ${res.status}`),
+          ? pass(15, "Get employee detail", "query")
+          : fail(15, "Get employee detail", `status ${res.status}`, "query"),
       );
     }
   } else {
-    results.push(fail(8, "Deactivate employee", "no employeeId"));
+    results.push(fail(15, "Get employee detail", "no employeeId", "query"));
   }
 
-  // Re-invite for subsequent tests
-  if (employeeInviteEndpoint) {
+  // 16. Update employee
+  if (employeeId) {
+    const employeeUpdateEndpoint = findEndpoint(routes, {
+      pathKeywords: ["employees"],
+      method: "PUT",
+    });
+    if (!employeeUpdateEndpoint) {
+      results.push(fail(16, "Update employee", "endpoint not found", "crud"));
+    } else {
+      const url = http.resolvePath(employeeUpdateEndpoint.url, {
+        id: employeeId,
+        employeeId,
+      });
+      const res = await http.put(
+        url,
+        { display_name: "Updated Employee", position: "Senior Developer" },
+        true,
+      );
+      results.push(
+        res.ok
+          ? pass(16, "Update employee", "crud")
+          : fail(16, "Update employee", `status ${res.status}`, "crud"),
+      );
+    }
+  } else {
+    results.push(fail(16, "Update employee", "no employeeId", "crud"));
+  }
+
+  // 17. Assign employee to department
+  const empDeptEndpoint = findEndpoint(routes, {
+    pathKeywords: ["employee-departments"],
+    method: "POST",
+  });
+  if (!empDeptEndpoint || !employeeId || !departmentId) {
+    results.push(
+      fail(
+        17,
+        "Assign employee to department",
+        "endpoint or IDs not found",
+        "workflow",
+      ),
+    );
+  } else {
     const res = await http.post(
-      employeeInviteEndpoint.url,
+      empDeptEndpoint.url,
+      { employee_id: employeeId, department_id: departmentId },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(17, "Assign employee to department", "workflow")
+        : fail(
+            17,
+            "Assign employee to department",
+            `status ${res.status}`,
+            "workflow",
+          ),
+    );
+  }
+
+  // ── Roles & Permissions ───────────────────────────────
+
+  // 18. Create role
+  const roleCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["roles"],
+    method: "POST",
+  });
+  if (!roleCreateEndpoint) {
+    results.push(fail(18, "Create role", "endpoint not found", "crud"));
+  } else {
+    const res = await http.post(
+      roleCreateEndpoint.url,
       {
-        email: randomEmail(),
-        display_name: "Active Employee",
-        position: "Engineer",
-        employment_type: "full-time",
+        name: "Project Manager",
+        description: "Can manage projects and tasks",
       },
       true,
     );
     if (res.ok) {
-      employeeId = res.body?.id || res.body?.data?.id || null;
+      roleId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(18, "Create role", "crud"));
+    } else {
+      results.push(fail(18, "Create role", `status ${res.status}`, "crud"));
     }
   }
 
-  // ── Employee Contracts ──────────────────────────────────
+  // 19. List roles
+  const roleListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["roles"],
+    method: "PATCH",
+  });
+  if (!roleListEndpoint) {
+    results.push(fail(19, "List roles", "endpoint not found", "query"));
+  } else {
+    const res = await http.patch(roleListEndpoint.url, {}, true);
+    results.push(
+      res.ok
+        ? pass(19, "List roles", "query")
+        : fail(19, "List roles", `status ${res.status}`, "query"),
+    );
+  }
 
-  // 9. Create employee contract
+  // 20. Assign role to employee
+  const empRoleEndpoint = findEndpoint(routes, {
+    pathKeywords: ["employee-roles"],
+    method: "POST",
+  });
+  if (!empRoleEndpoint || !employeeId || !roleId) {
+    results.push(
+      fail(
+        20,
+        "Assign role to employee",
+        "endpoint or IDs not found",
+        "workflow",
+      ),
+    );
+  } else {
+    const res = await http.post(
+      empRoleEndpoint.url,
+      { employee_id: employeeId, role_id: roleId },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(20, "Assign role to employee", "workflow")
+        : fail(
+            20,
+            "Assign role to employee",
+            `status ${res.status}`,
+            "workflow",
+          ),
+    );
+  }
+
+  // 21. Create role permission
+  const rolePermEndpoint = findEndpoint(routes, {
+    pathKeywords: ["role-permissions"],
+    method: "POST",
+  });
+  if (!rolePermEndpoint || !roleId) {
+    results.push(
+      fail(
+        21,
+        "Create role permission",
+        "endpoint or roleId not found",
+        "crud",
+      ),
+    );
+  } else {
+    const res = await http.post(
+      rolePermEndpoint.url,
+      { role_id: roleId, permission: "project:manage" },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(21, "Create role permission", "crud")
+        : fail(21, "Create role permission", `status ${res.status}`, "crud"),
+    );
+  }
+
+  // ── Contract Management ───────────────────────────────
+
+  // 22. Create contract
   const contractCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["contracts"],
     method: "POST",
   });
   if (!contractCreateEndpoint || !employeeId) {
     results.push(
-      fail(9, "Create employee contract", "endpoint or employeeId not found"),
+      fail(22, "Create contract", "endpoint or employeeId not found", "crud"),
     );
   } else {
-    const url = http.resolvePath(contractCreateEndpoint.url, {
-      employeeId,
-      id: employeeId,
-    });
     const res = await http.post(
-      url,
+      contractCreateEndpoint.url,
       {
         employee_id: employeeId,
         start_date: "2026-01-01",
@@ -273,38 +590,122 @@ export async function runGauzyScenarios(
       true,
     );
     if (res.ok) {
-      _contractId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(9, "Create employee contract"));
+      contractId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(22, "Create contract", "crud"));
     } else {
-      results.push(fail(9, "Create employee contract", `status ${res.status}`));
+      results.push(fail(22, "Create contract", `status ${res.status}`, "crud"));
     }
   }
 
-  // 10. List employee contracts
+  // 23. List contracts
   const contractListEndpoint = findEndpoint(routes, {
     pathKeywords: ["contracts"],
-    method: "GET",
+    method: "PATCH",
   });
   if (!contractListEndpoint) {
-    results.push(fail(10, "List employee contracts", "endpoint not found"));
+    results.push(fail(23, "List contracts", "endpoint not found", "query"));
   } else {
-    const res = await http.get(contractListEndpoint.url, true);
+    const res = await http.patch(contractListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(10, "List employee contracts")
-        : fail(10, "List employee contracts", `status ${res.status}`),
+        ? pass(23, "List contracts", "query")
+        : fail(23, "List contracts", `status ${res.status}`, "query"),
     );
   }
 
-  // ── Projects & Tasks ────────────────────────────────────
+  // 24. Get contract detail
+  if (contractId) {
+    const contractGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["contracts"],
+      method: "GET",
+    });
+    if (!contractGetEndpoint) {
+      results.push(
+        fail(24, "Get contract detail", "endpoint not found", "query"),
+      );
+    } else {
+      const url = http.resolvePath(contractGetEndpoint.url, {
+        id: contractId,
+        contractId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(24, "Get contract detail", "query")
+          : fail(24, "Get contract detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(24, "Get contract detail", "no contractId", "query"));
+  }
 
-  // 11. Create project
+  // 25. Add contract note
+  if (contractId) {
+    const noteEndpoint = findEndpoint(routes, {
+      pathKeywords: ["contracts", "notes"],
+      method: "POST",
+    });
+    if (!noteEndpoint) {
+      results.push(fail(25, "Add contract note", "endpoint not found", "crud"));
+    } else {
+      const url = http.resolvePath(noteEndpoint.url, {
+        contractId,
+        id: contractId,
+      });
+      const res = await http.post(
+        url,
+        { content: "Contract review completed" },
+        true,
+      );
+      results.push(
+        res.ok
+          ? pass(25, "Add contract note", "crud")
+          : fail(25, "Add contract note", `status ${res.status}`, "crud"),
+      );
+    }
+  } else {
+    results.push(fail(25, "Add contract note", "no contractId", "crud"));
+  }
+
+  // 26. Create contract transition
+  if (contractId) {
+    const transitionEndpoint = findEndpoint(routes, {
+      pathKeywords: ["contracts", "transitions"],
+      method: "POST",
+    });
+    if (!transitionEndpoint) {
+      results.push(
+        fail(26, "Contract transition", "endpoint not found", "workflow"),
+      );
+    } else {
+      const url = http.resolvePath(transitionEndpoint.url, {
+        contractId,
+        id: contractId,
+      });
+      const res = await http.post(
+        url,
+        { status: "active", reason: "Contract activated" },
+        true,
+      );
+      results.push(
+        res.ok
+          ? pass(26, "Contract transition", "workflow")
+          : fail(26, "Contract transition", `status ${res.status}`, "workflow"),
+      );
+    }
+  } else {
+    results.push(fail(26, "Contract transition", "no contractId", "workflow"));
+  }
+
+  // ── Projects ──────────────────────────────────────────
+
+  // 27. Create project
   const projectCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["projects"],
     method: "POST",
   });
   if (!projectCreateEndpoint) {
-    results.push(fail(11, "Create project", "endpoint not found"));
+    results.push(fail(27, "Create project", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       projectCreateEndpoint.url,
@@ -313,62 +714,183 @@ export async function runGauzyScenarios(
         description: "Test project for E2E",
         status: "active",
         budget_hours: 100,
+        organization_id: orgId,
       },
       true,
     );
     if (res.ok) {
       projectId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(11, "Create project"));
+      results.push(pass(27, "Create project", "crud"));
     } else {
-      results.push(fail(11, "Create project", `status ${res.status}`));
+      results.push(fail(27, "Create project", `status ${res.status}`, "crud"));
     }
   }
 
-  // 12. List projects
-  const projectListEndpoint =
-    findEndpoint(routes, { pathKeywords: ["projects"], method: "GET" }) ||
-    findEndpoint(routes, { pathKeywords: ["projects"], method: "PATCH" });
-  if (!projectListEndpoint) {
-    results.push(fail(12, "List projects", "endpoint not found"));
-  } else {
-    const res =
-      projectListEndpoint.method === "PATCH"
-        ? await http.patch(projectListEndpoint.url, {}, true)
-        : await http.get(projectListEndpoint.url, true);
-    results.push(
-      res.ok
-        ? pass(12, "List projects")
-        : fail(12, "List projects", `status ${res.status}`),
-    );
-  }
-
-  // 13. Edit project
-  const projectEditEndpoint = findEndpoint(routes, {
+  // 28. List projects
+  const projectListEndpoint = findEndpoint(routes, {
     pathKeywords: ["projects"],
     method: "PATCH",
   });
-  if (!projectEditEndpoint || !projectId) {
-    results.push(fail(13, "Edit project", "endpoint or projectId not found"));
+  if (!projectListEndpoint) {
+    results.push(fail(28, "List projects", "endpoint not found", "query"));
   } else {
-    const url = http.resolvePath(projectEditEndpoint.url, {
-      id: projectId,
-      projectId,
-    });
-    const res = await http.patch(url, { name: "Updated Project" }, true);
+    const res = await http.patch(projectListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(13, "Edit project")
-        : fail(13, "Edit project", `status ${res.status}`),
+        ? pass(28, "List projects", "query")
+        : fail(28, "List projects", `status ${res.status}`, "query"),
     );
   }
 
-  // 14. Create task
+  // 29. Get project detail
+  if (projectId) {
+    const projectGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["projects"],
+      method: "GET",
+    });
+    if (!projectGetEndpoint) {
+      results.push(
+        fail(29, "Get project detail", "endpoint not found", "query"),
+      );
+    } else {
+      const url = http.resolvePath(projectGetEndpoint.url, {
+        id: projectId,
+        projectId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(29, "Get project detail", "query")
+          : fail(29, "Get project detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(29, "Get project detail", "no projectId", "query"));
+  }
+
+  // 30. Update project
+  if (projectId) {
+    const projectUpdateEndpoint = findEndpoint(routes, {
+      pathKeywords: ["projects"],
+      method: "PUT",
+    });
+    if (!projectUpdateEndpoint) {
+      results.push(fail(30, "Update project", "endpoint not found", "crud"));
+    } else {
+      const url = http.resolvePath(projectUpdateEndpoint.url, {
+        id: projectId,
+        projectId,
+      });
+      const res = await http.put(url, { name: "Updated Project" }, true);
+      results.push(
+        res.ok
+          ? pass(30, "Update project", "crud")
+          : fail(30, "Update project", `status ${res.status}`, "crud"),
+      );
+    }
+  } else {
+    results.push(fail(30, "Update project", "no projectId", "crud"));
+  }
+
+  // 31. Create project tag
+  const projectTagCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["project-tags"],
+    method: "POST",
+  });
+  if (!projectTagCreateEndpoint) {
+    results.push(fail(31, "Create project tag", "endpoint not found", "crud"));
+  } else {
+    const res = await http.post(
+      projectTagCreateEndpoint.url,
+      { name: "priority", color: "#FF0000" },
+      true,
+    );
+    if (res.ok) {
+      projectTagId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(31, "Create project tag", "crud"));
+    } else {
+      results.push(
+        fail(31, "Create project tag", `status ${res.status}`, "crud"),
+      );
+    }
+  }
+
+  // 32. Assign tag to project
+  if (projectId && projectTagId) {
+    const tagAssignEndpoint = findEndpoint(routes, {
+      pathKeywords: ["project-tag-assignments"],
+      method: "POST",
+    });
+    if (!tagAssignEndpoint) {
+      results.push(
+        fail(32, "Assign tag to project", "endpoint not found", "workflow"),
+      );
+    } else {
+      const res = await http.post(
+        tagAssignEndpoint.url,
+        { project_id: projectId, project_tag_id: projectTagId },
+        true,
+      );
+      results.push(
+        res.ok
+          ? pass(32, "Assign tag to project", "workflow")
+          : fail(
+              32,
+              "Assign tag to project",
+              `status ${res.status}`,
+              "workflow",
+            ),
+      );
+    }
+  } else {
+    results.push(
+      fail(32, "Assign tag to project", "no projectId or tagId", "workflow"),
+    );
+  }
+
+  // 33. Add project membership
+  const membershipEndpoint = findEndpoint(routes, {
+    pathKeywords: ["project-memberships"],
+    method: "POST",
+  });
+  if (!membershipEndpoint || !projectId || !employeeId) {
+    results.push(
+      fail(
+        33,
+        "Add project membership",
+        "endpoint or IDs not found",
+        "workflow",
+      ),
+    );
+  } else {
+    const res = await http.post(
+      membershipEndpoint.url,
+      { project_id: projectId, employee_id: employeeId, role: "member" },
+      true,
+    );
+    results.push(
+      res.ok
+        ? pass(33, "Add project membership", "workflow")
+        : fail(
+            33,
+            "Add project membership",
+            `status ${res.status}`,
+            "workflow",
+          ),
+    );
+  }
+
+  // ── Tasks ─────────────────────────────────────────────
+
+  // 34. Create task
   const taskCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["tasks"],
     method: "POST",
   });
   if (!taskCreateEndpoint || !projectId) {
-    results.push(fail(14, "Create task", "endpoint or projectId not found"));
+    results.push(
+      fail(34, "Create task", "endpoint or projectId not found", "crud"),
+    );
   } else {
     const res = await http.post(
       taskCreateEndpoint.url,
@@ -382,63 +904,87 @@ export async function runGauzyScenarios(
     );
     if (res.ok) {
       taskId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(14, "Create task"));
+      results.push(pass(34, "Create task", "crud"));
     } else {
-      results.push(fail(14, "Create task", `status ${res.status}`));
+      results.push(fail(34, "Create task", `status ${res.status}`, "crud"));
     }
   }
 
-  // 15. List tasks
-  const taskListEndpoint =
-    findEndpoint(routes, { pathKeywords: ["tasks"], method: "GET" }) ||
-    findEndpoint(routes, { pathKeywords: ["tasks"], method: "PATCH" });
+  // 35. List tasks
+  const taskListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["tasks"],
+    method: "PATCH",
+  });
   if (!taskListEndpoint) {
-    results.push(fail(15, "List tasks", "endpoint not found"));
+    results.push(fail(35, "List tasks", "endpoint not found", "query"));
   } else {
-    const res =
-      taskListEndpoint.method === "PATCH"
-        ? await http.patch(taskListEndpoint.url, {}, true)
-        : await http.get(taskListEndpoint.url, true);
+    const res = await http.patch(taskListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(15, "List tasks")
-        : fail(15, "List tasks", `status ${res.status}`),
+        ? pass(35, "List tasks", "query")
+        : fail(35, "List tasks", `status ${res.status}`, "query"),
     );
   }
 
-  // 16. Update task status
-  if (taskId && taskCreateEndpoint) {
+  // 36. Get task detail
+  if (taskId) {
+    const taskGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["tasks"],
+      method: "GET",
+    });
+    if (!taskGetEndpoint) {
+      results.push(fail(36, "Get task detail", "endpoint not found", "query"));
+    } else {
+      const url = http.resolvePath(taskGetEndpoint.url, {
+        id: taskId,
+        taskId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(36, "Get task detail", "query")
+          : fail(36, "Get task detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(36, "Get task detail", "no taskId", "query"));
+  }
+
+  // 37. Update task status
+  if (taskId) {
     const taskUpdateEndpoint = findEndpoint(routes, {
       pathKeywords: ["tasks"],
-      method: "PATCH",
+      method: "PUT",
     });
     if (!taskUpdateEndpoint) {
-      results.push(fail(16, "Update task status", "endpoint not found"));
+      results.push(
+        fail(37, "Update task status", "endpoint not found", "crud"),
+      );
     } else {
       const url = http.resolvePath(taskUpdateEndpoint.url, {
         id: taskId,
         taskId,
       });
-      const res = await http.patch(url, { status: "in-progress" }, true);
+      const res = await http.put(url, { status: "in-progress" }, true);
       results.push(
         res.ok
-          ? pass(16, "Update task status")
-          : fail(16, "Update task status", `status ${res.status}`),
+          ? pass(37, "Update task status", "crud")
+          : fail(37, "Update task status", `status ${res.status}`, "crud"),
       );
     }
   } else {
-    results.push(fail(16, "Update task status", "no taskId"));
+    results.push(fail(37, "Update task status", "no taskId", "crud"));
   }
 
-  // ── Time Tracking ───────────────────────────────────────
+  // ── Time Tracking ─────────────────────────────────────
 
-  // 17. Create timelog
+  // 38. Create timelog
   const timelogCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["timelogs", "time-logs"],
     method: "POST",
   });
   if (!timelogCreateEndpoint) {
-    results.push(fail(17, "Create timelog", "endpoint not found"));
+    results.push(fail(38, "Create timelog", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       timelogCreateEndpoint.url,
@@ -453,119 +999,165 @@ export async function runGauzyScenarios(
       true,
     );
     if (res.ok) {
-      _timelogId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(17, "Create timelog"));
+      timelogId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(38, "Create timelog", "crud"));
     } else {
-      results.push(fail(17, "Create timelog", `status ${res.status}`));
+      results.push(fail(38, "Create timelog", `status ${res.status}`, "crud"));
     }
   }
 
-  // 18. List timelogs
-  const timelogListEndpoint =
-    findEndpoint(routes, {
-      pathKeywords: ["timelogs", "time-logs"],
-      method: "GET",
-    }) ||
-    findEndpoint(routes, {
-      pathKeywords: ["timelogs", "time-logs"],
-      method: "PATCH",
-    });
+  // 39. List timelogs
+  const timelogListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["timelogs", "time-logs"],
+    method: "PATCH",
+  });
   if (!timelogListEndpoint) {
-    results.push(fail(18, "List timelogs", "endpoint not found"));
+    results.push(fail(39, "List timelogs", "endpoint not found", "query"));
   } else {
-    const res =
-      timelogListEndpoint.method === "PATCH"
-        ? await http.patch(timelogListEndpoint.url, {}, true)
-        : await http.get(timelogListEndpoint.url, true);
+    const res = await http.patch(timelogListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(18, "List timelogs")
-        : fail(18, "List timelogs", `status ${res.status}`),
+        ? pass(39, "List timelogs", "query")
+        : fail(39, "List timelogs", `status ${res.status}`, "query"),
     );
   }
 
-  // 19. Submit timesheet
+  // 40. Get timelog detail
+  if (timelogId) {
+    const timelogGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["timelogs", "time-logs"],
+      method: "GET",
+    });
+    if (!timelogGetEndpoint) {
+      results.push(
+        fail(40, "Get timelog detail", "endpoint not found", "query"),
+      );
+    } else {
+      const url = http.resolvePath(timelogGetEndpoint.url, {
+        id: timelogId,
+        timelogId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(40, "Get timelog detail", "query")
+          : fail(40, "Get timelog detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(40, "Get timelog detail", "no timelogId", "query"));
+  }
+
+  // 41. Submit timesheet
   const timesheetCreateEndpoint = findEndpoint(routes, {
     pathKeywords: ["timesheets"],
     method: "POST",
   });
   if (!timesheetCreateEndpoint) {
-    results.push(fail(19, "Submit timesheet", "endpoint not found"));
+    results.push(fail(41, "Submit timesheet", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       timesheetCreateEndpoint.url,
-      {
-        week_start: "2026-03-09",
-        status: "submitted",
-      },
+      { week_start: "2026-03-09", status: "submitted" },
       true,
     );
     if (res.ok) {
       timesheetId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(19, "Submit timesheet"));
+      results.push(pass(41, "Submit timesheet", "crud"));
     } else {
-      results.push(fail(19, "Submit timesheet", `status ${res.status}`));
+      results.push(
+        fail(41, "Submit timesheet", `status ${res.status}`, "crud"),
+      );
     }
   }
 
-  // 20. List timesheets
-  const timesheetListEndpoint =
-    findEndpoint(routes, { pathKeywords: ["timesheets"], method: "GET" }) ||
-    findEndpoint(routes, { pathKeywords: ["timesheets"], method: "PATCH" });
+  // 42. List timesheets
+  const timesheetListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["timesheets"],
+    method: "PATCH",
+  });
   if (!timesheetListEndpoint) {
-    results.push(fail(20, "List timesheets", "endpoint not found"));
+    results.push(fail(42, "List timesheets", "endpoint not found", "query"));
   } else {
-    const res =
-      timesheetListEndpoint.method === "PATCH"
-        ? await http.patch(timesheetListEndpoint.url, {}, true)
-        : await http.get(timesheetListEndpoint.url, true);
+    const res = await http.patch(timesheetListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(20, "List timesheets")
-        : fail(20, "List timesheets", `status ${res.status}`),
+        ? pass(42, "List timesheets", "query")
+        : fail(42, "List timesheets", `status ${res.status}`, "query"),
     );
   }
 
-  // 21. Approve timesheet
+  // 43. Approve timesheet
   if (timesheetId) {
-    const approveEndpoint =
-      findEndpoint(routes, {
-        pathKeywords: ["timesheets", "approve"],
-        method: "POST",
-      }) ||
-      findEndpoint(routes, {
-        pathKeywords: ["timesheets", "approve"],
-        method: "PATCH",
-      }) ||
-      findEndpoint(routes, { pathKeywords: ["timesheets"], method: "PATCH" });
+    const approveEndpoint = findEndpoint(routes, {
+      pathKeywords: ["timesheets"],
+      method: "PUT",
+    });
     if (!approveEndpoint) {
-      results.push(fail(21, "Approve timesheet", "endpoint not found"));
+      results.push(
+        fail(43, "Approve timesheet", "endpoint not found", "workflow"),
+      );
     } else {
       const url = http.resolvePath(approveEndpoint.url, {
         id: timesheetId,
         timesheetId,
       });
-      const res = await http.patch(url, { status: "approved" }, true);
+      const res = await http.put(url, { status: "approved" }, true);
       results.push(
         res.ok
-          ? pass(21, "Approve timesheet")
-          : fail(21, "Approve timesheet", `status ${res.status}`),
+          ? pass(43, "Approve timesheet", "workflow")
+          : fail(43, "Approve timesheet", `status ${res.status}`, "workflow"),
       );
     }
   } else {
-    results.push(fail(21, "Approve timesheet", "no timesheetId"));
+    results.push(fail(43, "Approve timesheet", "no timesheetId", "workflow"));
   }
 
-  // ── Timer ───────────────────────────────────────────────
-
-  // 22. Start timer
-  const timerStartEndpoint =
-    findEndpoint(routes, {
-      pathKeywords: ["timer", "start"],
+  // 44. Link timelog to timesheet
+  if (timesheetId && timelogId) {
+    const linkEndpoint = findEndpoint(routes, {
+      pathKeywords: ["timesheets", "timelogs"],
       method: "POST",
-    }) || findEndpoint(routes, { pathKeywords: ["timers"], method: "POST" });
+    });
+    if (!linkEndpoint) {
+      results.push(
+        fail(44, "Link timelog to timesheet", "endpoint not found", "workflow"),
+      );
+    } else {
+      const url = http.resolvePath(linkEndpoint.url, {
+        timesheetId,
+        id: timesheetId,
+      });
+      const res = await http.post(url, { timelog_id: timelogId }, true);
+      results.push(
+        res.ok
+          ? pass(44, "Link timelog to timesheet", "workflow")
+          : fail(
+              44,
+              "Link timelog to timesheet",
+              `status ${res.status}`,
+              "workflow",
+            ),
+      );
+    }
+  } else {
+    results.push(
+      fail(
+        44,
+        "Link timelog to timesheet",
+        "no timesheetId or timelogId",
+        "workflow",
+      ),
+    );
+  }
+
+  // 45. Start timer
+  const timerStartEndpoint = findEndpoint(routes, {
+    pathKeywords: ["timers"],
+    method: "POST",
+  });
   if (!timerStartEndpoint) {
-    results.push(fail(22, "Start timer", "endpoint not found"));
+    results.push(fail(45, "Start timer", "endpoint not found", "workflow"));
   } else {
     const res = await http.post(
       timerStartEndpoint.url,
@@ -574,138 +1166,199 @@ export async function runGauzyScenarios(
     );
     results.push(
       res.ok
-        ? pass(22, "Start timer")
-        : fail(22, "Start timer", `status ${res.status}`),
+        ? pass(45, "Start timer", "workflow")
+        : fail(45, "Start timer", `status ${res.status}`, "workflow"),
     );
   }
 
-  // 23. Stop timer
-  const timerStopEndpoint =
-    findEndpoint(routes, {
-      pathKeywords: ["timer", "stop"],
-      method: "POST",
-    }) ||
-    findEndpoint(routes, {
-      pathKeywords: ["timer", "stop"],
-      method: "PATCH",
-    });
-  if (!timerStopEndpoint) {
-    results.push(fail(23, "Stop timer", "endpoint not found"));
-  } else {
-    const res = await http.post(timerStopEndpoint.url, {}, true);
-    const res2 = res.ok
-      ? res
-      : await http.patch(timerStopEndpoint.url, {}, true);
-    results.push(
-      res2.ok
-        ? pass(23, "Stop timer")
-        : fail(23, "Stop timer", `status ${res2.status}`),
-    );
-  }
+  // ── Invitations ───────────────────────────────────────
 
-  // ── Reports ─────────────────────────────────────────────
-
-  // 24. Time report
-  const timeReportEndpoint =
-    findEndpoint(routes, {
-      pathKeywords: ["reports", "time"],
-      method: "GET",
-    }) ||
-    findEndpoint(routes, {
-      pathKeywords: ["reports", "time"],
-      method: "PATCH",
-    });
-  if (!timeReportEndpoint) {
-    results.push(fail(24, "Time report", "endpoint not found"));
-  } else {
-    const res =
-      timeReportEndpoint.method === "PATCH"
-        ? await http.patch(timeReportEndpoint.url, {}, true)
-        : await http.get(timeReportEndpoint.url, true);
-    results.push(
-      res.ok
-        ? pass(24, "Time report")
-        : fail(24, "Time report", `status ${res.status}`),
-    );
-  }
-
-  // 25. Dashboard (employee or organization)
-  const dashboardEndpoint =
-    findEndpoint(routes, { pathKeywords: ["dashboard"], method: "GET" }) ||
-    findEndpoint(routes, { pathKeywords: ["dashboards"], method: "GET" });
-  if (!dashboardEndpoint) {
-    results.push(fail(25, "Dashboard", "endpoint not found"));
-  } else {
-    const res = await http.get(dashboardEndpoint.url, true);
-    results.push(
-      res.ok
-        ? pass(25, "Dashboard")
-        : fail(25, "Dashboard", `status ${res.status}`),
-    );
-  }
-
-  // ── Roles & Permissions ─────────────────────────────────
-
-  // 26. Create custom role
-  const roleCreateEndpoint = findEndpoint(routes, {
-    pathKeywords: ["roles"],
+  // 46. Create invitation
+  const invitationCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["invitations"],
     method: "POST",
   });
-  if (!roleCreateEndpoint) {
-    results.push(fail(26, "Create custom role", "endpoint not found"));
+  if (!invitationCreateEndpoint) {
+    results.push(fail(46, "Create invitation", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
-      roleCreateEndpoint.url,
+      invitationCreateEndpoint.url,
       {
-        name: "Project Viewer",
-        permissions: ["project:view", "time:view_all"],
+        email: randomEmail(),
+        role: "member",
+        organization_id: orgId,
       },
       true,
     );
-    results.push(
-      res.ok
-        ? pass(26, "Create custom role")
-        : fail(26, "Create custom role", `status ${res.status}`),
-    );
+    if (res.ok) {
+      invitationId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(46, "Create invitation", "crud"));
+    } else {
+      results.push(
+        fail(46, "Create invitation", `status ${res.status}`, "crud"),
+      );
+    }
   }
 
-  // 27. List roles
-  const roleListEndpoint = findEndpoint(routes, {
-    pathKeywords: ["roles"],
-    method: "GET",
+  // 47. List invitations
+  const invitationListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["invitations"],
+    method: "PATCH",
   });
-  if (!roleListEndpoint) {
-    results.push(fail(27, "List roles", "endpoint not found"));
+  if (!invitationListEndpoint) {
+    results.push(fail(47, "List invitations", "endpoint not found", "query"));
   } else {
-    const res = await http.get(roleListEndpoint.url, true);
+    const res = await http.patch(invitationListEndpoint.url, {}, true);
     results.push(
       res.ok
-        ? pass(27, "List roles")
-        : fail(27, "List roles", `status ${res.status}`),
+        ? pass(47, "List invitations", "query")
+        : fail(47, "List invitations", `status ${res.status}`, "query"),
     );
   }
 
-  // ── Cleanup ─────────────────────────────────────────────
-
-  // 28. Archive project
-  if (projectId && projectEditEndpoint) {
-    const url = http.resolvePath(projectEditEndpoint.url, {
-      id: projectId,
-      projectId,
+  // 48. Delete invitation
+  if (invitationId) {
+    const invitationDeleteEndpoint = findEndpoint(routes, {
+      pathKeywords: ["invitations"],
+      method: "DELETE",
     });
-    const res = await http.patch(url, { status: "archived" }, true);
-    results.push(
-      res.ok
-        ? pass(28, "Archive project")
-        : fail(28, "Archive project", `status ${res.status}`),
-    );
+    if (!invitationDeleteEndpoint) {
+      results.push(fail(48, "Delete invitation", "endpoint not found", "crud"));
+    } else {
+      const url = http.resolvePath(invitationDeleteEndpoint.url, {
+        id: invitationId,
+        invitationId,
+      });
+      const res = await http.delete(url, true);
+      results.push(
+        res.ok
+          ? pass(48, "Delete invitation", "crud")
+          : fail(48, "Delete invitation", `status ${res.status}`, "crud"),
+      );
+    }
   } else {
-    results.push(fail(28, "Archive project", "no projectId or endpoint"));
+    results.push(fail(48, "Delete invitation", "no invitationId", "crud"));
   }
 
-  // ── Negative Tests ──────────────────────────────────────
+  // ── Reports ───────────────────────────────────────────
 
-  // 29. Unauthenticated access returns 401
+  // 49. Create report
+  const reportCreateEndpoint = findEndpoint(routes, {
+    pathKeywords: ["reports"],
+    method: "POST",
+  });
+  if (!reportCreateEndpoint) {
+    results.push(fail(49, "Create report", "endpoint not found", "crud"));
+  } else {
+    const res = await http.post(
+      reportCreateEndpoint.url,
+      {
+        name: "Weekly Time Report",
+        type: "time",
+        organization_id: orgId,
+      },
+      true,
+    );
+    if (res.ok) {
+      reportId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(49, "Create report", "crud"));
+    } else {
+      results.push(fail(49, "Create report", `status ${res.status}`, "crud"));
+    }
+  }
+
+  // 50. List reports
+  const reportListEndpoint = findEndpoint(routes, {
+    pathKeywords: ["reports"],
+    method: "PATCH",
+  });
+  if (!reportListEndpoint) {
+    results.push(fail(50, "List reports", "endpoint not found", "query"));
+  } else {
+    const res = await http.patch(reportListEndpoint.url, {}, true);
+    results.push(
+      res.ok
+        ? pass(50, "List reports", "query")
+        : fail(50, "List reports", `status ${res.status}`, "query"),
+    );
+  }
+
+  // 51. Get report detail
+  if (reportId) {
+    const reportGetEndpoint = findEndpoint(routes, {
+      pathKeywords: ["reports"],
+      method: "GET",
+    });
+    if (!reportGetEndpoint) {
+      results.push(
+        fail(51, "Get report detail", "endpoint not found", "query"),
+      );
+    } else {
+      const url = http.resolvePath(reportGetEndpoint.url, {
+        id: reportId,
+        reportId,
+      });
+      const res = await http.get(url, true);
+      results.push(
+        res.ok
+          ? pass(51, "Get report detail", "query")
+          : fail(51, "Get report detail", `status ${res.status}`, "query"),
+      );
+    }
+  } else {
+    results.push(fail(51, "Get report detail", "no reportId", "query"));
+  }
+
+  // ── Dashboard & Analytics ─────────────────────────────
+
+  // 52. OrgOwner dashboard summary
+  const ownerDashboardEndpoint =
+    findEndpoint(routes, {
+      pathKeywords: ["dashboard", "summary"],
+      mustContain: "orgOwner",
+      method: "GET",
+    }) ||
+    findEndpoint(routes, {
+      pathKeywords: ["dashboard"],
+      method: "GET",
+    });
+  if (!ownerDashboardEndpoint) {
+    results.push(
+      fail(52, "OrgOwner dashboard summary", "endpoint not found", "query"),
+    );
+  } else {
+    const res = await http.get(ownerDashboardEndpoint.url, true);
+    results.push(
+      res.ok
+        ? pass(52, "OrgOwner dashboard summary", "query")
+        : fail(
+            52,
+            "OrgOwner dashboard summary",
+            `status ${res.status}`,
+            "query",
+          ),
+    );
+  }
+
+  // 53. Activity logs
+  const activityLogEndpoint = findEndpoint(routes, {
+    pathKeywords: ["activityLogs", "activity-logs"],
+    method: "PATCH",
+  });
+  if (!activityLogEndpoint) {
+    results.push(fail(53, "Activity logs", "endpoint not found", "query"));
+  } else {
+    const res = await http.patch(activityLogEndpoint.url, {}, true);
+    results.push(
+      res.ok
+        ? pass(53, "Activity logs", "query")
+        : fail(53, "Activity logs", `status ${res.status}`, "query"),
+    );
+  }
+
+  // ── Negative Tests ────────────────────────────────────
+
+  // 54. Unauthenticated access returns 401
   if (projectCreateEndpoint) {
     const anonHttp = new HttpRunner();
     const res = await anonHttp.post(
@@ -715,42 +1368,186 @@ export async function runGauzyScenarios(
     );
     results.push(
       res.status === 401
-        ? pass(29, "Unauthenticated project create returns 401")
+        ? pass(54, "Unauthenticated project create returns 401", "negative")
         : fail(
-            29,
+            54,
             "Unauthenticated project create returns 401",
             `expected 401 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
       fail(
-        29,
+        54,
         "Unauthenticated project create returns 401",
         "endpoint not found",
+        "negative",
       ),
     );
   }
 
-  // 30. Invalid login returns error status
-  if (loginEndpoint) {
-    const res = await http.post(loginEndpoint.url, {
+  // 55. Invalid login returns error status
+  if (userLoginEndpoint) {
+    const res = await http.post(userLoginEndpoint.url, {
       email: "nonexistent@invalid.test",
       password: "WrongPassword123!",
     });
     results.push(
       res.status === 401 || res.status === 403 || res.status === 404
-        ? pass(30, "Invalid login returns error status")
+        ? pass(55, "Invalid login returns error status", "negative")
         : fail(
-            30,
+            55,
             "Invalid login returns error status",
             `expected 401/403/404 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(30, "Invalid login returns error status", "endpoint not found"),
+      fail(
+        55,
+        "Invalid login returns error status",
+        "endpoint not found",
+        "negative",
+      ),
     );
+  }
+
+  // 56. Duplicate registration returns error
+  if (userJoinEndpoint) {
+    const res = await http.post(userJoinEndpoint.url, {
+      email: userEmail,
+      password: userPassword,
+      display_name: "Duplicate User",
+    });
+    results.push(
+      !res.ok
+        ? pass(56, "Duplicate registration returns error", "negative")
+        : fail(
+            56,
+            "Duplicate registration returns error",
+            `expected error but got ${res.status}`,
+            "negative",
+          ),
+    );
+  } else {
+    results.push(
+      fail(
+        56,
+        "Duplicate registration returns error",
+        "endpoint not found",
+        "negative",
+      ),
+    );
+  }
+
+  // 57. Non-existent resource returns 404
+  const taskGetForNegative = findEndpoint(routes, {
+    pathKeywords: ["tasks"],
+    method: "GET",
+  });
+  if (taskGetForNegative) {
+    const url = http.resolvePath(taskGetForNegative.url, {
+      id: "00000000-0000-0000-0000-000000000000",
+      taskId: "00000000-0000-0000-0000-000000000000",
+    });
+    const res = await http.get(url, true);
+    results.push(
+      res.status === 404 || res.status === 400
+        ? pass(57, "Non-existent task returns 404", "negative")
+        : fail(
+            57,
+            "Non-existent task returns 404",
+            `expected 404 but got ${res.status}`,
+            "negative",
+          ),
+    );
+  } else {
+    results.push(
+      fail(
+        57,
+        "Non-existent task returns 404",
+        "endpoint not found",
+        "negative",
+      ),
+    );
+  }
+
+  // ── Cleanup ───────────────────────────────────────────
+
+  // 58. Delete task
+  if (taskId) {
+    const taskDeleteEndpoint = findEndpoint(routes, {
+      pathKeywords: ["tasks"],
+      method: "DELETE",
+    });
+    if (taskDeleteEndpoint) {
+      const url = http.resolvePath(taskDeleteEndpoint.url, {
+        id: taskId,
+        taskId,
+      });
+      const res = await http.delete(url, true);
+      results.push(
+        res.ok
+          ? pass(58, "Delete task", "cleanup")
+          : fail(58, "Delete task", `status ${res.status}`, "cleanup"),
+      );
+    } else {
+      results.push(fail(58, "Delete task", "endpoint not found", "cleanup"));
+    }
+  } else {
+    results.push(fail(58, "Delete task", "no taskId", "cleanup"));
+  }
+
+  // 59. Delete project
+  if (projectId) {
+    const projectDeleteEndpoint = findEndpoint(routes, {
+      pathKeywords: ["projects"],
+      method: "DELETE",
+    });
+    if (projectDeleteEndpoint) {
+      const url = http.resolvePath(projectDeleteEndpoint.url, {
+        id: projectId,
+        projectId,
+      });
+      const res = await http.delete(url, true);
+      results.push(
+        res.ok
+          ? pass(59, "Delete project", "cleanup")
+          : fail(59, "Delete project", `status ${res.status}`, "cleanup"),
+      );
+    } else {
+      results.push(fail(59, "Delete project", "endpoint not found", "cleanup"));
+    }
+  } else {
+    results.push(fail(59, "Delete project", "no projectId", "cleanup"));
+  }
+
+  // 60. Delete organization
+  if (orgId) {
+    const orgDeleteEndpoint = findEndpoint(routes, {
+      pathKeywords: ["organizations", "orgs"],
+      method: "DELETE",
+    });
+    if (orgDeleteEndpoint) {
+      const url = http.resolvePath(orgDeleteEndpoint.url, {
+        id: orgId,
+        organizationId: orgId,
+      });
+      const res = await http.delete(url, true);
+      results.push(
+        res.ok
+          ? pass(60, "Delete organization", "cleanup")
+          : fail(60, "Delete organization", `status ${res.status}`, "cleanup"),
+      );
+    } else {
+      results.push(
+        fail(60, "Delete organization", "endpoint not found", "cleanup"),
+      );
+    }
+  } else {
+    results.push(fail(60, "Delete organization", "no orgId", "cleanup"));
   }
 
   return results;

@@ -47,8 +47,10 @@ export namespace RouteCoverage {
   }
 }
 
-/** Action name → HTTP method(s) mapping. Some actions map to multiple methods
- *  (e.g. "update" can be PUT or PATCH depending on the generator). */
+/**
+ * Action name → HTTP method(s) mapping. Some actions map to multiple methods
+ * (e.g. "update" can be PUT or PATCH depending on the generator).
+ */
 const ACTION_TO_METHODS: Record<string, string[]> = {
   // POST
   join: ["POST"],
@@ -85,10 +87,9 @@ const ACTION_TO_METHODS: Record<string, string[]> = {
 
 /**
  * Infer HTTP method(s) from a compound action name like
- * `updateTodoEditHistoryEntryChange` or `restoreFromTrash`.
- * Falls back to ACTION_TO_METHODS lookup on the full name,
- * then tries the first camelCase word as a prefix.
- * Returns an array of possible methods.
+ * `updateTodoEditHistoryEntryChange` or `restoreFromTrash`. Falls back to
+ * ACTION_TO_METHODS lookup on the full name, then tries the first camelCase
+ * word as a prefix. Returns an array of possible methods.
  */
 function inferMethodsFromAction(action: string): string[] {
   if (ACTION_TO_METHODS[action]) return ACTION_TO_METHODS[action];
@@ -99,7 +100,6 @@ function inferMethodsFromAction(action: string): string[] {
   }
   return ["UNKNOWN"];
 }
-
 
 /** Test quality analysis result */
 interface TestQuality {

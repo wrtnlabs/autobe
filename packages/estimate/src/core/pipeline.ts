@@ -46,7 +46,14 @@ import {
   scoreToGrade,
 } from "../types";
 import { buildContext } from "./context-builder";
-import { computeDiff, loadCache, saveCache } from "./incremental";
+import {
+  type IncrementalDiff,
+  canReusePhase,
+  computeDiff,
+  loadCache,
+  restorePhaseResult,
+  saveCache,
+} from "./incremental";
 
 const { version } = require("../../package.json");
 
@@ -108,15 +115,24 @@ export class EvaluationPipeline {
     this.log(`  - Tests: ${this.context.files.tests.length}`);
     this.log(`  - Prisma: ${this.context.files.prismaSchemas.length}`);
 
-    // Incremental diff (informational — does not skip phases yet)
+    // Incremental diff — used to skip unchanged phases
     const cache = loadCache(input.inputPath);
+    let diff: IncrementalDiff | null = null;
     if (cache) {
-      const diff = computeDiff(this.context, cache);
+      diff = computeDiff(this.context, cache);
       this.log(
         `\n[Incremental] ${diff.changed.length} changed, ${diff.added.length} added, ${diff.removed.length} removed, ${diff.unchangedCount} unchanged`,
       );
       if (diff.requiresFullEval) {
-        this.log("  → Full re-evaluation required (schema change or >30% changed)");
+        this.log(
+          "  → Full re-evaluation required (schema change or >30% changed)",
+        );
+      } else if (diff.changedCategories.size === 0) {
+        this.log("  → No changes detected — will reuse cached phase results");
+      } else {
+        this.log(
+          `  → Partial changes in: ${[...diff.changedCategories].join(", ")}`,
+        );
       }
     } else {
       this.log("\n[Incremental] No cache found — full evaluation");
@@ -156,9 +172,33 @@ export class EvaluationPipeline {
     }
 
     // ── Scoring phases ───────────────────────────────────
+    // When incremental diff is available and doesn't require full eval,
+    // skip phases whose file dependencies haven't changed.
+    const canUseIncremental =
+      diff !== null && !diff.requiresFullEval && cache?.phaseResults;
+
     this.log("\n[Scoring] Running evaluation phases...");
     const phaseResults = await Promise.all(
       phaseStrategies.map(async (strategy) => {
+        // Try to reuse cached result if dependencies haven't changed
+        if (canUseIncremental && canReusePhase(strategy.key, diff!)) {
+          const cached = cache!.phaseResults![strategy.key];
+          if (cached) {
+            this.log(
+              `  - ${strategy.label}: reusing cached result (score ${cached.score})`,
+            );
+            const restored = restorePhaseResult(cached);
+            if (trace) {
+              const span = startPhaseSpan(trace, strategy.key, {
+                label: strategy.label,
+                cached: true,
+              });
+              endPhaseSpan(span, restored);
+            }
+            return restored;
+          }
+        }
+
         const span = trace
           ? startPhaseSpan(trace, strategy.key, { label: strategy.label })
           : null;
@@ -194,6 +234,29 @@ export class EvaluationPipeline {
       }
     }
 
+    // ── Contract Tests (auto-generated from swagger.json) ──
+    const contractResult = this.context.contractResult;
+    if (contractResult) {
+      // Merge contract metrics into goldenSet if present,
+      // otherwise use contract result as goldenSet phase
+      if (phases.goldenSet) {
+        // Append contract metrics to existing golden set
+        phases.goldenSet.metrics = {
+          ...phases.goldenSet.metrics,
+          ...contractResult.metrics,
+        };
+        phases.goldenSet.issues.push(...contractResult.issues);
+      } else if (input.options?.runTests) {
+        // Use contract result as goldenSet when no hardcoded scenarios
+        phases.goldenSet = contractResult;
+      }
+
+      if (trace && contractResult) {
+        const contractSpan = startPhaseSpan(trace, "contractTest", {});
+        endPhaseSpan(contractSpan, contractResult);
+      }
+    }
+
     // ── Reference info ───────────────────────────────────
     this.log("\n[Reference] Collecting code quality metrics...");
     const [reference, perfMetrics] = await Promise.all([
@@ -226,8 +289,12 @@ export class EvaluationPipeline {
     // Record all scores on trace
     if (trace) recordScores(trace, result);
 
-    // Save incremental cache for next run
-    saveCache(this.context);
+    // Save incremental cache for next run (including phase results)
+    const phaseResultMap: Record<string, PhaseResult> = {};
+    for (const [i, strategy] of phaseStrategies.entries()) {
+      phaseResultMap[strategy.key] = phaseResults[i];
+    }
+    saveCache(this.context, phaseResultMap);
 
     return result;
   }
@@ -399,7 +466,10 @@ export class EvaluationPipeline {
         typeWarningCount,
         prismaCriticalCount,
         prismaWarningCount,
-        softPass: filesWithErrors > 0 || typeWarningCount > 0 || prismaCriticalCount > 0,
+        softPass:
+          filesWithErrors > 0 ||
+          typeWarningCount > 0 ||
+          prismaCriticalCount > 0,
       },
     };
   }
@@ -559,28 +629,28 @@ export class EvaluationPipeline {
     if (!phases.gate.passed) {
       totalScore = 0;
     } else {
-      // Calculate weighted score, conditionally including goldenSet
+      // Calculate weighted score
+      // When goldenSet is present, include it as a regular phase with its weight.
+      // When absent, exclude it and normalize remaining weights to 1.0.
       const hasGoldenSet = !!phases.goldenSet;
-      const GOLDEN_SET_WEIGHT = 0.15;
+      const activePhases = hasGoldenSet
+        ? [
+            ...phaseStrategies,
+            { key: "goldenSet" as const, label: "Golden Set" },
+          ]
+        : phaseStrategies;
 
-      const baseSum = phaseStrategies.reduce(
+      const activeSum = activePhases.reduce(
         (sum, s) => sum + PHASE_WEIGHTS[s.key],
         0,
       );
-      // goldenSet present: scale base phases to 0.85, add goldenSet at 0.15
-      // goldenSet absent: normalize base phases to fill 1.0
-      const baseFactor = hasGoldenSet
-        ? (1 - GOLDEN_SET_WEIGHT) / baseSum
-        : 1 / baseSum;
+      const normFactor = activeSum > 0 ? 1 / activeSum : 1;
 
-      let rawScore = phaseStrategies.reduce(
+      let rawScore = activePhases.reduce(
         (sum, s) =>
-          sum + phases[s.key].score * PHASE_WEIGHTS[s.key] * baseFactor,
+          sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
-      if (hasGoldenSet) {
-        rawScore += phases.goldenSet!.score * GOLDEN_SET_WEIGHT;
-      }
       // Apply gate as a multiplier instead of direct subtraction to avoid
       // double-penalizing (gate penalty + warning penalty on same issues).
       // Gate score 100 → no reduction, gate score 65 → raw * 0.65
@@ -677,8 +747,14 @@ export class EvaluationPipeline {
           reference.schemaSync.mismatchedProperties / syncTotal;
 
         // Scale thresholds by project size: larger projects naturally have more edge cases
-        const emptyThreshold = Math.min(0.25, 0.15 + Math.max(0, syncTotal - 30) * 0.001);
-        const mismatchThreshold = Math.min(0.15, 0.05 + Math.max(0, syncTotal - 30) * 0.001);
+        const emptyThreshold = Math.min(
+          0.25,
+          0.15 + Math.max(0, syncTotal - 30) * 0.001,
+        );
+        const mismatchThreshold = Math.min(
+          0.15,
+          0.05 + Math.max(0, syncTotal - 30) * 0.001,
+        );
 
         // Empty types: penalize when above threshold
         if (emptyRatio > emptyThreshold) {

@@ -76,6 +76,11 @@ export interface EvaluationContext {
   runtimeResult?: RuntimeResult;
   /** Golden Set result (populated by RuntimeEvaluator when server is up) */
   goldenResult?: import("./score").PhaseResult;
+  /**
+   * Contract Test result (auto-generated from swagger.json, populated by
+   * RuntimeEvaluator)
+   */
+  contractResult?: import("./score").PhaseResult;
   /** Evaluation options */
   options?: EvaluationOptions;
 }

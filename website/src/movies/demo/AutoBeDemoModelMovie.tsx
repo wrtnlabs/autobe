@@ -13,21 +13,14 @@ export default function AutoBeDemoModelMovie(
 
   if (replayList === null) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-        <div className="text-6xl mb-4">🔍</div>
-        <p className="text-lg">No projects available for this model</p>
+      <div className="flex flex-col items-center justify-center py-16 text-neutral-600">
+        <p className="text-sm">No projects available for this model</p>
       </div>
     );
   }
 
   return (
-    <div
-      className="gap-6 grid grid-cols-1 lg:grid-cols-2"
-      style={{
-        maxWidth: "920px",
-        margin: "0 auto",
-      }}
-    >
+    <div className="gap-4 grid grid-cols-1 lg:grid-cols-2 max-w-5xl mx-auto">
       {replayList.map((replay, index) => (
         <AutoBeDemoProjectMovie
           key={index}

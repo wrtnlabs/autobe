@@ -6,6 +6,7 @@ import type { EvaluationContext, Issue } from "../../types";
 import { createIssue } from "../../types";
 import { GateCheckResult, GateEvaluator } from "../base";
 import { type GoldenProject, GoldenSetEvaluator } from "../golden";
+import { ContractEvaluator } from "../golden/contract-evaluator";
 
 const HEALTH_CHECK_TIMEOUT_MS = 60000;
 const HEALTH_CHECK_INTERVAL_MS = 2000;
@@ -111,6 +112,18 @@ export class RuntimeEvaluator extends GateEvaluator {
           apiPort,
         );
         context.goldenResult = goldenResult;
+      }
+
+      // Run Contract Tests (auto-generated from swagger.json)
+      try {
+        const contractEvaluator = new ContractEvaluator();
+        const contractResult = await contractEvaluator.evaluate(
+          context,
+          apiPort,
+        );
+        context.contractResult = contractResult;
+      } catch {
+        // Contract testing is non-blocking — failures don't affect gate
       }
 
       const testResults = await this.runTests(rootPath);

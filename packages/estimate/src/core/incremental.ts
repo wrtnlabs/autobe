@@ -2,7 +2,7 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 
-import type { EvaluationContext, SourceFiles } from "../types";
+import type { EvaluationContext, PhaseResult, SourceFiles } from "../types";
 
 /** File fingerprint for change detection */
 interface FileFingerprint {
@@ -12,20 +12,70 @@ interface FileFingerprint {
   mtimeMs: number;
 }
 
+/** Cached phase result (serializable subset of PhaseResult) */
+interface CachedPhaseResult {
+  phase: string;
+  passed: boolean;
+  score: number;
+  maxScore: number;
+  weightedScore: number;
+  durationMs: number;
+  metrics?: Record<string, number | string | boolean>;
+  issueCount: number;
+}
+
 /** Incremental evaluation cache */
 export interface IncrementalCache {
   version: number;
   evaluatedAt: string;
   fingerprints: FileFingerprint[];
+  /** Cached phase results from previous evaluation */
+  phaseResults?: Record<string, CachedPhaseResult>;
+  /** Hash of docs/ directory contents for documentQuality change detection */
+  docsHash?: string;
+  /** Whether agent evaluation was included in this cache */
+  useAgent?: boolean;
 }
 
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 const CACHE_FILENAME = ".estimate-cache.json";
 
 /** Compute MD5 hash of file content */
 function hashFile(filePath: string): string {
   const content = fs.readFileSync(filePath, "utf-8");
   return crypto.createHash("md5").update(content).digest("hex");
+}
+
+/** Compute hash of docs/ directory (for documentQuality change detection) */
+function hashDocsDir(rootPath: string): string {
+  const docsPath = path.join(rootPath, "docs");
+  if (!fs.existsSync(docsPath)) return "";
+  const hash = crypto.createHash("md5");
+  const files = findFilesRecursive(docsPath);
+  for (const f of files.sort()) {
+    try {
+      hash.update(f);
+      hash.update(fs.readFileSync(f, "utf-8"));
+    } catch {
+      // skip unreadable
+    }
+  }
+  return hash.digest("hex");
+}
+
+function findFilesRecursive(dir: string): string[] {
+  const results: string[] = [];
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) results.push(...findFilesRecursive(fullPath));
+      else results.push(fullPath);
+    }
+  } catch {
+    // skip unreadable dirs
+  }
+  return results;
 }
 
 /** Build fingerprints for all source files */
@@ -66,12 +116,36 @@ export function loadCache(rootPath: string): IncrementalCache | null {
   }
 }
 
-/** Save cache to project root */
-export function saveCache(context: EvaluationContext): void {
+/** Save cache to project root, including phase results */
+export function saveCache(
+  context: EvaluationContext,
+  phaseResults?: Record<string, PhaseResult>,
+  useAgent?: boolean,
+): void {
+  const cachedPhases: Record<string, CachedPhaseResult> = {};
+  if (phaseResults) {
+    for (const [key, result] of Object.entries(phaseResults)) {
+      cachedPhases[key] = {
+        phase: result.phase,
+        passed: result.passed,
+        score: result.score,
+        maxScore: result.maxScore,
+        weightedScore: result.weightedScore,
+        durationMs: result.durationMs,
+        metrics: result.metrics,
+        issueCount: result.issues.length,
+      };
+    }
+  }
+
   const cache: IncrementalCache = {
     version: CACHE_VERSION,
     evaluatedAt: new Date().toISOString(),
     fingerprints: buildFingerprints(context),
+    phaseResults:
+      Object.keys(cachedPhases).length > 0 ? cachedPhases : undefined,
+    docsHash: hashDocsDir(context.project.rootPath),
+    useAgent,
   };
 
   const cachePath = path.join(context.project.rootPath, CACHE_FILENAME);
@@ -90,7 +164,34 @@ export interface IncrementalDiff {
   unchangedCount: number;
   /** Whether a full re-evaluation is needed */
   requiresFullEval: boolean;
+  /** Whether docs/ directory changed */
+  docsChanged: boolean;
+  /** Changed file categories (which SourceFiles categories have changes) */
+  changedCategories: Set<SourceFileCategory>;
 }
+
+export type SourceFileCategory =
+  | "controllers"
+  | "providers"
+  | "structures"
+  | "tests"
+  | "prismaSchemas"
+  | "docs";
+
+/**
+ * Phase dependency map: which file categories affect each scoring phase.
+ *
+ * DocumentQuality → docs/ directory requirementsCoverage → controllers,
+ * providers, structures, docs testCoverage → tests, controllers
+ * logicCompleteness → controllers, providers apiCompleteness → controllers
+ */
+export const PHASE_DEPENDENCIES: Record<string, SourceFileCategory[]> = {
+  documentQuality: ["docs"],
+  requirementsCoverage: ["controllers", "providers", "structures", "docs"],
+  testCoverage: ["tests", "controllers"],
+  logicCompleteness: ["controllers", "providers"],
+  apiCompleteness: ["controllers"],
+};
 
 /** Compare current context against cache to find changed files */
 export function computeDiff(
@@ -149,9 +250,72 @@ export function computeDiff(
     changed.some((f) => f.endsWith(".prisma")) ||
     added.some((f) => f.endsWith(".prisma"));
   const changeRatio = totalChanged / Math.max(allFiles.length, 1);
-  const requiresFullEval = prismaChanged || changeRatio > 0.3 || removed.length > 0;
+  const requiresFullEval =
+    prismaChanged || changeRatio > 0.3 || removed.length > 0;
 
-  return { changed, added, removed, unchangedCount, requiresFullEval };
+  // Check docs/ directory change
+  const currentDocsHash = hashDocsDir(context.project.rootPath);
+  const docsChanged = currentDocsHash !== (cache.docsHash ?? "");
+
+  // Determine which file categories have changes
+  const changedSet = new Set([...changed, ...added]);
+  const changedCategories = new Set<SourceFileCategory>();
+
+  if (docsChanged) changedCategories.add("docs");
+  if (prismaChanged) changedCategories.add("prismaSchemas");
+
+  const categoryArrays: [SourceFileCategory, string[]][] = [
+    ["controllers", context.files.controllers],
+    ["providers", context.files.providers],
+    ["structures", context.files.structures],
+    ["tests", context.files.tests],
+  ];
+  for (const [category, files] of categoryArrays) {
+    if (files.some((f) => changedSet.has(f))) {
+      changedCategories.add(category);
+    }
+  }
+
+  return {
+    changed,
+    added,
+    removed,
+    unchangedCount,
+    requiresFullEval,
+    docsChanged,
+    changedCategories,
+  };
+}
+
+/**
+ * Check if a phase can reuse cached results based on changed file categories.
+ * Returns true if the phase's dependencies have NOT changed.
+ */
+export function canReusePhase(
+  phaseKey: string,
+  diff: IncrementalDiff,
+): boolean {
+  const deps = PHASE_DEPENDENCIES[phaseKey];
+  if (!deps) return false; // unknown phase → always re-run
+  return !deps.some((cat) => diff.changedCategories.has(cat));
+}
+
+/** Convert cached phase result back to PhaseResult (with empty issues array) */
+export function restorePhaseResult(cached: CachedPhaseResult): PhaseResult {
+  return {
+    phase: cached.phase as PhaseResult["phase"],
+    passed: cached.passed,
+    score: cached.score,
+    maxScore: cached.maxScore,
+    weightedScore: cached.weightedScore,
+    issues: [], // Issues are not cached — they can be large and are regenerated
+    durationMs: 0, // Mark as 0 since this was a cache hit
+    metrics: {
+      ...cached.metrics,
+      cached: true,
+      originalDurationMs: cached.durationMs,
+    },
+  };
 }
 
 /** Filter source files to only include changed/added files */

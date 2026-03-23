@@ -115,6 +115,11 @@ function renderScoringPhases(result: ExtendedResult): string {
     return `| ${phaseName} | ${phaseResult.score}/100 | ${weight} | ${status} |`;
   }).join("\n");
 
+  // Golden Set row (optional — only present with --golden --run-tests)
+  const goldenRow = result.phases.goldenSet
+    ? `| ${PHASE_NAMES.goldenSet} | ${result.phases.goldenSet.score}/100 | ${Math.round(PHASE_WEIGHTS.goldenSet * 100)}% | ${getStatusEmoji(result.phases.goldenSet.score)} |`
+    : "";
+
   return `
 ## Scoring Phases (affects total score)
 
@@ -122,6 +127,7 @@ function renderScoringPhases(result: ExtendedResult): string {
 |-------|-------|--------|--------|
 | Gate | - | - | ${gateStatus} |
 ${phaseRows}
+${goldenRow}
 `.trim();
 }
 
@@ -153,6 +159,10 @@ function renderDetailedResults(result: ExtendedResult): string {
     renderPhaseDetail(phase, result.phases[phase]),
   ).join("\n\n");
 
+  const goldenSection = result.phases.goldenSet
+    ? `\n\n${renderGoldenSetDetail(result.phases.goldenSet)}`
+    : "";
+
   return `
 ## Detailed Results
 
@@ -160,7 +170,7 @@ function renderDetailedResults(result: ExtendedResult): string {
 
 ${gateSection}
 
-${phaseSections}
+${phaseSections}${goldenSection}
 `.trim();
 }
 
@@ -197,6 +207,99 @@ function renderPhaseDetail(phase: string, phaseResult: PhaseResult): string {
 
 ${metricsSection}
 ${explanationSection}
+${issuesSection}
+`.trim();
+}
+
+function renderGoldenSetDetail(phaseResult: PhaseResult): string {
+  const m = phaseResult.metrics || {};
+  const score = phaseResult.score;
+
+  let categoryTable = "";
+  if (m.categories) {
+    try {
+      const cats =
+        typeof m.categories === "string"
+          ? JSON.parse(m.categories)
+          : m.categories;
+      const catRows = Object.entries(cats)
+        .map(([cat, info]: [string, any]) => {
+          const status =
+            info.score >= 80 ? "✅" : info.score >= 50 ? "⚠️" : "❌";
+          return `| ${cat} | ${info.passed}/${info.total} | ${info.score}/100 | ${info.weight}% | ${status} |`;
+        })
+        .join("\n");
+
+      categoryTable = `
+**Category Breakdown:**
+
+| Category | Passed | Score | Weight | Status |
+|----------|--------|-------|--------|--------|
+${catRows}
+`;
+    } catch {
+      // skip malformed categories
+    }
+  }
+
+  const timingSection =
+    m.avgResponseMs !== undefined
+      ? `
+**Response Time:**
+
+| Metric | Value |
+|--------|-------|
+| Average | ${m.avgResponseMs}ms |
+| P50 | ${m.p50ResponseMs ?? "-"}ms |
+| P95 | ${m.p95ResponseMs ?? "-"}ms |
+| Max | ${m.maxResponseMs ?? "-"}ms |
+`
+      : "";
+
+  const contractSection =
+    m.contractEndpoints !== undefined
+      ? `
+**Contract Tests (auto-generated from swagger.json):**
+
+| Metric | Value |
+|--------|-------|
+| Endpoints tested | ${m.contractEndpoints} |
+| Passed | ${m.contractPassed ?? "-"} |
+| Failed | ${m.contractFailed ?? "-"} |
+| Pass rate | ${m.contractPassRate ?? "-"}% |
+| Avg response | ${m.contractAvgResponseMs ?? "-"}ms |
+| Schema warnings | ${m.contractSchemaWarnings ?? 0} |
+`
+      : "";
+
+  const scoreBreakdown =
+    m.categoryScore !== undefined
+      ? `
+**Score Dimensions:**
+
+| Dimension | Score | Weight |
+|-----------|-------|--------|
+| Category pass rate | ${m.categoryScore}/100 | 70% |
+| Response time (P95) | ${m.responseTimeScore ?? "-"}/100 | 15% |
+| Data consistency | ${m.consistencyScore ?? "-"}/100 | 15% |
+`
+      : "";
+
+  const issuesSection =
+    phaseResult.issues.length > 0
+      ? renderIssuesTable(phaseResult.issues)
+      : "✅ No issues found.";
+
+  return `
+### ${PHASE_NAMES.goldenSet}
+
+**Score:** ${score}/100
+**Features:** ${m.passedFeatures ?? 0}/${m.totalFeatures ?? 0} passed (${m.passRate ?? 0}%)
+
+${scoreBreakdown}
+${categoryTable}
+${timingSection}
+${contractSection}
 ${issuesSection}
 `.trim();
 }

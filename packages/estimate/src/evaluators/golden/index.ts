@@ -1,5 +1,6 @@
 export { GoldenSetEvaluator } from "./golden-set.evaluator";
 export type { GoldenProject } from "./golden-set.evaluator";
+export { ContractEvaluator } from "./contract-evaluator";
 export { buildRouteMap, findEndpoint } from "./url-resolver";
 export type { RouteInfo, ResolvedEndpoint } from "./url-resolver";
 export { HttpRunner } from "./http-runner";

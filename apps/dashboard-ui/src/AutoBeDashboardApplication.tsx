@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { ThemeContextProvider } from "./theme/ThemeContext";
 import { DashboardLayout } from "./components/layout/DashboardLayout";
@@ -12,7 +12,7 @@ import { SettingsPage } from "./pages/SettingsPage";
 export function AutoBeDashboardApplication() {
   return (
     <ThemeContextProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route element={<DashboardLayout />}>
             <Route path="/" element={<Navigate to="/benchmark" replace />} />
@@ -33,7 +33,7 @@ export function AutoBeDashboardApplication() {
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeContextProvider>
   );
 }

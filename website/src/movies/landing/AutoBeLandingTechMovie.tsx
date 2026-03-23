@@ -1,152 +1,155 @@
 "use client";
 
+import FadeIn from "./FadeIn";
+
+const steps = [
+  {
+    title: "Analyze",
+    desc: "Requirements extraction from conversation",
+  },
+  {
+    title: "Database",
+    desc: "Prisma schema generation & validation",
+  },
+  {
+    title: "Interface",
+    desc: "OpenAPI spec with full type safety",
+  },
+  {
+    title: "Test",
+    desc: "E2E test suite auto-generation",
+  },
+  {
+    title: "Realize",
+    desc: "NestJS implementation with zero errors",
+  },
+];
+
 export default function AutoBeLandingTechMovie() {
   return (
-    <section className="landing-section">
-      <div className="landing-container">
-        <div className="max-w-5xl mx-auto">
-          <div className="pb-8 mb-10 border-b border-white/10">
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
-              Technical
-            </p>
-            <h2 className="mt-3 text-3xl md:text-4xl font-semibold tracking-tight text-white">
-              Technical innovation
-            </h2>
-            <p className="mt-3 text-base md:text-lg text-slate-300 leading-relaxed max-w-2xl">
-              Why AutoBE achieves 100% compilation success where others fail.
-            </p>
+    <section className="relative py-40 px-6 bg-neutral-950">
+      <div className="max-w-5xl mx-auto">
+        {/* LEFT-aligned header */}
+        <FadeIn className="max-w-xl mb-20">
+          <p className="text-xs font-medium tracking-[0.3em] uppercase text-neutral-600 mb-6">
+            How it works
+          </p>
+          <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-[1.1]">
+            Five phases,
+            <br />
+            <span className="text-neutral-500">zero manual steps</span>
+          </h2>
+        </FadeIn>
+
+        {/* Pipeline timeline */}
+        <FadeIn className="relative mb-28">
+          {/* Horizontal line (desktop) */}
+          <div className="hidden md:block absolute top-5 left-[10%] right-[10%] h-px bg-neutral-800" />
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-10 md:gap-0">
+            {steps.map((step, i) => (
+              <div key={step.title} className="relative text-center px-2">
+                {/* Numbered dot on the line */}
+                <div className="relative inline-flex items-center justify-center w-10 h-10 rounded-full border border-neutral-700 bg-neutral-950 mb-5 z-10">
+                  <span className="text-[11px] font-mono text-neutral-400">
+                    0{i + 1}
+                  </span>
+                </div>
+                <h3 className="text-sm font-semibold text-white mb-1.5">
+                  {step.title}
+                </h3>
+                <p className="text-xs text-neutral-500 leading-relaxed max-w-[140px] mx-auto">
+                  {step.desc}
+                </p>
+              </div>
+            ))}
           </div>
+        </FadeIn>
 
-          <div className="space-y-14">
-            <div className="pt-10 border-t border-white/10">
-              <div className="grid md:grid-cols-12 gap-10 items-start">
-                <div className="md:col-span-7">
-                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-white">
-                    AI-friendly compilers
-                  </h3>
-                  <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-xl">
-                    Instead of emitting code as raw text, AutoBE generates AST
-                    first and validates it with compilers before producing
-                    TypeScript.
-                  </p>
+        {/* Two-column feature blocks */}
+        <FadeIn>
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Compiler block */}
+            <div className="rounded-2xl border border-neutral-800/60 p-10 flex flex-col">
+              <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-600 mb-5">
+                Compiler-Driven
+              </div>
+              <h3 className="text-xl font-semibold text-white mb-8">
+                Three-tier validation
+              </h3>
 
-                  <div className="mt-7 space-y-5">
-                    <div>
-                      <p className="text-sm font-semibold text-white">
-                        Traditional AI tools
-                      </p>
-                      <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                        Generate code as text → higher chance of syntax errors
-                        and drift.
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white">
-                        AutoBE approach
-                      </p>
-                      <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                        AI generates AST → compiler validates → generator emits
-                        correct TypeScript.
-                      </p>
-                    </div>
+              <div className="space-y-2 mb-8 flex-1">
+                {[
+                  { name: "Prisma Compiler", desc: "Schema" },
+                  { name: "OpenAPI Compiler", desc: "API Spec" },
+                  { name: "TypeScript Compiler", desc: "Code" },
+                ].map((compiler) => (
+                  <div
+                    key={compiler.name}
+                    className="flex items-center justify-between py-3.5 px-5 rounded-xl bg-neutral-900/80 border border-neutral-800/40"
+                  >
+                    <span className="text-sm text-neutral-300">
+                      {compiler.name}
+                    </span>
+                    <span className="text-xs text-neutral-500">
+                      {compiler.desc}
+                    </span>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="md:col-span-5">
-                  <div className="rounded-2xl border border-white/10 p-6">
-                    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
-                      Process
-                    </p>
-                    <div className="mt-3 text-slate-300 font-mono text-sm space-y-1.5">
-                      <div>1. AI → Abstract Syntax Tree</div>
-                      <div>2. Compiler → validates structure</div>
-                      <div>3. Generator → emits TypeScript</div>
-                      <div className="text-slate-200 mt-2">
-                        100% compilation success
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex items-center gap-3 pt-6 border-t border-neutral-800/40">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="text-sm text-neutral-400 font-medium">
+                  100% compilation success
+                </span>
               </div>
             </div>
 
-            <div className="pt-10 border-t border-white/10">
-              <div className="grid md:grid-cols-12 gap-10 items-start">
-                <div className="md:col-span-7">
-                  <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-white">
-                    Automatic SDK generation
-                  </h3>
-                  <p className="mt-3 text-sm text-slate-400 leading-relaxed max-w-xl">
-                    Every backend ships with a type-safe client SDK — no manual
-                    typing, no boilerplate, and end-to-end type safety for both
-                    apps and tests.
-                  </p>
-
-                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10">
-                    {[
-                      {
-                        title: "Zero configuration",
-                        desc: "Auto-generated with your backend.",
-                      },
-                      {
-                        title: "100% type safety",
-                        desc: "TypeScript-first SDK and validation.",
-                      },
-                      {
-                        title: "Frontend ready",
-                        desc: "Works with React, Vue, Angular.",
-                      },
-                      {
-                        title: "E2E test integration",
-                        desc: "Powers AI-generated test suites.",
-                      },
-                    ].map((item, idx) => (
-                      <div
-                        key={item.title}
-                        className={[
-                          "pt-5 border-t border-white/10",
-                          idx % 2 === 1
-                            ? "sm:border-l sm:border-white/10 sm:pl-8"
-                            : "",
-                        ].join(" ")}
-                      >
-                        <p className="text-sm font-semibold text-white">
-                          {item.title}
-                        </p>
-                        <p className="mt-1 text-sm text-slate-400 leading-relaxed">
-                          {item.desc}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="md:col-span-5">
-                  <div className="rounded-2xl border border-white/10 p-6 overflow-x-auto">
-                    <p className="text-xs font-semibold tracking-[0.18em] uppercase text-slate-400">
-                      Example
-                    </p>
-                    <pre className="mt-3 text-slate-200/90 font-mono text-xs lg:text-sm leading-relaxed">
-{`import api, { IPost } from "autobe-generated-sdk";
-
-const connection: api.IConnection = {
-  host: "http://localhost:1234",
-};
-
-await api.functional.users.login(connection, {
-  body: { email: "user@example.com", password: "secure-password" },
-});
-
-const post: IPost = await api.functional.posts.create(connection, {
-  body: { title: "Hello World", content: "My first post" },
-});`}
-                    </pre>
-                  </div>
-                </div>
+            {/* SDK block */}
+            <div className="rounded-2xl border border-neutral-800/60 p-10 flex flex-col">
+              <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-neutral-600 mb-5">
+                Auto-Generated
               </div>
+              <h3 className="text-xl font-semibold text-white mb-4">
+                Type-safe client SDK
+              </h3>
+              <p className="text-sm text-neutral-500 leading-relaxed mb-8">
+                Every backend ships with a fully typed SDK. Zero configuration —
+                powers both frontend integration and E2E tests.
+              </p>
+
+              <div className="rounded-xl bg-black border border-neutral-800/40 p-6 mb-8 overflow-x-auto flex-1">
+                <pre className="text-[13px] font-mono leading-[1.7] text-neutral-400">
+                  <span className="text-neutral-600">{"// Fully typed"}</span>
+                  {"\n"}
+                  <span className="text-neutral-500">{"const"}</span>
+                  {" post "}
+                  <span className="text-neutral-600">{"="}</span>
+                  {" "}
+                  <span className="text-neutral-500">{"await"}</span>
+                  {"\n"}
+                  {"  api.functional.posts."}
+                  <span className="text-white">{"create"}</span>
+                  {"(conn, {"}
+                  {"\n"}
+                  {"    title: "}
+                  <span className="text-neutral-500">{'"Hello"'}</span>
+                  {","}
+                  {"\n"}
+                  {"    content: "}
+                  <span className="text-neutral-500">{'"World"'}</span>
+                  {"\n"}
+                  {"  });"}
+                </pre>
+              </div>
+
+              <p className="text-xs text-neutral-500">
+                Works with any frontend framework
+              </p>
             </div>
           </div>
-        </div>
+        </FadeIn>
       </div>
     </section>
   );

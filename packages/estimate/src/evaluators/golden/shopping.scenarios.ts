@@ -1,5 +1,6 @@
 import { HttpRunner } from "./http-runner";
 import {
+  type ScenarioCategory,
   type ScenarioResult,
   fail,
   pass,
@@ -35,7 +36,7 @@ export async function runShoppingScenarios(
       method: "POST",
     }) || findEndpoint(routes, { pathKeywords: ["join"], method: "POST" });
   if (!customerJoinEndpoint) {
-    results.push(fail(1, "Customer signup", "endpoint not found"));
+    results.push(fail(1, "Customer signup", "endpoint not found", "auth"));
   } else {
     const res = await http.post(customerJoinEndpoint.url, {
       email: customerEmail,
@@ -44,8 +45,8 @@ export async function runShoppingScenarios(
     });
     results.push(
       res.ok
-        ? pass(1, "Customer signup")
-        : fail(1, "Customer signup", `status ${res.status}`),
+        ? pass(1, "Customer signup", "auth")
+        : fail(1, "Customer signup", `status ${res.status}`, "auth"),
     );
   }
 
@@ -57,7 +58,7 @@ export async function runShoppingScenarios(
       method: "POST",
     }) || findEndpoint(routes, { pathKeywords: ["login"], method: "POST" });
   if (!customerLoginEndpoint) {
-    results.push(fail(2, "Customer login", "endpoint not found"));
+    results.push(fail(2, "Customer login", "endpoint not found", "auth"));
   } else {
     const res = await http.post(customerLoginEndpoint.url, {
       email: customerEmail,
@@ -70,12 +71,12 @@ export async function runShoppingScenarios(
         typeof token === "string" ? token : token?.access || token;
       if (tokenStr) {
         http.setToken(tokenStr);
-        results.push(pass(2, "Customer login"));
+        results.push(pass(2, "Customer login", "auth"));
       } else {
-        results.push(fail(2, "Customer login", "no token in response"));
+        results.push(fail(2, "Customer login", "no token in response", "auth"));
       }
     } else {
-      results.push(fail(2, "Customer login", `status ${res.status}`));
+      results.push(fail(2, "Customer login", `status ${res.status}`, "auth"));
     }
   }
 
@@ -86,13 +87,13 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!customerProfileGetEndpoint) {
-    results.push(fail(3, "Get customer profile", "endpoint not found"));
+    results.push(fail(3, "Get customer profile", "endpoint not found", "auth"));
   } else {
     const res = await http.get(customerProfileGetEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(3, "Get customer profile")
-        : fail(3, "Get customer profile", `status ${res.status}`),
+        ? pass(3, "Get customer profile", "auth")
+        : fail(3, "Get customer profile", `status ${res.status}`, "auth"),
     );
   }
 
@@ -103,7 +104,9 @@ export async function runShoppingScenarios(
     method: "PATCH",
   });
   if (!customerProfileEndpoint) {
-    results.push(fail(4, "Update customer profile", "endpoint not found"));
+    results.push(
+      fail(4, "Update customer profile", "endpoint not found", "auth"),
+    );
   } else {
     const res = await http.patch(
       customerProfileEndpoint.url,
@@ -112,8 +115,8 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.ok
-        ? pass(4, "Update customer profile")
-        : fail(4, "Update customer profile", `status ${res.status}`),
+        ? pass(4, "Update customer profile", "auth")
+        : fail(4, "Update customer profile", `status ${res.status}`, "auth"),
     );
   }
 
@@ -130,7 +133,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!sellerJoinEndpoint) {
-    results.push(fail(5, "Seller signup", "endpoint not found"));
+    results.push(fail(5, "Seller signup", "endpoint not found", "auth"));
   } else {
     const res = await http.post(sellerJoinEndpoint.url, {
       email: sellerEmail,
@@ -139,8 +142,8 @@ export async function runShoppingScenarios(
     });
     results.push(
       res.ok
-        ? pass(5, "Seller signup")
-        : fail(5, "Seller signup", `status ${res.status}`),
+        ? pass(5, "Seller signup", "auth")
+        : fail(5, "Seller signup", `status ${res.status}`, "auth"),
     );
   }
 
@@ -151,7 +154,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!sellerLoginEndpoint) {
-    results.push(fail(6, "Seller login", "endpoint not found"));
+    results.push(fail(6, "Seller login", "endpoint not found", "auth"));
   } else {
     const res = await http.post(sellerLoginEndpoint.url, {
       email: sellerEmail,
@@ -164,12 +167,12 @@ export async function runShoppingScenarios(
         typeof token === "string" ? token : token?.access || token;
       if (tokenStr) {
         sellerHttp.setToken(tokenStr);
-        results.push(pass(6, "Seller login"));
+        results.push(pass(6, "Seller login", "auth"));
       } else {
-        results.push(fail(6, "Seller login", "no token in response"));
+        results.push(fail(6, "Seller login", "no token in response", "auth"));
       }
     } else {
-      results.push(fail(6, "Seller login", `status ${res.status}`));
+      results.push(fail(6, "Seller login", `status ${res.status}`, "auth"));
     }
   }
 
@@ -181,7 +184,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!addressCreateEndpoint) {
-    results.push(fail(7, "Add address", "endpoint not found"));
+    results.push(fail(7, "Add address", "endpoint not found", "crud"));
   } else {
     const res = await http.post(
       addressCreateEndpoint.url,
@@ -199,9 +202,9 @@ export async function runShoppingScenarios(
     );
     if (res.ok) {
       addressId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(7, "Add address"));
+      results.push(pass(7, "Add address", "crud"));
     } else {
-      results.push(fail(7, "Add address", `status ${res.status}`));
+      results.push(fail(7, "Add address", `status ${res.status}`, "crud"));
     }
   }
 
@@ -211,13 +214,13 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!addressListEndpoint) {
-    results.push(fail(8, "List addresses", "endpoint not found"));
+    results.push(fail(8, "List addresses", "endpoint not found", "query"));
   } else {
     const res = await http.get(addressListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(8, "List addresses")
-        : fail(8, "List addresses", `status ${res.status}`),
+        ? pass(8, "List addresses", "query")
+        : fail(8, "List addresses", `status ${res.status}`, "query"),
     );
   }
 
@@ -232,6 +235,7 @@ export async function runShoppingScenarios(
         9,
         "Edit address",
         addressEditEndpoint ? "no addressId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -242,8 +246,8 @@ export async function runShoppingScenarios(
     const res = await http.patch(url, { city: "Busan" }, true);
     results.push(
       res.ok
-        ? pass(9, "Edit address")
-        : fail(9, "Edit address", `status ${res.status}`),
+        ? pass(9, "Edit address", "crud")
+        : fail(9, "Edit address", `status ${res.status}`, "crud"),
     );
   }
 
@@ -275,6 +279,7 @@ export async function runShoppingScenarios(
         10,
         "Delete address",
         addressDeleteEndpoint ? "no addressId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -285,8 +290,8 @@ export async function runShoppingScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(10, "Delete address")
-        : fail(10, "Delete address", `status ${res.status}`),
+        ? pass(10, "Delete address", "crud")
+        : fail(10, "Delete address", `status ${res.status}`, "crud"),
     );
   }
 
@@ -298,13 +303,13 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!categoryListEndpoint) {
-    results.push(fail(11, "List categories", "endpoint not found"));
+    results.push(fail(11, "List categories", "endpoint not found", "query"));
   } else {
     const res = await http.get(categoryListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(11, "List categories")
-        : fail(11, "List categories", `status ${res.status}`),
+        ? pass(11, "List categories", "query")
+        : fail(11, "List categories", `status ${res.status}`, "query"),
     );
   }
 
@@ -318,7 +323,7 @@ export async function runShoppingScenarios(
       method: "POST",
     }) || findEndpoint(routes, { pathKeywords: ["products"], method: "POST" });
   if (!productCreateEndpoint) {
-    results.push(fail(12, "Create product", "endpoint not found"));
+    results.push(fail(12, "Create product", "endpoint not found", "crud"));
   } else {
     const res = await sellerHttp.post(
       productCreateEndpoint.url,
@@ -332,9 +337,9 @@ export async function runShoppingScenarios(
     );
     if (res.ok) {
       productId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(12, "Create product"));
+      results.push(pass(12, "Create product", "crud"));
     } else {
-      results.push(fail(12, "Create product", `status ${res.status}`));
+      results.push(fail(12, "Create product", `status ${res.status}`, "crud"));
     }
   }
 
@@ -351,6 +356,7 @@ export async function runShoppingScenarios(
         13,
         "Edit product",
         productEditEndpoint ? "no productId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -365,8 +371,8 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.ok
-        ? pass(13, "Edit product")
-        : fail(13, "Edit product", `status ${res.status}`),
+        ? pass(13, "Edit product", "crud")
+        : fail(13, "Edit product", `status ${res.status}`, "crud"),
     );
   }
 
@@ -381,6 +387,7 @@ export async function runShoppingScenarios(
         14,
         "Add variant",
         variantCreateEndpoint ? "no productId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -398,9 +405,9 @@ export async function runShoppingScenarios(
     );
     if (res.ok) {
       variantId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(14, "Add variant"));
+      results.push(pass(14, "Add variant", "crud"));
     } else {
-      results.push(fail(14, "Add variant", `status ${res.status}`));
+      results.push(fail(14, "Add variant", `status ${res.status}`, "crud"));
     }
   }
 
@@ -415,6 +422,7 @@ export async function runShoppingScenarios(
         15,
         "Edit variant",
         !variantEditEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -426,8 +434,8 @@ export async function runShoppingScenarios(
     const res = await sellerHttp.patch(url, { price: 11000 }, true);
     results.push(
       res.ok
-        ? pass(15, "Edit variant")
-        : fail(15, "Edit variant", `status ${res.status}`),
+        ? pass(15, "Edit variant", "crud")
+        : fail(15, "Edit variant", `status ${res.status}`, "crud"),
     );
   }
 
@@ -442,6 +450,7 @@ export async function runShoppingScenarios(
         16,
         "Adjust inventory",
         !inventoryEndpoint ? "endpoint not found" : "no IDs",
+        "crud",
       ),
     );
   } else {
@@ -453,8 +462,8 @@ export async function runShoppingScenarios(
     const res = await sellerHttp.post(url, { quantity: 100 }, true);
     results.push(
       res.ok
-        ? pass(16, "Adjust inventory")
-        : fail(16, "Adjust inventory", `status ${res.status}`),
+        ? pass(16, "Adjust inventory", "crud")
+        : fail(16, "Adjust inventory", `status ${res.status}`, "crud"),
     );
   }
 
@@ -464,19 +473,21 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!productListEndpoint) {
-    results.push(fail(17, "List products", "endpoint not found"));
+    results.push(fail(17, "List products", "endpoint not found", "query"));
   } else {
     const res = await http.get(productListEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(17, "List products")
-        : fail(17, "List products", `status ${res.status}`),
+        ? pass(17, "List products", "query")
+        : fail(17, "List products", `status ${res.status}`, "query"),
     );
   }
 
   // 18. Get product detail
   if (!productListEndpoint || !productId) {
-    results.push(fail(18, "Get product detail", "no productId or endpoint"));
+    results.push(
+      fail(18, "Get product detail", "no productId or endpoint", "query"),
+    );
   } else {
     const url = http.resolvePath(productListEndpoint.url, {
       id: productId,
@@ -485,8 +496,8 @@ export async function runShoppingScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(18, "Get product detail")
-        : fail(18, "Get product detail", `status ${res.status}`),
+        ? pass(18, "Get product detail", "query")
+        : fail(18, "Get product detail", `status ${res.status}`, "query"),
     );
   }
 
@@ -503,6 +514,7 @@ export async function runShoppingScenarios(
         19,
         "Add to wishlist",
         wishlistAddEndpoint ? "no productId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -513,8 +525,8 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.ok
-        ? pass(19, "Add to wishlist")
-        : fail(19, "Add to wishlist", `status ${res.status}`),
+        ? pass(19, "Add to wishlist", "crud")
+        : fail(19, "Add to wishlist", `status ${res.status}`, "crud"),
     );
   }
 
@@ -524,13 +536,13 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!wishlistGetEndpoint) {
-    results.push(fail(20, "Get wishlist", "endpoint not found"));
+    results.push(fail(20, "Get wishlist", "endpoint not found", "crud"));
   } else {
     const res = await http.get(wishlistGetEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(20, "Get wishlist")
-        : fail(20, "Get wishlist", `status ${res.status}`),
+        ? pass(20, "Get wishlist", "crud")
+        : fail(20, "Get wishlist", `status ${res.status}`, "crud"),
     );
   }
 
@@ -545,6 +557,7 @@ export async function runShoppingScenarios(
         21,
         "Remove from wishlist",
         wishlistRemoveEndpoint ? "no productId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -555,8 +568,8 @@ export async function runShoppingScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(21, "Remove from wishlist")
-        : fail(21, "Remove from wishlist", `status ${res.status}`),
+        ? pass(21, "Remove from wishlist", "crud")
+        : fail(21, "Remove from wishlist", `status ${res.status}`, "crud"),
     );
   }
 
@@ -568,7 +581,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!cartAddEndpoint) {
-    results.push(fail(22, "Add to cart", "endpoint not found"));
+    results.push(fail(22, "Add to cart", "endpoint not found", "crud"));
   } else {
     const body: Record<string, unknown> = { quantity: 2 };
     if (variantId) body.variant_id = variantId;
@@ -576,9 +589,9 @@ export async function runShoppingScenarios(
     const res = await http.post(cartAddEndpoint.url, body, true);
     if (res.ok) {
       cartItemId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(22, "Add to cart"));
+      results.push(pass(22, "Add to cart", "crud"));
     } else {
-      results.push(fail(22, "Add to cart", `status ${res.status}`));
+      results.push(fail(22, "Add to cart", `status ${res.status}`, "crud"));
     }
   }
 
@@ -588,13 +601,13 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!cartGetEndpoint) {
-    results.push(fail(23, "Get cart", "endpoint not found"));
+    results.push(fail(23, "Get cart", "endpoint not found", "query"));
   } else {
     const res = await http.get(cartGetEndpoint.url, true);
     results.push(
       res.ok
-        ? pass(23, "Get cart")
-        : fail(23, "Get cart", `status ${res.status}`),
+        ? pass(23, "Get cart", "query")
+        : fail(23, "Get cart", `status ${res.status}`, "query"),
     );
   }
 
@@ -609,6 +622,7 @@ export async function runShoppingScenarios(
         24,
         "Update cart item",
         cartUpdateEndpoint ? "no cartItemId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -619,8 +633,8 @@ export async function runShoppingScenarios(
     const res = await http.patch(url, { quantity: 3 }, true);
     results.push(
       res.ok
-        ? pass(24, "Update cart item")
-        : fail(24, "Update cart item", `status ${res.status}`),
+        ? pass(24, "Update cart item", "crud")
+        : fail(24, "Update cart item", `status ${res.status}`, "crud"),
     );
   }
 
@@ -644,6 +658,7 @@ export async function runShoppingScenarios(
         25,
         "Remove from cart",
         cartRemoveEndpoint ? "no cartItemId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -654,8 +669,8 @@ export async function runShoppingScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(25, "Remove from cart")
-        : fail(25, "Remove from cart", `status ${res.status}`),
+        ? pass(25, "Remove from cart", "crud")
+        : fail(25, "Remove from cart", `status ${res.status}`, "crud"),
     );
   }
 
@@ -667,7 +682,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!orderCreateEndpoint) {
-    results.push(fail(26, "Place order", "endpoint not found"));
+    results.push(fail(26, "Place order", "endpoint not found", "workflow"));
   } else {
     const body: Record<string, unknown> = {};
     if (addressId) body.address_id = addressId;
@@ -679,9 +694,9 @@ export async function runShoppingScenarios(
       if (Array.isArray(items) && items.length > 0) {
         orderItemId = items[0].id || null;
       }
-      results.push(pass(26, "Place order"));
+      results.push(pass(26, "Place order", "workflow"));
     } else {
-      results.push(fail(26, "Place order", `status ${res.status}`));
+      results.push(fail(26, "Place order", `status ${res.status}`, "workflow"));
     }
   }
 
@@ -691,7 +706,7 @@ export async function runShoppingScenarios(
     method: "GET",
   });
   if (!orderListEndpoint) {
-    results.push(fail(27, "Order history", "endpoint not found"));
+    results.push(fail(27, "Order history", "endpoint not found", "workflow"));
   } else {
     const res = await http.get(orderListEndpoint.url, true);
     if (res.ok && !orderItemId) {
@@ -705,14 +720,16 @@ export async function runShoppingScenarios(
     }
     results.push(
       res.ok
-        ? pass(27, "Order history")
-        : fail(27, "Order history", `status ${res.status}`),
+        ? pass(27, "Order history", "workflow")
+        : fail(27, "Order history", `status ${res.status}`, "workflow"),
     );
   }
 
   // 28. Order detail
   if (!orderListEndpoint || !orderId) {
-    results.push(fail(28, "Order detail", "no orderId or endpoint"));
+    results.push(
+      fail(28, "Order detail", "no orderId or endpoint", "workflow"),
+    );
   } else {
     const url = http.resolvePath(orderListEndpoint.url, {
       id: orderId,
@@ -721,8 +738,8 @@ export async function runShoppingScenarios(
     const res = await http.get(url, true);
     results.push(
       res.ok
-        ? pass(28, "Order detail")
-        : fail(28, "Order detail", `status ${res.status}`),
+        ? pass(28, "Order detail", "workflow")
+        : fail(28, "Order detail", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -737,6 +754,7 @@ export async function runShoppingScenarios(
         29,
         "Request cancellation",
         !cancelEndpoint ? "endpoint not found" : "no order IDs",
+        "workflow",
       ),
     );
   } else {
@@ -749,8 +767,8 @@ export async function runShoppingScenarios(
     const res = await http.post(url, { reason: "Changed my mind" }, true);
     results.push(
       res.ok
-        ? pass(29, "Request cancellation")
-        : fail(29, "Request cancellation", `status ${res.status}`),
+        ? pass(29, "Request cancellation", "workflow")
+        : fail(29, "Request cancellation", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -765,6 +783,7 @@ export async function runShoppingScenarios(
         30,
         "Request refund",
         !refundEndpoint ? "endpoint not found" : "no order IDs",
+        "workflow",
       ),
     );
   } else {
@@ -777,8 +796,8 @@ export async function runShoppingScenarios(
     const res = await http.post(url, { reason: "Defective item" }, true);
     results.push(
       res.ok
-        ? pass(30, "Request refund")
-        : fail(30, "Request refund", `status ${res.status}`),
+        ? pass(30, "Request refund", "workflow")
+        : fail(30, "Request refund", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -795,6 +814,7 @@ export async function runShoppingScenarios(
         31,
         "Create shipment",
         !shipmentCreateEndpoint ? "endpoint not found" : "no order IDs",
+        "workflow",
       ),
     );
   } else {
@@ -810,8 +830,8 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.ok
-        ? pass(31, "Create shipment")
-        : fail(31, "Create shipment", `status ${res.status}`),
+        ? pass(31, "Create shipment", "workflow")
+        : fail(31, "Create shipment", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -821,7 +841,9 @@ export async function runShoppingScenarios(
     method: "PATCH",
   });
   if (!deliveryEndpoint) {
-    results.push(fail(32, "Confirm delivery", "endpoint not found"));
+    results.push(
+      fail(32, "Confirm delivery", "endpoint not found", "workflow"),
+    );
   } else {
     // Try with a placeholder; may fail if no shipment exists
     const url = http.resolvePath(deliveryEndpoint.url, {
@@ -831,8 +853,8 @@ export async function runShoppingScenarios(
     const res = await http.patch(url, {}, true);
     results.push(
       res.ok
-        ? pass(32, "Confirm delivery")
-        : fail(32, "Confirm delivery", `status ${res.status}`),
+        ? pass(32, "Confirm delivery", "workflow")
+        : fail(32, "Confirm delivery", `status ${res.status}`, "workflow"),
     );
   }
 
@@ -844,7 +866,7 @@ export async function runShoppingScenarios(
     method: "POST",
   });
   if (!reviewCreateEndpoint) {
-    results.push(fail(33, "Write review", "endpoint not found"));
+    results.push(fail(33, "Write review", "endpoint not found", "crud"));
   } else {
     const body: Record<string, unknown> = {
       rating: 5,
@@ -855,9 +877,9 @@ export async function runShoppingScenarios(
     const res = await http.post(reviewCreateEndpoint.url, body, true);
     if (res.ok) {
       reviewId = res.body?.id || res.body?.data?.id || null;
-      results.push(pass(33, "Write review"));
+      results.push(pass(33, "Write review", "crud"));
     } else {
-      results.push(fail(33, "Write review", `status ${res.status}`));
+      results.push(fail(33, "Write review", `status ${res.status}`, "crud"));
     }
   }
 
@@ -872,6 +894,7 @@ export async function runShoppingScenarios(
         34,
         "Edit review",
         reviewEditEndpoint ? "no reviewId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -886,8 +909,8 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.ok
-        ? pass(34, "Edit review")
-        : fail(34, "Edit review", `status ${res.status}`),
+        ? pass(34, "Edit review", "crud")
+        : fail(34, "Edit review", `status ${res.status}`, "crud"),
     );
   }
 
@@ -902,6 +925,7 @@ export async function runShoppingScenarios(
         35,
         "Delete review",
         reviewDeleteEndpoint ? "no reviewId" : "endpoint not found",
+        "crud",
       ),
     );
   } else {
@@ -912,8 +936,8 @@ export async function runShoppingScenarios(
     const res = await http.delete(url, true);
     results.push(
       res.ok
-        ? pass(35, "Delete review")
-        : fail(35, "Delete review", `status ${res.status}`),
+        ? pass(35, "Delete review", "crud")
+        : fail(35, "Delete review", `status ${res.status}`, "crud"),
     );
   }
 
@@ -933,6 +957,7 @@ export async function runShoppingScenarios(
         36,
         "Delete product",
         productDeleteEndpoint ? "no productId" : "endpoint not found",
+        "cleanup",
       ),
     );
   } else {
@@ -943,8 +968,8 @@ export async function runShoppingScenarios(
     const res = await sellerHttp.delete(url, true);
     results.push(
       res.ok
-        ? pass(36, "Delete product")
-        : fail(36, "Delete product", `status ${res.status}`),
+        ? pass(36, "Delete product", "cleanup")
+        : fail(36, "Delete product", `status ${res.status}`, "cleanup"),
     );
   }
 
@@ -960,16 +985,22 @@ export async function runShoppingScenarios(
     );
     results.push(
       res.status === 401
-        ? pass(37, "Unauthenticated product create returns 401")
+        ? pass(37, "Unauthenticated product create returns 401", "negative")
         : fail(
             37,
             "Unauthenticated product create returns 401",
             `expected 401 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(37, "Unauthenticated product create returns 401", "endpoint not found"),
+      fail(
+        37,
+        "Unauthenticated product create returns 401",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -981,16 +1012,22 @@ export async function runShoppingScenarios(
     });
     results.push(
       res.status === 401 || res.status === 403 || res.status === 404
-        ? pass(38, "Invalid customer login returns error status")
+        ? pass(38, "Invalid customer login returns error status", "negative")
         : fail(
             38,
             "Invalid customer login returns error status",
             `expected 401/403/404 but got ${res.status}`,
+            "negative",
           ),
     );
   } else {
     results.push(
-      fail(38, "Invalid customer login returns error status", "endpoint not found"),
+      fail(
+        38,
+        "Invalid customer login returns error status",
+        "endpoint not found",
+        "negative",
+      ),
     );
   }
 
@@ -1009,16 +1046,22 @@ export async function runShoppingScenarios(
       const res = await http.get(url, true);
       results.push(
         res.status === 404
-          ? pass(39, "Get non-existent product returns 404")
+          ? pass(39, "Get non-existent product returns 404", "negative")
           : fail(
               39,
               "Get non-existent product returns 404",
               `expected 404 but got ${res.status}`,
+              "negative",
             ),
       );
     } else {
       results.push(
-        fail(39, "Get non-existent product returns 404", "endpoint not found"),
+        fail(
+          39,
+          "Get non-existent product returns 404",
+          "endpoint not found",
+          "negative",
+        ),
       );
     }
   }
@@ -1033,11 +1076,16 @@ export async function runShoppingScenarios(
       const freshEmail = randomEmail();
       const freshPassword = randomPassword();
       const freshHttp = new HttpRunner();
-      const joinEndpoint = findEndpoint(routes, {
-        pathKeywords: ["join", "signup", "register"],
-        mustContain: "customer",
-        method: "POST",
-      }) || findEndpoint(routes, { pathKeywords: ["join", "signup", "register"], method: "POST" });
+      const joinEndpoint =
+        findEndpoint(routes, {
+          pathKeywords: ["join", "signup", "register"],
+          mustContain: "customer",
+          method: "POST",
+        }) ||
+        findEndpoint(routes, {
+          pathKeywords: ["join", "signup", "register"],
+          method: "POST",
+        });
       if (joinEndpoint && customerLoginEndpoint) {
         await freshHttp.post(joinEndpoint.url, {
           email: freshEmail,
@@ -1059,21 +1107,32 @@ export async function runShoppingScenarios(
         const res = await freshHttp.post(orderEndpoint.url, {}, true);
         results.push(
           res.status === 400 || res.status === 422 || res.status === 409
-            ? pass(40, "Place order with empty cart returns error")
+            ? pass(40, "Place order with empty cart returns error", "negative")
             : fail(
                 40,
                 "Place order with empty cart returns error",
                 `expected 400/422/409 but got ${res.status}`,
+                "negative",
               ),
         );
       } else {
         results.push(
-          fail(40, "Place order with empty cart returns error", "auth endpoints missing"),
+          fail(
+            40,
+            "Place order with empty cart returns error",
+            "auth endpoints missing",
+            "negative",
+          ),
         );
       }
     } else {
       results.push(
-        fail(40, "Place order with empty cart returns error", "endpoint not found"),
+        fail(
+          40,
+          "Place order with empty cart returns error",
+          "endpoint not found",
+          "negative",
+        ),
       );
     }
   }

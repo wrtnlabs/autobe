@@ -94,8 +94,10 @@ async function loadIgnorePatterns(rootPath: string): Promise<string[]> {
   return [...new Set(patterns)];
 }
 
-/** Scan AutoBE project structure using declarative mapping.
- *  Supports both `src/` and `lib/` layouts (some models output to `lib/`). */
+/**
+ * Scan AutoBE project structure using declarative mapping. Supports both `src/`
+ * and `lib/` layouts (some models output to `lib/`).
+ */
 async function scanProjectStructure(
   rootPath: string,
 ): Promise<AutoBEProjectStructure> {

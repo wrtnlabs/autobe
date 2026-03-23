@@ -80,7 +80,10 @@ export class ComplexityEvaluator extends BaseEvaluator {
 
       // Skip nested arrow functions / function expressions inside a method
       // to avoid double-counting. Only report top-level functions and class methods.
-      if (insideFunction && (ts.isArrowFunction(node) || ts.isFunctionExpression(node))) {
+      if (
+        insideFunction &&
+        (ts.isArrowFunction(node) || ts.isFunctionExpression(node))
+      ) {
         return;
       }
 

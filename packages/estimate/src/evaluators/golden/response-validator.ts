@@ -55,7 +55,7 @@ export function loadOpenApiSpec(
 }
 
 /** Resolve $ref to schema definition */
-function resolveRef(
+export function resolveRef(
   spec: Record<string, unknown>,
   ref: string,
 ): OpenApiSchema | null {
@@ -70,7 +70,7 @@ function resolveRef(
 }
 
 /** Get expected response schema for a path+method from spec */
-function _getResponseSchema(
+export function getResponseSchema(
   spec: Record<string, unknown>,
   apiPath: string,
   method: string,

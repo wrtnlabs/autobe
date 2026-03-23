@@ -156,9 +156,11 @@ export class TypeEvaluator extends GateEvaluator {
     };
   }
 
-  /** Parse Prisma schema files and extract model definitions with typed fields.
-   *  Uses brace-counting instead of `[^}]+` regex because JSDoc comments
-   *  like `{@link Foo.id}` contain `}` that would prematurely end the match. */
+  /**
+   * Parse Prisma schema files and extract model definitions with typed fields.
+   * Uses brace-counting instead of `[^}]+` regex because JSDoc comments like
+   * `{@link Foo.id}` contain `}` that would prematurely end the match.
+   */
   private parsePrismaModels(schemaFiles: string[]): ParsedModel[] {
     const models: ParsedModel[] = [];
 
@@ -227,8 +229,10 @@ export class TypeEvaluator extends GateEvaluator {
     return models;
   }
 
-  /** Parse Prisma schema files and extract enum definitions.
-   *  Uses brace-counting for consistency with parsePrismaModels. */
+  /**
+   * Parse Prisma schema files and extract enum definitions. Uses brace-counting
+   * for consistency with parsePrismaModels.
+   */
   private parsePrismaEnums(schemaFiles: string[]): ParsedEnum[] {
     const enums: ParsedEnum[] = [];
 
@@ -261,7 +265,11 @@ export class TypeEvaluator extends GateEvaluator {
 
         for (const line of enumBody.split("\n")) {
           const trimmed = line.trim();
-          if (!trimmed || trimmed.startsWith("//") || trimmed.startsWith("@@")) {
+          if (
+            !trimmed ||
+            trimmed.startsWith("//") ||
+            trimmed.startsWith("@@")
+          ) {
             continue;
           }
           // Enum values are simple identifiers

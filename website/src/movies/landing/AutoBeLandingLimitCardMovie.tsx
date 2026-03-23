@@ -3,23 +3,21 @@
 interface LimitCardProps {
   title: string;
   description: string;
-  footer?: React.ReactNode;
+  detail: string;
 }
 
 export default function AutoBeLandingLimitCardMovie({
   title,
   description,
-  footer,
+  detail,
 }: LimitCardProps) {
   return (
-    <div className="text-left">
-      <h3 className="text-base md:text-lg font-semibold text-white tracking-tight">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm text-slate-400 leading-relaxed max-w-xl">
+    <div className="flex-1 min-w-0">
+      <h3 className="text-sm font-semibold text-white mb-2">{title}</h3>
+      <p className="text-[13px] text-neutral-500 leading-relaxed mb-3">
         {description}
       </p>
-      {footer && <div className="mt-4">{footer}</div>}
+      <p className="text-[11px] text-neutral-700 font-mono">{detail}</p>
     </div>
   );
 }
