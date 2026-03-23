@@ -83,6 +83,7 @@ export function AutoBePlaygroundChatMovie(
                 )}
                 <AutoBeChatMain
                   isUnusedConfig={props.isUnusedConfig ?? false}
+                  isReplay={props.isReplay}
                   isMobile={isMobile}
                   setError={setError}
                   configFields={PLAYGROUND_CONFIG_FIELDS}
@@ -101,6 +102,7 @@ export namespace AutoBePlaygroundChatMovie {
     title?: string;
     hideAppBar?: boolean;
     hideSidebar?: boolean;
+    isReplay?: boolean;
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;

@@ -22,14 +22,6 @@ const PHASES_DESC: AutoBePhase[] = [
   "analyze",
 ];
 
-const PHASES_ASC: AutoBePhase[] = [
-  "analyze",
-  "database",
-  "interface",
-  "test",
-  "realize",
-];
-
 export namespace AutoBePlaygroundExampleSocketProvider {
   /**
    * Directly replay example data over WebSocket.
@@ -65,17 +57,12 @@ export namespace AutoBePlaygroundExampleSocketProvider {
     );
     props.acceptor.ping(500);
 
-    // Use AutoBeMockAgent.conversate() for proper event pacing.
-    // Each call advances one phase with sleepMap-based delays,
-    // and events are forwarded to the client via AutoBeRpcService.
-    for (const phase of PHASES_ASC) {
-      if (replayData[phase] === null) continue;
-      await agent.conversate("continue");
-    }
-
-    // Disable input — replay is read-only
+    // Enable input — let the client drive via AutoBeMockAgent.conversate()
     await sleep_for(100);
-    void props.acceptor.getDriver().enable(false).catch(() => {});
+    void props.acceptor
+      .getDriver()
+      .enable(true)
+      .catch(() => {});
 
     // Wait for disconnect
     await props.acceptor.join();

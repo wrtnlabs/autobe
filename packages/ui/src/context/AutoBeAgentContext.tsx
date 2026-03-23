@@ -262,20 +262,18 @@ export function useAutoBeAgent() {
 }
 
 /**
- * Wrap a TGrid driver Proxy so that Symbol property access (used by
- * React 19 dev-mode render logging) returns `undefined` instead of
- * throwing "Cannot convert a Symbol value to a string".
+ * Wrap a TGrid driver Proxy into a plain object so that React dev-mode
+ * render logging never touches the Proxy (which crashes on Symbol
+ * property access: "Cannot convert a Symbol value to a string").
  */
 function wrapServiceProxy(
   service: IAutoBeRpcService,
 ): IAutoBeRpcService {
-  return new Proxy(service, {
-    get(target, prop, receiver) {
-      if (typeof prop === "symbol") return undefined;
-      return Reflect.get(target, prop, receiver);
-    },
-    set(target, prop, value) {
-      return Reflect.set(target, prop, value);
-    },
-  });
+  return {
+    conversate: (content) => service.conversate(content),
+    getFiles: (options) => service.getFiles(options),
+    getHistories: () => service.getHistories(),
+    getTokenUsage: () => service.getTokenUsage(),
+    getPhase: () => service.getPhase(),
+  };
 }

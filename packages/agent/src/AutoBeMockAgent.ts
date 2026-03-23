@@ -171,14 +171,6 @@ export namespace AutoBeMockAgent {
     ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
     replay: IAutoBePlaygroundReplay;
   }
-
-  /**
-   * Per-event-type base sleep duration (ms) used for replay pacing.
-   *
-   * Actual delay should be randomized around this value, e.g.
-   * `randint(time * 0.2, time * 1.8)`.
-   */
-  export const SLEEP_MAP: Record<AutoBeEvent.Type, number> = sleepMap;
 }
 
 const sleepMap: Record<AutoBeEvent.Type, number> = {
@@ -199,8 +191,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   analyzeStart: 1_000,
   analyzeScenario: 1_000,
   analyzeWriteModule: 500,
-  analyzeWriteUnit: 500,
-  analyzeWriteSection: 500,
+  analyzeWriteUnit: 250,
+  analyzeWriteSection: 200,
   analyzeSectionReview: 300,
   analyzeScenarioReview: 300,
   analyzeComplete: 1_000,
@@ -220,10 +212,10 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   // INTERFACE
   interfaceStart: 1_000,
   interfaceGroup: 1_000,
-  interfaceEndpoint: 1_000,
+  interfaceEndpoint: 500,
   interfaceEndpointReview: 1_000,
   interfaceOperation: 400,
-  interfaceOperationReview: 400,
+  interfaceOperationReview: 500,
   interfaceAuthorization: 400,
   interfaceSchema: 400,
   interfaceSchemaCasting: 400,

@@ -18,7 +18,7 @@ import { AutoBeRpcService } from "@autobe/rpc";
 import { ArrayUtil } from "@nestia/e2e";
 import OpenAI from "openai";
 import { Driver, WebSocketAcceptor } from "tgrid";
-import { randint, sleep_for } from "tstl";
+import { sleep_for } from "tstl";
 import typia from "typia";
 
 import { AutoBePlaygroundGlobal } from "../../../AutoBePlaygroundGlobal";
@@ -77,14 +77,11 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
         session: props.session,
       });
 
-    // Build replay data — always use AutoBeMockAgent for replay
-    const apiKey = await AutoBePlaygroundVendorProvider.decryptApiKey(
-      props.session.vendor.id,
+    const replayData: IAutoBePlaygroundReplay = buildReplayFromSnapshots(
+      props.session,
+      histories,
+      snapshots,
     );
-    const replayData: IAutoBePlaygroundReplay =
-      apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
-        ? await buildReplayFromExamples(props.session)
-        : buildReplayFromSnapshots(props.session, histories, snapshots);
 
     const agent = new AutoBeMockAgent({
       replay: replayData,
@@ -101,21 +98,9 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     );
     props.acceptor.ping(500);
 
-    // Use AutoBeMockAgent.conversate() for proper event pacing
-    const PHASES: AutoBePhase[] = [
-      "analyze",
-      "database",
-      "interface",
-      "test",
-      "realize",
-    ];
-    for (const phase of PHASES) {
-      if (replayData[phase] === null) continue;
-      await agent.conversate("continue");
-    }
-
+    // Enable input — let the client drive via AutoBeMockAgent.conversate()
     await sleep_for(100);
-    void props.acceptor.getDriver().enable(false).catch(() => {});
+    void props.acceptor.getDriver().enable(true).catch(() => {});
     await props.acceptor.join();
   };
 
@@ -181,8 +166,6 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     for (const s of snapshots) {
       (agent.getTokenUsage() as AutoBeTokenUsage).assign(s.tokenUsage);
       void (listener as any)[s.event.type](s.event).catch(() => {});
-      const base = AutoBeMockAgent.SLEEP_MAP[s.event.type] ?? 500;
-      await sleep_for(randint(base * 0.2, base * 1.8));
     }
 
     // REPLAY NEVER ALLOWS CONVERSATION

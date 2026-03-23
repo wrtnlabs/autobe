@@ -102,16 +102,17 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
       if (messages.length !== 0) {
-        await new Promise((resolve) => {
-          if (serviceData.listener.getEnable() === true) {
-            resolve(void 0);
-          }
-          serviceData.listener.onEnable(async (value) => {
-            if (value === true) {
-              resolve(void 0);
-            }
+        if (serviceData.listener.getEnable() !== true) {
+          await new Promise<void>((resolve) => {
+            const onEnable = async (value: boolean) => {
+              if (value === true) {
+                serviceData.listener.offEnable(onEnable);
+                resolve();
+              }
+            };
+            serviceData.listener.onEnable(onEnable);
           });
-        });
+        }
         await serviceData.service.conversate(messages);
       }
       if (eventGroups.length === 0) {
@@ -132,7 +133,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
 
   // Auto-connect if there are existing conversations and config is ready
   useEffect(() => {
-    if (props.isReplay === true) {
+    if (props.isReplay === true && connectionStatus === "disconnected") {
       conversate([]);
       return;
     }

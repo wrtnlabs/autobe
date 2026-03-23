@@ -48,12 +48,14 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
   };
 
   useEffect(() => {
+    if (!listener) return;
     async function trackEnable(value: boolean) {
       setEnabled(value);
     }
-    listener?.onEnable(trackEnable);
+    setEnabled(listener.getEnable());
+    listener.onEnable(trackEnable);
     return () => {
-      listener?.offEnable(trackEnable);
+      listener.offEnable(trackEnable);
     };
   }, [listener]);
 
