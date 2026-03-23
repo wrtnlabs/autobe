@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>AutoBe Blog</title>
+    <link>https://autobe.dev/blog/</link>
+    <description>Engineering notes, releases, and deep dives from AutoBE.</description>
+    <language>en</language>
+    <item>
+      <title>Function Calling Harness — Qwen Meetup Korea 2026</title>
+      <link>https://autobe.dev/blog/function-calling-harness-qwen-meetup-korea/</link>
+      <guid>https://autobe.dev/blog/function-calling-harness-qwen-meetup-korea/</guid>
+      <pubDate>Thu, 26 Mar 2026 00:00:00 GMT</pubDate>
+      <description>6.75% first-try function calling success becomes 100% compilation via type schemas, compilers, and structured feedback. Dissecting the harness engineering behind AutoBe and Typia.</description>
+    </item>
+    <item>
+      <title>[AutoBe] We Built an AI That Writes Full Backend Apps — Then Broke Its 100% Success Rate on Purpose</title>
+      <link>https://autobe.dev/blog/autobe-broke-100-percent-success-rate-on-purpose/</link>
+      <guid>https://autobe.dev/blog/autobe-broke-100-percent-success-rate-on-purpose/</guid>
+      <pubDate>Thu, 26 Feb 2026 00:00:00 GMT</pubDate>
+      <description>How we rebuilt AutoBE from a one-shot prototype builder to a modular development platform, recovering from 40% to near-100% compilation success through RAG optimization, weak-model testing, and type-driven validation.</description>
+    </item>
+    <item>
+      <title>[AutoBe] Achieved 100% compilation success of backend generation with \&quot;qwen3-next-80b-a3b\&quot;</title>
+      <link>https://autobe.dev/blog/autobe-100-percent-compilation-qwen3-next-80b/</link>
+      <guid>https://autobe.dev/blog/autobe-100-percent-compilation-qwen3-next-80b/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>AutoBE achieved 100% compilation success for backend applications using local AI models like qwen3-next-80b-a3b — a marked improvement from earlier attempts where most projects failed to build.</description>
+    </item>
+    <item>
+      <title>[AutoBe] Hardcore function calling benchmark in backend coding agent</title>
+      <link>https://autobe.dev/blog/autobe-hardcore-function-calling-benchmark/</link>
+      <guid>https://autobe.dev/blog/autobe-hardcore-function-calling-benchmark/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>AutoBE leverages LLM function calling throughout every phase rather than relying on plain text generation, including compiler AST structures with infinite depths — establishing the most extreme function calling benchmark ever.</description>
+    </item>
+    <item>
+      <title>[AutoBe] Built full-level backend applications with \&quot;qwen-next-80b-a3b\&quot; model</title>
+      <link>https://autobe.dev/blog/autobe-qwen-next-80b-a3b-backend-applications/</link>
+      <guid>https://autobe.dev/blog/autobe-qwen-next-80b-a3b-backend-applications/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>The AutoBE team has successfully tested the qwen3-next-80b-a3b-instruct model to generate three complete backend applications: To Do List, Reddit Community, and Economic Discussion Board.</description>
+    </item>
+    <item>
+      <title>Succeeded to build full-level backend application with \&quot;qwen3-235b-a22b\&quot; in AutoBE</title>
+      <link>https://autobe.dev/blog/autobe-qwen3-235b-full-level-backend/</link>
+      <guid>https://autobe.dev/blog/autobe-qwen3-235b-full-level-backend/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>AutoBE successfully generated a complete backend application without compilation errors using qwen3-235b-a22b model, consisting of 10 API functions and 37 DTO schemas.</description>
+    </item>
+    <item>
+      <title>[AutoBe] Qwen3-80B suddenly wrote doomsday AI mythology while generating a TODO app</title>
+      <link>https://autobe.dev/blog/autobe-qwen3-80b-doomsday-mythology-todo-app/</link>
+      <guid>https://autobe.dev/blog/autobe-qwen3-80b-doomsday-mythology-todo-app/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>During testing, the Qwen3-80B model unexpectedly generated approximately 3,000+ words of apocalyptic poetry instead of documentation while building a simple TODO application.</description>
+    </item>
+    <item>
+      <title>Built Reddit like community with AutoBe and AutoView (gpt-4.1-mini and qwen3-235b-a22b)</title>
+      <link>https://autobe.dev/blog/autobe-reddit-community-with-autoview/</link>
+      <guid>https://autobe.dev/blog/autobe-reddit-community-with-autoview/</guid>
+      <pubDate>Mon, 02 Feb 2026 00:00:00 GMT</pubDate>
+      <description>AutoBE demonstrated the ability to generate increasingly sophisticated backend applications beyond basic todo implementations using open-source and commercial AI models.</description>
+    </item>
+    <item>
+      <title>[AutoBE Hackathon] AI Chatbot generating Backend Application with AI Compilers ($6,400 Prize Pool)</title>
+      <link>https://autobe.dev/blog/autobe-hackathon-ai-chatbot-backend-generation/</link>
+      <guid>https://autobe.dev/blog/autobe-hackathon-ai-chatbot-backend-generation/</guid>
+      <pubDate>Fri, 05 Sep 2025 00:00:00 GMT</pubDate>
+      <description>Wrtn Technologies hosts the 1st AutoBE Hackathon — a coding competition focused on evaluating AI-generated backend applications with $6,400 in prizes.</description>
+    </item>
+    <item>
+      <title>[AutoBE] We made AI-friendly Compilers for Vibe Coding, achieving 100% build success</title>
+      <link>https://autobe.dev/blog/autobe-ai-friendly-compilers-for-vibe-coding/</link>
+      <guid>https://autobe.dev/blog/autobe-ai-friendly-compilers-for-vibe-coding/</guid>
+      <pubDate>Wed, 23 Jul 2025 00:00:00 GMT</pubDate>
+      <description>AutoBE employs a five-phase waterfall model with dedicated agents and specialized compilers — a Prisma compiler, OpenAPI validator, and TypeScript compiler — ensuring sequential quality assurance and 100% build success.</description>
+    </item>
+    <item>
+      <title>AutoBE, Backend No-Coding Agent Achieving 100% Compilation Success (Open Source)</title>
+      <link>https://autobe.dev/blog/autobe-backend-no-coding-agent-100-percent-compilation/</link>
+      <guid>https://autobe.dev/blog/autobe-backend-no-coding-agent-100-percent-compilation/</guid>
+      <pubDate>Sat, 12 Jul 2025 00:00:00 GMT</pubDate>
+      <description>AutoBE represents a revolutionary advancement in AI-assisted backend development. Rather than generating potentially flawed code snippets, AutoBE produces 100% working, production-ready backend applications through a compiler-driven approach.</description>
+    </item>
+  </channel>
+</rss>
