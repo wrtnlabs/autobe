@@ -1,5 +1,7 @@
+import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import Script from "next/script";
 import { Head } from "nextra/components";
+import { getPageMap } from "nextra/page-map";
 
 import "./global.css";
 
@@ -8,6 +10,14 @@ export const metadata = {
   // https://nextjs.org/docs/app/building-your-application/optimizing/metadata
 };
 
+const navbar = (
+  <Navbar
+    logo={<b>AutoBE</b>}
+    projectLink="https://github.com/wrtnlabs/autobe"
+  />
+);
+
+const footer = <Footer>Wrtn Technologies.</Footer>
 const description = "Backend Vibe Coding";
 
 export default async function RootLayout(props) {
@@ -88,7 +98,20 @@ export default async function RootLayout(props) {
         /> */}
       </Head>
       <body>
-        {props.children}
+        <Layout
+          navbar={navbar}
+          pageMap={await getPageMap()}
+          docsRepositoryBase="https://github.com/wrtnlabs/autobe/tree/main/website"
+          editLink="Edit this page on GitHub"
+          sidebar={{ autoCollapse: false }}
+          nextThemes={{
+            defaultTheme: "dark",
+          }}
+          darkMode={false}
+          footer={footer}
+        >
+          {props.children}
+        </Layout>
       </body>
     </html>
   );
