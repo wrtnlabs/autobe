@@ -1,6 +1,5 @@
 import { HttpRunner } from "./http-runner";
 import {
-  type ScenarioCategory,
   type ScenarioResult,
   fail,
   pass,

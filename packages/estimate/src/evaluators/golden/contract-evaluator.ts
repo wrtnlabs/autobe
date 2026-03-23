@@ -59,7 +59,7 @@ const RESPONSE_TIME_RATIO = 0.2; // reasonable response time
 // ── Max endpoints to test (cost/time guard) ─────────────────
 
 const MAX_ENDPOINTS = 80;
-const REQUEST_TIMEOUT_MS = 10000;
+const _REQUEST_TIMEOUT_MS = 10000;
 
 export class ContractEvaluator {
   readonly name = "ContractEvaluator";
