@@ -1,122 +1,71 @@
 "use client";
 
 import AutoBeLandingLimitCardMovie from "./AutoBeLandingLimitCardMovie";
+import FadeIn from "./FadeIn";
 
 const limitations = [
   {
-    bgColor: "bg-yellow-500/5",
-    borderColor: "border-yellow-600/30",
-    hoverBgColor: "bg-yellow-500/10",
-    hoverBorderColor: "border-yellow-600/40",
-    iconBgColor: "bg-yellow-500/20",
-    iconColor: "text-yellow-400",
-    icon: "⚡",
-    titleColor: "text-yellow-400",
-    title: "Runtime Optimization in Progress",
+    title: "Runtime",
     description:
-      "While we guarantee 100% compilation success, runtime behavior may need testing and refinement. Our v1.0 release (Q4 2025) targets 100% runtime success.",
-    footer: (
-      <div className="text-xs text-gray-500 font-mono bg-black/30 rounded p-2">
-        Current: 100% Compilation ✓<br />
-        Target: 100% Runtime Success
-      </div>
-    ),
+      "100% compilation guaranteed, runtime behavior is actively being improved.",
+    detail: "Target: 100% runtime success",
   },
   {
-    bgColor: "bg-blue-500/5",
-    borderColor: "border-blue-600/30",
-    hoverBgColor: "bg-blue-500/10",
-    hoverBorderColor: "border-blue-600/40",
-    iconBgColor: "bg-blue-500/20",
-    iconColor: "text-blue-400",
-    icon: "🪙",
-    titleColor: "text-blue-400",
-    title: "Token Consumption",
+    title: "Token Usage",
     description:
-      "Complex projects require significant AI tokens. We're implementing RAG optimization to reduce token usage by up to 70%.",
-    footer: (
-      <div className="text-xs text-gray-500 space-y-1">
-        <div className="flex justify-between">
-          <span>Simple Todo App:</span>
-          <span className="text-blue-400 font-mono">~4M tokens</span>
-        </div>
-        <div className="flex justify-between">
-          <span>E-Commerce Platform:</span>
-          <span className="text-blue-400 font-mono">~250M tokens</span>
-        </div>
-      </div>
-    ),
+      "Complex projects use significant tokens. RAG optimization coming soon.",
+    detail: "Todo ~4M · E-commerce ~250M",
   },
   {
-    bgColor: "bg-purple-500/5",
-    borderColor: "border-purple-600/30",
-    hoverBgColor: "bg-purple-500/10",
-    hoverBorderColor: "border-purple-600/40",
-    iconBgColor: "bg-purple-500/20",
-    iconColor: "text-purple-400",
-    icon: "🎨",
-    titleColor: "text-purple-400",
-    title: "Design Interpretation",
+    title: "Design Gap",
     description:
-      "AI-generated designs may differ from your vision. Always review the generated specifications before implementation.",
-    footer: (
-      <p className="text-xs text-gray-500 italic">
-        Tip: Provide detailed requirements for better results
-      </p>
-    ),
+      "AI output may differ from your vision. Review specs before implementation.",
+    detail: "Detailed requirements help",
   },
   {
-    bgColor: "bg-green-500/5",
-    borderColor: "border-green-600/30",
-    hoverBgColor: "bg-green-500/10",
-    hoverBorderColor: "border-green-600/40",
-    iconBgColor: "bg-green-500/20",
-    iconColor: "text-green-400",
-    icon: "🔧",
-    titleColor: "text-green-400",
-    title: "Post-Generation Maintenance",
+    title: "Maintenance",
     description:
-      "AutoBE focuses on initial generation. For ongoing maintenance, combine with AI coding assistants like Claude Code.",
-    footer: (
-      <p className="text-xs text-green-400/70 font-semibold">
-        AutoBE + Claude Code = Full Development Lifecycle
-      </p>
-    ),
+      "Focused on initial generation. Pair with AI coding assistants for upkeep.",
+    detail: "AutoBE + Claude Code",
   },
 ];
 
 export default function AutoBeLandingLimitMovie() {
   return (
-    <section className="py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold mb-6">Current Limitations</h2>
-          <p className="text-xl text-gray-300">
-            Transparent about what we're still working on
-          </p>
-        </div>
+    <section className="py-40 px-6 bg-neutral-950">
+      <div className="max-w-5xl mx-auto">
+        <FadeIn>
+          <div className="rounded-2xl border border-neutral-800/50 p-10 md:p-14">
+            <div className="flex flex-col md:flex-row md:items-start gap-10 md:gap-16">
+              {/* Label */}
+              <div className="md:w-48 shrink-0">
+                <p className="text-xs font-medium tracking-[0.3em] uppercase text-neutral-600 mb-3">
+                  Transparency
+                </p>
+                <h2 className="text-2xl font-bold text-white tracking-tight leading-tight">
+                  Known
+                  <br />
+                  limitations
+                </h2>
+                <a
+                  href="https://autobe.dev/docs/roadmap/alpha"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-6 text-xs text-neutral-600 hover:text-white transition-colors duration-200"
+                >
+                  View Roadmap →
+                </a>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {limitations.map((limitation, index) => (
-            <AutoBeLandingLimitCardMovie key={index} {...limitation} />
-          ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-gray-400 mb-6">
-            Despite these limitations, AutoBE significantly accelerates backend
-            development
-          </p>
-          <a
-            href="https://autobe.dev/docs/roadmap/v1.0"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-gray-600 text-white rounded-full hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300"
-          >
-            View Our Roadmap
-            <span className="ml-2">→</span>
-          </a>
-        </div>
+              {/* Items */}
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {limitations.map((limitation, index) => (
+                  <AutoBeLandingLimitCardMovie key={index} {...limitation} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );

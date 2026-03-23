@@ -1,58 +1,35 @@
 "use client";
 
 interface FeatureCardProps {
-  gradientFrom: string;
-  gradientTo: string;
-  hoverFrom: string;
-  hoverTo: string;
-  shadowColor: string;
-  iconBg: string;
-  iconColor: string;
-  icon: string;
+  num: string;
   title: string;
   subtitle: string;
   description: string;
-  footerColor: string;
   footer: string;
+  span?: boolean;
 }
 
 export default function AutoBeLandingStrengthCardMovie({
-  gradientFrom,
-  gradientTo,
-  hoverFrom,
-  hoverTo,
-  shadowColor,
-  iconBg,
-  iconColor,
-  icon,
+  num,
   title,
   subtitle,
   description,
-  footerColor,
   footer,
+  span,
 }: FeatureCardProps) {
   return (
-    <div 
-      className="border border-gray-600/30 rounded-2xl p-8 transition-all duration-300 hover:border-gray-500/50 hover:scale-[1.02]"
-      style={{
-        background: `linear-gradient(to bottom right, ${gradientFrom}, ${gradientTo})`,
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = `linear-gradient(to bottom right, ${hoverFrom}, ${hoverTo})`;
-        e.currentTarget.style.boxShadow = `0 20px 25px -5px ${shadowColor}40, 0 10px 10px -5px ${shadowColor}20`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = `linear-gradient(to bottom right, ${gradientFrom}, ${gradientTo})`;
-        e.currentTarget.style.boxShadow = '';
-      }}
+    <div
+      className={`group rounded-2xl border border-neutral-800/50 transition-all duration-300 hover:border-neutral-700/60 p-8 ${
+        span ? "lg:col-span-2" : ""
+      }`}
     >
-      <div className={`w-16 h-16 ${iconBg} rounded-full flex items-center justify-center mb-6`}>
-        <div className={`${iconColor} text-2xl`}>{icon}</div>
-      </div>
-      <h3 className="text-2xl font-bold mb-4">{title}</h3>
-      <p className="text-gray-300 mb-4">{subtitle}</p>
-      <p className="text-gray-400 text-sm mb-4">{description}</p>
-      <p className={`${footerColor} text-sm font-semibold`}>{footer}</p>
+      <div className="text-[10px] font-mono text-neutral-700 mb-4">{num}</div>
+      <h3 className="text-base font-semibold mb-2 text-white">{title}</h3>
+      <p className="text-xs text-neutral-400 mb-3">{subtitle}</p>
+      <p className="text-xs text-neutral-500 leading-relaxed mb-5">
+        {description}
+      </p>
+      <p className="text-[11px] text-neutral-700 font-mono">{footer}</p>
     </div>
   );
 }
