@@ -76,7 +76,7 @@ export function createProgram(): Command {
     .option("--golden", "Run Golden Set evaluation", false)
     .option(
       "--project <project>",
-      "Project type for Golden Set (todo|bbs|reddit|shopping|gauzy)",
+      "Project type for Golden Set (todo|bbs|reddit|shopping|erp|gauzy)",
     )
     .action(async (options) => {
       await runCLI(options);
@@ -312,19 +312,39 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   let adjustedScore = result.totalScore;
   let agentAvg = 0;
   if (agentResults.length > 0 && result.phases.gate.passed) {
-    const scoredForScore = agentResults.filter((r) => r.agent in AGENT_WEIGHTS);
-    agentAvg = scoredForScore.reduce(
-      (sum, r) => sum + r.score * AGENT_WEIGHTS[r.agent],
-      0,
+    // Exclude failed agents (score < 0) and re-normalize weights
+    const successAgents = agentResults.filter(
+      (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
     );
+    if (successAgents.length > 0) {
+      const weightSum = successAgents.reduce(
+        (sum, r) => sum + AGENT_WEIGHTS[r.agent],
+        0,
+      );
+      agentAvg = successAgents.reduce(
+        (sum, r) => sum + r.score * (AGENT_WEIGHTS[r.agent] / weightSum),
+        0,
+      );
 
-    const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
-    const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
-    adjustedScore = Math.round(phasesPortion + agentPortion);
+      const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
+      const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
+      adjustedScore = Math.round(phasesPortion + agentPortion);
 
-    // Two-tier agent cap
-    if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
-    else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
+      // Two-tier agent cap (only when ALL agents succeeded — API failures excluded)
+      const allWeightedAgents = agentResults.filter(
+        (r) => r.agent in AGENT_WEIGHTS,
+      );
+      const failedAgents = allWeightedAgents.filter((r) => r.score < 0);
+      if (failedAgents.length === 0) {
+        if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
+        else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
+      } else {
+        console.log(
+          `  ⚠ ${failedAgents.length} agent(s) failed (API error) — two-tier cap skipped`,
+        );
+      }
+    }
+    // If all agents failed, adjustedScore stays as phase-only score
   }
 
   const scoreBreakdown: ScoreBreakdown = {
@@ -404,7 +424,7 @@ interface BatchTarget {
   inputPath: string;
 }
 
-const VALID_PROJECTS = new Set(["todo", "bbs", "reddit", "shopping", "gauzy"]);
+const VALID_PROJECTS = new Set(["todo", "bbs", "reddit", "shopping", "erp", "gauzy"]);
 
 function discoverTargets(examplesDir: string): BatchTarget[] {
   const targets: BatchTarget[] = [];

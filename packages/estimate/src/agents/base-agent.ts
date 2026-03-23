@@ -67,39 +67,62 @@ export abstract class BaseAgent {
   protected async chatWithRetry(
     systemPrompt: string,
     userPrompt: string,
-    maxRetries: number = 2,
+    maxRetries: number = 3,
   ): Promise<AgentChunkResult> {
     let lastError: string = "";
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         const response = await this.client.chat(systemPrompt, userPrompt);
+
+        // Detect empty/terminated responses from provider
+        if (!response.content || response.content.trim().length === 0) {
+          lastError = "Empty response (possibly terminated by provider)";
+          if (attempt < maxRetries) {
+            const delay = Math.min(30_000, 3_000 * Math.pow(2, attempt));
+            console.log(
+              `  ↻ ${this.name} retry ${attempt + 1}/${maxRetries} (${lastError}, backoff ${Math.round(delay / 1000)}s)`,
+            );
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+          break;
+        }
+
         const parsed = this.parseResponse(response.content);
-        if (
-          parsed.summary === "Failed to parse agent response" &&
-          attempt < maxRetries
-        ) {
-          lastError = "JSON parse failed";
-          console.log(
-            `  ↻ ${this.name} retry ${attempt + 1}/${maxRetries} (${lastError})`,
-          );
-          continue;
+        if (parsed.summary === "Failed to parse agent response") {
+          if (attempt < maxRetries) {
+            lastError = "JSON parse failed";
+            const delay = Math.min(30_000, 3_000 * Math.pow(2, attempt));
+            console.log(
+              `  ↻ ${this.name} retry ${attempt + 1}/${maxRetries} (${lastError}, backoff ${Math.round(delay / 1000)}s)`,
+            );
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+          lastError = "JSON parse failed on final attempt";
+          break;
         }
         return { parsed, tokensUsed: response.tokensUsed };
       } catch (error) {
         lastError = error instanceof Error ? error.message : "Unknown error";
         if (attempt < maxRetries) {
+          const delay = Math.min(30_000, 3_000 * Math.pow(2, attempt));
           console.log(
-            `  ↻ ${this.name} retry ${attempt + 1}/${maxRetries} (${lastError})`,
+            `  ↻ ${this.name} retry ${attempt + 1}/${maxRetries} (${lastError}, backoff ${Math.round(delay / 1000)}s)`,
           );
+          await new Promise((r) => setTimeout(r, delay));
           continue;
         }
       }
     }
+    console.log(
+      `  ✗ ${this.name}: ${lastError} — marking as API failure (score -1)`,
+    );
     return {
       parsed: {
         issues: [],
-        score: 0,
-        summary: `Failed after ${maxRetries + 1} attempts: ${lastError}`,
+        score: -1,
+        summary: `API failure after ${maxRetries + 1} attempts: ${lastError}`,
       },
     };
   }
@@ -163,11 +186,16 @@ export abstract class BaseAgent {
 
     const deepEvalSamples: DeepEvalScores[] = [];
 
+    let failedChunks = 0;
     for (const { parsed, tokensUsed } of chunkResults) {
-      allIssues.push(...parsed.issues);
-      scores.push(parsed.score);
+      if (parsed.score < 0) {
+        failedChunks++;
+      } else {
+        allIssues.push(...parsed.issues);
+        scores.push(parsed.score);
+        if (parsed.deepEvalScores) deepEvalSamples.push(parsed.deepEvalScores);
+      }
       summaries.push(parsed.summary);
-      if (parsed.deepEvalScores) deepEvalSamples.push(parsed.deepEvalScores);
 
       if (tokensUsed) {
         totalInput += tokensUsed.input;
@@ -180,7 +208,44 @@ export abstract class BaseAgent {
     // Deduplicate issues by similarity
     const uniqueIssues = this.deduplicateIssues(allIssues);
 
-    // Average scores, merge issues, combine summaries
+    // If all chunks failed, mark entire agent as failed
+    if (scores.length === 0) {
+      return {
+        parsed: {
+          issues: [],
+          score: -1,
+          summary: `All ${failedChunks} chunks failed due to API errors`,
+        },
+        tokensUsed: {
+          input: totalInput,
+          output: totalOutput,
+          inputCost: totalInputCost || undefined,
+          outputCost: totalOutputCost || undefined,
+        },
+      };
+    }
+
+    // If >50% chunks failed, mark as failed — too unreliable for scoring
+    if (failedChunks > 0 && failedChunks / chunks.length > 0.5) {
+      console.log(
+        `  ⚠ ${this.name}: ${failedChunks}/${chunks.length} chunks failed — marking agent as unreliable`,
+      );
+      return {
+        parsed: {
+          issues: uniqueIssues,
+          score: -1,
+          summary: `${failedChunks}/${chunks.length} chunks failed due to API errors`,
+        },
+        tokensUsed: {
+          input: totalInput,
+          output: totalOutput,
+          inputCost: totalInputCost || undefined,
+          outputCost: totalOutputCost || undefined,
+        },
+      };
+    }
+
+    // Average only successful chunk scores
     const avgScore = Math.round(
       scores.reduce((a, b) => a + b, 0) / scores.length,
     );

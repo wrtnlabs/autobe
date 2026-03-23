@@ -78,7 +78,7 @@ echo "Scanning: $EXAMPLES_DIR"
 
 # ── Discover targets ──────────────────────────────────────
 
-VALID_PROJECTS="todo bbs reddit shopping"
+VALID_PROJECTS="todo bbs reddit shopping erp gauzy"
 TARGETS=()
 MODELS_FOUND=()
 
@@ -163,12 +163,16 @@ for entry in "${TARGETS[@]}"; do
     ARGS="$ARGS --use-agent --run-tests --golden"
   fi
 
-  if node "$ESTIMATE_DIR/dist/bin/estimate.js" $ARGS 2>&1 | tail -3; then
+  LOG_FILE=$(mktemp)
+  if node -r ts-node/register "$ESTIMATE_DIR/dist/bin/estimate.js" $ARGS > "$LOG_FILE" 2>&1; then
+    tail -5 "$LOG_FILE"
     PASSED=$((PASSED + 1))
   else
+    tail -10 "$LOG_FILE"
     echo "  ERROR: evaluation failed"
     FAILED=$((FAILED + 1))
   fi
+  rm -f "$LOG_FILE"
 
   echo "────────────────────────────────────────"
 done
@@ -192,7 +196,7 @@ read_score() {
 
 # Collect all projects that exist
 ALL_PROJECTS=()
-for p_name in todo bbs reddit shopping; do
+for p_name in todo bbs reddit shopping erp gauzy; do
   for m in "${MODELS_FOUND[@]}"; do
     if [ -f "$ESTIMATE_DIR/reports/benchmark/$m/$p_name/estimate-report.json" ]; then
       if ! printf '%s\n' "${ALL_PROJECTS[@]}" | grep -qx "$p_name"; then
