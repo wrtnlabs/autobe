@@ -290,11 +290,20 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Record agent results to Langfuse trace
     const trace = getActiveTrace();
     if (trace && agentResults.length > 0) {
-      const scoredAgents = agentResults.filter((r) => r.agent in AGENT_WEIGHTS);
-      const agentAvgForTrace = scoredAgents.reduce(
-        (sum, r) => sum + r.score * AGENT_WEIGHTS[r.agent],
-        0,
+      const successForTrace = agentResults.filter(
+        (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
       );
+      let agentAvgForTrace = 0;
+      if (successForTrace.length > 0) {
+        const wSum = successForTrace.reduce(
+          (sum, r) => sum + AGENT_WEIGHTS[r.agent],
+          0,
+        );
+        agentAvgForTrace = successForTrace.reduce(
+          (sum, r) => sum + r.score * (AGENT_WEIGHTS[r.agent] / wSum),
+          0,
+        );
+      }
       const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
       const agentPortion = agentAvgForTrace * AGENT_WEIGHT_RATIO;
       recordAgentResults(
@@ -424,7 +433,14 @@ interface BatchTarget {
   inputPath: string;
 }
 
-const VALID_PROJECTS = new Set(["todo", "bbs", "reddit", "shopping", "erp", "gauzy"]);
+const VALID_PROJECTS = new Set([
+  "todo",
+  "bbs",
+  "reddit",
+  "shopping",
+  "erp",
+  "gauzy",
+]);
 
 function discoverTargets(examplesDir: string): BatchTarget[] {
   const targets: BatchTarget[] = [];
@@ -593,7 +609,10 @@ async function runBatch(options: BatchCommandOptions): Promise<void> {
   if (fullResults.length >= 3) {
     const correlationReport = generateCorrelationReport(fullResults);
     const correlationMd = formatCorrelationMarkdown(correlationReport);
-    const correlationPath = path.resolve(options.output, "correlation-report.md");
+    const correlationPath = path.resolve(
+      options.output,
+      "correlation-report.md",
+    );
     const correlationJsonPath = path.resolve(
       options.output,
       "correlation-report.json",
@@ -866,9 +885,15 @@ function printResults(result: EvaluationResult): void {
     const pm = result.performanceMetrics;
     console.log("📏 Performance Metrics:");
     console.log("─────────────────────────────────────────");
-    console.log(`   Code Size:     ${pm.totalSizeKB} KB (${pm.totalLines} lines)`);
-    console.log(`   Files:         ${pm.totalFiles} (avg ${pm.avgLinesPerFile} lines/file)`);
-    console.log(`   Largest:       ${pm.largestFile} (${pm.largestFileSizeKB} KB)`);
+    console.log(
+      `   Code Size:     ${pm.totalSizeKB} KB (${pm.totalLines} lines)`,
+    );
+    console.log(
+      `   Files:         ${pm.totalFiles} (avg ${pm.avgLinesPerFile} lines/file)`,
+    );
+    console.log(
+      `   Largest:       ${pm.largestFile} (${pm.largestFileSizeKB} KB)`,
+    );
     console.log(
       `   Breakdown:     ${pm.controllers} ctrl, ${pm.providers} prov, ${pm.structures} struct, ${pm.tests} test`,
     );
