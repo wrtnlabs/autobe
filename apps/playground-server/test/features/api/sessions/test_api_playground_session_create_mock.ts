@@ -52,21 +52,13 @@ export const test_api_playground_session_create_mock = async (
 
   // Verify session was created with proper mock metadata
   TestValidator.predicate("id exists", () => session.id.length > 0);
-  TestValidator.equals(
-    "title",
-    session.title,
-    `[Mock] ${model} / ${project}`,
-  );
+  TestValidator.equals("title", session.title, `[Mock] ${model} / ${project}`);
   TestValidator.equals(
     "model encodes vendor#project",
     session.model,
     `${model}#${project}`,
   );
-  TestValidator.equals(
-    "vendor name",
-    session.vendor.name,
-    `virtual: ${model}`,
-  );
+  TestValidator.equals("vendor name", session.vendor.name, `virtual: ${model}`);
 
   // Verify hardcoded defaults for mock sessions
   TestValidator.equals("locale", session.locale, "en");

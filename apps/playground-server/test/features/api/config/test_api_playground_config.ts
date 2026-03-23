@@ -16,11 +16,7 @@ export const test_api_playground_config = async (
     initial.default_vendor_id,
     null,
   );
-  TestValidator.equals(
-    "default_model is null",
-    initial.default_model,
-    null,
-  );
+  TestValidator.equals("default_model is null", initial.default_model, null);
 
   // 2. PUT partial update — only locale
   const afterLocale: IAutoBePlaygroundConfig =
@@ -29,11 +25,7 @@ export const test_api_playground_config = async (
     });
 
   TestValidator.equals("locale updated", afterLocale.locale, "ko-KR");
-  TestValidator.equals(
-    "timezone unchanged",
-    afterLocale.timezone,
-    "UTC",
-  );
+  TestValidator.equals("timezone unchanged", afterLocale.timezone, "UTC");
   TestValidator.equals(
     "default_vendor_id still null",
     afterLocale.default_vendor_id,
@@ -51,11 +43,7 @@ export const test_api_playground_config = async (
       timezone: "Asia/Seoul",
     });
 
-  TestValidator.equals(
-    "locale persisted",
-    afterTimezone.locale,
-    "ko-KR",
-  );
+  TestValidator.equals("locale persisted", afterTimezone.locale, "ko-KR");
   TestValidator.equals(
     "timezone updated",
     afterTimezone.timezone,
@@ -105,11 +93,7 @@ export const test_api_playground_config = async (
     afterClear.default_vendor_id,
     null,
   );
-  TestValidator.equals(
-    "default_model cleared",
-    afterClear.default_model,
-    null,
-  );
+  TestValidator.equals("default_model cleared", afterClear.default_model, null);
 
   // 7. Restore defaults for other tests
   await pApi.functional.autobe.playground.config.update(connection, {

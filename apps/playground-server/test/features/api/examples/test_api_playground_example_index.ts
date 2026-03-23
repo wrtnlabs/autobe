@@ -9,10 +9,7 @@ export const test_api_playground_example_index = async (
     await pApi.functional.autobe.playground.examples.index(connection);
 
   // Must have at least one benchmark available
-  TestValidator.predicate(
-    "has benchmarks",
-    () => benchmarks.length > 0,
-  );
+  TestValidator.predicate("has benchmarks", () => benchmarks.length > 0);
 
   // Each benchmark must have valid structure
   for (const benchmark of benchmarks) {
@@ -20,10 +17,7 @@ export const test_api_playground_example_index = async (
       "vendor is non-empty",
       () => benchmark.vendor.length > 0,
     );
-    TestValidator.predicate(
-      "has replays",
-      () => benchmark.replays.length > 0,
-    );
+    TestValidator.predicate("has replays", () => benchmark.replays.length > 0);
     for (const replay of benchmark.replays) {
       TestValidator.predicate(
         "replay vendor matches",
@@ -39,5 +33,9 @@ export const test_api_playground_example_index = async (
   // Verify no duplicate vendors
   const vendors = benchmarks.map((b) => b.vendor);
   const uniqueVendors = new Set(vendors);
-  TestValidator.equals("no duplicate vendors", vendors.length, uniqueVendors.size);
+  TestValidator.equals(
+    "no duplicate vendors",
+    vendors.length,
+    uniqueVendors.size,
+  );
 };

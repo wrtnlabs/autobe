@@ -16,9 +16,7 @@ import { getConnection } from "../utils/connection";
  * Write operations (appendHistory, appendEvent, setTokenUsage) are no-ops
  * because the WebSocket acceptor already persists these server-side.
  */
-export class AutoBeAgentSessionStorageServerStrategy
-  implements IAutoBeAgentSessionStorageStrategy
-{
+export class AutoBeAgentSessionStorageServerStrategy implements IAutoBeAgentSessionStorageStrategy {
   // Server already persists histories via WebSocket acceptor — no-op
   async appendHistory(): Promise<void> {}
 
@@ -59,9 +57,7 @@ export class AutoBeAgentSessionStorageServerStrategy
     }
   }
 
-  async deleteSession(
-    props: Pick<IAutoBeAgentSession, "id">,
-  ): Promise<void> {
+  async deleteSession(props: Pick<IAutoBeAgentSession, "id">): Promise<void> {
     await pApi.functional.autobe.playground.sessions.erase(
       getConnection(),
       props.id as string & tags.Format<"uuid">,
@@ -93,9 +89,7 @@ function transformSummary(
   };
 }
 
-function transformSession(
-  s: IAutoBePlaygroundSession,
-): IAutoBeAgentSession {
+function transformSession(s: IAutoBePlaygroundSession): IAutoBeAgentSession {
   return {
     id: s.id,
     title: s.title ?? s.model,

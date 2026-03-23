@@ -97,18 +97,18 @@ export namespace IAutoBePlaygroundSession {
   /**
    * Properties for creating a new vibe coding session.
    *
-   * Accepts either real session properties (with vendor_id and model)
-   * or mock session properties (with mock vendor/project from example
-   * storage). When mock is provided, a virtual vendor is auto-created
-   * and the session uses {@link AutoBeMockAgent} on connect.
+   * Accepts either real session properties (with vendor_id and model) or mock
+   * session properties (with mock vendor/project from example storage). When
+   * mock is provided, a virtual vendor is auto-created and the session uses
+   * {@link AutoBeMockAgent} on connect.
    */
   export type ICreate = ICreate.IProps | ICreate.IMock;
   export namespace ICreate {
     /**
      * Create a real session bound to a stored vendor configuration.
      *
-     * The vendor's decrypted API key will be used when establishing the
-     * AI agent connection.
+     * The vendor's decrypted API key will be used when establishing the AI
+     * agent connection.
      */
     export interface IProps {
       /** ID of the stored vendor configuration to use. */
@@ -144,9 +144,9 @@ export namespace IAutoBePlaygroundSession {
      * Create a mock session from pre-recorded example data.
      *
      * A virtual vendor is auto-created with a sentinel API key. When the
-     * frontend connects via WebSocket, the server detects the virtual
-     * vendor and creates an {@link AutoBeMockAgent} that replays events
-     * with realistic timing.
+     * frontend connects via WebSocket, the server detects the virtual vendor
+     * and creates an {@link AutoBeMockAgent} that replays events with realistic
+     * timing.
      */
     export interface IMock {
       /** Mock configuration from example data. */
@@ -154,8 +154,8 @@ export namespace IAutoBePlaygroundSession {
         /**
          * Example vendor/model slug.
          *
-         * Corresponds to a directory name under `autobe-examples/raw/`,
-         * e.g. `"openai/gpt-4.1"`, `"anthropic/claude-sonnet-4-20250514"`.
+         * Corresponds to a directory name under `autobe-examples/raw/`, e.g.
+         * `"openai/gpt-4.1"`, `"anthropic/claude-sonnet-4-20250514"`.
          */
         vendor: string;
 

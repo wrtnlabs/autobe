@@ -38,15 +38,14 @@ export const test_api_playground_example_replay = async (
       };
 
   // Connect to example replay
-  const { connector } =
-    await pApi.functional.autobe.playground.examples.replay(
-      connection,
-      {
-        vendor: example.vendor,
-        project: example.project,
-      },
-      listener,
-    );
+  const { connector } = await pApi.functional.autobe.playground.examples.replay(
+    connection,
+    {
+      vendor: example.vendor,
+      project: example.project,
+    },
+    listener,
+  );
 
   // Wait for events to stop arriving (convergence)
   let length: number = 0;
@@ -58,16 +57,19 @@ export const test_api_playground_example_replay = async (
 
   try {
     // Replay must have sent events
-    TestValidator.predicate(
-      "received events",
-      () => eventList.length > 0,
-    );
+    TestValidator.predicate("received events", () => eventList.length > 0);
 
     // Replay must send enable(false) — read-only mode
     TestValidator.equals("enabled", enabled.value, false);
 
     // Validate that each available phase has a complete event
-    const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
+    const PHASES = [
+      "analyze",
+      "database",
+      "interface",
+      "test",
+      "realize",
+    ] as const;
     for (const phase of PHASES) {
       if (example[phase] === null) continue;
       TestValidator.predicate(`${phase}Complete event`, () =>

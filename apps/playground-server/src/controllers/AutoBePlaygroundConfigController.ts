@@ -24,8 +24,8 @@ export class AutoBePlaygroundConfigController {
   /**
    * Update the global playground configuration.
    *
-   * Only provided fields are updated. Omitted fields retain their
-   * current values.
+   * Only provided fields are updated. Omitted fields retain their current
+   * values.
    *
    * @author Samchon
    * @param body Fields to update

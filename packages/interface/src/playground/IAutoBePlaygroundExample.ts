@@ -1,12 +1,12 @@
-import { AutoBeExampleProject } from "../typings/AutoBeExampleProject";
 import { AutoBePhase } from "../histories";
+import { AutoBeExampleProject } from "../typings/AutoBeExampleProject";
 
 /**
- * Interface representing an available example from the benchmark
- * example storage.
+ * Interface representing an available example from the benchmark example
+ * storage.
  *
- * Used to list available vendor/project/phase combinations for
- * mock session creation and direct replay.
+ * Used to list available vendor/project/phase combinations for mock session
+ * creation and direct replay.
  *
  * @author Samchon
  */

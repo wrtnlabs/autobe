@@ -20,8 +20,8 @@ export namespace AutoBePlaygroundSessionProvider {
   /**
    * Sentinel API key used to identify virtual/mock vendor sessions.
    *
-   * When the socket acceptor detects this API key during the connect flow,
-   * it creates an `AutoBeMockAgent` instead of a real `AutoBeAgent`.
+   * When the socket acceptor detects this API key during the connect flow, it
+   * creates an `AutoBeMockAgent` instead of a real `AutoBeAgent`.
    */
   export const VIRTUAL_API_KEY = "virtual-seed-no-api-key";
 

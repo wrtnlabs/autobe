@@ -6,8 +6,10 @@ const SINGLETON_ID = "00000000-0000-0000-0000-000000000000";
 
 export namespace AutoBePlaygroundConfigProvider {
   export const get = async (): Promise<IAutoBePlaygroundConfig> => {
-    const record = await AutoBePlaygroundGlobal.prisma.autobe_playground_configs
-      .findFirst({ where: { id: SINGLETON_ID } });
+    const record =
+      await AutoBePlaygroundGlobal.prisma.autobe_playground_configs.findFirst({
+        where: { id: SINGLETON_ID },
+      });
     if (record === null) return seed();
     return transform(record);
   };

@@ -362,9 +362,7 @@ export class AutoBeListener {
     setTimeout(() => {
       this.dispatchScheduled_ = false;
       const snapshot = this.events_.toJSON();
-      this.callback_.forEach((callback) =>
-        callback(snapshot).catch(() => {}),
-      );
+      this.callback_.forEach((callback) => callback(snapshot).catch(() => {}));
     }, 0);
   }
 }

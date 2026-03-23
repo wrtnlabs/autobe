@@ -17,8 +17,8 @@ export class AutoBePlaygroundExampleController {
    * List all available examples from benchmark storage.
    *
    * Returns vendor-grouped benchmark data sourced from the pre-computed
-   * `benchmark.json`. Each entry contains a vendor identifier, emoji,
-   * score, and its replay summaries.
+   * `benchmark.json`. Each entry contains a vendor identifier, emoji, score,
+   * and its replay summaries.
    *
    * @author Samchon
    * @returns List of benchmarks grouped by vendor

@@ -100,7 +100,10 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
 
     // Enable input — let the client drive via AutoBeMockAgent.conversate()
     await sleep_for(100);
-    void props.acceptor.getDriver().enable(true).catch(() => {});
+    void props.acceptor
+      .getDriver()
+      .enable(true)
+      .catch(() => {});
     await props.acceptor.join();
   };
 
@@ -317,15 +320,17 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
   /**
    * Build an {@link IAutoBePlaygroundReplay} from example storage.
    *
-   * The model field of mock sessions encodes both vendor slug and project
-   * as `"vendor/model#project"` (e.g. `"openai/gpt-4.1#bbs"`).
+   * The model field of mock sessions encodes both vendor slug and project as
+   * `"vendor/model#project"` (e.g. `"openai/gpt-4.1#bbs"`).
    */
   const buildReplayFromExamples = async (
     session: IAutoBePlaygroundSession.ISummary,
   ): Promise<IAutoBePlaygroundReplay> => {
     const separatorIndex = session.model.lastIndexOf("#");
     const vendor: string =
-      separatorIndex >= 0 ? session.model.slice(0, separatorIndex) : session.model;
+      separatorIndex >= 0
+        ? session.model.slice(0, separatorIndex)
+        : session.model;
     const project = (
       separatorIndex >= 0 ? session.model.slice(separatorIndex + 1) : ""
     ) as AutoBeExampleProject;
