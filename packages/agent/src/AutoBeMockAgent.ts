@@ -116,10 +116,9 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         });
         return;
       }
-      // Find the nearest user message that led into this phase.
-      // There may be assistant messages between the user request and the
-      // resulting phase history, so we search backwards instead of assuming
-      // the immediately previous entry is always a user message.
+      // Find the nearest user message that led into this phase for history
+      // tracking. There may be assistant messages between the user request
+      // and the resulting phase history, so we search backwards.
       const phaseIndex = this.props_.replay.histories.findIndex(
         (h) => h.type === type,
       );
@@ -130,18 +129,7 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
               .reverse()
               .find((h) => h.type === "userMessage")
           : undefined;
-      if (originalUserMessage?.type === "userMessage")
-        void this.dispatch(originalUserMessage).catch(() => {});
       for (const s of snapshots) {
-        // Skip conversation events — userMessage is dispatched above from
-        // the original replay history, and assistantMessage is not needed
-        // during phase snapshot playback.
-        if (
-          s.event.type === "userMessage" ||
-          s.event.type === "assistantMessage"
-        )
-          continue;
-
         const time: number =
           this.props_.delay?.(s.event.type) ?? sleepMap[s.event.type] ?? 500;
         await sleep_for(randint(time * 0.2, time * 1.8));
