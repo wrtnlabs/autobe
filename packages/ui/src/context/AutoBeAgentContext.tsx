@@ -144,9 +144,19 @@ export function AutoBeAgentProvider({
   }, []);
 
   useEffect(() => {
+    // Close existing connection when switching sessions
+    const prev = serviceInstanceRef.current;
+    if (prev) {
+      void Promise.resolve(prev.close()).catch(() => {});
+      serviceInstanceRef.current = null;
+      setConnectionStatus("disconnected");
+    }
+
+    // Clear stale events immediately
+    setEventGroups([]);
+    setTokenUsage(null);
+
     if (activeConversationId === null) {
-      setEventGroups([]);
-      setTokenUsage(null);
       return;
     }
 

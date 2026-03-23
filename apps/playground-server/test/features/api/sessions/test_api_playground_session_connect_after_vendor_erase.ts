@@ -4,7 +4,7 @@ import {
   IAutoBeRpcListener,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { TestValidator } from "@nestia/e2e";
+import { RandomGenerator, TestValidator } from "@nestia/e2e";
 import { IPointer, sleep_for } from "tstl";
 import { v7 } from "uuid";
 
@@ -13,12 +13,11 @@ import { AutoBePlaygroundGlobal } from "../../../../src/AutoBePlaygroundGlobal";
 export const test_api_playground_session_connect_after_vendor_erase = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
-  // Create a dedicated vendor with garbage API key
   const vendor: IAutoBePlaygroundVendor =
     await pApi.functional.autobe.playground.vendors.create(connection, {
-      name: "Vendor To Delete",
-      apiKey: "garbage-api-key-value-not-real",
-      baseURL: "http://localhost:9999",
+      name: RandomGenerator.name(),
+      apiKey: RandomGenerator.alphaNumeric(32),
+      baseURL: "http://localhost:1234",
       semaphore: 16,
     });
 
@@ -26,7 +25,7 @@ export const test_api_playground_session_connect_after_vendor_erase = async (
   const session: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
       vendor_id: vendor.id,
-      model: "dummy/garbage-model",
+      model: "qwen3.5-35b-a3b",
       locale: "en-US",
       timezone: "Asia/Seoul",
       title: "Vendor Deletion Test",

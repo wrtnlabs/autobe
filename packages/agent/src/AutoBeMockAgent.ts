@@ -135,7 +135,9 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
           s.event.type === "assistantMessage"
         )
           continue;
-        const time: number = sleepMap[s.event.type] ?? 500;
+
+        const time: number =
+          this.props_.delay?.(s.event.type) ?? sleepMap[s.event.type] ?? 500;
         await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
@@ -204,6 +206,7 @@ export namespace AutoBeMockAgent {
       listener: IAutoBeCompilerListener,
     ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
     replay: IAutoBePlaygroundReplay;
+    delay?: ((type: AutoBeEvent.Type) => number | undefined) | undefined;
   }
 }
 

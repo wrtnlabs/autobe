@@ -121,7 +121,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
           <Alert severity="error" icon={<ErrorOutline />}>
             <AlertTitle>Invalid Parameters</AlertTitle>
             Missing required URL parameters. Provide either session-id or
-            example-vendor + example-project.
+            vendor + project.
           </Alert>
         </Container>
       </Box>
@@ -135,6 +135,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
         title={next.title}
         serviceFactory={next.serviceFactory}
         isUnusedConfig={true}
+        isReplay={true}
         hideSidebar={true}
         storageStrategyFactory={next.storageStrategyFactory}
       />
@@ -343,9 +344,9 @@ const getReplayParams = (): ReplayParams | null => {
 
   // Check example params first — SearchParamsProvider may inject a
   // session-id into the URL after the initial connection, so on refresh
-  // we must prefer the original example-vendor/project params.
-  const vendor = query.get("example-vendor");
-  const project = query.get("example-project");
+  // we must prefer the original vendor/project params.
+  const vendor = query.get("vendor");
+  const project = query.get("project");
   if (vendor && project) return { type: "example", vendor, project };
 
   const sessionId = query.get("session-id");

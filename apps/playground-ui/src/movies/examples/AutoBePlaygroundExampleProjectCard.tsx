@@ -33,7 +33,7 @@ export function AutoBePlaygroundExampleProjectCard(
     100
   ).toFixed(2);
 
-  const replayUrl = `/replay/get?example-vendor=${encodeURIComponent(replay.vendor)}&example-project=${encodeURIComponent(replay.project)}`;
+  const replayUrl = `/replay/get?vendor=${encodeURIComponent(replay.vendor)}&project=${encodeURIComponent(replay.project)}`;
 
   return (
     <Card

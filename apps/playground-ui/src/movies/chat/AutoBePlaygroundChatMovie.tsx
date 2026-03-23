@@ -4,7 +4,6 @@ import {
   AutoBeChatMain,
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
-  IConfigField,
   SearchParamsProvider,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
@@ -12,6 +11,7 @@ import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
 import { AutoBePlaygroundSidebar } from "./AutoBePlaygroundSidebar";
+import { VendorModelSelector } from "./VendorModelSelector";
 
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
@@ -82,12 +82,24 @@ export function AutoBePlaygroundChatMovie(
                   />
                 )}
                 <AutoBeChatMain
-                  isUnusedConfig={props.isUnusedConfig ?? false}
+                  isUnusedConfig={true}
                   isReplay={props.isReplay}
                   isMobile={isMobile}
                   setError={setError}
-                  configFields={PLAYGROUND_CONFIG_FIELDS}
-                  requiredFields={["vendorName"]}
+                  disconnectedContent={
+                    !props.isReplay ? (
+                      <VendorModelSelector
+                        selectedVendorId={props.selectedVendorId ?? null}
+                        selectedModel={props.selectedModel ?? null}
+                        locale={props.selectedLocale ?? ""}
+                        timezone={props.selectedTimezone ?? ""}
+                        onVendorChange={props.onVendorChange ?? (() => {})}
+                        onModelChange={props.onModelChange ?? (() => {})}
+                        onLocaleChange={props.onLocaleChange ?? (() => {})}
+                        onTimezoneChange={props.onTimezoneChange ?? (() => {})}
+                      />
+                    ) : undefined
+                  }
                 />
               </div>
             </AutoBeAgentProvider>
@@ -106,50 +118,15 @@ export namespace AutoBePlaygroundChatMovie {
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
+
+    // Vendor/model/locale/timezone selection
+    selectedVendorId?: string | null;
+    selectedModel?: string | null;
+    selectedLocale?: string;
+    selectedTimezone?: string;
+    onVendorChange?: (vendorId: string | null) => void;
+    onModelChange?: (model: string | null) => void;
+    onLocaleChange?: (locale: string) => void;
+    onTimezoneChange?: (timezone: string) => void;
   }
 }
-
-const PLAYGROUND_CONFIG_FIELDS: IConfigField[] = [
-  {
-    key: "vendorName",
-    label: "Vendor Name",
-    type: "text",
-    storageKey: "autobe_vendor_name",
-    placeholder: "My OpenAI",
-    default: "default",
-    required: true,
-  },
-  {
-    key: "aiModel",
-    label: "AI Model",
-    type: "text",
-    storageKey: "autobe_ai_model",
-    placeholder: "gpt-4.1",
-    default: "gpt-4.1",
-    suggestions: [
-      "gpt-4.1",
-      "gpt-4.1-mini",
-      "qwen/qwen3-235b-a22b-2507",
-      "qwen/qwen3-next-80b-a3b-instruct",
-    ],
-  },
-  {
-    key: "baseUrl",
-    label: "Base URL",
-    type: "text",
-    storageKey: "autobe_base_url",
-    placeholder: "https://api.openai.com/v1",
-    suggestions: [
-      "https://api.openai.com/v1",
-      "https://openrouter.ai/api/v1",
-    ],
-  },
-  {
-    key: "openApiKey",
-    label: "API Key (only for new vendors)",
-    type: "text",
-    storageKey: "autobe_openapi_key_encrypted",
-    placeholder: "sk-... (leave empty if vendor already registered)",
-    encrypted: true,
-  },
-];

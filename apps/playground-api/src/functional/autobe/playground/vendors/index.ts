@@ -7,7 +7,7 @@
 import type { IAutoBePlaygroundVendor, IPage } from "@autobe/interface";
 import type { IConnection } from "@nestia/fetcher";
 import { PlainFetcher } from "@nestia/fetcher";
-import type { Primitive, tags } from "typia";
+import type { tags } from "typia";
 
 export * as models from "./models/index";
 
@@ -48,8 +48,8 @@ export async function create(
   );
 }
 export namespace create {
-  export type Body = Primitive<IAutoBePlaygroundVendor.ICreate>;
-  export type Output = Primitive<IAutoBePlaygroundVendor>;
+  export type Body = IAutoBePlaygroundVendor.ICreate;
+  export type Output = IAutoBePlaygroundVendor;
 
   export const METADATA = {
     method: "POST",
@@ -105,8 +105,8 @@ export async function index(
   );
 }
 export namespace index {
-  export type Body = Primitive<IPage.IRequest>;
-  export type Output = Primitive<IPage<IAutoBePlaygroundVendor>>;
+  export type Body = IPage.IRequest;
+  export type Output = IPage<IAutoBePlaygroundVendor>;
 
   export const METADATA = {
     method: "PATCH",
@@ -149,7 +149,7 @@ export async function at(
   });
 }
 export namespace at {
-  export type Output = Primitive<IAutoBePlaygroundVendor>;
+  export type Output = IAutoBePlaygroundVendor;
 
   export const METADATA = {
     method: "GET",
@@ -204,7 +204,7 @@ export async function update(
   );
 }
 export namespace update {
-  export type Body = Primitive<IAutoBePlaygroundVendor.IUpdate>;
+  export type Body = IAutoBePlaygroundVendor.IUpdate;
 
   export const METADATA = {
     method: "PUT",

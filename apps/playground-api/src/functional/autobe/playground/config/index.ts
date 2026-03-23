@@ -7,7 +7,6 @@
 import type { IAutoBePlaygroundConfig } from "@autobe/interface";
 import type { IConnection } from "@nestia/fetcher";
 import { PlainFetcher } from "@nestia/fetcher";
-import type { Primitive } from "typia";
 
 /**
  * Get the global playground configuration.
@@ -32,7 +31,7 @@ export async function get(connection: IConnection): Promise<get.Output> {
   });
 }
 export namespace get {
-  export type Output = Primitive<IAutoBePlaygroundConfig>;
+  export type Output = IAutoBePlaygroundConfig;
 
   export const METADATA = {
     method: "GET",
@@ -51,8 +50,8 @@ export namespace get {
 /**
  * Update the global playground configuration.
  *
- * Only provided fields are updated. Omitted fields retain their
- * current values.
+ * Only provided fields are updated. Omitted fields retain their current
+ * values.
  *
  * @param body Fields to update
  * @author Samchon
@@ -85,8 +84,8 @@ export async function update(
   );
 }
 export namespace update {
-  export type Body = Primitive<IAutoBePlaygroundConfig.IUpdate>;
-  export type Output = Primitive<IAutoBePlaygroundConfig>;
+  export type Body = IAutoBePlaygroundConfig.IUpdate;
+  export type Output = IAutoBePlaygroundConfig;
 
   export const METADATA = {
     method: "PUT",

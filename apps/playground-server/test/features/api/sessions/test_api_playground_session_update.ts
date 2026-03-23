@@ -15,7 +15,7 @@ export const test_api_playground_session_update = async (
   const session: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
       vendor_id: vendor.id,
-      model: "openai/gpt-4.1-mini",
+      model: "qwen3-coder-next",
       locale: "en-US",
       timezone: "Asia/Seoul",
       title: "Update Target Session",

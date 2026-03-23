@@ -268,6 +268,9 @@ export namespace IAutoBePlaygroundReplay {
 
     /** Example project name (e.g. "bbs", "todo"). */
     project: string;
+
+    /** Optional delay in milliseconds to simulate real-time replay speed. */
+    delay?: number | undefined;
   }
 
   export type Collection = Record<string, IAutoBePlaygroundReplay.ISummary[]>;

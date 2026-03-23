@@ -400,7 +400,7 @@ export const AutoBePlaygroundSettingsMovie = () => {
                 variant="caption"
                 sx={{ display: "block", mb: 2, color: "text.secondary" }}
               >
-                Pre-fills the config modal on the chat page for new sessions.
+                Pre-fills the vendor and model selection on the chat page for new sessions.
               </Typography>
               <Stack spacing={2}>
                 <FormControl fullWidth size="small">

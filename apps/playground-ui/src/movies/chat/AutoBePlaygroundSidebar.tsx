@@ -1,20 +1,31 @@
-import { IAutoBePlaygroundSession } from "@autobe/interface";
+import {
+  IAutoBePlaygroundSession,
+  IAutoBePlaygroundVendor,
+  IAutoBePlaygroundVendorModel,
+} from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import {
   IAutoBeAgentSessionStorageStrategy,
   useAutoBeAgentSessionList,
   useSearchParams,
 } from "@autobe/ui";
-import { ChevronLeft, ChevronRight, Delete } from "@mui/icons-material";
+import { Add, ChevronLeft, ChevronRight, Delete } from "@mui/icons-material";
 import {
+  Autocomplete,
   Box,
+  Button,
   Chip,
   CircularProgress,
+  Divider,
+  FormControl,
   IconButton,
   List,
   ListItemButton,
   ListItemText,
+  MenuItem,
+  Select,
   Stack,
+  TextField,
   Typography,
   alpha,
   useTheme,
@@ -27,33 +38,77 @@ export const AutoBePlaygroundSidebar = (
   props: AutoBePlaygroundSidebar.IProps,
 ) => {
   const theme = useTheme();
-  const { refreshSessionList } = useAutoBeAgentSessionList();
-  const { searchParams } = useSearchParams();
+  const { sessionList, refreshSessionList } = useAutoBeAgentSessionList();
+  const { searchParams, setSearchParams } = useSearchParams();
   const activeSessionId = searchParams.get("session-id") ?? null;
 
   const [sessions, setSessions] = useState<
     IAutoBePlaygroundSession.ISummary[] | null
   >(null);
 
+  // Filter state
+  const [filterVendorId, setFilterVendorId] = useState<string | null>(null);
+  const [filterModel, setFilterModel] = useState<string | null>(null);
+  const [vendors, setVendors] = useState<IAutoBePlaygroundVendor[]>([]);
+  const [vendorModels, setVendorModels] = useState<
+    IAutoBePlaygroundVendorModel[]
+  >([]);
+
+  // Load vendors for filter dropdown
+  useEffect(() => {
+    pApi.functional.autobe.playground.vendors
+      .index(getConnection(), {})
+      .then((page) => setVendors(page.data))
+      .catch(console.error);
+  }, []);
+
+  // Load models for selected vendor filter
+  useEffect(() => {
+    if (!filterVendorId) {
+      setVendorModels([]);
+      return;
+    }
+    pApi.functional.autobe.playground.vendors.models
+      .index(getConnection(), filterVendorId)
+      .then(setVendorModels)
+      .catch(console.error);
+  }, [filterVendorId]);
+
   const loadSessions = useCallback(async () => {
     try {
       const page = await pApi.functional.autobe.playground.sessions.index(
         getConnection(),
-        { limit: 100 },
+        {
+          limit: 100,
+          vendor_id: filterVendorId ?? undefined,
+          model: filterModel || undefined,
+        },
       );
       setSessions(page.data);
     } catch (err) {
       console.error("Failed to load sessions:", err);
       setSessions([]);
     }
-  }, []);
+  }, [filterVendorId, filterModel]);
 
   useEffect(() => {
     loadSessions();
-  }, [loadSessions]);
+  }, [loadSessions, sessionList]);
+
+  const handleNewChat = () => {
+    setSearchParams((sp) => {
+      const next = new URLSearchParams(sp);
+      next.delete("session-id");
+      return next;
+    });
+  };
 
   const handleSessionSelect = (id: string) => {
-    window.location.href = `/?session-id=${id}`;
+    setSearchParams((sp) => {
+      const next = new URLSearchParams(sp);
+      next.set("session-id", id);
+      return next;
+    });
   };
 
   const handleSessionDelete = async (e: React.MouseEvent, id: string) => {
@@ -79,14 +134,32 @@ export const AutoBePlaygroundSidebar = (
         overflow: "hidden",
       }}
     >
-      {/* Toggle */}
+      {/* Toggle + New Chat */}
       <Box
         sx={{
           display: "flex",
-          justifyContent: props.isCollapsed ? "center" : "flex-end",
+          justifyContent: props.isCollapsed ? "center" : "space-between",
+          alignItems: "center",
           p: 0.5,
+          gap: 0.5,
         }}
       >
+        {!props.isCollapsed && (
+          <Button
+            size="small"
+            variant="outlined"
+            startIcon={<Add sx={{ fontSize: 16 }} />}
+            onClick={handleNewChat}
+            sx={{
+              ml: 0.5,
+              textTransform: "none",
+              fontSize: "0.75rem",
+              py: 0.25,
+            }}
+          >
+            New Chat
+          </Button>
+        )}
         <IconButton size="small" onClick={props.onToggle}>
           {props.isCollapsed ? (
             <ChevronRight fontSize="small" />
@@ -97,13 +170,71 @@ export const AutoBePlaygroundSidebar = (
       </Box>
 
       {!props.isCollapsed && (
-        <Box sx={{ flex: 1, overflow: "auto" }}>
-          <SessionsPanel
-            sessions={sessions}
-            activeSessionId={activeSessionId}
-            onSelect={handleSessionSelect}
-            onDelete={handleSessionDelete}
-          />
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <Divider />
+
+          {/* Filters */}
+          <Box sx={{ px: 1.5, py: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 600, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: 0.5, mb: 0.5, display: "block" }}
+            >
+              Filters
+            </Typography>
+            <FormControl fullWidth size="small" sx={{ mb: 0.5 }}>
+              <Select
+                value={filterVendorId ?? ""}
+                onChange={(e) => setFilterVendorId(e.target.value || null)}
+                displayEmpty
+                sx={{ fontSize: "0.75rem" }}
+              >
+                <MenuItem value="">
+                  <em>All Vendors</em>
+                </MenuItem>
+                {vendors.map((v) => (
+                  <MenuItem
+                    key={v.id}
+                    value={v.id}
+                    sx={{ fontSize: "0.75rem" }}
+                  >
+                    {v.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Autocomplete
+              freeSolo
+              size="small"
+              options={vendorModels.map((m) => m.model)}
+              value={filterModel ?? ""}
+              onInputChange={(_, value) => setFilterModel(value || null)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Filter by model..."
+                  sx={{ "& input": { fontSize: "0.75rem", py: 0.5 } }}
+                />
+              )}
+            />
+          </Box>
+
+          <Divider />
+
+          {/* Sessions */}
+          <Box sx={{ flex: 1, overflow: "auto" }}>
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontWeight: 600, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: 0.5, px: 1.5, pt: 1, pb: 0.5, display: "block" }}
+            >
+              Sessions
+            </Typography>
+            <SessionsPanel
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              onSelect={handleSessionSelect}
+              onDelete={handleSessionDelete}
+            />
+          </Box>
         </Box>
       )}
     </Box>
@@ -173,54 +304,68 @@ const SessionsPanel = (props: {
                 <Typography
                   variant="body2"
                   noWrap
-                  sx={{ fontWeight: isActive ? 600 : 400, fontSize: "0.82rem" }}
+                  sx={{
+                    fontWeight: isActive ? 600 : 400,
+                    fontSize: "0.82rem",
+                  }}
                 >
                   {title}
                 </Typography>
               }
               secondary={
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  alignItems="center"
-                  sx={{ mt: 0.25 }}
-                >
-                  <Typography variant="caption" color="text.secondary">
-                    {date.toLocaleDateString()}
+                <Stack direction="column" spacing={0.25} sx={{ mt: 0.25 }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    noWrap
+                    sx={{ fontSize: "0.68rem" }}
+                  >
+                    {s.vendor?.name ?? "Unknown"} / {s.model}
                   </Typography>
-                  {s.phase && (
-                    <Chip
-                      label={s.phase}
-                      size="small"
-                      sx={{
-                        height: 16,
-                        fontSize: "0.65rem",
-                        textTransform: "capitalize",
-                      }}
-                    />
-                  )}
-                  {s.completed_at && (
-                    <Chip
-                      label="Done"
-                      size="small"
-                      color="success"
-                      variant="outlined"
-                      sx={{ height: 16, fontSize: "0.65rem" }}
-                    />
-                  )}
+                  <Stack
+                    direction="row"
+                    spacing={0.5}
+                    alignItems="center"
+                  >
+                    <Typography variant="caption" color="text.secondary">
+                      {date.toLocaleDateString()}
+                    </Typography>
+                    {s.phase && (
+                      <Chip
+                        label={s.phase}
+                        size="small"
+                        sx={{
+                          height: 16,
+                          fontSize: "0.65rem",
+                          textTransform: "capitalize",
+                        }}
+                      />
+                    )}
+                    {s.completed_at && (
+                      <Chip
+                        label="Done"
+                        size="small"
+                        color="success"
+                        variant="outlined"
+                        sx={{ height: 16, fontSize: "0.65rem" }}
+                      />
+                    )}
+                  </Stack>
                 </Stack>
               }
             />
-            <IconButton
-              size="small"
-              onClick={(e) => props.onDelete(e, s.id)}
-              sx={{
-                opacity: 0.3,
-                "&:hover": { opacity: 1, color: theme.palette.error.main },
-              }}
-            >
-              <Delete sx={{ fontSize: 16 }} />
-            </IconButton>
+            {!isActive && (
+              <IconButton
+                size="small"
+                onClick={(e) => props.onDelete(e, s.id)}
+                sx={{
+                  opacity: 0.3,
+                  "&:hover": { opacity: 1, color: theme.palette.error.main },
+                }}
+              >
+                <Delete sx={{ fontSize: 16 }} />
+              </IconButton>
+            )}
           </ListItemButton>
         );
       })}

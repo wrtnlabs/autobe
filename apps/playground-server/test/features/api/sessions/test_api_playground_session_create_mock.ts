@@ -2,9 +2,12 @@ import { AutoBeExampleStorage } from "@autobe/benchmark";
 import {
   AutoBeExampleProject,
   IAutoBePlaygroundSession,
+  IAutoBePlaygroundVendor,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { TestValidator } from "@nestia/e2e";
+
+import { TestVendor } from "../../../internal/TestVendor";
 
 const PROJECTS: AutoBeExampleProject[] = [
   "todo",
@@ -41,9 +44,13 @@ export const test_api_playground_session_create_mock = async (
   if (example === null) throw new Error("No example data available.");
   const { model, project } = example;
 
-  // Create a mock session
+  const vendor: IAutoBePlaygroundVendor = await TestVendor.get(connection);
+
+  // Create a mock session via API with @internal mock field
   const session: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
+      vendor_id: vendor.id,
+      model: "qwen3-coder-next",
       mock: {
         vendor: model,
         project,
@@ -84,12 +91,12 @@ export const test_api_playground_session_create_mock = async (
   TestValidator.equals("read.locale", read.locale, "en");
 
   // Verify the virtual vendor was auto-created
-  const vendor = await pApi.functional.autobe.playground.vendors.at(
+  const mockVendor = await pApi.functional.autobe.playground.vendors.at(
     connection,
     session.vendor.id,
   );
-  TestValidator.equals("vendor.name", vendor.name, `virtual: ${model}`);
-  TestValidator.equals("vendor.deleted_at", vendor.deleted_at, null);
+  TestValidator.equals("vendor.name", mockVendor.name, `virtual: ${model}`);
+  TestValidator.equals("vendor.deleted_at", mockVendor.deleted_at, null);
 
   // Verify mock session appears in index
   const page = await pApi.functional.autobe.playground.sessions.index(

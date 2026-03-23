@@ -17,14 +17,6 @@ import { AutoBePlaygroundSessionEventProvider } from "./AutoBePlaygroundSessionE
 import { AutoBePlaygroundSessionHistoryProvider } from "./AutoBePlaygroundSessionHistoryProvider";
 
 export namespace AutoBePlaygroundSessionProvider {
-  /**
-   * Sentinel API key used to identify virtual/mock vendor sessions.
-   *
-   * When the socket acceptor detects this API key during the connect flow, it
-   * creates an `AutoBeMockAgent` instead of a real `AutoBeAgent`.
-   */
-  export const VIRTUAL_API_KEY = "virtual-seed-no-api-key";
-
   export namespace json {
     export const transform = (
       input: Prisma.autobe_playground_sessionsGetPayload<
@@ -131,19 +123,57 @@ export namespace AutoBePlaygroundSessionProvider {
     return json.transform(record);
   };
 
+  /**
+   * Sentinel API key used to identify virtual/mock vendor sessions.
+   *
+   * @internal
+   */
+  export const VIRTUAL_API_KEY = "virtual-seed-no-api-key";
+
   export const create = async (props: {
     body: IAutoBePlaygroundSession.ICreate;
   }): Promise<IAutoBePlaygroundSession> => {
-    if ("mock" in props.body) {
-      return createMock(props.body);
-    }
-    return createReal(props.body);
-  };
+    const { body } = props;
 
-  const createReal = async (
-    body: IAutoBePlaygroundSession.ICreate.IProps,
-  ): Promise<IAutoBePlaygroundSession> => {
-    // Validate vendor exists
+    // Mock session: auto-create virtual vendor
+    if (body.mock) {
+      const { vendor: vendorSlug, project } = body.mock;
+
+      const vendor = await AutoBePlaygroundVendorProvider.create({
+        body: {
+          name: `virtual: ${vendorSlug}`,
+          apiKey: VIRTUAL_API_KEY,
+          baseURL: null,
+          semaphore: 16,
+        },
+      });
+
+      const record =
+        await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
+          data: {
+            id: v7(),
+            autobe_playground_vendor_id: vendor.id,
+            model: `${vendorSlug}#${project}`,
+            locale: "en",
+            timezone: "UTC",
+            title: `[Mock] ${vendorSlug} / ${project}`,
+            created_at: new Date(),
+            completed_at: null,
+            aggregate: {
+              create: {
+                id: v7(),
+                phase: null,
+                enabled: true,
+                token_usage: JSON.stringify(new AutoBeTokenUsage().toJSON()),
+              },
+            },
+          },
+          ...json.select(),
+        });
+      return json.transform(record);
+    }
+
+    // Real session
     await AutoBePlaygroundGlobal.prisma.autobe_playground_vendors.findFirstOrThrow(
       {
         where: { id: body.vendor_id, deleted_at: null },
@@ -151,13 +181,11 @@ export namespace AutoBePlaygroundSessionProvider {
       },
     );
 
-    // Auto-register model under vendor
     await AutoBePlaygroundVendorModelProvider.emplace({
       vendorId: body.vendor_id,
       model: body.model,
     });
 
-    // Resolve locale/timezone from global config when not provided
     const config = await AutoBePlaygroundConfigProvider.get();
     const locale = body.locale ?? config.locale;
     const timezone = body.timezone ?? config.timezone;
@@ -171,47 +199,6 @@ export namespace AutoBePlaygroundSessionProvider {
           locale,
           timezone,
           title: body.title ?? null,
-          created_at: new Date(),
-          completed_at: null,
-          aggregate: {
-            create: {
-              id: v7(),
-              phase: null,
-              enabled: true,
-              token_usage: JSON.stringify(new AutoBeTokenUsage().toJSON()),
-            },
-          },
-        },
-        ...json.select(),
-      });
-    return json.transform(record);
-  };
-
-  const createMock = async (
-    body: IAutoBePlaygroundSession.ICreate.IMock,
-  ): Promise<IAutoBePlaygroundSession> => {
-    const { vendor: vendorSlug, project } = body.mock;
-
-    // Auto-create a virtual vendor with sentinel API key
-    const vendor = await AutoBePlaygroundVendorProvider.create({
-      body: {
-        name: `virtual: ${vendorSlug}`,
-        apiKey: VIRTUAL_API_KEY,
-        baseURL: null,
-        semaphore: 16,
-      },
-    });
-
-    // Create session — AutoBeMockAgent populates data on connect
-    const record =
-      await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
-        data: {
-          id: v7(),
-          autobe_playground_vendor_id: vendor.id,
-          model: `${vendorSlug}#${project}`,
-          locale: "en",
-          timezone: "UTC",
-          title: `[Mock] ${vendorSlug} / ${project}`,
           created_at: new Date(),
           completed_at: null,
           aggregate: {

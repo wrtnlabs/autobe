@@ -14,14 +14,13 @@ import type { IConnection } from "@nestia/fetcher";
 import { PlainFetcher } from "@nestia/fetcher";
 import { WebSocketConnector } from "tgrid";
 import type { Driver } from "tgrid";
-import type { Primitive } from "typia";
 
 /**
  * List all available examples from benchmark storage.
  *
  * Returns vendor-grouped benchmark data sourced from the pre-computed
- * `benchmark.json`. Each entry contains a vendor identifier, emoji,
- * score, and its replay summaries.
+ * `benchmark.json`. Each entry contains a vendor identifier, emoji, score,
+ * and its replay summaries.
  *
  * @author Samchon
  * @returns List of benchmarks grouped by vendor
@@ -40,7 +39,7 @@ export async function index(connection: IConnection): Promise<index.Output> {
   });
 }
 export namespace index {
-  export type Output = Primitive<Array<IAutoBePlaygroundBenchmark>>;
+  export type Output = Array<IAutoBePlaygroundBenchmark>;
 
   export const METADATA = {
     method: "GET",

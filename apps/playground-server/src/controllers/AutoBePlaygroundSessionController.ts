@@ -46,13 +46,11 @@ export class AutoBePlaygroundSessionController {
   /**
    * Create a new vibe coding session.
    *
-   * Accepts either real or mock session creation. For real sessions, provide
-   * `vendor_id` and `model`. For mock sessions, provide a `mock` object with
-   * vendor slug and project name — a virtual vendor is auto-created and the
-   * session uses {@link AutoBeMockAgent} on connect.
+   * Creates a session bound to a stored vendor configuration. The vendor's
+   * decrypted API key will be used when establishing the AI agent connection.
    *
    * @author Samchon
-   * @param body Session creation properties (real or mock)
+   * @param body Session creation properties
    * @returns Newly created session with full detail
    * @tag Session
    */

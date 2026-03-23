@@ -50,6 +50,7 @@ export class AutoBePlaygroundExampleController {
       await AutoBePlaygroundExampleSocketProvider.replay({
         vendor: query.vendor,
         project: query.project,
+        delay: query.delay,
         acceptor,
       });
     } catch {}

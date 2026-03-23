@@ -3,16 +3,15 @@ import {
   IAutoBePlaygroundVendorModel,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { TestValidator } from "@nestia/e2e";
+import { RandomGenerator, TestValidator } from "@nestia/e2e";
 
 export const test_api_playground_vendor_model_erase = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
-  // Create own vendor for destructive test
   const vendor: IAutoBePlaygroundVendor =
     await pApi.functional.autobe.playground.vendors.create(connection, {
-      name: "Model Erase Target",
-      apiKey: "test-dummy-key",
+      name: RandomGenerator.name(),
+      apiKey: RandomGenerator.alphaNumeric(32),
       baseURL: "http://localhost:1234",
       semaphore: 16,
     });
@@ -20,7 +19,7 @@ export const test_api_playground_vendor_model_erase = async (
   // Creating a session auto-registers the model under the vendor
   await pApi.functional.autobe.playground.sessions.create(connection, {
     vendor_id: vendor.id,
-    model: "openai/gpt-4.1-mini",
+    model: "qwen3.5-35b-a3b",
     locale: "en-US",
     timezone: "Asia/Seoul",
     title: "Model Erase Test",
@@ -31,7 +30,7 @@ export const test_api_playground_vendor_model_erase = async (
       connection,
       vendor.id,
     );
-  const target = models.find((m) => m.model === "openai/gpt-4.1-mini");
+  const target = models.find((m) => m.model === "qwen3.5-35b-a3b");
   TestValidator.predicate("model exists", () => target !== undefined);
 
   await pApi.functional.autobe.playground.vendors.models.erase(

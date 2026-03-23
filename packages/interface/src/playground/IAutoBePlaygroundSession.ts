@@ -97,77 +97,63 @@ export namespace IAutoBePlaygroundSession {
   /**
    * Properties for creating a new vibe coding session.
    *
-   * Accepts either real session properties (with vendor_id and model) or mock
-   * session properties (with mock vendor/project from example storage). When
-   * mock is provided, a virtual vendor is auto-created and the session uses
-   * {@link AutoBeMockAgent} on connect.
+   * Creates a session bound to a stored vendor configuration. The vendor's
+   * decrypted API key will be used when establishing the AI agent connection.
    */
-  export type ICreate = ICreate.IProps | ICreate.IMock;
-  export namespace ICreate {
-    /**
-     * Create a real session bound to a stored vendor configuration.
-     *
-     * The vendor's decrypted API key will be used when establishing the AI
-     * agent connection.
-     */
-    export interface IProps {
-      /** ID of the stored vendor configuration to use. */
-      vendor_id: string & tags.Format<"uuid">;
-
-      /**
-       * AI model identifier specifying which model to use.
-       *
-       * The exact model name or identifier for the AI provider, such as
-       * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
-       */
-      model: string;
-
-      /**
-       * Locale for AI assistant responses.
-       *
-       * When omitted, falls back to the global playground configuration.
-       */
-      locale?: string | null;
-
-      /**
-       * IANA timezone identifier.
-       *
-       * When omitted, falls back to the global playground configuration.
-       */
-      timezone?: string | null;
-
-      /** Optional title for this session. */
-      title?: string | null;
-    }
+  export interface ICreate {
+    /** ID of the stored vendor configuration to use. */
+    vendor_id: string & tags.Format<"uuid">;
 
     /**
-     * Create a mock session from pre-recorded example data.
+     * AI model identifier specifying which model to use.
      *
-     * A virtual vendor is auto-created with a sentinel API key. When the
-     * frontend connects via WebSocket, the server detects the virtual vendor
-     * and creates an {@link AutoBeMockAgent} that replays events with realistic
-     * timing.
+     * The exact model name or identifier for the AI provider, such as
+     * "gpt-4.1", "claude-sonnet-4-20250514", "qwen3-235b-a22b", etc.
      */
-    export interface IMock {
-      /** Mock configuration from example data. */
-      mock: {
-        /**
-         * Example vendor/model slug.
-         *
-         * Corresponds to a directory name under `autobe-examples/raw/`, e.g.
-         * `"openai/gpt-4.1"`, `"anthropic/claude-sonnet-4-20250514"`.
-         */
-        vendor: string;
+    model: string;
 
-        /**
-         * Example project name.
-         *
-         * One of the predefined example projects: "todo", "bbs", "reddit",
-         * "shopping", "chat", "account", "erp", etc.
-         */
-        project: string;
-      };
-    }
+    /**
+     * Locale for AI assistant responses.
+     *
+     * When omitted, falls back to the global playground configuration.
+     */
+    locale?: string | null;
+
+    /**
+     * IANA timezone identifier.
+     *
+     * When omitted, falls back to the global playground configuration.
+     */
+    timezone?: string | null;
+
+    /** Optional title for this session. */
+    title?: string | null;
+
+    /**
+     * Mock session configuration from pre-recorded example data.
+     *
+     * Used exclusively by the server to create test sessions backed by
+     * {@link AutoBeMockAgent}. Not exposed through any public API endpoint.
+     *
+     * @internal
+     */
+    mock?: IMock | undefined;
+  }
+
+  /**
+   * Mock session descriptor.
+   *
+   * @internal
+   */
+  export interface IMock {
+    /** Example vendor/model slug (e.g. `"openai/gpt-4.1"`). */
+    vendor: string;
+
+    /** Example project name (e.g. `"bbs"`, `"todo"`). */
+    project: string;
+
+    /** Artificial delay in milliseconds to simulate between events. */
+    delay?: number | undefined;
   }
 
   /** Properties for updating an existing session. */

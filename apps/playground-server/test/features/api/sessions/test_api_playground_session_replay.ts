@@ -112,17 +112,17 @@ export const test_api_playground_session_replay = async (
         },
       },
     );
-  for (const history of histories)
+  for (const h of histories)
     await AutoBePlaygroundSessionHistoryProvider.create({
       session: created,
       connection: conn,
-      history,
+      history: h,
     });
-  for (const snapshot of snapshots)
+  for (const s of snapshots)
     await AutoBePlaygroundSessionEventProvider.create({
       session: created,
       connection: conn,
-      snapshot,
+      snapshot: s,
     });
   await AutoBePlaygroundGlobal.prisma.autobe_playground_session_aggregates.update(
     {

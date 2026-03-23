@@ -1,10 +1,7 @@
 import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
-import {
-  Chat,
-  Science,
-} from "@mui/icons-material";
+import { Chat, Science, Settings } from "@mui/icons-material";
 import {
   AppBar,
   Tab,
@@ -18,15 +15,31 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
 import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
+import { AutoBePlaygroundSettingsMovie } from "./movies/settings/AutoBePlaygroundSettingsMovie";
 import { AutoBeAgentSessionStorageServerStrategy } from "./strategy/AutoBeAgentSessionStorageServerStrategy";
 import { getConnection, getServerUrl } from "./utils/connection";
 import { getGlobalConfig } from "./utils/globalConfig";
 
+const TAB_HASHES = ["#chat", "#examples", "#settings"] as const;
+
 export function AutoBePlaygroundApplication() {
   const theme = useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [tab, setTab] = useState(() =>
-    window.location.hash === "#examples" ? 1 : 0,
+  const [tab, setTab] = useState(() => {
+    const hash = window.location.hash;
+    if (hash === "#examples") return 1;
+    if (hash === "#settings") return 2;
+    return 0;
+  });
+
+  // Vendor/model/locale/timezone selection state
+  const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [selectedLocale, setSelectedLocale] = useState<string>(
+    window.navigator.language,
+  );
+  const [selectedTimezone, setSelectedTimezone] = useState<string>(
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
 
   // Examples state
@@ -34,11 +47,17 @@ export function AutoBePlaygroundApplication() {
     IAutoBePlaygroundBenchmark[] | null
   >(null);
 
-  // Seed localStorage with global config defaults on first visit
+  // Seed defaults from global config
   useEffect(() => {
     getGlobalConfig().then((cfg) => {
-      if (cfg.default_model && !localStorage.getItem("autobe_ai_model")) {
-        localStorage.setItem("autobe_ai_model", cfg.default_model);
+      if (cfg.default_vendor_id && !selectedVendorId) {
+        setSelectedVendorId(cfg.default_vendor_id);
+      }
+      if (cfg.default_model && !selectedModel) {
+        setSelectedModel(cfg.default_model);
+      }
+      if (cfg.locale) {
+        setSelectedLocale(cfg.locale);
       }
     });
   }, []);
@@ -55,14 +74,12 @@ export function AutoBePlaygroundApplication() {
     loadBenchmarks().catch(console.error);
   }, [loadBenchmarks]);
 
-  // Playground service factory
+  // Playground service factory — reads vendor/model from component state
   const serviceFactory = async (
     config: IAutoBeConfig,
   ): Promise<IAutoBeServiceData> => {
-    const serverUrl = getServerUrl();
-    const connection = { host: serverUrl };
+    const connection = { host: getServerUrl() };
     const listener = new AutoBeListener();
-    const globalConfig = await getGlobalConfig();
 
     let sessionId: string;
 
@@ -70,26 +87,23 @@ export function AutoBePlaygroundApplication() {
       // Reconnecting to existing session
       sessionId = config.sessionId;
     } else {
-      // Create or reuse vendor on the server
-      const vendorId = await getOrCreateVendor(connection, {
-        name: String(config["vendorName"] ?? "default"),
-        apiKey: String(config.openApiKey ?? ""),
-        baseURL: config.baseUrl || undefined,
-        semaphore: config.semaphore ?? 16,
-      });
+      if (!selectedVendorId) {
+        throw new Error(
+          "No vendor selected. Please select a vendor before starting a session.",
+        );
+      }
+      if (!selectedModel) {
+        throw new Error(
+          "No model selected. Please select a model before starting a session.",
+        );
+      }
 
-      // Create new session on the server
       const session =
         await pApi.functional.autobe.playground.sessions.create(connection, {
-          vendor_id: vendorId,
-          model: config.aiModel ?? globalConfig.default_model ?? "gpt-4.1",
-          locale:
-            config.locale ??
-            globalConfig.locale ??
-            window.navigator.language,
-          timezone:
-            globalConfig.timezone ??
-            Intl.DateTimeFormat().resolvedOptions().timeZone,
+          vendor_id: selectedVendorId,
+          model: selectedModel,
+          locale: selectedLocale,
+          timezone: selectedTimezone,
         });
       sessionId = session.id;
     }
@@ -132,7 +146,7 @@ export function AutoBePlaygroundApplication() {
               window.history.replaceState(
                 null,
                 "",
-                `${window.location.pathname}${window.location.search}${v === 1 ? "#examples" : "#chat"}`,
+                `${window.location.pathname}${window.location.search}${TAB_HASHES[v]}`,
               );
             }}
             sx={{
@@ -158,6 +172,11 @@ export function AutoBePlaygroundApplication() {
               iconPosition="start"
               label="Examples"
             />
+            <Tab
+              icon={<Settings sx={{ fontSize: 18 }} />}
+              iconPosition="start"
+              label="Settings"
+            />
           </Tabs>
         </Toolbar>
       </AppBar>
@@ -170,63 +189,21 @@ export function AutoBePlaygroundApplication() {
             storageStrategyFactory={() =>
               new AutoBeAgentSessionStorageServerStrategy()
             }
+            selectedVendorId={selectedVendorId}
+            selectedModel={selectedModel}
+            selectedLocale={selectedLocale}
+            selectedTimezone={selectedTimezone}
+            onVendorChange={setSelectedVendorId}
+            onModelChange={setSelectedModel}
+            onLocaleChange={setSelectedLocale}
+            onTimezoneChange={setSelectedTimezone}
           />
         )}
         {tab === 1 && benchmarks && (
           <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
         )}
+        {tab === 2 && <AutoBePlaygroundSettingsMovie />}
       </div>
     </div>
   );
-}
-
-async function getOrCreateVendor(
-  connection: { host: string },
-  config: {
-    name: string;
-    apiKey?: string;
-    baseURL?: string;
-    semaphore?: number;
-  },
-): Promise<string> {
-  // 1. Fetch all vendors from server, find by name
-  const { data: vendors } =
-    await pApi.functional.autobe.playground.vendors.index(connection, {});
-  const existing = vendors.find((v) => v.name === config.name);
-
-  if (existing) {
-    // Vendor already registered — update only if new API key provided
-    if (config.apiKey) {
-      await pApi.functional.autobe.playground.vendors.update(
-        connection,
-        existing.id as any,
-        {
-          apiKey: config.apiKey,
-          baseURL: config.baseURL || null,
-          semaphore: config.semaphore,
-        },
-      );
-    }
-    localStorage.setItem("autobe_vendor_id", existing.id);
-    return existing.id;
-  }
-
-  // 2. New vendor — API key is required
-  if (!config.apiKey) {
-    throw new Error(
-      `Vendor "${config.name}" not found. API Key is required to register a new vendor.`,
-    );
-  }
-
-  const vendor = await pApi.functional.autobe.playground.vendors.create(
-    connection,
-    {
-      name: config.name,
-      apiKey: config.apiKey,
-      baseURL: config.baseURL || null,
-      semaphore: config.semaphore,
-    },
-  );
-  localStorage.setItem("autobe_vendor_id", vendor.id);
-  return vendor.id;
 }

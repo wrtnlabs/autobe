@@ -30,9 +30,10 @@ export namespace AutoBePlaygroundExampleSocketProvider {
    * client. No database session is created — purely in-memory.
    */
   export const replay = async (props: {
+    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>;
     vendor: string;
     project: string;
-    acceptor: WebSocketAcceptor<any, IAutoBeRpcService, IAutoBeRpcListener>;
+    delay?: number | undefined;
   }): Promise<void> => {
     const replayData = await buildReplay(props.vendor, props.project);
     if (replayData === null) {
@@ -45,6 +46,7 @@ export namespace AutoBePlaygroundExampleSocketProvider {
     const agent = new AutoBeMockAgent({
       replay: replayData,
       compiler: () => AutoBePlaygroundSessionCompiler.get(),
+      delay: props.delay !== undefined ? () => props.delay : undefined,
     });
 
     await props.acceptor.accept(
@@ -57,12 +59,26 @@ export namespace AutoBePlaygroundExampleSocketProvider {
     );
     props.acceptor.ping(500);
 
-    // Enable input — let the client drive via AutoBeMockAgent.conversate()
+    // Read-only replay — push all snapshot events directly
+    const listener = props.acceptor.getDriver();
     await sleep_for(100);
-    void props.acceptor
-      .getDriver()
-      .enable(true)
-      .catch(() => {});
+    void listener.enable(false).catch(() => {});
+
+    const phases: AutoBePhase[] = [
+      "analyze",
+      "database",
+      "interface",
+      "test",
+      "realize",
+    ];
+    for (const phase of phases) {
+      const snapshots = replayData[phase];
+      if (snapshots === null) continue;
+      for (const s of snapshots) {
+        if (props.delay) await sleep_for(props.delay);
+        void (listener as any)[s.event.type](s.event).catch(() => {});
+      }
+    }
 
     // Wait for disconnect
     await props.acceptor.join();

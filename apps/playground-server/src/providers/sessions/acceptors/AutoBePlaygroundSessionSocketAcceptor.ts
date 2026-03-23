@@ -98,12 +98,14 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
     );
     props.acceptor.ping(500);
 
-    // Enable input — let the client drive via AutoBeMockAgent.conversate()
+    // Read-only replay — push all snapshot events directly
+    const listener = props.acceptor.getDriver();
     await sleep_for(100);
-    void props.acceptor
-      .getDriver()
-      .enable(true)
-      .catch(() => {});
+    void listener.enable(false).catch(() => {});
+
+    for (const s of snapshots)
+      void (listener as any)[s.event.type](s.event).catch(() => {});
+
     await props.acceptor.join();
   };
 
@@ -322,6 +324,8 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
    *
    * The model field of mock sessions encodes both vendor slug and project as
    * `"vendor/model#project"` (e.g. `"openai/gpt-4.1#bbs"`).
+   *
+   * @internal
    */
   const buildReplayFromExamples = async (
     session: IAutoBePlaygroundSession.ISummary,
@@ -347,7 +351,6 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
       return AutoBeExampleStorage.getSnapshots({ vendor, project, phase });
     };
 
-    // Find the last available phase for loading histories
     const PHASES: AutoBePhase[] = [
       "realize",
       "test",

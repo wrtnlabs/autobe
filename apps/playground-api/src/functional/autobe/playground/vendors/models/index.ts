@@ -7,7 +7,7 @@
 import type { IAutoBePlaygroundVendorModel } from "@autobe/interface";
 import type { IConnection } from "@nestia/fetcher";
 import { PlainFetcher } from "@nestia/fetcher";
-import type { Primitive, tags } from "typia";
+import type { tags } from "typia";
 
 /**
  * List models registered under a vendor.
@@ -37,7 +37,7 @@ export async function index(
   });
 }
 export namespace index {
-  export type Output = Primitive<Array<IAutoBePlaygroundVendorModel>>;
+  export type Output = Array<IAutoBePlaygroundVendorModel>;
 
   export const METADATA = {
     method: "GET",

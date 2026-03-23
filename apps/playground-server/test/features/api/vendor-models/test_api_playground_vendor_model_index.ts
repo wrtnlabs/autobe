@@ -15,7 +15,7 @@ export const test_api_playground_vendor_model_index = async (
   // Creating a session auto-registers the model under the vendor
   await pApi.functional.autobe.playground.sessions.create(connection, {
     vendor_id: vendor.id,
-    model: "openai/gpt-4.1",
+    model: "qwen3-coder-next",
     locale: "en-US",
     timezone: "Asia/Seoul",
     title: "Model Index Test",
@@ -28,6 +28,6 @@ export const test_api_playground_vendor_model_index = async (
     );
   TestValidator.predicate("has data", () => models.length > 0);
   TestValidator.predicate("contains model", () =>
-    models.some((m) => m.model === "openai/gpt-4.1"),
+    models.some((m) => m.model === "qwen3-coder-next"),
   );
 };

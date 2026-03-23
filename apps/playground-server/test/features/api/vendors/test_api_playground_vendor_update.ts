@@ -1,14 +1,14 @@
 import { IAutoBePlaygroundVendor } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { TestValidator } from "@nestia/e2e";
+import { RandomGenerator, TestValidator } from "@nestia/e2e";
 
 export const test_api_playground_vendor_update = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
   const vendor: IAutoBePlaygroundVendor =
     await pApi.functional.autobe.playground.vendors.create(connection, {
-      name: "Update Target",
-      apiKey: "test-dummy-key",
+      name: RandomGenerator.name(),
+      apiKey: RandomGenerator.alphaNumeric(32),
       baseURL: "http://localhost:1234",
       semaphore: 16,
     });

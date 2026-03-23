@@ -4,17 +4,16 @@ import {
   IAutoBeRpcListener,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { TestValidator } from "@nestia/e2e";
+import { RandomGenerator, TestValidator } from "@nestia/e2e";
 import { IPointer, sleep_for } from "tstl";
 
 export const test_api_playground_vendor_soft_delete = async (
   connection: pApi.IConnection,
 ): Promise<void> => {
-  // Create a dedicated vendor (NOT the shared TestVendor)
   const vendor: IAutoBePlaygroundVendor =
     await pApi.functional.autobe.playground.vendors.create(connection, {
-      name: "Soft Delete Target",
-      apiKey: "test-dummy-key",
+      name: RandomGenerator.name(),
+      apiKey: RandomGenerator.alphaNumeric(32),
       baseURL: "http://localhost:1234",
       semaphore: 16,
     });
@@ -24,7 +23,7 @@ export const test_api_playground_vendor_soft_delete = async (
   const session: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
       vendor_id: vendor.id,
-      model: "openai/gpt-4.1-mini",
+      model: "qwen3-coder-next",
       locale: "en-US",
       timezone: "Asia/Seoul",
       title: "Vendor Soft Delete Test",
@@ -41,6 +40,7 @@ export const test_api_playground_vendor_soft_delete = async (
       session.id,
       listener,
     );
+  console.log("connected");
   await connector.close();
   await sleep_for(500);
 

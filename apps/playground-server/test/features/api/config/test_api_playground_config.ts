@@ -54,7 +54,7 @@ export const test_api_playground_config = async (
   const afterDefaults: IAutoBePlaygroundConfig =
     await pApi.functional.autobe.playground.config.update(connection, {
       default_vendor_id: "00000000-0000-0000-0000-000000000001",
-      default_model: "gpt-4.1",
+      default_model: "qwen3-coder-next",
     });
 
   TestValidator.equals(
@@ -65,7 +65,7 @@ export const test_api_playground_config = async (
   TestValidator.equals(
     "default_model set",
     afterDefaults.default_model,
-    "gpt-4.1",
+    "qwen3-coder-next",
   );
 
   // 5. GET reflects all updates
@@ -79,7 +79,11 @@ export const test_api_playground_config = async (
     final.default_vendor_id,
     "00000000-0000-0000-0000-000000000001",
   );
-  TestValidator.equals("final default_model", final.default_model, "gpt-4.1");
+  TestValidator.equals(
+    "final default_model",
+    final.default_model,
+    "qwen3-coder-next",
+  );
 
   // 6. PUT null to clear optional fields
   const afterClear: IAutoBePlaygroundConfig =

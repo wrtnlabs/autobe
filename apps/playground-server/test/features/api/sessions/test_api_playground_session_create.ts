@@ -16,7 +16,7 @@ export const test_api_playground_session_create = async (
   const session: IAutoBePlaygroundSession =
     await pApi.functional.autobe.playground.sessions.create(connection, {
       vendor_id: vendor.id,
-      model: "openai/gpt-4.1-mini",
+      model: "qwen3-coder-next",
       locale: "en-US",
       timezone: "Asia/Seoul",
       title: "My First Session",
@@ -24,7 +24,7 @@ export const test_api_playground_session_create = async (
 
   TestValidator.predicate("id exists", () => session.id.length > 0);
   TestValidator.equals("vendor.id", session.vendor.id, vendor.id);
-  TestValidator.equals("model", session.model, "openai/gpt-4.1-mini");
+  TestValidator.equals("model", session.model, "qwen3-coder-next");
   TestValidator.equals("locale", session.locale, "en-US");
   TestValidator.equals("timezone", session.timezone, "Asia/Seoul");
   TestValidator.equals("title", session.title, "My First Session");
