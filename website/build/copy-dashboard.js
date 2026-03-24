@@ -26,10 +26,24 @@ if (!fs.existsSync(src)) {
   process.exit(0);
 }
 
+// Preserve benchmark-summary.json across rebuilds
+const summaryPath = path.join(dest, "benchmark-summary.json");
+let savedSummary = null;
+if (fs.existsSync(summaryPath)) {
+  savedSummary = fs.readFileSync(summaryPath);
+}
+
 // Clean destination first
 if (fs.existsSync(dest)) {
   fs.rmSync(dest, { recursive: true });
 }
 
 copyDir(src, dest);
+
+// Restore benchmark-summary.json if dist didn't include one
+if (savedSummary && !fs.existsSync(summaryPath)) {
+  fs.writeFileSync(summaryPath, savedSummary);
+  console.log("[copy-dashboard] restored existing benchmark-summary.json");
+}
+
 console.log("[copy-dashboard] copied dashboard-ui dist → public/benchmark/");
