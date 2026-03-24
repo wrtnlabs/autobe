@@ -240,3 +240,31 @@ for m in "${MODELS_FOUND[@]}"; do
 done
 
 echo "$BOTTOM"
+
+# ── Aggregate benchmark data for dashboard ─────────────────
+AGGREGATE_SCRIPT="$(dirname "$ESTIMATE_DIR")/apps/dashboard-ui/scripts/aggregate-benchmarks.mjs"
+WEBSITE_BENCHMARK_DIR="$(dirname "$ESTIMATE_DIR")/website/public/benchmark"
+
+if [ -f "$AGGREGATE_SCRIPT" ]; then
+  echo ""
+  echo "Aggregating benchmark data for dashboard..."
+  node "$AGGREGATE_SCRIPT"
+  if [ -d "$WEBSITE_BENCHMARK_DIR" ]; then
+    cp "$(dirname "$AGGREGATE_SCRIPT")/../public/benchmark-summary.json" "$WEBSITE_BENCHMARK_DIR/benchmark-summary.json"
+    echo "Dashboard data updated: $WEBSITE_BENCHMARK_DIR/benchmark-summary.json"
+    # Auto-refresh browser tab showing benchmark
+    if command -v osascript &>/dev/null; then
+      osascript -e '
+        tell application "Google Chrome"
+          repeat with w in windows
+            repeat with t in tabs of w
+              if URL of t contains "benchmark" then
+                tell t to reload
+              end if
+            end repeat
+          end repeat
+        end tell
+      ' 2>/dev/null && echo "Browser refreshed." || true
+    fi
+  fi
+fi

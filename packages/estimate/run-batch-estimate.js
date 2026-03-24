@@ -1,17 +1,35 @@
+// Load .env from multiple locations
+const fs = require('fs');
+const path = require('path');
+for (const envPath of [
+  path.resolve(__dirname, '.env'),
+  path.resolve(__dirname, '../../.env'),
+]) {
+  if (fs.existsSync(envPath)) {
+    const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+    for (const line of lines) {
+      const match = line.match(/^([^#=]+)=(.*)$/);
+      if (match && !process.env[match[1].trim()]) {
+        process.env[match[1].trim()] = match[2].trim();
+      }
+    }
+  }
+}
+
 const { EvaluationPipeline } = require('./src/core/pipeline');
 const { generateJsonReport, generateMarkdownReport } = require('./src/reporters');
 const { SecurityAgent, LLMQualityAgent, HallucinationAgent, SECURITY_MODEL, QUALITY_MODEL, HALLUCINATION_MODEL } = require('./src/agents');
 const { AGENT_WEIGHTS, AGENT_WEIGHT_RATIO, scoreToGrade } = require('./src/types');
-const fs = require('fs');
-const path = require('path');
+const { spawn, execSync } = require('child_process');
 
-const examplesDir = '/Users/yongrean/Downloads/autobe-examples';
-// Output directly to reports/benchmark so the dashboard UI picks it up automatically
+// ── Configuration ──────────────────────────────────────────
+const DEFAULT_EXAMPLES_DIR = path.resolve(__dirname, '../../../autobe-examples');
+const examplesDir = process.env.EXAMPLES_DIR || DEFAULT_EXAMPLES_DIR;
 const outputBase = path.resolve(__dirname, 'reports/benchmark');
-const VALID_PROJECTS = new Set(['todo', 'bbs', 'reddit', 'shopping', 'erp']);
-const EXCLUDE_MODELS = new Set(['deepseek-v3.1-terminus-exacto', 'gpt-4.1-mini', 'seed-2.0-mini']);
+const VALID_PROJECTS = new Set(['todo', 'bbs', 'reddit', 'shopping', 'erp', 'gauzy']);
 
 const USE_AGENT = process.argv.includes('--use-agent');
+const NO_DASHBOARD = process.argv.includes('--no-dashboard');
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
 if (USE_AGENT && !API_KEY) {
@@ -19,7 +37,7 @@ if (USE_AGENT && !API_KEY) {
   process.exit(1);
 }
 
-// Discover targets
+// ── Discover targets (all models, no exclusions) ───────────
 const targets = [];
 const vendors = fs.readdirSync(examplesDir).filter(d => {
   const full = path.join(examplesDir, d);
@@ -30,7 +48,6 @@ for (const vendor of vendors) {
   const vendorPath = path.join(examplesDir, vendor);
   const models = fs.readdirSync(vendorPath).filter(d => fs.statSync(path.join(vendorPath, d)).isDirectory());
   for (const model of models) {
-    if (EXCLUDE_MODELS.has(model)) continue;
     const modelPath = path.join(vendorPath, model);
     const projects = fs.readdirSync(modelPath).filter(d => {
       const full = path.join(modelPath, d);
@@ -44,6 +61,37 @@ for (const vendor of vendors) {
 
 console.log(`\n=== Batch Estimate: ${targets.length} targets (agent: ${USE_AGENT ? 'ON' : 'OFF'}) ===\n`);
 
+// ── Start dashboard dev server ─────────────────────────────
+let dashboardProcess = null;
+const dashboardDir = path.resolve(__dirname, '../../apps/dashboard-ui');
+
+function startDashboard() {
+  if (NO_DASHBOARD) return;
+  if (!fs.existsSync(path.join(dashboardDir, 'package.json'))) {
+    console.log('Dashboard UI not found, skipping dev server.');
+    return;
+  }
+
+  // Check if already running on port 3000
+  try {
+    execSync('lsof -ti:3000', { stdio: 'pipe' });
+    console.log('Dashboard already running on port 3000');
+    return;
+  } catch (_) {
+    // Port not in use, start it
+  }
+
+  console.log('Starting dashboard dev server on http://localhost:3000 ...');
+  dashboardProcess = spawn('npx', ['vite', '--port', '3000', '--host'], {
+    cwd: dashboardDir,
+    stdio: 'ignore',
+    detached: true,
+  });
+  dashboardProcess.unref();
+  console.log(`Dashboard PID: ${dashboardProcess.pid}\n`);
+}
+
+// ── Agent evaluations ──────────────────────────────────────
 async function runAgentEvaluations(context) {
   const baseConfig = { provider: 'openrouter', apiKey: API_KEY };
   const securityAgent = new SecurityAgent({ ...baseConfig, model: SECURITY_MODEL });
@@ -59,7 +107,10 @@ async function runAgentEvaluations(context) {
   return [securityResult, llmQualityResult, hallucinationResult];
 }
 
+// ── Main ───────────────────────────────────────────────────
 async function main() {
+  startDashboard();
+
   const results = [];
   let completed = 0;
 
@@ -93,7 +144,6 @@ async function main() {
           console.log(`  [agent] Running SecurityAgent + LLMQualityAgent + HallucinationAgent...`);
           try {
             agentResults = await runAgentEvaluations(context);
-            // Exclude failed agents (score < 0) and re-normalize weights
             const successAgents = agentResults.filter(r => r.agent in AGENT_WEIGHTS && r.score >= 0);
             if (successAgents.length > 0) {
               const weightSum = successAgents.reduce((sum, r) => sum + AGENT_WEIGHTS[r.agent], 0);
@@ -190,7 +240,7 @@ async function main() {
     const aggregatePath = path.resolve(__dirname, '../../apps/dashboard-ui/scripts/aggregate-benchmarks.mjs');
     if (fs.existsSync(aggregatePath)) {
       console.log('\nRunning dashboard aggregation...');
-      require('child_process').execSync(`node ${aggregatePath}`, { stdio: 'inherit' });
+      execSync(`node ${aggregatePath}`, { stdio: 'inherit' });
     }
   } catch (e) {
     console.log('Aggregation skipped:', e.message);

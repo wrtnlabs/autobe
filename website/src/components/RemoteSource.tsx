@@ -9,7 +9,12 @@ export const RemoteSource = async (props: {
   showLineNumbers?: boolean;
   highlight?: string;
 }) => {
-  const content: string = await getRemoteSourceFile(props.url);
+  let content: string;
+  try {
+    content = await getRemoteSourceFile(props.url);
+  } catch {
+    content = `// Source unavailable: ${props.url}`;
+  }
   const header: string = [
     `${BRACKET}typescript`,
     !!props.filename?.length
