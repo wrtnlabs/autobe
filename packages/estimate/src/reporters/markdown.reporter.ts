@@ -438,10 +438,9 @@ function renderAgentIssuesTable(issues: AgentResult["issues"]): string {
     .map((issue) => {
       const severity = getSeverityEmoji(issue.severity);
       const file = issue.file ? path.basename(issue.file) : "-";
+      const rawDesc = issue.description || "";
       const desc =
-        issue.description.length > 60
-          ? issue.description.substring(0, 60) + "..."
-          : issue.description;
+        rawDesc.length > 60 ? rawDesc.substring(0, 60) + "..." : rawDesc;
       return `| ${severity} | ${issue.type} | ${desc} | ${file} |`;
     })
     .join("\n");

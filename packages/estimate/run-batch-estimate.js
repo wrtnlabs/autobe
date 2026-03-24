@@ -61,6 +61,18 @@ for (const vendor of vendors) {
 
 console.log(`\n=== Batch Estimate: ${targets.length} targets (agent: ${USE_AGENT ? 'ON' : 'OFF'}) ===\n`);
 
+// ── Live dashboard aggregation ───────────────────────────
+const AGGREGATE_SCRIPT = path.resolve(__dirname, '../../apps/dashboard-ui/scripts/aggregate-benchmarks.mjs');
+function triggerAggregation() {
+  try {
+    if (fs.existsSync(AGGREGATE_SCRIPT)) {
+      execSync(`node ${AGGREGATE_SCRIPT}`, { stdio: 'pipe' });
+    }
+  } catch (_) {
+    // non-blocking
+  }
+}
+
 // ── Start dashboard dev server ─────────────────────────────
 let dashboardProcess = null;
 const dashboardDir = path.resolve(__dirname, '../../apps/dashboard-ui');
@@ -153,9 +165,9 @@ async function main() {
               const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
               adjustedScore = Math.round(phasesPortion + agentPortion);
 
-              // Two-tier agent cap (only when all weighted agents succeeded)
-              const allWeightedAgents = agentResults.filter(r => r.agent in AGENT_WEIGHTS);
-              if (successAgents.length === allWeightedAgents.length) {
+              // Two-tier agent cap — only apply when enough agent coverage
+              const totalAgentWeight = Object.values(AGENT_WEIGHTS).reduce((s, w) => s + w, 0);
+              if (weightSum >= totalAgentWeight * 0.5) {
                 if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
                 else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
               }
@@ -203,6 +215,9 @@ async function main() {
       });
 
       console.log(`  → ${adjustedScore}/100 (${fullResult.grade}) gate=${result.phases.gate.passed ? 'PASS' : 'FAIL'}${agentTag}`);
+
+      // Live-update dashboard after each target
+      triggerAggregation();
     } catch (err) {
       console.log(`  → ERROR: ${err.message}`);
       results.push({
@@ -235,16 +250,8 @@ async function main() {
   fs.writeFileSync(summaryPath, JSON.stringify(results, null, 2));
   console.log(`\nSummary saved: ${summaryPath}`);
 
-  // Trigger aggregation for dashboard
-  try {
-    const aggregatePath = path.resolve(__dirname, '../../apps/dashboard-ui/scripts/aggregate-benchmarks.mjs');
-    if (fs.existsSync(aggregatePath)) {
-      console.log('\nRunning dashboard aggregation...');
-      execSync(`node ${aggregatePath}`, { stdio: 'inherit' });
-    }
-  } catch (e) {
-    console.log('Aggregation skipped:', e.message);
-  }
+  // Final aggregation
+  triggerAggregation();
 }
 
 main().catch(err => {

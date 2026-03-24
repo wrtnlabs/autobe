@@ -75,6 +75,10 @@ const MODEL_TO_RESULTS_PATH = {
   "gpt-4.1-mini": "openai/gpt-4.1-mini",
   "gpt-4.1": "openai/gpt-4.1",
   "gpt-4.1-mini-v2": "openai/gpt-4.1-mini",
+  "claude-sonnet-4.6": "anthropic/claude-sonnet-4-6",
+  "deepseek-v3.2": "deepseek/deepseek-v3.2",
+  "kimi-k2.5": "moonshotai/kimi-k2-0905",
+  "seed-2.0-mini": "bytedance-seed/seed-2.0-mini",
 };
 
 const PIPELINE_PHASES = ["analyze", "database", "interface", "test", "realize"];
@@ -414,8 +418,20 @@ function main() {
     generatedAt: new Date().toISOString(),
   };
 
+  const jsonData = JSON.stringify(output, null, 2);
+
+  // Write to dashboard-ui public (for dev server)
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+  fs.writeFileSync(outputPath, jsonData);
+
+  // Also write to website public (for team access via localhost:3000)
+  const websiteOutputPath = path.resolve(
+    __dirname,
+    "../../../website/public/benchmark/benchmark-summary.json",
+  );
+  if (fs.existsSync(path.dirname(websiteOutputPath))) {
+    fs.writeFileSync(websiteOutputPath, jsonData);
+  }
 
   console.log(
     `\nAggregated ${entries.length} entries (${models.size} models x ${projects.size} projects)`,

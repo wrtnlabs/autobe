@@ -268,3 +268,9 @@ if [ -f "$AGGREGATE_SCRIPT" ]; then
     fi
   fi
 fi
+
+# ── Generate blog summary for landing page ────────────────
+BLOG_SUMMARY_SCRIPT="$(dirname "$ESTIMATE_DIR")/website/scripts/generate-blog-summary.js"
+if [ -f "$BLOG_SUMMARY_SCRIPT" ]; then
+  node "$BLOG_SUMMARY_SCRIPT" 2>/dev/null && echo "Blog summary updated." || true
+fi

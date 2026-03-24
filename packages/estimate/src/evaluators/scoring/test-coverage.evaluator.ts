@@ -76,6 +76,7 @@ const ACTION_TO_METHODS: Record<string, string[]> = {
   modify: ["PUT", "PATCH"],
   process: ["PATCH"],
   // DELETE
+  delete: ["DELETE"],
   erase: ["DELETE"],
   remove: ["DELETE"],
   destroy: ["DELETE"],
@@ -505,10 +506,15 @@ export class TestCoverageEvaluator extends BaseEvaluator {
             content,
           );
 
-        const isStub =
-          /(?:\/\/\s*TODO|throw new Error\(["']not implemented["']\)|pending\(\)|skip\()/i.test(
+        // A file is a stub only if it lacks real assertions AND has placeholder markers
+        const hasPlaceholder =
+          /(?:throw new Error\(["']not implemented["']\)|pending\(\)|skip\()/i.test(
             content,
-          ) || content.length < 200;
+          );
+        const isStub =
+          !hasAssertions &&
+          !hasTestStructure &&
+          (hasPlaceholder || content.length < 100);
 
         if ((hasAssertions || hasTestStructure) && !isStub) {
           withAssertions++;

@@ -102,18 +102,9 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     ).length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 
-    let score: number;
-    if (criticalCount === 0 && issues.length === 0) {
-      score = 100;
-    } else if (criticalCount === 0) {
-      score = Math.max(70, 100 - warningCount * 2);
-    } else if (criticalCount <= 3) {
-      score = Math.max(50, 80 - criticalCount * 10);
-    } else if (criticalCount <= 10) {
-      score = Math.max(20, 50 - criticalCount * 3);
-    } else {
-      score = 0;
-    }
+    // Continuous scoring: criticals cost 7 pts each, warnings cost 2 pts each.
+    // No cliffs — smooth degradation. Floor at 0.
+    const score = Math.max(0, 100 - criticalCount * 7 - warningCount * 2);
 
     return {
       phase: "logicCompleteness",
@@ -163,6 +154,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
               code === "LOGIC002" ||
               code === "LOGIC003" ||
               code === "LOGIC004" ||
+              code === "LOGIC011" ||
               code === "LOGIC012" ||
               code === "LOGIC013" ||
               code === "LOGIC014" ||
@@ -312,7 +304,7 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
         createIssue({
           severity: "critical",
           category: "completeness",
-          code: "LOGIC010",
+          code: "LOGIC020",
           message: "Stub return value — method returns empty object/array/null",
           location: { file: filePath, line },
         }),
@@ -454,8 +446,8 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     filePath: string,
     issues: Issue[],
   ): void {
-    // Only check provider files
-    if (!/provider/i.test(filePath)) return;
+    // Only check provider/service files
+    if (!/provider|service/i.test(filePath)) return;
 
     const funcStart = /(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*[^{]+)?\s*\{/g;
     // Prisma CRUD pattern: body is only `return (await)? this.prisma.xxx.method(...);`

@@ -1,4 +1,5 @@
 const DEFAULT_PORT = 37001;
+const REQUEST_TIMEOUT_MS = 15000;
 
 export interface HttpResponse {
   status: number;
@@ -72,11 +73,15 @@ export class HttpRunner {
       headers["Authorization"] = `Bearer ${this.token}`;
     const start = performance.now();
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       const res = await fetch(`${this.baseUrl}${url}`, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
       let responseBody: any = null;
       const text = await res.text();
       try {

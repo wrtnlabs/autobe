@@ -112,16 +112,26 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
         .replace("controller", "");
 
       // Check if any provider matches this controller's domain.
-      // Require non-empty domain strings and a minimum overlap length
-      // to prevent false positives from short names like "get" or "at".
+      // Use domain-based matching to avoid false positives from substring
+      // matches (e.g., "order" ∈ "recorder").
       const ctrlDomain = this.extractDomain(ctrlName);
       const hasProvider = providerNames.some((p) => {
-        // Direct substring match (both directions) — require ≥4 char overlap
-        if (ctrlName.length >= 4 && p.includes(ctrlName)) return true;
-        if (p.length >= 4 && ctrlName.includes(p)) return true;
+        // Exact name match (after stripping suffixes)
+        if (ctrlName === p) return true;
         // Domain-based match — only when both domains are non-empty
         const pDomain = this.extractDomain(p);
         if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
+        // Whole-word containment: require the shorter name to be a
+        // complete word boundary match in the longer name (camelCase split)
+        const ctrlWords = this.splitCamelCase(ctrlName);
+        const pWords = this.splitCamelCase(p);
+        if (
+          ctrlWords.length >= 1 &&
+          pWords.length >= 1 &&
+          (this.wordsContain(pWords, ctrlWords) ||
+            this.wordsContain(ctrlWords, pWords))
+        )
+          return true;
         return false;
       });
 
@@ -169,6 +179,27 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       .trim();
     // Require minimum length to avoid matching on empty/trivial strings
     return domain.length >= 3 ? domain : "";
+  }
+
+  /** Split camelCase/PascalCase into lowercase words */
+  private splitCamelCase(name: string): string[] {
+    return name
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length >= 3);
+  }
+
+  /** Check if all words from `needle` appear in `haystack` in order */
+  private wordsContain(haystack: string[], needle: string[]): boolean {
+    if (needle.length === 0) return false;
+    let hi = 0;
+    for (const word of needle) {
+      while (hi < haystack.length && haystack[hi] !== word) hi++;
+      if (hi >= haystack.length) return false;
+      hi++;
+    }
+    return true;
   }
 
   private computeRequirementsScore(

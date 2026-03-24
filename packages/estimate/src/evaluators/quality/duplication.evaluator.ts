@@ -16,8 +16,8 @@ export class DuplicationEvaluator extends BaseEvaluator {
   readonly phase = "quality" as const;
   readonly description = "Detects duplicate code blocks";
 
-  private readonly MIN_LINES = 10;
-  private readonly MIN_CHARS = 100;
+  private readonly MIN_LINES = 12;
+  private readonly MIN_CHARS = 120;
 
   async evaluate(context: EvaluationContext): Promise<PhaseResult> {
     const startTime = performance.now();
@@ -116,7 +116,11 @@ export class DuplicationEvaluator extends BaseEvaluator {
             !line.startsWith("*") &&
             !line.startsWith("/*") &&
             !line.startsWith("import ") &&
-            !line.startsWith("export ")
+            !line.startsWith("export ") &&
+            // Filter NestJS boilerplate: decorators, constructor DI, module metadata
+            !line.startsWith("@") &&
+            !/^constructor\s*\(/.test(line) &&
+            !/^(private|protected|public)\s+readonly\s+\w+:/.test(line)
           );
         })
         .join("\n");

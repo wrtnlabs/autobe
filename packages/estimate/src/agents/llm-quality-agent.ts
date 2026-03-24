@@ -25,8 +25,8 @@ export class LLMQualityAgent extends BaseAgent {
         provider: this.config.provider,
         model: this.client.getModel(),
         issues: [],
-        score: 100,
-        summary: "No files to evaluate",
+        score: -1,
+        summary: "No files to evaluate — excluded from scoring",
         durationMs: Math.round(performance.now() - startTime),
       };
     }

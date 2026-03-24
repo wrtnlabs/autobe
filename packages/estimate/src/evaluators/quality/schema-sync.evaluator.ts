@@ -202,6 +202,44 @@ export class SchemaSyncEvaluator extends BaseEvaluator {
           continue;
         }
 
+        // Match: multi-line empty interface (opening brace on same line, closing brace within 2 lines)
+        const ifaceOpenMatch = line.match(
+          /export\s+interface\s+(\w+)[\s<].*\{\s*$/,
+        );
+        if (ifaceOpenMatch) {
+          // Look ahead up to 2 lines for a closing brace with only whitespace between
+          let isEmptyMultiline = false;
+          for (let k = i + 1; k < Math.min(i + 3, lines.length); k++) {
+            const nextLine = lines[k].trim();
+            if (nextLine === "}") {
+              // Check that all lines between opening and closing are blank
+              const betweenLines = lines
+                .slice(i + 1, k)
+                .every((l) => l.trim().length === 0);
+              if (betweenLines) {
+                isEmptyMultiline = true;
+              }
+              break;
+            }
+            if (nextLine.length > 0 && nextLine !== "}") break;
+          }
+
+          totalTypes++;
+          if (isEmptyMultiline) {
+            emptyTypes++;
+            issues.push(
+              createIssue({
+                severity: "warning",
+                category: "completeness",
+                code: "SYNC001",
+                message: `Empty interface: ${ifaceOpenMatch[1]} {} — missing properties`,
+                location: { file: relativePath, line: i + 1 },
+              }),
+            );
+          }
+          continue;
+        }
+
         // Count non-empty type/interface declarations
         if (
           /export\s+(type|interface)\s+\w+/.test(line) &&

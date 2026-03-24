@@ -31,8 +31,8 @@ export class HallucinationAgent extends BaseAgent {
         provider: this.config.provider,
         model: this.client.getModel(),
         issues: [],
-        score: 100,
-        summary: "No files to evaluate",
+        score: -1,
+        summary: "No files to evaluate — excluded from scoring",
         durationMs: Math.round(performance.now() - startTime),
       };
     }
@@ -46,8 +46,9 @@ export class HallucinationAgent extends BaseAgent {
         provider: this.config.provider,
         model: this.client.getModel(),
         issues: [],
-        score: 100,
-        summary: "No spec context available (OpenAPI/Prisma not found)",
+        score: -1,
+        summary:
+          "No spec context available (OpenAPI/Prisma not found) — excluded from scoring",
         durationMs: Math.round(performance.now() - startTime),
       };
     }

@@ -160,6 +160,7 @@ export namespace ReferenceInfo {
   }
   export interface JsDoc {
     totalMissing: number;
+    totalApis: number;
     issues: Issue[];
   }
   export interface SchemaSync {

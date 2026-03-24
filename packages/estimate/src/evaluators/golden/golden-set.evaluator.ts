@@ -115,7 +115,9 @@ export class GoldenSetEvaluator {
       (r) => r.schemaWarnings && r.schemaWarnings.length > 0,
     ).length;
     const warningRatio = withWarnings / results.length;
-    return Math.max(0, Math.round(100 - warningRatio * 200));
+    // Gentler curve: 0% warnings → 100, 50% → 50, 100% → 0
+    // (Previous: 200x multiplier made 50% warnings → 0 score)
+    return Math.max(0, Math.round(100 * (1 - warningRatio)));
   }
 
   async evaluate(

@@ -339,34 +339,36 @@ export async function runCLI(options: CLIOptions): Promise<void> {
       const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
       adjustedScore = Math.round(phasesPortion + agentPortion);
 
-      // Two-tier agent cap (only when ALL agents succeeded — API failures excluded)
-      const allWeightedAgents = agentResults.filter(
-        (r) => r.agent in AGENT_WEIGHTS,
+      // Two-tier agent cap — only apply when enough agent coverage exists.
+      // Successful agents must cover ≥50% of total weight to be conclusive.
+      const totalAgentWeight = Object.values(AGENT_WEIGHTS).reduce(
+        (s, w) => s + w,
+        0,
       );
-      const failedAgents = allWeightedAgents.filter((r) => r.score < 0);
-      if (failedAgents.length === 0) {
+      if (weightSum >= totalAgentWeight * 0.5) {
         if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
         else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
-      } else {
-        console.log(
-          `  ⚠ ${failedAgents.length} agent(s) failed (API error) — two-tier cap skipped`,
-        );
       }
     }
     // If all agents failed, adjustedScore stays as phase-only score
   }
 
+  // Use actual blending state for breakdown — only when agents actually succeeded
+  const successAgentCount = agentResults.filter(
+    (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
+  ).length;
+  const agentsBlended = successAgentCount > 0 && result.phases.gate.passed;
   const scoreBreakdown: ScoreBreakdown = {
     phaseScore: result.totalScore,
-    phaseWeight: agentResults.length > 0 ? 1 - AGENT_WEIGHT_RATIO : 1.0,
-    phaseContribution:
-      agentResults.length > 0
-        ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
-        : result.totalScore,
-    agentScore: agentResults.length > 0 ? Math.round(agentAvg) : null,
-    agentWeight: agentResults.length > 0 ? AGENT_WEIGHT_RATIO : 0,
-    agentContribution:
-      agentResults.length > 0 ? Math.round(agentAvg * AGENT_WEIGHT_RATIO) : 0,
+    phaseWeight: agentsBlended ? 1 - AGENT_WEIGHT_RATIO : 1.0,
+    phaseContribution: agentsBlended
+      ? Math.round(result.totalScore * (1 - AGENT_WEIGHT_RATIO))
+      : result.totalScore,
+    agentScore: agentsBlended ? Math.round(agentAvg) : null,
+    agentWeight: agentsBlended ? AGENT_WEIGHT_RATIO : 0,
+    agentContribution: agentsBlended
+      ? Math.round(agentAvg * AGENT_WEIGHT_RATIO)
+      : 0,
   };
 
   const fullResult = {
@@ -751,10 +753,11 @@ function printAgentResults(agentResults: AgentResult[]): void {
         `      DeepEval: Faith=${d.faithfulness} Rel=${d.relevancy} Prec=${d.contextualPrecision}`,
       );
     }
+    const rawSummary = result.summary || "";
     const summaryText =
-      result.summary.length > 120
-        ? result.summary.substring(0, 120) + "..."
-        : result.summary;
+      rawSummary.length > 120
+        ? rawSummary.substring(0, 120) + "..."
+        : rawSummary;
     console.log(`      Summary: ${summaryText}`);
     console.log("");
   }
@@ -954,10 +957,8 @@ function printGroupedIssues(issues: EvaluationResult["criticalIssues"]): void {
   for (const [code, info] of sorted.slice(0, 5)) {
     const fileHint = info.files.join(", ");
     const more = info.count > info.files.length ? " ..." : "";
-    const msg =
-      info.message.length > 100
-        ? info.message.substring(0, 100) + "..."
-        : info.message;
+    const rawMsg = info.message || "";
+    const msg = rawMsg.length > 100 ? rawMsg.substring(0, 100) + "..." : rawMsg;
     console.log(`   • [${code}] ×${info.count} — ${msg}`);
     console.log(`     files: ${fileHint}${more}`);
   }

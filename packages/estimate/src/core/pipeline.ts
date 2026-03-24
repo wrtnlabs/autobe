@@ -545,6 +545,7 @@ export class EvaluationPipeline {
       },
       jsdoc: {
         totalMissing: resultMap.jsdoc.issues.length,
+        totalApis: (resultMap.jsdoc.metrics?.totalPublicApis as number) || 0,
         issues: resultMap.jsdoc.issues,
       },
       schemaSync: {
@@ -567,7 +568,7 @@ export class EvaluationPipeline {
       },
       duplication: { totalBlocks: 0, issues: [] },
       naming: { totalIssues: 0, issues: [] },
-      jsdoc: { totalMissing: 0, issues: [] },
+      jsdoc: { totalMissing: 0, totalApis: 0, issues: [] },
       schemaSync: {
         totalTypes: 0,
         emptyTypes: 0,
@@ -651,12 +652,14 @@ export class EvaluationPipeline {
           sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
-      // Apply gate as a soft multiplier: if gate passed, floor at 0.9 to avoid
-      // over-penalizing minor compilation warnings (e.g., .prisma extension TS6054).
-      // Gate failed → full multiplier (score/100). Gate passed → max(score/100, 0.9).
+      // Apply gate as a soft multiplier with smooth interpolation.
+      // Gate failed → raw multiplier (score/100).
+      // Gate passed → linear ramp from 0.7 (at gate=0) to 1.0 (at gate=100),
+      // providing meaningful penalty for poor gate scores.
+      rawScore = Math.min(100, rawScore); // clamp before multiplier
       const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
       const gateMultiplier = phases.gate.passed
-        ? Math.max(rawGateMultiplier, 0.9)
+        ? 0.7 + rawGateMultiplier * 0.3
         : rawGateMultiplier;
       totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 
@@ -679,11 +682,11 @@ export class EvaluationPipeline {
       );
       const totalFiles = context.files.typescript.length || 1;
       const warningRatio = realWarnings.length / totalFiles;
-      // Scale threshold by project size: small projects (<50 files) use 0.3,
-      // large projects (200+ files) use 0.5 — more warnings are natural at scale
+      // Scale threshold by project size: small projects (<50 files) use 0.2,
+      // large projects (200+ files) use up to 0.35 — tighter than before
       const warningThreshold = Math.min(
-        0.5,
-        0.3 + Math.max(0, totalFiles - 50) * 0.001,
+        0.35,
+        0.2 + Math.max(0, totalFiles - 50) * 0.001,
       );
       if (warningRatio > warningThreshold) {
         const warningPenalty = Math.min(
@@ -702,11 +705,15 @@ export class EvaluationPipeline {
         }
       }
 
-      // Duplication penalty
-      if (reference.duplication.totalBlocks > 50) {
+      // Duplication penalty — threshold scales with project size
+      const dupThreshold = Math.max(
+        30,
+        Math.min(80, Math.round(totalFiles * 0.5)),
+      );
+      if (reference.duplication.totalBlocks > dupThreshold) {
         const dupPenalty = Math.min(
           5,
-          Math.round((reference.duplication.totalBlocks - 50) / 20),
+          Math.round((reference.duplication.totalBlocks - dupThreshold) / 20),
         );
         totalScore = Math.max(0, totalScore - dupPenalty);
         penaltyData.duplication = {
@@ -715,17 +722,21 @@ export class EvaluationPipeline {
         };
         if (this.verbose) {
           console.log(
-            `  Duplication penalty: -${dupPenalty} (${reference.duplication.totalBlocks} blocks)`,
+            `  Duplication penalty: -${dupPenalty} (${reference.duplication.totalBlocks} blocks, threshold=${dupThreshold})`,
           );
         }
       }
 
-      // JSDoc penalty
+      // JSDoc penalty — proportional to missing ratio, capped at 5
+      // Use totalApis (documentable symbols) as denominator, not file count
       if (reference.jsdoc.totalMissing > 0) {
-        const jsdocRatio =
-          reference.jsdoc.totalMissing / (context.files.typescript.length || 1);
-        if (jsdocRatio > 0.1) {
-          const jsdocPenalty = Math.min(5, Math.round(jsdocRatio * 5));
+        const jsdocDenom =
+          reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
+        const jsdocRatio = reference.jsdoc.totalMissing / jsdocDenom;
+        if (jsdocRatio > 0.3) {
+          // 30% missing → 0pt penalty, 100% missing → 5pt penalty
+          const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
+          const jsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
           totalScore = Math.max(0, totalScore - jsdocPenalty);
           penaltyData.jsdoc = {
             amount: jsdocPenalty,
@@ -741,9 +752,10 @@ export class EvaluationPipeline {
       }
 
       // Empty interface + mismatch penalty (ratio-based, scaled by project size)
+      // Use minimum denominator of 10 to prevent small type counts from inflating ratios
       {
         let syncPenalty = 0;
-        const syncTotal = Math.max(reference.schemaSync.totalTypes, 1);
+        const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
         const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
         const mismatchRatio =
           reference.schemaSync.mismatchedProperties / syncTotal;
@@ -790,9 +802,16 @@ export class EvaluationPipeline {
           500 + Math.max(0, totalFiles - 50) * 3,
         );
         if (suggestionCount > suggestionThreshold) {
+          // Divisor scales with project size: small=150, large=400
+          const suggestionDivisor = Math.min(
+            400,
+            150 + Math.max(0, totalFiles - 50) * 1.5,
+          );
           const suggestionPenalty = Math.min(
             10,
-            Math.round((suggestionCount - suggestionThreshold) / 200),
+            Math.round(
+              (suggestionCount - suggestionThreshold) / suggestionDivisor,
+            ),
           );
           totalScore = Math.max(0, totalScore - suggestionPenalty);
           penaltyData.suggestionOverflow = {
@@ -804,6 +823,24 @@ export class EvaluationPipeline {
               `  Suggestion overflow penalty: -${suggestionPenalty} (${suggestionCount} suggestions, threshold=${suggestionThreshold})`,
             );
           }
+        }
+      }
+
+      // Combined penalty cap — prevent penalty stacking from dominating
+      const totalPenaltyAmount = Object.values(penaltyData).reduce(
+        (sum, p) =>
+          sum + (typeof p === "object" && "amount" in p ? p.amount : 0),
+        0,
+      );
+      const MAX_COMBINED_PENALTY = 30;
+      if (totalPenaltyAmount > MAX_COMBINED_PENALTY) {
+        // Restore excess penalty
+        const excess = totalPenaltyAmount - MAX_COMBINED_PENALTY;
+        totalScore = Math.min(100, totalScore + excess);
+        if (this.verbose) {
+          console.log(
+            `  Penalty cap: restored ${excess}pts (total penalties ${totalPenaltyAmount} → ${MAX_COMBINED_PENALTY})`,
+          );
         }
       }
 

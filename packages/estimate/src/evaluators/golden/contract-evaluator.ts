@@ -48,6 +48,7 @@ interface ContractTestResult extends ScenarioResult {
   method: string;
   statusCode?: number;
   responseWarnings: string[];
+  skipped?: boolean;
 }
 
 // ── Score ratios (same structure as GoldenSetEvaluator) ─────
@@ -59,7 +60,6 @@ const RESPONSE_TIME_RATIO = 0.2; // reasonable response time
 // ── Max endpoints to test (cost/time guard) ─────────────────
 
 const MAX_ENDPOINTS = 80;
-const _REQUEST_TIMEOUT_MS = 10000;
 
 export class ContractEvaluator {
   readonly name = "ContractEvaluator";
@@ -331,7 +331,7 @@ export class ContractEvaluator {
       );
       if (loginEp?.requestBodySchema) {
         const body = this.generateRequestBody(spec, loginEp.requestBodySchema);
-        const res = await http.post(joinEp?.path ?? loginEp.path, body);
+        const res = await http.post(loginEp.path, body);
         return this.extractToken(res.body);
       }
       return null;
@@ -513,16 +513,18 @@ export class ContractEvaluator {
       const path = ep.path;
 
       // Skip endpoints with path parameters (we can't resolve them)
+      // Excluded from scoring — neither pass nor fail
       if (path.includes("{") || path.includes(":")) {
         return {
           id: 0,
           name: `${ep.method} ${ep.path}`,
-          passed: true, // skip, don't penalize
+          passed: false,
           category: ep.category,
           endpoint: ep.path,
           method: ep.method,
           responseWarnings: [],
           reason: "skipped (path parameters)",
+          skipped: true,
         };
       }
 
@@ -612,19 +614,25 @@ export class ContractEvaluator {
   }
 
   private validateStatusCode(ep: EndpointSpec, status: number): boolean {
-    // Auth endpoints returning 400/401 with bad credentials is expected
-    if (ep.category === "auth" && (status === 400 || status === 401))
-      return true;
-
-    // Server responding at all is a pass for contract testing
     // Status 0 = connection refused
     if (status === 0) return false;
 
     // 2xx = success
     if (status >= 200 && status < 300) return true;
 
-    // 4xx can be OK for contract testing (validation errors, etc.)
-    // The important thing is the server handles it gracefully
+    // Auth endpoints: 400/401/403 with bad credentials is expected
+    if (ep.category === "auth" && [400, 401, 403].includes(status)) return true;
+
+    // 400 = validation error (expected with generated request bodies)
+    if (status === 400) return true;
+
+    // 404 = route not found — the endpoint doesn't exist, fail
+    // 405 = method not allowed — route exists but wrong method
+    // 401/403 = auth required — route exists but needs credentials
+    if (status === 404 || status === 405) return false;
+    if (status === 401 || status === 403) return true; // route exists
+
+    // Other 4xx = fail (409 conflict, 422 unprocessable, etc. are ambiguous)
     if (status >= 400 && status < 500) return true;
 
     // 5xx = server error = fail
@@ -632,8 +640,14 @@ export class ContractEvaluator {
   }
 
   private isExpectedError(ep: EndpointSpec, status: number): boolean {
-    // 4xx errors are expected when we send generated data
-    return status >= 400 && status < 500;
+    // Only specific 4xx are expected — 404/405 are NOT expected
+    return (
+      status === 400 ||
+      status === 401 ||
+      status === 403 ||
+      status === 409 ||
+      status === 422
+    );
   }
 
   // ── Response schema validation ────────────────────────────
@@ -642,6 +656,7 @@ export class ContractEvaluator {
     spec: Record<string, unknown>,
     body: unknown,
     schema: OpenApiSchema,
+    depth: number = 0,
   ): string[] {
     const warnings: string[] = [];
 
@@ -673,7 +688,7 @@ export class ContractEvaluator {
         }
       }
 
-      // Check declared properties exist
+      // Check declared properties exist and validate types recursively
       if (resolved.properties) {
         const declaredKeys = Object.keys(resolved.properties);
         const bodyKeys = Object.keys(bodyObj);
@@ -688,16 +703,36 @@ export class ContractEvaluator {
             `Low schema match: only ${matchedKeys.length}/${declaredKeys.length} declared fields present`,
           );
         }
+
+        // Recursive type checking on matched properties (limit depth)
+        if (depth < 3) {
+          for (const key of matchedKeys) {
+            const propSchema = resolved.properties![key];
+            const propValue = bodyObj[key];
+            if (propValue !== null && propValue !== undefined && propSchema) {
+              const propWarnings = this.validateResponseSchema(
+                spec,
+                propValue,
+                propSchema,
+                depth + 1,
+              );
+              for (const w of propWarnings) {
+                warnings.push(`${key}.${w}`);
+              }
+            }
+          }
+        }
       }
     }
 
     if (resolved.type === "array" && Array.isArray(body)) {
       // Check items schema on first element
-      if (body.length > 0 && resolved.items) {
+      if (body.length > 0 && resolved.items && depth < 3) {
         const itemWarnings = this.validateResponseSchema(
           spec,
           body[0],
           resolved.items,
+          depth + 1,
         );
         for (const w of itemWarnings) {
           warnings.push(`[0]: ${w}`);
@@ -724,26 +759,28 @@ export class ContractEvaluator {
   // ── Scoring ───────────────────────────────────────────────
 
   private computeScore(results: ContractTestResult[]): number {
-    if (results.length === 0) return 0;
+    // Exclude skipped endpoints (path parameters) from scoring
+    const scoreable = results.filter((r) => !r.skipped);
+    if (scoreable.length === 0) return 0;
 
-    const total = results.length;
+    const total = scoreable.length;
 
-    // 1. Status code score (30%) — not 5xx
-    const statusOk = results.filter(
+    // 1. Status code score (30%) — 2xx success only
+    const statusOk = scoreable.filter(
       (r) =>
-        r.statusCode !== undefined && r.statusCode !== 0 && r.statusCode < 500,
+        r.statusCode !== undefined && r.statusCode >= 200 && r.statusCode < 300,
     ).length;
     const statusScore = (statusOk / total) * 100;
 
     // 2. Schema match score (50%) — responses match declared schema
-    const withWarnings = results.filter(
+    const withWarnings = scoreable.filter(
       (r) => r.responseWarnings.length > 0,
     ).length;
     const warningRatio = withWarnings / total;
     const schemaScore = Math.max(0, 100 - warningRatio * 200);
 
     // 3. Response time score (20%)
-    const timings = results
+    const timings = scoreable
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
     let responseTimeScore = 100;

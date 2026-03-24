@@ -175,10 +175,40 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
       let noProviderEndpoints = 0;
       let passthroughEndpoints = 0;
 
+      // HTTP routing decorator names — only these indicate an API endpoint
+      const HTTP_DECORATOR_NAMES = new Set([
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete",
+        "All",
+        "Head",
+        "Options",
+      ]);
+
       const visit = (node: ts.Node) => {
         if (ts.isMethodDeclaration(node)) {
           const decorators = ts.getDecorators(node);
-          if (decorators && decorators.length > 0) {
+          // Only count methods with HTTP routing decorators as endpoints
+          const hasHttpDecorator = decorators?.some((d) => {
+            const expr = d.expression;
+            // @Get(), @Post(), etc.
+            if (ts.isCallExpression(expr)) {
+              const name = expr.expression.getText(sourceFile);
+              // Handle @TypedRoute.Get, @TypedRoute.Post, etc.
+              const baseName = name.includes(".")
+                ? name.split(".").pop()!
+                : name;
+              return HTTP_DECORATOR_NAMES.has(baseName);
+            }
+            // @Get (without parentheses)
+            if (ts.isIdentifier(expr)) {
+              return HTTP_DECORATOR_NAMES.has(expr.text);
+            }
+            return false;
+          });
+          if (hasHttpDecorator) {
             totalEndpoints++;
 
             if (node.body) {
@@ -252,23 +282,29 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                 }
 
                 // Check for provider/service delegation.
-                const LOGGING_PATTERN = /this\.(logger|log|logging)\.\w+\s*\(/i;
-                const hasNonLoggingDelegation =
+                // Exclude infrastructure calls that don't count as real delegation
+                const INFRA_CALL_PATTERN =
+                  /this\.(logger|log|logging|config|configService|moduleRef|reflector|httpAdapter|i18n)\.\w+\s*\(/i;
+                const hasNonInfraDelegation =
                   /this\.\w+\.\w+\s*\(/i.test(bodyText) &&
                   bodyText
                     .split("\n")
                     .some(
                       (line) =>
                         /this\.\w+\.\w+\s*\(/i.test(line) &&
-                        !LOGGING_PATTERN.test(line),
+                        !INFRA_CALL_PATTERN.test(line),
                     );
                 const delegatesToProvider =
                   /this\.\w*(provider|service|repository|usecase|gateway|handler|manager|facade)/i.test(
                     bodyText,
                   ) ||
-                  hasNonLoggingDelegation ||
-                  /return\s+.*this\./i.test(bodyText) ||
-                  /await\s+this\./i.test(bodyText);
+                  hasNonInfraDelegation ||
+                  /return\s+.*this\.\w*(provider|service|repository)/i.test(
+                    bodyText,
+                  ) ||
+                  /await\s+this\.\w*(provider|service|repository)/i.test(
+                    bodyText,
+                  );
 
                 if (!delegatesToProvider && !hasRealLogic) {
                   noProviderEndpoints++;

@@ -36,10 +36,28 @@ export abstract class BaseAgent {
         jsonStr = jsonStr.replace(/```\n?/g, "");
       }
       const parsed = JSON.parse(jsonStr.trim());
+      // Sanitize issues: ensure each has required string fields
+      const rawIssues: AgentIssue[] = (parsed.issues || [])
+        .filter((i: unknown) => i && typeof i === "object")
+        .map((i: Record<string, unknown>) => ({
+          ...i,
+          description:
+            typeof i.description === "string"
+              ? i.description
+              : String(i.description ?? "No description"),
+          type: typeof i.type === "string" ? i.type : "unknown",
+          severity: typeof i.severity === "string" ? i.severity : "warning",
+        }));
       const result: AgentParseResult = {
-        issues: parsed.issues || [],
-        score: typeof parsed.score === "number" ? parsed.score : 100,
-        summary: parsed.summary || "No summary provided",
+        issues: rawIssues,
+        score:
+          typeof parsed.score === "number"
+            ? Math.max(0, Math.min(100, parsed.score))
+            : 100,
+        summary:
+          typeof parsed.summary === "string"
+            ? parsed.summary
+            : "No summary provided",
       };
       if (parsed.deepEvalScores) {
         const d = parsed.deepEvalScores;
@@ -328,7 +346,8 @@ export abstract class BaseAgent {
       const fileKey = issue.file ? `${issue.type}:${issue.file}` : null;
 
       // Key by first 80 chars of description (catch near-duplicates)
-      const descKey = `${issue.type}:${issue.severity}:${issue.description.substring(0, 80).toLowerCase()}`;
+      const desc = issue.description || "";
+      const descKey = `${issue.type}:${issue.severity}:${desc.substring(0, 80).toLowerCase()}`;
 
       const key = fileKey || descKey;
 

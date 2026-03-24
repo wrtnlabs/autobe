@@ -434,21 +434,23 @@ export class RuntimeEvaluator extends GateEvaluator {
     });
 
     this.serverProcess.on("error", (err) => {
-      throw new Error(`Server process error: ${err.message}`);
+      console.error(`Server process error: ${err.message}`);
+      this.serverProcess = null;
     });
   }
 
   private killServer(): void {
-    if (this.serverProcess && !this.serverProcess.killed) {
-      this.serverProcess.kill("SIGTERM");
+    const proc = this.serverProcess;
+    if (proc && !proc.killed) {
+      proc.kill("SIGTERM");
       // Give it a moment, then force kill
       setTimeout(() => {
-        if (this.serverProcess && !this.serverProcess.killed) {
-          this.serverProcess.kill("SIGKILL");
+        if (!proc.killed) {
+          proc.kill("SIGKILL");
         }
       }, 5000);
-      this.serverProcess = null;
     }
+    this.serverProcess = null;
   }
 
   // ── Shared methods ──────────────────────────────────────────
@@ -515,17 +517,35 @@ export class RuntimeEvaluator extends GateEvaluator {
     output: string,
     durationMs: number,
   ): TestOutputResult {
-    if (output.includes("Success") && !output.includes("Failed")) {
+    // Try standard test runner patterns first (Jest, Vitest, Mocha, etc.)
+    const passedMatch = output.match(/(\d+)\s+pass(?:ed|ing)?/i);
+    const failedMatch = output.match(/(\d+)\s+fail(?:ed|ing|ure)?/i);
+
+    if (passedMatch || failedMatch) {
+      const passed = passedMatch ? parseInt(passedMatch[1]) : 0;
+      const failed = failedMatch ? parseInt(failedMatch[1]) : 0;
+      return { passed, failed, total: passed + failed, durationMs };
+    }
+
+    // Try "X of Y" pattern (e.g., "5 of 10 tests passed")
+    const ofMatch = output.match(/(\d+)\s+of\s+(\d+)\s+tests?\s+passed/i);
+    if (ofMatch) {
+      const passed = parseInt(ofMatch[1]);
+      const total = parseInt(ofMatch[2]);
+      return { passed, failed: total - passed, total, durationMs };
+    }
+
+    // Heuristic: exit code 0 with no obvious failure indicators → assume pass
+    const hasFailIndicator =
+      /\b(fail|error|FAIL|ERROR)\b/.test(output) && !/0\s+fail/i.test(output);
+    const hasPassIndicator = /\b(success|ok|pass|complete|✓|✔)\b/i.test(output);
+
+    if (hasPassIndicator && !hasFailIndicator) {
       return { passed: 1, failed: 0, total: 1, durationMs };
     }
 
-    const passedMatch = output.match(/(\d+)\s+passed/i);
-    const failedMatch = output.match(/(\d+)\s+failed/i);
-
-    const passed = passedMatch ? parseInt(passedMatch[1]) : 0;
-    const failed = failedMatch ? parseInt(failedMatch[1]) : 0;
-
-    return { passed, failed, total: passed + failed, durationMs };
+    // No recognizable pattern — report as unknown
+    return { passed: 0, failed: 0, total: 0, durationMs };
   }
 
   private sleep(ms: number): Promise<void> {

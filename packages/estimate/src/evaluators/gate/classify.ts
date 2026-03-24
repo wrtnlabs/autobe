@@ -6,7 +6,20 @@ const CRITICAL_CODES = new Set([
 ]);
 
 const WARNING_CODES = new Set([
-  2304, 2305, 2306, 2307, 2314, 2322, 2339, 2345, 2551, 2554, 2561, 7006, 7031,
+  // Cannot find name/module (import resolution)
+  2304, 2305, 2306, 2307,
+  // Type mismatch / assignment errors
+  2314, 2322, 2339, 2345, 2352,
+  // Spelling suggestions, argument count, readonly
+  2551, 2554, 2540, 2561,
+  // Property missing, no overload match, not assignable in extends
+  2741, 2769, 2416,
+  // Cannot be used as index, function must return
+  2538, 2355,
+  // Implicit any
+  7006, 7031, 7053,
+  // Strict null checks (variable is possibly null/undefined/unknown)
+  18046, 18047, 18048,
 ]);
 
 // Infrastructure noise — does not affect gate or penalties
