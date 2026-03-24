@@ -42,6 +42,11 @@ export function AutoBePlaygroundApplication() {
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
 
+  // Mock mode state
+  const [mockMode, setMockMode] = useState(false);
+  const [mockVendor, setMockVendor] = useState<string | null>(null);
+  const [mockProject, setMockProject] = useState<string | null>(null);
+
   // Examples state
   const [benchmarks, setBenchmarks] = useState<
     IAutoBePlaygroundBenchmark[] | null
@@ -104,6 +109,14 @@ export function AutoBePlaygroundApplication() {
           model: selectedModel,
           locale: selectedLocale,
           timezone: selectedTimezone,
+          ...(mockMode && mockVendor && mockProject
+            ? {
+                mock: {
+                  vendor: mockVendor,
+                  project: mockProject,
+                },
+              }
+            : {}),
         });
       sessionId = session.id;
     }
@@ -197,6 +210,13 @@ export function AutoBePlaygroundApplication() {
             onModelChange={setSelectedModel}
             onLocaleChange={setSelectedLocale}
             onTimezoneChange={setSelectedTimezone}
+            benchmarks={benchmarks ?? []}
+            mockMode={mockMode}
+            onMockModeChange={setMockMode}
+            mockVendor={mockVendor}
+            mockProject={mockProject}
+            onMockVendorChange={setMockVendor}
+            onMockProjectChange={setMockProject}
           />
         )}
         {tab === 1 && benchmarks && (

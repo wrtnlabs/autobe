@@ -326,6 +326,7 @@ const SessionsPanel = (props: {
                     direction="row"
                     spacing={0.5}
                     alignItems="center"
+                    flexWrap="wrap"
                   >
                     <Typography variant="caption" color="text.secondary">
                       {date.toLocaleDateString()}
@@ -351,6 +352,23 @@ const SessionsPanel = (props: {
                       />
                     )}
                   </Stack>
+                  {s.token_usage.total > 0 && (
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ fontSize: "0.65rem" }}
+                    >
+                      {formatTokens(s.token_usage.total)} tokens
+                      {" (in: "}
+                      {formatTokens(s.token_usage.input.total)}
+                      {s.token_usage.input.cached > 0 && (
+                        <>, {formatTokens(s.token_usage.input.cached)} cached</>
+                      )}
+                      {" / out: "}
+                      {formatTokens(s.token_usage.output.total)}
+                      {")"}
+                    </Typography>
+                  )}
                 </Stack>
               }
             />
@@ -372,3 +390,9 @@ const SessionsPanel = (props: {
     </List>
   );
 };
+
+function formatTokens(num: number): string {
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(2)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  return num.toString();
+}

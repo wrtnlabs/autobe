@@ -1,3 +1,4 @@
+import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import {
   AutoBeAgentProvider,
   AutoBeAgentSessionListProvider,
@@ -97,6 +98,17 @@ export function AutoBePlaygroundChatMovie(
                         onModelChange={props.onModelChange ?? (() => {})}
                         onLocaleChange={props.onLocaleChange ?? (() => {})}
                         onTimezoneChange={props.onTimezoneChange ?? (() => {})}
+                        benchmarks={props.benchmarks ?? []}
+                        mockMode={props.mockMode ?? false}
+                        onMockModeChange={props.onMockModeChange ?? (() => {})}
+                        mockVendor={props.mockVendor ?? null}
+                        mockProject={props.mockProject ?? null}
+                        onMockVendorChange={
+                          props.onMockVendorChange ?? (() => {})
+                        }
+                        onMockProjectChange={
+                          props.onMockProjectChange ?? (() => {})
+                        }
                       />
                     ) : undefined
                   }
@@ -128,5 +140,14 @@ export namespace AutoBePlaygroundChatMovie {
     onModelChange?: (model: string | null) => void;
     onLocaleChange?: (locale: string) => void;
     onTimezoneChange?: (timezone: string) => void;
+
+    // Mock mode
+    benchmarks?: IAutoBePlaygroundBenchmark[];
+    mockMode?: boolean;
+    onMockModeChange?: (enabled: boolean) => void;
+    mockVendor?: string | null;
+    mockProject?: string | null;
+    onMockVendorChange?: (vendor: string | null) => void;
+    onMockProjectChange?: (project: string | null) => void;
   }
 }

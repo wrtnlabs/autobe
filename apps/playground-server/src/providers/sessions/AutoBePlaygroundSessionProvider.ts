@@ -135,45 +135,7 @@ export namespace AutoBePlaygroundSessionProvider {
   }): Promise<IAutoBePlaygroundSession> => {
     const { body } = props;
 
-    // Mock session: auto-create virtual vendor
-    if (body.mock) {
-      const { vendor: vendorSlug, project } = body.mock;
-
-      const vendor = await AutoBePlaygroundVendorProvider.create({
-        body: {
-          name: `virtual: ${vendorSlug}`,
-          apiKey: VIRTUAL_API_KEY,
-          baseURL: null,
-          semaphore: 16,
-        },
-      });
-
-      const record =
-        await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
-          data: {
-            id: v7(),
-            autobe_playground_vendor_id: vendor.id,
-            model: `${vendorSlug}#${project}`,
-            locale: "en",
-            timezone: "UTC",
-            title: `[Mock] ${vendorSlug} / ${project}`,
-            created_at: new Date(),
-            completed_at: null,
-            aggregate: {
-              create: {
-                id: v7(),
-                phase: null,
-                enabled: true,
-                token_usage: JSON.stringify(new AutoBeTokenUsage().toJSON()),
-              },
-            },
-          },
-          ...json.select(),
-        });
-      return json.transform(record);
-    }
-
-    // Real session
+    // Validate vendor exists
     await AutoBePlaygroundGlobal.prisma.autobe_playground_vendors.findFirstOrThrow(
       {
         where: { id: body.vendor_id, deleted_at: null },
@@ -181,24 +143,34 @@ export namespace AutoBePlaygroundSessionProvider {
       },
     );
 
-    await AutoBePlaygroundVendorModelProvider.emplace({
-      vendorId: body.vendor_id,
-      model: body.model,
-    });
-
     const config = await AutoBePlaygroundConfigProvider.get();
     const locale = body.locale ?? config.locale;
     const timezone = body.timezone ?? config.timezone;
+
+    // Determine model field: encode mock info as "vendor#project" when mock
+    const isMock = body.mock != null;
+    const model = isMock
+      ? `${body.mock!.vendor}#${body.mock!.project}`
+      : body.model;
+    const title = body.title ??
+      (isMock ? `[Mock] ${body.mock!.project}` : null);
+
+    if (!isMock) {
+      await AutoBePlaygroundVendorModelProvider.emplace({
+        vendorId: body.vendor_id,
+        model: body.model,
+      });
+    }
 
     const record =
       await AutoBePlaygroundGlobal.prisma.autobe_playground_sessions.create({
         data: {
           id: v7(),
           autobe_playground_vendor_id: body.vendor_id,
-          model: body.model,
+          model,
           locale,
           timezone,
-          title: body.title ?? null,
+          title,
           created_at: new Date(),
           completed_at: null,
           aggregate: {

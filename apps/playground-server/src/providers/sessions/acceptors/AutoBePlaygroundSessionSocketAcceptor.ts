@@ -123,12 +123,16 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
         session: props.session,
       });
 
+    // Determine if this is a mock session by checking the model field
+    // for the "vendor#project" encoding pattern.
+    const isMockSession = props.session.model.includes("#");
+
     // Decrypt vendor API key
     const apiKey = await AutoBePlaygroundVendorProvider.decryptApiKey(
       props.session.vendor.id,
     );
     const agent: IAutoBeAgent =
-      apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
+      isMockSession || apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
         ? await startCommunication({
             ...props,
             histories,

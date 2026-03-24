@@ -1,4 +1,5 @@
 import {
+  IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundVendor,
   IAutoBePlaygroundVendorModel,
 } from "@autobe/interface";
@@ -15,10 +16,12 @@ import {
   DialogTitle,
   Divider,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Select,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -56,6 +59,15 @@ export interface IVendorModelSelectorProps {
   onModelChange: (model: string | null) => void;
   onLocaleChange: (locale: string) => void;
   onTimezoneChange: (timezone: string) => void;
+
+  // Mock mode
+  benchmarks: IAutoBePlaygroundBenchmark[];
+  mockMode: boolean;
+  onMockModeChange: (enabled: boolean) => void;
+  mockVendor: string | null;
+  mockProject: string | null;
+  onMockVendorChange: (vendor: string | null) => void;
+  onMockProjectChange: (project: string | null) => void;
 }
 
 const CREATE_NEW_VENDOR_VALUE = "__create_new_vendor__";
@@ -129,6 +141,12 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
       .finally(() => setLoadingModels(false));
   }, [props.selectedVendorId]);
 
+  // Derive project list from selected mock vendor
+  const selectedBenchmark = props.benchmarks.find(
+    (b) => b.vendor === props.mockVendor,
+  );
+  const mockProjects = selectedBenchmark?.replays.map((r) => r.project) ?? [];
+
   return (
     <Box
       sx={{
@@ -197,7 +215,11 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
           value={props.selectedModel ?? ""}
           onInputChange={(_, value) => props.onModelChange(value || null)}
           renderInput={(params) => (
-            <TextField {...params} label="Model" placeholder="e.g. gpt-4.1" />
+            <TextField
+              {...params}
+              label="Model"
+              placeholder="e.g. gpt-4.1"
+            />
           )}
         />
 
@@ -230,6 +252,78 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
             />
           )}
         />
+
+        {/* Mock example data toggle */}
+        {props.benchmarks.length > 0 && (
+          <>
+            <Divider sx={{ my: 0.5 }} />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={props.mockMode}
+                  onChange={(_, checked) => props.onMockModeChange(checked)}
+                  size="small"
+                />
+              }
+              label={
+                <Typography variant="body2" sx={{ color: "#555" }}>
+                  Use example data (mock)
+                </Typography>
+              }
+            />
+
+            {props.mockMode && (
+              <>
+                {/* Example Vendor */}
+                <FormControl fullWidth size="small">
+                  <InputLabel>Example Vendor</InputLabel>
+                  <Select
+                    value={props.mockVendor ?? ""}
+                    label="Example Vendor"
+                    onChange={(e) => {
+                      props.onMockVendorChange(e.target.value || null);
+                      props.onMockProjectChange(null);
+                    }}
+                  >
+                    <MenuItem value="">
+                      <em>Select a vendor...</em>
+                    </MenuItem>
+                    {props.benchmarks.map((b) => (
+                      <MenuItem key={b.vendor} value={b.vendor}>
+                        {b.emoji} {b.vendor}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                {/* Example Project */}
+                <FormControl
+                  fullWidth
+                  size="small"
+                  disabled={!props.mockVendor}
+                >
+                  <InputLabel>Example Project</InputLabel>
+                  <Select
+                    value={props.mockProject ?? ""}
+                    label="Example Project"
+                    onChange={(e) =>
+                      props.onMockProjectChange(e.target.value || null)
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>Select a project...</em>
+                    </MenuItem>
+                    {mockProjects.map((p) => (
+                      <MenuItem key={p} value={p}>
+                        {p}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
+          </>
+        )}
       </Stack>
 
       {vendors.length === 0 && (
