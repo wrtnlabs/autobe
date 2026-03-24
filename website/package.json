@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "pnpm run prebuild && pnpm run build:next && pnpm run postbuild",
-    "prebuild": "rimraf .next && rimraf out && pnpm run build:typedoc && pnpm run build:blog:rss",
+    "prebuild": "rimraf .next && rimraf out && pnpm run build:dashboard && pnpm run build:typedoc && pnpm run build:blog:rss",
+    "build:dashboard": "cd ../apps/dashboard-ui && pnpm run build && cd ../../website && node build/copy-dashboard.js",
     "build:blog:rss": "node build/blog",
     "postbuild": "pnpm run build:pagefind && pnpm run build:sitemap",
     "build:next": "next build",
