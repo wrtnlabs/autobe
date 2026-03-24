@@ -1,4 +1,4 @@
-import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Function calling interface for the cyclinic write-compile-correct loop of E2E
@@ -56,7 +56,7 @@ export namespace IAutoBeTestOperationWriteApplication {
      *   compilation)
      * - `complete`: Finalize after successful write validation
      */
-    request: IWrite | IAutoBeCyclinicComplete;
+    request: IWrite | IComplete;
   }
 
   /**

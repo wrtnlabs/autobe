@@ -1,6 +1,6 @@
 import { AutoBeDatabase } from "@autobe/interface";
 
-import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
@@ -77,7 +77,7 @@ export namespace IAutoBeDatabaseCorrectApplication {
      */
     request:
       | IWrite
-      | IAutoBeCyclinicComplete
+      | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetPreviousAnalysisSections

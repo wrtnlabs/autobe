@@ -1,5 +1,6 @@
 import { AutoBeEventSource, AutoBePreliminaryKind } from "@autobe/interface";
-import { ILlmApplication, ILlmSchema, LlmTypeChecker } from "@samchon/openapi";
+import { LlmTypeChecker } from "@typia/utils";
+import { ILlmApplication, ILlmSchema } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
@@ -61,8 +62,7 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
   // ── Schema manipulation ──
 
   /**
-   * Removes `IAutoBeCyclinicComplete` from the request union when no write has
-   * succeeded.
+   * Removes `IComplete` from the request union when no write has succeeded.
    *
    * Same schema mutation pattern as
    * {@link AutoBePreliminaryController.fixApplication}.
@@ -79,22 +79,25 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
     if (request === undefined) return application;
     if (LlmTypeChecker.isAnyOf(request) === false) return application;
 
-    const refs: ILlmSchema.IReference[] = request.anyOf.filter(
-      (s): s is ILlmSchema.IReference => LlmTypeChecker.isReference(s),
-    );
+    // biome-ignore lint: type narrowing insufficient after isAnyOf guard
+    const anyOfSchema = request as ILlmSchema.IAnyOf;
+    const children = anyOfSchema.anyOf as ILlmSchema.IReference[];
+    // biome-ignore lint: x-discriminator is a runtime extension property
     const mapping: Record<string, string> =
-      request["x-discriminator"]?.mapping ?? {};
+      (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
+      null
+        ? ((
+            (anyOfSchema as unknown as Record<string, unknown>)[
+              "x-discriminator"
+            ] as Record<string, Record<string, string>>
+          ).mapping ?? {})
+        : {};
 
-    // Remove IAutoBeCyclinicComplete from anyOf
-    const completeRef = refs.find(
-      (c) =>
-        c.$ref.endsWith("/IAutoBeCyclinicComplete") ||
-        c.$ref.endsWith(".IAutoBeCyclinicComplete"),
+    // Remove IComplete from anyOf
+    const completeIdx = children.findIndex(
+      (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
     );
-    if (completeRef !== undefined) {
-      const idx = request.anyOf.indexOf(completeRef);
-      if (idx !== -1) request.anyOf.splice(idx, 1);
-    }
+    if (completeIdx !== -1) children.splice(completeIdx, 1);
 
     // Remove from discriminator mapping
     delete mapping["complete"];

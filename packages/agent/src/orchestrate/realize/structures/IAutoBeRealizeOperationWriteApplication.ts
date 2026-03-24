@@ -1,4 +1,4 @@
-import { IAutoBeCyclinicComplete } from "../../common/structures/IAutoBeCyclinicComplete";
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
@@ -75,7 +75,7 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      */
     request:
       | IWrite
-      | IAutoBeCyclinicComplete
+      | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetRealizeCollectors
