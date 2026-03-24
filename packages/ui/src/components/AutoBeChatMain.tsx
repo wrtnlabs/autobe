@@ -34,6 +34,9 @@ export interface IAutoBeChatMainProps {
 
   /** Hide the status info button (e.g. when a persistent status panel is shown) */
   hideStatusButton?: boolean;
+
+  /** Disable the chat input (e.g. when required config like vendor/model is not selected) */
+  chatDisabled?: boolean;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -381,6 +384,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             }
             conversate={conversate}
             setError={props.setError}
+            disabled={props.chatDisabled}
           />
         </div>
       </div>

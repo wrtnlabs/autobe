@@ -59,16 +59,16 @@ export const test_api_playground_session_create_mock = async (
 
   // Verify session was created with proper mock metadata
   TestValidator.predicate("id exists", () => session.id.length > 0);
-  TestValidator.equals("title", session.title, `[Mock] ${model} / ${project}`);
+  TestValidator.equals("title", session.title, `[Mock] ${project}`);
   TestValidator.equals(
     "model encodes vendor#project",
     session.model,
     `${model}#${project}`,
   );
-  TestValidator.equals("vendor name", session.vendor.name, `virtual: ${model}`);
+  TestValidator.equals("vendor id", session.vendor.id, vendor.id);
 
-  // Verify hardcoded defaults for mock sessions
-  TestValidator.equals("locale", session.locale, "en");
+  // Verify config-fallback defaults for mock sessions
+  TestValidator.equals("locale", session.locale, "en-US");
   TestValidator.equals("timezone", session.timezone, "UTC");
 
   // Verify initial state
@@ -88,14 +88,14 @@ export const test_api_playground_session_create_mock = async (
   TestValidator.equals("read.id", read.id, session.id);
   TestValidator.equals("read.title", read.title, session.title);
   TestValidator.equals("read.model", read.model, `${model}#${project}`);
-  TestValidator.equals("read.locale", read.locale, "en");
+  TestValidator.equals("read.locale", read.locale, "en-US");
 
-  // Verify the virtual vendor was auto-created
+  // Verify vendor is retrievable
   const mockVendor = await pApi.functional.autobe.playground.vendors.at(
     connection,
     session.vendor.id,
   );
-  TestValidator.equals("vendor.name", mockVendor.name, `virtual: ${model}`);
+  TestValidator.equals("vendor.id", mockVendor.id, vendor.id);
   TestValidator.equals("vendor.deleted_at", mockVendor.deleted_at, null);
 
   // Verify mock session appears in index

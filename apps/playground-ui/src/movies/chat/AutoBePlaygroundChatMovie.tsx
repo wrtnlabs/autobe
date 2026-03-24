@@ -58,6 +58,12 @@ export function AutoBePlaygroundChatMovie(
                   isMobile={isMobile}
                   setError={setError}
                   hideStatusButton={isMinWidthXl}
+                  chatDisabled={
+                    !props.isReplay &&
+                    (props.mockMode
+                      ? !props.mockVendor || !props.mockProject
+                      : !props.selectedVendorId || !props.selectedModel)
+                  }
                   disconnectedContent={
                     !props.isReplay ? (
                       <VendorModelSelector

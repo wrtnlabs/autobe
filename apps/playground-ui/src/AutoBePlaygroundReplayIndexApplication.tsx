@@ -1,18 +1,3 @@
-import {
-  IAutoBePlaygroundBenchmark,
-  IAutoBePlaygroundSession,
-} from "@autobe/interface";
-import pApi from "@autobe/playground-api";
-import {
-  Database,
-  FlaskConical,
-  Loader2,
-  PlusCircle,
-  RotateCcw,
-  Settings,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,8 +16,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Toaster } from "@/components/ui/sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  IAutoBePlaygroundBenchmark,
+  IAutoBePlaygroundSession,
+} from "@autobe/interface";
+import pApi from "@autobe/playground-api";
+import {
+  Database,
+  FlaskConical,
+  Loader2,
+  PlusCircle,
+  RotateCcw,
+  Settings,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
 import { AutoBePlaygroundReplayIndexMovie } from "./movies/replay/AutoBePlaygroundReplayIndexMovie";
@@ -64,9 +63,8 @@ export function AutoBePlaygroundReplayIndexApplication() {
   }, []);
 
   const loadExamples = useCallback(async () => {
-    const list = await pApi.functional.autobe.playground.examples.index(
-      getConnection(),
-    );
+    const list =
+      await pApi.functional.autobe.playground.examples.index(getConnection());
     setBenchmarks(list);
   }, []);
 
@@ -107,11 +105,14 @@ export function AutoBePlaygroundReplayIndexApplication() {
   const handleCreateMock = async () => {
     setCreating(true);
     try {
-      const session =
-        await pApi.functional.autobe.playground.sessions.create(
-          getConnection(),
-          { mock: { vendor: mockVendor, project: mockProject } },
-        );
+      const session = await pApi.functional.autobe.playground.sessions.create(
+        getConnection(),
+        {
+          vendor_id: "00000000-0000-0000-0000-000000000000",
+          model: "mock",
+          mock: { vendor: mockVendor, project: mockProject },
+        },
+      );
       window.location.href = `/?session-id=${session.id}`;
     } catch (err) {
       console.error("Failed to create mock session:", err);
@@ -143,7 +144,11 @@ export function AutoBePlaygroundReplayIndexApplication() {
         )}
       </header>
 
-      <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
+      <Tabs
+        value={tab}
+        onValueChange={setTab}
+        className="flex-1 flex flex-col overflow-hidden"
+      >
         <TabsList className="mx-4 mt-2 w-fit">
           <TabsTrigger value="sessions" className="gap-1.5">
             <Database className="h-4 w-4" /> Sessions
@@ -175,13 +180,26 @@ export function AutoBePlaygroundReplayIndexApplication() {
           </div>
         ) : (
           <>
-            <TabsContent value="sessions" className="flex-1 overflow-hidden mt-0">
-              {sessions && <AutoBePlaygroundReplayIndexMovie sessions={sessions} />}
+            <TabsContent
+              value="sessions"
+              className="flex-1 overflow-hidden mt-0"
+            >
+              {sessions && (
+                <AutoBePlaygroundReplayIndexMovie sessions={sessions} />
+              )}
             </TabsContent>
-            <TabsContent value="examples" className="flex-1 overflow-hidden mt-0">
-              {benchmarks && <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />}
+            <TabsContent
+              value="examples"
+              className="flex-1 overflow-hidden mt-0"
+            >
+              {benchmarks && (
+                <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
+              )}
             </TabsContent>
-            <TabsContent value="settings" className="flex-1 overflow-hidden mt-0">
+            <TabsContent
+              value="settings"
+              className="flex-1 overflow-hidden mt-0"
+            >
               <AutoBePlaygroundSettingsMovie />
             </TabsContent>
           </>
@@ -220,7 +238,9 @@ export function AutoBePlaygroundReplayIndexApplication() {
                     </SelectTrigger>
                     <SelectContent>
                       {uniqueVendors.map((v) => (
-                        <SelectItem key={v} value={v}>{v}</SelectItem>
+                        <SelectItem key={v} value={v}>
+                          {v}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -233,7 +253,9 @@ export function AutoBePlaygroundReplayIndexApplication() {
                     </SelectTrigger>
                     <SelectContent>
                       {availableProjects.map((p) => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                        <SelectItem key={p} value={p}>
+                          {p}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -242,7 +264,11 @@ export function AutoBePlaygroundReplayIndexApplication() {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setMockOpen(false)} disabled={creating}>
+            <Button
+              variant="outline"
+              onClick={() => setMockOpen(false)}
+              disabled={creating}
+            >
               Cancel
             </Button>
             <Button

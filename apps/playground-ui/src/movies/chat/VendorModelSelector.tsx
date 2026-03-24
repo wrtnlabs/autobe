@@ -248,7 +248,7 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
               {props.mockMode && (
                 <div className="space-y-3 pt-1">
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Vendor</Label>
+                    <Label className="text-xs">Model</Label>
                     <Select
                       value={props.mockVendor ?? ""}
                       onValueChange={(v) => {
@@ -257,7 +257,7 @@ export const VendorModelSelector = (props: IVendorModelSelectorProps) => {
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a vendor..." />
+                        <SelectValue placeholder="Select a model..." />
                       </SelectTrigger>
                       <SelectContent>
                         {props.benchmarks.map((b) => (
