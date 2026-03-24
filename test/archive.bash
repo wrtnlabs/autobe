@@ -4,6 +4,18 @@ pnpm run build:prompt
 ######################################################
 # QWEN
 ######################################################
+# qwen/qwen3.5-plus-02-15 (0.260)
+pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project reddit > archive.qwen-qwen3.5-397b-a17b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project shopping > archive.qwen-qwen3.5-397b-a17b.shopping.log
+pnpm run archive:go --vendor qwen/qwen3.5-plus-02-15 --label qwen/qwen3.5-397b-a17b --useToolChoice false --project erp > archive.qwen-qwen3.5-397b-a17b.erp.log
+
+# qwen/qwen3.5-flash-02-23 (0.065)
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project todo > archive.qwen-qwen3.5-35b-a3b.todo.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project reddit > archive.qwen-qwen3.5-35b-a3b.reddit.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project shopping > archive.qwen-qwen3.5-35b-a3b.shopping.log
+pnpm run archive:go --vendor qwen/qwen3.5-flash-02-23 --label qwen/qwen3.5-35b-a3b --useToolChoice false --project erp > archive.qwen-qwen3.5-35b-a3b.erp.log
+
 # qwen/qwen3.5-397b-a17b (0.39)
 pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project todo > archive.qwen-qwen3.5-397b-a17b.todo.log
 pnpm run archive:go --vendor qwen/qwen3.5-397b-a17b --useToolChoice false --project reddit > archive.qwen-qwen3.5-397b-a17b.reddit.log
@@ -57,6 +69,15 @@ pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project to
 pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project reddit > archive.z-ai-glm-5-turbo.reddit.log
 pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project shopping > archive.z-ai-glm-5-turbo.shopping.log
 pnpm run archive:go --vendor z-ai/glm-5-turbo --useToolChoice false --project erp > archive.z-ai-glm-5-turbo.erp.log
+
+######################################################
+# MINIMAX
+######################################################
+# minimax/minimax-m2.7 (0.30) -> working
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project todo > archive.minimax-minimax-m2.7.todo.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project reddit > archive.minimax-minimax-m2.7.reddit.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project shopping > archive.minimax-minimax-m2.7.shopping.log
+pnpm run archive:go --vendor minimax/minimax-m2.7 --useToolChoice false --project erp > archive.minimax-minimax-m2.7.erp.log
 
 ######################################################
 # DEEPSEEK

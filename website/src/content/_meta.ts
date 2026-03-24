@@ -17,10 +17,19 @@ const meta: MetaRecord = {
   tutorial: {
     display: "hidden",
   },
+  blog: {
+    type: "page",
+    title: "📝 Blog Articles",
+  },
   benchmark: {
     type: "page",
     title: "📊 Benchmark",
     href: "/benchmark/index.html",
+  },
+  demo: {
+    type: "page",
+    title: "📚 Demonstrations",
+    href: "https://github.com/wrtnlabs/autobe-examples",
   },
   screenshot: {
     type: "page",

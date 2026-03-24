@@ -1,7 +1,8 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener } from "@autobe/ui";
 import { ErrorOutline, ReplayOutlined } from "@mui/icons-material";
+
+import { getServerUrl } from "../../utils/connection";
 import {
   Alert,
   AlertTitle,
@@ -24,7 +25,7 @@ import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 
 export const AutoBePlaygroundReplayGetMovie = () => {
   const theme = useTheme();
-  const [props] = useState<IAutoBePlaygroundReplay.IProps | null>(getProps());
+  const [params] = useState(() => getReplayParams());
   const [next, setNext] = useState<AutoBePlaygroundChatMovie.IProps | null>(
     null,
   );
@@ -32,7 +33,7 @@ export const AutoBePlaygroundReplayGetMovie = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    if (props === null) return;
+    if (params === null) return;
 
     // Simulate loading progress
     const progressInterval = setInterval(() => {
@@ -50,28 +51,49 @@ export const AutoBePlaygroundReplayGetMovie = () => {
       setLoadingProgress(100);
       clearInterval(progressInterval);
 
+      const isExample = params.type === "example";
+      const title = isExample
+        ? `AutoBE Playground (Example: ${params.vendor}/${params.project})`
+        : "AutoBE Playground (Replay)";
+
       setNext({
-        title: "AutoBE Playground (Replay)",
+        title,
         storageStrategyFactory: () =>
           new AutoBeAgentSessionStorageMockStrategy(),
         serviceFactory: async () => {
           const listener: AutoBeListener = new AutoBeListener();
-          const { connector, driver } =
-            await pApi.functional.autobe.playground.replay.get(
-              {
-                host: "http://127.0.0.1:5890",
-              },
-              props,
-              listener.getListener(),
-            );
+          const host = getServerUrl();
 
-          return {
-            connector,
-            service: driver,
-            listener,
-            sessionId: "mocked-session-id",
-            close: () => connector.close(),
-          };
+          if (isExample) {
+            const { connector, driver } =
+              await pApi.functional.autobe.playground.examples.replay(
+                { host },
+                {
+                  vendor: params.vendor,
+                  project: params.project,
+                },
+                listener.getListener(),
+              );
+            return {
+              service: driver,
+              listener,
+              sessionId: `example:${params.vendor}/${params.project}`,
+              close: () => connector.close(),
+            };
+          } else {
+            const { connector, driver } =
+              await pApi.functional.autobe.playground.sessions.replay(
+                { host },
+                params.sessionId,
+                listener.getListener(),
+              );
+            return {
+              service: driver,
+              listener,
+              sessionId: params.sessionId,
+              close: () => connector.close(),
+            };
+          }
         },
       });
     };
@@ -80,10 +102,10 @@ export const AutoBePlaygroundReplayGetMovie = () => {
       clearInterval(progressInterval);
       setError(err as Error);
     });
-  }, [props]);
+  }, [params]);
 
   // Invalid props error
-  if (props === null) {
+  if (params === null) {
     return (
       <Box
         sx={{
@@ -98,7 +120,8 @@ export const AutoBePlaygroundReplayGetMovie = () => {
         <Container maxWidth="sm">
           <Alert severity="error" icon={<ErrorOutline />}>
             <AlertTitle>Invalid Parameters</AlertTitle>
-            Missing required URL parameters: vendor, project, and step.
+            Missing required URL parameters. Provide either session-id or
+            vendor + project.
           </Alert>
         </Container>
       </Box>
@@ -112,6 +135,8 @@ export const AutoBePlaygroundReplayGetMovie = () => {
         title={next.title}
         serviceFactory={next.serviceFactory}
         isUnusedConfig={true}
+        isReplay={true}
+        hideSidebar={true}
         storageStrategyFactory={next.storageStrategyFactory}
       />
     );
@@ -261,7 +286,9 @@ export const AutoBePlaygroundReplayGetMovie = () => {
                   color: theme.palette.text.secondary,
                 }}
               >
-                {props.vendor} • {props.project} • {props.phase}
+                {params.type === "example"
+                  ? `Example: ${params.vendor} / ${params.project}`
+                  : `Session: ${params.sessionId}`}
               </Typography>
             </Stack>
 
@@ -308,16 +335,22 @@ export const AutoBePlaygroundReplayGetMovie = () => {
   );
 };
 
-const getProps = (): IAutoBePlaygroundReplay.IProps | null => {
-  const query: URLSearchParams = new URLSearchParams(window.location.search);
-  const vendor: string | null = query.get("vendor");
-  const project: string | null = query.get("project");
-  const phase: string | null = query.get("phase");
-  if (vendor === null || project === null || phase === null) return null;
+type ReplayParams =
+  | { type: "session"; sessionId: string }
+  | { type: "example"; vendor: string; project: string };
 
-  return {
-    vendor,
-    project,
-    phase: phase as "analyze",
-  };
+const getReplayParams = (): ReplayParams | null => {
+  const query = new URLSearchParams(window.location.search);
+
+  // Check example params first — SearchParamsProvider may inject a
+  // session-id into the URL after the initial connection, so on refresh
+  // we must prefer the original vendor/project params.
+  const vendor = query.get("vendor");
+  const project = query.get("project");
+  if (vendor && project) return { type: "example", vendor, project };
+
+  const sessionId = query.get("session-id");
+  if (sessionId) return { type: "session", sessionId };
+
+  return null;
 };

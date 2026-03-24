@@ -2,6 +2,9 @@
 out/
 public/api/
 public/robots.txt
+public/blog/rss.xml
 public/sitemap*.xml
 repositories/
 typedoc-json/
+
+!.env

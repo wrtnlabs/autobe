@@ -1,0 +1,161 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../../src/prisma"
+  moduleFormat = "cjs"
+}
+
+model autobe_playground_vendors {
+  //----
+  // COLUMNS
+  //----
+  id                String    @id
+  name              String
+  encrypted_api_key String
+  base_url          String?
+  semaphore         Int       @default(16)
+  created_at        DateTime
+  deleted_at        DateTime?
+
+  //----
+  // RELATIONS
+  //----
+  sessions autobe_playground_sessions[]
+  models   autobe_playground_vendor_models[]
+
+  @@index([created_at])
+}
+
+model autobe_playground_vendor_models {
+  //----
+  // COLUMNS
+  //----
+  id                          String   @id
+  autobe_playground_vendor_id String
+  model                       String
+  created_at                  DateTime
+
+  //----
+  // RELATIONS
+  //----
+  vendor autobe_playground_vendors @relation(fields: [autobe_playground_vendor_id], references: [id])
+
+  @@unique([autobe_playground_vendor_id, model])
+  @@index([autobe_playground_vendor_id, created_at])
+}
+
+model autobe_playground_sessions {
+  //----
+  // COLUMNS
+  //----
+  id                          String    @id
+  autobe_playground_vendor_id String
+  model                       String
+  locale                      String
+  timezone                    String
+  title                       String?
+  created_at                  DateTime
+  completed_at                DateTime?
+
+  //----
+  // RELATIONS
+  //----
+  vendor      autobe_playground_vendors              @relation(fields: [autobe_playground_vendor_id], references: [id])
+  connections autobe_playground_session_connections[]
+  histories   autobe_playground_session_histories[]
+  events      autobe_playground_session_events[]
+  aggregate   autobe_playground_session_aggregates?
+
+  @@index([autobe_playground_vendor_id, created_at])
+}
+
+model autobe_playground_session_connections {
+  //----
+  // COLUMNS
+  //----
+  id                           String    @id
+  autobe_playground_session_id String
+  created_at                   DateTime
+  disconnected_at              DateTime?
+
+  //----
+  // RELATIONS
+  //----
+  session   autobe_playground_sessions             @relation(fields: [autobe_playground_session_id], references: [id], onDelete: Cascade)
+  histories autobe_playground_session_histories[]
+  events    autobe_playground_session_events[]
+
+  @@index([autobe_playground_session_id, created_at])
+}
+
+model autobe_playground_session_histories {
+  //----
+  // COLUMNS
+  //----
+  id                                      String   @id
+  autobe_playground_session_id            String
+  autobe_playground_session_connection_id String
+  type                                    String
+  data                                    String
+  created_at                              DateTime
+
+  //----
+  // RELATIONS
+  //----
+  session    autobe_playground_sessions             @relation(fields: [autobe_playground_session_id], references: [id], onDelete: Cascade)
+  connection autobe_playground_session_connections   @relation(fields: [autobe_playground_session_connection_id], references: [id], onDelete: Cascade)
+
+  @@index([autobe_playground_session_id, created_at])
+  @@index([autobe_playground_session_connection_id, created_at])
+}
+
+model autobe_playground_session_events {
+  //----
+  // COLUMNS
+  //----
+  id                                      String   @id
+  autobe_playground_session_id            String
+  autobe_playground_session_connection_id String
+  type                                    String
+  data                                    String
+  created_at                              DateTime
+
+  //----
+  // RELATIONS
+  //----
+  session    autobe_playground_sessions             @relation(fields: [autobe_playground_session_id], references: [id], onDelete: Cascade)
+  connection autobe_playground_session_connections   @relation(fields: [autobe_playground_session_connection_id], references: [id], onDelete: Cascade)
+
+  @@index([autobe_playground_session_id, created_at])
+  @@index([autobe_playground_session_connection_id, created_at])
+}
+
+model autobe_playground_configs {
+  //----
+  // COLUMNS
+  //----
+  id                String  @id
+  locale            String
+  timezone          String
+  default_vendor_id String?
+  default_model     String?
+}
+
+model autobe_playground_session_aggregates {
+  //----
+  // COLUMNS
+  //----
+  id                           String  @id
+  autobe_playground_session_id String  @unique
+  phase                        String?
+  enabled                      Boolean
+  token_usage                  String
+
+  //----
+  // RELATIONS
+  //----
+  session autobe_playground_sessions @relation(fields: [autobe_playground_session_id], references: [id], onDelete: Cascade)
+}

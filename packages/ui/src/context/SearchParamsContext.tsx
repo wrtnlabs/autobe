@@ -19,7 +19,7 @@ export function SearchParamsProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    const url = new URL(`${window.location.origin}${window.location.pathname}`);
+    const url = new URL(`${window.location.origin}${window.location.pathname}${window.location.hash}`);
     searchParams.forEach((value, key) => {
       url.searchParams.set(key, value);
     });

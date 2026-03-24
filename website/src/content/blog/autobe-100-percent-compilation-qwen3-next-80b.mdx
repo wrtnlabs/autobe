@@ -1,0 +1,45 @@
+---
+title: "[AutoBe] Achieved 100% compilation success of backend generation with \"qwen3-next-80b-a3b\""
+description: "AutoBE achieved 100% compilation success for backend applications using local AI models like qwen3-next-80b-a3b — a marked improvement from earlier attempts where most projects failed to build."
+date: "2026-02-02"
+author: "Jeongho Nam"
+ogImage: "https://media2.dev.to/dynamic/image/width=1080,height=1080,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F5qf913tsmiqf1lb73oes.png"
+devtoUrl: "https://dev.to/samchon/autobe-achieved-100-compilation-success-of-backend-generation-with-qwen3-next-80b-a3b-1f6c"
+tags:
+  - ai
+  - backend
+  - llm
+  - opensource
+---
+
+[AutoBE](https://github.com/wrtnlabs/autobe) is an open-source project enabling automatic generation of backend applications through AI chatbot conversations.
+
+We achieved 100% compilation success for backend applications using local AI models like `qwen3-next-80b-a3b` — a marked improvement from earlier attempts where most projects failed to build due to compilation errors.
+
+## Key Achievement
+
+Rather than having AI generate code as text, AutoBE developed a custom compiler using AST (Abstract Syntax Tree) construction through function calling. This approach presented significant challenges, as not a single model could handle AutoBE's AST structure during earlier experiments. However, newly released local LLMs overcame this limitation within months.
+
+## Important Caveats
+
+100% compilation success doesn't necessarily mean 100% runtime success. Current limitations include:
+
+- Test function pass rate: approximately 80%
+- Occasional SQL query errors
+- Potential misinterpretation of complex business logic
+- Target goal: 100% runtime success rate by year-end
+
+## Project Examples
+
+Results tested across multiple models:
+
+- **qwen3-next-80b-a3b-instruct** (To Do List, Reddit Community, Economic Discussion, E-Commerce)
+- **gpt-4.1-mini** (same application set)
+- **gpt-4.1** (same application set)
+
+## Future Direction
+
+We plan to develop benchmarks targeting AutoBE compiler components and publish periodic analyses of local LLMs' function calling capabilities for complex types, with initial benchmarks expected in two months.
+
+- [Homepage](https://autobe.dev)
+- [GitHub](https://github.com/wrtnlabs/autobe)

@@ -14,6 +14,7 @@ export class AutoBeListener {
     new Map();
   private enable_: boolean = false;
   private readonly state_: AutoBeListenerState;
+  private dispatchScheduled_: boolean = false;
 
   public constructor() {
     this.callback_ = new Set();
@@ -356,8 +357,12 @@ export class AutoBeListener {
   }
 
   private dispatch() {
-    this.callback_.forEach((callback) =>
-      callback(this.events_.toJSON()).catch(() => {}),
-    );
+    if (this.dispatchScheduled_) return;
+    this.dispatchScheduled_ = true;
+    setTimeout(() => {
+      this.dispatchScheduled_ = false;
+      const snapshot = this.events_.toJSON();
+      this.callback_.forEach((callback) => callback(snapshot).catch(() => {}));
+    }, 0);
   }
 }

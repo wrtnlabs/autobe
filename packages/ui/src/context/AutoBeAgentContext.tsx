@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -75,9 +76,10 @@ export function AutoBeAgentProvider({
   );
   const [eventGroups, setEventGroups] = useState<IAutoBeEventGroup[]>([]);
 
-  // Context-scoped service instance (contains service, listener, header)
-  const [serviceInstance, setServiceInstance] =
-    useState<IAutoBeServiceData | null>(null);
+  // Store service instance in a ref to avoid React dev mode inspecting
+  // the TGrid driver Proxy (which crashes on Symbol property access).
+  // connectionStatus state changes drive re-renders instead.
+  const serviceInstanceRef = useRef<IAutoBeServiceData | null>(null);
 
   const { refreshSessionList } = useAutoBeAgentSessionList();
   // Context-scoped service getter
@@ -86,8 +88,8 @@ export function AutoBeAgentProvider({
       config: IAutoBeConfig = {} as IAutoBeConfig,
     ): Promise<IAutoBeServiceData> => {
       // Return existing instance if available
-      if (serviceInstance && connectionStatus === "connected") {
-        return serviceInstance;
+      if (serviceInstanceRef.current && connectionStatus === "connected") {
+        return serviceInstanceRef.current;
       }
 
       // Prevent multiple concurrent creations
@@ -107,7 +109,10 @@ export function AutoBeAgentProvider({
           ...config,
           sessionId: activeConversationId,
         });
-        setServiceInstance(newServiceData);
+        // Wrap the TGrid driver proxy to handle Symbol access from
+        // React dev-mode's render logging without crashing.
+        newServiceData.service = wrapServiceProxy(newServiceData.service);
+        serviceInstanceRef.current = newServiceData;
 
         setSearchParams((sp) => {
           const newSp = new URLSearchParams(sp);
@@ -124,7 +129,6 @@ export function AutoBeAgentProvider({
     },
     [
       serviceFactory,
-      serviceInstance,
       connectionStatus,
       activeConversationId,
       searchParams,
@@ -133,16 +137,32 @@ export function AutoBeAgentProvider({
 
   // Reset service (for reconnection, etc.)
   const resetService = useCallback(() => {
-    setServiceInstance(null);
+    serviceInstanceRef.current = null;
     setConnectionStatus("disconnected");
     setEventGroups([]);
     setTokenUsage(null);
   }, []);
 
   useEffect(() => {
+    // Close existing connection when switching sessions,
+    // but skip if the current service already owns this session
+    // (happens when getAutoBeService just created it and set the URL).
+    const prev = serviceInstanceRef.current;
+    if (prev) {
+      if (prev.sessionId === activeConversationId) {
+        // Same session — do not tear down the connection we just created
+        return;
+      }
+      void Promise.resolve(prev.close()).catch(() => {});
+      serviceInstanceRef.current = null;
+      setConnectionStatus("disconnected");
+    }
+
+    // Clear stale events immediately
+    setEventGroups([]);
+    setTokenUsage(null);
+
     if (activeConversationId === null) {
-      setEventGroups([]);
-      setTokenUsage(null);
       return;
     }
 
@@ -155,38 +175,55 @@ export function AutoBeAgentProvider({
           return null;
         }
         refreshSessionList();
-        setEventGroups(v.events);
+        // Avoid wiping live websocket replay events with empty storage data.
+        // Some strategies only persist histories/token usage and leave events
+        // empty, so replacing current groups here can erase already-delivered
+        // replay messages such as early userMessage events.
+        if (v.events.length > 0) {
+          setEventGroups(v.events);
+        }
         setTokenUsage(v.tokenUsage);
       })
       .catch(console.error);
   }, [activeConversationId]);
 
+  // Register listener when service connects
   useEffect(() => {
-    if (serviceInstance === null) {
+    const instance = serviceInstanceRef.current;
+    if (connectionStatus !== "connected" || instance === null) {
       return;
     }
 
-    serviceInstance.listener.on(async (e) => {
-      serviceInstance.service
-        .getTokenUsage()
-        .then(setTokenUsage)
-        .catch(() => {});
+    const onEvent = async (e: IAutoBeEventGroup[]) => {
       setEventGroups(e);
-    });
+      setTimeout(() => {
+        instance.service
+          .getTokenUsage()
+          .then(setTokenUsage)
+          .catch(() => {});
+      }, 0);
+    };
 
-    serviceInstance.service
+    instance.listener.on(onEvent);
+
+    instance.service
       .getTokenUsage()
       .then(setTokenUsage)
       .catch(() => {});
-  }, [serviceInstance]);
+
+    return () => {
+      instance.listener.off(onEvent);
+    };
+  }, [connectionStatus]);
 
   useEffect(() => {
-    if (activeConversationId === null || serviceInstance === null) {
+    const instance = serviceInstanceRef.current;
+    if (activeConversationId === null || connectionStatus !== "connected" || instance === null) {
       return;
     }
 
-    const originConversate = serviceInstance.service.conversate;
-    serviceInstance.service.conversate = async (content) => {
+    const originConversate = instance.service.conversate;
+    instance.service.conversate = async (content) => {
       const result = await originConversate(content);
       await storageStrategy.appendHistory({
         id: activeConversationId,
@@ -202,16 +239,18 @@ export function AutoBeAgentProvider({
       });
       await storageStrategy.setTokenUsage({
         id: activeConversationId,
-        tokenUsage: await serviceInstance.service.getTokenUsage(),
+        tokenUsage: await instance.service.getTokenUsage(),
       });
     };
 
-    serviceInstance.listener.on(registerEvent);
+    instance.listener.on(registerEvent);
     return () => {
-      serviceInstance.service.conversate = originConversate;
-      serviceInstance.listener.off(registerEvent);
+      instance.service.conversate = originConversate;
+      instance.listener.off(registerEvent);
     };
-  }, [activeConversationId, serviceInstance]);
+  }, [activeConversationId, connectionStatus]);
+
+  const currentInstance = serviceInstanceRef.current;
 
   return (
     <AutoBeAgentContext.Provider
@@ -222,9 +261,9 @@ export function AutoBeAgentProvider({
         // Service data
         eventGroups,
         tokenUsage,
-        state: serviceInstance?.listener?.getState() ?? null,
-        service: serviceInstance?.service ?? null,
-        listener: serviceInstance?.listener ?? null,
+        state: currentInstance?.listener?.getState() ?? null,
+        service: currentInstance?.service ?? null,
+        listener: currentInstance?.listener ?? null,
 
         // Service management
         getAutoBeService,
@@ -242,4 +281,21 @@ export function useAutoBeAgent() {
     throw new Error("useAutoBeAgent must be used within a AutoBeAgentProvider");
   }
   return context;
+}
+
+/**
+ * Wrap a TGrid driver Proxy into a plain object so that React dev-mode
+ * render logging never touches the Proxy (which crashes on Symbol
+ * property access: "Cannot convert a Symbol value to a string").
+ */
+function wrapServiceProxy(
+  service: IAutoBeRpcService,
+): IAutoBeRpcService {
+  return {
+    conversate: (content) => service.conversate(content),
+    getFiles: (options) => service.getFiles(options),
+    getHistories: () => service.getHistories(),
+    getTokenUsage: () => service.getTokenUsage(),
+    getPhase: () => service.getPhase(),
+  };
 }

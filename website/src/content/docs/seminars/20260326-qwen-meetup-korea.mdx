@@ -1,0 +1,1240 @@
+---
+title: AutoBE > Seminars > Qwen Meetup Korea 2026
+---
+
+import { Tabs } from "nextra/components";
+import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+import PptxBanner from "../../../components/PptxBanner";
+
+# Function Calling Harness
+
+<PptxBanner
+  title="Qwen Meetup Korea"
+  href="/seminars/20260326-qwen-meetup-korea.pptx"
+/>
+
+> **TL;DR**
+>
+> 1. [AutoBe](https://github.com/wrtnlabs/autobe) — AI backend auto-generation agent
+>    - Production-grade backend from natural language conversation
+>    - 4 AST types + 4-tier compiler validation + self-healing loops
+>    - Schema specs are the new prompts
+> 2. [Typia](https://github.com/samchon/typia) — The infrastructure that turns 0% into 100%
+>    - A single type automates schema, parser, validator, and feedback generator
+>    - Lenient JSON parsing + schema-based type coercion + precise validation feedback
+>    - Combined with AutoBe to complete harness engineering
+> 3. In Praise of Function Calling
+>    - Types eliminate ambiguity; schemas constrain through absence
+>    - Model-neutral, mechanically verifiable, deterministically convergent
+>    - Applicable to all engineering domains with validators — semiconductors, chemical processes, control systems, etc.
+> 4. Qwen — Why small models are the best QA engineers
+>    - Smaller models are better at exposing system vulnerabilities
+>    - R&D cost reduction, vendor independence, open ecosystem virtuous cycle
+> 5. 6.75% is not failure — it's the first input to the loop
+>    - `qwen3-coder-next` scores 6.75% on first-try tool calling
+>    - AutoBe's self-healing harness turns that into 100% compilation success
+>    - If you can verify, you converge
+
+{
+// function calling success rate 6.75% comes from
+// https://github.com/wrtnlabs/autobe-examples/tree/58b9fe0847dfa84ca428482651391387594540b2/qwen/qwen3-coder-next/shopping#function-calling
+//
+// in actually, the 1st attempt was not 6.75%, but 4.60% estimated
+// and after openrouter announced exacto mode,
+// success rate became higher
+}
+
+## 1. Preface
+
+6.75%.
+
+That's the first-try function calling success rate when `qwen3-coder-next` is asked to generate API data types for a shopping mall backend. 93 out of 100 attempts produce invalid structured output.
+
+This isn't surprising. [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797) measured GPT-4o at 28% accuracy on nested tool call sequences. [JSONSchemaBench (ICLR 2025)](https://arxiv.org/abs/2501.10868) tested constrained decoding frameworks on 10,000 real-world schemas and found 3–41% coverage on the hardest ones. BoundaryML went further, [arguing](https://boundaryml.com/blog/structured-outputs-create-false-confidence) that structured outputs actively degrade model reasoning — that forcing JSON format makes the model *dumber*. The consensus is clear: function calling works for flat, simple schemas. For anything with recursive nesting or deep structural complexity, don't bother.
+
+But if you want to make AI output deterministic — parse it, validate it, and correct it in a loop until it converges — there is no alternative to structured output. Free-form text can't be mechanically verified. Natural language can't be compiled. Without structure, there's no feedback loop, and without a feedback loop, there's no guarantee. So we didn't have the luxury of giving up on function calling. We had to make it work on the exact kind of complex, recursive schemas the industry had written off.
+
+[AutoBe](https://github.com/wrtnlabs/autobe) is the result. It's an open-source AI agent that takes a single natural language conversation and generates a complete backend — requirements analysis, database schema, API specification, E2E tests, and implementation code. Hook up that 6.75% model and what happens? Final compilation success rate: **100%**. All four Qwen models.
+
+The answer wasn't a better model or a smarter prompt. It was a **harness** — type schemas that constrain outputs, compilers that verify results, and structured feedback that pinpoints exactly where and why something went wrong so the LLM can correct itself. A deterministic loop wrapping a probabilistic model. The engineering outside the model, not inside, that made the difference.
+
+This talk dissects that engineering.
+
+**Chapter 2** examines AutoBe's architecture: a 5-phase pipeline running through 4 AST types and 4-tier compilers, with self-healing loops that systematically correct LLM mistakes.
+
+**Chapter 3** delves into Typia, the heart of that structure. The TypeScript compiler analyzes a single type from source code and generates schema, parser, validator, and feedback generator — all automatically. The concrete mechanism that flipped Qwen 3.5's 0% to 100% lives here.
+
+**Chapter 4** steps back to ask a bigger question. Does this pattern work beyond backends? Semiconductors, chemical processes, architecture, control systems — anywhere deterministic validators exist in engineering.
+
+And **Chapter 5** answers why this story belongs at Qwen Meetup. Small models aren't a weakness. They're the harness system's best QA engineers.
+
+---
+
+## 2. AutoBe — AI Backend Auto-Generation Agent
+
+### 2.1. What AutoBe Does
+
+[AutoBe](https://github.com/wrtnlabs/autobe) is an open-source AI agent that automatically generates production-grade backends from natural language. Developed by [Wrtn Technologies](https://wrtn.io).
+
+"Build me a shopping mall backend. I need product listings, shopping cart, orders, and payments." From this single sentence, AutoBe generates everything:
+
+- Requirements analysis (SRS)
+- Database schema (ERD)
+- API specification (OpenAPI v3.2)
+- E2E test code
+- Complete implementation code
+- Type-safe SDK
+
+Every line of generated code compiles. The result is a fully functional backend built on TypeScript + NestJS.
+
+<br/>
+
+<AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
+
+### 2.2. LLMs Don't Write Code
+
+Most AI coding agents tell the LLM "write this code" and save the returned text directly as source files. AutoBe is different.
+
+AutoBe uses **function calling**. Instead of generating free-form text, the LLM fills in predefined structures — JSON Schema. It's filling out a form, not writing on a blank page. Once the LLM fills the form, compilers validate and transform it into actual code. **The LLM fills structures; compilers write code.**
+
+This approach applies across the entire 5-phase waterfall pipeline.
+
+| Phase | Structure the LLM Fills | Compiler Validation |
+|-------|------------------------|---------------------|
+| Requirements | [`AutoBeAnalyze`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/analyze/AutoBeAnalyze.ts) — Structured SRS | Structure check |
+| Database | [`AutoBeDatabase`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/database/AutoBeDatabase.ts) — DB schema AST | AutoBeDatabase compiler |
+| API Design | [`AutoBeOpenApi`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/openapi/AutoBeOpenApi.ts) — OpenAPI v3.2 spec | AutoBeOpenApi compiler |
+| Testing | [`AutoBeTest`](https://github.com/wrtnlabs/autobe/blob/main/packages/interface/src/test/AutoBeTest.ts) — 30+ expression types | AutoBeTest compiler |
+| Implementation | Modularized code (Collector/Transformer/Operation) | TypeScript compiler |
+
+Each AST strictly limits the range of values the LLM can generate — for example, `AutoBeDatabase`'s field types are restricted to just 7 options: `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"`, making it impossible for the LLM to generate arbitrary types like `"varchar"`.
+
+Over 40 specialized AI agents execute this pipeline. It's not a simple straight line — spiral loops run within each phase, automatically repeating generation and correction upon failure. Inter-phase dependencies are managed through the Step Counter pattern — when an upstream phase re-executes, downstream phases are automatically invalidated, triggering cascading regeneration from API specifications through implementation code when a database schema changes.
+
+### 2.3. 4-Tier Compiler Validation
+
+AutoBe's 100% compilation guarantee comes from its 4-tier validation system. Each tier validates at a different level of abstraction.
+
+**Tier 1: AutoBeDatabase Compiler**
+
+Validates the structural integrity of the database AST. Duplicate model/field detection, referential integrity (do foreign keys point to existing models?), naming convention compliance (models in snake_case, relations in camelCase), index validity (do indexed fields exist?), and relationship consistency. Upon passing validation, the AST is transformed into actual DB schema code and compiled again.
+
+```typescript
+// Structure of diagnostic information returned by the compiler
+interface IError {
+  path: "application.files[0]";          // location
+  table: "shopping_customers" | null;    // target model
+  field: "shopping_customer_id" | null;  // target field
+  message: "detailed error description"; // cause
+}
+```
+
+**Tier 2: AutoBeOpenApi Compiler**
+
+Validates the OpenAPI v3.2 specification. Checks consistency with the database schema — whether DTO fields correspond to actual model fields, whether all tables have API operations. Verifies path uniqueness and schema reference validity. Upon passing, generates NestJS templates, DTO types, and module configurations.
+
+**Tier 3: AutoBeTest Compiler**
+
+Validates the test AST. Verifies that E2E test code composed of 30+ `IExpression` variants has correct structure and is consistent with the API specification. Upon passing, generates actual TypeScript test code.
+
+**Tier 4: TypeScript Compiler**
+
+The final validation gate. Compiles in strict mode (`strict null checks`, `no implicit any`). Supports incremental compilation — reusing previous compilation results yields 15x performance improvement. Provides file/line/column-level precise diagnostics. Concurrent compilations are limited to 2 via semaphore to prevent system overload.
+
+All four compilers, upon failure, return "where, what, and why went wrong" in structured form. This diagnostic information enables the self-healing loops described in the next section.
+
+### 2.4. Self-Healing Loops
+
+Compilation failure is not the end. AutoBe's core mechanism is the **self-healing loop**.
+
+```
+Generate → Compile → Extract Diagnostics → Correct → Recompile → (repeat until success)
+```
+
+1. The LLM generates structured data
+2. The compiler validates it
+3. On failure, diagnostics with exact locations and causes are extracted
+4. The Correct agent receives the original code + diagnostics and makes fixes
+5. Recompiles
+6. Repeats until success
+
+These loops nest hierarchically. The most complex Realize (implementation) phase has 4 levels of retry:
+
+1. **Inline retry** — immediate single retry after generation
+2. **Correction loop** — recursive correction based on compilation error diagnostics
+3. **Outer retry loop** — reprocesses failed operations up to 2 times
+4. **Selective reprocessing** — if 38 of 40 APIs succeed, only the 2 failures are reprocessed
+
+Successful code is preserved. Only the failed parts are corrected.
+
+On top of this, Typia's validation feedback adds precise error correction at the function calling level. AutoBe's compilers handle final validation at the code level, while Typia handles structural validation at the function calling level. The combination of these two layers is the driving force behind 100% compilation. Typia's role is covered in detail in Chapter 3.
+
+### 2.5. The Forms Are Not Simple
+
+The structures the LLM must fill are far from simple.
+
+During API design, the **DTO schema types** the LLM generates describe the data structure of API requests/responses — "a product's price is a positive integer, name is a string, category list is a string array." The `IJsonSchema` that defines these types is a recursive union of 10 variants:
+
+```typescript
+export type IJsonSchema =
+  | IJsonSchema.IConstant
+  | IJsonSchema.IBoolean
+  | IJsonSchema.IInteger
+  | IJsonSchema.INumber
+  | IJsonSchema.IString
+  | IJsonSchema.IArray      // items: IJsonSchema ← recursive
+  | IJsonSchema.IObject     // properties: Record<string, IJsonSchema> ← recursive
+  | IJsonSchema.IReference
+  | IJsonSchema.IOneOf      // oneOf: IJsonSchema[] ← recursive
+  | IJsonSchema.INull;
+```
+
+10 variants, infinitely recursive nesting. The first-try function calling success rate for this type is 6.75%.
+
+The testing phase raises complexity another level. E2E test code must express logic like "call this API, verify the response status is 200, and check that the body's items array length is greater than 0." The `IExpression` type that captures this:
+
+```typescript
+export type IExpression =
+  | IBooleanLiteral   | INumericLiteral    | IStringLiteral     // literals
+  | IArrayLiteralExpression  | IObjectLiteralExpression          // compound literals
+  | INullLiteral      | IUndefinedKeyword                       // null/undefined
+  | IIdentifier       | IPropertyAccessExpression               // accessors
+  | IElementAccessExpression | ITypeOfExpression                 // access/operations
+  | IPrefixUnaryExpression   | IPostfixUnaryExpression           // unary operations
+  | IBinaryExpression                                            // binary operations
+  | IArrowFunction    | ICallExpression    | INewExpression      // functions
+  | IArrayFilterExpression   | IArrayForEachExpression           // array operations
+  | IArrayMapExpression      | IArrayRepeatExpression            // array operations
+  | IPickRandom       | ISampleRandom      | IBooleanRandom     // random generation
+  | IIntegerRandom    | INumberRandom      | IStringRandom      // random generation
+  | IPatternRandom    | IFormatRandom      | IKeywordRandom     // random generation
+  | IEqualPredicate   | INotEqualPredicate                      // assertions
+  | IConditionalPredicate    | IErrorPredicate;                  // assertions
+```
+
+30+ variants with recursive nesting. Programming language-level complexity that must be handled in a single function call.
+
+### 2.6. Schema Specs Are Prompts
+
+In conventional AI agents, "prompts" are natural language instructions. "You are a backend development expert. Follow these rules when writing code..."
+
+In AutoBe, what serves as prompts is not natural language but the **schema specs** themselves. `AutoBeDatabase`'s `stance` enum tells the model what kinds of tables to create, `IJsonSchema`'s 10 variants define how DTOs should be structured, and `IExpression`'s 30+ variants specify what grammar test code should follow.
+
+Natural language prompts are ambiguous, interpreted differently by each model, and impossible to verify compliance. Schema specs are unambiguous, model-independent, and mechanically verifiable. This isn't to say system prompts are useless — it's that schema specs are **a more powerful means of instruction** than prompts.
+
+**Schema specs are the new prompts.**
+
+### 2.7. Four Qwen Models, All 100%
+
+AutoBe currently tests against four Qwen models. All achieve successful compilation.
+
+| Model | Active Parameters | Characteristics |
+|-------|------------------|-----------------|
+| `qwen/qwen3-coder-next` | 3B / 80B | Coding-specialized |
+| `qwen/qwen3.5-397b-a17b` | 17B / 397B | Largest MoE |
+| `qwen/qwen3.5-122b-a10b` | 10B / 122B | Medium MoE |
+| `qwen/qwen3.5-35b-a3b` | 3B / 35B | Small MoE |
+
+From 397B to 35B. Even a small model with 3B active parameters generates a complete shopping mall backend. Same schema, same pipeline, same result.
+
+---
+
+## 3. Typia — The Infrastructure That Turns 0% into 100%
+
+Chapter 2 described what AutoBe builds — but not how it survives 6.75%. Schema generation, broken JSON recovery, type coercion, precise error feedback — every piece of infrastructure that makes function calling work on complex types despite the industry consensus that it can't. Who handles all of it?
+
+[Typia](https://github.com/samchon/typia). Making function calling reliable on recursive union types required going deeper than runtime libraries can reach. Runtime reflection can't see TypeScript types — they're erased at compilation. Zod-style schema builders choke on recursive unions (Appendix A.4 explains why). The only path was to operate at the **compiler level** itself — analyze types directly from source code and generate every piece of infrastructure from that single source of truth.
+
+That's what Typia is. A **compiler library** that directly leverages the TypeScript compiler's type analyzer to automatically generate JSON Schema, validators, parsers, and feedback generators at compile time. Define one type, and the compiler handles the rest. It's the result of choosing to solve the problem at the deepest layer available, because every shallower approach hit a wall.
+
+Let's examine in detail how it turns `qwen3-coder-next`'s 6.75% success rate and `qwen3.5`'s 0% success rate into 100%.
+
+### 3.1. From TypeScript Types to Function Calling Schemas
+
+Function calling requires JSON Schema to tell the LLM "give me data in this structure." Normally, developers define types, separately write schemas, and keep the two synchronized forever.
+
+Typia automates this process. Define a TypeScript type, and Typia **automatically generates** validation code and JSON Schema **at compile time** — not through runtime reflection, but by directly leveraging the TypeScript compiler's type analyzer.
+
+Let's see the principle first. When you call `typia.is<T>()`, type information is analyzed at compile time and transformed into optimized validation code:
+
+<Tabs items={["Before Compilation: TypeScript", "After Compilation: JavaScript"]}>
+  <Tabs.Tab>
+```typescript
+import typia, { tags } from "typia";
+
+interface IMember {
+  id: string & tags.Format<"uuid">;
+  email: string & tags.Format<"email">;
+  age: number &
+    tags.Type<"uint32"> &
+    tags.ExclusiveMinimum<19> &
+    tags.Maximum<100>;
+}
+
+const check: boolean = typia.is<IMember>(input);
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```javascript
+((input) => {
+  return (
+    "object" === typeof input &&
+    null !== input &&
+    "string" === typeof input.id &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5].*$/.test(input.id) &&
+    "string" === typeof input.email &&
+    /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(input.email) &&
+    "number" === typeof input.age &&
+    Number.isInteger(input.age) &&
+    input.age >= 0 &&
+    19 < input.age &&
+    100 >= input.age
+  );
+})
+```
+  </Tabs.Tab>
+</Tabs>
+
+A single line — `typia.is<IMember>(input)` — transforms at compile time into optimized code containing UUID regex, email regex, integer checks, and range checks. It overcomes TypeScript's limitation of erasing type information at runtime through a compiler plugin.
+
+This principle applies directly to function calling. `typia.llm.parameters<T>()` generates JSON Schema through the same type analysis:
+
+<Tabs items={["Before Compilation: TypeScript", "After Compilation: JSON Schema"]}>
+  <Tabs.Tab>
+```typescript
+import typia, { tags } from "typia";
+
+interface IMember {
+  /**
+   * Member's age.
+   *
+   * Only adults aged 19 or older can register.
+   * This is the platform's legal age restriction.
+   */
+  age: number & tags.Type<"uint32"> & tags.ExclusiveMinimum<18>;
+  email: string & tags.Format<"email">;
+  name: string & tags.MinLength<1> & tags.MaxLength<100>;
+}
+
+const schema = typia.llm.parameters<IMember>();
+```
+  </Tabs.Tab>
+  <Tabs.Tab>
+```json
+{
+  "type": "object",
+  "properties": {
+    "age": {
+      "type": "integer",
+      "description": "Member's age.\n\nOnly adults aged 19 or older can register.\nThis is the platform's legal age restriction.",
+      "exclusiveMinimum": 18
+    },
+    "email": { "type": "string", "format": "email" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 100 }
+  },
+  "required": ["age", "email", "name"]
+}
+```
+  </Tabs.Tab>
+</Tabs>
+
+**JSDoc comments become `description` fields.** The LLM reads these descriptions to decide what values to generate. **Type constraints become validation rules.** `ExclusiveMinimum<18>` becomes a "> 18" rule, and `Format<"email">` becomes an email format check. A single type definition simultaneously generates LLM guidance and validation rules.
+
+At the class level, `typia.llm.application<T>()` can schematize an entire API:
+
+```typescript
+import { LlmJson } from "@typia/utils";
+import typia from "typia";
+
+class ShoppingOrderController {
+  /** Creates an order */
+  create(input: IShoppingOrderCreate): void;
+}
+
+const app = typia.llm.application<ShoppingOrderController>();
+const func = app.functions[0];
+
+// All public methods have built-in parse() and validate()
+const data = func.parse(llmOutput);        // broken JSON recovery + type coercion
+const result = func.validate(data);        // schema violation detection
+if (result.success === false) {
+  const feedback = LlmJson.stringify(result); // LLM-readable feedback generation
+}
+```
+
+**The type is the schema.** The constraints the LLM sees and the constraints the validator applies are always identical — because they come from the same source.
+
+This is the key point. The schema generated by the Typia compiler from source code types powers every runtime function that follows. The schema that `parse()` references when recovering broken JSON and coercing types, the schema that `validate()` uses as the comparison target when diagnosing errors — they're all the same schema, automatically generated from types at compile time. Because it's compiler output, not manually written, types and schemas can never diverge.
+
+### 3.2. The Cause of 6.75%: Structural Complexity
+
+The 10 variants of `IJsonSchema` and 30+ variants of `IExpression` from Chapter 2. Why is the first-try success rate so low?
+
+Recursive union types cause **combinatorial explosion**. 10 variants nested 3 levels deep create 1,000 possible paths. With 30 variants, that's 27,000. The probability of the LLM choosing the correct path in one try is structurally low.
+
+Moreover, subtle errors are frequent in union types:
+- Chose the correct variant but got the type of a sub-field wrong
+- Confused variants at recursive depth
+- Missing required fields
+- Serialized objects as strings (double-stringify)
+
+These errors are "structurally correct but semantically wrong," making it difficult to provide accurate feedback with simple JSON Schema validation.
+
+6.75% is the natural result of this structural complexity. The issue isn't the first try — it's **what happens after failure**.
+
+### 3.3. Lenient JSON Parsing: Recovering Broken JSON
+
+LLMs don't produce perfect JSON. LLMs are language models that generate text token by token, not JSON generators. They leave brackets unclosed, misplace commas, prepend "Here is your answer:" before JSON, and wrap it in Markdown code blocks.
+
+`JSON.parse()` rejects all of this. Typia's `ILlmFunction.parse()` handles every case:
+
+| Problem | Example | Handling |
+|---------|---------|----------|
+| Unclosed brackets | `{"name": "John"` | Auto-close |
+| Trailing commas | `[1, 2, 3, ]` | Ignore |
+| JavaScript comments | `{"a": 1 /* comment */}` | Remove |
+| Unquoted keys | `{name: "John"}` | Allow |
+| Incomplete keywords | `{"done": tru` | Complete to `true` |
+| Description prefix | `Here is your JSON: {"a": 1}` | Skip |
+| Markdown code blocks | `` ```json\n{"a": 1}\n``` `` | Extract inner content |
+
+When you call `func.parse()` on actual LLM output where these problems occur simultaneously:
+
+```typescript
+import { dedent } from "@typia/utils";
+import typia, { ILlmApplication, ILlmFunction, tags } from "typia";
+
+const app: ILlmApplication = typia.llm.application<OrderService>();
+const func: ILlmFunction = app.functions[0];
+
+// LLM sometimes returns malformed JSON with wrong types
+const llmOutput = dedent`
+  > LLM sometimes returns some prefix text with markdown JSON code block.
+
+  I'd be happy to help you with your order! 😊
+  
+  \`\`\`json
+  {
+    "order": {
+      "payment": "{\\"type\\":\\"card\\",\\"cardNumber\\":\\"1234-5678", // unclosed string & bracket
+      "product": {
+        name: "Laptop", // unquoted key
+        price: "1299.99", // wrong type (string instead of number)
+        quantity: 2, // trailing comma
+      },
+      "customer": {
+        // incomplete keyword + unclosed brackets
+        "name": "John Doe",
+        "email": "john@example.com",
+        vip: tru
+  \`\`\` `;
+
+const result = func.parse(llmOutput);
+if (result.success) console.log(result);
+
+interface IOrder {
+  payment: IPayment;
+  product: {
+    name: string;
+    price: number & tags.Minimum<0>;
+    quantity: number & tags.Type<"uint32">;
+  };
+  customer: {
+    name: string;
+    email: string & tags.Format<"email">;
+    vip: boolean;
+  };
+}
+
+type IPayment =
+  | { type: "card"; cardNumber: string }
+  | { type: "bank"; accountNumber: string };
+
+declare class OrderService {
+  /**
+   * Create a new order.
+   *
+   * @param props Order properties
+   */
+  createOrder(props: { order: IOrder }): { id: string };
+}
+```
+
+There's a critical difference. Most JSON repair tools (jsonrepair, dirty-json, LangChain's `parse_partial_json`) operate at the **string level** — cleaning trailing commas, closing brackets, removing Markdown, then passing to `JSON.parse()`. A double-stringified value `"{\"type\":\"card\"}"` is already valid JSON (a string), so it passes through as-is. Without a schema, there's no way to know it should be an object.
+
+Typia's `parse()` is different. It parses greedily while **referencing the schema** generated by the compiler from types in Section 3.1. When it encounters a string where the schema expects an object, it recursively calls `parse()` on that string. Parsing and coercion recursively call each other — a **schema-based recursive cycle** — naturally unwinding layers of stringification. Double or triple.
+
+`parse()` performs not just JSON recovery but also **schema-based type coercion** simultaneously. LLMs frequently get types wrong — `"42"` (string) where `42` (number) should be, `"true"` (string) where `true` (boolean) should be. Simple casting doesn't solve this. Whether `"42"` should become a number or stay a string depends entirely on the field's schema, which was automatically generated by the Typia compiler from TypeScript types.
+
+| LLM Output | Schema Expected Type | `parse()` Coercion Result |
+|------------|---------------------|---------------------------|
+| `"42"` | `number` or `integer` | `42` |
+| `"true"` / `"false"` | `boolean` | `true` / `false` |
+| `"null"` | `null` | `null` |
+| `"{\"x\": 1}"` | `object` | `{ x: 1 }` (recursive parsing) |
+| `"[1, 2, 3]"` | `array` | `[1, 2, 3]` (recursive parsing) |
+
+### 3.4. Qwen 3.5's 0% Problem: Double-Stringify
+
+There's an even more dramatic case with the `qwen3.5` series.
+
+From [Typia documentation](https://typia.io/docs/llm/application/#lenient-json-parsing)'s function calling example:
+
+```typescript
+interface IOrder {
+  payment: IPayment;
+  product: {
+    name: string;
+    price: number & tags.Minimum<0>;
+    quantity: number & tags.Type<"uint32">;
+  };
+  customer: {
+    name: string;
+    email: string & tags.Format<"email">;
+    vip: boolean;
+  };
+}
+type IPayment =
+  | { type: "card"; cardNumber: string }
+  | { type: "bank"; accountNumber: string };
+```
+
+What the LLM actually returns:
+
+```typescript
+const llmOutput = `
+  > LLM sometimes returns some prefix text with markdown JSON code block.
+
+  I'd be happy to help you with your order! 😊
+
+  \`\`\`json
+  {
+    "order": {
+      "payment": "{\"type\":\"card\",\"cardNumber\":\"1234-5678", // unclosed string & bracket
+      "product": {
+        name: "Laptop", // unquoted key
+        price: "1299.99", // wrong type (string instead of number)
+        quantity: 2, // trailing comma
+      },
+      "customer": {
+        // incomplete keyword + unclosed brackets
+        "name": "John Doe",
+        "email": "john@example.com",
+        vip: tru
+  \`\`\`
+```
+
+Markdown wrapping, description prefix, unquoted keys, trailing commas, `tru` (instead of `true`), unclosed brackets — and `payment` is **double-stringified**. Instead of `{"type": "card", ...}` (object), it generated `"{\"type\": \"card\", ...}"` (a string containing JSON). Seven problems in a single output.
+
+Double-stringification brings the success rate to **0%**. Other errors are intermittent, but `anyOf` double-stringification is **100% consistent** — on every `anyOf` field, every time. It's not a Qwen-only problem either. Anthropic's Claude exhibits the same behavior with `oneOf`. Every model family has a blind spot for union types.
+
+Typia's `parse()` handles all of this in a single call — broken JSON recovery, type coercion, double-stringify unwinding. No model change. No prompt tuning. This is how Qwen 3.5 went from 0% to 100%.
+
+### 3.5. Validation Feedback: Precise Error Feedback
+
+Even after parsing and coercion, values themselves can be wrong. Negative prices, strings that aren't emails, decimals where integers should be.
+
+Typia's `ILlmFunction.validate()` detects schema violations and tells you exactly **where and why** something is wrong:
+
+```typescript
+import { LlmJson } from "@typia/utils";
+import typia, { ILlmApplication, ILlmFunction, IValidation, tags } from "typia";
+
+const app: ILlmApplication = typia.llm.application<OrderService>();
+const func: ILlmFunction = app.functions[0];
+
+// LLM generated invalid data
+const input = {
+  order: {
+    payment: { type: "card", cardNumber: 12345678 }, // should be string
+    product: {
+      name: "Laptop",
+      price: -100, // violates Minimum<0>
+      quantity: 2.5, // should be uint32
+    },
+    customer: {
+      name: "John Doe",
+      email: "invalid-email", // violates Format<"email">
+      vip: "yes", // should be boolean
+    },
+  },
+};
+
+// Validate and format errors for LLM feedback
+const result: IValidation = func.validate(input);
+if (result.success === false) {
+  const feedback: string = LlmJson.stringify(result);
+  console.log(feedback);
+}
+
+interface IOrder {
+  payment: IPayment;
+  product: {
+    name: string;
+    price: number & tags.Minimum<0>;
+    quantity: number & tags.Type<"uint32">;
+  };
+  customer: {
+    name: string;
+    email: string & tags.Format<"email">;
+    vip: boolean;
+  };
+}
+
+type IPayment =
+  | { type: "card"; cardNumber: string }
+  | { type: "bank"; accountNumber: string };
+
+declare class OrderService {
+  /**
+   * Create a new order.
+   *
+   * @param props Order properties
+   */
+  createOrder(props: { order: IOrder }): { id: string };
+}
+```
+
+"The price inside product inside order should be ≥ 0, but you gave -100."
+
+`LlmJson.stringify()` renders these errors as `// ❌` inline comments on top of the LLM's original JSON:
+
+```json
+{
+  "order": {
+    "payment": {
+      "type": "card",
+      "cardNumber": 12345678 // ❌ [{"path":"$input.order.payment.cardNumber","expected":"string"}]
+    },
+    "product": {
+      "name": "Laptop",
+      "price": -100, // ❌ [{"path":"$input.order.product.price","expected":"number & Minimum<0>"}]
+      "quantity": 2.5 // ❌ [{"path":"$input.order.product.quantity","expected":"number & Type<\"uint32\">"}]
+    },
+    "customer": {
+      "name": "John Doe",
+      "email": "invalid-email", // ❌ [{"path":"$input.order.customer.email","expected":"string & Format<\"email\">"}]
+      "vip": "yes" // ❌ [{"path":"$input.order.customer.vip","expected":"boolean"}]
+    }
+  }
+}
+```
+
+`cardNumber` should be a string but got a number. `price` should be ≥ 0. `quantity` should be a positive integer. `email` is not a valid email. `vip` should be a boolean. 5 errors, each with exact path and expected type.
+
+The LLM sees exactly where it went wrong on its own JSON. Instead of rewriting everything, it only needs to fix the 5 marked fields. Precise, structured, immediately actionable feedback.
+
+### 3.6. The Complete Feedback Loop
+
+Combining everything into a single loop:
+
+```typescript
+async function callWithFeedback(
+  llm: LLM,
+  func: ILlmFunction,
+  prompt: string,
+  maxRetries: number = 10,
+): Promise<unknown> {
+  let feedback: string | null = null;
+
+  for (let i = 0; i < maxRetries; i++) {
+    // 1. Request function call from LLM (including previous feedback)
+    const rawOutput = await llm.call(prompt, feedback);
+
+    // 2. Lenient JSON parsing + type coercion
+    const parsed = func.parse(rawOutput);
+    if (!parsed.success) {
+      feedback = `JSON parsing failed: ${JSON.stringify(parsed.errors)}`;
+      continue;
+    }
+
+    // 3. Schema validation
+    const validated = func.validate(parsed.data);
+    if (!validated.success) {
+      // 4. Generate structured feedback (// ❌ inline comments)
+      feedback = LlmJson.stringify(validated);
+      continue;
+    }
+
+    // 5. Success
+    return validated.data;
+  }
+  throw new Error("Maximum retry count exceeded");
+}
+```
+
+`parse()` recovers broken JSON and performs initial type coercion. `validate()` catches schema violations. `LlmJson.stringify()` renders errors in a format the LLM can read. The LLM self-corrects and retries.
+
+This is the complete loop that turns 6.75% into 100%.
+
+### 3.7. Harness Engineering: The Union of AutoBe + Typia
+
+This is where the concept of **harness** is finally complete.
+
+A climbing harness doesn't make you stronger — it makes your strength safe. A test harness doesn't make code correct — it makes bugs visible. A function calling harness doesn't make the LLM smarter — it makes **the LLM's mistakes correctable**.
+
+The combination of AutoBe and Typia constitutes this harness. Each layer was added because the previous one wasn't enough.
+
+We started with raw `JSON.parse()`. It broke constantly — unclosed brackets, trailing commas, Markdown wrappers. So we built **lenient parsing**. That got us from 0% to "at least we can read the output."
+
+But parsed JSON had wrong types everywhere. `"42"` instead of `42`, `"true"` instead of `true`. Without a schema, there's no way to know which is correct. So we built **schema-based type coercion** — the same schema the compiler generated from types now guided the parser.
+
+Coercion fixed type mismatches, but values themselves were still wrong — negative prices, invalid emails, decimals where integers should be. The LLM had no idea what it got wrong. So we built **validation feedback** — `// ❌` inline comments showing exactly where and why each field failed.
+
+Feedback fixed individual function calls, but the system as a whole still had consistency gaps — a valid DTO schema referencing a database field that didn't exist, valid test code calling an API endpoint with wrong parameters. So we built **4-tier compiler validation** — each tier catching a different class of inconsistency.
+
+No layer was planned in advance. Each was the minimum response to a specific failure mode:
+
+**Typia Layer** (function calling level):
+- Type → automatic schema generation
+- Broken JSON recovery (lenient parsing)
+- Schema-based type coercion
+- Precise error feedback (validation feedback)
+
+**AutoBe Layer** (system level):
+- 4 AST types + 4-tier compiler validation
+- Self-healing loops (diagnostics → correction → revalidation)
+- Hierarchical orchestration (40+ agent collaboration)
+- Batch processing + prompt caching optimization
+
+Typia makes function calling I/O robust, and AutoBe ensures system-wide consistency. The combination of these two layers completes the deterministic loop wrapping a probabilistic model — the harness.
+
+Define a single TypeScript type and the Typia **compiler** handles the rest:
+
+1. **Compile time: source code analysis** — Analyzes TypeScript types to auto-generate JSON Schema, validators, and parser code
+2. **Schema generation** — `typia.llm.parameters<T>()`, `typia.llm.application<T>()`
+3. **Parsing + type coercion** — `ILlmFunction.parse()` (recovers broken JSON, coerces types, and unwinds double-stringify in one pass using compiler-generated schemas)
+4. **Validation** — `ILlmFunction.validate()` (detects violations using the same schema)
+5. **Feedback generation** — `LlmJson.stringify()` (LLM-readable `// ❌` inline diagnostics)
+
+**The type is the schema, the validator, and the prompt. The harness is everything around it.**
+
+---
+
+## 4. In Praise of Function Calling
+
+Chapters 2 and 3 showed **how** it works. Now: **why** function calling is this powerful — and why the widespread skepticism, while accurate about the symptoms, misses the root cause.
+
+"Structured outputs create false confidence." "Your agent demo works perfectly... then you deploy with 50 real endpoints and everything falls apart." These aren't strawmen — they're published findings and the lived experience of engineers who tried structured output on complex schemas and watched it crumble.
+
+The criticism is accurate when you use structured output *without a harness*. Constrained decoding alone does degrade reasoning. Strict mode alone does fail on complex types. `JSON.parse()` alone does discard salvageable output. Every criticism describes what happens when you treat function calling as a feature to toggle on, rather than as infrastructure to build around.
+
+This chapter argues that the failures the industry observed are not evidence against function calling, but evidence that the harness was missing.
+
+### 4.1. Natural Language vs Types
+
+Natural language evolved to be ambiguous. Metaphor, nuance, politeness, humor — all operate on top of ambiguity. "Just make it pretty" works between humans.
+
+Programming languages were designed to eliminate ambiguity. "Just make it pretty" doesn't compile.
+
+**When people communicate in natural language, misunderstandings arise. When they communicate through types, there are none.**
+
+Expressing constraints through prompts:
+> "The age field should be a positive integer greater than 18. Don't use string types for number fields. All required fields must be present..."
+
+Is "greater than 18" >18 or ≥18? You can't know whether the LLM followed this rule without manually inspecting the output. As schemas grow, these rules multiply endlessly.
+
+Expressing constraints through types:
+```typescript
+interface IMember {
+  /** Only adults 19+ can register */
+  age: number & Type<"uint32"> & ExclusiveMinimum<18>;
+}
+```
+
+`ExclusiveMinimum<18>` is >18. It's an integer. It's required. No ambiguity, mechanically verifiable.
+
+In domains requiring precision, type constraints provide certainty that natural language instructions cannot.
+
+### 4.2. The Pink Elephant Problem
+
+If you've built a prompt-based AI agent, you've written prohibition rules:
+
+- "Don't create utility functions"
+- "Don't use the `any` type"
+- "Don't create circular dependencies"
+
+"Don't think of a pink elephant." The first thing that comes to mind is a pink elephant. When you tell an LLM "don't do X," X gets placed at the center of attention. To avoid a forbidden pattern, the model must first recall that pattern, which paradoxically increases its generation probability. This is the essence of token prediction.
+
+Even knowing this, you can't avoid prohibition rules in prompts. "Don't do X" is the only way natural language can express constraints.
+
+**With schemas, this problem disappears.**
+
+No need to say "don't use the `any` type" — if `any` doesn't exist in the schema, the LLM physically cannot generate it. No need to say "don't create utility functions" — if there's no slot for utility functions, that's the end of it. When field types are limited to `"boolean" | "int" | "double" | "string" | "uri" | "uuid" | "datetime"` — 7 choices — there's no path for the LLM to write `"varchar"`.
+
+Not prohibition, but **absence**. Prompts prohibit what you don't want. Schemas allow only what you do want.
+
+This is function calling's deepest advantage: instead of fighting the model's tendencies, it makes unwanted outputs structurally impossible.
+
+### 4.3. Model Neutrality
+
+Prompt engineering is inherently model-dependent. A prompt optimized for GPT behaves differently on Claude, and differently again on Qwen. Rewriting prompts with each new model is routine.
+
+Function calling-based approaches are model-neutral. JSON Schema means the same thing regardless of which model reads it. The validation feedback loop absorbs performance differences between models. Strong models converge in 1–2 attempts, weaker models take 3–4, but both reach 100%.
+
+AutoBe running Qwen, GLM, DeepSeek, and OpenAI models with **the same schema, the same pipeline** and achieving 100% compilation across all of them is proof of this neutrality. No model-specific prompt tuning was ever performed.
+
+This changes the nature of model selection. From "Can this model do this task?" — a capability question — to "Which model is most cost-effective?" — a **cost optimization problem**: `average retries × tokens per attempt × cost per token`.
+
+### 4.4. The Core: Verifiability
+
+A single thread runs through everything.
+
+Function calling's fundamental advantage is that it **brings LLM output into the domain of software engineering**.
+
+Free-form text output makes correctness an AI problem. Parsing is fuzzy. Validation is fuzzy. Correction is fuzzy.
+
+Structured output makes correctness an **engineering problem**:
+
+1. **Validation is deterministic** — JSON Schema validation is a clear pass/fail
+2. **Feedback is precise** — "Field X should be type Y but you gave Z"
+3. **Correction converges** — precise feedback causes the model to fix only that part
+
+The model is still probabilistic. It still makes mistakes. But because **the structure wrapping the model is deterministic**, the process converges to 100%.
+
+> **Type schema + deterministic validator + structured feedback = harness**
+
+Prompt engineering tries to make the probabilistic part reliable. Function calling makes the deterministic part perfect. In domains requiring precision, the latter wins: 6.75% → 100%.
+
+### 4.5. This Pattern Is Universal
+
+Does this pattern only apply to code generation? No. It applies to every domain where output is mechanically verifiable.
+
+#### 4.5.1. Applicable Domains
+
+AutoBe's Database, Interface, Test, and Realize phases all fall into this category. Compilers serve as validators, guaranteeing 100% correctness.
+
+This isn't just about software. The same structure is possible in every field where "correct/incorrect" can be mechanically determined, with a natural hierarchy based on validation cost:
+
+| Domain | Fast (ms) | Medium (sec) | Deep (min+) |
+|--------|----------|--------------|-------------|
+| Software | Type check | Compilation | Test execution |
+| Semiconductor | DRC | LVS | SPICE simulation |
+| Chemical Process | Mass balance | Energy balance | Process simulation |
+| Interior Design | Dimensions/clearance | Building codes, collision detection | Lighting/HVAC simulation |
+| Control Systems | Transfer function validity | Stability/margin analysis | Time-domain simulation |
+
+Running the cheapest validator first, fixing errors, then moving to the next tier is the natural strategy.
+
+#### 4.5.2. Concrete Types from Other Domains
+
+The table above was an overview. Here's what this looks like as concrete types — each from a field where validators have been refined for decades.
+
+**Semiconductors** — The physical rules of chip design are non-negotiable:
+
+```typescript
+interface IChipLayout {
+  technology_node: "5nm" | "7nm" | "14nm" | "28nm";
+  blocks: IBlock[];
+  connections: IConnection[];
+}
+
+interface IBlock {
+  type: "logic" | "memory" | "io" | "analog" | "pll";
+  position: IPoint2D;
+  dimensions: IDimension;
+  sub_blocks: IBlock[];  // recursive hierarchy
+}
+```
+
+DRC (fast), LVS (medium), SPICE simulation (slow). All deterministic.
+
+**Chemical Processes** — Conservation laws are absolute validators:
+
+```typescript
+interface IProcessStream {
+  temperature: number & Minimum<0>;          // Kelvin
+  pressure: number & Minimum<0>;             // Pa
+  composition: IComponent[];                 // must sum to 1.0
+  phase: "liquid" | "vapor" | "solid" | "two_phase";
+  flow_rate: number & Minimum<0>;            // kg/s
+}
+
+interface IUnitOperation {
+  type: "reactor" | "distillation" | "heat_exchanger"
+    | "compressor" | "pump" | "mixer" | "splitter";
+  inlet_streams: IProcessStream[];
+  outlet_streams: IProcessStream[];          // mass balance: Σin = Σout
+  energy_duty: number;                       // energy balance
+}
+```
+
+Mass conservation (Σ inlet = Σ outlet), energy balance, thermodynamic consistency — these are laws of physics, not opinions. Tools like ASPEN and HYSYS have provided deterministic validation for over 40 years.
+
+**Interior Design** — Rigid constraints define spaces beneath aesthetics:
+
+```typescript
+interface IRoom {
+  type: "bedroom" | "living" | "kitchen" | "bathroom"
+    | "office" | "hallway" | "storage";
+  dimensions: IDimension3D;
+  openings: IOpening[];
+  fixtures: IFixture[];
+}
+
+interface IOpening {
+  type: "door" | "window" | "sliding_door" | "arch";
+  width: number & Minimum<0>;      // door ≥ 900mm (accessibility)
+  height: number & Minimum<0>;
+  position: IPoint3D;
+  swing_direction?: "inward" | "outward" | "sliding";
+}
+
+interface IFixture {
+  type: "cabinet" | "counter" | "appliance"
+    | "furniture" | "lighting" | "plumbing";
+  position: IPoint3D;
+  dimensions: IDimension3D;
+  clearance_required: number;       // minimum clearance (mm)
+}
+```
+
+Minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency evacuation distances. BIM tools like Revit have provided collision detection for decades.
+
+**Control Systems** — Stability is mathematically provable:
+
+```typescript
+interface IControlLoop {
+  type: "PID" | "MPC" | "LQR" | "feedforward" | "cascade";
+  plant_model: ITransferFunction;
+  setpoint: number;
+  sampling_rate: number & Minimum<0>;        // Hz
+  constraints: IConstraint[];
+}
+
+interface ITransferFunction {
+  numerator: number[];                       // polynomial coefficients
+  denominator: number[];                     // degree ≥ numerator
+  delay: number & Minimum<0>;               // transport delay (sec)
+}
+```
+
+Bode plots, Nyquist plots, pole placement: over 60 years of analysis tool history. Transfer function validity (fast) → stability/gain-phase margin (medium) → time-domain simulation (deep).
+
+Look at these types. They all have `type` fields with enumerated variants — `"logic" | "memory" | ...`, `"reactor" | "distillation" | ...`, `"bedroom" | "living" | ...`, `"PID" | "MPC" | ...`. Several nest recursively. The same union + tree structure as AutoBe's `IJsonSchema` and `IExpression`. This is not coincidence — it's the nature of engineering data. Appendix A.3 explains why.
+
+> **Note**: The domain examples above were AI-recommended — all are engineering fields where deterministic validators have existed for decades, so the same structure applies in principle. However, as I'm a developer and not a domain expert, please treat the specific details as reference material.
+
+---
+
+#### 4.5.3. Inapplicable Domains
+
+This approach has clear limitations.
+
+First, **domains without deterministic validators.** Creative writing, emotional intelligence, strategic decision-making. There is no validator for "a good novel" or "a wise business decision." Without a validator, there's no feedback loop, and without a feedback loop, this structure doesn't hold.
+
+Second, **when the cost of building the structure exceeds the cost of tolerating uncertainty.** Precise type design, compiler integration, and feedback formatting require upfront investment. For one-off tasks with loose accuracy requirements, a well-crafted prompt may be more appropriate. This structure shines when repeatable, verifiable accuracy is needed at scale — exactly the situation AutoBe faces in code generation.
+
+This is not a universal solution. It's a solution for domains where accuracy is non-negotiable and mechanically verifiable. In those domains, nothing can match it.
+
+---
+
+## 5. Qwen — Small Models and QA Engineering
+
+### 5.1. Function Calling Performance: Small/Medium Models Excel
+
+AutoBe's entire pipeline is function calling. Whether a model writes good prose or holds natural conversations is irrelevant. The only criterion is how accurately it fills complex JSON Schemas.
+
+Qwen isn't the only open-weight model that does function calling well. GLM, Kimi, and others show strong performance at large scale. But at the **small/medium scale**, Qwen was the only one that could handle function calling of this complexity.
+
+Even small MoE models with 3B active parameters support tool choice and process complex schemas containing 10+ recursive union variants. Why this small/medium performance was decisive for AutoBe continues below.
+
+### 5.2. R&D Cost: Users vs Developers
+
+For customers who **use** AutoBe, model cost is a non-issue. Even the most expensive model is cheaper than hiring a single backend developer.
+
+For us **developing** AutoBe, it's different. Every time we add new type designs or validation rules, we must run the entire pipeline from start to finish. Thousands of generate-compile-feedback cycles. Using commercial models at this scale would be financial ruin.
+
+Local models make R&D cycles possible. We experiment without limits, without cost concerns. The journey from 6.75% to 100% required hundreds of experimental cycles — possible only because models were local.
+
+### 5.3. Small Models Are the Best QA Engineers
+
+Large models make fewer mistakes. That's their advantage — and simultaneously their blind spot.
+
+Even if there are vulnerabilities in our system that we haven't thought of, large models rarely trigger those failures. They "correctly guess" ambiguous parts of schemas and pass through. Our mistakes remain hidden.
+
+Switch to a small model and the story changes:
+
+| Model | Active / Total | Success Rate | What It Found |
+|-------|---------------|--------------|---------------|
+| `qwen3-30b-a3b-thinking` | 3B / 30B | ~10% | Fundamental schema ambiguities, missing required fields |
+| `qwen3-next-80b-a3b-instruct` | 3B / 80B | ~20% | Subtle type mismatches in complex nested relations |
+
+The 10% success rate was the most valuable result. Every failure pointed to a system vulnerability, and each fix strengthened the pipeline for **all models**.
+
+AI is probabilistic. Large models make mistakes **less frequently**, not **never**. Edge cases that surface with small models will eventually occur with large models too — just rarely. In production, "rarely" means outage.
+
+**When a system is robust enough that even a 35B model can't find vulnerabilities, the probability of any model failing approaches zero.**
+
+Small models are the ultimate stress testers. From a QA engineering perspective, weaker models are actually the more powerful verification tool.
+
+### 5.4. No Vendor Lock-In
+
+Commercial API pricing changes, model deprecations, and request limits are at the vendor's discretion. The model you use today could disappear tomorrow.
+
+AutoBe's function calling schemas are model-neutral. No model-specific prompt tricks. JSON Schema and type-based validation are industry standards — the system remains unchanged even when models change.
+
+### 5.5. Open Source + Open Weights: A Virtuous Cycle
+
+AutoBe is open source (AGPL 3.0). Qwen is open-weight. Both are part of the open ecosystem.
+
+This combination enabled thousands of experiments, edge case discoveries, and system hardening. This scale of experimentation would have been financially impossible with commercial models.
+
+The open ecosystem creates a virtuous cycle:
+- AutoBe strengthens its system using Qwen
+- The strengthened system proves Qwen's production-level viability
+- Qwen's improvements raise AutoBe's overall performance
+- AutoBe's discoveries (e.g., the double-stringify issue) can contribute to Qwen's improvement
+
+---
+
+## 6. Conclusion
+
+We started at 6.75%. The industry said complex function calling doesn't work, and our results agreed.
+
+But there was no alternative — deterministic AI output requires structured output — so we built the harness, one failure mode at a time. Lenient parsing because JSON broke. Type coercion because types were wrong. Validation feedback because values were wrong. Compiler pipelines because the system needed consistency.
+
+AutoBe achieved 100% compilation across all four Qwen models. Not through better prompts, but through the accumulated engineering of every way things went wrong.
+
+Three things: type schemas that constrain outputs, compilers that verify results, and structured feedback that corrects errors. These three form a deterministic loop wrapping probabilistic models.
+
+This pattern is not limited to code generation. The same structure can be built in every engineering domain where deterministic validators exist — semiconductors, chemical processes, control systems.
+
+Communicate through types and there are no misunderstandings. Constrain through schemas and there are no pink elephants. With a deterministic loop, even 6.75% becomes 100%.
+
+**6.75% is not a failure — it's the first input to the loop. If you can verify, you converge.**
+
+---
+
+**About AutoBe**: [AutoBe](https://github.com/wrtnlabs/autobe) is an open-source AI agent developed by [Wrtn Technologies](https://wrtn.io). It generates production-grade backend applications from natural language.
+
+**About Typia**: [Typia](https://github.com/samchon/typia) is a compiler library that automatically generates runtime validators, JSON Schema, and function calling schemas from TypeScript types.
+
+---
+
+## Appendix: Technical Deep Dive
+
+Union types appear throughout this talk. `IJsonSchema`'s 10 variants (Section 2.5), `IExpression`'s 30+ variants (Section 2.5), Qwen 3.5's double-stringify problem (Section 3.4), type coercion (Section 3.3), validation feedback (Section 3.5). Sections A.1–A.4 explore why union types are the core challenge. Section A.5 explores a capability that schema-based parsing enables beyond validation.
+
+### A.1. What Is a Discriminated Union?
+
+A union type represents "one of several kinds." If a payment method can be card or bank transfer:
+
+```typescript
+type Payment =
+  | { type: "card"; cardNumber: string; cvc: string }
+  | { type: "bank_transfer"; bankCode: string; accountNumber: string }
+```
+
+A **discriminated** union has a **discriminator field** — a single field whose value determines the variant. Here, `type` is the discriminator. If `type` is `"card"`, there are `cardNumber` and `cvc`; if `"bank_transfer"`, there are `bankCode` and `accountNumber`. **A single discriminator value determines the rest of the structure.**
+
+Why does this matter? When an LLM generates data for a union type and makes a mistake, correction requires knowing "which variant was intended." With a discriminator, identification is simple — check one field and you know the variant. Without one, you must infer intent from the data's shape — harder, but possible with the right infrastructure.
+
+AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants) are all discriminated unions, and Typia's ability to structurally identify variants and generate per-field precise feedback is the core mechanism behind 6.75% → 100%.
+
+### A.2. Typia's `x-discriminator` — Adding Intelligence to `anyOf`
+
+JSON Schema provides `anyOf` (match any) and `oneOf` (match exactly one) for unions. Neither carries **"which field distinguishes variants"** — they simply say "match one of these schemas."
+
+OpenAPI v3.x has `discriminator`, but it's `oneOf`-only, and most LLMs can't reliably handle `oneOf`.
+
+Typia solves this with `x-discriminator`. It uses `anyOf`, which LLMs broadly support, while attaching discriminator metadata:
+
+```json
+{
+  "anyOf": [
+    { "type": "object", "properties": { "type": { "const": "card" }, "cardNumber": { ... } } },
+    { "type": "object", "properties": { "type": { "const": "bank_transfer" }, "bankCode": { ... } } }
+  ],
+  "x-discriminator": {
+    "propertyName": "type",
+    "mapping": {
+      "card": "#/$defs/CardPayment",
+      "bank_transfer": "#/$defs/BankTransferPayment"
+    }
+  }
+}
+```
+
+This serves a different purpose from Typia's internal processing. Typia's coercion and validation logic use **structural analysis** — matching property names, types, and shapes against each variant's schema — to identify the correct variant. They work regardless of whether a discriminator exists.
+
+`x-discriminator` is **for the LLM**. It tells the model "use the `type` field to select a variant," reducing the probability of generating structurally ambiguous data in the first place.
+
+The two work together:
+
+1. **`x-discriminator` reduces errors at the source** — the LLM reads the hint and generates clearer data
+2. **Structural analysis handles the rest** — `parse()` identifies the variant and applies variant-specific type coercion (including Qwen 3.5's double-stringify unwinding). `validate()` identifies the variant and generates per-field precise errors — not "none of the 10 variants matched," but "card variant's cardNumber should be string but you gave number"
+
+**`x-discriminator` makes the LLM more accurate. Structural analysis makes the system robust.** This is why coercion and validation work reliably on union types.
+
+### A.3. The World Is Made of Recursive Unions
+
+Engineering manages complexity through **hierarchical decomposition** — breaking large systems into smaller parts, and those parts into even smaller parts. A chip is blocks, and blocks are sub-blocks. A plant is sections, and sections are units. A building is floors, and floors are rooms. This decomposition forms a tree. At each level, parts have different kinds — blocks can be logic, memory, or IO; units can be reactors, distillation columns, or heat exchangers. The moment tree nodes have kinds, it becomes a **recursive union type**.
+
+All domains from Chapter 4 follow this pattern:
+
+- Semiconductors: `IBlock` → `sub_blocks: IBlock[]` (chip → block → sub-block)
+- Chemical processes: plant → section → unit → sub-unit (recursive process hierarchy)
+- Interior design: building → floor → room → zone (recursive spatial decomposition)
+- Control systems: cascade control — outer loop's output is inner loop's setpoint (recursive nesting)
+
+Structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). All are ASTs — Abstract Syntax Trees. **Hierarchical decomposition is how engineers manage complexity, and hierarchical decomposition produces recursive union types.** Every deterministic engineering domain shares this structure.
+
+If the same structure applies to all domains with deterministic validators, and those domains all share recursive union data structures, then **conquering union types is the prerequisite for building this structure**.
+
+If coercion doesn't work on unions, Qwen 3.5's double-stringify will appear in chip design too. If validation feedback doesn't work on unions, "none of 30 variants matched" makes convergence impossible. Without identifying the intended variant, correction is impossible.
+
+Typia's structural variant identification, schema-based coercion, and per-field precise validation are the solution for this universal structure. AutoBe's 6.75% → 100% is not just a code generation achievement. **It establishes reliability on the universal structure of recursive unions — an achievement transferable to every domain that shares this structure.**
+
+### A.4. Why Not Zod?
+
+Zod is the most popular runtime validation library in TypeScript. "Why not Zod?" is a frequent question.
+
+Let's see what happens when you define AutoBe-scale 30+ variant recursive discriminated unions with Zod:
+
+```typescript
+const ExpressionSchema: z.ZodType<IExpression> = z.lazy(() =>
+  z.discriminatedUnion("type", [
+    z.object({ type: z.literal("booleanLiteral"), value: z.boolean() }),
+    z.object({
+      type: z.literal("callExpression"),
+      expression: ExpressionSchema,         // circular reference
+      arguments: z.array(ExpressionSchema),  // circular reference
+    }),
+    // ... 28 more
+  ])
+);
+```
+
+Three problems.
+
+**First, you must define TypeScript types and Zod schemas separately.**
+
+Zod's documentation states this explicitly: "you can define a recursive schema in Zod, but because of a limitation of TypeScript, their type can't be statically inferred." Using `z.lazy()` breaks `z.infer`, so you define TypeScript interfaces separately and connect them with `z.ZodType<T>`:
+
+```typescript
+// 1. Define TypeScript types first
+type IExpression =
+  | { type: "booleanLiteral"; value: boolean }
+  | { type: "callExpression"; expression: IExpression; arguments: IExpression[] }
+  | { type: "binaryExpression"; left: IExpression; operator: string; right: IExpression }
+  // ... 27 more
+
+// 2. Define Zod schema separately with manual type hint connection
+const ExpressionSchema: z.ZodType<IExpression> = z.lazy(() =>
+  z.discriminatedUnion("type", [
+    z.object({ type: z.literal("booleanLiteral"), value: z.boolean() }),
+    z.object({ type: z.literal("callExpression"), expression: ExpressionSchema, arguments: z.array(ExpressionSchema) }),
+    z.object({ type: z.literal("binaryExpression"), left: ExpressionSchema, operator: z.string(), right: ExpressionSchema }),
+    // ... 27 more
+  ])
+);
+```
+
+For 30+ variant recursive unions, this dual definition runs to hundreds of lines. Over time the two diverge, and nothing catches the inconsistency.
+
+**Second, even accepting dual definitions, it won't compile.**
+
+As recursive union depth increases, you hit TypeScript's generic instantiation limit:
+
+> TS2589: Type instantiation is excessively deep and possibly infinite.
+
+In native TypeScript types, recursive references are **name lookups** — pointers to the same definition. 30 variants referencing `IExpression`? 30 pointer lookups. **O(N) — linear.**
+
+In Zod, `z.discriminatedUnion` is a deeply nested generic. TypeScript must **structurally expand** each variant's output type through Zod's conditional types. `z.lazy()` forces re-entry over the entire union — N variants × K recursive fields, each triggering another expansion. At N=30, K=2, depth 3, that's 216,000 type resolutions. **O((N·K)^d) — exponential.**
+
+This is the most repeatedly reported error on Zod's issue tracker. [#577](https://github.com/colinhacks/zod/issues/577), [#5064](https://github.com/colinhacks/zod/issues/5064), [#5256](https://github.com/colinhacks/zod/issues/5256) — all recursive schemas, all TS2589, unresolved even in Zod v4. [Discussion #1459](https://github.com/colinhacks/zod/discussions/1459) shows the same error on complex discriminated unions that aren't even recursive — generic expansion alone is costly enough.
+
+The practical impact extends to IDEs. TypeScript's language server runs the same type checker for autocomplete and hover types. A 30+ variant recursive Zod schema triggers the same exponential expansion — memory soars to gigabytes, and the IDE freezes not just on the schema file but on every file that imports it.
+
+**Third, even accepting all of this, you cannot build the feedback loop.**
+
+This is the decisive problem.
+
+When validation fails on a union type, Zod cannot determine "which variant was intended." On 10-variant unions, errors flood for all variants ([#792](https://github.com/colinhacks/zod/issues/792)), or discriminator mismatch silently hides other field errors ([#2202](https://github.com/colinhacks/zod/issues/2202)). Zod v4 regressed further: discriminator mismatch returns an empty error array and "No matching discriminator" ([#4909](https://github.com/colinhacks/zod/issues/4909), [#5670](https://github.com/colinhacks/zod/issues/5670)).
+
+From the LLM's perspective: if it intended the `callExpression` variant but got the `arguments` field type wrong, it needs feedback like "arguments should be an IExpression array but you gave string." What Zod gives is "none of the 10 variants matched." Feedback that doesn't tell you what to fix is not feedback. Without precise feedback, the loop doesn't converge.
+
+Typia analyzes the data's shape to structurally identify the intended variant, then generates per-field precise errors against that variant's schema. This is the prerequisite for the feedback loop to work, and Zod completely lacks this mechanism.
+
+**Zod: dual definitions, compilation failure, feedback loop impossible. This structure cannot be built on Zod.**
+
+Typia needs just one interface:
+
+```typescript
+const result = typia.validate<AutoBeTest.IExpression>(llmOutput);
+```
+
+It operates at the compiler level. No separate schema, no generic depth limits, no incomplete errors.
+
+### A.5. Beyond Token Limits: Incremental Structured Output
+
+Function calling has an unspoken constraint: **the entire JSON must fit in a single response.** If the model's maximum output is 32K tokens but the target JSON is 100K tokens, the output gets cut off mid-JSON. To `JSON.parse()`, truncated JSON is failed JSON. The entire generation is wasted.
+
+Typia's schema-based lenient parsing changes this dynamic. Because `parse()` automatically closes unclosed brackets, completes incomplete values, and recursively applies type coercion — truncated JSON is not a failure. `DeepPartial<T>`: completed fields are valid, and missing fields are a typed object identifiable by schema.
+
+```
+Turn 1: LLM generates 32K tokens → truncated mid-JSON
+         → Typia parse() → DeepPartial<T>
+         → Schema diff: "these fields are still missing"
+
+Turn 2: "Please fill in the remaining fields" + previous DeepPartial<T>
+         → LLM generates next chunk → Typia parse()
+         → DeepPartial<T> updated, validate() on completed subtrees
+
+Turn N: → All fields present → validate() passes → T
+```
+
+Each turn, `parse()` recovers truncated output and coerces types, while `validate()` can run on completed subtrees first. Errors surface incrementally, not at the end.
+
+This is incremental compilation applied to structured output. Traditional function calling discards truncated output and retries from scratch. Typia's approach reuses every valid field and asks the LLM to fill in only the missing parts.
+
+**Function calling's output size is no longer limited by `max_output_tokens`.** A 200K-token JSON can be progressively built over multiple turns, with type safety maintained at every step. The schema knows what you have and what you need, and the lenient parser ensures nothing is wasted.
+
+Once structured output can be built incrementally, the upper bound on what function calling can produce disappears.
+
+### A.6. Current Function Calling Success Rates
+
+The 6.75% figure cited throughout this talk was an early estimate. Since then, [OpenRouter](https://openrouter.ai) introduced **Exacto mode** — a server-side enforcement of structured output — and success rates have improved noticeably. Here are the current measurements across six models and two of AutoBe's most complex function calling targets.
+
+**Important methodological note**: the "1st success rate" column was **not directly measured**. What we observe is the total number of trials and successes across the entire self-healing loop. From these aggregate numbers, the first-try success probability is **estimated** using the following formula:
+
+```math
+p_1 = \frac{1}{1 + \sqrt{\mu} \cdot (\mu - 1)}, \quad \mu = \frac{N_{trial}}{N_{success}}
+```
+
+where `N_trial` is the total number of function call attempts and `N_success` is the number that eventually produced valid output. `μ` represents the average number of attempts per success — when `μ = 1`, every attempt succeeds on the first try (`p₁ = 100%`); as `μ` grows, `p₁` drops rapidly.
+
+#### `IAutoBeInterfaceSchemaRefineApplication.IProps`
+
+This is the function calling target for **DTO schema generation** — the 10-variant recursive `IJsonSchema` union from Section 2.5. The type that originally yielded the 6.75% estimate.
+
+| Model | Trials | Successes | Overall Rate | Est. 1st Success Rate |
+|-------|-------:|----------:|-------------:|----------------------:|
+| `qwen/qwen3-coder-next` | 619 | 166 | 26.82% | 15.95% |
+| `qwen/qwen3.5-122b-a10b` | 370 | 115 | 31.08% | 20.09% |
+| `moonshotai/kimi-k2.5` | 382 | 177 | 46.34% | 37.02% |
+| `z-ai/glm-5` | 169 | 96 | 56.80% | 49.78% |
+| `openai/gpt-5.4` | 338 | 144 | 42.60% | 32.64% |
+| `anthropic/claude-sonnet-4.6` | 360 | 151 | 41.94% | 31.88% |
+
+`qwen3-coder-next`'s estimated first-try rate rose from 6.75% to **15.95%** — more than doubled. Exacto mode's structured output enforcement catches many of the malformed JSON issues (unclosed brackets, trailing commas) at the API level before they ever reach AutoBe's pipeline.
+
+#### `IAutoBeInterfaceEndpointReviewApplication.IProps`
+
+This is the function calling target for **endpoint review** — validating whether API endpoint designs are consistent with the database schema.
+
+| Model | Trials | Successes | Overall Rate | Est. 1st Success Rate |
+|-------|-------:|----------:|-------------:|----------------------:|
+| `qwen/qwen3-coder-next` | 188 | 46 | 24.47% | 13.81% |
+| `qwen/qwen3.5-122b-a10b` | 56 | 56 | 100.00% | 100.00% |
+| `moonshotai/kimi-k2.5` | 116 | 38 | 32.76% | 21.80% |
+| `z-ai/glm-5` | 67 | 53 | 79.10% | 77.10% |
+| `openai/gpt-5.4` | 212 | 21 | 9.91% | 3.34% |
+| `anthropic/claude-sonnet-4.6` | 24 | 24 | 100.00% | 100.00% |
+
+Notable results: `qwen3.5-122b-a10b` and `claude-sonnet-4.6` achieved **100% first-try success** on endpoint review — every single attempt was valid. Meanwhile, `gpt-5.4` scored the lowest at 3.34%, demonstrating that model size and brand do not predict function calling performance on complex schemas.
+
+The core thesis holds: even with improved first-try rates, no model achieves 100% across all function calling targets. The harness remains essential. What changed is the **starting point** of the loop — and a higher starting point means fewer retries, lower cost, and faster convergence.
+
+All experiments were conducted via [OpenRouter](https://openrouter.ai) with Exacto mode enabled. Raw results are available in the [autobe-examples repository](https://github.com/wrtnlabs/autobe-examples).

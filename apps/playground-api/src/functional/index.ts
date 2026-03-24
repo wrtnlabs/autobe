@@ -5,4 +5,4 @@
  */
 //================================================================
 export * as autobe from "./autobe/index";
-export * as health_check from "./health_check/index";
+export * as monitors from "./monitors/index";

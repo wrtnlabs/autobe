@@ -61,5 +61,6 @@ useNodeVersion: 22.15.0
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - '@vscode/vsce-sign'
+  - better-sqlite3
   - esbuild
   - keytar

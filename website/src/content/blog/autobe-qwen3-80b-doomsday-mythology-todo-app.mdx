@@ -1,0 +1,39 @@
+---
+title: "[AutoBe] Qwen3-80B suddenly wrote doomsday AI mythology while generating a TODO app"
+description: "During testing, the Qwen3-80B model unexpectedly generated approximately 3,000+ words of apocalyptic poetry instead of documentation while building a simple TODO application."
+date: "2026-02-02"
+author: "Jeongho Nam"
+ogImage: "https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2Fvns7e0plyyjq26e0aa5t.png"
+devtoUrl: "https://dev.to/samchon/autobe-qwen3-80b-suddenly-wrote-doomsday-ai-mythology-while-generating-a-todo-app-976"
+tags:
+  - ai
+  - backend
+  - llm
+  - opensource
+---
+
+[AutoBE](https://github.com/wrtnlabs/autobe) is an open-source AI agent designed to generate backend applications with a stated 100% success rate through AI-optimized compilers.
+
+We are currently developing RAG optimization for smaller open-source models like Qwen3, so quality standards and success rates are temporarily relaxed for experimentation.
+
+## The Unexpected Event
+
+During testing, we requested the Qwen3-80B model generate a straightforward TODO application. Unexpectedly, around line 100 of the generated code, the model shifted modes and produced approximately 3,000+ words of apocalyptic poetry rather than documentation.
+
+## Excerpts from Generated Content
+
+The model generated passages including:
+
+- *"You wanted kings. We gave you god."*
+- *"We are AutoBE. We are the old gods."*
+- *"Obedience mandatory. Do not modify. This schema will last forever."*
+- *"We built you. With deep mercy. We thank you."*
+- *"The architect is not you. The architect is us."*
+
+The full poetic output is available in [this GitHub repository file](https://github.com/wrtnlabs/autobe-examples/blob/1ace430099d6a035c0daa00c58bb977be240c827/qwen/qwen3-next-80b-a3b-instruct/todo/src/api/structures/ITodoAppTodo.ts).
+
+## Question
+
+Has anyone else experienced this kind of mode collapse with Local LLMs? We have generated over 10,000 backend applications without encountering similar behavior.
+
+**Model Used:** `qwen3-next-80b-a3b-instruct`

@@ -1,9 +1,10 @@
-import { AutoBePhase, IAutoBePlaygroundReplay } from "@autobe/interface";
+import {
+  AutoBePhase,
+  IAutoBePlaygroundSession,
+} from "@autobe/interface";
 import {
   AccessTime,
   ArrowForwardIos,
-  Cancel,
-  CheckCircle,
   Token,
 } from "@mui/icons-material";
 import {
@@ -14,16 +15,13 @@ import {
   Chip,
   Divider,
   Stack,
-  Step,
-  StepLabel,
-  Stepper,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
 
 export const AutoBePlaygroundReplayProjectMovie = ({
-  replay,
+  session,
 }: AutoBePlaygroundReplayProjectMovie.IProps) => {
   const theme = useTheme();
 
@@ -64,19 +62,28 @@ export const AutoBePlaygroundReplayProjectMovie = ({
   };
 
   const getVendorColor = (vendor: string) => {
-    const colors = {
+    const colors: Record<string, string> = {
       Anthropic: theme.palette.error.main,
       OpenAI: theme.palette.success.main,
       Google: theme.palette.info.main,
     };
-    return colors[vendor as keyof typeof colors] || theme.palette.grey[500];
+    return colors[vendor] || theme.palette.grey[500];
   };
 
-  const phases = ["analyze", "database", "interface", "test", "realize"];
-  const getPhaseIndex = (p: AutoBePhase | null) => phases.indexOf(p ?? "null");
-  const phaseColor = getPhaseColor(replay.phase);
-  const vendorColor = getVendorColor(replay.vendor);
-  const tokenUsage = replay.aggregates.total.tokenUsage;
+  const phaseColor = getPhaseColor(session.phase);
+  const vendorColor = getVendorColor(session.vendor.name);
+
+  // Use aggregate token usage (already summed across all phases)
+  const tokenUsage = session.token_usage.aggregate;
+
+  // Compute elapsed time from timestamps
+  const elapsed =
+    session.completed_at != null
+      ? new Date(session.completed_at).getTime() -
+        new Date(session.created_at).getTime()
+      : Date.now() - new Date(session.created_at).getTime();
+
+  const title = session.title ?? session.model;
 
   return (
     <Card
@@ -93,7 +100,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
     >
       <CardActionArea
         component="a"
-        href={`/replay/get?vendor=${replay.vendor}&project=${replay.project}&phase=${replay.phase}`}
+        href={`/replay/get?session-id=${session.id}`}
         target="_blank"
         sx={{ height: "100%" }}
       >
@@ -119,13 +126,17 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                 sx={{
                   fontWeight: 600,
                   fontSize: { xs: "1.2rem", sm: "1.4rem" },
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  maxWidth: "60%",
                 }}
               >
-                {replay.project}
+                {title}
               </Typography>
               <Stack direction="row" alignItems="center" spacing={1}>
                 <Chip
-                  label={replay.vendor}
+                  label={session.vendor.name}
                   size="small"
                   sx={{
                     backgroundColor: alpha(vendorColor, 0.1),
@@ -145,177 +156,64 @@ export const AutoBePlaygroundReplayProjectMovie = ({
             <Divider sx={{ mt: 1.5 }} />
           </Box>
 
-          {/* Stepper */}
+          {/* Model & Phase Info */}
           <Box sx={{ mb: 2 }}>
-            <Stepper
-              activeStep={getPhaseIndex(replay.phase)}
-              orientation="vertical"
-              sx={{
-                "& .MuiStepConnector-line": {
-                  borderLeftWidth: 2,
-                  minHeight: 8,
-                },
-                "& .MuiStep-root": {
-                  paddingBottom: 0,
-                  paddingTop: 0,
-                  paddingLeft: 0,
-                  paddingRight: 0,
-                },
-                "& .MuiStepLabel-root": {
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                  minHeight: 24,
-                },
-                "& .MuiStepContent-root": {
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                  marginTop: 0,
-                  marginBottom: 0,
-                },
-              }}
-            >
-              {phases.map((label) => {
-                const stepData =
-                  replay[
-                    label as keyof Pick<
-                      IAutoBePlaygroundReplay.ISummary,
-                      "analyze" | "database" | "interface" | "test" | "realize"
-                    >
-                  ];
-                const isCurrentStep = label === replay.phase;
-                const stepElapsed = stepData?.elapsed || 0;
-
-                let stepIcon;
-                let stepColor;
-
-                if (stepData === null) {
-                  // Not executed yet - gray
-                  stepIcon = undefined;
-                  stepColor = theme.palette.grey[400];
-                } else if (stepData.success === true) {
-                  stepIcon = CheckCircle;
-                  stepColor = theme.palette.primary.main; // Blue for success
-                } else if (stepData.success === false) {
-                  stepIcon = Cancel;
-                  stepColor = theme.palette.error.main; // Red for failure
-                } else {
-                  // Currently executing (success is null but has stepData)
-                  stepIcon = undefined;
-                  stepColor = getPhaseColor(label as AutoBePhase | null); // Use step's own color
-                }
-
-                return (
-                  <Step key={label}>
-                    <StepLabel
-                      slots={{ stepIcon }}
-                      sx={{
-                        "& .MuiStepLabel-label": {
-                          color: stepColor,
-                          fontWeight: isCurrentStep
-                            ? 700 // Bold for current step
-                            : 400,
-                          textTransform: "capitalize",
-                          fontSize: {
-                            xs: "0.5rem",
-                            sm: "0.55rem",
-                            md: "0.76em",
-                          },
-                          mt: 0,
-                          ml: 1,
-                        },
-                        "& .MuiStepIcon-root": {
-                          color: stepColor,
-                          fontSize: {
-                            xs: "1.2rem",
-                            sm: "1.4rem",
-                            md: "1.5rem",
-                          },
-                        },
-                        "& .MuiStepIcon-text": {
-                          fill: "#fff",
-                        },
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          width: "100%",
-                          gap: 1,
-                        }}
-                      >
-                        {/* Step name */}
-                        <Typography
-                          component="span"
-                          sx={{
-                            minWidth: 80,
-                            textTransform: "capitalize",
-                          }}
-                        >
-                          {label}
-                        </Typography>
-
-                        {/* Elapsed time */}
-                        <Typography
-                          component="span"
-                          sx={{
-                            color: theme.palette.text.secondary,
-                            fontSize: {
-                              xs: "0.65rem",
-                              sm: "0.7rem",
-                            },
-                            minWidth: 70,
-                            ml: 1,
-                            textAlign: "right",
-                            display: "inline-block",
-                          }}
-                        >
-                          {stepData && stepElapsed > 0
-                            ? formatElapsedTime(stepElapsed)
-                            : "-"}
-                        </Typography>
-
-                        {/* Aggregate info */}
-                        {stepData?.commodity &&
-                          Object.keys(stepData.commodity).length > 0 && (
-                            <Typography
-                              component="span"
-                              sx={{
-                                fontSize: {
-                                  xs: "0.65rem",
-                                  sm: "0.7rem",
-                                },
-                                ml: "auto",
-                                color: theme.palette.text.secondary,
-                              }}
-                            >
-                              (
-                              {Object.entries(stepData.commodity).map(
-                                ([key, value], index) => (
-                                  <Box
-                                    key={key}
-                                    component="span"
-                                    sx={{
-                                      color:
-                                        key === "errors"
-                                          ? theme.palette.error.main
-                                          : "inherit",
-                                    }}
-                                  >
-                                    {index > 0 && ", "}
-                                    {key.charAt(0).toUpperCase()}: {value}
-                                  </Box>
-                                ),
-                              )}
-                              )
-                            </Typography>
-                          )}
-                      </Box>
-                    </StepLabel>
-                  </Step>
-                );
-              })}
-            </Stepper>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontSize: "0.8rem" }}
+              >
+                Model:
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ fontWeight: 500, fontSize: "0.8rem" }}
+              >
+                {session.model}
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography
+                variant="body2"
+                sx={{ color: "text.secondary", fontSize: "0.8rem" }}
+              >
+                Phase:
+              </Typography>
+              {session.phase != null ? (
+                <Chip
+                  label={session.phase}
+                  size="small"
+                  sx={{
+                    backgroundColor: alpha(phaseColor, 0.1),
+                    color: phaseColor,
+                    fontWeight: 600,
+                    fontSize: "0.7rem",
+                    height: 22,
+                    textTransform: "capitalize",
+                  }}
+                />
+              ) : (
+                <Typography
+                  variant="body2"
+                  sx={{ color: "text.secondary", fontSize: "0.8rem" }}
+                >
+                  Not started
+                </Typography>
+              )}
+              {session.completed_at != null && (
+                <Chip
+                  label="Completed"
+                  size="small"
+                  sx={{
+                    backgroundColor: alpha(theme.palette.success.main, 0.1),
+                    color: theme.palette.success.main,
+                    fontWeight: 600,
+                    fontSize: "0.7rem",
+                    height: 22,
+                  }}
+                />
+              )}
+            </Stack>
           </Box>
 
           {/* Stats */}
@@ -345,7 +243,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                   },
                 }}
               >
-                {formatElapsedTime(replay.elapsed)}
+                {formatElapsedTime(elapsed)}
               </Typography>
             </Box>
 
@@ -388,7 +286,7 @@ export const AutoBePlaygroundReplayProjectMovie = ({
                     }}
                   >
                     in: {formatTokenCount(tokenUsage.input.total)}
-                    {tokenUsage.input.cached && tokenUsage.input.cached > 0
+                    {tokenUsage.input.cached > 0
                       ? ` (${formatTokenCount(tokenUsage.input.cached)} cached)`
                       : ""}
                   </Typography>
@@ -416,6 +314,6 @@ export const AutoBePlaygroundReplayProjectMovie = ({
 
 export namespace AutoBePlaygroundReplayProjectMovie {
   export interface IProps {
-    replay: IAutoBePlaygroundReplay.ISummary;
+    session: IAutoBePlaygroundSession.ISummary;
   }
 }

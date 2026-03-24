@@ -63,20 +63,18 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         : Array.isArray(content)
           ? content
           : [content];
-    // THE USER-MESSAGE
-    const userMessage: AutoBeUserMessageHistory = {
-      id: v7(),
-      type: "userMessage",
-      contents: contents.map((c) =>
-        createAutoBeUserMessageContent({ content: c }),
-      ),
-      created_at: new Date().toISOString(),
-    };
-    void this.dispatch(userMessage).catch(() => {});
-
     // ALREADY REALIZED CASE
     const state: AutoBeState = createAutoBeState(this.histories_);
     if (state.realize !== null) {
+      const userMessage: AutoBeUserMessageHistory = {
+        id: v7(),
+        type: "userMessage",
+        contents: contents.map((c) =>
+          createAutoBeUserMessageContent({ content: c }),
+        ),
+        created_at: new Date().toISOString(),
+      };
+      void this.dispatch(userMessage).catch(() => {});
       await sleep_for(2_000);
       const assistantMessage: AutoBeAssistantMessageHistory = {
         id: v7(),
@@ -97,7 +95,14 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
       const snapshots: AutoBeEventSnapshot[] | null =
         this.getEventSnapshots(type);
       if (snapshots === null) {
-        this.histories_.push(userMessage);
+        this.histories_.push({
+          id: v7(),
+          type: "userMessage",
+          contents: contents.map((c) =>
+            createAutoBeUserMessageContent({ content: c }),
+          ),
+          created_at: new Date().toISOString(),
+        });
         this.histories_.push({
           id: v7(),
           type: "assistantMessage",
@@ -111,13 +116,38 @@ export class AutoBeMockAgent extends AutoBeAgentBase implements IAutoBeAgent {
         });
         return;
       }
+      // Find the nearest user message that led into this phase for history
+      // tracking. There may be assistant messages between the user request
+      // and the resulting phase history, so we search backwards.
+      const phaseIndex = this.props_.replay.histories.findIndex(
+        (h) => h.type === type,
+      );
+      const originalUserMessage: AutoBeHistory | undefined =
+        phaseIndex > 0
+          ? this.props_.replay.histories
+              .slice(0, phaseIndex)
+              .reverse()
+              .find((h) => h.type === "userMessage")
+          : undefined;
       for (const s of snapshots) {
-        const time: number = sleepMap[s.event.type] ?? 500;
+        const time: number =
+          this.props_.delay?.(s.event.type) ?? sleepMap[s.event.type] ?? 500;
         await sleep_for(randint(time * 0.2, time * 1.8));
         void this.dispatch(s.event).catch(() => {});
         this.token_usage_ = new AutoBeTokenUsage(s.tokenUsage);
       }
-      this.histories_.push(userMessage);
+      this.histories_.push(
+        originalUserMessage?.type === "userMessage"
+          ? originalUserMessage
+          : {
+              id: v7(),
+              type: "userMessage",
+              contents: contents.map((c) =>
+                createAutoBeUserMessageContent({ content: c }),
+              ),
+              created_at: new Date().toISOString(),
+            },
+      );
       this.histories_.push(
         this.props_.replay.histories.find((h) => h.type === type)!,
       );
@@ -170,6 +200,7 @@ export namespace AutoBeMockAgent {
       listener: IAutoBeCompilerListener,
     ) => IAutoBeCompiler | Promise<IAutoBeCompiler>;
     replay: IAutoBePlaygroundReplay;
+    delay?: ((type: AutoBeEvent.Type) => number | undefined) | undefined;
   }
 }
 
@@ -191,8 +222,8 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   analyzeStart: 1_000,
   analyzeScenario: 1_000,
   analyzeWriteModule: 500,
-  analyzeWriteUnit: 500,
-  analyzeWriteSection: 500,
+  analyzeWriteUnit: 250,
+  analyzeWriteSection: 200,
   analyzeSectionReview: 300,
   analyzeScenarioReview: 300,
   analyzeComplete: 1_000,
@@ -212,10 +243,10 @@ const sleepMap: Record<AutoBeEvent.Type, number> = {
   // INTERFACE
   interfaceStart: 1_000,
   interfaceGroup: 1_000,
-  interfaceEndpoint: 1_000,
+  interfaceEndpoint: 500,
   interfaceEndpointReview: 1_000,
   interfaceOperation: 400,
-  interfaceOperationReview: 400,
+  interfaceOperationReview: 500,
   interfaceAuthorization: 400,
   interfaceSchema: 400,
   interfaceSchemaCasting: 400,

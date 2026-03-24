@@ -4,11 +4,16 @@
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rimraf lib && tsc",
+    "build": "pnpm run build:prisma && rimraf lib && tsc",
+    "build:env": "ts-node build/env.ts",
+    "build:prisma": "pnpm run build:env && rimraf src/prisma && prisma generate",
+    "build:sdk": "nestia sdk",
     "postbuild": "node ../../internals/config/assertBuild.js",
-    "dev": "rimraf lib && tsc --watch",
+    "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
-    "start": "ts-node src/executable/server.ts"
+    "prepare": "pnpm run build:env && pnpm run build:prisma",
+    "start": "prisma migrate deploy && ts-node src/executable/server.ts",
+    "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "keywords": [],
   "author": "Wrtn Technologies",
@@ -42,19 +47,37 @@
     "@autobe/rpc": "workspace:^",
     "@autobe/utils": "workspace:^",
     "@nestia/core": "catalog:samchon",
+    "@nestia/e2e": "catalog:samchon",
+    "@nestia/fetcher": "catalog:samchon",
     "@nestjs/common": "^11.1.3",
     "@nestjs/core": "^11.1.3",
     "@nestjs/platform-express": "^11.1.6",
+    "@prisma/adapter-better-sqlite3": "catalog:prisma",
+    "@prisma/client": "catalog:prisma",
+    "dotenv": "^16.5.0",
+    "dotenv-expand": "^12.0.2",
     "openai": "catalog:libs",
+    "prisma": "catalog:prisma",
     "tgrid": "catalog:samchon",
     "tstl": "catalog:samchon",
-    "typia": "catalog:samchon"
+    "typia": "catalog:samchon",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@nestia/sdk": "catalog:samchon",
+    "@types/inquirer": "8.2.5",
+    "@types/uuid": "^10.0.0",
+    "chalk": "4.1.2",
+    "commander": "^14.0.0",
+    "inquirer": "8.2.5",
     "nestia": "catalog:samchon",
     "rimraf": "^6.0.1",
     "ts-node": "catalog:typescript",
     "typescript": "catalog:typescript"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

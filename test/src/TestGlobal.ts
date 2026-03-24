@@ -37,6 +37,7 @@ export class TestGlobal {
         baseURL: "https://openrouter.ai/api/v1",
       }),
       model: vendor,
+      label: this.getArguments("label")?.[0] ?? undefined,
       semaphore: Number(TestGlobal.getArguments("semaphore")?.[0] ?? 32),
       useToolChoice: useToolChoiceArgument
         ? useToolChoiceArgument.toLowerCase() !== "false"

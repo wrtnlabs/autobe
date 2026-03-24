@@ -1,33 +1,84 @@
-import { IAutoBePlaygroundReplay } from "@autobe/interface";
+import {
+  IAutoBePlaygroundBenchmark,
+  IAutoBePlaygroundSession,
+} from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import { ReplayOutlined } from "@mui/icons-material";
+import {
+  AddCircleOutline,
+  ReplayOutlined,
+  Science,
+  Settings,
+  Storage,
+} from "@mui/icons-material";
 import {
   AppBar,
   Box,
+  Button,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
   LinearProgress,
+  MenuItem,
+  Select,
   Skeleton,
   Stack,
+  Tab,
+  Tabs,
   Toolbar,
   Typography,
   alpha,
   useTheme,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
 import { AutoBePlaygroundReplayIndexMovie } from "./movies/replay/AutoBePlaygroundReplayIndexMovie";
+import { AutoBePlaygroundSettingsMovie } from "./movies/settings/AutoBePlaygroundSettingsMovie";
+import { getConnection } from "./utils/connection";
 
 export function AutoBePlaygroundReplayIndexApplication() {
   const theme = useTheme();
-  const [replays, setRelays] = useState<
-    IAutoBePlaygroundReplay.ISummary[] | null
+  const [tab, setTab] = useState(0);
+
+  // Sessions state
+  const [sessions, setSessions] = useState<
+    IAutoBePlaygroundSession.ISummary[] | null
   >(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
+  // Examples state
+  const [benchmarks, setBenchmarks] = useState<
+    IAutoBePlaygroundBenchmark[] | null
+  >(null);
+
+  // Mock dialog state
+  const [mockOpen, setMockOpen] = useState(false);
+  const [mockVendor, setMockVendor] = useState("");
+  const [mockProject, setMockProject] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const loadSessions = useCallback(async () => {
+    const page = await pApi.functional.autobe.playground.sessions.index(
+      getConnection(),
+      {},
+    );
+    setSessions(page.data);
+  }, []);
+
+  const loadExamples = useCallback(async () => {
+    const list = await pApi.functional.autobe.playground.examples.index(
+      getConnection(),
+    );
+    setBenchmarks(list);
+  }, []);
+
   useEffect(() => {
     const load = async () => {
-      // Simulate loading progress
       const progressInterval = setInterval(() => {
         setLoadingProgress((prev) => {
           if (prev >= 90) {
@@ -37,16 +88,46 @@ export function AutoBePlaygroundReplayIndexApplication() {
           return prev + 10;
         });
       }, 500);
-      setRelays(
-        await pApi.functional.autobe.playground.replay.index(CONNECTION),
-      );
-
-      // Complete the progress
+      await Promise.all([loadSessions(), loadExamples()]);
       setLoadingProgress(100);
       clearInterval(progressInterval);
     };
     load().catch(console.error);
-  }, []);
+  }, [loadSessions, loadExamples]);
+
+  // Mock dialog helpers
+  const benchmarkList = benchmarks ?? [];
+  const uniqueVendors = benchmarkList.map((b) => b.vendor);
+  const selectedBenchmark = benchmarkList.find((b) => b.vendor === mockVendor);
+  const availableProjects = selectedBenchmark
+    ? selectedBenchmark.replays.map((r) => r.project)
+    : [];
+
+  const handleOpenMockDialog = () => {
+    setMockOpen(true);
+    if (benchmarkList.length > 0 && !mockVendor) {
+      const first = benchmarkList[0];
+      setMockVendor(first.vendor);
+      if (first.replays.length > 0) setMockProject(first.replays[0].project);
+    }
+  };
+
+  const handleCreateMock = async () => {
+    setCreating(true);
+    try {
+      const session =
+        await pApi.functional.autobe.playground.sessions.create(
+          getConnection(),
+          { mock: { vendor: mockVendor, project: mockProject } },
+        );
+      window.location.href = `/?session-id=${session.id}`;
+    } catch (err) {
+      console.error("Failed to create mock session:", err);
+      setCreating(false);
+    }
+  };
+
+  const loading = sessions === null || benchmarks === null;
 
   return (
     <div
@@ -61,18 +142,60 @@ export function AutoBePlaygroundReplayIndexApplication() {
       <AppBar position="relative" component="div">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AutoBE Playground (List of Replays)
+            AutoBE Playground
           </Typography>
-          {replays === null && (
+          <Button
+            variant="outlined"
+            size="small"
+            startIcon={<AddCircleOutline />}
+            onClick={handleOpenMockDialog}
+            sx={{
+              color: theme.palette.common.white,
+              borderColor: alpha(theme.palette.common.white, 0.5),
+              mr: 2,
+              "&:hover": { borderColor: theme.palette.common.white },
+            }}
+          >
+            Mock
+          </Button>
+          {loading && (
             <CircularProgress
               size={24}
-              sx={{
-                color: theme.palette.common.white,
-              }}
+              sx={{ color: theme.palette.common.white }}
             />
           )}
         </Toolbar>
-        {replays === null && (
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          sx={{
+            bgcolor: alpha(theme.palette.common.black, 0.1),
+            "& .MuiTab-root": {
+              color: alpha(theme.palette.common.white, 0.7),
+            },
+            "& .Mui-selected": { color: theme.palette.common.white },
+            "& .MuiTabs-indicator": {
+              bgcolor: theme.palette.common.white,
+            },
+          }}
+        >
+          <Tab
+            icon={<Storage sx={{ fontSize: 18 }} />}
+            iconPosition="start"
+            label="Sessions"
+          />
+          <Tab
+            icon={<Science sx={{ fontSize: 18 }} />}
+            iconPosition="start"
+            label="Examples"
+          />
+          <Tab
+            icon={<Settings sx={{ fontSize: 18 }} />}
+            iconPosition="start"
+            label="Settings"
+          />
+        </Tabs>
+        {loading && (
           <LinearProgress
             variant="determinate"
             value={loadingProgress}
@@ -87,7 +210,7 @@ export function AutoBePlaygroundReplayIndexApplication() {
         )}
       </AppBar>
 
-      {replays === null ? (
+      {loading && tab !== 2 ? (
         <Box
           sx={{
             width: "100%",
@@ -100,87 +223,43 @@ export function AutoBePlaygroundReplayIndexApplication() {
         >
           <Container maxWidth="lg" sx={{ mt: 12 }}>
             <Stack spacing={4} alignItems="center">
-              {/* Loading Animation */}
-              <Box
-                sx={{
-                  position: "relative",
-                  display: "inline-flex",
-                }}
-              >
+              <Box sx={{ position: "relative", display: "inline-flex" }}>
                 <CircularProgress
                   size={80}
                   thickness={4}
-                  sx={{
-                    color: theme.palette.primary.main,
-                  }}
+                  sx={{ color: theme.palette.primary.main }}
                 />
                 <Box
                   sx={{
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
                     position: "absolute",
+                    inset: 0,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
                   <ReplayOutlined
-                    sx={{
-                      fontSize: 32,
-                      color: theme.palette.primary.main,
-                    }}
+                    sx={{ fontSize: 32, color: theme.palette.primary.main }}
                   />
                 </Box>
               </Box>
-
-              {/* Loading Text */}
               <Typography
                 variant="h5"
-                sx={{
-                  fontWeight: 500,
-                  color: theme.palette.text.primary,
-                }}
+                sx={{ fontWeight: 500, color: theme.palette.text.primary }}
               >
-                Loading Replay Data...
+                Loading...
               </Typography>
-
-              {/* Skeleton Preview */}
               <Box sx={{ width: "100%", mt: 4 }}>
                 <Stack spacing={3}>
-                  {["Anthropic", "OpenAI", "Google"].map((vendor) => (
-                    <Box key={vendor}>
-                      <Skeleton
-                        variant="text"
-                        width={120}
-                        height={32}
-                        sx={{ mb: 2 }}
-                      />
-                      <Box
-                        sx={{
-                          display: "grid",
-                          gridTemplateColumns: {
-                            xs: "1fr",
-                            sm: "1fr 1fr",
-                            md: "1fr 1fr 1fr",
-                          },
-                          gap: 3,
-                        }}
-                      >
-                        {[1, 2, 3].map((i) => (
-                          <Skeleton
-                            key={i}
-                            variant="rounded"
-                            height={280}
-                            sx={{
-                              bgcolor: alpha(theme.palette.action.hover, 0.1),
-                              animation: "pulse 1.5s ease-in-out infinite",
-                            }}
-                          />
-                        ))}
-                      </Box>
-                    </Box>
+                  {[1, 2, 3].map((i) => (
+                    <Skeleton
+                      key={i}
+                      variant="rounded"
+                      height={120}
+                      sx={{
+                        bgcolor: alpha(theme.palette.action.hover, 0.1),
+                      }}
+                    />
                   ))}
                 </Stack>
               </Box>
@@ -188,21 +267,99 @@ export function AutoBePlaygroundReplayIndexApplication() {
           </Container>
         </Box>
       ) : (
-        <div
-          style={{
-            width: "100%",
-            flex: 1,
-            overflow: "hidden",
-          }}
-        >
-          <AutoBePlaygroundReplayIndexMovie replays={replays} />
+        <div style={{ width: "100%", flex: 1, overflow: "hidden" }}>
+          {/* Sessions Tab */}
+          {tab === 0 && sessions && (
+            <AutoBePlaygroundReplayIndexMovie sessions={sessions} />
+          )}
+
+          {/* Examples Tab */}
+          {tab === 1 && benchmarks && (
+            <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
+          )}
+
+          {/* Settings Tab */}
+          {tab === 2 && <AutoBePlaygroundSettingsMovie />}
         </div>
       )}
+
+      {/* Mock Session Dialog */}
+      <Dialog
+        open={mockOpen}
+        onClose={() => setMockOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Create Mock Session</DialogTitle>
+        <DialogContent>
+          <Stack spacing={3} sx={{ mt: 1 }}>
+            {benchmarkList.length === 0 ? (
+              <Box
+                sx={{ display: "flex", justifyContent: "center", py: 2 }}
+              >
+                <CircularProgress size={24} />
+              </Box>
+            ) : (
+              <>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Vendor / Model</InputLabel>
+                  <Select
+                    value={mockVendor}
+                    label="Vendor / Model"
+                    onChange={(e) => {
+                      setMockVendor(e.target.value);
+                      const bench = benchmarkList.find(
+                        (b) => b.vendor === e.target.value,
+                      );
+                      if (bench && bench.replays.length > 0)
+                        setMockProject(bench.replays[0].project);
+                    }}
+                  >
+                    {uniqueVendors.map((v) => (
+                      <MenuItem key={v} value={v}>
+                        {v}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Project</InputLabel>
+                  <Select
+                    value={mockProject}
+                    label="Project"
+                    onChange={(e) => setMockProject(e.target.value)}
+                  >
+                    {availableProjects.map((p) => (
+                      <MenuItem key={p} value={p}>
+                        {p}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setMockOpen(false)} disabled={creating}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateMock}
+            variant="contained"
+            disabled={creating || !mockVendor || !mockProject}
+            startIcon={
+              creating ? (
+                <CircularProgress size={16} />
+              ) : (
+                <AddCircleOutline />
+              )
+            }
+          >
+            {creating ? "Creating..." : "Create"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
-
-const CONNECTION: pApi.IConnection = {
-  /** Loopback address */
-  host: "http://127.0.0.1:5890",
-};

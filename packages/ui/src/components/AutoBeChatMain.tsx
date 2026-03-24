@@ -4,6 +4,7 @@ import { RefObject, useEffect, useRef } from "react";
 
 import { AutoBeChatUploadBox, useAutoBeAgentSessionList } from "..";
 import { useAutoBeAgent } from "../context/AutoBeAgentContext";
+import { useSearchParams } from "../context/SearchParamsContext";
 import { useMediaQuery } from "../hooks";
 import {
   DEFAULT_CONFIG,
@@ -27,6 +28,9 @@ export interface IAutoBeChatMainProps {
 
   /** Additional required config fields beyond openApiKey */
   requiredFields?: string[];
+
+  /** Custom content to render when disconnected instead of the default placeholder */
+  disconnectedContent?: React.ReactNode;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -34,6 +38,8 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
   const scrollAnchorRef = useRef<HTMLDivElement>(null);
   const { eventGroups, getAutoBeService, connectionStatus } = useAutoBeAgent();
   const { refreshSessionList } = useAutoBeAgentSessionList();
+  const { searchParams } = useSearchParams();
+  const activeSessionId = searchParams.get("session-id");
   const listener: RefObject<AutoBeChatUploadBox.IListener> = useRef({
     handleDragEnter: () => {},
     handleDragLeave: () => {},
@@ -102,16 +108,17 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
       const config = getCurrentConfig();
       const serviceData = await getAutoBeService(config);
       if (messages.length !== 0) {
-        await new Promise((resolve) => {
-          if (serviceData.listener.getEnable() === true) {
-            resolve(void 0);
-          }
-          serviceData.listener.onEnable(async (value) => {
-            if (value === true) {
-              resolve(void 0);
-            }
+        if (serviceData.listener.getEnable() !== true) {
+          await new Promise<void>((resolve) => {
+            const onEnable = async (value: boolean) => {
+              if (value === true) {
+                serviceData.listener.offEnable(onEnable);
+                resolve();
+              }
+            };
+            serviceData.listener.onEnable(onEnable);
           });
-        });
+        }
         await serviceData.service.conversate(messages);
       }
       if (eventGroups.length === 0) {
@@ -130,22 +137,24 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
     }
   }, [eventGroups.length]);
 
-  // Auto-connect if there are existing conversations and config is ready
+  // Auto-connect: immediately when URL has session-id or on replay
   useEffect(() => {
+    if (connectionStatus !== "disconnected") return;
+
     if (props.isReplay === true) {
       conversate([]);
       return;
     }
 
-    if (
-      eventGroups.length > 0 &&
-      hasRequiredConfig() &&
-      connectionStatus === "disconnected"
-    ) {
+    if (activeSessionId) {
       conversate([]);
       return;
     }
-  }, [connectionStatus, eventGroups.length]);
+
+    if (eventGroups.length > 0 && hasRequiredConfig()) {
+      conversate([]);
+    }
+  }, [connectionStatus, activeSessionId, eventGroups.length]);
 
   return (
     <OverlayProvider>
@@ -301,38 +310,40 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
               flexDirection: "column",
             }}
           >
-            {connectionStatus === "disconnected" && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: "3rem",
-                  color: "#666",
-                  textAlign: "center",
-                  gap: "1rem",
-                }}
-              >
-                <div style={{ fontSize: "3rem" }}>⚙️</div>
-                <div style={{ fontSize: "1.25rem", fontWeight: "600" }}>
-                  Configuration Required
-                </div>
+            {connectionStatus === "disconnected" &&
+              eventGroups.length === 0 &&
+              (props.disconnectedContent ?? (
                 <div
                   style={{
-                    fontSize: "1rem",
-                    maxWidth: "400px",
-                    lineHeight: "1.5",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "3rem",
+                    color: "#666",
+                    textAlign: "center",
+                    gap: "1rem",
                   }}
                 >
-                  Please click the settings button ⚙️ to configure your server
-                  connection and API credentials, or start typing to begin
-                  setup.
+                  <div style={{ fontSize: "3rem" }}>⚙️</div>
+                  <div style={{ fontSize: "1.25rem", fontWeight: "600" }}>
+                    Configuration Required
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "1rem",
+                      maxWidth: "400px",
+                      lineHeight: "1.5",
+                    }}
+                  >
+                    Please click the settings button ⚙️ to configure your
+                    server connection and API credentials, or start typing to
+                    begin setup.
+                  </div>
                 </div>
-              </div>
-            )}
+              ))}
 
-            {connectionStatus === "connected" && (
+            {eventGroups.length > 0 && (
               <AutoBeEventGroupMovie eventGroups={eventGroups} />
             )}
           </div>

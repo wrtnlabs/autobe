@@ -1,3 +1,4 @@
+import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import {
   AutoBeAgentProvider,
   AutoBeAgentSessionListProvider,
@@ -5,42 +6,33 @@ import {
   AutoBeServiceFactory,
   IAutoBeAgentSessionStorageStrategy,
   SearchParamsProvider,
-  createAutoBeConfigFields,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
+import { AutoBePlaygroundSidebar } from "./AutoBePlaygroundSidebar";
+import { VendorModelSelector } from "./VendorModelSelector";
+
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
 ) {
   //----
-  // VARIABLES
-  //----
   // STATES
+  //----
   const [, setError] = useState<Error | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [storageStrategy] = useState<IAutoBeAgentSessionStorageStrategy>(
     props.storageStrategyFactory(),
   );
 
-  // Configuration fields for AutoBE Playground (adds serverUrl to defaults)
-  const configFields = createAutoBeConfigFields({
-    key: "serverUrl",
-    label: "Server URL",
-    type: "text",
-    storageKey: "autobe_server_url",
-    placeholder: "http://127.0.0.1:5890",
-    default: "http://127.0.0.1:5890",
-    required: true,
-  });
-
   //----
   // RENDERERS
   //----
-
   const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
   const isMobile = !isMinWidthLg;
+
   return (
     <div
       style={{
@@ -51,13 +43,15 @@ export function AutoBePlaygroundChatMovie(
         position: "relative",
       }}
     >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {props.title ?? "AutoBE Playground"}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      {!props.hideAppBar && (
+        <AppBar position="relative" component="div">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              {props.title ?? "AutoBE Playground"}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
       <div
         style={{
           width: "100%",
@@ -73,7 +67,6 @@ export function AutoBePlaygroundChatMovie(
               storageStrategy={storageStrategy}
               serviceFactory={props.serviceFactory}
             >
-              {/* Flex container for sidebar and main content */}
               <div
                 style={{
                   display: "flex",
@@ -82,23 +75,43 @@ export function AutoBePlaygroundChatMovie(
                   height: "100%",
                 }}
               >
-                {/* <AutoBeChatSidebar
-                  storageStrategy={storageStrategy}
-                  isCollapsed={isMobile ? false : sidebarCollapsed}
-                  onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                  onDeleteSession={(id) => {
-                    storageStrategy.deleteSession({ id });
-                  }}
-                /> */}
+                {!props.hideSidebar && (
+                  <AutoBePlaygroundSidebar
+                    storageStrategy={storageStrategy}
+                    isCollapsed={isMobile ? true : sidebarCollapsed}
+                    onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  />
+                )}
                 <AutoBeChatMain
-                  isUnusedConfig={props.isUnusedConfig ?? false}
+                  isUnusedConfig={true}
+                  isReplay={props.isReplay}
                   isMobile={isMobile}
                   setError={setError}
-                  configFields={configFields}
-                  requiredFields={["serverUrl", "openApiKey"]} // Playground requires serverUrl
-                  style={{
-                    backgroundColor: "lightblue",
-                  }}
+                  disconnectedContent={
+                    !props.isReplay ? (
+                      <VendorModelSelector
+                        selectedVendorId={props.selectedVendorId ?? null}
+                        selectedModel={props.selectedModel ?? null}
+                        locale={props.selectedLocale ?? ""}
+                        timezone={props.selectedTimezone ?? ""}
+                        onVendorChange={props.onVendorChange ?? (() => {})}
+                        onModelChange={props.onModelChange ?? (() => {})}
+                        onLocaleChange={props.onLocaleChange ?? (() => {})}
+                        onTimezoneChange={props.onTimezoneChange ?? (() => {})}
+                        benchmarks={props.benchmarks ?? []}
+                        mockMode={props.mockMode ?? false}
+                        onMockModeChange={props.onMockModeChange ?? (() => {})}
+                        mockVendor={props.mockVendor ?? null}
+                        mockProject={props.mockProject ?? null}
+                        onMockVendorChange={
+                          props.onMockVendorChange ?? (() => {})
+                        }
+                        onMockProjectChange={
+                          props.onMockProjectChange ?? (() => {})
+                        }
+                      />
+                    ) : undefined
+                  }
                 />
               </div>
             </AutoBeAgentProvider>
@@ -111,8 +124,30 @@ export function AutoBePlaygroundChatMovie(
 export namespace AutoBePlaygroundChatMovie {
   export interface IProps {
     title?: string;
+    hideAppBar?: boolean;
+    hideSidebar?: boolean;
+    isReplay?: boolean;
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
+
+    // Vendor/model/locale/timezone selection
+    selectedVendorId?: string | null;
+    selectedModel?: string | null;
+    selectedLocale?: string;
+    selectedTimezone?: string;
+    onVendorChange?: (vendorId: string | null) => void;
+    onModelChange?: (model: string | null) => void;
+    onLocaleChange?: (locale: string) => void;
+    onTimezoneChange?: (timezone: string) => void;
+
+    // Mock mode
+    benchmarks?: IAutoBePlaygroundBenchmark[];
+    mockMode?: boolean;
+    onMockModeChange?: (enabled: boolean) => void;
+    mockVendor?: string | null;
+    mockProject?: string | null;
+    onMockVendorChange?: (vendor: string | null) => void;
+    onMockProjectChange?: (project: string | null) => void;
   }
 }
