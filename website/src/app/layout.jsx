@@ -2,6 +2,7 @@ import { Footer, Layout, Navbar } from "nextra-theme-docs";
 import Script from "next/script";
 import { Head } from "nextra/components";
 import { getPageMap } from "nextra/page-map";
+import VerticalNav from "../components/VerticalNav";
 
 import "./global.css";
 
@@ -98,6 +99,7 @@ export default async function RootLayout(props) {
         /> */}
       </Head>
       <body>
+        <VerticalNav />
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}

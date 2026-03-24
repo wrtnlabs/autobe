@@ -1,6 +1,8 @@
 "use client";
 
 import FadeIn from "./FadeIn";
+import AutoBeLandingBenchmarkMovie from "./AutoBeLandingBenchmarkMovie";
+import AutoBeLandingBlogMovie from "./AutoBeLandingBlogMovie";
 import AutoBeDemoMovie from "./AutoBeLandingDemoMovie";
 import AutoBeLandingHeroMovie from "./AutoBeLandingHeroMovie";
 import AutoBeLandingLimitMovie from "./AutoBeLandingLimitMovie";
@@ -46,8 +48,18 @@ export default function AutoBeLandingMovie() {
 
         <SectionDivider />
 
+        {/* Benchmark leaderboard */}
+        <AutoBeLandingBenchmarkMovie />
+
+        <SectionDivider />
+
         {/* Limitations */}
         <AutoBeLandingLimitMovie />
+
+        <SectionDivider />
+
+        {/* Latest blog posts */}
+        <AutoBeLandingBlogMovie />
 
         <SectionDivider />
 
@@ -57,10 +69,10 @@ export default function AutoBeLandingMovie() {
           <FadeIn>
             <div className="relative max-w-2xl mx-auto">
               <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-6">
-                Start talking
+                Start building
               </h2>
               <p className="text-base text-neutral-500 mb-14">
-                Your next backend starts with a conversation.
+                Describe your backend. We'll compile the rest.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <a

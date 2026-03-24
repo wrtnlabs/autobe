@@ -26,11 +26,7 @@ const meta: MetaRecord = {
     title: "📊 Benchmark",
     href: "/benchmark/index.html",
   },
-  demo: {
-    type: "page",
-    title: "📚 Demonstrations",
-    href: "https://github.com/wrtnlabs/autobe-examples",
-  },
+  // Demonstrations removed — examples available on GitHub
   screenshot: {
     type: "page",
     title: "Screenshot",

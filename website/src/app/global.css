@@ -1,2 +1,197 @@
 @import "tailwindcss";
 @import "nextra-theme-docs/style.css";
+
+/* ── Hide the entire Nextra top navbar when vertical nav is active ── */
+body:has(.vertical-nav) .nextra-navbar {
+  display: none !important;
+}
+body:has(.vertical-nav) .nextra-mobile-nav {
+  display: none !important;
+}
+
+/* Reset navbar height since we hid the top navbar */
+body:has(.vertical-nav) {
+  --nextra-navbar-height: 0px;
+  overflow-x: hidden;
+}
+
+/* ── Vertical Navigation Sidebar ── */
+.vertical-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 220px;
+  background: #0a0a0a;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: width 0.2s ease;
+}
+.vertical-nav--collapsed {
+  width: 64px;
+}
+
+.vertical-nav__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.vertical-nav__logo {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+.vertical-nav--collapsed .vertical-nav__header {
+  justify-content: center;
+}
+.vertical-nav--collapsed .vertical-nav__logo {
+  font-size: 14px;
+}
+.vertical-nav__toggle {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 10px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.vertical-nav__toggle:hover {
+  color: white;
+}
+
+.vertical-nav__list {
+  list-style: none;
+  padding: 12px 8px;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vertical-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #999;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+.vertical-nav__link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.05);
+}
+.vertical-nav__link--active {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.vertical-nav__icon {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vertical-nav__label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vertical-nav__footer {
+  padding: 12px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Content offset for vertical sidebar ── */
+body:has(.vertical-nav:not(.vertical-nav--collapsed)) {
+  padding-left: 220px;
+}
+body:has(.vertical-nav.vertical-nav--collapsed) {
+  padding-left: 64px;
+}
+
+/* Nextra sidebar on docs pages */
+body:has(.vertical-nav) .nextra-sidebar {
+  top: 0;
+  height: 100dvh;
+}
+
+/* ── Mobile: hide sidebar, show hamburger-style toggle ── */
+@media (max-width: 768px) {
+  .vertical-nav {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease, width 0.2s ease;
+  }
+  .vertical-nav--open {
+    transform: translateX(0);
+  }
+  /* Remove content offset on mobile */
+  body:has(.vertical-nav:not(.vertical-nav--collapsed)) {
+    padding-left: 0;
+  }
+  body:has(.vertical-nav.vertical-nav--collapsed) {
+    padding-left: 0;
+  }
+  /* Mobile overlay backdrop */
+  .vertical-nav__backdrop {
+    display: block;
+  }
+}
+
+.vertical-nav__backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 49;
+}
+
+/* Mobile hamburger button */
+.vertical-nav__mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 51;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .vertical-nav__mobile-toggle {
+    display: flex;
+  }
+}
+
+/* ── Code showcase compile result animation ── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

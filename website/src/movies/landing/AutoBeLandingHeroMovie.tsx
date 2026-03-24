@@ -1,5 +1,6 @@
 "use client";
 
+import CodeShowcase from "./CodeShowcase";
 import FadeIn from "./FadeIn";
 
 export default function AutoBeLandingHeroMovie() {
@@ -10,18 +11,18 @@ export default function AutoBeLandingHeroMovie() {
 
       <div className="relative max-w-5xl mx-auto text-center">
         <FadeIn>
-          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold tracking-[-0.04em] leading-[0.95] mb-8 text-white">
-            Talk, Build,
+          <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-bold tracking-[-0.04em] leading-[1] mb-8 text-white">
+            Every line compiles
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-neutral-500">
-              Deploy
+              Every time
             </span>
           </h1>
         </FadeIn>
 
         <FadeIn delay={100}>
           <p className="text-lg md:text-xl text-neutral-500 max-w-xl mx-auto leading-relaxed mb-14">
-            AI-generated TypeScript backends that compile — every single time.
+            Production-ready backends from natural language.
           </p>
         </FadeIn>
 
@@ -91,19 +92,9 @@ export default function AutoBeLandingHeroMovie() {
           </div>
         </FadeIn>
 
-        {/* Video */}
+        {/* Terminal animation */}
         <FadeIn delay={500}>
-          <div className="max-w-5xl mx-auto rounded-2xl overflow-hidden border border-neutral-800/60 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
-            <iframe
-              src="https://www.youtube.com/embed/iE0b3Gt_uPk"
-              title="AutoBE & AutoView Demonstration (Reddit like Community)"
-              width="100%"
-              style={{ aspectRatio: "16/9" }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerPolicy="strict-origin-when-cross-origin"
-              allowFullScreen
-            />
-          </div>
+          <CodeShowcase />
         </FadeIn>
       </div>
     </section>
