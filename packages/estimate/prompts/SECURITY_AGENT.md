@@ -32,8 +32,10 @@ AutoBE generates functional backend code but does NOT include certain infrastruc
 - **Structured logging**: Controllers use `console.log(error)` for error handling. This is the standard AutoBE pattern. Flag once as a suggestion.
 - **Password complexity**: Password validation beyond type checking is not generated. Flag once as a suggestion.
 - **Audit logging**: Login failure logging is not generated. Flag once as a suggestion.
+- **Authentication guards**: AutoBE may or may not generate NestJS Guards depending on the project requirements. Missing authentication guards should be flagged as **warning** level (not critical) unless the endpoint clearly handles sensitive data (e.g., payment, password reset, admin operations). Public-facing read endpoints without guards are acceptable.
+- **IDOR (Insecure Direct Object Reference)**: Many REST APIs intentionally use resource IDs in URLs. Only flag as critical if the endpoint allows cross-user data access without ownership validation. Simple ID-based routing (e.g., `GET /users/:id`) is standard REST design, not necessarily IDOR.
 
-These are deployment-level concerns, not code-level vulnerabilities. Focus your critical/warning severity on actual broken access control, IDOR, injection, and data exposure issues.
+These are deployment-level concerns, not code-level vulnerabilities. Focus your critical/warning severity on actual data exposure, injection, and exploitable access control bypasses — not missing best-practice patterns.
 
 ## Evaluation Guidelines
 - Focus on **file-specific** vulnerabilities, not generic patterns that apply to all endpoints

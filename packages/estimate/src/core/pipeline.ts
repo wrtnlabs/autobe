@@ -651,11 +651,13 @@ export class EvaluationPipeline {
           sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
-      // Apply gate as a multiplier instead of direct subtraction to avoid
-      // double-penalizing (gate penalty + warning penalty on same issues).
-      // Gate score 100 → no reduction, gate score 65 → raw * 0.65
-      // Single Math.round at the end to avoid ±1 rounding drift.
-      const gateMultiplier = (phases.gate.score ?? 100) / 100;
+      // Apply gate as a soft multiplier: if gate passed, floor at 0.9 to avoid
+      // over-penalizing minor compilation warnings (e.g., .prisma extension TS6054).
+      // Gate failed → full multiplier (score/100). Gate passed → max(score/100, 0.9).
+      const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
+      const gateMultiplier = phases.gate.passed
+        ? Math.max(rawGateMultiplier, 0.9)
+        : rawGateMultiplier;
       totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 
       const penaltyData: NonNullable<EvaluationResult["penalties"]> = {};

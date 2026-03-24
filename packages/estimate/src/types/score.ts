@@ -3,11 +3,11 @@ import type { Issue } from "./issue";
 
 export const GATE_ERROR_THRESHOLD = 0.05;
 export const GATE_PENALTY_PER_PERCENT = 5;
-export const AGENT_WEIGHT_RATIO = 0.25;
+export const AGENT_WEIGHT_RATIO = 0.15;
 export const AGENT_WEIGHTS: Record<string, number> = {
-  SecurityAgent: 0.4, // 40% of agent portion — OWASP security audit
-  LLMQualityAgent: 0.3, // 30% of agent portion — AI code quality patterns
-  HallucinationAgent: 0.3, // 30% of agent portion — spec compliance (OpenAPI + Prisma)
+  SecurityAgent: 0.25, // 25% of agent portion — OWASP security audit (lowered: AutoBE auth guards are user-configured)
+  LLMQualityAgent: 0.4, // 40% of agent portion — AI code quality patterns (best discriminator)
+  HallucinationAgent: 0.35, // 35% of agent portion — spec compliance (OpenAPI + Prisma)
 };
 
 // Validate AGENT_WEIGHTS sum to 1.0 at module load
