@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { cn, formatTokens } from "@/lib/utils";
+import { cn, formatTokens } from "@/utils";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,

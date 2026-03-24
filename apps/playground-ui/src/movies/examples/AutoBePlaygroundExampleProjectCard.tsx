@@ -3,7 +3,7 @@ import { IAutoBePlaygroundReplay } from "@autobe/interface";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { formatElapsed, formatTokens } from "@/lib/utils";
+import { formatElapsed, formatTokens } from "@/utils";
 
 import { AutoBePlaygroundExamplePhaseRow } from "./AutoBePlaygroundExamplePhaseRow";
 

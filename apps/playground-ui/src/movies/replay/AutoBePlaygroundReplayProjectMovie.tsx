@@ -7,7 +7,7 @@ import { ChevronRight, Clock, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { formatElapsed, formatTokens } from "@/lib/utils";
+import { formatElapsed, formatTokens } from "@/utils";
 
 export const AutoBePlaygroundReplayProjectMovie = ({
   session,

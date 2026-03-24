@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 const PROGRESS_STEPS = [
   {

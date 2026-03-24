@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn, formatElapsed, formatTokens } from "@/lib/utils";
+import { cn, formatElapsed, formatTokens } from "@/utils";
 
 const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
 type PhaseName = (typeof PHASES)[number];
