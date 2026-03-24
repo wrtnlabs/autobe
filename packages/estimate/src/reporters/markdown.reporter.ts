@@ -222,8 +222,10 @@ function renderGoldenSetDetail(phaseResult: PhaseResult): string {
         typeof m.categories === "string"
           ? JSON.parse(m.categories)
           : m.categories;
-      const catRows = Object.entries(cats)
-        .map(([cat, info]: [string, Record<string, number>]) => {
+      const catRows = Object.entries(
+        cats as Record<string, Record<string, number>>,
+      )
+        .map(([cat, info]) => {
           const status =
             info.score >= 80 ? "✅" : info.score >= 50 ? "⚠️" : "❌";
           return `| ${cat} | ${info.passed}/${info.total} | ${info.score}/100 | ${info.weight}% | ${status} |`;
