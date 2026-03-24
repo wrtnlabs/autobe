@@ -12,7 +12,7 @@
     "dev": "rimraf bin && tsc -p test/tsconfig.json --watch --noEmit",
     "prepack": "pnpm run build",
     "prepare": "pnpm run build:env && pnpm run build:prisma",
-    "start": "ts-node src/executable/server.ts",
+    "start": "prisma migrate deploy && ts-node src/executable/server.ts",
     "test": "ts-node -P test/tsconfig.json test/index.ts"
   },
   "keywords": [],
