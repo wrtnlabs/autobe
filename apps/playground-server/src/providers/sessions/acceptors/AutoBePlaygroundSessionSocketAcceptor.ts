@@ -132,7 +132,8 @@ export namespace AutoBePlaygroundSessionSocketAcceptor {
       props.session.vendor.id,
     );
     const agent: IAutoBeAgent =
-      isMockSession || apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
+      isMockSession ||
+      apiKey === AutoBePlaygroundSessionProvider.VIRTUAL_API_KEY
         ? await startCommunication({
             ...props,
             histories,

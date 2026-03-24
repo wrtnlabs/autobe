@@ -152,8 +152,8 @@ export namespace AutoBePlaygroundSessionProvider {
     const model = isMock
       ? `${body.mock!.vendor}#${body.mock!.project}`
       : body.model;
-    const title = body.title ??
-      (isMock ? `[Mock] ${body.mock!.project}` : null);
+    const title =
+      body.title ?? (isMock ? `[Mock] ${body.mock!.project}` : null);
 
     if (!isMock) {
       await AutoBePlaygroundVendorModelProvider.emplace({
