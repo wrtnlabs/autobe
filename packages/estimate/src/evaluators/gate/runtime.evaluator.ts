@@ -519,7 +519,7 @@ export class RuntimeEvaluator extends GateEvaluator {
   ): TestOutputResult {
     // Try standard test runner patterns first (Jest, Vitest, Mocha, etc.)
     const passedMatch = output.match(/(\d+)\s+pass(?:ed|ing)?/i);
-    const failedMatch = output.match(/(\d+)\s+fail(?:ed|ing|ure)?/i);
+    const failedMatch = output.match(/(\d+)\s+fail(?:ed|ing|ure)?/i); // typos: ignore
 
     if (passedMatch || failedMatch) {
       const passed = passedMatch ? parseInt(passedMatch[1]) : 0;

@@ -16,10 +16,14 @@ fals = "fals"
 nul = "nul"
 xdescribe = "xdescribe"
 
+[default.extend-identifiers]
+criticals = "criticals"
+
 [files]
 extend-exclude = [
   "examples",
-  "*.json", 
+  "*.json",
   "*.prisma",
   "test/assets/**",
+  "website/public/benchmark/assets/**",
 ]

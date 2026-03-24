@@ -23,9 +23,7 @@ export function useBenchmarkData(): UseBenchmarkDataResult {
       setError(null);
     }
     try {
-      const res = await fetch(
-        `./benchmark-summary.json?t=${Date.now()}`,
-      );
+      const res = await fetch(`./benchmark-summary.json?t=${Date.now()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
       const text = await res.text();
       // Only update state if data actually changed
