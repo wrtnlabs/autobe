@@ -1,24 +1,20 @@
 import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
-import {
-  Box,
-  CircularProgress,
-  Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { AutoBePlaygroundExampleProjectCard } from "./AutoBePlaygroundExampleProjectCard";
 
 export function AutoBePlaygroundExampleMovie(
   props: AutoBePlaygroundExampleMovie.IProps,
 ) {
-  const theme = useTheme();
   const { benchmarks } = props;
 
   const [selectedVendor, setSelectedVendor] = useState<string>(
@@ -27,16 +23,9 @@ export function AutoBePlaygroundExampleMovie(
 
   if (benchmarks.length === 0) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 8,
-        }}
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
@@ -44,63 +33,41 @@ export function AutoBePlaygroundExampleMovie(
   const replays = selected?.replays ?? [];
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-        bgcolor: theme.palette.background.default,
-      }}
-    >
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+    <div className="w-full h-full overflow-auto bg-background">
+      <div className="mx-auto max-w-screen-lg px-4 py-8">
         {/* Model selector */}
-        <Stack alignItems="center" sx={{ mb: 4 }}>
-          <FormControl sx={{ minWidth: 300 }} size="small">
-            <InputLabel>Vendor / Model</InputLabel>
-            <Select
-              value={selectedVendor}
-              label="Vendor / Model"
-              onChange={(e) => setSelectedVendor(e.target.value)}
-            >
+        <div className="flex justify-center mb-8">
+          <Select value={selectedVendor} onValueChange={setSelectedVendor}>
+            <SelectTrigger className="w-[300px]">
+              <SelectValue placeholder="Select vendor..." />
+            </SelectTrigger>
+            <SelectContent>
               {benchmarks.map((b) => (
-                <MenuItem key={b.vendor} value={b.vendor}>
+                <SelectItem key={b.vendor} value={b.vendor}>
                   {b.emoji} {b.vendor}
-                </MenuItem>
+                </SelectItem>
               ))}
-            </Select>
-          </FormControl>
-        </Stack>
+            </SelectContent>
+          </Select>
+        </div>
 
         {/* Project grid */}
         {replays.length === 0 ? (
-          <Typography
-            sx={{ textAlign: "center", color: "text.secondary", mt: 8 }}
-          >
+          <p className="text-center text-muted-foreground mt-16">
             No projects available for this model
-          </Typography>
+          </p>
         ) : (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md: "1fr 1fr",
-              },
-              gap: 3,
-              maxWidth: 920,
-              mx: "auto",
-            }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[920px] mx-auto">
             {replays.map((replay) => (
               <AutoBePlaygroundExampleProjectCard
                 key={`${replay.vendor}/${replay.project}`}
                 replay={replay}
               />
             ))}
-          </Box>
+          </div>
         )}
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }
 export namespace AutoBePlaygroundExampleMovie {

@@ -31,6 +31,9 @@ export interface IAutoBeChatMainProps {
 
   /** Custom content to render when disconnected instead of the default placeholder */
   disconnectedContent?: React.ReactNode;
+
+  /** Hide the status info button (e.g. when a persistent status panel is shown) */
+  hideStatusButton?: boolean;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -291,7 +294,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             props.configFields.length > 0 && (
               <AutoBeConfigButton fields={props.configFields || []} />
             )}
-          <AutoBeStatusButton />
+          {!props.hideStatusButton && <AutoBeStatusButton />}
         </div>
         <div
           style={{

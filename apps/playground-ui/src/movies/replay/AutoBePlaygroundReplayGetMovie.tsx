@@ -1,53 +1,33 @@
 import pApi from "@autobe/playground-api";
 import { AutoBeListener } from "@autobe/ui";
-import { ErrorOutline, ReplayOutlined } from "@mui/icons-material";
-
-import { getServerUrl } from "../../utils/connection";
-import {
-  Alert,
-  AlertTitle,
-  AppBar,
-  Box,
-  CircularProgress,
-  Container,
-  LinearProgress,
-  Skeleton,
-  Stack,
-  Toolbar,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { AlertCircle, Loader2, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { getServerUrl } from "../../utils/connection";
 import { AutoBeAgentSessionStorageMockStrategy } from "../../strategy/AutoBeAgentSessionStorageMockStrategy";
 import { AutoBePlaygroundChatMovie } from "../chat/AutoBePlaygroundChatMovie";
 
 export const AutoBePlaygroundReplayGetMovie = () => {
-  const theme = useTheme();
   const [params] = useState(() => getReplayParams());
-  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IProps | null>(
-    null,
-  );
+  const [next, setNext] = useState<AutoBePlaygroundChatMovie.IProps | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
     if (params === null) return;
 
-    // Simulate loading progress
     const progressInterval = setInterval(() => {
       setLoadingProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(progressInterval);
-          return 90;
-        }
+        if (prev >= 90) { clearInterval(progressInterval); return 90; }
         return prev + 10;
       });
     }, 300);
 
     const connect = async () => {
-      // Complete the progress
       setLoadingProgress(100);
       clearInterval(progressInterval);
 
@@ -58,39 +38,28 @@ export const AutoBePlaygroundReplayGetMovie = () => {
 
       setNext({
         title,
-        storageStrategyFactory: () =>
-          new AutoBeAgentSessionStorageMockStrategy(),
+        storageStrategyFactory: () => new AutoBeAgentSessionStorageMockStrategy(),
         serviceFactory: async () => {
-          const listener: AutoBeListener = new AutoBeListener();
+          const listener = new AutoBeListener();
           const host = getServerUrl();
 
           if (isExample) {
             const { connector, driver } =
               await pApi.functional.autobe.playground.examples.replay(
-                { host },
-                {
-                  vendor: params.vendor,
-                  project: params.project,
-                },
-                listener.getListener(),
+                { host }, { vendor: params.vendor, project: params.project }, listener.getListener(),
               );
             return {
-              service: driver,
-              listener,
+              service: driver, listener,
               sessionId: `example:${params.vendor}/${params.project}`,
               close: () => connector.close(),
             };
           } else {
             const { connector, driver } =
               await pApi.functional.autobe.playground.sessions.replay(
-                { host },
-                params.sessionId,
-                listener.getListener(),
+                { host }, params.sessionId, listener.getListener(),
               );
             return {
-              service: driver,
-              listener,
-              sessionId: params.sessionId,
+              service: driver, listener, sessionId: params.sessionId,
               close: () => connector.close(),
             };
           }
@@ -104,31 +73,24 @@ export const AutoBePlaygroundReplayGetMovie = () => {
     });
   }, [params]);
 
-  // Invalid props error
+  // Invalid params
   if (params === null) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: theme.palette.background.default,
-        }}
-      >
-        <Container maxWidth="sm">
-          <Alert severity="error" icon={<ErrorOutline />}>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="max-w-md px-4">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
             <AlertTitle>Invalid Parameters</AlertTitle>
-            Missing required URL parameters. Provide either session-id or
-            vendor + project.
+            <AlertDescription>
+              Missing required URL parameters. Provide either session-id or vendor + project.
+            </AlertDescription>
           </Alert>
-        </Container>
-      </Box>
+        </div>
+      </div>
     );
   }
 
-  // Successfully loaded
+  // Loaded
   if (next !== null) {
     return (
       <AutoBePlaygroundChatMovie
@@ -142,196 +104,65 @@ export const AutoBePlaygroundReplayGetMovie = () => {
     );
   }
 
-  // Error state
+  // Error
   if (error !== null) {
     return (
-      <Box
-        sx={{
-          width: "100%",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <AppBar position="relative" component="div">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              AutoBE Playground (Replay)
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: theme.palette.background.default,
-          }}
-        >
-          <Container maxWidth="sm">
-            <Alert
-              severity="error"
-              icon={<ErrorOutline sx={{ fontSize: 48 }} />}
-            >
-              <AlertTitle sx={{ fontSize: "1.25rem" }}>
-                Failed to Load Replay
-              </AlertTitle>
-              <Typography variant="body2" sx={{ mt: 1 }}>
-                {error.message}
-              </Typography>
+      <div className="flex flex-col h-screen">
+        <header className="flex items-center h-14 px-4 bg-primary text-primary-foreground">
+          <h1 className="text-lg font-semibold">AutoBE Playground (Replay)</h1>
+        </header>
+        <div className="flex-1 flex items-center justify-center bg-background">
+          <div className="max-w-md px-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-5 w-5" />
+              <AlertTitle className="text-lg">Failed to Load Replay</AlertTitle>
+              <AlertDescription className="mt-2">{error.message}</AlertDescription>
             </Alert>
-          </Container>
-        </Box>
-      </Box>
+          </div>
+        </div>
+      </div>
     );
   }
 
-  // Loading state
+  // Loading
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <ReplayOutlined sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AutoBE Playground (Replay)
-          </Typography>
-          <CircularProgress
-            size={24}
-            sx={{
-              color: theme.palette.common.white,
-            }}
-          />
-        </Toolbar>
-        <LinearProgress
-          variant="determinate"
+    <div className="flex flex-col h-screen">
+      <header className="relative flex items-center h-14 px-4 bg-primary text-primary-foreground">
+        <RotateCcw className="h-5 w-5 mr-3" />
+        <h1 className="text-lg font-semibold flex-1">AutoBE Playground (Replay)</h1>
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <Progress
           value={loadingProgress}
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 3,
-          }}
+          className="absolute bottom-0 left-0 right-0 h-0.5 rounded-none"
         />
-      </AppBar>
+      </header>
 
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: theme.palette.background.default,
-        }}
-      >
-        <Container maxWidth="md" sx={{ mt: -8 }}>
-          <Stack spacing={4} alignItems="center">
-            {/* Loading Animation */}
-            <Box
-              sx={{
-                position: "relative",
-                display: "inline-flex",
-              }}
-            >
-              <CircularProgress
-                size={80}
-                thickness={4}
-                sx={{
-                  color: theme.palette.primary.main,
-                }}
-              />
-              <Box
-                sx={{
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  position: "absolute",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <ReplayOutlined
-                  sx={{
-                    fontSize: 32,
-                    color: theme.palette.primary.main,
-                  }}
-                />
-              </Box>
-            </Box>
+      <div className="flex-1 flex items-center justify-center bg-background">
+        <div className="max-w-xl w-full px-4 -mt-16">
+          <div className="flex flex-col items-center gap-6">
+            <div className="relative">
+              <Loader2 className="h-20 w-20 animate-spin text-primary" />
+              <RotateCcw className="h-8 w-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            </div>
 
-            {/* Loading Text */}
-            <Stack spacing={2} alignItems="center">
-              <Typography
-                variant="h5"
-                sx={{
-                  fontWeight: 500,
-                  color: theme.palette.text.primary,
-                }}
-              >
-                Loading Replay Data
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: theme.palette.text.secondary,
-                }}
-              >
+            <div className="text-center space-y-2">
+              <h2 className="text-xl font-medium">Loading Replay Data</h2>
+              <p className="text-muted-foreground">
                 {params.type === "example"
                   ? `Example: ${params.vendor} / ${params.project}`
                   : `Session: ${params.sessionId}`}
-              </Typography>
-            </Stack>
+              </p>
+            </div>
 
-            {/* Chat skeleton preview */}
-            <Box sx={{ width: "100%", maxWidth: 600, mt: 4 }}>
-              <Stack spacing={3}>
-                {/* System message skeleton */}
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    bgcolor: alpha(theme.palette.info.main, 0.1),
-                    border: `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
-                  }}
-                >
-                  <Skeleton variant="text" width="60%" height={24} />
-                  <Skeleton
-                    variant="text"
-                    width="80%"
-                    height={20}
-                    sx={{ mt: 1 }}
-                  />
-                </Box>
-
-                {/* Chat message skeletons */}
-                {[1, 2, 3].map((i) => (
-                  <Box key={i}>
-                    <Skeleton
-                      variant="rounded"
-                      height={60}
-                      sx={{
-                        bgcolor: alpha(theme.palette.action.hover, 0.1),
-                        animation: "pulse 1.5s ease-in-out infinite",
-                      }}
-                    />
-                  </Box>
-                ))}
-              </Stack>
-            </Box>
-          </Stack>
-        </Container>
-      </Box>
-    </Box>
+            <div className="w-full max-w-lg mt-6 space-y-4">
+              <Skeleton className="h-[60px] w-full rounded-lg" />
+              <Skeleton className="h-[60px] w-full rounded-lg" />
+              <Skeleton className="h-[60px] w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -341,16 +172,10 @@ type ReplayParams =
 
 const getReplayParams = (): ReplayParams | null => {
   const query = new URLSearchParams(window.location.search);
-
-  // Check example params first — SearchParamsProvider may inject a
-  // session-id into the URL after the initial connection, so on refresh
-  // we must prefer the original vendor/project params.
   const vendor = query.get("vendor");
   const project = query.get("project");
   if (vendor && project) return { type: "example", vendor, project };
-
   const sessionId = query.get("session-id");
   if (sessionId) return { type: "session", sessionId };
-
   return null;
 };

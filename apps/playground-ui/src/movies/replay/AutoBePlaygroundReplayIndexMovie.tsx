@@ -1,5 +1,4 @@
 import { IAutoBePlaygroundSession } from "@autobe/interface";
-import { Container } from "@mui/material";
 
 import { AutoBePlaygroundReplayVendorMovie } from "./AutoBePlaygroundReplayVendorMovie";
 
@@ -19,27 +18,16 @@ export const AutoBePlaygroundReplayIndexMovie = ({
       {} as Record<string, IAutoBePlaygroundSession.ISummary[]>,
     );
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        overflowY: "auto",
-      }}
-    >
-      <Container
-        maxWidth="lg"
-        sx={{ py: { xs: 2, sm: 3, md: 4 }, px: { xs: 2, sm: 3 } }}
-      >
-        {Object.entries(groupedSessions).map(([vendor, vendorSessions]) => {
-          return (
-            <AutoBePlaygroundReplayVendorMovie
-              key={vendor}
-              vendor={vendor}
-              sessions={vendorSessions}
-            />
-          );
-        })}
-      </Container>
+    <div className="w-full h-full overflow-y-auto">
+      <div className="mx-auto max-w-screen-lg px-4 sm:px-6 py-4 sm:py-6">
+        {Object.entries(groupedSessions).map(([vendor, vendorSessions]) => (
+          <AutoBePlaygroundReplayVendorMovie
+            key={vendor}
+            vendor={vendor}
+            sessions={vendorSessions}
+          />
+        ))}
+      </div>
     </div>
   );
 };
