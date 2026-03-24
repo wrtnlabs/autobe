@@ -144,9 +144,15 @@ export function AutoBeAgentProvider({
   }, []);
 
   useEffect(() => {
-    // Close existing connection when switching sessions
+    // Close existing connection when switching sessions,
+    // but skip if the current service already owns this session
+    // (happens when getAutoBeService just created it and set the URL).
     const prev = serviceInstanceRef.current;
     if (prev) {
+      if (prev.sessionId === activeConversationId) {
+        // Same session — do not tear down the connection we just created
+        return;
+      }
       void Promise.resolve(prev.close()).catch(() => {});
       serviceInstanceRef.current = null;
       setConnectionStatus("disconnected");
