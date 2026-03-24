@@ -1,23 +1,3 @@
-import {
-  IAutoBePlaygroundSession,
-  IAutoBePlaygroundVendor,
-  IAutoBePlaygroundVendorModel,
-} from "@autobe/interface";
-import pApi from "@autobe/playground-api";
-import {
-  IAutoBeAgentSessionStorageStrategy,
-  useAutoBeAgentSessionList,
-  useSearchParams,
-} from "@autobe/ui";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Plus,
-  Trash2,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +11,19 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn, formatTokens } from "@/lib/utils";
+import {
+  IAutoBePlaygroundSession,
+  IAutoBePlaygroundVendor,
+  IAutoBePlaygroundVendorModel,
+} from "@autobe/interface";
+import pApi from "@autobe/playground-api";
+import {
+  IAutoBeAgentSessionStorageStrategy,
+  useAutoBeAgentSessionList,
+  useSearchParams,
+} from "@autobe/ui";
+import { ChevronLeft, ChevronRight, Loader2, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { getConnection } from "../../utils/connection";
 
@@ -140,7 +133,12 @@ export const AutoBePlaygroundSidebar = (
             New Chat
           </Button>
         )}
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={props.onToggle}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={props.onToggle}
+        >
           {props.isCollapsed ? (
             <ChevronRight className="h-4 w-4" />
           ) : (
@@ -160,7 +158,9 @@ export const AutoBePlaygroundSidebar = (
             </p>
             <Select
               value={filterVendorId ?? "__all__"}
-              onValueChange={(v) => setFilterVendorId(v === "__all__" ? null : v)}
+              onValueChange={(v) =>
+                setFilterVendorId(v === "__all__" ? null : v)
+              }
             >
               <SelectTrigger className="h-7 text-xs">
                 <SelectValue placeholder="All Vendors" />
@@ -257,16 +257,19 @@ export const AutoBePlaygroundSidebar = (
                               </Badge>
                             )}
                           </div>
-                          {s.token_usage.total > 0 && (
+                          {s.token_usage.aggregate.total > 0 && (
                             <p className="text-[0.65rem] text-muted-foreground mt-0.5">
-                              {formatTokens(s.token_usage.total)} tokens
+                              {formatTokens(s.token_usage.aggregate.total)} tokens
                               {" (in: "}
-                              {formatTokens(s.token_usage.input.total)}
-                              {s.token_usage.input.cached > 0 && (
-                                <>, {formatTokens(s.token_usage.input.cached)} cached</>
+                              {formatTokens(s.token_usage.aggregate.input.total)}
+                              {s.token_usage.aggregate.input.cached > 0 && (
+                                <>
+                                  , {formatTokens(s.token_usage.aggregate.input.cached)}{" "}
+                                  cached
+                                </>
                               )}
                               {" / out: "}
-                              {formatTokens(s.token_usage.output.total)}
+                              {formatTokens(s.token_usage.aggregate.output.total)}
                               {")"}
                             </p>
                           )}
