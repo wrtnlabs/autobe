@@ -3,6 +3,7 @@ import {
   AutoBeInterfaceSchemaPropertyRevise,
 } from "@autobe/interface";
 
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -14,13 +15,14 @@ import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/stru
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
   /**
-   * Process schema review task or preliminary data requests.
+   * Process schema review via write-validate-correct loop with preliminary
+   * data requests.
    *
    * Reviews and validates OpenAPI schema definitions to ensure quality,
    * correctness, and compliance with domain requirements and system policies.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write
+   *   submission, or completion confirmation
    */
   process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
@@ -29,8 +31,8 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * Before requesting preliminary data, submitting a review, or completing
+     * your task, reflect on your current state and explain your reasoning:
      *
      * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
@@ -38,12 +40,15 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
-     * For completion (complete):
+     * For write submissions:
      *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * - What issues did you find in the schema?
+     * - What property changes are you proposing?
+     * - If this is a correction, what validation errors are you fixing?
+     *
+     * For completion:
+     *
+     * - Confirm that the last write passed validation successfully.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -53,13 +58,17 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas) or final schema review (complete). When preliminary
-     * returns empty array, that type is removed from the union, physically
-     * preventing repeated calls.
+     * Determines which action to perform:
+     *
+     * - Preliminary types: Load context data incrementally
+     * - `write`: Submit schema review for external validation
+     * - `complete`: Finalize after successful write validation
+     *
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -71,15 +80,16 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Complete schema review with property-level revisions. */
-  export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Value "complete" indicates this is the final review submission after all
-     * preliminary data has been gathered.
-     */
-    type: "complete";
+  /**
+   * Submit schema review with property-level revisions for validation.
+   *
+   * The submitted review will be validated externally. If validation fails,
+   * you will receive diagnostics in the next iteration and should correct
+   * and resubmit. You can submit up to 3 times.
+   */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Summary of issues found and fixes applied. */
     review: string;
