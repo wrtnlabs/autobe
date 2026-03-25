@@ -10,54 +10,21 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
 export interface IAutoBeInterfaceSchemaComplementApplication {
-  /**
-   * Process schema complement task or preliminary data requests.
-   *
-   * Adds missing schema definitions to ensure OpenAPI document is complete and
-   * all referenced schemas are properly defined.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   task
-   */
+  /** Process task or retrieve preliminary data. */
   process(props: IAutoBeInterfaceSchemaComplementApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceSchemaComplementApplication {
   export interface IProps {
     /**
-     * Think before you act.
-     *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
-     *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * Reasoning about your current state: what's missing (preliminary) or what
+     * you accomplished (completion).
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas, getPreviousInterfaceOperations,
-     * getPreviousInterfaceSchemas) or final schema complementation (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request:
       | IComplete
@@ -71,52 +38,20 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /**
-   * Request to add a missing schema definition.
-   *
-   * Executes schema complementation to fill in a referenced but undefined
-   * schema type in the OpenAPI document's components.schemas section. Ensures
-   * the $ref reference resolves to a valid schema definition.
-   */
+  /** Add a missing schema definition referenced by $ref in components.schemas. */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
-    /**
-     * Analysis of the missing type's purpose and context.
-     *
-     * Before designing the schema, analyze what you know:
-     *
-     * - What is this missing type for? Why is it referenced?
-     * - Where is it referenced from? ($ref in which schemas/operations?)
-     * - What does the reference context tell us about its expected structure?
-     * - Are there similar types that provide structural hints?
-     */
+    /** Analysis of the missing type's purpose and reference context. */
     analysis: string;
 
-    /**
-     * Rationale for the schema design decisions.
-     *
-     * Explain why you designed the schema this way:
-     *
-     * - Which properties did you include and why?
-     * - What is required vs optional, and why?
-     * - Which types use $ref and why?
-     * - What was excluded and why? (e.g., auto-generated fields for ICreate)
-     */
+    /** Rationale for the schema design decisions. */
     rationale: string;
 
     /**
-     * Design structure for the missing schema being complemented.
-     *
-     * Contains `databaseSchema`, `specification`, `description`, and `schema`
-     * fields that together define a complete DTO type component.
+     * Schema design: database mapping, specification, description, and JSON
+     * Schema.
      */
     design: AutoBeInterfaceSchemaDesign;
   }

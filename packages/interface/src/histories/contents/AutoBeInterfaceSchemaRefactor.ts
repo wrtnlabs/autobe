@@ -1,66 +1,25 @@
 /**
- * Represents a DTO type name refactoring operation.
+ * DTO type name refactoring operation.
  *
- * This interface defines a single rename operation to fix DTO type names that
- * violate the critical naming convention: ALL words from the Prisma table name
- * MUST be preserved in the DTO type name.
+ * Fixes names violating the rule: ALL words from the Prisma table name MUST be
+ * preserved. The orchestrator automatically renames all variants (.ICreate,
+ * .IUpdate, .ISummary, IPage*).
  *
- * Common violations detected:
+ * Common violations: `ISale` → `IShoppingSale` (prefix omission), `IBbsComment`
+ * → `IBbsArticleComment` (intermediate word omission).
  *
- * - Service prefix omission: `shopping_sales` → `ISale` (should be
- *   `IShoppingSale`)
- * - Intermediate word omission: `bbs_article_comments` → `IBbsComment` (should be
- *   `IBbsArticleComment`)
- * - Multiple words omitted: `shopping_order_good_refunds` → `IShoppingRefund`
- *   (should be `IShoppingOrderGoodRefund`)
- *
- * The orchestrator automatically handles renaming all related variants:
- *
- * - Base type: `ISale` → `IShoppingSale`
- * - Create variant: `ISale.ICreate` → `IShoppingSale.ICreate`
- * - Update variant: `ISale.IUpdate` → `IShoppingSale.IUpdate`
- * - Summary variant: `ISale.ISummary` → `IShoppingSale.ISummary`
- * - Page type: `IPageISale` → `IPageIShoppingSale`
- *
- * @example
- *   ```typescript
- *   // Fix service prefix omission
- *   { from: "ISale", to: "IShoppingSale" }
- *
- *   // Fix intermediate word omission
- *   { from: "IBbsComment", to: "IBbsArticleComment" }
- *
- *   // Fix multiple omissions
- *   { from: "IShoppingRefund", to: "IShoppingOrderGoodRefund" }
- *   ```;
+ * @author Samchon
  */
 export interface AutoBeInterfaceSchemaRefactor {
   /**
-   * Current INCORRECT type name that violates naming rules.
-   *
-   * This is the base type name (without variant suffixes or IPage prefix) that
-   * omits service prefixes or intermediate components from the Prisma table
-   * name.
-   *
-   * @example
-   *   ISale (when table is "shopping_sales")
-   *
-   * @example
-   *   IBbsComment (when table is "bbs_article_comments")
+   * Current INCORRECT base type name (e.g., "ISale" when table is
+   * "shopping_sales").
    */
   from: string;
 
   /**
-   * CORRECT type name with all components preserved.
-   *
-   * This is the proper base type name that preserves ALL words from the Prisma
-   * table name, converted from snake_case to PascalCase with "I" prefix.
-   *
-   * @example
-   *   IShoppingSale (from table "shopping_sales")
-   *
-   * @example
-   *   IBbsArticleComment (from table "bbs_article_comments")
+   * CORRECT base type name preserving ALL table words as PascalCase with "I"
+   * prefix (e.g., "IShoppingSale").
    */
   to: string;
 }

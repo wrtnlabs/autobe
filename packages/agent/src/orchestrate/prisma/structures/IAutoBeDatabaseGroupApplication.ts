@@ -6,55 +6,21 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseGroupApplication {
-  /**
-   * Process database component group generation task or preliminary data
-   * requests.
-   *
-   * Generate logical groups for organizing database component extraction based
-   * on business domains. Processes group generation with incremental context
-   * loading to ensure comprehensive organization.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   task
-   */
+  /** Process group generation task or retrieve preliminary data. */
   process(props: IAutoBeDatabaseGroupApplication.IProps): void;
 }
 
 export namespace IAutoBeDatabaseGroupApplication {
   export interface IProps {
     /**
-     * Think before you act.
-     *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
-     *
-     * For preliminary requests (getAnalysisSections,
-     * getPreviousAnalysisSections, getPreviousDatabaseSchemas):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * Reasoning about your current state: what's missing (preliminary) or what
+     * you accomplished (completion).
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas) or final group generation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request:
       | IComplete
@@ -63,54 +29,25 @@ export namespace IAutoBeDatabaseGroupApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /**
-   * Request to generate database component groups.
-   *
-   * Executes group generation to organize database components based on business
-   * domains from requirements.
-   */
+  /** Generate database component groups organized by business domains. */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Analysis of the requirements structure and domain organization.
-     *
-     * Documents the agent's understanding of the business requirements:
-     *
-     * - What major business domains were identified from the requirements?
-     * - How are these domains related to each other?
-     * - What organizational patterns exist in the requirements?
-     * - What foundational vs domain-specific components are needed?
+     * Analysis of the requirements structure, domain organization, and
+     * component needs.
      */
     analysis: string;
 
-    /**
-     * Rationale for the component grouping decisions.
-     *
-     * Explains why the groups were organized this way:
-     *
-     * - Why was each component group created?
-     * - Why were certain domains combined or kept separate?
-     * - How does the grouping reflect the business domain structure?
-     * - What considerations drove the component ordering?
-     */
+    /** Rationale for component grouping decisions and domain boundaries. */
     rationale: string;
 
     /**
-     * Array of database component groups for organizing development.
+     * Database component groups derived from business domains.
      *
-     * DO: Derive groups from business domains in requirements rather than
-     * arbitrary technical divisions. DO: Create foundational groups
-     * (Systematic, Actors) separately from domain-specific groups. DO: Organize
-     * groups around business workflows and entity relationships. DO: Provide
-     * complete coverage of all components without overlap.
+     * Separate foundational groups (Systematic, Actors) from domain-specific
+     * groups. Ensure complete coverage without overlap.
      */
     groups: AutoBeDatabaseGroup[] & tags.MinItems<1>;
   }
