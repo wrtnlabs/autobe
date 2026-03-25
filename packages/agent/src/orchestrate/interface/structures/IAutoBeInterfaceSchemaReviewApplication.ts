@@ -3,7 +3,6 @@ import {
   AutoBeInterfaceSchemaPropertyRevise,
 } from "@autobe/interface";
 
-import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
@@ -12,17 +11,18 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
   /**
-   * Process schema review via write-validate-correct loop with preliminary
-   * data requests.
+   * Process schema review via write-validate-correct loop with preliminary data
+   * requests.
    *
    * Reviews and validates OpenAPI schema definitions to ensure quality,
    * correctness, and compliance with domain requirements and system policies.
    *
-   * @param props Request containing preliminary data request, write
-   *   submission, or completion confirmation
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
@@ -83,9 +83,9 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
   /**
    * Submit schema review with property-level revisions for validation.
    *
-   * The submitted review will be validated externally. If validation fails,
-   * you will receive diagnostics in the next iteration and should correct
-   * and resubmit. You can submit up to 3 times.
+   * The submitted review will be validated externally. If validation fails, you
+   * will receive diagnostics in the next iteration and should correct and
+   * resubmit. You can submit up to 3 times.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

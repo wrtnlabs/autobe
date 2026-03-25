@@ -2,12 +2,12 @@
  * Shared completion request for cyclinic write-validate-correct loops.
  *
  * Used across all phases that employ the write → validate → correct pattern.
- * Only available after a write submission has passed external validation
- * (union narrowing removes this type until then).
+ * Only available after a write submission has passed external validation (union
+ * narrowing removes this type until then).
  *
- * The `remind` field forces the LLM to recall what it submitted and why
- * it considers the result correct before confirming — reducing premature
- * or hallucinated completions.
+ * The `remind` field forces the LLM to recall what it submitted and why it
+ * considers the result correct before confirming — reducing premature or
+ * hallucinated completions.
  *
  * @author Samchon
  */
@@ -31,8 +31,8 @@ export interface IComplete {
   /**
    * Explicit confirmation to finalize.
    *
-   * Must be `true` to proceed with finalization. Setting `false` cancels
-   * the completion and continues the loop.
+   * Must be `true` to proceed with finalization. Setting `false` cancels the
+   * completion and continues the loop.
    */
   confirm: boolean;
 }

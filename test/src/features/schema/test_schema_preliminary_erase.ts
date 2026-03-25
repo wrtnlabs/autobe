@@ -71,11 +71,12 @@ export const test_schema_preliminary_erase = async () => {
       .map((r) => r.$ref.split("/").pop()!)
       .sort(),
     [
-      "IAutoBeInterfaceSchemaReviewApplication.IComplete",
+      "IAutoBeInterfaceSchemaReviewApplication.IWrite",
       "IAutoBePreliminaryGetAnalysisSections",
       "IAutoBePreliminaryGetDatabaseSchemas",
       "IAutoBePreliminaryGetInterfaceOperations",
       "IAutoBePreliminaryGetInterfaceSchemas",
+      "IComplete",
     ].sort(),
   );
   TestValidator.equals(
@@ -87,6 +88,7 @@ export const test_schema_preliminary_erase = async () => {
       "getDatabaseSchemas",
       "getInterfaceOperations",
       "getInterfaceSchemas",
+      "write",
     ].sort(),
   );
   TestValidator.equals(
