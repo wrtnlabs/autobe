@@ -8,7 +8,6 @@ import {
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateRealizeOperationCorrectCasting } from "./orchestrateRealizeOperationCorrectCasting";
-import { orchestrateRealizeOperationCorrectOverall } from "./orchestrateRealizeOperationCorrectOverall";
 import { orchestrateRealizeOperationWrite } from "./orchestrateRealizeOperationWrite";
 
 export async function orchestrateRealizeOperation(
@@ -28,20 +27,13 @@ export async function orchestrateRealizeOperation(
       transformers: props.transformers,
       progress: props.writeProgress,
     });
-  props.validateProgress.total += 2 * functions.length;
+  props.validateProgress.total += functions.length;
 
   functions = await orchestrateRealizeOperationCorrectCasting(ctx, {
     authorizations: props.authorizations,
     collectors: props.collectors,
     transformers: props.transformers,
     functions,
-    progress: props.validateProgress,
-  });
-  functions = await orchestrateRealizeOperationCorrectOverall(ctx, {
-    functions,
-    authorizations: props.authorizations,
-    collectors: props.collectors,
-    transformers: props.transformers,
     progress: props.validateProgress,
   });
   return functions;

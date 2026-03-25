@@ -2,31 +2,33 @@ import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/I
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
- * Function calling interface for generating API operation implementation
- * functions.
+ * Function calling interface for the cyclinic write-compile-correct loop of API
+ * operation implementation.
  *
- * Guides the AI agent through creating provider functions that implement
- * complete business logic for specific API endpoints. Each operation function
- * handles the full request-response lifecycle including validation,
- * authorization, database operations, and response formatting.
+ * Combines preliminary context loading, code submission with compiler
+ * validation, and iterative correction into a single unified loop.
  *
- * The generation follows a structured RAG workflow: preliminary context
- * gathering (database schemas) → implementation planning → code generation →
- * review and refinement.
+ * The agent can:
+ *
+ * - Request context data (getAnalysisSections, getDatabaseSchemas, etc.)
+ * - Submit code via `write` for external TypeScript compilation validation
+ * - Finalize via `complete` after a successful write validation
  */
 export interface IAutoBeRealizeOperationWriteApplication {
   /**
-   * Process operation function implementation task or preliminary data
+   * Process operation function implementation, correction, or preliminary data
    * requests.
    *
-   * Generates complete operation function implementation through three-phase
-   * workflow (plan → draft → revise). Ensures type safety, proper database
-   * query patterns, and API contract compliance.
+   * Generates complete operation function implementation through structured
+   * workflow. Submits code via `write` for external validation (compilation).
+   * If validation fails, diagnostics are provided and you should correct and
+   * resubmit. Call `complete` only after a successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
@@ -36,8 +38,8 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * Before requesting preliminary data, submitting code, or completing your
+     * task, reflect on your current state and explain your reasoning:
      *
      * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
@@ -45,12 +47,14 @@ export namespace IAutoBeRealizeOperationWriteApplication {
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
-     * For completion (complete):
+     * For write submissions:
      *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * - If this is an initial write, summarize your implementation plan.
+     * - If this is a correction, what errors are you fixing and how?
+     *
+     * For completion:
+     *
+     * - Confirm that the last write passed validation successfully.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -60,13 +64,17 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getDatabaseSchemas, getRealizeCollectors, getRealizeTransformers) or
-     * final implementation generation (complete). When preliminary returns
-     * empty array, that type is removed from the union, physically preventing
-     * repeated calls.
+     * Determines which action to perform:
+     *
+     * - Preliminary types: Load context data incrementally
+     * - `write`: Submit code for external validation (TypeScript compilation)
+     * - `complete`: Finalize after successful write validation
+     *
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetDatabaseSchemas
       | IAutoBePreliminaryGetAnalysisSections
@@ -75,22 +83,27 @@ export namespace IAutoBeRealizeOperationWriteApplication {
   }
 
   /**
-   * Request to generate operation function implementation.
+   * Submit operation function code for external validation.
    *
-   * Executes three-phase generation to create complete operation
-   * implementation. Follows plan → draft → revise pattern to ensure type
-   * safety, proper database query patterns, and API contract compliance.
+   * The submitted code will be compiled by the TypeScript compiler. If
+   * compilation fails, you will receive diagnostics in the next iteration and
+   * should submit corrected code.
+   *
+   * Follows plan → draft → revise pattern to ensure type safety, proper
+   * database query patterns, and API contract compliance.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Operation implementation plan and strategy.
      *
-     * Analyzes the operation function requirements, identifies related database
-     * schemas, and outlines the implementation approach. Includes schema
-     * validation and API contract verification.
+     * For initial writes: analyze requirements and outline the implementation
+     * approach including schema validation and API contract verification.
+     *
+     * For corrections: identify error patterns, root causes, and the correction
+     * strategy.
      */
     plan: string;
 
