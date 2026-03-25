@@ -322,7 +322,7 @@ async function process(
 // ── Controller factory ──
 
 function createController(
-  ctx: AutoBeContext,
+  _ctx: AutoBeContext,
   props: {
     functionName: string;
     preliminary: AutoBePreliminaryController<PreliminaryKinds>;

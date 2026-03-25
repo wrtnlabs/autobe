@@ -382,7 +382,8 @@ function fixCompleteAvailability(
   const mapping: Record<string, string> =
     (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
     null
-      ? (((anyOfSchema as unknown as Record<string, unknown>)[
+      ? ((
+          (anyOfSchema as unknown as Record<string, unknown>)[
             "x-discriminator"
           ] as Record<string, Record<string, string>>
         ).mapping ?? {})

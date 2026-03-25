@@ -10,8 +10,8 @@ import { IComplete } from "../../common/structures/IComplete";
  * Function calling interface for the cyclinic write-validate-correct loop of
  * database schema correction.
  *
- * Combines preliminary context loading, corrected model submission with compiler
- * validation, and iterative correction into a single unified loop.
+ * Combines preliminary context loading, corrected model submission with
+ * compiler validation, and iterative correction into a single unified loop.
  *
  * The agent can:
  *
@@ -91,8 +91,8 @@ export namespace IAutoBeDatabaseCorrectApplication {
    * validation fails, you will receive diagnostics in the next iteration and
    * should submit corrected models.
    *
-   * Returns ONLY models mentioned in validation errors. Models not mentioned
-   * in errors must be excluded from the output.
+   * Returns ONLY models mentioned in validation errors. Models not mentioned in
+   * errors must be excluded from the output.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

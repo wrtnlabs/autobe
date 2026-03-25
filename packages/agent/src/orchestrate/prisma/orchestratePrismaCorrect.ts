@@ -235,9 +235,7 @@ async function execute(
           namespace: file.namespace,
           models: file.models.map((model) => {
             AutoBeDatabaseModelProgrammer.emend(model);
-            const newbie = writeData.models.find(
-              (m) => m.name === model.name,
-            );
+            const newbie = writeData.models.find((m) => m.name === model.name);
             return newbie ?? model;
           }),
         })),
@@ -255,7 +253,9 @@ async function execute(
       const remainingTargetErrors: IAutoBeDatabaseValidation.IError[] =
         validation.success
           ? []
-          : validation.errors.filter((e) => targetTables.has(e.table));
+          : validation.errors.filter(
+              (e) => e.table !== null && targetTables.has(e.table),
+            );
 
       if (remainingTargetErrors.length === 0) {
         lastWrite = writeData;
@@ -407,7 +407,8 @@ function fixCompleteAvailability(
   const mapping: Record<string, string> =
     (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
     null
-      ? (((anyOfSchema as unknown as Record<string, unknown>)[
+      ? ((
+          (anyOfSchema as unknown as Record<string, unknown>)[
             "x-discriminator"
           ] as Record<string, Record<string, string>>
         ).mapping ?? {})
