@@ -117,8 +117,8 @@ const main = async (): Promise<void> => {
   const dbms: "sqlite" | "postgres" = typia.assert<"sqlite" | "postgres">(
     TestGlobal.getArguments("dbms")?.[0] ?? "postgres",
   );
-  if (fs.existsSync(`${TestGlobal.ROOT}/raw`))
-    await fs.promises.rmdir(`${TestGlobal.ROOT}/raw`, {
+  if (fs.existsSync(`${TestGlobal.ROOT}/results`))
+    await fs.promises.rmdir(`${TestGlobal.ROOT}/results`, {
       recursive: true,
     });
   for (const vendor of await AutoBeExampleStorage.getVendorModels())
