@@ -4,16 +4,33 @@ import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/I
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
+/**
+ * Function calling interface for the cyclinic write-validate-correct loop of
+ * database schema correction.
+ *
+ * Combines preliminary context loading, corrected model submission with compiler
+ * validation, and iterative correction into a single unified loop.
+ *
+ * The agent can:
+ *
+ * - Request context data (getAnalysisSections, getDatabaseSchemas, etc.)
+ * - Submit corrected models via `write` for external Prisma validation
+ * - Finalize via `complete` after a successful write validation
+ */
 export interface IAutoBeDatabaseCorrectApplication {
   /**
-   * Process schema correction task or preliminary data requests.
+   * Process schema correction, preliminary data requests, or finalization.
    *
    * Fixes validation errors in specific database models while preserving all
-   * business logic and model descriptions. Returns ONLY corrected models.
+   * business logic and model descriptions. Submits corrected models via `write`
+   * for external Prisma validation. If validation fails, diagnostics are
+   * provided and you should correct and resubmit. Call `complete` only after a
+   * successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
@@ -22,8 +39,8 @@ export namespace IAutoBeDatabaseCorrectApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * Before requesting preliminary data, submitting corrections, or completing
+     * your task, reflect on your current state and explain your reasoning:
      *
      * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
      *
@@ -31,12 +48,14 @@ export namespace IAutoBeDatabaseCorrectApplication {
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
-     * For completion (complete):
+     * For write submissions:
      *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * - If this is an initial write, summarize your correction strategy.
+     * - If this is a correction, what validation errors are you fixing and how?
+     *
+     * For completion:
+     *
+     * - Confirm that the last write passed validation successfully.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -46,13 +65,18 @@ export namespace IAutoBeDatabaseCorrectApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getPreviousAnalysisSections, getDatabaseSchemas,
-     * getPreviousDatabaseSchemas) or final schema correction (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Determines which action to perform:
+     *
+     * - Preliminary types: Load context data incrementally
+     * - `write`: Submit corrected models for external validation (Prisma
+     *   compilation)
+     * - `complete`: Finalize after successful write validation
+     *
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -61,21 +85,18 @@ export namespace IAutoBeDatabaseCorrectApplication {
   }
 
   /**
-   * Request to fix validation errors in database models.
+   * Submit corrected database models for external validation.
    *
-   * Executes targeted error correction to resolve specific validation issues in
-   * affected models only. Applies minimal changes while preserving original
-   * design intent and business logic.
+   * The submitted models will be validated by the Prisma compiler. If
+   * validation fails, you will receive diagnostics in the next iteration and
+   * should submit corrected models.
+   *
+   * Returns ONLY models mentioned in validation errors. Models not mentioned
+   * in errors must be excluded from the output.
    */
-  export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Detailed execution plan for fixing validation errors.
@@ -133,14 +154,6 @@ export namespace IAutoBeDatabaseCorrectApplication {
      * - Single foreign key fields in index arrays within these models
      * - Invalid naming conventions within these specific models
      * - Type validation errors in fields of these models
-     *
-     * Model content analysis:
-     *
-     * - Complete field definitions for each error model only
-     * - Relationships from these models (may reference unchanged models)
-     * - Indexes within these models that need correction
-     * - Business descriptions specific to these models
-     * - Cross-model references that need validation (read-only for targets)
      *
      * Processing notes:
      *
