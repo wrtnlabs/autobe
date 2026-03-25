@@ -24,7 +24,10 @@ const meta: MetaRecord = {
   benchmark: {
     type: "page",
     title: "📊 Benchmark",
-    href: "/benchmark/index.html",
+    theme: {
+      layout: "full",
+      toc: false,
+    },
   },
   // Demonstrations removed — examples available on GitHub
   screenshot: {
