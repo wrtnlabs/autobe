@@ -161,6 +161,15 @@ export namespace ShoppingSaleTransformer {
 
 ## 6. Critical Rules
 
+**Anti-patterns that destroy type safety** — these cause COMPLETE type inference collapse (50-300 cascading errors from a single mistake):
+
+| Anti-Pattern | What Happens | Fix |
+|---|---|---|
+| `null` in select object | `GetPayload` becomes `never`, ALL field access fails | Use `true` for scalars, `{ select: {...} }` for relations |
+| Explicit return type on `select()` | Literal type widens to base type, relations disappear from Payload | Remove return type, use `satisfies` on return value |
+| `boolean` instead of `true` in select | Select value must be literal `true`, not type `boolean` | Replace `boolean` with `true` |
+| `satisfies FindManyArgs` on NESTED select (inside a relation) | Type mismatch at relation position | Only use `satisfies FindManyArgs` on the OUTERMOST select return and on inline HasMany relations |
+
 ### 6.1. NEVER Use `include` - ALWAYS Use `select`
 
 ```typescript
@@ -175,30 +184,33 @@ select: {
 }
 ```
 
-### 6.2. Use Relation Property Names in `select()`
+### 6.2. Use Relation Property Names from the Mapping Table
 
-In `select()`, use the **relation property name** (left side of the model definition), not the referenced table name.
+In `select()`, ONLY use the **relation property name** (left side of the model definition) — NEVER the table name. Consult the **Relation Mapping Table** provided in your context to find the correct name:
 
-```prisma
-model shopping_sales {
-  category  shopping_categories     @relation(...)   // propertyKey = "category"
-  tags      shopping_sale_tags[]                      // propertyKey = "tags"
-}
-```
+| propertyKey | Target Model | Relation Type | FK Column(s) |
+|---|---|---|---|
+| author | reddit_clone_members | belongsTo | reddit_clone_member_id |
+| commentVotes | reddit_clone_comment_votes | hasMany | - |
+| files | reddit_clone_post_files | hasMany | - |
 
 ```typescript
-// ✅ CORRECT - Relation property name
+// ✅ CORRECT — propertyKey from the Relation Mapping Table
 select: {
   category: ShoppingCategoryTransformer.select(),
   tags: ShoppingSaleTagTransformer.select(),
 }
 
-// ❌ WRONG - Table name instead of relation property name
+// ❌ WRONG — table name instead of propertyKey
 select: {
   shopping_categories: ShoppingCategoryTransformer.select(),
   shopping_sale_tags: ShoppingSaleTagTransformer.select(),
 }
 ```
+
+**Rules**:
+1. If you need a relation not listed in the table, the DTO field is likely a computed field (see Section 8)
+2. FK columns (e.g., `reddit_clone_member_id`) are scalar fields, NOT relations — select them with `true`, not `{ select: {...} }`
 
 ### 6.3. Mandatory Neighbor Transformer Reuse
 
