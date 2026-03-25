@@ -454,7 +454,7 @@ function buildHistories(props: {
       f.diagnostics
         .map(
           (d) =>
-            `  - ${d.file ?? "unknown"}:${d.line ?? "?"} ${d.category}: ${d.message}`,
+            `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
         )
         .join("\n"),
     created_at: new Date().toISOString(),
