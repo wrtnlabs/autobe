@@ -166,29 +166,23 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
   }
 
   /**
-   * Extract cleaned domain names from provider file paths.
-   * AutoBE providers follow the pattern: {httpMethod}{FullPath}Provider
-   * e.g. "patchShoppingMallCustomerRefundRequestsRefundRequestIdSnapshots"
+   * Extract cleaned domain names from provider file paths. AutoBE providers
+   * follow the pattern: {httpMethod}{FullPath}Provider e.g.
+   * "patchShoppingMallCustomerRefundRequestsRefundRequestIdSnapshots"
    *
-   * Returns an array of domain variant arrays — each provider produces
-   * multiple normalized forms to maximize matching success.
+   * Returns an array of domain variant arrays — each provider produces multiple
+   * normalized forms to maximize matching success.
    */
   private extractProviderDomains(providers: string[]): string[][] {
     return providers.map((f) => {
       const raw = path.basename(f, ".ts").replace(/Provider$/i, "");
 
       // Strip HTTP method prefix (get/post/patch/put/delete)
-      const withoutMethod = raw.replace(
-        /^(get|post|patch|put|delete)/i,
-        "",
-      );
+      const withoutMethod = raw.replace(/^(get|post|patch|put|delete)/i, "");
 
       // Strip path parameter segments — camelCase words ending in "Id"
       // e.g. "RefundRequestId" or "ProductId" or "SnapshotId"
-      const withoutIds = withoutMethod.replace(
-        /[A-Z][a-z]*Id(?=[A-Z]|$)/g,
-        "",
-      );
+      const withoutIds = withoutMethod.replace(/[A-Z][a-z]*Id(?=[A-Z]|$)/g, "");
 
       const variants: string[] = [];
       // Full form without method (normalized)
