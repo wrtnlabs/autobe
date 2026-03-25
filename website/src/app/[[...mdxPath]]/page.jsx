@@ -2,7 +2,14 @@ import { generateStaticParamsFor, importPage } from "nextra/pages";
 
 import { useMDXComponents as getMDXComponents } from "../../../mdx-components";
 
-export const generateStaticParams = generateStaticParamsFor("mdxPath");
+const CUSTOM_ROUTES = new Set(["benchmark"]);
+
+export async function generateStaticParams() {
+  const params = await generateStaticParamsFor("mdxPath")();
+  return params.filter(
+    (p) => !p.mdxPath?.length || !CUSTOM_ROUTES.has(p.mdxPath[0]),
+  );
+}
 
 export async function generateMetadata(props) {
   const params = await props.params;

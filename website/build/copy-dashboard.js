@@ -4,46 +4,18 @@ const path = require("path");
 const src = path.resolve(__dirname, "../../apps/dashboard-ui/dist");
 const dest = path.resolve(__dirname, "../public/benchmark");
 
-function copyDir(srcDir, destDir) {
-  fs.mkdirSync(destDir, { recursive: true });
-  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
-    const srcPath = path.join(srcDir, entry.name);
-    const destPath = path.join(destDir, entry.name);
-    if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
-    } else if (entry.isSymbolicLink()) {
-      const target = fs.readlinkSync(srcPath);
-      if (fs.existsSync(destPath)) fs.unlinkSync(destPath);
-      fs.symlinkSync(target, destPath);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
-    }
-  }
+// Only copy benchmark-summary.json from dashboard-ui dist.
+// The old SPA (index.html + assets/) is no longer needed —
+// /benchmark is now a native Nextra page.
+
+fs.mkdirSync(dest, { recursive: true });
+
+const srcSummary = path.join(src, "benchmark-summary.json");
+const destSummary = path.join(dest, "benchmark-summary.json");
+
+if (fs.existsSync(srcSummary)) {
+  fs.copyFileSync(srcSummary, destSummary);
+  console.log("[copy-dashboard] copied benchmark-summary.json");
+} else if (!fs.existsSync(destSummary)) {
+  console.warn("[copy-dashboard] benchmark-summary.json not found in dist or dest");
 }
-
-if (!fs.existsSync(src)) {
-  console.warn("[copy-dashboard] dashboard-ui dist not found, skipping");
-  process.exit(0);
-}
-
-// Preserve benchmark-summary.json across rebuilds
-const summaryPath = path.join(dest, "benchmark-summary.json");
-let savedSummary = null;
-if (fs.existsSync(summaryPath)) {
-  savedSummary = fs.readFileSync(summaryPath);
-}
-
-// Clean destination first
-if (fs.existsSync(dest)) {
-  fs.rmSync(dest, { recursive: true });
-}
-
-copyDir(src, dest);
-
-// Restore benchmark-summary.json if dist didn't include one
-if (savedSummary && !fs.existsSync(summaryPath)) {
-  fs.writeFileSync(summaryPath, savedSummary);
-  console.log("[copy-dashboard] restored existing benchmark-summary.json");
-}
-
-console.log("[copy-dashboard] copied dashboard-ui dist → public/benchmark/");
