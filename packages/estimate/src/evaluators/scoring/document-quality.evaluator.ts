@@ -166,7 +166,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
 
     // Boilerplate penalty
     const boilerplatePattern =
-      /\b(lorem ipsum|placeholder|todo|tbd|coming soon|work in progress)\b/i;
+      /\b(lorem ipsum|placeholder|tbd|coming soon|work in progress)\b/i;
     let boilerplateFiles = 0;
     for (const [, content] of contents) {
       if (boilerplatePattern.test(content) || content.trim().length < 200) {

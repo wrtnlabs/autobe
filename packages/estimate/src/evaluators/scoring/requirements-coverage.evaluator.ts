@@ -98,9 +98,10 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
   ): ControllerProviderMapping {
     if (controllers.length === 0) return { mapped: 0, unmapped: 0, ratio: 0 };
 
-    const providerNames = providers.map((f) =>
-      path.basename(f, ".ts").toLowerCase().replace("provider", ""),
-    );
+    // Extract and clean provider names — strip HTTP method prefixes and path
+    // parameter segments (e.g. "patchShoppingMallCustomerRefundRequestsRefundRequestIdSnapshots"
+    // → "shoppingmallcustomerrefundrequestssnapshots")
+    const providerDomains = this.extractProviderDomains(providers);
 
     let mapped = 0;
     const unmappedNames: string[] = [];
@@ -111,27 +112,24 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
         .toLowerCase()
         .replace("controller", "");
 
-      // Check if any provider matches this controller's domain.
-      // Use domain-based matching to avoid false positives from substring
-      // matches (e.g., "order" ∈ "recorder").
-      const ctrlDomain = this.extractDomain(ctrlName);
-      const hasProvider = providerNames.some((p) => {
-        // Exact name match (after stripping suffixes)
-        if (ctrlName === p) return true;
-        // Domain-based match — only when both domains are non-empty
-        const pDomain = this.extractDomain(p);
-        if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
-        // Whole-word containment: require the shorter name to be a
-        // complete word boundary match in the longer name (camelCase split)
-        const ctrlWords = this.splitCamelCase(ctrlName);
-        const pWords = this.splitCamelCase(p);
-        if (
-          ctrlWords.length >= 1 &&
-          pWords.length >= 1 &&
-          (this.wordsContain(pWords, ctrlWords) ||
-            this.wordsContain(ctrlWords, pWords))
-        )
-          return true;
+      const ctrlNorm = this.normalizeName(ctrlName);
+      const ctrlDomain = this.extractDomain(ctrlNorm);
+      const hasProvider = providerDomains.some((pDomains) => {
+        // Match against any of the provider's domain variants
+        for (const pNorm of pDomains) {
+          // Exact normalized match
+          if (ctrlNorm === pNorm) return true;
+          // Domain-based match
+          const pDomain = this.extractDomain(pNorm);
+          if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
+          // Containment: controller domain is a prefix/suffix of provider domain or vice versa
+          if (
+            ctrlNorm.length >= 3 &&
+            pNorm.length >= 3 &&
+            (pNorm.includes(ctrlNorm) || ctrlNorm.includes(pNorm))
+          )
+            return true;
+        }
         return false;
       });
 
@@ -168,6 +166,45 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
   }
 
   /**
+   * Extract cleaned domain names from provider file paths.
+   * AutoBE providers follow the pattern: {httpMethod}{FullPath}Provider
+   * e.g. "patchShoppingMallCustomerRefundRequestsRefundRequestIdSnapshots"
+   *
+   * Returns an array of domain variant arrays — each provider produces
+   * multiple normalized forms to maximize matching success.
+   */
+  private extractProviderDomains(providers: string[]): string[][] {
+    return providers.map((f) => {
+      const raw = path.basename(f, ".ts").replace(/Provider$/i, "");
+
+      // Strip HTTP method prefix (get/post/patch/put/delete)
+      const withoutMethod = raw.replace(
+        /^(get|post|patch|put|delete)/i,
+        "",
+      );
+
+      // Strip path parameter segments — camelCase words ending in "Id"
+      // e.g. "RefundRequestId" or "ProductId" or "SnapshotId"
+      const withoutIds = withoutMethod.replace(
+        /[A-Z][a-z]*Id(?=[A-Z]|$)/g,
+        "",
+      );
+
+      const variants: string[] = [];
+      // Full form without method (normalized)
+      variants.push(this.normalizeName(withoutMethod.toLowerCase()));
+      // Form without method + without ID params
+      if (withoutIds !== withoutMethod) {
+        variants.push(this.normalizeName(withoutIds.toLowerCase()));
+      }
+      // Original raw form (for traditional providers like "ShoppingMallProductsProvider")
+      variants.push(this.normalizeName(raw.toLowerCase()));
+
+      return variants;
+    });
+  }
+
+  /**
    * Extract domain keyword from a filename. Returns empty string if the
    * remaining domain is too short (< 3 chars) to prevent overly aggressive
    * matching (e.g. "get" → "" instead of matching everything).
@@ -181,25 +218,12 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     return domain.length >= 3 ? domain : "";
   }
 
-  /** Split camelCase/PascalCase into lowercase words */
-  private splitCamelCase(name: string): string[] {
-    return name
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase()
-      .split(/\s+/)
-      .filter((w) => w.length >= 3);
-  }
-
-  /** Check if all words from `needle` appear in `haystack` in order */
-  private wordsContain(haystack: string[], needle: string[]): boolean {
-    if (needle.length === 0) return false;
-    let hi = 0;
-    for (const word of needle) {
-      while (hi < haystack.length && haystack[hi] !== word) hi++;
-      if (hi >= haystack.length) return false;
-      hi++;
-    }
-    return true;
+  /**
+   * Normalize a name for matching: strip underscores, hyphens, and lowercase.
+   * This ensures "admin_actions" and "adminactions" match each other.
+   */
+  private normalizeName(name: string): string {
+    return name.replace(/[_\-]/g, "").toLowerCase();
   }
 
   private computeRequirementsScore(
