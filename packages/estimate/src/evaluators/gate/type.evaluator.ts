@@ -304,8 +304,10 @@ export class TypeEvaluator extends GateEvaluator {
     } else if (enumNames.has(field.type)) {
       baseType = field.type;
     } else {
-      // Unknown type — use string as safe fallback
-      baseType = "string";
+      // Unknown type (e.g. Unsupported, composite types) — use 'any' to avoid
+      // false type errors from incorrect type assumptions. 'string' caused TS
+      // errors when code accessed properties on relation-like fields.
+      baseType = "any";
     }
 
     if (field.isArray) {

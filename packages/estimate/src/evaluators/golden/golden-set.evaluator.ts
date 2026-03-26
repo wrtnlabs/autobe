@@ -98,13 +98,28 @@ export class GoldenSetEvaluator {
     return { score, categoryMetrics };
   }
 
-  /** Calculate response time score (15% of total) */
+  /** Calculate response time score (15% of total) — continuous interpolation */
   private computeResponseTimeScore(p95: number): number {
     if (p95 <= 0) return 100;
-    if (p95 < 500) return 100;
-    if (p95 < 1000) return 80;
-    if (p95 < 2000) return 60;
-    if (p95 < 5000) return 30;
+    // Piecewise linear interpolation instead of discrete cliffs:
+    //   0–500ms → 100,  500–1000ms → 100→80,  1000–2000ms → 80→60,
+    //   2000–5000ms → 60→30,  5000–10000ms → 30→0,  >10000ms → 0
+    const tiers: [number, number][] = [
+      [0, 100],
+      [500, 100],
+      [1000, 80],
+      [2000, 60],
+      [5000, 30],
+      [10000, 0],
+    ];
+    for (let i = 1; i < tiers.length; i++) {
+      if (p95 <= tiers[i][0]) {
+        const [x0, y0] = tiers[i - 1];
+        const [x1, y1] = tiers[i];
+        const ratio = (p95 - x0) / (x1 - x0);
+        return Math.round(y0 + (y1 - y0) * ratio);
+      }
+    }
     return 0;
   }
 

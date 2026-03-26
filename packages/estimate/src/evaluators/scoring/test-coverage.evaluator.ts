@@ -414,15 +414,16 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     // 3. Test quality (25 pts)
     const qualityScore = Math.round(quality.qualityRatio * 25);
 
-    // 4. Controller breadth (10 pts)
-    const wellCoveredControllers = analysis.controllerCoverage.filter(
-      (c) => c.coverageRatio > 0.5,
-    ).length;
-    const controllerBreadth =
+    // 4. Controller breadth (10 pts) — continuous scoring per controller
+    // Instead of a binary 50% cliff, use each controller's actual coverage ratio.
+    const avgControllerCoverage =
       analysis.controllerCoverage.length > 0
-        ? wellCoveredControllers / analysis.controllerCoverage.length
+        ? analysis.controllerCoverage.reduce(
+            (sum, c) => sum + c.coverageRatio,
+            0,
+          ) / analysis.controllerCoverage.length
         : 0;
-    const breadthScore = Math.round(controllerBreadth * 10);
+    const breadthScore = Math.round(avgControllerCoverage * 10);
 
     let score = routeScore + methodScore + qualityScore + breadthScore;
 

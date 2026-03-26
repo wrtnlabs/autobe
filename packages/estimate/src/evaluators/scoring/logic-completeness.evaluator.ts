@@ -102,9 +102,21 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     ).length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 
-    // Continuous scoring: criticals cost 7 pts each, warnings cost 2 pts each.
-    // No cliffs — smooth degradation. Floor at 0.
-    const score = Math.max(0, 100 - criticalCount * 7 - warningCount * 2);
+    // Two-tier scoring: criticals have diminishing but heavy impact,
+    // warnings have lighter impact. This differentiates "1 critical + 50 warnings"
+    // from "15 criticals" — previously both scored 0.
+    //
+    // Critical penalty: 1→-15, 2→-27, 5→-50, 10→-70, 15→-80 (diminishing returns)
+    // Warning penalty:  capped at -20 total, scales logarithmically
+    const criticalPenalty =
+      criticalCount > 0
+        ? Math.round(15 * Math.sqrt(criticalCount) + criticalCount * 2)
+        : 0;
+    const warningPenalty =
+      warningCount > 0
+        ? Math.min(20, Math.round(8 * Math.log2(warningCount + 1)))
+        : 0;
+    const score = Math.max(0, 100 - criticalPenalty - warningPenalty);
 
     return {
       phase: "logicCompleteness",

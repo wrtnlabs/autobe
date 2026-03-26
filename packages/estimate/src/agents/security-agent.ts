@@ -94,13 +94,31 @@ export class SecurityAgent extends BaseAgent {
     );
     const providerCount = maxFiles - controllerCount;
 
+    // Use a content-based seed: hash of sorted file names ensures different
+    // file sets produce different samples, while the same file set is
+    // reproducible within a single run. Adding a daily rotation ensures
+    // repeated evaluations sample different files over time.
+    const daysSinceEpoch = Math.floor(Date.now() / 86400000);
+    const contentHash = this.hashFileNames([...controllers, ...providers]);
+    const seed = (contentHash ^ daysSinceEpoch) >>> 0;
+
     return [
-      ...this.seededShuffle(controllers, total).slice(0, controllerCount),
-      ...this.seededShuffle(providers, total).slice(0, providerCount),
+      ...this.seededShuffle(controllers, seed).slice(0, controllerCount),
+      ...this.seededShuffle(providers, seed + 1).slice(0, providerCount),
     ];
   }
 
-  /** Deterministic shuffle using seed (same project → same sample) */
+  /** Simple hash of file name array for seed generation */
+  private hashFileNames(files: string[]): number {
+    let hash = 0;
+    const str = files.sort().join("|");
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+    }
+    return hash >>> 0;
+  }
+
+  /** Deterministic shuffle using seed */
   private seededShuffle(arr: string[], seed: number): string[] {
     const copy = [...arr];
     let s = seed;
