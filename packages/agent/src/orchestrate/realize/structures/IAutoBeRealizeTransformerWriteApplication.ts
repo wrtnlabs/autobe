@@ -4,14 +4,20 @@ import {
 } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
- * Function calling interface for generating DTO transformer functions.
+ * Function calling interface for the cyclinic write-compile-correct loop of DTO
+ * transformer function generation.
  *
- * Guides the AI agent through creating reusable transformer modules that
- * convert database query results to API response DTOs (DB → API). Each
- * transformer includes type-safe conversion logic and Prisma select
- * specifications for efficient data loading.
+ * Combines preliminary context loading, code submission with compiler
+ * validation, and iterative correction into a single unified loop.
+ *
+ * The agent can:
+ *
+ * - Request context data (getDatabaseSchemas)
+ * - Submit code via `write` for external TypeScript compilation validation
+ * - Finalize via `complete` after a successful write validation
  *
  * The generation follows a structured RAG workflow: preliminary context
  * gathering (database schemas only) → implementation planning → code generation
@@ -25,14 +31,16 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeTransformerWriteApplication {
   /**
-   * Process transformer generation task or preliminary data requests.
+   * Process transformer generation task, correction, or preliminary data
+   * requests.
    *
-   * Generates complete transformer module through three-phase workflow (plan →
-   * draft → revise). Ensures type safety, proper Prisma payload types, and
-   * correct DTO mapping.
+   * Generates complete transformer module through structured workflow. Submits
+   * code via `write` for external validation (TypeScript compilation). If
+   * validation fails, diagnostics are provided and you should correct and
+   * resubmit. Call `complete` only after a successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeRealizeTransformerWriteApplication.IProps): void;
 }
@@ -42,8 +50,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * Before requesting preliminary data, submitting code, or completing your
+     * task, reflect on your current state and explain your reasoning:
      *
      * For preliminary requests:
      *
@@ -51,12 +59,14 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * - Why do you need them for transformer generation?
      * - Be brief - state the gap, don't list everything you have.
      *
+     * For write submissions:
+     *
+     * - If this is an initial write, summarize your implementation plan.
+     * - If this is a correction, what errors are you fixing and how?
+     *
      * For completion:
      *
-     * - What schemas did you acquire?
-     * - What transformer patterns did you implement?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every field mapping.
+     * - Confirm that the last write passed validation successfully.
      *
      * Note: All necessary DTO type information is available transitively from
      * the DTO type names in the plan. You only need to request database
@@ -73,37 +83,31 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * Determines which action to perform:
      *
      * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
-     * - "complete": Generate final transformer implementation
-     *
-     * All necessary DTO type information is obtained transitively from the DTO
-     * type names provided in the plan (AutoBeRealizeTransformerPlan). Each DTO
-     * type name allows the system to recursively fetch all referenced types,
-     * providing complete type information without requiring explicit schema
-     * requests.
+     * - `write`: Submit code for external validation (TypeScript compilation)
+     * - `complete`: Finalize after successful write validation
      *
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
-   * Request to generate transformer module implementation.
+   * Submit transformer module code for external validation.
    *
-   * Executes three-phase generation to create complete transformer with:
+   * The submitted code will be compiled by the TypeScript compiler. If
+   * compilation fails, you will receive diagnostics in the next iteration and
+   * should submit corrected code.
    *
-   * - `select()` function: Returns Prisma include/select specification
-   * - `transform()` function: Converts Prisma payload to DTO
-   *
-   * Follows plan → draft → revise pattern to ensure type safety and correct
-   * field mappings.
+   * Follows plan → draft → revise pattern to ensure type safety, proper Prisma
+   * payload types, and correct DTO mapping.
    *
    * Note: The database schema name is provided as input from the planning
    * phase, so it doesn't need to be returned in the response.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Transformer implementation plan and strategy.
@@ -117,6 +121,9 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      *    transform()
      * 4. Edge Cases and Special Handling - Type casts (Decimal, DateTime),
      *    nullables
+     *
+     * For corrections: identify error patterns, root causes, and the correction
+     * strategy.
      *
      * This forces you to READ the actual schema (not imagine it) and creates an
      * explicit specification for both select() and transform() functions.

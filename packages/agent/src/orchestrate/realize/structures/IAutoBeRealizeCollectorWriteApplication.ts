@@ -1,14 +1,20 @@
 import { AutoBeRealizeCollectorMapping } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
- * Function calling interface for generating DTO collector functions.
+ * Function calling interface for the cyclinic write-compile-correct loop of DTO
+ * collector function generation.
  *
- * Guides the AI agent through creating reusable collector modules that prepare
- * database input data from API request DTOs (API → DB). Each collector handles
- * complex nested relationships, UUID generation, and proper Prisma
- * connect/create syntax.
+ * Combines preliminary context loading, code submission with compiler
+ * validation, and iterative correction into a single unified loop.
+ *
+ * The agent can:
+ *
+ * - Request context data (getDatabaseSchemas)
+ * - Submit code via `write` for external TypeScript compilation validation
+ * - Finalize via `complete` after a successful write validation
  *
  * The generation follows a structured RAG workflow: preliminary context
  * gathering (database schemas only) → implementation planning → code generation
@@ -18,14 +24,16 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
  */
 export interface IAutoBeRealizeCollectorWriteApplication {
   /**
-   * Process collector generation task or preliminary data requests.
+   * Process collector generation task, correction, or preliminary data
+   * requests.
    *
-   * Generates complete collector module through three-phase workflow (plan →
-   * draft → revise). Ensures type safety, proper database input types, and
-   * correct relationship handling.
+   * Generates complete collector module through structured workflow. Submits
+   * code via `write` for external validation (TypeScript compilation). If
+   * validation fails, diagnostics are provided and you should correct and
+   * resubmit. Call `complete` only after a successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeRealizeCollectorWriteApplication.IProps): void;
 }
@@ -35,8 +43,8 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * Before requesting preliminary data, submitting code, or completing your
+     * task, reflect on your current state and explain your reasoning:
      *
      * For preliminary requests:
      *
@@ -44,12 +52,14 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * - Why do you need them for collector generation?
      * - Be brief - state the gap, don't list everything you have.
      *
+     * For write submissions:
+     *
+     * - If this is an initial write, summarize your implementation plan.
+     * - If this is a correction, what errors are you fixing and how?
+     *
      * For completion:
      *
-     * - What schemas did you acquire?
-     * - What collector patterns did you implement?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every field mapping.
+     * - Confirm that the last write passed validation successfully.
      *
      * Note: All necessary DTO type information is available transitively from
      * the DTO type names in the plan. You only need to request database
@@ -66,36 +76,28 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * Determines which action to perform:
      *
      * - "getDatabaseSchemas": Retrieve database table schemas for DB structure
-     * - "complete": Generate final collector implementation
-     *
-     * All necessary DTO type information is obtained transitively from the DTO
-     * type names provided in the plan (AutoBeRealizeCollectorPlan). Each DTO
-     * type name allows the system to recursively fetch all referenced types,
-     * providing complete type information without requiring explicit schema
-     * requests.
+     * - `write`: Submit code for external validation (TypeScript compilation)
+     * - `complete`: Finalize after successful write validation
      *
      * The preliminary types are removed from the union after their respective
      * data has been provided, physically preventing repeated calls.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
   /**
-   * Request to generate collector module implementation.
+   * Submit collector module code for external validation.
    *
-   * Executes three-phase generation to create complete collector with:
+   * The submitted code will be compiled by the TypeScript compiler. If
+   * compilation fails, you will receive diagnostics in the next iteration and
+   * should submit corrected code.
    *
-   * - Collect() function: Converts DTO to database input
-   * - Proper handling of nested relationships
-   * - UUID generation for new records
-   * - Type-safe Prisma create/connect syntax
-   *
-   * Follows plan → draft → revise pattern to ensure type safety and correct
-   * relationship handling.
+   * Follows plan → draft → revise pattern to ensure type safety, proper
+   * database input types, and correct relationship handling.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Collector implementation plan and strategy.
@@ -107,6 +109,9 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * 2. DTO Property Inventory - List ALL properties with types
      * 3. Field-by-Field Mapping Strategy - Explicit mapping table for every field
      * 4. Edge Cases and Special Handling - Nullable, arrays, conditionals
+     *
+     * For corrections: identify error patterns, root causes, and the correction
+     * strategy.
      *
      * This forces you to READ the actual schema (not imagine it) and creates an
      * explicit specification that the draft must implement.
