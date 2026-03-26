@@ -1,6 +1,26 @@
 @import "tailwindcss";
 @import "nextra-theme-docs/style.css";
 
+/* ── Benchmark page: hide Nextra chrome ── */
+.benchmark-page .nextra-sidebar-container,
+.benchmark-page .nextra-sidebar,
+.benchmark-page .nextra-breadcrumb,
+.benchmark-page .nextra-toc,
+.benchmark-page nav.nextra-toc,
+.benchmark-page aside,
+.benchmark-page footer {
+  display: none !important;
+}
+.benchmark-page article {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.benchmark-page main {
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
 /* ── Code showcase compile result animation ── */
 @keyframes fadeSlideUp {
   from {
