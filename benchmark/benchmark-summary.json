@@ -3,7 +3,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "erp",
-      "totalScore": 81,
+      "totalScore": 83,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -12,7 +12,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 6376,
+          "durationMs": 6648,
           "metrics": {
             "totalFiles": 258,
             "filesWithErrors": 0,
@@ -185,9 +185,9 @@
         "suggestionCount": 12
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:06.857Z",
-        "reportUpdatedAt": "2026-03-26T07:53:06.891Z",
-        "totalDurationMs": 6762,
+        "evaluatedAt": "2026-03-26T10:16:30.997Z",
+        "reportUpdatedAt": "2026-03-26T10:16:31.017Z",
+        "totalDurationMs": 7005,
         "evaluatedFiles": 258
       },
       "reference": {
@@ -215,7 +215,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "reddit",
-      "totalScore": 82,
+      "totalScore": 83,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -224,7 +224,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 6202,
+          "durationMs": 5788,
           "metrics": {
             "totalFiles": 226,
             "filesWithErrors": 0,
@@ -280,7 +280,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-6-reports.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-5-comments.prisma'"
             }
           ]
         },
@@ -393,9 +393,9 @@
         "suggestionCount": 13
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:13.876Z",
-        "reportUpdatedAt": "2026-03-26T07:53:13.894Z",
-        "totalDurationMs": 6711,
+        "evaluatedAt": "2026-03-26T10:16:37.250Z",
+        "reportUpdatedAt": "2026-03-26T10:16:37.264Z",
+        "totalDurationMs": 6076,
         "evaluatedFiles": 226
       },
       "reference": {
@@ -423,8 +423,8 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "shopping",
-      "totalScore": 68,
-      "grade": "D",
+      "totalScore": 71,
+      "grade": "C",
       "pipeline": null,
       "phases": {
         "gate": {
@@ -432,7 +432,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 18929,
+          "durationMs": 15924,
           "metrics": {
             "totalFiles": 581,
             "filesWithErrors": 0,
@@ -623,9 +623,9 @@
         "suggestionCount": 30
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:34.112Z",
-        "reportUpdatedAt": "2026-03-26T07:53:34.162Z",
-        "totalDurationMs": 20092,
+        "evaluatedAt": "2026-03-26T10:16:54.377Z",
+        "reportUpdatedAt": "2026-03-26T10:16:54.425Z",
+        "totalDurationMs": 17004,
         "evaluatedFiles": 581
       },
       "reference": {
@@ -653,7 +653,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "todo",
-      "totalScore": 83,
+      "totalScore": 84,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -662,7 +662,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 2677,
+          "durationMs": 4380,
           "metrics": {
             "totalFiles": 90,
             "filesWithErrors": 0,
@@ -819,9 +819,9 @@
         "suggestionCount": 5
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:37.108Z",
-        "reportUpdatedAt": "2026-03-26T07:53:37.117Z",
-        "totalDurationMs": 2797,
+        "evaluatedAt": "2026-03-26T10:16:59.147Z",
+        "reportUpdatedAt": "2026-03-26T10:16:59.161Z",
+        "totalDurationMs": 4541,
         "evaluatedFiles": 90
       },
       "reference": {
@@ -858,7 +858,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": false,
-          "durationMs": 1,
+          "durationMs": 2,
           "metrics": {
             "failedAt": "no-nestjs-artifacts",
             "reason": "No controllers or providers found",
@@ -872,7 +872,7 @@
               "code": "GATE002",
               "count": 1,
               "severity": "critical",
-              "message": "No controllers or providers found \u2014 pipeline output is incomplete (only infrastructure files exist)"
+              "message": "No controllers or providers found — pipeline output is incomplete (only infrastructure files exist)"
             }
           ]
         },
@@ -888,7 +888,7 @@
             "docFileCount": 0,
             "totalDocLength": 0,
             "cached": true,
-            "originalDurationMs": 1
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -971,9 +971,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:37.730Z",
-        "reportUpdatedAt": "2026-03-26T07:53:37.756Z",
-        "totalDurationMs": 519,
+        "evaluatedAt": "2026-03-26T10:17:00.368Z",
+        "reportUpdatedAt": "2026-03-26T10:17:00.422Z",
+        "totalDurationMs": 970,
         "evaluatedFiles": 52
       },
       "reference": {
@@ -1010,7 +1010,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": false,
-          "durationMs": 0,
+          "durationMs": 2,
           "metrics": {
             "failedAt": "no-source",
             "reason": "No TypeScript files found"
@@ -1023,7 +1023,7 @@
               "code": "GATE001",
               "count": 1,
               "severity": "critical",
-              "message": "No TypeScript files found in src/ \u2014 pipeline may not have generated code"
+              "message": "No TypeScript files found in src/ — pipeline may not have generated code"
             }
           ]
         },
@@ -1122,9 +1122,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:37.859Z",
-        "reportUpdatedAt": "2026-03-26T07:53:37.865Z",
-        "totalDurationMs": 17,
+        "evaluatedAt": "2026-03-26T10:17:00.591Z",
+        "reportUpdatedAt": "2026-03-26T10:17:00.597Z",
+        "totalDurationMs": 31,
         "evaluatedFiles": 0
       },
       "reference": {
@@ -1152,7 +1152,7 @@
     {
       "model": "deepseek-v3.2",
       "project": "reddit",
-      "totalScore": 48,
+      "totalScore": 51,
       "grade": "F",
       "pipeline": null,
       "phases": {
@@ -1161,7 +1161,7 @@
           "maxScore": 100,
           "weightedScore": 70,
           "passed": true,
-          "durationMs": 14727,
+          "durationMs": 21947,
           "metrics": {
             "totalFiles": 588,
             "filesWithErrors": 1,
@@ -1453,9 +1453,9 @@
         "suggestionCount": 52
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:53.500Z",
-        "reportUpdatedAt": "2026-03-26T07:53:53.536Z",
-        "totalDurationMs": 15540,
+        "evaluatedAt": "2026-03-26T10:17:23.440Z",
+        "reportUpdatedAt": "2026-03-26T10:17:23.475Z",
+        "totalDurationMs": 22741,
         "evaluatedFiles": 588
       },
       "reference": {
@@ -1505,7 +1505,7 @@
               "code": "GATE001",
               "count": 1,
               "severity": "critical",
-              "message": "No TypeScript files found in src/ \u2014 pipeline may not have generated code"
+              "message": "No TypeScript files found in src/ — pipeline may not have generated code"
             }
           ]
         },
@@ -1521,7 +1521,7 @@
             "docFileCount": 6,
             "totalDocLength": 647504,
             "cached": true,
-            "originalDurationMs": 114
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -1540,7 +1540,7 @@
             "unmappedControllers": 0,
             "mappingRatio": 0,
             "cached": true,
-            "originalDurationMs": 7
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -1573,7 +1573,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 4
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -1592,7 +1592,7 @@
             "completionRate": 0,
             "implementationRate": 0,
             "cached": true,
-            "originalDurationMs": 2
+            "originalDurationMs": 0
           }
         }
       },
@@ -1604,9 +1604,9 @@
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:53.677Z",
-        "reportUpdatedAt": "2026-03-26T07:53:53.687Z",
-        "totalDurationMs": 10,
+        "evaluatedAt": "2026-03-26T10:17:23.626Z",
+        "reportUpdatedAt": "2026-03-26T10:17:23.641Z",
+        "totalDurationMs": 15,
         "evaluatedFiles": 0
       },
       "reference": {
@@ -1634,7 +1634,7 @@
     {
       "model": "deepseek-v3.2",
       "project": "todo",
-      "totalScore": 71,
+      "totalScore": 73,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -1643,7 +1643,7 @@
           "maxScore": 100,
           "weightedScore": 88,
           "passed": true,
-          "durationMs": 3771,
+          "durationMs": 7558,
           "metrics": {
             "totalFiles": 121,
             "filesWithErrors": 0,
@@ -1709,7 +1709,7 @@
             "docFileCount": 6,
             "totalDocLength": 137345,
             "cached": true,
-            "originalDurationMs": 53
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -1728,7 +1728,7 @@
             "unmappedControllers": 7,
             "mappingRatio": 0.4166666666666667,
             "cached": true,
-            "originalDurationMs": 1
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -1751,7 +1751,7 @@
             "assertionTests": 74,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 17
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -1769,7 +1769,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 26
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -1788,7 +1788,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 30
+            "originalDurationMs": 0
           }
         }
       },
@@ -1811,9 +1811,9 @@
         "suggestionCount": 6
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:53:57.677Z",
-        "reportUpdatedAt": "2026-03-26T07:53:57.683Z",
-        "totalDurationMs": 3886,
+        "evaluatedAt": "2026-03-26T10:17:31.568Z",
+        "reportUpdatedAt": "2026-03-26T10:17:31.587Z",
+        "totalDurationMs": 7741,
         "evaluatedFiles": 121
       },
       "reference": {
@@ -3609,7 +3609,7 @@
               "code": "GATE002",
               "count": 1,
               "severity": "critical",
-              "message": "No controllers or providers found \u2014 pipeline output is incomplete (only infrastructure files exist)"
+              "message": "No controllers or providers found — pipeline output is incomplete (only infrastructure files exist)"
             }
           ]
         },
@@ -3623,24 +3623,9 @@
             "hasDocsFolder": false,
             "hasReadme": false,
             "docFileCount": 0,
-            "totalDocLength": 0
-          },
-          "explanation": {
-            "reasons": [
-              "1 critical issue(s) found",
-              "1x No documentation found (missing docs/analysis/ and README.md)"
-            ],
-            "issueSummaries": [
-              {
-                "code": "DOC001",
-                "count": 1,
-                "severity": "critical",
-                "message": "No documentation found (missing docs/analysis/ and README.md)"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "totalDocLength": 0,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -3657,44 +3642,9 @@
             "hasRequirementsDocs": false,
             "mappedControllers": 0,
             "unmappedControllers": 0,
-            "mappingRatio": 0
-          },
-          "explanation": {
-            "reasons": [
-              "2 critical issue(s) found",
-              "1x No controllers found - API endpoints not implemented",
-              "1x No providers found - business logic not implemented",
-              "1x No structures/DTOs found"
-            ],
-            "issueSummaries": [
-              {
-                "code": "REQ001",
-                "count": 1,
-                "severity": "critical",
-                "message": "No controllers found - API endpoints not implemented"
-              },
-              {
-                "code": "REQ002",
-                "count": 1,
-                "severity": "critical",
-                "message": "No providers found - business logic not implemented"
-              },
-              {
-                "code": "REQ003",
-                "count": 1,
-                "severity": "warning",
-                "message": "No structures/DTOs found"
-              },
-              {
-                "code": "REQ004",
-                "count": 1,
-                "severity": "warning",
-                "message": "No requirements documents found in docs/analysis/"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "mappingRatio": 0,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -3707,24 +3657,9 @@
             "testCount": 0,
             "controllerCount": 0,
             "routeAnalysis": false,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "1 critical issue(s) found",
-              "1x No test files found"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST001",
-                "count": 1,
-                "severity": "critical",
-                "message": "No test files found"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -3740,12 +3675,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -3762,38 +3694,23 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 0,
-            "implementationRate": 0
-          },
-          "explanation": {
-            "reasons": [
-              "1 critical issue(s) found",
-              "1x No API endpoints found"
-            ],
-            "issueSummaries": [
-              {
-                "code": "API002",
-                "count": 1,
-                "severity": "critical",
-                "message": "No API endpoints found"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "implementationRate": 0,
+            "cached": true,
+            "originalDurationMs": 0
           }
         }
       },
       "penalties": null,
       "summary": {
-        "totalIssues": 8,
-        "criticalCount": 6,
-        "warningCount": 2,
+        "totalIssues": 1,
+        "criticalCount": 1,
+        "warningCount": 0,
         "suggestionCount": 0
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:20.031Z",
-        "reportUpdatedAt": "2026-03-26T07:55:20.037Z",
-        "totalDurationMs": 91,
+        "evaluatedAt": "2026-03-26T10:19:04.467Z",
+        "reportUpdatedAt": "2026-03-26T10:19:04.475Z",
+        "totalDurationMs": 115,
         "evaluatedFiles": 14
       },
       "reference": {
@@ -3821,7 +3738,7 @@
     {
       "model": "gpt-5.4",
       "project": "erp",
-      "totalScore": 76,
+      "totalScore": 78,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -3830,7 +3747,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 11494,
+          "durationMs": 16543,
           "metrics": {
             "totalFiles": 412,
             "filesWithErrors": 0,
@@ -4021,9 +3938,9 @@
         "suggestionCount": 11
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:32.379Z",
-        "reportUpdatedAt": "2026-03-26T07:55:32.415Z",
-        "totalDurationMs": 12150,
+        "evaluatedAt": "2026-03-26T10:19:21.999Z",
+        "reportUpdatedAt": "2026-03-26T10:19:22.063Z",
+        "totalDurationMs": 17309,
         "evaluatedFiles": 412
       },
       "reference": {
@@ -4051,7 +3968,7 @@
     {
       "model": "gpt-5.4",
       "project": "reddit",
-      "totalScore": 74,
+      "totalScore": 77,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -4060,7 +3977,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 10848,
+          "durationMs": 20937,
           "metrics": {
             "totalFiles": 460,
             "filesWithErrors": 0,
@@ -4245,9 +4162,9 @@
         "suggestionCount": 15
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:44.041Z",
-        "reportUpdatedAt": "2026-03-26T07:55:44.069Z",
-        "totalDurationMs": 11419,
+        "evaluatedAt": "2026-03-26T10:19:45.248Z",
+        "reportUpdatedAt": "2026-03-26T10:19:45.350Z",
+        "totalDurationMs": 22799,
         "evaluatedFiles": 460
       },
       "reference": {
@@ -4275,7 +4192,7 @@
     {
       "model": "gpt-5.4",
       "project": "shopping",
-      "totalScore": 75,
+      "totalScore": 77,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -4284,7 +4201,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 11960,
+          "durationMs": 21137,
           "metrics": {
             "totalFiles": 518,
             "filesWithErrors": 0,
@@ -4352,7 +4269,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-09-reviews.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-08-after-sales.prisma'"
             }
           ]
         },
@@ -4469,9 +4386,9 @@
         "suggestionCount": 17
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:57.140Z",
-        "reportUpdatedAt": "2026-03-26T07:55:57.176Z",
-        "totalDurationMs": 12839,
+        "evaluatedAt": "2026-03-26T10:20:07.834Z",
+        "reportUpdatedAt": "2026-03-26T10:20:07.895Z",
+        "totalDurationMs": 22038,
         "evaluatedFiles": 518
       },
       "reference": {
@@ -4499,7 +4416,7 @@
     {
       "model": "gpt-5.4",
       "project": "todo",
-      "totalScore": 75,
+      "totalScore": 78,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -4508,7 +4425,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 2725,
+          "durationMs": 4106,
           "metrics": {
             "totalFiles": 97,
             "filesWithErrors": 0,
@@ -4665,9 +4582,9 @@
         "suggestionCount": 26
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:56:00.270Z",
-        "reportUpdatedAt": "2026-03-26T07:56:00.279Z",
-        "totalDurationMs": 2888,
+        "evaluatedAt": "2026-03-26T10:20:12.424Z",
+        "reportUpdatedAt": "2026-03-26T10:20:12.433Z",
+        "totalDurationMs": 4308,
         "evaluatedFiles": 97
       },
       "reference": {
@@ -4695,7 +4612,7 @@
     {
       "model": "gpt-5.4-mini",
       "project": "erp",
-      "totalScore": 70,
+      "totalScore": 73,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -4704,7 +4621,7 @@
           "maxScore": 100,
           "weightedScore": 83,
           "passed": true,
-          "durationMs": 7937,
+          "durationMs": 36106,
           "metrics": {
             "totalFiles": 332,
             "filesWithErrors": 0,
@@ -4775,17 +4692,14 @@
           "maxScore": 100,
           "weightedScore": 4.4,
           "passed": true,
-          "durationMs": 212,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 436646
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "totalDocLength": 436646,
+            "cached": true,
+            "originalDurationMs": 212
           }
         },
         "requirementsCoverage": {
@@ -4793,7 +4707,7 @@
           "maxScore": 100,
           "weightedScore": 20,
           "passed": true,
-          "durationMs": 2,
+          "durationMs": 0,
           "metrics": {
             "controllerCount": 38,
             "providerCount": 114,
@@ -4802,12 +4716,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 38,
             "unmappedControllers": 0,
-            "mappingRatio": 1
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 2
           }
         },
         "testCoverage": {
@@ -4815,7 +4726,7 @@
           "maxScore": 100,
           "weightedScore": 18.5,
           "passed": true,
-          "durationMs": 50,
+          "durationMs": 0,
           "metrics": {
             "testCount": 286,
             "controllerCount": 38,
@@ -4828,31 +4739,9 @@
             "controllersAnalyzed": 37,
             "stubTests": 17,
             "assertionTests": 269,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "28 warnings detected",
-              "27x Controller \"/hrmTimeTracking/auth/guest\" has 1 untested route(s): POST /hrmTimeTracking/auth/guest/refresh",
-              "1x 17/286 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 27,
-                "severity": "warning",
-                "message": "Controller \"/hrmTimeTracking/auth/guest\" has 1 untested route(s): POST /hrmTimeTracking/auth/guest/refresh"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "17/286 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": [
-              "Address warnings to improve quality"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 50
           }
         },
         "logicCompleteness": {
@@ -4860,7 +4749,7 @@
           "maxScore": 100,
           "weightedScore": 29.049999999999997,
           "passed": true,
-          "durationMs": 144,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 1,
             "criticalCount": 1,
@@ -4868,24 +4757,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 1,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [
-              "1 critical issue(s) found",
-              "1x Empty method body found"
-            ],
-            "issueSummaries": [
-              {
-                "code": "LOGIC008",
-                "count": 1,
-                "severity": "critical",
-                "message": "Empty method body found"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 144
           }
         },
         "apiCompleteness": {
@@ -4893,7 +4767,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 151,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 111,
             "emptyEndpoints": 0,
@@ -4902,12 +4776,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 151
           }
         }
       },
@@ -4923,15 +4794,15 @@
         }
       },
       "summary": {
-        "totalIssues": 36,
-        "criticalCount": 2,
-        "warningCount": 26,
+        "totalIssues": 33,
+        "criticalCount": 1,
+        "warningCount": 24,
         "suggestionCount": 8
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:56:09.001Z",
-        "reportUpdatedAt": "2026-03-26T07:56:09.023Z",
-        "totalDurationMs": 8552,
+        "evaluatedAt": "2026-03-26T10:20:52.026Z",
+        "reportUpdatedAt": "2026-03-26T10:20:52.678Z",
+        "totalDurationMs": 39422,
         "evaluatedFiles": 332
       },
       "reference": {
@@ -4959,7 +4830,7 @@
     {
       "model": "gpt-5.4-mini",
       "project": "reddit",
-      "totalScore": 84,
+      "totalScore": 85,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -4968,7 +4839,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 5373,
+          "durationMs": 16243,
           "metrics": {
             "totalFiles": 246,
             "filesWithErrors": 0,
@@ -5018,7 +4889,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-05-moderation.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-06-reports.prisma'"
             }
           ]
         },
@@ -5027,26 +4898,14 @@
           "maxScore": 100,
           "weightedScore": 4.3500000000000005,
           "passed": true,
-          "durationMs": 140,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 243891
-          },
-          "explanation": {
-            "reasons": [
-              "1x 1 doc file(s) contain boilerplate or minimal content"
-            ],
-            "issueSummaries": [
-              {
-                "code": "DOC005",
-                "count": 1,
-                "severity": "warning",
-                "message": "1 doc file(s) contain boilerplate or minimal content"
-              }
-            ],
-            "suggestions": []
+            "totalDocLength": 243891,
+            "cached": true,
+            "originalDurationMs": 140
           }
         },
         "requirementsCoverage": {
@@ -5054,7 +4913,7 @@
           "maxScore": 100,
           "weightedScore": 20,
           "passed": true,
-          "durationMs": 1,
+          "durationMs": 0,
           "metrics": {
             "controllerCount": 31,
             "providerCount": 89,
@@ -5063,12 +4922,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 31,
             "unmappedControllers": 0,
-            "mappingRatio": 1
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 1
           }
         },
         "testCoverage": {
@@ -5076,7 +4932,7 @@
           "maxScore": 100,
           "weightedScore": 19.75,
           "passed": true,
-          "durationMs": 42,
+          "durationMs": 0,
           "metrics": {
             "testCount": 216,
             "controllerCount": 31,
@@ -5089,31 +4945,9 @@
             "controllersAnalyzed": 30,
             "stubTests": 28,
             "assertionTests": 188,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "20 warnings detected",
-              "19x Controller \"/communityPlatform/admin/admins\" has 1 untested route(s): PATCH /communityPlatform/admin/admins",
-              "1x 28/216 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 19,
-                "severity": "warning",
-                "message": "Controller \"/communityPlatform/admin/admins\" has 1 untested route(s): PATCH /communityPlatform/admin/admins"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "28/216 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": [
-              "Address warnings to improve quality"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 42
           }
         },
         "logicCompleteness": {
@@ -5121,7 +4955,7 @@
           "maxScore": 100,
           "weightedScore": 35,
           "passed": true,
-          "durationMs": 87,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 0,
             "criticalCount": 0,
@@ -5129,12 +4963,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 87
           }
         },
         "apiCompleteness": {
@@ -5142,7 +4973,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 94,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 85,
             "emptyEndpoints": 0,
@@ -5151,12 +4982,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 94
           }
         }
       },
@@ -5172,15 +5000,15 @@
         }
       },
       "summary": {
-        "totalIssues": 15,
+        "totalIssues": 12,
         "criticalCount": 1,
-        "warningCount": 5,
+        "warningCount": 2,
         "suggestionCount": 9
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:56:14.972Z",
-        "reportUpdatedAt": "2026-03-26T07:56:15.005Z",
-        "totalDurationMs": 5781,
+        "evaluatedAt": "2026-03-26T10:21:12.932Z",
+        "reportUpdatedAt": "2026-03-26T10:21:12.968Z",
+        "totalDurationMs": 19811,
         "evaluatedFiles": 246
       },
       "reference": {
@@ -5912,7 +5740,7 @@
               "9 critical issue(s) found",
               "4x Empty method body found",
               "4x Unimplemented code: throw new Error(\"not implemented\")",
-              "1x Suspicious null cast to any \u2014 likely incomplete implementation"
+              "1x Suspicious null cast to any — likely incomplete implementation"
             ],
             "issueSummaries": [
               {
@@ -5931,7 +5759,7 @@
                 "code": "LOGIC010",
                 "count": 1,
                 "severity": "critical",
-                "message": "Suspicious null cast to any \u2014 likely incomplete implementation"
+                "message": "Suspicious null cast to any — likely incomplete implementation"
               },
               {
                 "code": "LOGIC002",
@@ -6223,7 +6051,7 @@
             "reasons": [
               "9 critical issue(s) found",
               "6x Empty method body found",
-              "1x Suspicious null cast to any \u2014 likely incomplete implementation",
+              "1x Suspicious null cast to any — likely incomplete implementation",
               "1x Unimplemented code: throw new Error(\"not implemented\")"
             ],
             "issueSummaries": [
@@ -6237,7 +6065,7 @@
                 "code": "LOGIC010",
                 "count": 1,
                 "severity": "critical",
-                "message": "Suspicious null cast to any \u2014 likely incomplete implementation"
+                "message": "Suspicious null cast to any — likely incomplete implementation"
               },
               {
                 "code": "LOGIC001",
@@ -6249,7 +6077,7 @@
                 "code": "LOGIC020",
                 "count": 1,
                 "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
+                "message": "Stub return value — method returns empty object/array/null"
               },
               {
                 "code": "LOGIC002",
@@ -6788,7 +6616,7 @@
           "explanation": {
             "reasons": [
               "3 critical issue(s) found",
-              "2x Suspicious null cast to any \u2014 likely incomplete implementation",
+              "2x Suspicious null cast to any — likely incomplete implementation",
               "1x Unimplemented code: throw new Error(\"not implemented\")"
             ],
             "issueSummaries": [
@@ -6796,7 +6624,7 @@
                 "code": "LOGIC010",
                 "count": 2,
                 "severity": "critical",
-                "message": "Suspicious null cast to any \u2014 likely incomplete implementation"
+                "message": "Suspicious null cast to any — likely incomplete implementation"
               },
               {
                 "code": "LOGIC001",
@@ -6877,7 +6705,7 @@
     {
       "model": "kimi-k2.5",
       "project": "erp",
-      "totalScore": 76,
+      "totalScore": 77,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -6886,7 +6714,7 @@
           "maxScore": 100,
           "weightedScore": 79,
           "passed": true,
-          "durationMs": 5235,
+          "durationMs": 6056,
           "metrics": {
             "totalFiles": 244,
             "filesWithErrors": 0,
@@ -6976,7 +6804,7 @@
             "docFileCount": 6,
             "totalDocLength": 520668,
             "cached": true,
-            "originalDurationMs": 150
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -6995,7 +6823,7 @@
             "unmappedControllers": 9,
             "mappingRatio": 0.6086956521739131,
             "cached": true,
-            "originalDurationMs": 1
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -7018,7 +6846,7 @@
             "assertionTests": 222,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 45
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -7036,7 +6864,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 88
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -7055,7 +6883,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 95
+            "originalDurationMs": 0
           }
         }
       },
@@ -7073,9 +6901,9 @@
         "suggestionCount": 13
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:45.074Z",
-        "reportUpdatedAt": "2026-03-26T07:54:45.090Z",
-        "totalDurationMs": 5573,
+        "evaluatedAt": "2026-03-26T10:18:26.074Z",
+        "reportUpdatedAt": "2026-03-26T10:18:26.088Z",
+        "totalDurationMs": 6424,
         "evaluatedFiles": 244
       },
       "reference": {
@@ -7103,7 +6931,7 @@
     {
       "model": "kimi-k2.5",
       "project": "reddit",
-      "totalScore": 63,
+      "totalScore": 65,
       "grade": "D",
       "pipeline": null,
       "phases": {
@@ -7112,7 +6940,7 @@
           "maxScore": 100,
           "weightedScore": 86,
           "passed": true,
-          "durationMs": 9746,
+          "durationMs": 11348,
           "metrics": {
             "totalFiles": 410,
             "filesWithErrors": 0,
@@ -7220,7 +7048,7 @@
             "docFileCount": 6,
             "totalDocLength": 254523,
             "cached": true,
-            "originalDurationMs": 396
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -7239,7 +7067,7 @@
             "unmappedControllers": 44,
             "mappingRatio": 0.37142857142857144,
             "cached": true,
-            "originalDurationMs": 12
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -7262,7 +7090,7 @@
             "assertionTests": 273,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 169
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -7280,7 +7108,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 144
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -7299,7 +7127,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 189
+            "originalDurationMs": 0
           }
         }
       },
@@ -7321,9 +7149,9 @@
         "suggestionCount": 19
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:55.326Z",
-        "reportUpdatedAt": "2026-03-26T07:54:55.351Z",
-        "totalDurationMs": 10144,
+        "evaluatedAt": "2026-03-26T10:18:37.961Z",
+        "reportUpdatedAt": "2026-03-26T10:18:37.980Z",
+        "totalDurationMs": 11736,
         "evaluatedFiles": 410
       },
       "reference": {
@@ -7351,7 +7179,7 @@
     {
       "model": "kimi-k2.5",
       "project": "shopping",
-      "totalScore": 39,
+      "totalScore": 44,
       "grade": "F",
       "pipeline": null,
       "phases": {
@@ -7360,7 +7188,7 @@
           "maxScore": 100,
           "weightedScore": 86,
           "passed": true,
-          "durationMs": 20115,
+          "durationMs": 21479,
           "metrics": {
             "totalFiles": 748,
             "filesWithErrors": 0,
@@ -7458,7 +7286,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-005-service-requests.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-007-administration.prisma'"
             }
           ]
         },
@@ -7474,7 +7302,7 @@
             "docFileCount": 6,
             "totalDocLength": 637122,
             "cached": true,
-            "originalDurationMs": 1013
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -7493,7 +7321,7 @@
             "unmappedControllers": 83,
             "mappingRatio": 0.35658914728682173,
             "cached": true,
-            "originalDurationMs": 64
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -7516,7 +7344,7 @@
             "assertionTests": 601,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 192
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -7534,7 +7362,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 706
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -7553,7 +7381,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 745
+            "originalDurationMs": 0
           }
         }
       },
@@ -7575,9 +7403,9 @@
         "suggestionCount": 45
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:16.463Z",
-        "reportUpdatedAt": "2026-03-26T07:55:16.508Z",
-        "totalDurationMs": 20955,
+        "evaluatedAt": "2026-03-26T10:19:00.424Z",
+        "reportUpdatedAt": "2026-03-26T10:19:00.474Z",
+        "totalDurationMs": 22323,
         "evaluatedFiles": 748
       },
       "reference": {
@@ -7605,8 +7433,8 @@
     {
       "model": "kimi-k2.5",
       "project": "todo",
-      "totalScore": 79,
-      "grade": "C",
+      "totalScore": 81,
+      "grade": "B",
       "pipeline": {
         "totalTokens": 0,
         "totalInputTokens": 0,
@@ -7650,7 +7478,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 2895,
+          "durationMs": 3326,
           "metrics": {
             "totalFiles": 87,
             "filesWithErrors": 0,
@@ -7688,7 +7516,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-03-history.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-02-todos.prisma'"
             }
           ]
         },
@@ -7704,7 +7532,7 @@
             "docFileCount": 6,
             "totalDocLength": 117322,
             "cached": true,
-            "originalDurationMs": 27
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -7723,7 +7551,7 @@
             "unmappedControllers": 3,
             "mappingRatio": 0.6666666666666666,
             "cached": true,
-            "originalDurationMs": 1
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -7746,7 +7574,7 @@
             "assertionTests": 41,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 8
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -7764,7 +7592,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 14
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -7783,7 +7611,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 16
+            "originalDurationMs": 0
           }
         }
       },
@@ -7801,9 +7629,9 @@
         "suggestionCount": 5
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:55:19.593Z",
-        "reportUpdatedAt": "2026-03-26T07:55:19.599Z",
-        "totalDurationMs": 2968,
+        "evaluatedAt": "2026-03-26T10:19:03.995Z",
+        "reportUpdatedAt": "2026-03-26T10:19:04.002Z",
+        "totalDurationMs": 3401,
         "evaluatedFiles": 87
       },
       "reference": {
@@ -7831,7 +7659,7 @@
     {
       "model": "minimax-m2.7",
       "project": "erp",
-      "totalScore": 71,
+      "totalScore": 72,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -7840,7 +7668,7 @@
           "maxScore": 100,
           "weightedScore": 74,
           "passed": true,
-          "durationMs": 10905,
+          "durationMs": 13563,
           "metrics": {
             "totalFiles": 376,
             "filesWithErrors": 0,
@@ -7953,26 +7781,14 @@
           "maxScore": 100,
           "weightedScore": 4.45,
           "passed": true,
-          "durationMs": 239,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 530755
-          },
-          "explanation": {
-            "reasons": [
-              "1x 1 doc file(s) contain boilerplate or minimal content"
-            ],
-            "issueSummaries": [
-              {
-                "code": "DOC005",
-                "count": 1,
-                "severity": "warning",
-                "message": "1 doc file(s) contain boilerplate or minimal content"
-              }
-            ],
-            "suggestions": []
+            "totalDocLength": 530755,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "requirementsCoverage": {
@@ -7980,7 +7796,7 @@
           "maxScore": 100,
           "weightedScore": 20,
           "passed": true,
-          "durationMs": 2,
+          "durationMs": 0,
           "metrics": {
             "controllerCount": 48,
             "providerCount": 147,
@@ -7989,12 +7805,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 48,
             "unmappedControllers": 0,
-            "mappingRatio": 1
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -8002,7 +7815,7 @@
           "maxScore": 100,
           "weightedScore": 20.75,
           "passed": true,
-          "durationMs": 73,
+          "durationMs": 0,
           "metrics": {
             "testCount": 380,
             "controllerCount": 48,
@@ -8015,31 +7828,9 @@
             "controllersAnalyzed": 46,
             "stubTests": 38,
             "assertionTests": 342,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "21 warnings detected",
-              "20x Controller \"/erpHrm/admin/admin-audit-logs\" has 2 untested route(s): PATCH /erpHrm/admin/admin-audit-logs, GET /erpHrm/admin/admin-audit-logs/:auditLogId",
-              "1x 38/380 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 20,
-                "severity": "warning",
-                "message": "Controller \"/erpHrm/admin/admin-audit-logs\" has 2 untested route(s): PATCH /erpHrm/admin/admin-audit-logs, GET /erpHrm/a"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "38/380 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": [
-              "Address warnings to improve quality"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "logicCompleteness": {
@@ -8047,7 +7838,7 @@
           "maxScore": 100,
           "weightedScore": 29.049999999999997,
           "passed": true,
-          "durationMs": 143,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 1,
             "criticalCount": 1,
@@ -8055,24 +7846,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [
-              "1 critical issue(s) found",
-              "1x Stub return value \u2014 method returns empty object/array/null"
-            ],
-            "issueSummaries": [
-              {
-                "code": "LOGIC020",
-                "count": 1,
-                "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "apiCompleteness": {
@@ -8080,7 +7856,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 154,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 143,
             "emptyEndpoints": 0,
@@ -8089,12 +7865,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 0
           }
         }
       },
@@ -8110,15 +7883,15 @@
         }
       },
       "summary": {
-        "totalIssues": 215,
-        "criticalCount": 2,
-        "warningCount": 141,
+        "totalIssues": 211,
+        "criticalCount": 1,
+        "warningCount": 138,
         "suggestionCount": 72
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:09.445Z",
-        "reportUpdatedAt": "2026-03-26T07:54:09.466Z",
-        "totalDurationMs": 11662,
+        "evaluatedAt": "2026-03-26T10:17:45.892Z",
+        "reportUpdatedAt": "2026-03-26T10:17:45.920Z",
+        "totalDurationMs": 14150,
         "evaluatedFiles": 376
       },
       "reference": {
@@ -8146,7 +7919,7 @@
     {
       "model": "minimax-m2.7",
       "project": "reddit",
-      "totalScore": 63,
+      "totalScore": 66,
       "grade": "D",
       "pipeline": null,
       "phases": {
@@ -8155,7 +7928,7 @@
           "maxScore": 100,
           "weightedScore": 69,
           "passed": true,
-          "durationMs": 6715,
+          "durationMs": 8303,
           "metrics": {
             "totalFiles": 286,
             "filesWithErrors": 0,
@@ -8253,7 +8026,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-08-moderation.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-09-files.prisma'"
             }
           ]
         },
@@ -8262,26 +8035,14 @@
           "maxScore": 100,
           "weightedScore": 3.95,
           "passed": true,
-          "durationMs": 168,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 283472
-          },
-          "explanation": {
-            "reasons": [
-              "1x 4 doc file(s) contain boilerplate or minimal content"
-            ],
-            "issueSummaries": [
-              {
-                "code": "DOC005",
-                "count": 1,
-                "severity": "warning",
-                "message": "4 doc file(s) contain boilerplate or minimal content"
-              }
-            ],
-            "suggestions": []
+            "totalDocLength": 283472,
+            "cached": true,
+            "originalDurationMs": 168
           }
         },
         "requirementsCoverage": {
@@ -8289,7 +8050,7 @@
           "maxScore": 100,
           "weightedScore": 19,
           "passed": true,
-          "durationMs": 1,
+          "durationMs": 0,
           "metrics": {
             "controllerCount": 43,
             "providerCount": 94,
@@ -8298,21 +8059,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 38,
             "unmappedControllers": 5,
-            "mappingRatio": 0.8837209302325582
-          },
-          "explanation": {
-            "reasons": [
-              "1x 5 controller(s) have no matching provider: RedditcloneGuestUsersPostsController, RedditcloneGuestUsersCommentsController, RedditcloneGuestCommunitiesPostsController, RedditcloneMemberUsersPostsController, RedditcloneMemberUsersCommentsController"
-            ],
-            "issueSummaries": [
-              {
-                "code": "REQ005",
-                "count": 1,
-                "severity": "warning",
-                "message": "5 controller(s) have no matching provider: RedditcloneGuestUsersPostsController, RedditcloneGuestUsersCommentsController"
-              }
-            ],
-            "suggestions": []
+            "mappingRatio": 0.8837209302325582,
+            "cached": true,
+            "originalDurationMs": 1
           }
         },
         "testCoverage": {
@@ -8320,7 +8069,7 @@
           "maxScore": 100,
           "weightedScore": 18.75,
           "passed": true,
-          "durationMs": 60,
+          "durationMs": 0,
           "metrics": {
             "testCount": 248,
             "controllerCount": 43,
@@ -8333,31 +8082,9 @@
             "controllersAnalyzed": 43,
             "stubTests": 32,
             "assertionTests": 216,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "27 warnings detected",
-              "26x Controller \"/redditClone/communities\" has 1 untested route(s): PATCH /redditClone/communities",
-              "1x 32/248 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 26,
-                "severity": "warning",
-                "message": "Controller \"/redditClone/communities\" has 1 untested route(s): PATCH /redditClone/communities"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "32/248 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": [
-              "Address warnings to improve quality"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 60
           }
         },
         "logicCompleteness": {
@@ -8365,7 +8092,7 @@
           "maxScore": 100,
           "weightedScore": 21.7,
           "passed": true,
-          "durationMs": 102,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 4,
             "criticalCount": 4,
@@ -8373,24 +8100,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [
-              "4 critical issue(s) found",
-              "4x Stub return value \u2014 method returns empty object/array/null"
-            ],
-            "issueSummaries": [
-              {
-                "code": "LOGIC020",
-                "count": 4,
-                "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
-              }
-            ],
-            "suggestions": [
-              "Fix all critical issues first"
-            ]
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 102
           }
         },
         "apiCompleteness": {
@@ -8398,7 +8110,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 99,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 91,
             "emptyEndpoints": 0,
@@ -8407,12 +8119,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 99
           }
         }
       },
@@ -8424,15 +8133,15 @@
         }
       },
       "summary": {
-        "totalIssues": 193,
-        "criticalCount": 5,
-        "warningCount": 169,
+        "totalIssues": 185,
+        "criticalCount": 1,
+        "warningCount": 165,
         "suggestionCount": 19
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:16.807Z",
-        "reportUpdatedAt": "2026-03-26T07:54:16.825Z",
-        "totalDurationMs": 7219,
+        "evaluatedAt": "2026-03-26T10:17:54.751Z",
+        "reportUpdatedAt": "2026-03-26T10:17:54.770Z",
+        "totalDurationMs": 8683,
         "evaluatedFiles": 286
       },
       "reference": {
@@ -8460,7 +8169,7 @@
     {
       "model": "minimax-m2.7",
       "project": "shopping",
-      "totalScore": 72,
+      "totalScore": 73,
       "grade": "C",
       "pipeline": null,
       "phases": {
@@ -8469,7 +8178,7 @@
           "maxScore": 100,
           "weightedScore": 77,
           "passed": true,
-          "durationMs": 16977,
+          "durationMs": 19798,
           "metrics": {
             "totalFiles": 648,
             "filesWithErrors": 0,
@@ -8624,26 +8333,14 @@
           "maxScore": 100,
           "weightedScore": 4.45,
           "passed": true,
-          "durationMs": 500,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 685665
-          },
-          "explanation": {
-            "reasons": [
-              "1x 2 doc file(s) contain boilerplate or minimal content"
-            ],
-            "issueSummaries": [
-              {
-                "code": "DOC005",
-                "count": 1,
-                "severity": "warning",
-                "message": "2 doc file(s) contain boilerplate or minimal content"
-              }
-            ],
-            "suggestions": []
+            "totalDocLength": 685665,
+            "cached": true,
+            "originalDurationMs": 500
           }
         },
         "requirementsCoverage": {
@@ -8651,7 +8348,7 @@
           "maxScore": 100,
           "weightedScore": 20,
           "passed": true,
-          "durationMs": 3,
+          "durationMs": 0,
           "metrics": {
             "controllerCount": 97,
             "providerCount": 215,
@@ -8660,12 +8357,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 97,
             "unmappedControllers": 0,
-            "mappingRatio": 1
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 3
           }
         },
         "testCoverage": {
@@ -8673,7 +8367,7 @@
           "maxScore": 100,
           "weightedScore": 17,
           "passed": true,
-          "durationMs": 233,
+          "durationMs": 0,
           "metrics": {
             "testCount": 566,
             "controllerCount": 97,
@@ -8686,31 +8380,9 @@
             "controllersAnalyzed": 89,
             "stubTests": 63,
             "assertionTests": 503,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "53 warnings detected",
-              "52x Controller \"/ecommerceMall/admin/admin/audit-logs/:logId\" has 1 untested route(s): GET /ecommerceMall/admin/admin/audit-logs/:logId",
-              "1x 63/566 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 52,
-                "severity": "warning",
-                "message": "Controller \"/ecommerceMall/admin/admin/audit-logs/:logId\" has 1 untested route(s): GET /ecommerceMall/admin/admin/audit-"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "63/566 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": [
-              "Address warnings to improve quality"
-            ]
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 233
           }
         },
         "logicCompleteness": {
@@ -8718,7 +8390,7 @@
           "maxScore": 100,
           "weightedScore": 35,
           "passed": true,
-          "durationMs": 254,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 0,
             "criticalCount": 0,
@@ -8726,12 +8398,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 254
           }
         },
         "apiCompleteness": {
@@ -8739,7 +8408,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 253,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 209,
             "emptyEndpoints": 0,
@@ -8748,12 +8417,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 253
           }
         }
       },
@@ -8774,15 +8440,15 @@
         }
       },
       "summary": {
-        "totalIssues": 438,
+        "totalIssues": 435,
         "criticalCount": 1,
-        "warningCount": 158,
+        "warningCount": 155,
         "suggestionCount": 279
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:35.072Z",
-        "reportUpdatedAt": "2026-03-26T07:54:35.114Z",
-        "totalDurationMs": 18142,
+        "evaluatedAt": "2026-03-26T10:18:15.494Z",
+        "reportUpdatedAt": "2026-03-26T10:18:15.532Z",
+        "totalDurationMs": 20589,
         "evaluatedFiles": 648
       },
       "reference": {
@@ -8819,7 +8485,7 @@
           "maxScore": 100,
           "weightedScore": 86,
           "passed": true,
-          "durationMs": 3985,
+          "durationMs": 3795,
           "metrics": {
             "totalFiles": 75,
             "filesWithErrors": 0,
@@ -8869,7 +8535,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-01-actors.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-02-todos.prisma'"
             }
           ]
         },
@@ -8878,17 +8544,14 @@
           "maxScore": 100,
           "weightedScore": 4.6000000000000005,
           "passed": true,
-          "durationMs": 33,
+          "durationMs": 0,
           "metrics": {
             "hasDocsFolder": true,
             "hasReadme": true,
             "docFileCount": 6,
-            "totalDocLength": 133785
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "totalDocLength": 133785,
+            "cached": true,
+            "originalDurationMs": 33
           }
         },
         "requirementsCoverage": {
@@ -8905,12 +8568,9 @@
             "hasRequirementsDocs": true,
             "mappedControllers": 6,
             "unmappedControllers": 0,
-            "mappingRatio": 1
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
           }
         },
         "testCoverage": {
@@ -8918,7 +8578,7 @@
           "maxScore": 100,
           "weightedScore": 21.75,
           "passed": true,
-          "durationMs": 8,
+          "durationMs": 0,
           "metrics": {
             "testCount": 47,
             "controllerCount": 6,
@@ -8931,28 +8591,9 @@
             "controllersAnalyzed": 6,
             "stubTests": 3,
             "assertionTests": 44,
-            "runtimeVerified": false
-          },
-          "explanation": {
-            "reasons": [
-              "3x Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): POST /multiUserTodo/member/todos/:todoId/toggle",
-              "1x 3/47 test files are stubs or lack assertions"
-            ],
-            "issueSummaries": [
-              {
-                "code": "TEST005",
-                "count": 3,
-                "severity": "warning",
-                "message": "Controller \"/multiUserTodo/member/todos\" has 1 untested route(s): POST /multiUserTodo/member/todos/:todoId/toggle"
-              },
-              {
-                "code": "TEST003",
-                "count": 1,
-                "severity": "warning",
-                "message": "3/47 test files are stubs or lack assertions"
-              }
-            ],
-            "suggestions": []
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 8
           }
         },
         "logicCompleteness": {
@@ -8960,7 +8601,7 @@
           "maxScore": 100,
           "weightedScore": 35,
           "passed": true,
-          "durationMs": 21,
+          "durationMs": 0,
           "metrics": {
             "totalIncomplete": 0,
             "criticalCount": 0,
@@ -8968,12 +8609,9 @@
             "todoCount": 0,
             "fixmeCount": 0,
             "emptyMethods": 0,
-            "emptyCatch": 0
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 21
           }
         },
         "apiCompleteness": {
@@ -8981,7 +8619,7 @@
           "maxScore": 100,
           "weightedScore": 0,
           "passed": true,
-          "durationMs": 21,
+          "durationMs": 0,
           "metrics": {
             "totalEndpoints": 17,
             "emptyEndpoints": 0,
@@ -8990,12 +8628,9 @@
             "noProviderEndpoints": 0,
             "passthroughEndpoints": 0,
             "completionRate": 100,
-            "implementationRate": 100
-          },
-          "explanation": {
-            "reasons": [],
-            "issueSummaries": [],
-            "suggestions": []
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 21
           }
         }
       },
@@ -9012,15 +8647,15 @@
         }
       },
       "summary": {
-        "totalIssues": 11,
+        "totalIssues": 9,
         "criticalCount": 1,
-        "warningCount": 5,
+        "warningCount": 3,
         "suggestionCount": 5
       },
       "meta": {
-        "evaluatedAt": "2026-03-26T07:54:39.397Z",
-        "reportUpdatedAt": "2026-03-26T07:54:39.410Z",
-        "totalDurationMs": 4130,
+        "evaluatedAt": "2026-03-26T10:18:19.543Z",
+        "reportUpdatedAt": "2026-03-26T10:18:19.549Z",
+        "totalDurationMs": 3889,
         "evaluatedFiles": 75
       },
       "reference": {
@@ -9549,7 +9184,7 @@
           "explanation": {
             "reasons": [
               "1 critical issue(s) found",
-              "1x Stub return value \u2014 method returns empty object/array/null",
+              "1x Stub return value — method returns empty object/array/null",
               "1x TODO comment found"
             ],
             "issueSummaries": [
@@ -9557,7 +9192,7 @@
                 "code": "LOGIC020",
                 "count": 1,
                 "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
+                "message": "Stub return value — method returns empty object/array/null"
               },
               {
                 "code": "LOGIC002",
@@ -9864,8 +9499,8 @@
           "explanation": {
             "reasons": [
               "1 critical issue(s) found",
-              "1x Stub return value \u2014 method returns empty object/array/null",
-              "1x 6/8 methods have identical structure \u2014 likely copy-paste boilerplate without domain-specific logic",
+              "1x Stub return value — method returns empty object/array/null",
+              "1x 6/8 methods have identical structure — likely copy-paste boilerplate without domain-specific logic",
               "1x TODO comment found"
             ],
             "issueSummaries": [
@@ -9873,13 +9508,13 @@
                 "code": "LOGIC020",
                 "count": 1,
                 "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
+                "message": "Stub return value — method returns empty object/array/null"
               },
               {
                 "code": "LOGIC018",
                 "count": 1,
                 "severity": "warning",
-                "message": "6/8 methods have identical structure \u2014 likely copy-paste boilerplate without domain-specific logic"
+                "message": "6/8 methods have identical structure — likely copy-paste boilerplate without domain-specific logic"
               },
               {
                 "code": "LOGIC002",
@@ -10162,14 +9797,14 @@
           "explanation": {
             "reasons": [
               "1 critical issue(s) found",
-              "1x Stub return value \u2014 method returns empty object/array/null"
+              "1x Stub return value — method returns empty object/array/null"
             ],
             "issueSummaries": [
               {
                 "code": "LOGIC020",
                 "count": 1,
                 "severity": "critical",
-                "message": "Stub return value \u2014 method returns empty object/array/null"
+                "message": "Stub return value — method returns empty object/array/null"
               }
             ],
             "suggestions": [
@@ -10267,7 +9902,7 @@
               "code": "GATE002",
               "count": 1,
               "severity": "critical",
-              "message": "No controllers or providers found \u2014 pipeline output is incomplete (only infrastructure files exist)"
+              "message": "No controllers or providers found — pipeline output is incomplete (only infrastructure files exist)"
             }
           ]
         },
@@ -14340,5 +13975,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-03-26T08:37:52.379Z"
+  "generatedAt": "2026-03-26T10:21:13.418Z"
 }
