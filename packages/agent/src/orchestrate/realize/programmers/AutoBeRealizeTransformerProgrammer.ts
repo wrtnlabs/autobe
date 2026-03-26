@@ -239,18 +239,6 @@ ${Object.keys(props.schema.properties)
       path: "$input.request.draft",
       errors,
     });
-    validateSelectTransformConsistency({
-      selectMappings: props.selectMappings,
-      transformMappings: props.transformMappings,
-      code: props.draft,
-      path: "$input.request.draft",
-      errors,
-    });
-    validateSelectAntiPatterns({
-      code: props.draft,
-      path: "$input.request.draft",
-      errors,
-    });
 
     // validate final
     if (props.revise.final !== null) {
@@ -264,18 +252,6 @@ ${Object.keys(props.schema.properties)
         plan: props.plan,
         neighbors: props.neighbors,
         content: props.revise.final,
-        path: "$input.request.revise.final",
-        errors,
-      });
-      validateSelectTransformConsistency({
-        selectMappings: props.selectMappings,
-        transformMappings: props.transformMappings,
-        code: props.revise.final,
-        path: "$input.request.revise.final",
-        errors,
-      });
-      validateSelectAntiPatterns({
-        code: props.revise.final,
         path: "$input.request.revise.final",
         errors,
       });
@@ -438,96 +414,6 @@ ${Object.keys(props.schema.properties)
       `import { toISOStringSafe } from "../utils/toISOStringSafe";`,
     ];
     return imports;
-  }
-
-  function validateSelectTransformConsistency(props: {
-    selectMappings: AutoBeRealizeTransformerSelectMapping[];
-    transformMappings: AutoBeRealizeTransformerTransformMapping[];
-    code: string;
-    errors: IValidation.IError[];
-    path: string;
-  }): void {
-    const selectedMembers = new Set(props.selectMappings.map((s) => s.member));
-
-    // Extract input.X access patterns from transform() code
-    const inputAccessPattern = /input\.(\w+)/g;
-    const accessed = new Set<string>();
-    let match: RegExpExecArray | null;
-    while ((match = inputAccessPattern.exec(props.code)) !== null) {
-      accessed.add(match[1]!);
-    }
-
-    for (const field of accessed) {
-      if (field === "_count") continue;
-      if (!selectedMembers.has(field)) {
-        props.errors.push({
-          path: props.path,
-          value: props.code,
-          expected: `field "${field}" in selectMappings`,
-          description: `input.${field} accessed in transform() but "${field}" is not in selectMappings. Add it to selectMappings and select().`,
-        });
-      }
-    }
-
-    // Check transformMappings references against selectMappings
-    for (const tm of props.transformMappings) {
-      const refMatch = tm.how.match(/input\.(\w+)/);
-      if (refMatch) {
-        const refMember = refMatch[1]!;
-        if (refMember !== "_count" && !selectedMembers.has(refMember)) {
-          props.errors.push({
-            path: props.path,
-            value: props.code,
-            expected: `"${refMember}" in selectMappings`,
-            description: `transformMapping for "${tm.property}" references input.${refMember} but it's not in selectMappings`,
-          });
-        }
-      }
-    }
-  }
-
-  function validateSelectAntiPatterns(props: {
-    code: string;
-    errors: IValidation.IError[];
-    path: string;
-  }): void {
-    // C-1: null value in select object
-    if (/select:\s*\{[\s\S]*?:\s*null\b/m.test(props.code)) {
-      props.errors.push({
-        path: props.path,
-        value: props.code,
-        expected: "true or { select: {...} } for each select field",
-        description:
-          "null found in select object. This destroys GetPayload type inference " +
-          "and causes 50-300 cascading errors. Use `true` for scalars or " +
-          "`{ select: {...} }` for relations. NEVER use null.",
-      });
-    }
-
-    // C-3: explicit return type on select() function
-    if (/function\s+select\s*\(\s*\)\s*:\s*Prisma\.\w+/m.test(props.code)) {
-      props.errors.push({
-        path: props.path,
-        value: props.code,
-        expected: "select() without explicit return type annotation",
-        description:
-          "Explicit return type on select() widens the literal type and breaks " +
-          "GetPayload inference. Remove the return type annotation and use " +
-          "`satisfies Prisma.XFindManyArgs` on the return value instead.",
-      });
-    }
-
-    // C-2: boolean type instead of true literal
-    if (/select:\s*\{[\s\S]*?\w+:\s*boolean\b/m.test(props.code)) {
-      props.errors.push({
-        path: props.path,
-        value: props.code,
-        expected: "true (literal) for scalar fields in select",
-        description:
-          "`boolean` type found instead of `true` literal in select object. " +
-          "Prisma select requires the literal value `true`, not the type `boolean`.",
-      });
-    }
   }
 
   function validateEmptyCode(props: {
