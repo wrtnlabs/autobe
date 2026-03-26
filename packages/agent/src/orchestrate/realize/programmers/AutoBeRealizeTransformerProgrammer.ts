@@ -462,8 +462,9 @@ ${Object.keys(props.schema.properties)
       if (!selectedMembers.has(field)) {
         props.errors.push({
           path: props.path,
+          value: props.code,
           expected: `field "${field}" in selectMappings`,
-          value: `input.${field} accessed in transform() but "${field}" is not in selectMappings. Add it to selectMappings and select().`,
+          description: `input.${field} accessed in transform() but "${field}" is not in selectMappings. Add it to selectMappings and select().`,
         });
       }
     }
@@ -476,8 +477,9 @@ ${Object.keys(props.schema.properties)
         if (refMember !== "_count" && !selectedMembers.has(refMember)) {
           props.errors.push({
             path: props.path,
+            value: props.code,
             expected: `"${refMember}" in selectMappings`,
-            value: `transformMapping for "${tm.property}" references input.${refMember} but it's not in selectMappings`,
+            description: `transformMapping for "${tm.property}" references input.${refMember} but it's not in selectMappings`,
           });
         }
       }
@@ -493,8 +495,9 @@ ${Object.keys(props.schema.properties)
     if (/select:\s*\{[\s\S]*?:\s*null\b/m.test(props.code)) {
       props.errors.push({
         path: props.path,
+        value: props.code,
         expected: "true or { select: {...} } for each select field",
-        value:
+        description:
           "null found in select object. This destroys GetPayload type inference " +
           "and causes 50-300 cascading errors. Use `true` for scalars or " +
           "`{ select: {...} }` for relations. NEVER use null.",
@@ -505,8 +508,9 @@ ${Object.keys(props.schema.properties)
     if (/function\s+select\s*\(\s*\)\s*:\s*Prisma\.\w+/m.test(props.code)) {
       props.errors.push({
         path: props.path,
+        value: props.code,
         expected: "select() without explicit return type annotation",
-        value:
+        description:
           "Explicit return type on select() widens the literal type and breaks " +
           "GetPayload inference. Remove the return type annotation and use " +
           "`satisfies Prisma.XFindManyArgs` on the return value instead.",
@@ -517,8 +521,9 @@ ${Object.keys(props.schema.properties)
     if (/select:\s*\{[\s\S]*?\w+:\s*boolean\b/m.test(props.code)) {
       props.errors.push({
         path: props.path,
+        value: props.code,
         expected: "true (literal) for scalar fields in select",
-        value:
+        description:
           "`boolean` type found instead of `true` literal in select object. " +
           "Prisma select requires the literal value `true`, not the type `boolean`.",
       });
