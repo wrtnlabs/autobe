@@ -20,6 +20,94 @@ import { AutoBePreliminaryController } from "../../common/AutoBePreliminaryContr
 import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
+/**
+ * Deduplicate diagnostics by grouping identical messages and capping total count.
+ *
+ * Single root causes (e.g., `null` in select) can produce 50-300 cascading errors
+ * with identical messages. This function collapses them so the LLM focuses on the
+ * root cause instead of being overwhelmed by repetition.
+ */
+const deduplicateDiagnostics = (
+  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
+): IAutoBeTypeScriptCompileResult.IDiagnostic[] => {
+  const byMessage = new Map<
+    string,
+    {
+      diag: IAutoBeTypeScriptCompileResult.IDiagnostic;
+      count: number;
+    }
+  >();
+  for (const d of diagnostics) {
+    const key = d.messageText;
+    const existing = byMessage.get(key);
+    if (existing) {
+      existing.count++;
+    } else {
+      byMessage.set(key, { diag: d, count: 1 });
+    }
+  }
+
+  const deduped: IAutoBeTypeScriptCompileResult.IDiagnostic[] = [];
+  for (const [, { diag, count }] of byMessage) {
+    deduped.push({
+      ...diag,
+      messageText:
+        count > 1
+          ? `${diag.messageText} (repeated ${count} times - fix the root cause)`
+          : diag.messageText,
+    });
+  }
+
+  if (deduped.length > 25) {
+    const truncated = deduped.slice(0, 25);
+    truncated.push({
+      file: deduped[0]!.file,
+      start: null,
+      length: null,
+      code: 0,
+      messageText: `[+${deduped.length - 25} additional unique errors omitted - focus on the above errors first]`,
+      category: "error",
+    });
+    return truncated;
+  }
+  return deduped;
+};
+
+/**
+ * Sanitize LLM-generated code by removing common artifacts:
+ * - Chain-of-thought text leaked into code output
+ * - Token truncation artifacts (e.g., standalone 'n' characters)
+ * - Markdown code fences
+ */
+const sanitizeGeneratedCode = (code: string): string => {
+  let result = code;
+
+  // 1. Extract code from markdown fences if present
+  const codeBlockMatch = result.match(
+    /```(?:typescript|ts)?\s*\n([\s\S]*?)\n```/,
+  );
+  if (codeBlockMatch) {
+    result = codeBlockMatch[1]!;
+  }
+
+  // 2. Remove everything before the first export statement
+  const exportMatch = result.match(
+    /(export\s+(?:namespace|async\s+function|function|const)\s+[\s\S]*)/,
+  );
+  if (exportMatch) {
+    result = exportMatch[1]!;
+  }
+
+  // 3. Remove standalone 'n' token artifacts (minimax-m2.7 pattern)
+  // Only remove lines that are EXACTLY 'n' (with optional whitespace)
+  result = result.replace(/^\s*n\s*$/gm, "");
+
+  // 4. Remove trailing 'n' after commas (another truncation pattern)
+  result = result.replace(/,\s*n\s*\n/g, ",\n");
+
+  return result.trim();
+};
+
 interface IProgrammer<
   RealizeFunction extends AutoBeRealizeFunction,
   PreliminaryKind extends AutoBePreliminaryKind,
@@ -171,6 +259,18 @@ const correct = async <
           const localFunction: RealizeFunction = props.functions.find(
             (f) => f.location === location,
           )!;
+          const rawDiagnostics =
+            failure.diagnostics.filter(
+              (d) => d.file === localFunction.location,
+            );
+
+          // P2-5: Log when error count is very high (suggests regeneration may be better than correction)
+          if (rawDiagnostics.length > 20) {
+            console.warn(
+              `[realizeCorrectOverall] ${rawDiagnostics.length} errors in ${localFunction.location} — consider regeneration instead of correction`,
+            );
+          }
+
           const localFailures: IAutoBeRealizeFunctionFailure<RealizeFunction>[] =
             [
               ...props.previousFailures
@@ -183,9 +283,7 @@ const correct = async <
                 .filter((x) => x !== null),
               {
                 function: localFunction,
-                diagnostics: failure.diagnostics.filter(
-                  (d) => d.file === localFunction.location,
-                ),
+                diagnostics: deduplicateDiagnostics(rawDiagnostics),
               },
             ];
           try {
@@ -324,7 +422,9 @@ const process = async <
 
     const content: string = await props.programmer.replaceImportStatements({
       function: props.function,
-      code: pointer.value.revise.final ?? pointer.value.draft,
+      code: sanitizeGeneratedCode(
+        pointer.value.revise.final ?? pointer.value.draft,
+      ),
     });
     ctx.dispatch({
       id: v7(),
@@ -381,11 +481,24 @@ const compileWithFiltering = async <
   });
   if (compiled.result.type !== "failure") return compiled;
 
-  const functionLocations: string[] = props.functions.map((f) => f.location);
+  const functionLocations = new Set(props.functions.map((f) => f.location));
 
-  compiled.result.diagnostics = compiled.result.diagnostics.filter(
-    (d) => d.file !== null && functionLocations.includes(d.file),
+  const directErrors = compiled.result.diagnostics.filter(
+    (d) => d.file !== null && functionLocations.has(d.file),
   );
+  const crossFileErrors = compiled.result.diagnostics.filter(
+    (d) => d.file !== null && !functionLocations.has(d.file),
+  );
+
+  // Log cross-file errors for debugging (P1-4)
+  if (crossFileErrors.length > 0) {
+    console.warn(
+      `[realizeCorrectOverall] ${crossFileErrors.length} cross-file errors detected in: ` +
+        [...new Set(crossFileErrors.map((d) => d.file))].join(", "),
+    );
+  }
+
+  compiled.result.diagnostics = directErrors;
   if (compiled.result.diagnostics.length === 0) {
     compiled.result = { type: "success" };
   }
@@ -437,11 +550,13 @@ const separateCorrectionResults = <
   const failed: RealizeFunction[] = corrections
     .filter(
       (c) =>
-        c.type === "success" && errorLocations.includes(c.function.location),
+        (c.type === "success" &&
+          errorLocations.includes(c.function.location)) ||
+        c.type === "exception",
     )
     .map((c) => c.function);
   const ignored: RealizeFunction[] = corrections
-    .filter((c) => c.type === "ignore" || c.type === "exception")
+    .filter((c) => c.type === "ignore")
     .map((c) => c.function);
   return { success, failed, ignored };
 };

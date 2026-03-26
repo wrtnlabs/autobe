@@ -172,6 +172,18 @@ files: {
 },
 ```
 
+### 4.5.1. Verifying Relation Names Against Schema
+
+When TS2353 says `'X' does not exist in type 'YSelect'`:
+
+1. **X is NOT a valid relation name** for table Y
+2. Check the Relation Mapping Table in your context for the correct propertyKey
+3. Common confusions:
+   - Table name `shopping_categories` vs property name `category`
+   - FK column `shopping_seller_id` vs relation `seller`
+   - DTO name `orderItems` vs property name `items`
+4. After finding the correct name, update BOTH the `select` clause AND any `transform`/return code that references the relation
+
 ### 4.6. Unwrapping Transformer.select() with `.select`
 
 ```typescript

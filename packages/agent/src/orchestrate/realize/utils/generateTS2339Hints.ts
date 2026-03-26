@@ -5,16 +5,20 @@ import { IAutoBeTypeScriptCompileResult } from "@autobe/interface";
  * errors.
  *
  * Parses TS2339 "Property 'X' does not exist on type 'Y'" diagnostics,
- * deduplicates by (property, type) pair, and returns a short explanation when Y
- * appears to be a Prisma model type (snake_case naming).
+ * deduplicates by property name, and returns a short explanation.
  *
- * Returns empty string if no TS2339 diagnostics on Prisma-like types are found.
+ * Handles both simple type names (e.g., `shopping_sales`) and inline Prisma
+ * GetPayload types (e.g., `{ id: string; body: string; ... }`).
+ *
+ * Returns empty string if no TS2339 diagnostics are found.
  */
 export function generateTS2339Hints(
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
 ): string {
-  const TS2339_PATTERN = /^Property '(\w+)' does not exist on type '(\w+)'\.?$/;
-  const PRISMA_MODEL_PATTERN = /^[a-z][a-z0-9]*(_[a-z][a-z0-9]*)+$/;
+  // Match both simple types and inline object types
+  const TS2339_SIMPLE = /^Property '(\w+)' does not exist on type '(\w+)'\.?$/;
+  const TS2339_INLINE =
+    /^Property '(\w+)' does not exist on type '\{[^}]*\}'\.?$/;
 
   const seen = new Set<string>();
   const hints: Array<{ property: string; modelType: string }> = [];
@@ -22,17 +26,28 @@ export function generateTS2339Hints(
   for (const diag of diagnostics) {
     if (Number(diag.code) !== 2339) continue;
 
-    const match = diag.messageText.match(TS2339_PATTERN);
-    if (match === null) continue;
+    // Try simple type match first
+    const simpleMatch = diag.messageText.match(TS2339_SIMPLE);
+    if (simpleMatch !== null) {
+      const [, property, typeName] = simpleMatch;
+      const key = `${property}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        hints.push({ property: property!, modelType: typeName! });
+      }
+      continue;
+    }
 
-    const [, property, typeName] = match;
-    if (!PRISMA_MODEL_PATTERN.test(typeName)) continue;
-
-    const key = `${property}::${typeName}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    hints.push({ property, modelType: typeName });
+    // Try inline object type match (Prisma GetPayload output)
+    const inlineMatch = diag.messageText.match(TS2339_INLINE);
+    if (inlineMatch !== null) {
+      const [, property] = inlineMatch;
+      const key = `${property}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        hints.push({ property: property!, modelType: "(Prisma Payload)" });
+      }
+    }
   }
 
   if (hints.length === 0) return "";
@@ -44,11 +59,16 @@ export function generateTS2339Hints(
   return [
     "## TS2339 Relation Field Hints",
     "",
-    "These TS2339 errors are caused by accessing **Prisma relation fields** not available on the base model type.",
-    "- For transformers: add the missing relation to `select()` using `NeighborTransformer.select()`",
-    "- For collectors: use the **relation property name** (left side of schema definition) with `{ connect }` syntax",
+    "These TS2339 errors are caused by accessing fields not available on the Prisma Payload type.",
+    "This usually means the field is MISSING from your `select()` object.",
     "",
-    "Affected:",
+    "**Fix**: For each property below, add it to `select()`:",
+    "- Scalar field → `fieldName: true`",
+    "- Relation (has neighbor transformer) → `relation: NeighborTransformer.select()`",
+    "- Relation (no transformer) → `relation: { select: { ... } }`",
+    "- Aggregate count → `_count: { select: { relation: true } }`",
+    "",
+    "Affected properties:",
     lines,
   ].join("\n");
 }

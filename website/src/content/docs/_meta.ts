@@ -27,6 +27,5 @@ const meta: MetaRecord = {
     title: "🏆 Hackathon",
     display: "hidden",
   },
-  seminars: "🎤 Seminars",
 };
 export default meta;

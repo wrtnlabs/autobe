@@ -5,13 +5,21 @@ date: "2026-03-26"
 author: "Jeongho Nam"
 ogImage: "https://autobe.dev/og.jpg"
 tags:
-  - ai
-  - typescript
   - function-calling
   - qwen
+  - seminar
 ---
 
-> **Slide Deck**: [Download PPTX](/seminars/20260326-qwen-meetup-korea.pptx)
+import { Tabs } from "nextra/components";
+import AutoBeDemoMovie from "../../movies/demo/AutoBeDemoMovie";
+import PptxBanner from "../../components/PptxBanner";
+
+# Function Calling Harness
+
+<PptxBanner
+  title="Qwen Meetup Korea"
+  href="/seminars/20260326-qwen-meetup-korea.pptx"
+/>
 
 > **TL;DR**
 >
@@ -34,6 +42,15 @@ tags:
 >    - `qwen3-coder-next` scores 6.75% on first-try tool calling
 >    - AutoBe's self-healing harness turns that into 100% compilation success
 >    - If you can verify, you converge
+
+{
+// function calling success rate 6.75% comes from
+// https://github.com/wrtnlabs/autobe-examples/tree/58b9fe0847dfa84ca428482651391387594540b2/qwen/qwen3-coder-next/shopping#function-calling
+//
+// in actually, the 1st attempt was not 6.75%, but 4.60% estimated
+// and after openrouter announced exacto mode,
+// success rate became higher
+}
 
 ## 1. Preface
 
@@ -77,6 +94,10 @@ And **Chapter 5** answers why this story belongs at Qwen Meetup. Small models ar
 - Type-safe SDK
 
 Every line of generated code compiles. The result is a fully functional backend built on TypeScript + NestJS.
+
+<br/>
+
+<AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
 
 ### 2.2. LLMs Don't Write Code
 
@@ -244,8 +265,8 @@ Typia automates this process. Define a TypeScript type, and Typia **automaticall
 
 Let's see the principle first. When you call `typia.is<T>()`, type information is analyzed at compile time and transformed into optimized validation code:
 
-**Before Compilation (TypeScript):**
-
+<Tabs items={["Before Compilation: TypeScript", "After Compilation: JavaScript"]}>
+  <Tabs.Tab>
 ```typescript
 import typia, { tags } from "typia";
 
@@ -260,9 +281,8 @@ interface IMember {
 
 const check: boolean = typia.is<IMember>(input);
 ```
-
-**After Compilation (JavaScript):**
-
+  </Tabs.Tab>
+  <Tabs.Tab>
 ```javascript
 ((input) => {
   return (
@@ -280,13 +300,15 @@ const check: boolean = typia.is<IMember>(input);
   );
 })
 ```
+  </Tabs.Tab>
+</Tabs>
 
 A single line — `typia.is<IMember>(input)` — transforms at compile time into optimized code containing UUID regex, email regex, integer checks, and range checks. It overcomes TypeScript's limitation of erasing type information at runtime through a compiler plugin.
 
 This principle applies directly to function calling. `typia.llm.parameters<T>()` generates JSON Schema through the same type analysis:
 
-**Before Compilation (TypeScript):**
-
+<Tabs items={["Before Compilation: TypeScript", "After Compilation: JSON Schema"]}>
+  <Tabs.Tab>
 ```typescript
 import typia, { tags } from "typia";
 
@@ -304,9 +326,8 @@ interface IMember {
 
 const schema = typia.llm.parameters<IMember>();
 ```
-
-**After Compilation (JSON Schema):**
-
+  </Tabs.Tab>
+  <Tabs.Tab>
 ```json
 {
   "type": "object",
@@ -322,6 +343,8 @@ const schema = typia.llm.parameters<IMember>();
   "required": ["age", "email", "name"]
 }
 ```
+  </Tabs.Tab>
+</Tabs>
 
 **JSDoc comments become `description` fields.** The LLM reads these descriptions to decide what values to generate. **Type constraints become validation rules.** `ExclusiveMinimum<18>` becomes a "> 18" rule, and `Format<"email">` becomes an email format check. A single type definition simultaneously generates LLM guidance and validation rules.
 
@@ -396,8 +419,8 @@ const func: ILlmFunction = app.functions[0];
 const llmOutput = dedent`
   > LLM sometimes returns some prefix text with markdown JSON code block.
 
-  I'd be happy to help you with your order!
-
+  I'd be happy to help you with your order! 😊
+  
   \`\`\`json
   {
     "order": {
@@ -490,7 +513,7 @@ What the LLM actually returns:
 const llmOutput = `
   > LLM sometimes returns some prefix text with markdown JSON code block.
 
-  I'd be happy to help you with your order!
+  I'd be happy to help you with your order! 😊
 
   \`\`\`json
   {
@@ -580,7 +603,7 @@ declare class OrderService {
 }
 ```
 
-"The price inside product inside order should be >= 0, but you gave -100."
+"The price inside product inside order should be ≥ 0, but you gave -100."
 
 `LlmJson.stringify()` renders these errors as `// ❌` inline comments on top of the LLM's original JSON:
 
@@ -605,7 +628,7 @@ declare class OrderService {
 }
 ```
 
-`cardNumber` should be a string but got a number. `price` should be >= 0. `quantity` should be a positive integer. `email` is not a valid email. `vip` should be a boolean. 5 errors, each with exact path and expected type.
+`cardNumber` should be a string but got a number. `price` should be ≥ 0. `quantity` should be a positive integer. `email` is not a valid email. `vip` should be a boolean. 5 errors, each with exact path and expected type.
 
 The LLM sees exactly where it went wrong on its own JSON. Instead of rewriting everything, it only needs to fix the 5 marked fields. Precise, structured, immediately actionable feedback.
 
@@ -717,7 +740,7 @@ Programming languages were designed to eliminate ambiguity. "Just make it pretty
 Expressing constraints through prompts:
 > "The age field should be a positive integer greater than 18. Don't use string types for number fields. All required fields must be present..."
 
-Is "greater than 18" >18 or >=18? You can't know whether the LLM followed this rule without manually inspecting the output. As schemas grow, these rules multiply endlessly.
+Is "greater than 18" >18 or ≥18? You can't know whether the LLM followed this rule without manually inspecting the output. As schemas grow, these rules multiply endlessly.
 
 Expressing constraints through types:
 ```typescript
@@ -859,7 +882,7 @@ interface IRoom {
 
 interface IOpening {
   type: "door" | "window" | "sliding_door" | "arch";
-  width: number & Minimum<0>;      // door >= 900mm (accessibility)
+  width: number & Minimum<0>;      // door ≥ 900mm (accessibility)
   height: number & Minimum<0>;
   position: IPoint3D;
   swing_direction?: "inward" | "outward" | "sliding";
@@ -874,7 +897,7 @@ interface IFixture {
 }
 ```
 
-Minimum passage width (800mm), door width for accessibility (>=900mm), fire compartment regulations, emergency evacuation distances. BIM tools like Revit have provided collision detection for decades.
+Minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency evacuation distances. BIM tools like Revit have provided collision detection for decades.
 
 **Control Systems** — Stability is mathematically provable:
 
@@ -889,7 +912,7 @@ interface IControlLoop {
 
 interface ITransferFunction {
   numerator: number[];                       // polynomial coefficients
-  denominator: number[];                     // degree >= numerator
+  denominator: number[];                     // degree ≥ numerator
   delay: number & Minimum<0>;               // transport delay (sec)
 }
 ```
@@ -1028,8 +1051,8 @@ Typia solves this with `x-discriminator`. It uses `anyOf`, which LLMs broadly su
 ```json
 {
   "anyOf": [
-    { "type": "object", "properties": { "type": { "const": "card" }, "cardNumber": {} } },
-    { "type": "object", "properties": { "type": { "const": "bank_transfer" }, "bankCode": {} } }
+    { "type": "object", "properties": { "type": { "const": "card" }, "cardNumber": { ... } } },
+    { "type": "object", "properties": { "type": { "const": "bank_transfer" }, "bankCode": { ... } } }
   ],
   "x-discriminator": {
     "propertyName": "type",

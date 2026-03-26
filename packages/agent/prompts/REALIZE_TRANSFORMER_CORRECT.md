@@ -139,6 +139,16 @@ select: {
 }
 ```
 
+### 5.1.1. How to Find the Correct Relation Property Name
+
+When you see TS2353 (`'X' does not exist in type Select`), the field name `X` is wrong. To find the correct name:
+
+1. Check the **Relation Mapping Table** in your context — it lists every valid propertyKey
+2. Look for a propertyKey whose Target Model matches the table you're trying to join
+3. Example: If you wrote `shopping_categories` but got TS2353, find the row with Target Model = `shopping_categories` — the propertyKey is `category`
+
+**NEVER derive the property name from the table name.** The property name is set by the Prisma schema author and may differ significantly (e.g., `author` for `reddit_clone_members`, `items` for `shopping_order_items`).
+
 ### 5.2. Unwrapping Neighbor Transformer with `.select`
 
 ```typescript

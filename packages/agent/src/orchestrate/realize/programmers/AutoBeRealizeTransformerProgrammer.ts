@@ -58,6 +58,67 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
+  export function getRelationMappingTable(props: {
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
+  }): Array<{
+    propertyKey: string;
+    targetModel: string;
+    relationType: string;
+    fkColumns: string;
+  }> {
+    const result: Array<{
+      propertyKey: string;
+      targetModel: string;
+      relationType: string;
+      fkColumns: string;
+    }> = [];
+
+    // belongsTo relations (forward FK on this model)
+    for (const f of props.model.foreignFields) {
+      result.push({
+        propertyKey: f.relation.name,
+        targetModel: f.relation.targetModel,
+        relationType: "belongsTo",
+        fkColumns: f.name,
+      });
+    }
+
+    // hasMany/hasOne relations (FK on the other model pointing to this model)
+    for (const file of props.application.files) {
+      for (const om of file.models) {
+        for (const fk of om.foreignFields) {
+          if (fk.relation.targetModel === props.model.name) {
+            result.push({
+              propertyKey: fk.relation.oppositeName,
+              targetModel: om.name,
+              relationType: fk.unique ? "hasOne" : "hasMany",
+              fkColumns: fk.name,
+            });
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  export function formatRelationMappingTable(props: {
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
+  }): string {
+    const relations = getRelationMappingTable(props);
+    if (relations.length === 0) return "(no relations)";
+    return [
+      "| propertyKey | Target Model | Relation Type | FK Column(s) |",
+      "|---|---|---|---|",
+      ...relations.map(
+        (r) =>
+          `| ${r.propertyKey} | ${r.targetModel} | ${r.relationType} | ${r.fkColumns} |`,
+      ),
+    ].join("\n");
+  }
+
   export function getSelectMappingMetadata(props: {
     application: AutoBeDatabase.IApplication;
     model: AutoBeDatabase.IModel;
@@ -173,6 +234,16 @@ ${Object.keys(props.schema.properties)
       neighbors: props.neighbors,
       content: props.draft,
       path: "$input.request.draft",
+      errors,
+    });
+    validateSelectTransformConsistency({
+      selectMappings: props.selectMappings,
+      transformMappings: props.transformMappings,
+      code: props.revise.final ?? props.draft,
+      errors,
+    });
+    validateSelectAntiPatterns({
+      code: props.revise.final ?? props.draft,
       errors,
     });
     if (props.revise.final !== null) {
@@ -348,6 +419,89 @@ ${Object.keys(props.schema.properties)
       `import { toISOStringSafe } from "../utils/toISOStringSafe";`,
     ];
     return imports;
+  }
+
+  function validateSelectTransformConsistency(props: {
+    selectMappings: AutoBeRealizeTransformerSelectMapping[];
+    transformMappings: AutoBeRealizeTransformerTransformMapping[];
+    code: string;
+    errors: IValidation.IError[];
+  }): void {
+    const selectedMembers = new Set(props.selectMappings.map((s) => s.member));
+
+    // Extract input.X access patterns from transform() code
+    const inputAccessPattern = /input\.(\w+)/g;
+    const accessed = new Set<string>();
+    let match: RegExpExecArray | null;
+    while ((match = inputAccessPattern.exec(props.code)) !== null) {
+      accessed.add(match[1]!);
+    }
+
+    for (const field of accessed) {
+      if (field === "_count") continue;
+      if (!selectedMembers.has(field)) {
+        props.errors.push({
+          path: "$input.request.draft",
+          expected: `field "${field}" in selectMappings`,
+          value: `input.${field} accessed in transform() but "${field}" is not in selectMappings. Add it to selectMappings and select().`,
+        });
+      }
+    }
+
+    // Check transformMappings references against selectMappings
+    for (const tm of props.transformMappings) {
+      const refMatch = tm.how.match(/input\.(\w+)/);
+      if (refMatch) {
+        const refMember = refMatch[1]!;
+        if (refMember !== "_count" && !selectedMembers.has(refMember)) {
+          props.errors.push({
+            path: "$input.request.transformMappings",
+            expected: `"${refMember}" in selectMappings`,
+            value: `transformMapping for "${tm.property}" references input.${refMember} but it's not in selectMappings`,
+          });
+        }
+      }
+    }
+  }
+
+  function validateSelectAntiPatterns(props: {
+    code: string;
+    errors: IValidation.IError[];
+  }): void {
+    // C-1: null value in select object
+    if (/select:\s*\{[\s\S]*?:\s*null\b/m.test(props.code)) {
+      props.errors.push({
+        path: "$input.request.draft",
+        expected: "true or { select: {...} } for each select field",
+        value:
+          "null found in select object. This destroys GetPayload type inference " +
+          "and causes 50-300 cascading errors. Use `true` for scalars or " +
+          "`{ select: {...} }` for relations. NEVER use null.",
+      });
+    }
+
+    // C-3: explicit return type on select() function
+    if (/function\s+select\s*\(\s*\)\s*:\s*Prisma\.\w+/m.test(props.code)) {
+      props.errors.push({
+        path: "$input.request.draft",
+        expected: "select() without explicit return type annotation",
+        value:
+          "Explicit return type on select() widens the literal type and breaks " +
+          "GetPayload inference. Remove the return type annotation and use " +
+          "`satisfies Prisma.XFindManyArgs` on the return value instead.",
+      });
+    }
+
+    // C-2: boolean type instead of true literal
+    if (/select:\s*\{[\s\S]*?\w+:\s*boolean\b/m.test(props.code)) {
+      props.errors.push({
+        path: "$input.request.draft",
+        expected: "true (literal) for scalar fields in select",
+        value:
+          "`boolean` type found instead of `true` literal in select object. " +
+          "Prisma select requires the literal value `true`, not the type `boolean`.",
+      });
+    }
   }
 
   function validateEmptyCode(props: {
