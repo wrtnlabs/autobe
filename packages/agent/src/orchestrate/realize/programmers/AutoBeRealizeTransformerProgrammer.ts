@@ -211,6 +211,7 @@ ${Object.keys(props.schema.properties)
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
+    // mapping plans
     validateTransformMappings({
       document: props.document,
       errors,
@@ -223,6 +224,8 @@ ${Object.keys(props.schema.properties)
       plan: props.plan,
       selectMappings: props.selectMappings,
     });
+
+    // validata draft
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,
@@ -239,21 +242,17 @@ ${Object.keys(props.schema.properties)
     validateSelectTransformConsistency({
       selectMappings: props.selectMappings,
       transformMappings: props.transformMappings,
-      code: props.revise.final ?? props.draft,
+      code: props.draft,
+      path: "$input.request.draft",
       errors,
-      path:
-        props.revise.final === null
-          ? "$input.request.draft"
-          : "$input.request.revise.final",
     });
     validateSelectAntiPatterns({
-      code: props.revise.final ?? props.draft,
+      code: props.draft,
+      path: "$input.request.draft",
       errors,
-      path:
-        props.revise.final === null
-          ? "$input.request.draft"
-          : "$input.request.revise.final",
     });
+
+    // validate final
     if (props.revise.final !== null) {
       validateEmptyCode({
         plan: props.plan,
@@ -265,6 +264,18 @@ ${Object.keys(props.schema.properties)
         plan: props.plan,
         neighbors: props.neighbors,
         content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+      validateSelectTransformConsistency({
+        selectMappings: props.selectMappings,
+        transformMappings: props.transformMappings,
+        code: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+      validateSelectAntiPatterns({
+        code: props.revise.final,
         path: "$input.request.revise.final",
         errors,
       });
