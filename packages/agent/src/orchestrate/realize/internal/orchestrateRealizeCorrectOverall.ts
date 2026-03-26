@@ -21,11 +21,12 @@ import { compileRealizeFiles } from "../programmers/compileRealizeFiles";
 import { IAutoBeRealizeFunctionFailure } from "../structures/IAutoBeRealizeFunctionFailure";
 
 /**
- * Deduplicate diagnostics by grouping identical messages and capping total count.
+ * Deduplicate diagnostics by grouping identical messages and capping total
+ * count.
  *
- * Single root causes (e.g., `null` in select) can produce 50-300 cascading errors
- * with identical messages. This function collapses them so the LLM focuses on the
- * root cause instead of being overwhelmed by repetition.
+ * Single root causes (e.g., `null` in select) can produce 50-300 cascading
+ * errors with identical messages. This function collapses them so the LLM
+ * focuses on the root cause instead of being overwhelmed by repetition.
  */
 const deduplicateDiagnostics = (
   diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[],
@@ -75,6 +76,7 @@ const deduplicateDiagnostics = (
 
 /**
  * Sanitize LLM-generated code by removing common artifacts:
+ *
  * - Chain-of-thought text leaked into code output
  * - Token truncation artifacts (e.g., standalone 'n' characters)
  * - Markdown code fences
@@ -259,10 +261,9 @@ const correct = async <
           const localFunction: RealizeFunction = props.functions.find(
             (f) => f.location === location,
           )!;
-          const rawDiagnostics =
-            failure.diagnostics.filter(
-              (d) => d.file === localFunction.location,
-            );
+          const rawDiagnostics = failure.diagnostics.filter(
+            (d) => d.file === localFunction.location,
+          );
 
           // P2-5: Log when error count is very high (suggests regeneration may be better than correction)
           if (rawDiagnostics.length > 20) {
