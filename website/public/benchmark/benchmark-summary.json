@@ -3,8 +3,8 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "erp",
-      "totalScore": 76,
-      "grade": "C",
+      "totalScore": 81,
+      "grade": "B",
       "pipeline": null,
       "phases": {
         "gate": {
@@ -12,7 +12,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 6279,
+          "durationMs": 12358,
           "metrics": {
             "totalFiles": 258,
             "filesWithErrors": 0,
@@ -84,13 +84,13 @@
             "docFileCount": 6,
             "totalDocLength": 612375,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 340
           }
         },
         "requirementsCoverage": {
-          "score": 70,
+          "score": 100,
           "maxScore": 100,
-          "weightedScore": 14,
+          "weightedScore": 20,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -99,11 +99,11 @@
             "structureCount": 38,
             "requirementsDocCount": 6,
             "hasRequirementsDocs": true,
-            "mappedControllers": 15,
-            "unmappedControllers": 11,
-            "mappingRatio": 0.5769230769230769,
+            "mappedControllers": 26,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 1
           }
         },
         "testCoverage": {
@@ -126,7 +126,7 @@
             "assertionTests": 173,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 49
           }
         },
         "logicCompleteness": {
@@ -144,7 +144,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 261
           }
         },
         "apiCompleteness": {
@@ -163,7 +163,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 269
           }
         }
       },
@@ -185,9 +185,9 @@
         "suggestionCount": 12
       },
       "meta": {
-        "evaluatedAt": "2026-03-24T06:09:31.743Z",
-        "reportUpdatedAt": "2026-03-24T08:46:14.007Z",
-        "totalDurationMs": 6660,
+        "evaluatedAt": "2026-03-25T08:42:53.812Z",
+        "reportUpdatedAt": "2026-03-25T08:44:08.426Z",
+        "totalDurationMs": 13501,
         "evaluatedFiles": 258
       },
       "reference": {
@@ -215,8 +215,8 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "reddit",
-      "totalScore": 73,
-      "grade": "C",
+      "totalScore": 81,
+      "grade": "B",
       "pipeline": null,
       "phases": {
         "gate": {
@@ -224,7 +224,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 5220,
+          "durationMs": 12335,
           "metrics": {
             "totalFiles": 226,
             "filesWithErrors": 0,
@@ -280,7 +280,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-5-comments.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-6-reports.prisma'"
             }
           ]
         },
@@ -296,13 +296,13 @@
             "docFileCount": 6,
             "totalDocLength": 320386,
             "cached": true,
-            "originalDurationMs": 119
+            "originalDurationMs": 382
           }
         },
         "requirementsCoverage": {
-          "score": 57,
+          "score": 100,
           "maxScore": 100,
-          "weightedScore": 11.4,
+          "weightedScore": 20,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -311,9 +311,9 @@
             "structureCount": 31,
             "requirementsDocCount": 6,
             "hasRequirementsDocs": true,
-            "mappedControllers": 13,
-            "unmappedControllers": 17,
-            "mappingRatio": 0.43333333333333335,
+            "mappedControllers": 30,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
             "cached": true,
             "originalDurationMs": 1
           }
@@ -338,7 +338,7 @@
             "assertionTests": 163,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 29
+            "originalDurationMs": 50
           }
         },
         "logicCompleteness": {
@@ -356,7 +356,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 75
+            "originalDurationMs": 154
           }
         },
         "apiCompleteness": {
@@ -375,7 +375,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 80
+            "originalDurationMs": 161
           }
         }
       },
@@ -393,9 +393,9 @@
         "suggestionCount": 13
       },
       "meta": {
-        "evaluatedAt": "2026-03-24T06:22:59.182Z",
-        "reportUpdatedAt": "2026-03-24T06:34:18.906Z",
-        "totalDurationMs": 5634,
+        "evaluatedAt": "2026-03-25T08:42:53.862Z",
+        "reportUpdatedAt": "2026-03-25T08:43:37.793Z",
+        "totalDurationMs": 13550,
         "evaluatedFiles": 226
       },
       "reference": {
@@ -423,8 +423,8 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "shopping",
-      "totalScore": 55,
-      "grade": "F",
+      "totalScore": 69,
+      "grade": "D",
       "pipeline": null,
       "phases": {
         "gate": {
@@ -432,7 +432,7 @@
           "maxScore": 100,
           "weightedScore": 87,
           "passed": true,
-          "durationMs": 14206,
+          "durationMs": 17004,
           "metrics": {
             "totalFiles": 581,
             "filesWithErrors": 0,
@@ -506,7 +506,7 @@
               "code": "P001",
               "count": 1,
               "severity": "critical",
-              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-06-reviews.prisma'"
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-05-postsale.prisma'"
             }
           ]
         },
@@ -522,13 +522,13 @@
             "docFileCount": 6,
             "totalDocLength": 717612,
             "cached": true,
-            "originalDurationMs": 411
+            "originalDurationMs": 514
           }
         },
         "requirementsCoverage": {
-          "score": 59,
+          "score": 100,
           "maxScore": 100,
-          "weightedScore": 11.8,
+          "weightedScore": 20,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -537,11 +537,11 @@
             "structureCount": 79,
             "requirementsDocCount": 6,
             "hasRequirementsDocs": true,
-            "mappedControllers": 39,
-            "unmappedControllers": 44,
-            "mappingRatio": 0.46987951807228917,
+            "mappedControllers": 83,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
             "cached": true,
-            "originalDurationMs": 2
+            "originalDurationMs": 8
           }
         },
         "testCoverage": {
@@ -564,13 +564,13 @@
             "assertionTests": 470,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 140
+            "originalDurationMs": 173
           }
         },
         "logicCompleteness": {
-          "score": 50,
+          "score": 79,
           "maxScore": 100,
-          "weightedScore": 15,
+          "weightedScore": 23.7,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -582,7 +582,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 238
+            "originalDurationMs": 289
           }
         },
         "apiCompleteness": {
@@ -601,7 +601,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 254
+            "originalDurationMs": 319
           }
         }
       },
@@ -623,9 +623,9 @@
         "suggestionCount": 30
       },
       "meta": {
-        "evaluatedAt": "2026-03-24T06:34:34.297Z",
-        "reportUpdatedAt": "2026-03-24T06:53:36.846Z",
-        "totalDurationMs": 15365,
+        "evaluatedAt": "2026-03-25T08:43:56.249Z",
+        "reportUpdatedAt": "2026-03-25T08:45:40.327Z",
+        "totalDurationMs": 18110,
         "evaluatedFiles": 581
       },
       "reference": {
@@ -653,7 +653,7 @@
     {
       "model": "claude-sonnet-4.6",
       "project": "todo",
-      "totalScore": 80,
+      "totalScore": 81,
       "grade": "B",
       "pipeline": null,
       "phases": {
@@ -662,7 +662,7 @@
           "maxScore": 100,
           "weightedScore": 89,
           "passed": true,
-          "durationMs": 3111,
+          "durationMs": 6793,
           "metrics": {
             "totalFiles": 90,
             "filesWithErrors": 0,
@@ -722,13 +722,13 @@
             "docFileCount": 6,
             "totalDocLength": 132332,
             "cached": true,
-            "originalDurationMs": 35
+            "originalDurationMs": 96
           }
         },
         "requirementsCoverage": {
-          "score": 80,
+          "score": 100,
           "maxScore": 100,
-          "weightedScore": 16,
+          "weightedScore": 20,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -737,17 +737,17 @@
             "structureCount": 12,
             "requirementsDocCount": 6,
             "hasRequirementsDocs": true,
-            "mappedControllers": 7,
-            "unmappedControllers": 2,
-            "mappingRatio": 0.7777777777777778,
+            "mappedControllers": 9,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
             "cached": true,
-            "originalDurationMs": 0
+            "originalDurationMs": 1
           }
         },
         "testCoverage": {
-          "score": 68,
+          "score": 69,
           "maxScore": 100,
-          "weightedScore": 13.600000000000001,
+          "weightedScore": 13.8,
           "passed": true,
           "durationMs": 0,
           "metrics": {
@@ -760,11 +760,11 @@
             "definedMethods": "POST,GET,PUT,PATCH,DELETE",
             "testedMethods": "GET,PUT,POST,PATCH,DELETE",
             "controllersAnalyzed": 9,
-            "stubTests": 5,
-            "assertionTests": 48,
+            "stubTests": 2,
+            "assertionTests": 51,
             "runtimeVerified": false,
             "cached": true,
-            "originalDurationMs": 8
+            "originalDurationMs": 22
           }
         },
         "logicCompleteness": {
@@ -782,7 +782,7 @@
             "emptyMethods": 0,
             "emptyCatch": 0,
             "cached": true,
-            "originalDurationMs": 19
+            "originalDurationMs": 61
           }
         },
         "apiCompleteness": {
@@ -801,7 +801,7 @@
             "completionRate": 100,
             "implementationRate": 100,
             "cached": true,
-            "originalDurationMs": 22
+            "originalDurationMs": 68
           }
         }
       },
@@ -819,9 +819,9 @@
         "suggestionCount": 5
       },
       "meta": {
-        "evaluatedAt": "2026-03-24T06:53:40.202Z",
-        "reportUpdatedAt": "2026-03-24T07:07:28.360Z",
-        "totalDurationMs": 3336,
+        "evaluatedAt": "2026-03-25T08:44:16.454Z",
+        "reportUpdatedAt": "2026-03-25T08:44:59.837Z",
+        "totalDurationMs": 7276,
         "evaluatedFiles": 90
       },
       "reference": {
@@ -1822,6 +1822,2625 @@
           "totalTypes": 45,
           "emptyTypes": 0,
           "mismatchedProperties": 4
+        }
+      }
+    },
+    {
+      "model": "glm-5",
+      "project": "erp",
+      "totalScore": 0,
+      "grade": "F",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": false,
+          "durationMs": 0,
+          "metrics": {
+            "failedAt": "no-source",
+            "reason": "No TypeScript files found"
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 0,
+          "suggestionCount": 0,
+          "issuesByCode": [
+            {
+              "code": "GATE001",
+              "count": 1,
+              "severity": "critical",
+              "message": "No TypeScript files found in src/ — pipeline may not have generated code"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 4.45,
+          "passed": true,
+          "durationMs": 13,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 428358
+          },
+          "explanation": {
+            "reasons": [
+              "1x 1 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "1 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 5,
+          "maxScore": 100,
+          "weightedScore": 1,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 0,
+            "providerCount": 0,
+            "structureCount": 0,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 0,
+            "unmappedControllers": 0,
+            "mappingRatio": 0
+          },
+          "explanation": {
+            "reasons": [
+              "2 critical issue(s) found",
+              "1x No controllers found - API endpoints not implemented",
+              "1x No providers found - business logic not implemented",
+              "1x No structures/DTOs found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ001",
+                "count": 1,
+                "severity": "critical",
+                "message": "No controllers found - API endpoints not implemented"
+              },
+              {
+                "code": "REQ002",
+                "count": 1,
+                "severity": "critical",
+                "message": "No providers found - business logic not implemented"
+              },
+              {
+                "code": "REQ003",
+                "count": 1,
+                "severity": "warning",
+                "message": "No structures/DTOs found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "testCoverage": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 0,
+            "controllerCount": 0,
+            "routeAnalysis": false,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x No test files found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST001",
+                "count": 1,
+                "severity": "critical",
+                "message": "No test files found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 0,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 0,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 0,
+            "implementationRate": 0
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x No API endpoints found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "API002",
+                "count": 1,
+                "severity": "critical",
+                "message": "No API endpoints found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        }
+      },
+      "penalties": null,
+      "summary": {
+        "totalIssues": 7,
+        "criticalCount": 5,
+        "warningCount": 2,
+        "suggestionCount": 0
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:37:08.624Z",
+        "reportUpdatedAt": "2026-03-24T10:37:08.630Z",
+        "totalDurationMs": 19,
+        "evaluatedFiles": 0
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 0,
+          "complexFunctions": 0,
+          "maxComplexity": 0
+        },
+        "duplication": {
+          "totalBlocks": 0
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 0
+        },
+        "schemaSync": {
+          "totalTypes": 0,
+          "emptyTypes": 0,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "glm-5",
+      "project": "reddit",
+      "totalScore": 73,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 79,
+          "maxScore": 100,
+          "weightedScore": 79,
+          "passed": true,
+          "durationMs": 12116,
+          "metrics": {
+            "totalFiles": 185,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 21,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 26,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 26,
+          "suggestionCount": 16,
+          "issuesByCode": [
+            {
+              "code": "TS2345",
+              "count": 12,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platfo"
+            },
+            {
+              "code": "TS2322",
+              "count": 10,
+              "severity": "warning",
+              "message": "Type 'boolean' is not assignable to type 'true'."
+            },
+            {
+              "code": "TS6054",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2339",
+              "count": 2,
+              "severity": "warning",
+              "message": "Property '$queryRaw' does not exist on type 'PrismaClient'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS7006",
+              "count": 1,
+              "severity": "warning",
+              "message": "Parameter 's' implicitly has an 'any' type."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-08-moderation.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 84,
+          "maxScore": 100,
+          "weightedScore": 4.2,
+          "passed": true,
+          "durationMs": 314,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 204638
+          },
+          "explanation": {
+            "reasons": [
+              "1x 1 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "1 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 51,
+          "maxScore": 100,
+          "weightedScore": 10.200000000000001,
+          "passed": true,
+          "durationMs": 1,
+          "metrics": {
+            "controllerCount": 24,
+            "providerCount": 61,
+            "structureCount": 23,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 9,
+            "unmappedControllers": 15,
+            "mappingRatio": 0.375
+          },
+          "explanation": {
+            "reasons": [
+              "1x 15 controller(s) have no matching provider: CommunityplatformFilesController, CommunityplatformAuthMemberController, CommunityplatformAuthGuestController, CommunityplatformCommunitiesPostsController, CommunityplatformPostsCommentsController ... and 10 more",
+              "1x Low controller-provider mapping: 38% — many API endpoints may lack business logic"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ005",
+                "count": 1,
+                "severity": "warning",
+                "message": "15 controller(s) have no matching provider: CommunityplatformFilesController, CommunityplatformAuthMemberController, Com"
+              },
+              {
+                "code": "REQ006",
+                "count": 1,
+                "severity": "warning",
+                "message": "Low controller-provider mapping: 38% — many API endpoints may lack business logic"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "testCoverage": {
+          "score": 80,
+          "maxScore": 100,
+          "weightedScore": 16,
+          "passed": true,
+          "durationMs": 147,
+          "metrics": {
+            "testCount": 159,
+            "controllerCount": 24,
+            "routeAnalysis": true,
+            "totalRoutes": 57,
+            "coveredRoutes": 41,
+            "routeCoveragePercent": 72,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "POST,GET,PUT,DELETE,PATCH",
+            "controllersAnalyzed": 23,
+            "stubTests": 10,
+            "assertionTests": 149,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "14 warnings detected",
+              "13x Controller \"/communityPlatform/auth/guest\" has 1 untested route(s): POST /communityPlatform/auth/guest/refresh",
+              "1x 10/159 test files are stubs or lack assertions"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST005",
+                "count": 13,
+                "severity": "warning",
+                "message": "Controller \"/communityPlatform/auth/guest\" has 1 untested route(s): POST /communityPlatform/auth/guest/refresh"
+              },
+              {
+                "code": "TEST003",
+                "count": 1,
+                "severity": "warning",
+                "message": "10/159 test files are stubs or lack assertions"
+              }
+            ],
+            "suggestions": [
+              "Address warnings to improve quality"
+            ]
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 153,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 165,
+          "metrics": {
+            "totalEndpoints": 58,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 58,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 5,
+          "missing": 24,
+          "ratio": "96%"
+        }
+      },
+      "summary": {
+        "totalIssues": 41,
+        "criticalCount": 1,
+        "warningCount": 31,
+        "suggestionCount": 9
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:37:21.586Z",
+        "reportUpdatedAt": "2026-03-24T10:37:21.821Z",
+        "totalDurationMs": 12956,
+        "evaluatedFiles": 185
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 544,
+          "complexFunctions": 0,
+          "maxComplexity": 18
+        },
+        "duplication": {
+          "totalBlocks": 56
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 24
+        },
+        "schemaSync": {
+          "totalTypes": 61,
+          "emptyTypes": 0,
+          "mismatchedProperties": 2
+        }
+      }
+    },
+    {
+      "model": "glm-5",
+      "project": "shopping",
+      "totalScore": 68,
+      "grade": "D",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 85,
+          "maxScore": 100,
+          "weightedScore": 85,
+          "passed": true,
+          "durationMs": 19374,
+          "metrics": {
+            "totalFiles": 415,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 15,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 20,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 20,
+          "suggestionCount": 28,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 10,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 10,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS18046",
+              "count": 8,
+              "severity": "warning",
+              "message": "'found._count' is of type 'unknown'."
+            },
+            {
+              "code": "TS2345",
+              "count": 6,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_categories>)[]' is not assignable to parameter of"
+            },
+            {
+              "code": "TS2694",
+              "count": 6,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
+            },
+            {
+              "code": "TS2339",
+              "count": 4,
+              "severity": "warning",
+              "message": "Property '$queryRaw' does not exist on type 'PrismaClient'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2739",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, image_url, display_order, created_at"
+            },
+            {
+              "code": "TS2353",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS7006",
+              "count": 1,
+              "severity": "warning",
+              "message": "Parameter 'p' implicitly has an 'any' type."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-07-orders.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 88,
+          "maxScore": 100,
+          "weightedScore": 4.4,
+          "passed": true,
+          "durationMs": 242,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 1651257
+          },
+          "explanation": {
+            "reasons": [
+              "1x 3 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "3 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 47,
+          "maxScore": 100,
+          "weightedScore": 9.4,
+          "passed": true,
+          "durationMs": 4,
+          "metrics": {
+            "controllerCount": 68,
+            "providerCount": 127,
+            "structureCount": 50,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 25,
+            "unmappedControllers": 43,
+            "mappingRatio": 0.36764705882352944
+          },
+          "explanation": {
+            "reasons": [
+              "1x 43 controller(s) have no matching provider: ShoppingmallProductsVariantsController, ShoppingmallProductsSnapshotsController, ShoppingmallProductsReview_statsController, ShoppingmallProductsImagesController, ShoppingmallCustomerRefund_requestsController ... and 38 more",
+              "1x Low controller-provider mapping: 37% — many API endpoints may lack business logic"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ005",
+                "count": 1,
+                "severity": "warning",
+                "message": "43 controller(s) have no matching provider: ShoppingmallProductsVariantsController, ShoppingmallProductsSnapshotsControl"
+              },
+              {
+                "code": "REQ006",
+                "count": 1,
+                "severity": "warning",
+                "message": "Low controller-provider mapping: 37% — many API endpoints may lack business logic"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "testCoverage": {
+          "score": 64,
+          "maxScore": 100,
+          "weightedScore": 12.8,
+          "passed": true,
+          "durationMs": 82,
+          "metrics": {
+            "testCount": 298,
+            "controllerCount": 68,
+            "routeAnalysis": true,
+            "totalRoutes": 118,
+            "coveredRoutes": 52,
+            "routeCoveragePercent": 44,
+            "definedMethods": "PUT,PATCH,GET,POST,DELETE",
+            "testedMethods": "PUT,GET,DELETE,POST,PATCH",
+            "controllersAnalyzed": 64,
+            "stubTests": 17,
+            "assertionTests": 281,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "47 warnings detected",
+              "46x Controller \"/shoppingMall/administrator/administrator-requests\" has 3 untested route(s): PATCH /shoppingMall/administrator/administrator-requests, PATCH /shoppingMall/administrator/administrator-requests/:administratorRequestId/approve, PATCH /shoppingMall/administrator/administrator-requests/:administratorRequestId/reject",
+              "1x 17/298 test files are stubs or lack assertions"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST005",
+                "count": 46,
+                "severity": "warning",
+                "message": "Controller \"/shoppingMall/administrator/administrator-requests\" has 3 untested route(s): PATCH /shoppingMall/administrat"
+              },
+              {
+                "code": "TEST003",
+                "count": 1,
+                "severity": "warning",
+                "message": "17/298 test files are stubs or lack assertions"
+              }
+            ],
+            "suggestions": [
+              "Address warnings to improve quality"
+            ]
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 114,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 133,
+          "metrics": {
+            "totalEndpoints": 123,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 123,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 0,
+          "blocks": 89
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 68,
+          "ratio": "99%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 1,
+          "mismatchedProperties": 30
+        }
+      },
+      "summary": {
+        "totalIssues": 45,
+        "criticalCount": 1,
+        "warningCount": 25,
+        "suggestionCount": 19
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:37:42.034Z",
+        "reportUpdatedAt": "2026-03-24T10:37:42.105Z",
+        "totalDurationMs": 20213,
+        "evaluatedFiles": 415
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1099,
+          "complexFunctions": 3,
+          "maxComplexity": 41
+        },
+        "duplication": {
+          "totalBlocks": 89
+        },
+        "naming": {
+          "totalIssues": 20
+        },
+        "jsdoc": {
+          "totalMissing": 68
+        },
+        "schemaSync": {
+          "totalTypes": 138,
+          "emptyTypes": 1,
+          "mismatchedProperties": 30
+        }
+      }
+    },
+    {
+      "model": "glm-5",
+      "project": "todo",
+      "totalScore": 78,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 86,
+          "maxScore": 100,
+          "weightedScore": 86,
+          "passed": true,
+          "durationMs": 2442,
+          "metrics": {
+            "totalFiles": 84,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 14,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 3,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 3,
+          "suggestionCount": 6,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2307",
+              "count": 1,
+              "severity": "warning",
+              "message": "Cannot find module '../../providers/authorize/memberAuthorize' or its corresponding type declarations."
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; "
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-todos.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 72,
+          "maxScore": 100,
+          "weightedScore": 3.6,
+          "passed": true,
+          "durationMs": 62,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 98673
+          },
+          "explanation": {
+            "reasons": [
+              "1x 6 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "6 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 70,
+          "maxScore": 100,
+          "weightedScore": 14,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 7,
+            "providerCount": 23,
+            "structureCount": 11,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 4,
+            "unmappedControllers": 3,
+            "mappingRatio": 0.5714285714285714
+          },
+          "explanation": {
+            "reasons": [
+              "1x 3 controller(s) have no matching provider: PrivatetodoappAuthMemberController, PrivatetodoappAuthGuestController, PrivatetodoappMemberTodosEdithistoriesController",
+              "1x Low controller-provider mapping: 57% — many API endpoints may lack business logic"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ005",
+                "count": 1,
+                "severity": "warning",
+                "message": "3 controller(s) have no matching provider: PrivatetodoappAuthMemberController, PrivatetodoappAuthGuestController, Privat"
+              },
+              {
+                "code": "REQ006",
+                "count": 1,
+                "severity": "warning",
+                "message": "Low controller-provider mapping: 57% — many API endpoints may lack business logic"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "testCoverage": {
+          "score": 76,
+          "maxScore": 100,
+          "weightedScore": 15.200000000000001,
+          "passed": true,
+          "durationMs": 18,
+          "metrics": {
+            "testCount": 59,
+            "controllerCount": 7,
+            "routeAnalysis": true,
+            "totalRoutes": 20,
+            "coveredRoutes": 13,
+            "routeCoveragePercent": 65,
+            "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+            "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+            "controllersAnalyzed": 7,
+            "stubTests": 3,
+            "assertionTests": 56,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "6x Controller \"/privateTodoApp/auth/guest\" has 1 untested route(s): POST /privateTodoApp/auth/guest/join",
+              "1x 3/59 test files are stubs or lack assertions"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST005",
+                "count": 6,
+                "severity": "warning",
+                "message": "Controller \"/privateTodoApp/auth/guest\" has 1 untested route(s): POST /privateTodoApp/auth/guest/join"
+              },
+              {
+                "code": "TEST003",
+                "count": 1,
+                "severity": "warning",
+                "message": "3/59 test files are stubs or lack assertions"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 40,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 29,
+          "metrics": {
+            "totalEndpoints": 20,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 20,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 7,
+          "ratio": "88%"
+        }
+      },
+      "summary": {
+        "totalIssues": 13,
+        "criticalCount": 1,
+        "warningCount": 8,
+        "suggestionCount": 4
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:37:44.719Z",
+        "reportUpdatedAt": "2026-03-24T10:37:44.737Z",
+        "totalDurationMs": 2614,
+        "evaluatedFiles": 84
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 200,
+          "complexFunctions": 0,
+          "maxComplexity": 15
+        },
+        "duplication": {
+          "totalBlocks": 38
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 7
+        },
+        "schemaSync": {
+          "totalTypes": 27,
+          "emptyTypes": 0,
+          "mismatchedProperties": 1
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4",
+      "project": "erp",
+      "totalScore": 75,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 87,
+          "maxScore": 100,
+          "weightedScore": 87,
+          "passed": true,
+          "durationMs": 19964,
+          "metrics": {
+            "totalFiles": 412,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 13,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 12,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 12,
+          "suggestionCount": 16,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 6,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TS2345",
+              "count": 6,
+              "severity": "warning",
+              "message": "Argument of type 'Promise<hrm_time_tracking_role_permissions>[]' is not assignable to parameter of type '(tx: Transactio"
+            },
+            {
+              "code": "TSeslint",
+              "count": 6,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2322",
+              "count": 4,
+              "severity": "warning",
+              "message": "Type 'Prisma.hrm_time_tracking_role_permissionsCreateManyInput[]' is not assignable to type 'Record<string, unknown>'.\n "
+            },
+            {
+              "code": "TS2749",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2352",
+              "count": 1,
+              "severity": "warning",
+              "message": "Conversion of type 'hrm_time_tracking_employees' to type 'Record<string, unknown>' may be a mistake because neither type"
+            },
+            {
+              "code": "TS2724",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "'\"src/prisma/client\".Prisma' has no exported member named 'hrm_time_tracking_role_permissionsCreateManyInput'. Did you m"
+            },
+            {
+              "code": "TS2488",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-04-time-tracking.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 90,
+          "maxScore": 100,
+          "weightedScore": 4.5,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 782805,
+            "cached": true,
+            "originalDurationMs": 760
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 47,
+            "providerCount": 158,
+            "structureCount": 56,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 47,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 2
+          }
+        },
+        "testCoverage": {
+          "score": 66,
+          "maxScore": 100,
+          "weightedScore": 13.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 384,
+            "controllerCount": 47,
+            "routeAnalysis": true,
+            "totalRoutes": 149,
+            "coveredRoutes": 81,
+            "routeCoveragePercent": 54,
+            "definedMethods": "PATCH,GET,POST,PUT,DELETE",
+            "testedMethods": "GET,PUT,PATCH,DELETE",
+            "controllersAnalyzed": 46,
+            "stubTests": 27,
+            "assertionTests": 357,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 99
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 397
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 154,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 154,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 424
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 230
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 47,
+          "ratio": "98%"
+        }
+      },
+      "summary": {
+        "totalIssues": 24,
+        "criticalCount": 1,
+        "warningCount": 12,
+        "suggestionCount": 11
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:46:22.557Z",
+        "reportUpdatedAt": "2026-03-25T08:47:54.806Z",
+        "totalDurationMs": 21657,
+        "evaluatedFiles": 412
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1467,
+          "complexFunctions": 26,
+          "maxComplexity": 86
+        },
+        "duplication": {
+          "totalBlocks": 230
+        },
+        "naming": {
+          "totalIssues": 1
+        },
+        "jsdoc": {
+          "totalMissing": 47
+        },
+        "schemaSync": {
+          "totalTypes": 159,
+          "emptyTypes": 1,
+          "mismatchedProperties": 5
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4",
+      "project": "reddit",
+      "totalScore": 73,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 89,
+          "passed": true,
+          "durationMs": 19938,
+          "metrics": {
+            "totalFiles": 460,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 11,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 6,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 6,
+          "suggestionCount": 21,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2724",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "'\"src/prisma/client\".Prisma' has no exported member named 'community_platform_report_postsDefaultArgs'. Did you mean 'co"
+            },
+            {
+              "code": "TS2345",
+              "count": 3,
+              "severity": "warning",
+              "message": "Argument of type '{ id: string; direction: string; created_at: Date; updated_at: Date; deleted_at: null; member: communi"
+            },
+            {
+              "code": "TS2339",
+              "count": 2,
+              "severity": "warning",
+              "message": "Property '_count' does not exist on type 'community_platform_communities'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2749",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TS2353",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-06-moderation.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 4.45,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 376726,
+            "cached": true,
+            "originalDurationMs": 674
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 61,
+            "providerCount": 162,
+            "structureCount": 65,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 61,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 1
+          }
+        },
+        "testCoverage": {
+          "score": 69,
+          "maxScore": 100,
+          "weightedScore": 13.8,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 447,
+            "controllerCount": 61,
+            "routeAnalysis": true,
+            "totalRoutes": 110,
+            "coveredRoutes": 60,
+            "routeCoveragePercent": 55,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "PATCH,GET,PUT,DELETE,POST",
+            "controllersAnalyzed": 42,
+            "stubTests": 49,
+            "assertionTests": 398,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 126
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 1,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 494
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 158,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 158,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 515
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 306
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 61,
+          "ratio": "98%"
+        }
+      },
+      "summary": {
+        "totalIssues": 22,
+        "criticalCount": 1,
+        "warningCount": 6,
+        "suggestionCount": 15
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:46:22.619Z",
+        "reportUpdatedAt": "2026-03-25T08:48:11.947Z",
+        "totalDurationMs": 21719,
+        "evaluatedFiles": 460
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1552,
+          "complexFunctions": 21,
+          "maxComplexity": 46
+        },
+        "duplication": {
+          "totalBlocks": 306
+        },
+        "naming": {
+          "totalIssues": 2
+        },
+        "jsdoc": {
+          "totalMissing": 61
+        },
+        "schemaSync": {
+          "totalTypes": 164,
+          "emptyTypes": 5,
+          "mismatchedProperties": 3
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4",
+      "project": "shopping",
+      "totalScore": 75,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 89,
+          "passed": true,
+          "durationMs": 17100,
+          "metrics": {
+            "totalFiles": 518,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 11,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 3,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 3,
+          "suggestionCount": 27,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2694",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type '{ id: string; shopping_mall_product_snapshot_id: string; sequence: number; image_uri: string; thumbnail: boolean; "
+            },
+            {
+              "code": "TS2353",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2749",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TS2339",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property '_count' does not exist on type 'shopping_mall_product_snapshots'."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-09-reviews.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 88,
+          "maxScore": 100,
+          "weightedScore": 4.4,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 892291,
+            "cached": true,
+            "originalDurationMs": 521
+          }
+        },
+        "requirementsCoverage": {
+          "score": 99,
+          "maxScore": 100,
+          "weightedScore": 19.8,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 66,
+            "providerCount": 173,
+            "structureCount": 78,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 64,
+            "unmappedControllers": 2,
+            "mappingRatio": 0.9696969696969697,
+            "cached": true,
+            "originalDurationMs": 4
+          }
+        },
+        "testCoverage": {
+          "score": 63,
+          "maxScore": 100,
+          "weightedScore": 12.600000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 491,
+            "controllerCount": 66,
+            "routeAnalysis": true,
+            "totalRoutes": 123,
+            "coveredRoutes": 56,
+            "routeCoveragePercent": 46,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "PATCH,GET,PUT,DELETE,POST",
+            "controllersAnalyzed": 43,
+            "stubTests": 52,
+            "assertionTests": 439,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 205
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 266
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 168,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 168,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 290
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 430
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 66,
+          "ratio": "99%"
+        }
+      },
+      "summary": {
+        "totalIssues": 21,
+        "criticalCount": 1,
+        "warningCount": 3,
+        "suggestionCount": 17
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:48:17.071Z",
+        "reportUpdatedAt": "2026-03-25T08:49:57.168Z",
+        "totalDurationMs": 22136,
+        "evaluatedFiles": 518
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1609,
+          "complexFunctions": 18,
+          "maxComplexity": 62
+        },
+        "duplication": {
+          "totalBlocks": 430
+        },
+        "naming": {
+          "totalIssues": 28
+        },
+        "jsdoc": {
+          "totalMissing": 66
+        },
+        "schemaSync": {
+          "totalTypes": 199,
+          "emptyTypes": 0,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4",
+      "project": "todo",
+      "totalScore": 75,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 89,
+          "passed": true,
+          "durationMs": 3940,
+          "metrics": {
+            "totalFiles": 97,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 11,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 1,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 1,
+          "suggestionCount": 28,
+          "issuesByCode": [
+            {
+              "code": "TS2749",
+              "count": 22,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TS6054",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-2-todos.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 80,
+          "maxScore": 100,
+          "weightedScore": 4,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 147080,
+            "cached": true,
+            "originalDurationMs": 36
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 9,
+            "providerCount": 24,
+            "structureCount": 16,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 9,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 70,
+          "maxScore": 100,
+          "weightedScore": 14,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 63,
+            "controllerCount": 9,
+            "routeAnalysis": true,
+            "totalRoutes": 22,
+            "coveredRoutes": 13,
+            "routeCoveragePercent": 59,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "GET,PUT,POST,PATCH,DELETE",
+            "controllersAnalyzed": 9,
+            "stubTests": 4,
+            "assertionTests": 59,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 8
+          }
+        },
+        "logicCompleteness": {
+          "score": 79,
+          "maxScore": 100,
+          "weightedScore": 23.7,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 3,
+            "criticalCount": 3,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 24
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 22,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 22,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 27
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 9,
+          "ratio": "90%"
+        }
+      },
+      "summary": {
+        "totalIssues": 28,
+        "criticalCount": 1,
+        "warningCount": 1,
+        "suggestionCount": 26
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:48:17.234Z",
+        "reportUpdatedAt": "2026-03-25T08:49:00.215Z",
+        "totalDurationMs": 5104,
+        "evaluatedFiles": 97
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 220,
+          "complexFunctions": 2,
+          "maxComplexity": 39
+        },
+        "duplication": {
+          "totalBlocks": 13
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 9
+        },
+        "schemaSync": {
+          "totalTypes": 35,
+          "emptyTypes": 0,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4-mini",
+      "project": "todo",
+      "totalScore": 76,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 87,
+          "maxScore": 100,
+          "weightedScore": 87,
+          "passed": true,
+          "durationMs": 3470,
+          "metrics": {
+            "totalFiles": 122,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 13,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 4,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 4,
+          "suggestionCount": 10,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 2,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2339",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property '$queryRawUnsafe' does not exist on type 'PrismaClient'."
+            },
+            {
+              "code": "TS2345",
+              "count": 1,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<{ count: number; }> | Promise<todo_app_todos>)[]' is not assignable to parameter of type '(tx"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-04-todo-history.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 79,
+          "maxScore": 100,
+          "weightedScore": 3.95,
+          "passed": true,
+          "durationMs": 42,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 129100
+          },
+          "explanation": {
+            "reasons": [
+              "1x 6 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "6 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 59,
+          "maxScore": 100,
+          "weightedScore": 11.8,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 13,
+            "providerCount": 35,
+            "structureCount": 17,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 6,
+            "unmappedControllers": 7,
+            "mappingRatio": 0.46153846153846156
+          },
+          "explanation": {
+            "reasons": [
+              "1x 7 controller(s) have no matching provider: TodoappAuthMemberController, TodoappAuthGuestController, TodoappMemberPassword_resetsController, TodoappMemberEmail_verificationsController, TodoappMemberTodosCompletion_statusController ... and 2 more",
+              "1x Low controller-provider mapping: 46% — many API endpoints may lack business logic"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ005",
+                "count": 1,
+                "severity": "warning",
+                "message": "7 controller(s) have no matching provider: TodoappAuthMemberController, TodoappAuthGuestController, TodoappMemberPasswor"
+              },
+              {
+                "code": "REQ006",
+                "count": 1,
+                "severity": "warning",
+                "message": "Low controller-provider mapping: 46% — many API endpoints may lack business logic"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "testCoverage": {
+          "score": 76,
+          "maxScore": 100,
+          "weightedScore": 15.200000000000001,
+          "passed": true,
+          "durationMs": 13,
+          "metrics": {
+            "testCount": 86,
+            "controllerCount": 13,
+            "routeAnalysis": true,
+            "totalRoutes": 32,
+            "coveredRoutes": 21,
+            "routeCoveragePercent": 66,
+            "definedMethods": "POST,GET,PATCH,PUT,DELETE",
+            "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+            "controllersAnalyzed": 13,
+            "stubTests": 6,
+            "assertionTests": 80,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "8x Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refresh",
+              "1x 6/86 test files are stubs or lack assertions"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST005",
+                "count": 8,
+                "severity": "warning",
+                "message": "Controller \"/todoApp/auth/guest\" has 2 untested route(s): POST /todoApp/auth/guest/join, POST /todoApp/auth/guest/refres"
+              },
+              {
+                "code": "TEST003",
+                "count": 1,
+                "severity": "warning",
+                "message": "6/86 test files are stubs or lack assertions"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 24,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 26,
+          "metrics": {
+            "totalEndpoints": 32,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 32,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 13,
+          "ratio": "93%"
+        }
+      },
+      "summary": {
+        "totalIssues": 16,
+        "criticalCount": 1,
+        "warningCount": 9,
+        "suggestionCount": 6
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:26:57.897Z",
+        "reportUpdatedAt": "2026-03-24T10:34:59.907Z",
+        "totalDurationMs": 3784,
+        "evaluatedFiles": 122
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 311,
+          "complexFunctions": 1,
+          "maxComplexity": 22
+        },
+        "duplication": {
+          "totalBlocks": 26
+        },
+        "naming": {
+          "totalIssues": 3
+        },
+        "jsdoc": {
+          "totalMissing": 13
+        },
+        "schemaSync": {
+          "totalTypes": 41,
+          "emptyTypes": 2,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "gpt-5.4-nano",
+      "project": "todo",
+      "totalScore": 61,
+      "grade": "D",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 46,
+          "maxScore": 100,
+          "weightedScore": 46,
+          "passed": true,
+          "durationMs": 7347,
+          "metrics": {
+            "totalFiles": 136,
+            "filesWithErrors": 3,
+            "errorRatio": 2,
+            "penalty": 54,
+            "typeCriticalCount": 18,
+            "typeWarningCount": 172,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 37,
+          "typeWarningCount": 172,
+          "suggestionCount": 74,
+          "issuesByCode": [
+            {
+              "code": "TS2304",
+              "count": 156,
+              "severity": "warning",
+              "message": "Cannot find name 'Use'."
+            },
+            {
+              "code": "TS7005",
+              "count": 22,
+              "severity": "suggestion",
+              "message": "Variable 'correct' implicitly has an 'any' type."
+            },
+            {
+              "code": "TS1109",
+              "count": 18,
+              "severity": "critical",
+              "message": "Expression expected."
+            },
+            {
+              "code": "TS1003",
+              "count": 14,
+              "severity": "critical",
+              "message": "Identifier expected."
+            },
+            {
+              "code": "TS2448",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Block-scoped variable 'schema' used before its declaration."
+            },
+            {
+              "code": "TSeslint",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Parsing error: Type expected."
+            },
+            {
+              "code": "TS2695",
+              "count": 6,
+              "severity": "suggestion",
+              "message": "Left side of comma operator is unused and has no side effects."
+            },
+            {
+              "code": "TS2352",
+              "count": 5,
+              "severity": "warning",
+              "message": "Conversion of type 'string' to type 'null | undefined' may be a mistake because neither type sufficiently overlaps with "
+            },
+            {
+              "code": "TS2708",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "Cannot use namespace 'IPageIMultiUserTodoEditHistoryEntryChange' as a value."
+            },
+            {
+              "code": "TS1002",
+              "count": 4,
+              "severity": "critical",
+              "message": "Unterminated string literal."
+            },
+            {
+              "code": "TS6054",
+              "count": 4,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TS2305",
+              "count": 4,
+              "severity": "warning",
+              "message": "Module '\"../../../../../providers/patchMultiUserTodoMemberTodosTodoIdEditHistory\"' has no exported member 'patchMultiUse"
+            },
+            {
+              "code": "TS2451",
+              "count": 4,
+              "severity": "suggestion",
+              "message": "Cannot redeclare block-scoped variable 'But'."
+            },
+            {
+              "code": "TS1101",
+              "count": 4,
+              "severity": "suggestion",
+              "message": "'with' statements are not allowed in strict mode."
+            },
+            {
+              "code": "TS1110",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Type expected."
+            },
+            {
+              "code": "TS2554",
+              "count": 2,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2339",
+              "count": 2,
+              "severity": "warning",
+              "message": "Property '$queryRawUnsafe' does not exist on type 'PrismaClient'."
+            },
+            {
+              "code": "TS2300",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Duplicate identifier 'to'."
+            },
+            {
+              "code": "TS2693",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "'has' only refers to a type, but is being used as a value here."
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type '{ pagination: { current: any; records: number; pages: number; }; data: never[]; }' is not assignable to type 'ISum"
+            },
+            {
+              "code": "TS2345",
+              "count": 1,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<multi_user_todo_members> | Promise<multi_user_todo_member_password_resets>)[]' is not assigna"
+            },
+            {
+              "code": "TS7006",
+              "count": 1,
+              "severity": "warning",
+              "message": "Parameter 'props' implicitly has an 'any' type."
+            },
+            {
+              "code": "TS7019",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Rest parameter '(Missing)' implicitly has an 'any[]' type."
+            },
+            {
+              "code": "TS2353",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'current' does not exist in type 'IPagination'."
+            },
+            {
+              "code": "TS2552",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Cannot find name 'change'. Did you mean 'onchange'?"
+            },
+            {
+              "code": "TS2440",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Import declaration conflicts with local declaration of 'typia'."
+            },
+            {
+              "code": "TS2391",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Function implementation is missing or not immediately following the declaration."
+            },
+            {
+              "code": "TS2362",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type."
+            },
+            {
+              "code": "TS2749",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "'multi_user_member_id' refers to a value, but is being used as a type here. Did you mean 'typeof multi_user_member_id'?"
+            },
+            {
+              "code": "TS2582",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or "
+            },
+            {
+              "code": "TS18050",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "The value 'null' cannot be used here."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-4-todo-edit-history-entries.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 82,
+          "maxScore": 100,
+          "weightedScore": 4.1000000000000005,
+          "passed": true,
+          "durationMs": 94,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 166719
+          },
+          "explanation": {
+            "reasons": [
+              "1x 6 doc file(s) contain boilerplate or minimal content"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC005",
+                "count": 1,
+                "severity": "warning",
+                "message": "6 doc file(s) contain boilerplate or minimal content"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "requirementsCoverage": {
+          "score": 59,
+          "maxScore": 100,
+          "weightedScore": 11.8,
+          "passed": true,
+          "durationMs": 4,
+          "metrics": {
+            "controllerCount": 15,
+            "providerCount": 45,
+            "structureCount": 16,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 7,
+            "unmappedControllers": 8,
+            "mappingRatio": 0.4666666666666667
+          },
+          "explanation": {
+            "reasons": [
+              "1x 8 controller(s) have no matching provider: MultiusertodoMemberPassword_resetsController, MultiusertodoMemberEmail_verificationsController, MultiusertodoAuthGuestController, MultiusertodoAuthMemberController, MultiusertodoMemberTrashRestoreController ... and 3 more",
+              "1x Low controller-provider mapping: 47% — many API endpoints may lack business logic"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ005",
+                "count": 1,
+                "severity": "warning",
+                "message": "8 controller(s) have no matching provider: MultiusertodoMemberPassword_resetsController, MultiusertodoMemberEmail_verifi"
+              },
+              {
+                "code": "REQ006",
+                "count": 1,
+                "severity": "warning",
+                "message": "Low controller-provider mapping: 47% — many API endpoints may lack business logic"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "testCoverage": {
+          "score": 75,
+          "maxScore": 100,
+          "weightedScore": 15,
+          "passed": true,
+          "durationMs": 22,
+          "metrics": {
+            "testCount": 111,
+            "controllerCount": 15,
+            "routeAnalysis": true,
+            "totalRoutes": 37,
+            "coveredRoutes": 23,
+            "routeCoveragePercent": 62,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "PATCH,GET,PUT,DELETE,POST",
+            "controllersAnalyzed": 14,
+            "stubTests": 8,
+            "assertionTests": 103,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "9x Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo/auth/guest/refresh",
+              "1x 8/111 test files are stubs or lack assertions"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST005",
+                "count": 9,
+                "severity": "warning",
+                "message": "Controller \"/multiUserTodo/auth/guest\" has 2 untested route(s): POST /multiUserTodo/auth/guest/join, POST /multiUserTodo"
+              },
+              {
+                "code": "TEST003",
+                "count": 1,
+                "severity": "warning",
+                "message": "8/111 test files are stubs or lack assertions"
+              }
+            ],
+            "suggestions": []
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 56,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 1,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x Empty method body found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "LOGIC008",
+                "count": 1,
+                "severity": "critical",
+                "message": "Empty method body found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 62,
+          "metrics": {
+            "totalEndpoints": 42,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 42,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 5,
+          "missing": 15,
+          "ratio": "94%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 0,
+          "mismatchedProperties": 7
+        }
+      },
+      "summary": {
+        "totalIssues": 282,
+        "criticalCount": 36,
+        "warningCount": 177,
+        "suggestionCount": 69
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:35:07.829Z",
+        "reportUpdatedAt": "2026-03-24T10:35:07.882Z",
+        "totalDurationMs": 7894,
+        "evaluatedFiles": 136
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 398,
+          "complexFunctions": 0,
+          "maxComplexity": 9
+        },
+        "duplication": {
+          "totalBlocks": 28
+        },
+        "naming": {
+          "totalIssues": 2
+        },
+        "jsdoc": {
+          "totalMissing": 15
+        },
+        "schemaSync": {
+          "totalTypes": 43,
+          "emptyTypes": 0,
+          "mismatchedProperties": 7
         }
       }
     },
@@ -3028,12 +5647,3096 @@
           "mismatchedProperties": 0
         }
       }
+    },
+    {
+      "model": "qwen3-next-80b-a3b-instruct",
+      "project": "todo",
+      "totalScore": 0,
+      "grade": "F",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": false,
+          "durationMs": 0,
+          "metrics": {
+            "failedAt": "no-nestjs-artifacts",
+            "reason": "No controllers or providers found",
+            "typescriptFiles": 16
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 0,
+          "suggestionCount": 0,
+          "issuesByCode": [
+            {
+              "code": "GATE002",
+              "count": 1,
+              "severity": "critical",
+              "message": "No controllers or providers found — pipeline output is incomplete (only infrastructure files exist)"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": false,
+            "hasReadme": false,
+            "docFileCount": 0,
+            "totalDocLength": 0
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x No documentation found (missing docs/analysis/ and README.md)"
+            ],
+            "issueSummaries": [
+              {
+                "code": "DOC001",
+                "count": 1,
+                "severity": "critical",
+                "message": "No documentation found (missing docs/analysis/ and README.md)"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "requirementsCoverage": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 0,
+            "providerCount": 0,
+            "structureCount": 0,
+            "requirementsDocCount": 0,
+            "hasRequirementsDocs": false,
+            "mappedControllers": 0,
+            "unmappedControllers": 0,
+            "mappingRatio": 0
+          },
+          "explanation": {
+            "reasons": [
+              "2 critical issue(s) found",
+              "1x No controllers found - API endpoints not implemented",
+              "1x No providers found - business logic not implemented",
+              "1x No structures/DTOs found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "REQ001",
+                "count": 1,
+                "severity": "critical",
+                "message": "No controllers found - API endpoints not implemented"
+              },
+              {
+                "code": "REQ002",
+                "count": 1,
+                "severity": "critical",
+                "message": "No providers found - business logic not implemented"
+              },
+              {
+                "code": "REQ003",
+                "count": 1,
+                "severity": "warning",
+                "message": "No structures/DTOs found"
+              },
+              {
+                "code": "REQ004",
+                "count": 1,
+                "severity": "warning",
+                "message": "No requirements documents found in docs/analysis/"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "testCoverage": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 0,
+            "controllerCount": 0,
+            "routeAnalysis": false,
+            "runtimeVerified": false
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x No test files found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "TEST001",
+                "count": 1,
+                "severity": "critical",
+                "message": "No test files found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0
+          },
+          "explanation": {
+            "reasons": [],
+            "issueSummaries": [],
+            "suggestions": []
+          }
+        },
+        "apiCompleteness": {
+          "score": 0,
+          "maxScore": 100,
+          "weightedScore": 0,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 0,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 0,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 0,
+            "implementationRate": 0
+          },
+          "explanation": {
+            "reasons": [
+              "1 critical issue(s) found",
+              "1x No API endpoints found"
+            ],
+            "issueSummaries": [
+              {
+                "code": "API002",
+                "count": 1,
+                "severity": "critical",
+                "message": "No API endpoints found"
+              }
+            ],
+            "suggestions": [
+              "Fix all critical issues first"
+            ]
+          }
+        }
+      },
+      "penalties": null,
+      "summary": {
+        "totalIssues": 8,
+        "criticalCount": 6,
+        "warningCount": 2,
+        "suggestionCount": 0
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-24T10:35:08.020Z",
+        "reportUpdatedAt": "2026-03-24T10:35:08.040Z",
+        "totalDurationMs": 137,
+        "evaluatedFiles": 16
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 4,
+          "complexFunctions": 0,
+          "maxComplexity": 1
+        },
+        "duplication": {
+          "totalBlocks": 0
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 0
+        },
+        "schemaSync": {
+          "totalTypes": 0,
+          "emptyTypes": 0,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-122b-a10b",
+      "project": "erp",
+      "totalScore": 60,
+      "grade": "D",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 58,
+          "maxScore": 100,
+          "weightedScore": 58,
+          "passed": true,
+          "durationMs": 13454,
+          "metrics": {
+            "totalFiles": 314,
+            "filesWithErrors": 1,
+            "errorRatio": 0,
+            "penalty": 42,
+            "typeCriticalCount": 33,
+            "typeWarningCount": 316,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 67,
+          "typeWarningCount": 316,
+          "suggestionCount": 103,
+          "issuesByCode": [
+            {
+              "code": "TS2304",
+              "count": 233,
+              "severity": "warning",
+              "message": "Cannot find name 'created_at'."
+            },
+            {
+              "code": "TS1109",
+              "count": 66,
+              "severity": "critical",
+              "message": "Expression expected."
+            },
+            {
+              "code": "TS18046",
+              "count": 20,
+              "severity": "warning",
+              "message": "'contractFilters' is of type 'unknown'."
+            },
+            {
+              "code": "TS2339",
+              "count": 20,
+              "severity": "warning",
+              "message": "Property 'hrm_platform_role_permissions' does not exist on type 'hrm_platform_roles'."
+            },
+            {
+              "code": "TS2693",
+              "count": 18,
+              "severity": "suggestion",
+              "message": "'string' only refers to a type, but is being used as a value here."
+            },
+            {
+              "code": "TS2695",
+              "count": 17,
+              "severity": "suggestion",
+              "message": "Left side of comma operator is unused and has no side effects."
+            },
+            {
+              "code": "TS2353",
+              "count": 15,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2551",
+              "count": 14,
+              "severity": "warning",
+              "message": "Property 'parent_department' does not exist on type 'hrm_platform_departments'. Did you mean 'parent_department_id'?"
+            },
+            {
+              "code": "TS2322",
+              "count": 12,
+              "severity": "warning",
+              "message": "Type 'ISummary | undefined' is not assignable to type 'ISummary | null'.\n  Type 'undefined' is not assignable to type 'I"
+            },
+            {
+              "code": "TS2362",
+              "count": 12,
+              "severity": "suggestion",
+              "message": "The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type."
+            },
+            {
+              "code": "TS18004",
+              "count": 12,
+              "severity": "suggestion",
+              "message": "No value exists in scope for the shorthand property 'as'. Either declare one or provide an initializer."
+            },
+            {
+              "code": "TSeslint",
+              "count": 9,
+              "severity": "suggestion",
+              "message": "Parsing error: Expression expected."
+            },
+            {
+              "code": "TS6054",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TS2345",
+              "count": 7,
+              "severity": "warning",
+              "message": "Argument of type 'hrm_platform_tasks' is not assignable to parameter of type '{ id: string; title: string; status: strin"
+            },
+            {
+              "code": "TS2708",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Cannot use namespace 'IHrmPlatformEmployee' as a value."
+            },
+            {
+              "code": "TS18047",
+              "count": 5,
+              "severity": "warning",
+              "message": "'timer.employee.department.parent' is possibly 'null'."
+            },
+            {
+              "code": "TS7006",
+              "count": 3,
+              "severity": "warning",
+              "message": "Parameter 'rp' implicitly has an 'any' type."
+            },
+            {
+              "code": "TS2571",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Object is of type 'unknown'."
+            },
+            {
+              "code": "TS2739",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Type 'ISummary' is missing the following properties from type 'Promise<ISummary>': then, catch, finally, [Symbol.toStrin"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2740",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'IHrmPlatformDepartment[]' is missing the following properties from type 'IHrmPlatformDepartment': id, name, descri"
+            },
+            {
+              "code": "TS2355",
+              "count": 1,
+              "severity": "warning",
+              "message": "A function whose declared type is neither 'undefined', 'void', nor 'any' must return a value."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-5-roles.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 87,
+          "maxScore": 100,
+          "weightedScore": 4.3500000000000005,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 403820,
+            "cached": true,
+            "originalDurationMs": 231
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 35,
+            "providerCount": 104,
+            "structureCount": 55,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 35,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 28,
+          "maxScore": 100,
+          "weightedScore": 5.6000000000000005,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 5,
+            "controllerCount": 35,
+            "routeAnalysis": true,
+            "totalRoutes": 101,
+            "coveredRoutes": 1,
+            "routeCoveragePercent": 1,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "GET",
+            "controllersAnalyzed": 35,
+            "stubTests": 0,
+            "assertionTests": 5,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 5
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 196
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 101,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 101,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 203
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 250
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 35,
+          "ratio": "97%"
+        }
+      },
+      "summary": {
+        "totalIssues": 477,
+        "criticalCount": 67,
+        "warningCount": 314,
+        "suggestionCount": 96
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:52:00.589Z",
+        "reportUpdatedAt": "2026-03-25T08:53:44.287Z",
+        "totalDurationMs": 14693,
+        "evaluatedFiles": 314
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 978,
+          "complexFunctions": 13,
+          "maxComplexity": 54
+        },
+        "duplication": {
+          "totalBlocks": 250
+        },
+        "naming": {
+          "totalIssues": 5
+        },
+        "jsdoc": {
+          "totalMissing": 35
+        },
+        "schemaSync": {
+          "totalTypes": 136,
+          "emptyTypes": 1,
+          "mismatchedProperties": 8
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-122b-a10b",
+      "project": "reddit",
+      "totalScore": 81,
+      "grade": "B",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 88,
+          "maxScore": 100,
+          "weightedScore": 88,
+          "passed": true,
+          "durationMs": 13476,
+          "metrics": {
+            "totalFiles": 223,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 12,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 5,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 5,
+          "suggestionCount": 17,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2353",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'."
+            },
+            {
+              "code": "TS2345",
+              "count": 2,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' is not as"
+            },
+            {
+              "code": "TS18046",
+              "count": 2,
+              "severity": "warning",
+              "message": "'whereInput.created_at' is of type 'unknown'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-5-reports.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 88,
+          "maxScore": 100,
+          "weightedScore": 4.4,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 472713,
+            "cached": true,
+            "originalDurationMs": 267
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 29,
+            "providerCount": 65,
+            "structureCount": 35,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 29,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 1
+          }
+        },
+        "testCoverage": {
+          "score": 71,
+          "maxScore": 100,
+          "weightedScore": 14.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 162,
+            "controllerCount": 29,
+            "routeAnalysis": true,
+            "totalRoutes": 60,
+            "coveredRoutes": 36,
+            "routeCoveragePercent": 60,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "POST,GET,PUT,DELETE",
+            "controllersAnalyzed": 28,
+            "stubTests": 1,
+            "assertionTests": 161,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 42
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 89
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 62,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 62,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 87
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 5,
+          "missing": 29,
+          "ratio": "97%"
+        }
+      },
+      "summary": {
+        "totalIssues": 17,
+        "criticalCount": 1,
+        "warningCount": 5,
+        "suggestionCount": 11
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:52:00.545Z",
+        "reportUpdatedAt": "2026-03-25T08:52:44.326Z",
+        "totalDurationMs": 14649,
+        "evaluatedFiles": 223
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 592,
+          "complexFunctions": 1,
+          "maxComplexity": 31
+        },
+        "duplication": {
+          "totalBlocks": 31
+        },
+        "naming": {
+          "totalIssues": 3
+        },
+        "jsdoc": {
+          "totalMissing": 29
+        },
+        "schemaSync": {
+          "totalTypes": 81,
+          "emptyTypes": 1,
+          "mismatchedProperties": 7
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-122b-a10b",
+      "project": "shopping",
+      "totalScore": 70,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 82,
+          "maxScore": 100,
+          "weightedScore": 82,
+          "passed": true,
+          "durationMs": 18927,
+          "metrics": {
+            "totalFiles": 461,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 18,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 36,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 36,
+          "suggestionCount": 38,
+          "issuesByCode": [
+            {
+              "code": "TS18046",
+              "count": 24,
+              "severity": "warning",
+              "message": "'group._count' is of type 'unknown'."
+            },
+            {
+              "code": "TS2353",
+              "count": 13,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'."
+            },
+            {
+              "code": "TS6054",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2345",
+              "count": 7,
+              "severity": "warning",
+              "message": "Argument of type 'Promise<ecommerce_mall_product_images>[]' is not assignable to parameter of type '(tx: TransactionClie"
+            },
+            {
+              "code": "TS2339",
+              "count": 2,
+              "severity": "warning",
+              "message": "Property 'some' does not exist on type '{}'."
+            },
+            {
+              "code": "TS2488",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2740",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, quantity, is_available, added_at, and 2 "
+            },
+            {
+              "code": "TS2741",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property 'ids' is missing in type 'IRequest' but required in type '{ ids: (string & Format<\"uuid\">)[]; }'."
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type '{ id: string & Format<\"uuid\">; ecommerce_mall_product_variant_id: string & Format<\"uuid\">; key: string; value: str"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-8-carts.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 85,
+          "maxScore": 100,
+          "weightedScore": 4.25,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 1176221,
+            "cached": true,
+            "originalDurationMs": 710
+          }
+        },
+        "requirementsCoverage": {
+          "score": 96,
+          "maxScore": 100,
+          "weightedScore": 19.200000000000003,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 73,
+            "providerCount": 152,
+            "structureCount": 61,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 67,
+            "unmappedControllers": 6,
+            "mappingRatio": 0.9178082191780822,
+            "cached": true,
+            "originalDurationMs": 9
+          }
+        },
+        "testCoverage": {
+          "score": 66,
+          "maxScore": 100,
+          "weightedScore": 13.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 390,
+            "controllerCount": 73,
+            "routeAnalysis": true,
+            "totalRoutes": 135,
+            "coveredRoutes": 61,
+            "routeCoveragePercent": 45,
+            "definedMethods": "PATCH,GET,POST,PUT,DELETE",
+            "testedMethods": "GET,POST,PUT,DELETE,PATCH",
+            "controllersAnalyzed": 68,
+            "stubTests": 2,
+            "assertionTests": 388,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 370
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 274
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 148,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 148,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 295
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 260
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 73,
+          "ratio": "99%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 1,
+          "mismatchedProperties": 25
+        }
+      },
+      "summary": {
+        "totalIssues": 65,
+        "criticalCount": 1,
+        "warningCount": 36,
+        "suggestionCount": 28
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:53:05.854Z",
+        "reportUpdatedAt": "2026-03-25T08:54:32.295Z",
+        "totalDurationMs": 20441,
+        "evaluatedFiles": 461
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1357,
+          "complexFunctions": 5,
+          "maxComplexity": 42
+        },
+        "duplication": {
+          "totalBlocks": 260
+        },
+        "naming": {
+          "totalIssues": 26
+        },
+        "jsdoc": {
+          "totalMissing": 73
+        },
+        "schemaSync": {
+          "totalTypes": 156,
+          "emptyTypes": 1,
+          "mismatchedProperties": 25
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-122b-a10b",
+      "project": "todo",
+      "totalScore": 73,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 89,
+          "passed": true,
+          "durationMs": 4380,
+          "metrics": {
+            "totalFiles": 82,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 11,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 1,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 1,
+          "suggestionCount": 9,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TS2749",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TSeslint",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-3-todo-history.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 72,
+          "maxScore": 100,
+          "weightedScore": 3.6,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 92059,
+            "cached": true,
+            "originalDurationMs": 27
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 7,
+            "providerCount": 17,
+            "structureCount": 13,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 7,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 51,
+          "maxScore": 100,
+          "weightedScore": 10.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 39,
+            "controllerCount": 7,
+            "routeAnalysis": true,
+            "totalRoutes": 14,
+            "coveredRoutes": 4,
+            "routeCoveragePercent": 29,
+            "definedMethods": "POST,PUT,PATCH,GET",
+            "testedMethods": "POST,PUT,GET",
+            "controllersAnalyzed": 7,
+            "stubTests": 0,
+            "assertionTests": 39,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 5
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 17
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 14,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 14,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 19
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 7,
+          "ratio": "88%"
+        },
+        "schemaSync": {
+          "amount": 1,
+          "emptyTypes": 0,
+          "mismatchedProperties": 2
+        }
+      },
+      "summary": {
+        "totalIssues": 9,
+        "criticalCount": 1,
+        "warningCount": 1,
+        "suggestionCount": 7
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:53:48.887Z",
+        "reportUpdatedAt": "2026-03-25T08:54:34.128Z",
+        "totalDurationMs": 4487,
+        "evaluatedFiles": 82
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 159,
+          "complexFunctions": 0,
+          "maxComplexity": 19
+        },
+        "duplication": {
+          "totalBlocks": 0
+        },
+        "naming": {
+          "totalIssues": 3
+        },
+        "jsdoc": {
+          "totalMissing": 7
+        },
+        "schemaSync": {
+          "totalTypes": 29,
+          "emptyTypes": 0,
+          "mismatchedProperties": 2
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-35b-a3b",
+      "project": "erp",
+      "totalScore": 53,
+      "grade": "F",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 78,
+          "maxScore": 100,
+          "weightedScore": 78,
+          "passed": true,
+          "durationMs": 17164,
+          "metrics": {
+            "totalFiles": 369,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 22,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 78,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 78,
+          "suggestionCount": 44,
+          "issuesByCode": [
+            {
+              "code": "TS2339",
+              "count": 29,
+              "severity": "warning",
+              "message": "Property 'duration_minutes' does not exist on type '{}'."
+            },
+            {
+              "code": "TS18046",
+              "count": 17,
+              "severity": "warning",
+              "message": "'totalBudgetHours._sum' is of type 'unknown'."
+            },
+            {
+              "code": "TS2353",
+              "count": 16,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS6054",
+              "count": 9,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TS2322",
+              "count": 9,
+              "severity": "warning",
+              "message": "Type 'IHrmsTaskStatusHistory[]' is not assignable to type 'IHrmsTaskStatusHistory'."
+            },
+            {
+              "code": "TS18047",
+              "count": 9,
+              "severity": "warning",
+              "message": "'weeklyTimelogsSum._sum' is possibly 'null'."
+            },
+            {
+              "code": "TSeslint",
+              "count": 9,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2345",
+              "count": 7,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<{ count: number; }> | Promise<hrms_activity_logs> | Promise<hrms_departments>)[]' is not assi"
+            },
+            {
+              "code": "TS2739",
+              "count": 4,
+              "severity": "suggestion",
+              "message": "Type 'ISummary' is missing the following properties from type 'IHrmsProject': dashboard_type, generation_timestamp"
+            },
+            {
+              "code": "TS2741",
+              "count": 3,
+              "severity": "warning",
+              "message": "Property '_sum' is missing in type 'Record<string, unknown>' but required in type '{ _sum: { duration_minutes: number | "
+            },
+            {
+              "code": "TS2694",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFilter'."
+            },
+            {
+              "code": "TS2571",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "Object is of type 'unknown'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2740",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'ISummary' is missing the following properties from type 'IHrmsOrganization': totalActiveEmployees, totalHoursThisW"
+            },
+            {
+              "code": "TS2538",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type 'unknown' cannot be used as an index type."
+            },
+            {
+              "code": "TS7006",
+              "count": 1,
+              "severity": "warning",
+              "message": "Parameter 'p' implicitly has an 'any' type."
+            },
+            {
+              "code": "TS2551",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property 'permission' does not exist on type 'hrms_organization_roles'. Did you mean 'permissions'?"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-07-time-tracking.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 4.45,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 483385,
+            "cached": true,
+            "originalDurationMs": 310
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 59,
+            "providerCount": 121,
+            "structureCount": 57,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 59,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 1
+          }
+        },
+        "testCoverage": {
+          "score": 71,
+          "maxScore": 100,
+          "weightedScore": 14.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 297,
+            "controllerCount": 59,
+            "routeAnalysis": true,
+            "totalRoutes": 117,
+            "coveredRoutes": 64,
+            "routeCoveragePercent": 55,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "POST,PUT,GET,PATCH,DELETE",
+            "controllersAnalyzed": 56,
+            "stubTests": 1,
+            "assertionTests": 296,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 85
+          }
+        },
+        "logicCompleteness": {
+          "score": 44,
+          "maxScore": 100,
+          "weightedScore": 13.2,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 8,
+            "criticalCount": 8,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 208
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 119,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 1,
+            "implementedEndpoints": 118,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 99,
+            "cached": true,
+            "originalDurationMs": 208
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 4,
+          "blocks": 157
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 59,
+          "ratio": "98%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 0,
+          "mismatchedProperties": 20
+        }
+      },
+      "summary": {
+        "totalIssues": 115,
+        "criticalCount": 1,
+        "warningCount": 78,
+        "suggestionCount": 36
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:55:05.369Z",
+        "reportUpdatedAt": "2026-03-25T08:57:05.584Z",
+        "totalDurationMs": 17989,
+        "evaluatedFiles": 369
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1164,
+          "complexFunctions": 22,
+          "maxComplexity": 33
+        },
+        "duplication": {
+          "totalBlocks": 157
+        },
+        "naming": {
+          "totalIssues": 15
+        },
+        "jsdoc": {
+          "totalMissing": 59
+        },
+        "schemaSync": {
+          "totalTypes": 132,
+          "emptyTypes": 0,
+          "mismatchedProperties": 20
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-35b-a3b",
+      "project": "reddit",
+      "totalScore": 78,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 84,
+          "maxScore": 100,
+          "weightedScore": 84,
+          "passed": true,
+          "durationMs": 17190,
+          "metrics": {
+            "totalFiles": 313,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 16,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 19,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 19,
+          "suggestionCount": 30,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2339",
+              "count": 7,
+              "severity": "warning",
+              "message": "Property '_count' does not exist on type 'reddit_community_comments'."
+            },
+            {
+              "code": "TS2694",
+              "count": 7,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'StringFieldUpdateOperationsInput'."
+            },
+            {
+              "code": "TS2345",
+              "count": 5,
+              "severity": "warning",
+              "message": "Argument of type '{ commentId: string & tags.Format<\"uuid\">; deletionId: string & tags.Format<\"uuid\">; }' is not assigna"
+            },
+            {
+              "code": "TS18046",
+              "count": 4,
+              "severity": "warning",
+              "message": "'whereInput.created_at' is of type 'unknown'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type 'import(\"src/api/structures/IPageIRedditCommunityFeedQuery\").IPageIRedditCommunityFeedQuery.ISummary' is not assign"
+            },
+            {
+              "code": "TS2749",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TS2551",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property 'createdAt' does not exist on type 'reddit_community_comments'. Did you mean 'created_at'?"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-09-systematic.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 4.45,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 271259,
+            "cached": true,
+            "originalDurationMs": 360
+          }
+        },
+        "requirementsCoverage": {
+          "score": 97,
+          "maxScore": 100,
+          "weightedScore": 19.400000000000002,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 43,
+            "providerCount": 84,
+            "structureCount": 57,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 43,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 1
+          }
+        },
+        "testCoverage": {
+          "score": 63,
+          "maxScore": 100,
+          "weightedScore": 12.600000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 202,
+            "controllerCount": 43,
+            "routeAnalysis": true,
+            "totalRoutes": 82,
+            "coveredRoutes": 35,
+            "routeCoveragePercent": 43,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "POST,GET,PUT,DELETE,PATCH",
+            "controllersAnalyzed": 43,
+            "stubTests": 4,
+            "assertionTests": 198,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 55
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 179
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 82,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 82,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 181
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 5,
+          "missing": 43,
+          "ratio": "98%"
+        }
+      },
+      "summary": {
+        "totalIssues": 40,
+        "criticalCount": 1,
+        "warningCount": 19,
+        "suggestionCount": 20
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:55:05.397Z",
+        "reportUpdatedAt": "2026-03-25T08:55:50.574Z",
+        "totalDurationMs": 18017,
+        "evaluatedFiles": 313
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 779,
+          "complexFunctions": 4,
+          "maxComplexity": 24
+        },
+        "duplication": {
+          "totalBlocks": 19
+        },
+        "naming": {
+          "totalIssues": 8
+        },
+        "jsdoc": {
+          "totalMissing": 43
+        },
+        "schemaSync": {
+          "totalTypes": 118,
+          "emptyTypes": 0,
+          "mismatchedProperties": 14
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-35b-a3b",
+      "project": "shopping",
+      "totalScore": 73,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 84,
+          "maxScore": 100,
+          "weightedScore": 84,
+          "passed": true,
+          "durationMs": 17414,
+          "metrics": {
+            "totalFiles": 618,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 16,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 34,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 34,
+          "suggestionCount": 43,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 15,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 15,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS18046",
+              "count": 12,
+              "severity": "warning",
+              "message": "'created_at_filter' is of type 'unknown'."
+            },
+            {
+              "code": "TS2322",
+              "count": 8,
+              "severity": "warning",
+              "message": "Type 'Record<string, unknown>[]' is not assignable to type '{ actor_type: string; entity_type: string; action_type: stri"
+            },
+            {
+              "code": "TS2345",
+              "count": 6,
+              "severity": "warning",
+              "message": "Argument of type '{ reviewId: string & tags.Format<\"uuid\">; body: IEcommerceMallReviewHelpfulnessVote.IUpdate; }' is not"
+            },
+            {
+              "code": "TS2339",
+              "count": 6,
+              "severity": "warning",
+              "message": "Property 'status' does not exist on type 'ecommerce_mall_order_items'."
+            },
+            {
+              "code": "TS2749",
+              "count": 6,
+              "severity": "suggestion",
+              "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?"
+            },
+            {
+              "code": "TS2353",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2724",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "'\"src/prisma/client\".Prisma' has no exported member named 'ecommerce_mall_notification_recipientsUncheckedCreateInput'. "
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2740",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type '{ id: string; }' is missing the following properties from type 'ecommerce_mall_refund_requests': ecommerce_mall_cu"
+            },
+            {
+              "code": "TS2694",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
+            },
+            {
+              "code": "TS2769",
+              "count": 1,
+              "severity": "warning",
+              "message": "No overload matches this call.\n  Overload 1 of 2, '(o: {}): string[]', gave the following error.\n    Argument of type 'u"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-13-actors.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 92,
+          "maxScore": 100,
+          "weightedScore": 4.6000000000000005,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 612145,
+            "cached": true,
+            "originalDurationMs": 375
+          }
+        },
+        "requirementsCoverage": {
+          "score": 98,
+          "maxScore": 100,
+          "weightedScore": 19.6,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 97,
+            "providerCount": 202,
+            "structureCount": 90,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 93,
+            "unmappedControllers": 4,
+            "mappingRatio": 0.9587628865979382,
+            "cached": true,
+            "originalDurationMs": 6
+          }
+        },
+        "testCoverage": {
+          "score": 61,
+          "maxScore": 100,
+          "weightedScore": 12.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 415,
+            "controllerCount": 97,
+            "routeAnalysis": true,
+            "totalRoutes": 173,
+            "coveredRoutes": 65,
+            "routeCoveragePercent": 38,
+            "definedMethods": "PATCH,GET,PUT,POST,DELETE",
+            "testedMethods": "GET,PUT,POST,PATCH,DELETE",
+            "controllersAnalyzed": 84,
+            "stubTests": 3,
+            "assertionTests": 412,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 101
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 251
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 196,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 196,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 230
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 2,
+          "blocks": 129
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 97,
+          "ratio": "99%"
+        }
+      },
+      "summary": {
+        "totalIssues": 63,
+        "criticalCount": 1,
+        "warningCount": 33,
+        "suggestionCount": 29
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:56:08.872Z",
+        "reportUpdatedAt": "2026-03-25T08:58:07.085Z",
+        "totalDurationMs": 18170,
+        "evaluatedFiles": 618
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1785,
+          "complexFunctions": 8,
+          "maxComplexity": 36
+        },
+        "duplication": {
+          "totalBlocks": 129
+        },
+        "naming": {
+          "totalIssues": 40
+        },
+        "jsdoc": {
+          "totalMissing": 97
+        },
+        "schemaSync": {
+          "totalTypes": 218,
+          "emptyTypes": 0,
+          "mismatchedProperties": 25
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-35b-a3b",
+      "project": "todo",
+      "totalScore": 82,
+      "grade": "B",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 87,
+          "maxScore": 100,
+          "weightedScore": 87,
+          "passed": true,
+          "durationMs": 5723,
+          "metrics": {
+            "totalFiles": 80,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 13,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 2,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 2,
+          "suggestionCount": 6,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2345",
+              "count": 1,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<{ count: number; }> | Promise<multi_user_todo_app_todos>)[]' is not assignable to parameter o"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-02-todos.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 77,
+          "maxScore": 100,
+          "weightedScore": 3.85,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 111450,
+            "cached": true,
+            "originalDurationMs": 30
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 7,
+            "providerCount": 21,
+            "structureCount": 11,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 7,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 79,
+          "maxScore": 100,
+          "weightedScore": 15.8,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 50,
+            "controllerCount": 7,
+            "routeAnalysis": true,
+            "totalRoutes": 18,
+            "coveredRoutes": 12,
+            "routeCoveragePercent": 67,
+            "definedMethods": "POST,PUT,PATCH,GET,DELETE",
+            "testedMethods": "POST,PUT,GET,PATCH,DELETE",
+            "controllersAnalyzed": 7,
+            "stubTests": 1,
+            "assertionTests": 49,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 7
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 18
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 18,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 18,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 20
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 7,
+          "ratio": "88%"
+        }
+      },
+      "summary": {
+        "totalIssues": 7,
+        "criticalCount": 1,
+        "warningCount": 2,
+        "suggestionCount": 4
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:57:11.678Z",
+        "reportUpdatedAt": "2026-03-25T08:57:50.623Z",
+        "totalDurationMs": 5911,
+        "evaluatedFiles": 80
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 181,
+          "complexFunctions": 0,
+          "maxComplexity": 16
+        },
+        "duplication": {
+          "totalBlocks": 10
+        },
+        "naming": {
+          "totalIssues": 0
+        },
+        "jsdoc": {
+          "totalMissing": 7
+        },
+        "schemaSync": {
+          "totalTypes": 24,
+          "emptyTypes": 1,
+          "mismatchedProperties": 0
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-397b-a17b",
+      "project": "erp",
+      "totalScore": 75,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 81,
+          "maxScore": 100,
+          "weightedScore": 81,
+          "passed": true,
+          "durationMs": 13867,
+          "metrics": {
+            "totalFiles": 281,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 19,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 25,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 25,
+          "suggestionCount": 26,
+          "issuesByCode": [
+            {
+              "code": "TS18046",
+              "count": 21,
+              "severity": "warning",
+              "message": "'count._count' is of type 'unknown'."
+            },
+            {
+              "code": "TS6054",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2353",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2694",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
+            },
+            {
+              "code": "TS2345",
+              "count": 2,
+              "severity": "warning",
+              "message": "Argument of type 'unknown' is not assignable to parameter of type '(string & Format<\"date-time\">) | Date'."
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2739",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, role, employee, project, created_at"
+            },
+            {
+              "code": "TS2322",
+              "count": 1,
+              "severity": "warning",
+              "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission: string; created_at: Date; updated_at: Date; deleted_at"
+            },
+            {
+              "code": "TS2488",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-07-activity.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 91,
+          "maxScore": 100,
+          "weightedScore": 4.55,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 326327,
+            "cached": true,
+            "originalDurationMs": 358
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 31,
+            "providerCount": 92,
+            "structureCount": 49,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 31,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 5
+          }
+        },
+        "testCoverage": {
+          "score": 71,
+          "maxScore": 100,
+          "weightedScore": 14.200000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 173,
+            "controllerCount": 31,
+            "routeAnalysis": true,
+            "totalRoutes": 89,
+            "coveredRoutes": 48,
+            "routeCoveragePercent": 54,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "GET,DELETE,POST,PATCH,PUT",
+            "controllersAnalyzed": 31,
+            "stubTests": 1,
+            "assertionTests": 172,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 71
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 173
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 89,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 89,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 182
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 1,
+          "blocks": 92
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 31,
+          "ratio": "97%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 0,
+          "mismatchedProperties": 23
+        }
+      },
+      "summary": {
+        "totalIssues": 45,
+        "criticalCount": 1,
+        "warningCount": 25,
+        "suggestionCount": 19
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:58:45.164Z",
+        "reportUpdatedAt": "2026-03-25T09:00:13.846Z",
+        "totalDurationMs": 14751,
+        "evaluatedFiles": 281
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 838,
+          "complexFunctions": 8,
+          "maxComplexity": 38
+        },
+        "duplication": {
+          "totalBlocks": 92
+        },
+        "naming": {
+          "totalIssues": 4
+        },
+        "jsdoc": {
+          "totalMissing": 31
+        },
+        "schemaSync": {
+          "totalTypes": 130,
+          "emptyTypes": 0,
+          "mismatchedProperties": 23
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-397b-a17b",
+      "project": "reddit",
+      "totalScore": 61,
+      "grade": "D",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 85,
+          "maxScore": 100,
+          "weightedScore": 85,
+          "passed": true,
+          "durationMs": 13847,
+          "metrics": {
+            "totalFiles": 256,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 15,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 12,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 12,
+          "suggestionCount": 41,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 11,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2353",
+              "count": 9,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2571",
+              "count": 8,
+              "severity": "suggestion",
+              "message": "Object is of type 'unknown'."
+            },
+            {
+              "code": "TS18046",
+              "count": 8,
+              "severity": "warning",
+              "message": "'result._count' is of type 'unknown'."
+            },
+            {
+              "code": "TS2345",
+              "count": 2,
+              "severity": "warning",
+              "message": "Argument of type 'unknown' is not assignable to parameter of type 'string'."
+            },
+            {
+              "code": "TS7023",
+              "count": 2,
+              "severity": "suggestion",
+              "message": "'select' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2339",
+              "count": 1,
+              "severity": "warning",
+              "message": "Property '_count' does not exist on type 'reddit_clone_posts'."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-10-moderation.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 84,
+          "maxScore": 100,
+          "weightedScore": 4.2,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 178956,
+            "cached": true,
+            "originalDurationMs": 288
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 34,
+            "providerCount": 73,
+            "structureCount": 37,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 34,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 69,
+          "maxScore": 100,
+          "weightedScore": 13.8,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 196,
+            "controllerCount": 34,
+            "routeAnalysis": true,
+            "totalRoutes": 69,
+            "coveredRoutes": 36,
+            "routeCoveragePercent": 52,
+            "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "testedMethods": "POST,PATCH,GET,PUT,DELETE",
+            "controllersAnalyzed": 33,
+            "stubTests": 2,
+            "assertionTests": 194,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 47
+          }
+        },
+        "logicCompleteness": {
+          "score": 65,
+          "maxScore": 100,
+          "weightedScore": 19.5,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 5,
+            "criticalCount": 5,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 211
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 70,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 70,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 221
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 189
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 34,
+          "ratio": "97%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 1,
+          "mismatchedProperties": 19
+        }
+      },
+      "summary": {
+        "totalIssues": 44,
+        "criticalCount": 1,
+        "warningCount": 12,
+        "suggestionCount": 31
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:58:45.232Z",
+        "reportUpdatedAt": "2026-03-25T08:59:37.364Z",
+        "totalDurationMs": 14819,
+        "evaluatedFiles": 256
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 722,
+          "complexFunctions": 9,
+          "maxComplexity": 44
+        },
+        "duplication": {
+          "totalBlocks": 189
+        },
+        "naming": {
+          "totalIssues": 3
+        },
+        "jsdoc": {
+          "totalMissing": 34
+        },
+        "schemaSync": {
+          "totalTypes": 87,
+          "emptyTypes": 1,
+          "mismatchedProperties": 19
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-397b-a17b",
+      "project": "shopping",
+      "totalScore": 70,
+      "grade": "C",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 85,
+          "maxScore": 100,
+          "weightedScore": 85,
+          "passed": true,
+          "durationMs": 16549,
+          "metrics": {
+            "totalFiles": 548,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 15,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 28,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 28,
+          "suggestionCount": 33,
+          "issuesByCode": [
+            {
+              "code": "TS2339",
+              "count": 17,
+              "severity": "warning",
+              "message": "Property 'order_items' does not exist on type 'shopping_mall_orders'."
+            },
+            {
+              "code": "TS6054",
+              "count": 12,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 12,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS18046",
+              "count": 6,
+              "severity": "warning",
+              "message": "'stat._avg' is of type 'unknown'."
+            },
+            {
+              "code": "TS2694",
+              "count": 5,
+              "severity": "suggestion",
+              "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'."
+            },
+            {
+              "code": "TS2353",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'."
+            },
+            {
+              "code": "TS2345",
+              "count": 2,
+              "severity": "warning",
+              "message": "Argument of type '(Promise<{ count: number; }> | Promise<shopping_mall_products>)[]' is not assignable to parameter of t"
+            },
+            {
+              "code": "TS2322",
+              "count": 2,
+              "severity": "warning",
+              "message": "Type '{ id: string & Format<\"uuid\">; shopping_mall_product_snapshot_id: string & Format<\"uuid\">; image_url: string; disp"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "TS2740",
+              "count": 1,
+              "severity": "suggestion",
+              "message": "Type 'IShoppingMallProductImage[]' is missing the following properties from type 'IShoppingMallProductImage': id, image_"
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-11-admin-requests.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 87,
+          "maxScore": 100,
+          "weightedScore": 4.3500000000000005,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 510132,
+            "cached": true,
+            "originalDurationMs": 256
+          }
+        },
+        "requirementsCoverage": {
+          "score": 98,
+          "maxScore": 100,
+          "weightedScore": 19.6,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 87,
+            "providerCount": 179,
+            "structureCount": 69,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 84,
+            "unmappedControllers": 3,
+            "mappingRatio": 0.9655172413793104,
+            "cached": true,
+            "originalDurationMs": 3
+          }
+        },
+        "testCoverage": {
+          "score": 65,
+          "maxScore": 100,
+          "weightedScore": 13,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 417,
+            "controllerCount": 87,
+            "routeAnalysis": true,
+            "totalRoutes": 157,
+            "coveredRoutes": 68,
+            "routeCoveragePercent": 43,
+            "definedMethods": "DELETE,POST,PATCH,GET,PUT",
+            "testedMethods": "DELETE,POST,PUT,PATCH,GET",
+            "controllersAnalyzed": 77,
+            "stubTests": 4,
+            "assertionTests": 413,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 100
+          }
+        },
+        "logicCompleteness": {
+          "score": 93,
+          "maxScore": 100,
+          "weightedScore": 27.9,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 1,
+            "criticalCount": 1,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 133
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 174,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 174,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 143
+          }
+        }
+      },
+      "penalties": {
+        "duplication": {
+          "amount": 5,
+          "blocks": 296
+        },
+        "jsdoc": {
+          "amount": 5,
+          "missing": 87,
+          "ratio": "99%"
+        },
+        "schemaSync": {
+          "amount": 2,
+          "emptyTypes": 0,
+          "mismatchedProperties": 40
+        }
+      },
+      "summary": {
+        "totalIssues": 51,
+        "criticalCount": 1,
+        "warningCount": 28,
+        "suggestionCount": 22
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T08:59:55.046Z",
+        "reportUpdatedAt": "2026-03-25T09:01:16.762Z",
+        "totalDurationMs": 17499,
+        "evaluatedFiles": 548
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 1580,
+          "complexFunctions": 2,
+          "maxComplexity": 26
+        },
+        "duplication": {
+          "totalBlocks": 296
+        },
+        "naming": {
+          "totalIssues": 25
+        },
+        "jsdoc": {
+          "totalMissing": 87
+        },
+        "schemaSync": {
+          "totalTypes": 173,
+          "emptyTypes": 0,
+          "mismatchedProperties": 40
+        }
+      }
+    },
+    {
+      "model": "qwen3.5-397b-a17b",
+      "project": "todo",
+      "totalScore": 81,
+      "grade": "B",
+      "pipeline": null,
+      "phases": {
+        "gate": {
+          "score": 89,
+          "maxScore": 100,
+          "weightedScore": 89,
+          "passed": true,
+          "durationMs": 4270,
+          "metrics": {
+            "totalFiles": 84,
+            "filesWithErrors": 0,
+            "errorRatio": 0,
+            "penalty": 11,
+            "typeCriticalCount": 0,
+            "typeWarningCount": 1,
+            "prismaCriticalCount": 1,
+            "prismaWarningCount": 0,
+            "softPass": true
+          },
+          "typeErrorCount": 1,
+          "typeWarningCount": 1,
+          "suggestionCount": 6,
+          "issuesByCode": [
+            {
+              "code": "TS6054",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "File 'prisma/schema/main.prisma' has an unsupported extension. The only supported extensions are '.ts', '.tsx', '.d.ts',"
+            },
+            {
+              "code": "TSeslint",
+              "count": 3,
+              "severity": "suggestion",
+              "message": "Parsing error: \"parserOptions.programs\" has been provided for @typescript-eslint/parser.\nThe file was not found in any o"
+            },
+            {
+              "code": "TS2554",
+              "count": 1,
+              "severity": "warning",
+              "message": "Expected 0 arguments, but got 1."
+            },
+            {
+              "code": "P001",
+              "count": 1,
+              "severity": "critical",
+              "message": "Prisma compilation exception: ENOENT: no such file or directory, open 'schema-02-todos.prisma'"
+            }
+          ]
+        },
+        "documentQuality": {
+          "score": 70,
+          "maxScore": 100,
+          "weightedScore": 3.5,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "hasDocsFolder": true,
+            "hasReadme": true,
+            "docFileCount": 6,
+            "totalDocLength": 88213,
+            "cached": true,
+            "originalDurationMs": 24
+          }
+        },
+        "requirementsCoverage": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 20,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "controllerCount": 7,
+            "providerCount": 22,
+            "structureCount": 11,
+            "requirementsDocCount": 6,
+            "hasRequirementsDocs": true,
+            "mappedControllers": 7,
+            "unmappedControllers": 0,
+            "mappingRatio": 1,
+            "cached": true,
+            "originalDurationMs": 0
+          }
+        },
+        "testCoverage": {
+          "score": 73,
+          "maxScore": 100,
+          "weightedScore": 14.600000000000001,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "testCount": 48,
+            "controllerCount": 7,
+            "routeAnalysis": true,
+            "totalRoutes": 19,
+            "coveredRoutes": 11,
+            "routeCoveragePercent": 58,
+            "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+            "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+            "controllersAnalyzed": 7,
+            "stubTests": 0,
+            "assertionTests": 48,
+            "runtimeVerified": false,
+            "cached": true,
+            "originalDurationMs": 7
+          }
+        },
+        "logicCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 30,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalIncomplete": 0,
+            "criticalCount": 0,
+            "warningCount": 0,
+            "todoCount": 0,
+            "fixmeCount": 0,
+            "emptyMethods": 0,
+            "emptyCatch": 0,
+            "cached": true,
+            "originalDurationMs": 13
+          }
+        },
+        "apiCompleteness": {
+          "score": 100,
+          "maxScore": 100,
+          "weightedScore": 10,
+          "passed": true,
+          "durationMs": 0,
+          "metrics": {
+            "totalEndpoints": 19,
+            "emptyEndpoints": 0,
+            "stubEndpoints": 0,
+            "implementedEndpoints": 19,
+            "noProviderEndpoints": 0,
+            "passthroughEndpoints": 0,
+            "completionRate": 100,
+            "implementationRate": 100,
+            "cached": true,
+            "originalDurationMs": 14
+          }
+        }
+      },
+      "penalties": {
+        "jsdoc": {
+          "amount": 4,
+          "missing": 7,
+          "ratio": "88%"
+        },
+        "schemaSync": {
+          "amount": 1,
+          "emptyTypes": 0,
+          "mismatchedProperties": 3
+        }
+      },
+      "summary": {
+        "totalIssues": 6,
+        "criticalCount": 1,
+        "warningCount": 1,
+        "suggestionCount": 4
+      },
+      "meta": {
+        "evaluatedAt": "2026-03-25T09:00:18.484Z",
+        "reportUpdatedAt": "2026-03-25T09:00:59.508Z",
+        "totalDurationMs": 4448,
+        "evaluatedFiles": 84
+      },
+      "reference": {
+        "complexity": {
+          "totalFunctions": 197,
+          "complexFunctions": 0,
+          "maxComplexity": 13
+        },
+        "duplication": {
+          "totalBlocks": 8
+        },
+        "naming": {
+          "totalIssues": 1
+        },
+        "jsdoc": {
+          "totalMissing": 7
+        },
+        "schemaSync": {
+          "totalTypes": 28,
+          "emptyTypes": 0,
+          "mismatchedProperties": 3
+        }
+      }
     }
   ],
   "models": [
     "claude-sonnet-4.6",
     "deepseek-v3.2",
-    "kimi-k2.5"
+    "glm-5",
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
+    "kimi-k2.5",
+    "qwen3-next-80b-a3b-instruct",
+    "qwen3.5-122b-a10b",
+    "qwen3.5-35b-a3b",
+    "qwen3.5-397b-a17b"
   ],
   "projects": [
     "todo",
@@ -3041,5 +8744,5 @@
     "shopping",
     "erp"
   ],
-  "generatedAt": "2026-03-24T09:31:01.262Z"
+  "generatedAt": "2026-03-26T07:08:28.119Z"
 }
