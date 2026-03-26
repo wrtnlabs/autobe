@@ -1,5 +1,6 @@
 assets/migrate/
 assets/logs/
+diagnoses/
 repositories/
 results/
 benchmark-logs/
