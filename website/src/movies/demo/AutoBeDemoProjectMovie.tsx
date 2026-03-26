@@ -15,7 +15,7 @@ export default function AutoBeDemoProjectMovie(
   if (replay === null) {
     return (
       <div className="rounded-2xl p-6 border border-neutral-800/50 flex flex-col items-center justify-center min-h-[200px]">
-        <p className="text-sm text-neutral-600">No project data available</p>
+        <p className="text-sm text-neutral-400">No project data available</p>
       </div>
     );
   }
@@ -71,7 +71,7 @@ export default function AutoBeDemoProjectMovie(
     >
       <div className="mb-5 flex items-center justify-between">
         <h3 className="text-base font-semibold text-white">{projectTitle}</h3>
-        <span className="text-[11px] text-neutral-600 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800/50">
+        <span className="text-[11px] text-neutral-400 px-2.5 py-1 rounded-full bg-neutral-900 border border-neutral-800/50">
           {replay.vendor}
         </span>
       </div>
@@ -98,26 +98,26 @@ export default function AutoBeDemoProjectMovie(
 
       <div className="border-t border-neutral-800/40 pt-4 space-y-1.5">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-neutral-600">Success Rate</span>
+          <span className="text-xs text-neutral-400">Success Rate</span>
           <span className="text-xs text-neutral-300 font-medium">
             {successRate}%
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-neutral-600">Elapsed Time</span>
+          <span className="text-xs text-neutral-400">Elapsed Time</span>
           <span className="text-xs text-neutral-300 font-medium">
             {formatElapsedTime(replay.elapsed)}
           </span>
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-neutral-600">Total Tokens</span>
+          <span className="text-xs text-neutral-400">Total Tokens</span>
           <div className="text-right">
             <span className="text-xs text-neutral-300 font-medium">
               {totalTokens}
             </span>
-            <div className="text-[11px] text-neutral-700">
+            <div className="text-[11px] text-neutral-500">
               in: {inputTokens} ({cachedTokens} cached) · out: {outputTokens}
             </div>
           </div>
