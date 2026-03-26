@@ -9,16 +9,16 @@ export default function AutoBeDemoPhaseMovie(
     return (
       <tr className="border-b border-neutral-800/30 last:border-0">
         <td className="py-1.5 pr-3 w-5">
-          <div className="w-1.5 h-1.5 bg-neutral-800 rounded-full"></div>
+          <div className="w-1.5 h-1.5 bg-neutral-500 rounded-full"></div>
         </td>
         <td className="py-1.5 pr-1 text-xs">
-          <span className="text-neutral-700">
+          <span className="text-neutral-400">
             {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
           </span>
         </td>
-        <td className="py-1.5 pl-1 text-xs text-neutral-800">-</td>
+        <td className="py-1.5 pl-1 text-xs text-neutral-500">-</td>
         {showTimeColumn && (
-          <td className="py-1.5 px-3 text-xs text-neutral-800 text-right w-16">
+          <td className="py-1.5 px-3 text-xs text-neutral-500 text-right w-16">
             -
           </td>
         )}
@@ -33,19 +33,19 @@ export default function AutoBeDemoPhaseMovie(
     : "-";
 
   const getStatusColor = () => {
-    if (phase.success === true) return "bg-neutral-300";
+    if (phase.success === true) return "bg-emerald-400";
     if (phase.success === false)
-      if (Object.keys(phase.commodity).length !== 0) return "bg-neutral-500";
-      else return "bg-neutral-700";
-    return "bg-neutral-800";
+      if (Object.keys(phase.commodity).length !== 0) return "bg-amber-400";
+      else return "bg-red-400";
+    return "bg-neutral-500";
   };
 
   const getTextColor = () => {
-    if (phase.success === true) return "text-neutral-300";
+    if (phase.success === true) return "text-emerald-300";
     if (phase.success === false)
-      if (Object.keys(phase.commodity).length !== 0) return "text-neutral-500";
-      else return "text-neutral-600";
-    return "text-neutral-700";
+      if (Object.keys(phase.commodity).length !== 0) return "text-amber-300";
+      else return "text-red-300";
+    return "text-neutral-400";
   };
 
   return (
@@ -58,11 +58,11 @@ export default function AutoBeDemoPhaseMovie(
           {phaseName.charAt(0).toUpperCase() + phaseName.slice(1)}
         </span>
       </td>
-      <td className="py-1.5 pl-1 text-xs text-neutral-600 whitespace-nowrap">
+      <td className="py-1.5 pl-1 text-xs text-neutral-400 whitespace-nowrap">
         {detail}
       </td>
       {showTimeColumn && (
-        <td className="py-1.5 px-3 text-xs text-neutral-600 text-right w-16 whitespace-nowrap">
+        <td className="py-1.5 px-3 text-xs text-neutral-400 text-right w-16 whitespace-nowrap">
           {phase.elapsed ? formatElapsedTime(phase.elapsed) : "-"}
         </td>
       )}

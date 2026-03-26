@@ -313,19 +313,19 @@ function LeaderboardTable({ entries, models, projects, allEntries }) {
   return (
     <div style={{ borderRadius: "10px", border: "1px solid #334155", overflow: "hidden", background: "#0f172a" }}>
       <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "600px" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "480px" }}>
           <thead>
             <tr>
-              <th style={{ ...thBase, width: "52px", textAlign: "center", paddingLeft: "16px", paddingRight: "8px" }}>#</th>
-              <th style={{ ...thBase, textAlign: "left", minWidth: "180px" }}>Model</th>
+              <th style={{ ...thBase, width: "40px", textAlign: "center", paddingLeft: "10px", paddingRight: "4px" }}>#</th>
+              <th style={{ ...thBase, textAlign: "left", minWidth: "120px" }}>Model</th>
               {projects.map((p) => (
-                <th key={p} style={{ ...thBase, textAlign: "center", minWidth: "100px" }}>{p}</th>
+                <th key={p} style={{ ...thBase, textAlign: "center", minWidth: "70px" }}>{p}</th>
               ))}
               <th
                 style={{
                   ...thBase,
                   textAlign: "center",
-                  minWidth: "100px",
+                  minWidth: "70px",
                   borderLeft: "2px solid #334155",
                   background: "#172033",
                   color: "#cbd5e1",
