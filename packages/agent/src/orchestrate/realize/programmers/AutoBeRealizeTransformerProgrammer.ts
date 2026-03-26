@@ -241,10 +241,18 @@ ${Object.keys(props.schema.properties)
       transformMappings: props.transformMappings,
       code: props.revise.final ?? props.draft,
       errors,
+      path:
+        props.revise.final === null
+          ? "$input.request.draft"
+          : "$input.request.revise.final",
     });
     validateSelectAntiPatterns({
       code: props.revise.final ?? props.draft,
       errors,
+      path:
+        props.revise.final === null
+          ? "$input.request.draft"
+          : "$input.request.revise.final",
     });
     if (props.revise.final !== null) {
       validateEmptyCode({
@@ -426,6 +434,7 @@ ${Object.keys(props.schema.properties)
     transformMappings: AutoBeRealizeTransformerTransformMapping[];
     code: string;
     errors: IValidation.IError[];
+    path: string;
   }): void {
     const selectedMembers = new Set(props.selectMappings.map((s) => s.member));
 
@@ -441,7 +450,7 @@ ${Object.keys(props.schema.properties)
       if (field === "_count") continue;
       if (!selectedMembers.has(field)) {
         props.errors.push({
-          path: "$input.request.draft",
+          path: props.path,
           expected: `field "${field}" in selectMappings`,
           value: `input.${field} accessed in transform() but "${field}" is not in selectMappings. Add it to selectMappings and select().`,
         });
@@ -455,7 +464,7 @@ ${Object.keys(props.schema.properties)
         const refMember = refMatch[1]!;
         if (refMember !== "_count" && !selectedMembers.has(refMember)) {
           props.errors.push({
-            path: "$input.request.transformMappings",
+            path: props.path,
             expected: `"${refMember}" in selectMappings`,
             value: `transformMapping for "${tm.property}" references input.${refMember} but it's not in selectMappings`,
           });
@@ -467,11 +476,12 @@ ${Object.keys(props.schema.properties)
   function validateSelectAntiPatterns(props: {
     code: string;
     errors: IValidation.IError[];
+    path: string;
   }): void {
     // C-1: null value in select object
     if (/select:\s*\{[\s\S]*?:\s*null\b/m.test(props.code)) {
       props.errors.push({
-        path: "$input.request.draft",
+        path: props.path,
         expected: "true or { select: {...} } for each select field",
         value:
           "null found in select object. This destroys GetPayload type inference " +
@@ -483,7 +493,7 @@ ${Object.keys(props.schema.properties)
     // C-3: explicit return type on select() function
     if (/function\s+select\s*\(\s*\)\s*:\s*Prisma\.\w+/m.test(props.code)) {
       props.errors.push({
-        path: "$input.request.draft",
+        path: props.path,
         expected: "select() without explicit return type annotation",
         value:
           "Explicit return type on select() widens the literal type and breaks " +
@@ -495,7 +505,7 @@ ${Object.keys(props.schema.properties)
     // C-2: boolean type instead of true literal
     if (/select:\s*\{[\s\S]*?\w+:\s*boolean\b/m.test(props.code)) {
       props.errors.push({
-        path: "$input.request.draft",
+        path: props.path,
         expected: "true (literal) for scalar fields in select",
         value:
           "`boolean` type found instead of `true` literal in select object. " +
