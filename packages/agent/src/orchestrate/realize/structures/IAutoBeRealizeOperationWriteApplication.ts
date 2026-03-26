@@ -3,23 +3,35 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/IAutoBePreliminaryGetRealizeCollectors";
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
-/** Generates provider functions implementing business logic for API endpoints. */
+/**
+ * Generates provider functions implementing business logic for API endpoints
+ * via plan/draft/revise workflow.
+ */
 export interface IAutoBeRealizeOperationWriteApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process operation function generation task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeRealizeOperationWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeOperationWriteApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -35,8 +47,9 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     type: "complete";
 
     /**
-     * Analyze requirements, identify DB schemas, outline implementation
-     * approach.
+     * Operation implementation plan. Analyze requirements, identify related
+     * database schemas, and outline implementation approach including schema
+     * validation and API contract verification.
      */
     plan: string;
 
@@ -49,12 +62,20 @@ export namespace IAutoBeRealizeOperationWriteApplication {
 
   export interface IReviseProps {
     /**
-     * Identify improvements: type safety, query optimization, null handling,
-     * auth, error handling.
+     * Identify improvements:
+     *
+     * - Type safety enhancements
+     * - Database query optimizations
+     * - Null/undefined handling corrections
+     * - Authentication/authorization improvements
+     * - Error handling refinements
      */
     review: string;
 
-    /** Final code, or null if draft needs no changes. */
+    /**
+     * Final operation function code with all review improvements applied, or
+     * null if draft needs no changes.
+     */
     final: string | null;
   }
 }

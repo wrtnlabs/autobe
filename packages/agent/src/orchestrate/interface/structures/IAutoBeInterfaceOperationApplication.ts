@@ -7,20 +7,30 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 
 export interface IAutoBeInterfaceOperationApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process operation generation task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeInterfaceOperationApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceOperationApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -45,9 +55,16 @@ export namespace IAutoBeInterfaceOperationApplication {
     /**
      * The API operation to generate.
      *
-     * For list/search (PATCH `index`), include pagination, search, and sorting
-     * in the request body. For detail (GET `at`), return full entity. For
-     * creation (POST), use `.ICreate`. For update (PUT), use `.IUpdate`.
+     * Follow CRUD operation patterns:
+     *
+     * - List/search (PATCH `index`): include pagination, search, and sorting
+     *   in request body
+     * - Detail retrieval (GET `at`): return single full entity
+     * - Creation (POST): use `.ICreate` request body
+     * - Modification (PUT): use `.IUpdate` request body
+     *
+     * Use object types for request/response bodies, reference named component
+     * types, and `application/json` content-type.
      */
     operation: IOperation;
   }

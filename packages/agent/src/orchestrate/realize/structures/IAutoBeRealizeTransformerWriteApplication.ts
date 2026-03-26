@@ -7,24 +7,37 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 
 /**
  * Generates transformer functions that convert Prisma query results to API
- * response DTOs (DB to API).
+ * response DTOs (DB → API) via plan/draft/revise workflow.
  */
 export interface IAutoBeRealizeTransformerWriteApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process transformer generation task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeRealizeTransformerWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeTransformerWriteApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what database schemas are missing and why?
+     *
+     * For completion: what schemas did you acquire, what patterns did you
+     * implement, and why is it sufficient? Summarize — don't enumerate every
+     * field.
+     *
+     * Note: All DTO type information is available transitively from the plan's
+     * DTO type names. You only need to request database schemas.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
@@ -38,32 +51,57 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     type: "complete";
 
     /**
-     * MUST contain four sections:
+     * Transformer implementation plan. MUST contain four sections:
      *
-     * 1. Database Schema Field Inventory - ALL fields with exact names
-     * 2. DTO Property Inventory - ALL properties with types
-     * 3. Field-by-Field Mapping Strategy - explicit table for BOTH select() and
+     * 1. Database Schema Field Inventory — ALL fields with exact names from
+     *    schema
+     * 2. DTO Property Inventory — ALL properties with types
+     * 3. Field-by-Field Mapping Strategy — explicit table for BOTH select() and
      *    transform()
-     * 4. Edge Cases and Special Handling - type casts (Decimal, DateTime),
+     * 4. Edge Cases and Special Handling — type casts (Decimal, DateTime),
      *    nullables
+     *
+     * This forces you to READ the actual schema (not imagine it) and creates
+     * an explicit specification for both select() and transform() functions.
      */
     plan: string;
 
     /**
-     * MUST include EVERY database field needed by transform(). Each entry:
-     * `member` (exact DB field name, snake_case), `kind`
-     * (scalar/belongsTo/hasOne/hasMany), `nullable` (true/false for
-     * scalar/belongsTo, null for hasMany/hasOne), `how` (which DTO property
-     * needs it).
+     * Database field-by-field selection mapping for select().
+     *
+     * MUST include EVERY database field needed by transform() — no exceptions.
+     * Each mapping specifies:
+     *
+     * - `member`: Exact Prisma field/relation name (snake_case) — read from
+     *   the Relation Mapping Table and member list, NOT from DTO property names
+     * - `kind`: scalar, belongsTo, hasOne, or hasMany
+     * - `nullable`: true/false for scalar/belongsTo, null for hasMany/hasOne
+     * - `how`: Which DTO property needs it
+     *
+     * The `kind` property forces explicit classification of each member BEFORE
+     * deciding select syntax, preventing confusion between scalars and
+     * relations.
      *
      * Missing even a single required field will cause validation failure.
      */
     selectMappings: AutoBeRealizeTransformerSelectMapping[];
 
     /**
-     * MUST include EVERY property from the DTO type definition. Each entry:
-     * `property` (exact camelCase name), `how` (how to obtain from Prisma
-     * payload).
+     * DTO property-by-property transformation mapping for transform().
+     *
+     * MUST include EVERY property from the DTO type definition — no exceptions.
+     * Each mapping specifies:
+     *
+     * - `property`: Exact DTO property name (camelCase)
+     * - `how`: How to obtain from Prisma payload
+     *
+     * **Common transformation patterns**:
+     *
+     * - Direct mapping: snake_case → camelCase
+     * - Type conversion: Decimal → Number, DateTime → ISO string
+     * - Nullable: DateTime? → string | null
+     * - Nested objects: Reuse neighbor transformers
+     * - Arrays: ArrayUtil.asyncMap + neighbor transformer
      *
      * Missing even a single property will cause validation failure.
      */
@@ -71,8 +109,12 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
     /**
      * Complete implementation following plan's mapping table. EVERY field from
-     * plan Section 3 MUST appear in BOTH select() and transform(). NEVER inline
-     * when neighbor transformer exists. ALWAYS use `select`, NEVER `include`.
+     * plan Section 3 MUST appear in BOTH select() and transform(). Implement:
+     *
+     * - Transform() first, select() second, Payload last (correct order)
+     * - All field mappings from plan with correct transformations
+     * - Neighbor transformer reuse (NEVER inline when transformer exists)
+     * - ALWAYS use `select`, NEVER use `include`
      */
     draft: string;
 
@@ -82,14 +124,23 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
 
   export interface IReviseProps {
     /**
-     * MUST verify: 1) schema fidelity, 2) plan adherence in BOTH select() and
-     * transform(), 3) system rules (neighbor reuse, function order, select not
-     * include), 4) type safety (Decimal/DateTime casts, nullable). Identify
-     * issues with line numbers.
+     * MUST systematically verify four checklists:
+     *
+     * 1. Schema Fidelity — cross-check EVERY field name against plan Section 1
+     * 2. Plan Adherence — verify EVERY mapping from Section 3 in BOTH select()
+     *    and transform()
+     * 3. System Rules — neighbor reuse, function order, select (not include)
+     * 4. Type Safety — Decimal→Number, DateTime→ISO, nullable handling
+     *
+     * Identify issues with line numbers. This catches hallucinated fields,
+     * missing transformations, and rule violations.
      */
     review: string;
 
-    /** Final code, or null if draft needs no changes. */
+    /**
+     * Final transformer code with all review improvements applied, or null if
+     * draft needs no changes.
+     */
     final: string | null;
   }
 }

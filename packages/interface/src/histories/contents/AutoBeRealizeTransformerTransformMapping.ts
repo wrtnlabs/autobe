@@ -10,9 +10,28 @@ export interface AutoBeRealizeTransformerTransformMapping {
   /**
    * Exact DTO property name (case-sensitive, camelCase).
    *
-   * Include ALL properties: direct mappings, type conversions (Decimal →
-   * Number, DateTime → ISO string), computed values, and nested
-   * transformations.
+   * Include ALL properties: direct mappings, type conversions, computed values,
+   * and nested transformations.
+   *
+   * **Examples**:
+   *
+   * ```typescript
+   * // Direct scalar mappings
+   * { property: "id", how: "From prisma.id" }
+   * { property: "createdAt", how: "From prisma.created_at.toISOString()" }
+   *
+   * // Type conversions
+   * { property: "price", how: "From prisma.unit_price (Decimal → Number)" }
+   * { property: "deletedAt", how: "From prisma.deleted_at?.toISOString() ?? null" }
+   *
+   * // Computed properties
+   * { property: "totalPrice", how: "Compute: prisma.unit_price * prisma.quantity" }
+   * { property: "reviewCount", how: "From prisma._count.reviews" }
+   *
+   * // Nested transformations (reuse neighbor transformers)
+   * { property: "customer", how: "Transform with CustomerTransformer" }
+   * { property: "tags", how: "Array map with TagTransformer" }
+   * ```
    */
   property: string;
 
@@ -24,7 +43,10 @@ export interface AutoBeRealizeTransformerTransformMapping {
    * (Decimal → Number)", "Transform with CustomerTransformer", "Array map with
    * TagTransformer", "Compute: prisma.unit_price * prisma.quantity".
    *
-   * Correct phase: "No change needed", "Fix: Missing Decimal conversion".
+   * Correct phase: "No change needed", "Fix: Missing Decimal conversion",
+   * "Fix: Should use TagTransformer instead of inline".
+   *
+   * Even if correct, you MUST include it. This ensures complete DTO coverage.
    */
   how: string;
 }

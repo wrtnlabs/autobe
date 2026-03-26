@@ -2,21 +2,30 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBeRealizeAuthorizationWriteApplication } from "./IAutoBeRealizeAuthorizationWriteApplication";
 
 export interface IAutoBeRealizeAuthorizationCorrectApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process authentication correction task or preliminary data requests.
+   *
+   * @param next Request containing either preliminary data request or complete
+   *   task
+   */
   process(next: IAutoBeRealizeAuthorizationCorrectApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeAuthorizationCorrectApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing?
+     *
+     * For completion: what did you acquire, what did you accomplish, why is it
+     * sufficient?
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }

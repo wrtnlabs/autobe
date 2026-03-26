@@ -6,20 +6,30 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseCorrectApplication {
-  /** Process schema correction task or retrieve preliminary data. */
+  /**
+   * Process schema correction task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeDatabaseCorrectApplication.IProps): void;
 }
 export namespace IAutoBeDatabaseCorrectApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -38,11 +48,19 @@ export namespace IAutoBeDatabaseCorrectApplication {
     type: "complete";
 
     /**
-     * Execution plan for fixing validation errors.
+     * Execution plan for fixing validation errors. Required steps:
      *
-     * Focus ONLY on models mentioned in validation errors. Plan minimal changes
-     * per affected model, ensure cross-model references remain valid, and
-     * preserve all business logic.
+     * 1. Error scope analysis — list all validation errors, extract affected
+     *    table names, categorize by type (duplications, references, types,
+     *    indexes)
+     * 2. Targeted fix strategy — focus ONLY on models in errors, outline
+     *    minimal changes per model
+     * 3. Model-specific fix plan — detail corrections per affected model
+     * 4. Minimal scope validation — confirm which models are in/out of output
+     * 5. Targeted impact assessment — verify fixes don't break references from
+     *    unchanged models
+     *
+     * Preserve all business logic and cross-model references.
      */
     planning: string;
 

@@ -2,22 +2,35 @@ import { CamelCasePattern, PascalCasePattern } from "@autobe/interface";
 
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 
+/**
+ * Generates authentication components (provider, decorator, payload) for an
+ * actor type.
+ */
 export interface IAutoBeRealizeAuthorizationWriteApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process authentication generation task or preliminary data requests.
+   *
+   * @param next Request containing either preliminary data request or complete
+   *   task
+   */
   process(next: IAutoBeRealizeAuthorizationWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeAuthorizationWriteApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what database schemas are missing and why?
+     *
+     * For completion: what schemas did you acquire, what authentication
+     * patterns did you implement, why is it sufficient?
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }

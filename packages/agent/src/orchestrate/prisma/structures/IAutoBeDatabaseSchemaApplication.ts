@@ -5,20 +5,30 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseSchemaApplication {
-  /** Process schema generation task or retrieve preliminary data. */
+  /**
+   * Process schema generation task or retrieve preliminary data.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeDatabaseSchemaApplication.IProps): void;
 }
 export namespace IAutoBeDatabaseSchemaApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete

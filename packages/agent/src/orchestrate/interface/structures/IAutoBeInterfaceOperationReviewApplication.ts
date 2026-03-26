@@ -7,21 +7,31 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 
 export interface IAutoBeInterfaceOperationReviewApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process operation review task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeInterfaceOperationReviewApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceOperationReviewApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -33,9 +43,17 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Review and validate an API operation. Can only modify IOperation fields
-   * (specification, description, requestBody, responseBody). Return null to
-   * reject if issues exist in non-modifiable fields.
+   * Review and validate an API operation. Can ONLY modify IOperation fields:
+   *
+   * - `specification`: Can fix implementation details, algorithm descriptions,
+   *   database query logic
+   * - `description`: Can fix soft delete mismatches, inappropriate security
+   *   mentions, add schema references
+   * - `requestBody`: Can modify both description and typeName
+   * - `responseBody`: Can modify both description and typeName
+   *
+   * Return null to reject if issues exist in non-modifiable fields (path,
+   * method, parameters, etc.).
    */
   export interface IComplete {
     /** Type discriminator for completion request. */

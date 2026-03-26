@@ -4,21 +4,30 @@ import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
 export interface IAutoBeRealizeOperationCorrectApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process provider correction task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeRealizeOperationCorrectApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeOperationCorrectApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     *
+     * For completion: what did you acquire, what did you accomplish, why is it
+     * sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -33,24 +42,38 @@ export namespace IAutoBeRealizeOperationCorrectApplication {
     /** Type discriminator for completion request. */
     type: "complete";
 
-    /** Analyze error patterns, root causes, and required fixes. */
+    /**
+     * Error analysis and correction strategy. Understand:
+     *
+     * - Error patterns and root causes
+     * - Required fixes and their impact
+     * - Whether quick fixes or deep refactoring is needed
+     * - Database schema and API contract constraints
+     */
     think: string;
 
-    /** Initial corrected implementation based on think phase analysis. */
+    /** Corrected implementation applying all fixes from think phase. */
     draft: string;
 
-    /** Reviews draft and produces final error-free code. */
+    /** Reviews draft corrections and produces final error-free code. */
     revise: IReviseProps;
   }
 
   export interface IReviseProps {
     /**
-     * Verify all errors resolved, business logic intact, no regressions
-     * introduced.
+     * Verify corrections:
+     *
+     * - All TypeScript errors resolved
+     * - Business logic remains intact
+     * - No new errors introduced
+     * - Performance and security preserved
      */
     review: string;
 
-    /** Final code, or null if draft needs no changes. */
+    /**
+     * Final error-free code with all corrections applied, or null if draft
+     * needs no changes.
+     */
     final: string | null;
   }
 }

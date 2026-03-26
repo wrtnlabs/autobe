@@ -17,20 +17,30 @@ import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/stru
  * and description.
  */
 export interface IAutoBeInterfaceSchemaRefineApplication {
-  /** Process task or retrieve preliminary data. */
+  /**
+   * Process schema refinement task or preliminary data requests.
+   *
+   * @param props Request containing either preliminary data request or complete
+   *   task
+   */
   process(props: IAutoBeInterfaceSchemaRefineApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceSchemaRefineApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
+     *
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
      * Action to perform. Exhausted preliminary types are removed from the
-     * union.
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -61,13 +71,14 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     /**
      * HOW the schema should be implemented (data source mappings,
      * transformation rules). **MANDATORY**: Always provide, even if existing
-     * value is correct.
+     * value is correct — this forces explicit review of implementation details.
      */
     specification: string;
 
     /**
      * WHAT the schema represents for API consumers. **MANDATORY**: Always
-     * provide, even if existing value is correct.
+     * provide, even if existing value is correct — this forces explicit review
+     * of consumer-facing documentation.
      */
     description: string;
 

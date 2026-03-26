@@ -18,8 +18,12 @@ export interface IAutoBeAnalyzeScenarioApplication {
 export namespace IAutoBeAnalyzeScenarioApplication {
   export interface IProps {
     /**
-     * Reasoning about your current state: what's missing (preliminary) or what
-     * you accomplished (completion).
+     * Think before you act.
+     *
+     * For preliminary requests: what previous analysis sections are missing?
+     *
+     * For completion: is the DTO transformable or non-transformable? What
+     * actors, entities, and prefix were chosen based on requirements?
      */
     thinking?: string | null;
 
