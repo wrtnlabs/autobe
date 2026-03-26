@@ -1,17 +1,13 @@
 import {
-  AutoBeEventSource,
   AutoBeOpenApi,
   AutoBeProgressEventBase,
   AutoBeTestPrepareFunction,
 } from "@autobe/interface";
-import typia, { ILlmApplication, ILlmController, IValidation } from "typia";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { orchestrateTestCorrectCasting } from "./internal/orchestrateTestCorrectCasting";
-import { orchestrateTestCorrectOverall } from "./internal/orchestrateTestCorrectOverall";
 import { orchestrateTestPrepareWrite } from "./orchestrateTestPrepareWrite";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
-import { IAutoBeTestPrepareCorrectOverallApplication } from "./structures/IAutoBeTestPrepareCorrectOverallApplication";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 
 export async function orchestrateTestPrepare(
@@ -58,60 +54,5 @@ export async function orchestrateTestPrepare(
     procedures,
     progress: props.validateProgress,
   });
-  procedures = await orchestrateTestCorrectOverall(ctx, {
-    programmer: {
-      compile,
-      replaceImportStatements,
-      controller: (next) => createCorrectOverallController(next),
-    },
-    procedures,
-    instruction: props.instruction,
-    progress: props.validateProgress,
-    discard: false,
-  });
   return procedures.map((p) => p.function);
-}
-
-function createCorrectOverallController(props: {
-  procedure: IAutoBeTestPrepareProcedure;
-  build: (next: IAutoBeTestPrepareCorrectOverallApplication.IProps) => void;
-}): ILlmController<IAutoBeTestPrepareCorrectOverallApplication> {
-  const validate = (
-    input: unknown,
-  ): IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps> => {
-    const result: IValidation<IAutoBeTestPrepareCorrectOverallApplication.IProps> =
-      typia.validate<IAutoBeTestPrepareCorrectOverallApplication.IProps>(input);
-    if (result.success === false) return result;
-    const errors: IValidation.IError[] = AutoBeTestPrepareProgrammer.validate({
-      typeName: props.procedure.typeName,
-      schema: props.procedure.schema,
-      mappings: result.data.mappings,
-      draft: result.data.draft,
-      revise: result.data.revise,
-    });
-    return errors.length
-      ? {
-          success: false,
-          errors,
-          data: result.data,
-        }
-      : result;
-  };
-
-  const application: ILlmApplication =
-    typia.llm.application<IAutoBeTestPrepareCorrectOverallApplication>({
-      validate: {
-        rewrite: validate,
-      },
-    });
-  return {
-    protocol: "class",
-    name: "testCorrect" satisfies AutoBeEventSource,
-    application,
-    execute: {
-      rewrite: (v) => {
-        props.build(v);
-      },
-    } satisfies IAutoBeTestPrepareCorrectOverallApplication,
-  };
 }

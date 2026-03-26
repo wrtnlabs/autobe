@@ -1,20 +1,81 @@
+import { IComplete } from "../../common/structures/IComplete";
+
+/**
+ * Function calling interface for generating authorization utility functions.
+ *
+ * Guides the AI agent through creating authorization functions that handle
+ * authentication flows (login, join, refresh, etc.) for different actor types.
+ * This structured approach ensures consistent authentication handling across
+ * the test suite.
+ *
+ * The generation follows a write-validate-correct workflow: code generation →
+ * external TypeScript compilation → error feedback → correction → completion.
+ */
 export interface IAutoBeTestAuthorizationWriteApplication {
   /**
-   * Main entry point for AI Function Call - generates authorization utility
-   * functions.
+   * Submit authorization utility function or confirm completion.
    *
-   * The AI executes this function to generate authorization functions that
-   * handle authentication flows (login, join, refresh, etc.) for different
-   * actor types. This structured approach ensures consistent authentication
-   * handling across the test suite.
+   * Generates complete authorization function through write-validate-correct
+   * loop. The submitted code is compiled externally; compilation failures
+   * produce diagnostic errors that feed back for correction.
    *
-   * @param props Complete specification for authorization function generation
+   * @param props Request containing either code submission or completion
+   *   confirmation
    */
-  write(props: IAutoBeTestAuthorizationWriteApplication.IProps): void;
+  process(props: IAutoBeTestAuthorizationWriteApplication.IProps): void;
 }
 
 export namespace IAutoBeTestAuthorizationWriteApplication {
   export interface IProps {
+    /**
+     * Think before you act.
+     *
+     * Before submitting code or confirming completion, reflect on your current
+     * state and explain your reasoning:
+     *
+     * For write submissions:
+     *
+     * - What authorization flow are you implementing?
+     * - What actor type does this serve?
+     * - If retrying after failure, what specific compilation errors are you
+     *   fixing?
+     *
+     * For completion:
+     *
+     * - What code did you submit?
+     * - Why did it pass compilation?
+     * - Summarize the key implementation decisions.
+     *
+     * This reflection helps you produce correct code and avoid repeated errors.
+     */
+    thinking: string;
+
+    /**
+     * Type discriminator for the request.
+     *
+     * Determines which action to perform:
+     *
+     * - "write": Submit authorization function code for external compilation
+     *   validation
+     * - "complete": Confirm and finalize after successful compilation
+     *
+     * The "complete" option is only available after a write submission has
+     * passed TypeScript compilation. Before that, only "write" is available in
+     * the union.
+     */
+    request: IWrite | IComplete;
+  }
+
+  /**
+   * Submit authorization function implementation for validation.
+   *
+   * The submitted code will be compiled externally. If compilation fails, you
+   * will receive diagnostic errors and should submit a corrected version.
+   */
+  export interface IWrite {
+    /** Type discriminator for write request. */
+    type: "write";
+
     /**
      * Step 1: Strategic authorization analysis.
      *
