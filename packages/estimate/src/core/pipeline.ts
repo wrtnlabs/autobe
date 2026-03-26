@@ -673,12 +673,14 @@ export class EvaluationPipeline {
         "MyGlobal",
         "unsupported extension",
       ];
-      // Also exclude TS-code warnings (already penalized via gate multiplier)
-      const isTypescriptWarning = (w: Issue) => /^TS\d+$/.test(w.code);
+      // Exclude warnings already penalized via gate (TS diagnostics, Prisma)
+      // to prevent double-counting the same issues.
+      const isGatePenalizedWarning = (w: Issue) =>
+        /^TS\d+$/.test(w.code) || /^P\d+$/.test(w.code);
       const realWarnings = warnings.filter(
         (w) =>
           !INFRA_WARNING_PATTERNS.some((p) => w.message.includes(p)) &&
-          !isTypescriptWarning(w),
+          !isGatePenalizedWarning(w),
       );
       const totalFiles = context.files.typescript.length || 1;
       const warningRatio = realWarnings.length / totalFiles;

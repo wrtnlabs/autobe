@@ -58,15 +58,27 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
       if (hasDocsFolder) score += 10;
       if (hasReadme) score += 5;
 
-      if (docFiles.length >= 10) score += 15;
-      else if (docFiles.length >= 5) score += 10;
-      else if (docFiles.length >= 3) score += 7;
-      else if (docFiles.length >= 1) score += 3;
+      // Doc file count: continuous interpolation (max 15)
+      // 0 files → 0, 1 → 3, 5 → 10, 10+ → 15
+      {
+        const fileCountScore =
+          docFiles.length >= 10
+            ? 15
+            : docFiles.length >= 1
+              ? Math.round(3 + ((docFiles.length - 1) / 9) * 12)
+              : 0;
+        score += fileCountScore;
+      }
 
-      if (totalDocLength >= 100000) score += 15;
-      else if (totalDocLength >= 50000) score += 10;
-      else if (totalDocLength >= 20000) score += 7;
-      else if (totalDocLength >= 5000) score += 3;
+      // Doc length: normalize by endpoint count for project-size awareness (max 15)
+      // Expect ~2KB per endpoint as baseline; fall back to absolute thresholds
+      // when endpoint count is unavailable.
+      {
+        const endpointCount = context.files.controllers.length || 1;
+        const expectedLength = Math.max(5000, endpointCount * 2000);
+        const lengthRatio = Math.min(1, totalDocLength / expectedLength);
+        score += Math.round(lengthRatio * 15);
+      }
 
       const qualityScore = this.analyzeContentQuality(
         docsResult.contents,

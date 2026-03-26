@@ -290,20 +290,19 @@ export async function runCLI(options: CLIOptions): Promise<void> {
     // Record agent results to Langfuse trace
     const trace = getActiveTrace();
     if (trace && agentResults.length > 0) {
-      const successForTrace = agentResults.filter(
-        (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
+      const knownForTrace = agentResults.filter(
+        (r) => r.agent in AGENT_WEIGHTS,
       );
-      let agentAvgForTrace = 0;
-      if (successForTrace.length > 0) {
-        const wSum = successForTrace.reduce(
-          (sum, r) => sum + AGENT_WEIGHTS[r.agent],
-          0,
-        );
-        agentAvgForTrace = successForTrace.reduce(
-          (sum, r) => sum + r.score * (AGENT_WEIGHTS[r.agent] / wSum),
-          0,
-        );
-      }
+      const totalWeight = Object.values(AGENT_WEIGHTS).reduce(
+        (s, w) => s + w,
+        0,
+      );
+      // Failed agents count as 0 (consistent with scoring logic)
+      const agentAvgForTrace = knownForTrace.reduce(
+        (sum, r) =>
+          sum + Math.max(0, r.score) * (AGENT_WEIGHTS[r.agent] / totalWeight),
+        0,
+      );
       const phasesPortion = result.totalScore * (1 - AGENT_WEIGHT_RATIO);
       const agentPortion = agentAvgForTrace * AGENT_WEIGHT_RATIO;
       recordAgentResults(
@@ -321,17 +320,14 @@ export async function runCLI(options: CLIOptions): Promise<void> {
   let adjustedScore = result.totalScore;
   let agentAvg = 0;
   if (agentResults.length > 0 && result.phases.gate.passed) {
-    // Exclude failed agents (score < 0) and re-normalize weights
-    const successAgents = agentResults.filter(
-      (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
-    );
-    if (successAgents.length > 0) {
-      const weightSum = successAgents.reduce(
-        (sum, r) => sum + AGENT_WEIGHTS[r.agent],
-        0,
-      );
-      agentAvg = successAgents.reduce(
-        (sum, r) => sum + r.score * (AGENT_WEIGHTS[r.agent] / weightSum),
+    // Use full weight denominator — failed agents (score < 0) count as 0
+    // instead of being excluded (which inflates the average)
+    const knownAgents = agentResults.filter((r) => r.agent in AGENT_WEIGHTS);
+    const totalWeight = Object.values(AGENT_WEIGHTS).reduce((s, w) => s + w, 0);
+    if (knownAgents.length > 0 && totalWeight > 0) {
+      agentAvg = knownAgents.reduce(
+        (sum, r) =>
+          sum + Math.max(0, r.score) * (AGENT_WEIGHTS[r.agent] / totalWeight),
         0,
       );
 
@@ -341,23 +337,22 @@ export async function runCLI(options: CLIOptions): Promise<void> {
 
       // Two-tier agent cap — only apply when enough agent coverage exists.
       // Successful agents must cover ≥50% of total weight to be conclusive.
-      const totalAgentWeight = Object.values(AGENT_WEIGHTS).reduce(
-        (s, w) => s + w,
-        0,
-      );
-      if (weightSum >= totalAgentWeight * 0.5) {
+      const successWeight = knownAgents
+        .filter((r) => r.score >= 0)
+        .reduce((sum, r) => sum + AGENT_WEIGHTS[r.agent], 0);
+      if (successWeight >= totalWeight * 0.5) {
         if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
         else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
       }
     }
-    // If all agents failed, adjustedScore stays as phase-only score
+    // If no known agents, adjustedScore stays as phase-only score
   }
 
-  // Use actual blending state for breakdown — only when agents actually succeeded
-  const successAgentCount = agentResults.filter(
-    (r) => r.agent in AGENT_WEIGHTS && r.score >= 0,
+  // Use actual blending state for breakdown — only when known agents exist
+  const knownAgentCount = agentResults.filter(
+    (r) => r.agent in AGENT_WEIGHTS,
   ).length;
-  const agentsBlended = successAgentCount > 0 && result.phases.gate.passed;
+  const agentsBlended = knownAgentCount > 0 && result.phases.gate.passed;
   const scoreBreakdown: ScoreBreakdown = {
     phaseScore: result.totalScore,
     phaseWeight: agentsBlended ? 1 - AGENT_WEIGHT_RATIO : 1.0,

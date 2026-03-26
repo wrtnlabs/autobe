@@ -272,11 +272,10 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
     }
 
     // Provider depth — multiple providers per controller (max 10)
+    // Continuous: linearly interpolate from 0 (ratio=0) to 10 (ratio≥2)
     if (counts.controllerCount > 0) {
       const ratio = counts.providerCount / counts.controllerCount;
-      if (ratio >= 2) score += 10;
-      else if (ratio >= 1.5) score += 7;
-      else if (ratio >= 1) score += 5;
+      score += Math.min(10, Math.round((ratio / 2) * 10));
     }
 
     // Requirements docs exist (max 5, reduced from 10)
@@ -293,38 +292,39 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Mapping quality tiers with graduated penalties
+    // Continuous mapping quality adjustment (max +10 bonus, max -30 penalty)
+    // Replaces cliff-based tiers with smooth interpolation:
+    //   ratio 0.0 → -30, ratio 0.6 → 0, ratio 0.8 → +5, ratio 1.0 → +10
     if (counts.controllerCount > 0) {
-      if (counts.mappingRatio < 0.3) {
-        // Very low mapping: severe penalty
-        const penalty = Math.round(((0.3 - counts.mappingRatio) / 0.3) * 30);
+      const r = counts.mappingRatio;
+      if (r < 0.6) {
+        // Penalty zone: linear from -30 (at 0) to 0 (at 0.6)
+        const penalty = Math.round(((0.6 - r) / 0.6) * 30);
         score = Math.max(0, score - penalty);
-        issues.push(
-          createIssue({
-            severity: "critical",
-            category: "requirements",
-            code: "REQ006",
-            message: `Very low controller-provider mapping: ${Math.round(counts.mappingRatio * 100)}% — most API endpoints have no matching business logic`,
-          }),
-        );
-      } else if (counts.mappingRatio < 0.6) {
-        // Low mapping: moderate penalty
-        const penalty = Math.round(((0.6 - counts.mappingRatio) / 0.3) * 15);
-        score = Math.max(0, score - penalty);
-        issues.push(
-          createIssue({
-            severity: "warning",
-            category: "requirements",
-            code: "REQ006",
-            message: `Low controller-provider mapping: ${Math.round(counts.mappingRatio * 100)}% — many API endpoints may lack business logic`,
-          }),
-        );
+        if (r < 0.3) {
+          issues.push(
+            createIssue({
+              severity: "critical",
+              category: "requirements",
+              code: "REQ006",
+              message: `Very low controller-provider mapping: ${Math.round(r * 100)}% — most API endpoints have no matching business logic`,
+            }),
+          );
+        } else {
+          issues.push(
+            createIssue({
+              severity: "warning",
+              category: "requirements",
+              code: "REQ006",
+              message: `Low controller-provider mapping: ${Math.round(r * 100)}% — many API endpoints may lack business logic`,
+            }),
+          );
+        }
+      } else {
+        // Bonus zone: linear from 0 (at 0.6) to 10 (at 1.0)
+        const bonus = Math.round(((r - 0.6) / 0.4) * 10);
+        score += bonus;
       }
-    }
-
-    // Bonus for high mapping (>80%)
-    if (counts.mappingRatio >= 0.8) {
-      score += 10;
     }
 
     return Math.min(100, score);

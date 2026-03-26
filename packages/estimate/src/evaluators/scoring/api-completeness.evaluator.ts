@@ -99,12 +99,14 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         );
       }
 
-      // Passthrough penalty: endpoints that just forward to provider without logic
+      // Passthrough penalty: continuous from 0 (at 30%) to 20 (at 100%)
+      // Replaces cliff at 50% with smooth ramp starting at 30%
       if (passthroughEndpoints > 0) {
         const passthroughRatio = passthroughEndpoints / totalEndpoints;
-        if (passthroughRatio > 0.5) {
-          // More than half are passthrough → deduct from implementation score
-          const passthroughPenalty = Math.round((passthroughRatio - 0.5) * 40);
+        if (passthroughRatio > 0.3) {
+          const passthroughPenalty = Math.round(
+            ((passthroughRatio - 0.3) / 0.7) * 20,
+          );
           score = Math.max(0, score - passthroughPenalty);
         }
         issues.push(

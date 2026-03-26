@@ -588,9 +588,10 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Apply mild discount (0.9x) for fallback mode since route-level analysis
-    // is unavailable, but don't hard-cap at 80 which unfairly penalizes models.
-    return Math.min(100, Math.round(score * 0.9));
+    // Fallback discount: continuous from 0.95x (high score) to 0.85x (low score)
+    // Higher-quality projects lose less from fallback mode; replaces flat 0.9x.
+    const fallbackMultiplier = 0.85 + (Math.min(score, 100) / 100) * 0.1;
+    return Math.min(100, Math.round(score * fallbackMultiplier));
   }
 
   // ── Runtime evaluation (unchanged) ────────────────────

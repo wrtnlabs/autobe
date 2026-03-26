@@ -777,7 +777,8 @@ export class ContractEvaluator {
       (r) => r.responseWarnings.length > 0,
     ).length;
     const warningRatio = withWarnings / total;
-    const schemaScore = Math.max(0, 100 - warningRatio * 200);
+    // Linear curve: 0% warnings → 100, 100% warnings → 0 (aligned with GoldenSetEvaluator)
+    const schemaScore = Math.round(100 * (1 - warningRatio));
 
     // 3. Response time score (20%)
     const timings = scoreable
@@ -787,10 +788,25 @@ export class ContractEvaluator {
     if (timings.length > 0) {
       const sorted = [...timings].sort((a, b) => a - b);
       const p95 = sorted[Math.floor(sorted.length * 0.95)];
-      if (p95 >= 5000) responseTimeScore = 0;
-      else if (p95 >= 2000) responseTimeScore = 30;
-      else if (p95 >= 1000) responseTimeScore = 60;
-      else if (p95 >= 500) responseTimeScore = 80;
+      // Piecewise linear interpolation (aligned with GoldenSetEvaluator)
+      const tiers: [number, number][] = [
+        [0, 100],
+        [500, 100],
+        [1000, 80],
+        [2000, 60],
+        [5000, 30],
+        [10000, 0],
+      ];
+      responseTimeScore = 0;
+      for (let i = 1; i < tiers.length; i++) {
+        if (p95 <= tiers[i][0]) {
+          const [x0, y0] = tiers[i - 1];
+          const [x1, y1] = tiers[i];
+          const ratio = (p95 - x0) / (x1 - x0);
+          responseTimeScore = Math.round(y0 + (y1 - y0) * ratio);
+          break;
+        }
+      }
     }
 
     return Math.round(

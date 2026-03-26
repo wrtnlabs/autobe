@@ -70,21 +70,13 @@ export class GoldenSetEvaluator {
       byCategory.set(cat, entry);
     }
 
-    // Compute active weights (redistribute weight of missing categories)
-    let activeWeightSum = 0;
-    for (const [cat, weight] of Object.entries(CATEGORY_WEIGHTS)) {
-      if (weight > 0 && byCategory.has(cat as ScenarioCategory)) {
-        activeWeightSum += weight;
-      }
-    }
-
+    // Use fixed weights — missing categories contribute 0 score (no redistribution)
+    // This prevents inflating scores when important categories are untested
     let score = 0;
     const categoryMetrics: Record<string, unknown> = {};
 
     for (const [cat, entry] of byCategory) {
-      const rawWeight = CATEGORY_WEIGHTS[cat] ?? 0;
-      const normalizedWeight =
-        activeWeightSum > 0 ? rawWeight / activeWeightSum : 0;
+      const normalizedWeight = CATEGORY_WEIGHTS[cat] ?? 0;
       const catScore = entry.total > 0 ? (entry.passed / entry.total) * 100 : 0;
       score += catScore * normalizedWeight;
       categoryMetrics[cat] = {
