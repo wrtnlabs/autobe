@@ -38,8 +38,8 @@ export interface AutoBeRealizeTransformerSelectMapping {
    * { member: "tags", kind: "hasMany", nullable: null, how: "For DTO.tags (array transformer)" }
    * ```
    *
-   * DO NOT use DTO property names — this is about Prisma schema members.
-   * Read the Relation Mapping Table and member list to find correct names.
+   * DO NOT use DTO property names — this is about Prisma schema members. Read
+   * the Relation Mapping Table and member list to find correct names.
    */
   member: string;
 
@@ -68,8 +68,8 @@ export interface AutoBeRealizeTransformerSelectMapping {
   /**
    * Brief reason for selecting this field (NOT code).
    *
-   * Write phase: "For DTO.id", "For DTO.createdAt (needs .toISOString())",
-   * "For DTO.customer (nested transformer)".
+   * Write phase: "For DTO.id", "For DTO.createdAt (needs .toISOString())", "For
+   * DTO.customer (nested transformer)".
    *
    * Correct phase: "No change needed", "Fix: Missing field — add for
    * DTO.totalPrice".

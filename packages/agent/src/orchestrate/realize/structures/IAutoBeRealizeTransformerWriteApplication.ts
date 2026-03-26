@@ -53,16 +53,15 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
     /**
      * Transformer implementation plan. MUST contain four sections:
      *
-     * 1. Database Schema Field Inventory — ALL fields with exact names from
-     *    schema
+     * 1. Database Schema Field Inventory — ALL fields with exact names from schema
      * 2. DTO Property Inventory — ALL properties with types
      * 3. Field-by-Field Mapping Strategy — explicit table for BOTH select() and
      *    transform()
      * 4. Edge Cases and Special Handling — type casts (Decimal, DateTime),
      *    nullables
      *
-     * This forces you to READ the actual schema (not imagine it) and creates
-     * an explicit specification for both select() and transform() functions.
+     * This forces you to READ the actual schema (not imagine it) and creates an
+     * explicit specification for both select() and transform() functions.
      */
     plan: string;
 
@@ -72,8 +71,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * MUST include EVERY database field needed by transform() — no exceptions.
      * Each mapping specifies:
      *
-     * - `member`: Exact Prisma field/relation name (snake_case) — read from
-     *   the Relation Mapping Table and member list, NOT from DTO property names
+     * - `member`: Exact Prisma field/relation name (snake_case) — read from the
+     *   Relation Mapping Table and member list, NOT from DTO property names
      * - `kind`: scalar, belongsTo, hasOne, or hasMany
      * - `nullable`: true/false for scalar/belongsTo, null for hasMany/hasOne
      * - `how`: Which DTO property needs it
@@ -127,8 +126,8 @@ export namespace IAutoBeRealizeTransformerWriteApplication {
      * MUST systematically verify four checklists:
      *
      * 1. Schema Fidelity — cross-check EVERY field name against plan Section 1
-     * 2. Plan Adherence — verify EVERY mapping from Section 3 in BOTH select()
-     *    and transform()
+     * 2. Plan Adherence — verify EVERY mapping from Section 3 in BOTH select() and
+     *    transform()
      * 3. System Rules — neighbor reuse, function order, select (not include)
      * 4. Type Safety — Decimal→Number, DateTime→ISO, nullable handling
      *

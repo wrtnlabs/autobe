@@ -225,7 +225,7 @@ ${Object.keys(props.schema.properties)
       selectMappings: props.selectMappings,
     });
 
-    // validata draft
+    // validate draft
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,

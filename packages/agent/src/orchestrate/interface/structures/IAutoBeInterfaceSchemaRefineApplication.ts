@@ -71,7 +71,8 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     /**
      * HOW the schema should be implemented (data source mappings,
      * transformation rules). **MANDATORY**: Always provide, even if existing
-     * value is correct — this forces explicit review of implementation details.
+     * value is correct — this forces explicit review of implementation
+     * details.
      */
     specification: string;
 

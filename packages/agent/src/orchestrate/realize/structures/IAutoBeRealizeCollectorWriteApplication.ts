@@ -47,14 +47,13 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
     /**
      * Collector implementation plan. MUST contain four sections:
      *
-     * 1. Database Schema Field Inventory — ALL fields with exact names from
-     *    schema
+     * 1. Database Schema Field Inventory — ALL fields with exact names from schema
      * 2. DTO Property Inventory — ALL properties with types
      * 3. Field-by-Field Mapping Strategy — explicit mapping for every field
      * 4. Edge Cases and Special Handling — nullable, arrays, conditionals
      *
-     * This forces you to READ the actual schema (not imagine it) and creates
-     * an explicit specification that the draft must implement.
+     * This forces you to READ the actual schema (not imagine it) and creates an
+     * explicit specification that the draft must implement.
      */
     plan: string;
 
@@ -64,14 +63,14 @@ export namespace IAutoBeRealizeCollectorWriteApplication {
      * MUST include EVERY field and relation from the database schema — no
      * exceptions. Each mapping specifies:
      *
-     * - `member`: Exact Prisma field/relation name — read from schema, NOT
-     *   from DTO property names or FK column names
+     * - `member`: Exact Prisma field/relation name — read from schema, NOT from
+     *   DTO property names or FK column names
      * - `kind`: scalar, belongsTo, hasOne, or hasMany
      * - `nullable`: true/false for scalar/belongsTo, null for hasMany/hasOne
      * - `how`: How to obtain/generate the value for that field
      *
-     * The `kind` property forces explicit classification BEFORE deciding how
-     * to handle it, preventing errors like treating belongsTo as scalar.
+     * The `kind` property forces explicit classification BEFORE deciding how to
+     * handle it, preventing errors like treating belongsTo as scalar.
      *
      * Missing even a single field will cause validation failure.
      */

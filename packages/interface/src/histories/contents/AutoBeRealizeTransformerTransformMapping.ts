@@ -43,8 +43,8 @@ export interface AutoBeRealizeTransformerTransformMapping {
    * (Decimal → Number)", "Transform with CustomerTransformer", "Array map with
    * TagTransformer", "Compute: prisma.unit_price * prisma.quantity".
    *
-   * Correct phase: "No change needed", "Fix: Missing Decimal conversion",
-   * "Fix: Should use TagTransformer instead of inline".
+   * Correct phase: "No change needed", "Fix: Missing Decimal conversion", "Fix:
+   * Should use TagTransformer instead of inline".
    *
    * Even if correct, you MUST include it. This ensures complete DTO coverage.
    */

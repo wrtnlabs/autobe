@@ -43,8 +43,8 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * Systematic error analysis. MUST contain four sections:
      *
      * 1. Error Inventory — categorize ALL compilation errors by root cause
-     * 2. Root Cause Analysis — identify WHY each error occurs (wrong field,
-     *    wrong transform, etc.)
+     * 2. Root Cause Analysis — identify WHY each error occurs (wrong field, wrong
+     *    transform, etc.)
      * 3. Schema Verification — cross-check error-related fields against actual
      *    database schema
      * 4. Correction Strategy — specific fix for each error in BOTH select() and
@@ -59,8 +59,8 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * Selection mapping verification for select(). For each database field
      * needed by transform(), document:
      *
-     * - `member`: Exact Prisma field/relation name (snake_case) — verify
-     *   against the Relation Mapping Table and member list
+     * - `member`: Exact Prisma field/relation name (snake_case) — verify against
+     *   the Relation Mapping Table and member list
      * - `kind`: scalar, belongsTo, hasOne, or hasMany
      * - `nullable`: true/false for scalar/belongsTo, null for hasMany/hasOne
      * - `how`: Current state + correction plan ("No change needed", "Fix: wrong
@@ -112,8 +112,7 @@ export namespace IAutoBeRealizeTransformerCorrectApplication {
      * MUST systematically verify four checklists:
      *
      * 1. Error Resolution — confirm EVERY error from think Section 1 is fixed
-     * 2. Root Cause Fix — verify fixes address root causes (not
-     *    workarounds/hacks)
+     * 2. Root Cause Fix — verify fixes address root causes (not workarounds/hacks)
      * 3. System Rules — neighbor reuse, select (not include), proper types
      * 4. No Regression — confirm no NEW errors, Payload type matches select()
      *

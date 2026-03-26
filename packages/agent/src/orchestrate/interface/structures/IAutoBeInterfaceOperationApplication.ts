@@ -57,8 +57,8 @@ export namespace IAutoBeInterfaceOperationApplication {
      *
      * Follow CRUD operation patterns:
      *
-     * - List/search (PATCH `index`): include pagination, search, and sorting
-     *   in request body
+     * - List/search (PATCH `index`): include pagination, search, and sorting in
+     *   request body
      * - Detail retrieval (GET `at`): return single full entity
      * - Creation (POST): use `.ICreate` request body
      * - Modification (PUT): use `.IUpdate` request body

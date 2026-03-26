@@ -14,7 +14,8 @@ export interface AutoBeTestAuthorizeFunction extends AutoBeTestFunctionBase<"aut
   actor: string;
 
   /**
-   * Authentication type, matching {@link AutoBeOpenApi.IOperation.authorizationType}:
+   * Authentication type, matching
+   * {@link AutoBeOpenApi.IOperation.authorizationType}:
    *
    * - "login": Authenticate existing user
    * - "join": Register new user

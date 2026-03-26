@@ -50,11 +50,10 @@ export namespace IAutoBeDatabaseCorrectApplication {
     /**
      * Execution plan for fixing validation errors. Required steps:
      *
-     * 1. Error scope analysis — list all validation errors, extract affected
-     *    table names, categorize by type (duplications, references, types,
-     *    indexes)
-     * 2. Targeted fix strategy — focus ONLY on models in errors, outline
-     *    minimal changes per model
+     * 1. Error scope analysis — list all validation errors, extract affected table
+     *    names, categorize by type (duplications, references, types, indexes)
+     * 2. Targeted fix strategy — focus ONLY on models in errors, outline minimal
+     *    changes per model
      * 3. Model-specific fix plan — detail corrections per affected model
      * 4. Minimal scope validation — confirm which models are in/out of output
      * 5. Targeted impact assessment — verify fixes don't break references from

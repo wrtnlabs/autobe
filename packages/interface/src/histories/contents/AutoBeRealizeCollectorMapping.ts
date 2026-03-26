@@ -28,8 +28,8 @@ export interface AutoBeRealizeCollectorMapping {
    * { member: "comments", kind: "hasMany", nullable: null, how: "Not needed (optional has-many)" }
    * ```
    *
-   * DO NOT use FK column names (e.g., "customer_id" is WRONG — use
-   * "customer"). Include ALL members even if unused in this collector.
+   * DO NOT use FK column names (e.g., "customer_id" is WRONG — use "customer").
+   * Include ALL members even if unused in this collector.
    */
   member: string;
 

@@ -40,8 +40,8 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * Systematic error analysis. MUST contain four sections:
      *
      * 1. Error Inventory — categorize ALL compilation errors by root cause
-     * 2. Root Cause Analysis — identify WHY each error occurs (wrong field,
-     *    type mismatch, etc.)
+     * 2. Root Cause Analysis — identify WHY each error occurs (wrong field, type
+     *    mismatch, etc.)
      * 3. Schema Verification — cross-check error-related fields against actual
      *    database schema
      * 4. Correction Strategy — specific fix for each error (not workarounds)
@@ -91,8 +91,7 @@ export namespace IAutoBeRealizeCollectorCorrectApplication {
      * MUST systematically verify four checklists:
      *
      * 1. Error Resolution — confirm EVERY error from think Section 1 is fixed
-     * 2. Root Cause Fix — verify fixes address root causes (not
-     *    workarounds/hacks)
+     * 2. Root Cause Fix — verify fixes address root causes (not workarounds/hacks)
      * 3. System Rules — neighbor reuse, proper types, no fabricated fields
      * 4. No Regression — confirm no NEW errors, business logic intact
      *
