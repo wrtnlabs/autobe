@@ -1,5 +1,5 @@
 ---
-title: "Function Calling Harness — Qwen Meetup Korea 2026"
+title: "Function Calling Harness: From 6.75% to 100%"
 description: "6.75% first-try function calling success becomes 100% compilation via type schemas, compilers, and structured feedback. Dissecting the harness engineering behind AutoBe and Typia."
 date: "2026-03-26"
 author: "Jeongho Nam"
@@ -14,7 +14,7 @@ import { Tabs } from "nextra/components";
 import AutoBeDemoMovie from "../../movies/demo/AutoBeDemoMovie";
 import PptxBanner from "../../components/PptxBanner";
 
-# Function Calling Harness
+# Function Calling Harness: From 6.75% to 100%
 
 <PptxBanner
   title="Qwen Meetup Korea"
@@ -62,7 +62,7 @@ This isn't surprising. [NESTFUL (EMNLP 2025)](https://arxiv.org/abs/2409.03797) 
 
 But if you want to make AI output deterministic — parse it, validate it, and correct it in a loop until it converges — there is no alternative to structured output. Free-form text can't be mechanically verified. Natural language can't be compiled. Without structure, there's no feedback loop, and without a feedback loop, there's no guarantee. So we didn't have the luxury of giving up on function calling. We had to make it work on the exact kind of complex, recursive schemas the industry had written off.
 
-[AutoBe](https://github.com/wrtnlabs/autobe) is the result. It's an open-source AI agent that takes a single natural language conversation and generates a complete backend — requirements analysis, database schema, API specification, E2E tests, and implementation code. Hook up that 6.75% model and what happens? Final compilation success rate: **100%**. All four Qwen models.
+[AutoBe](https://github.com/wrtnlabs/autobe) is the result. It's an open-source AI agent that takes a single natural language conversation and generates a complete backend — requirements analysis, database schema, API specification, E2E tests, and implementation code. Hook up that 6.75% model and what happens? Final compilation success rate: **99.8%+**. All five Qwen models.
 
 The answer wasn't a better model or a smarter prompt. It was a **harness** — type schemas that constrain outputs, compilers that verify results, and structured feedback that pinpoints exactly where and why something went wrong so the LLM can correct itself. A deterministic loop wrapping a probabilistic model. The engineering outside the model, not inside, that made the difference.
 
@@ -232,18 +232,19 @@ Natural language prompts are ambiguous, interpreted differently by each model, a
 
 **Schema specs are the new prompts.**
 
-### 2.7. Four Qwen Models, All 100%
+### 2.7. Five Qwen Models, All 99.8%+
 
-AutoBe currently tests against four Qwen models. All achieve successful compilation.
+AutoBe currently tests against five Qwen models. All achieve successful compilation.
 
-| Model | Active Parameters | Characteristics |
-|-------|------------------|-----------------|
-| `qwen/qwen3-coder-next` | 3B / 80B | Coding-specialized |
-| `qwen/qwen3.5-397b-a17b` | 17B / 397B | Largest MoE |
-| `qwen/qwen3.5-122b-a10b` | 10B / 122B | Medium MoE |
-| `qwen/qwen3.5-35b-a3b` | 3B / 35B | Small MoE |
+| Model | Parameters | Compilation |
+|-------|-----------|-------------|
+| `qwen/qwen3.5-397b-a17b` | 17B / 397B (Largest MoE) | 100% |
+| `qwen/qwen3.5-122b-a10b` | 10B / 122B (Medium MoE) | 100% |
+| `qwen/qwen3.5-27b` | 27B (Medium Dense) | 100% |
+| `qwen/qwen3.5-35b-a3b` | 3B / 35B (Small MoE) | 99.8% |
+| `qwen/qwen3-coder-next` | 3B / 80B (Coding-specialized) | 99.8% |
 
-From 397B to 35B. Even a small model with 3B active parameters generates a complete shopping mall backend. Same schema, same pipeline, same result.
+From 397B to 35B. Same schema, same pipeline, same result.
 
 ---
 
@@ -784,6 +785,18 @@ AutoBe running Qwen, GLM, DeepSeek, and OpenAI models with **the same schema, th
 
 This changes the nature of model selection. From "Can this model do this task?" — a capability question — to "Which model is most cost-effective?" — a **cost optimization problem**: `average retries × tokens per attempt × cost per token`.
 
+#### Prompt Fragility in Practice
+
+This isn't theoretical. Every major vendor has demonstrated prompt fragility across model versions:
+
+**OpenAI**: GPT-4 → GPT-4o caused [widespread prompt regressions](https://github.com/chapman4444/gpt4o-regression-report) — same prompts suddenly produced different outputs. GPT-4 → GPT-5 required prompt rewrites at such scale that OpenAI had to ship a [Prompt Optimizer tool](https://cookbook.openai.com/examples/gpt-5). And GPT-4o is [being retired on 2026.03.31](https://echostash.app/blog/gpt-4o-retirement) — every application using it must migrate.
+
+**Anthropic**: Claude 3.x → 4.x introduced [breaking changes every major version](https://docs.anthropic.com/en/docs/about-claude/models/migrating-to-claude-4) — prefill removed, tool versions changed, response style shifted.
+
+Every vendor, every version: prompts must be rewritten. Model-specific tricks accumulate as vendor lock-in and technical debt.
+
+**Type schemas don't break across versions.** JSON Schema is an industry standard — zero rewrite required.
+
 ### 4.4. The Core: Verifiability
 
 A single thread runs through everything.
@@ -819,7 +832,7 @@ This isn't just about software. The same structure is possible in every field wh
 | Software | Type check | Compilation | Test execution |
 | Semiconductor | DRC | LVS | SPICE simulation |
 | Chemical Process | Mass balance | Energy balance | Process simulation |
-| Interior Design | Dimensions/clearance | Building codes, collision detection | Lighting/HVAC simulation |
+| Construction (BIM) | Dimensions/clearance | Building codes, collision detection | Lighting/HVAC simulation |
 | Control Systems | Transfer function validity | Stability/margin analysis | Time-domain simulation |
 
 Running the cheapest validator first, fixing errors, then moving to the next tier is the natural strategy.
@@ -831,95 +844,103 @@ The table above was an overview. Here's what this looks like as concrete types �
 **Semiconductors** — The physical rules of chip design are non-negotiable:
 
 ```typescript
-interface IChipLayout {
-  technology_node: "5nm" | "7nm" | "14nm" | "28nm";
-  blocks: IBlock[];
-  connections: IConnection[];
-}
+// DRC (fast) → LVS (medium) → SPICE simulation (deep) — all deterministic
 
-interface IBlock {
-  type: "logic" | "memory" | "io" | "analog" | "pll";
-  position: IPoint2D;
-  dimensions: IDimension;
-  sub_blocks: IBlock[];  // recursive hierarchy
-}
+type IBlock =
+  | ILogicBlock        // children: IBlock[]  ← recursive
+  | IMemoryBlock       // children: IBlock[]  ← SRAM, DRAM, ROM, Flash, MRAM
+  | IAnalogBlock       // children: IBlock[]  ← PLL, ADC, DAC, SerDes, LDO
+  | IIOBlock | IClockTree | IInterconnect | IPowerGrid
+  | ICPU | IGPU | INPU | IDSP
+  | ISecurityBlock | IDebugBlock | IPhyBlock;
+
+type IStandardCell =                    // hundreds per PDK
+  | IAND | IOR | INAND | INOR | IXOR | IXNOR | INOT | IBUF | IMUX | IDEMUX
+  | IAOI | IOAI | IHA | IFA | IDFF | IJKFF | ILatch | IScanFF | IRetentionFF
+  | IICG | IClkBuf | IClkInv | ITieCell | ITapCell | IFiller | IDecap | IEndcap
+  | ILevelShifter | IIsolationCell | IPowerGate | IAntennaCell | ISpareCell
+  | IECOCell | ...;
 ```
 
-DRC (fast), LVS (medium), SPICE simulation (slow). All deterministic.
+`IBlock` contains `IBlock[]` — recursive like `IJsonSchema`. Each `ILogicBlock.cells: IStandardCell[]` — union within union. DRC → LVS → SPICE: all deterministic, all validatable.
 
 **Chemical Processes** — Conservation laws are absolute validators:
 
 ```typescript
-interface IProcessStream {
-  temperature: number & Minimum<0>;          // Kelvin
-  pressure: number & Minimum<0>;             // Pa
-  composition: IComponent[];                 // must sum to 1.0
-  phase: "liquid" | "vapor" | "solid" | "two_phase";
-  flow_rate: number & Minimum<0>;            // kg/s
-}
+// Mass balance (fast) → Energy balance (medium) → ASPEN simulation (deep)
 
-interface IUnitOperation {
-  type: "reactor" | "distillation" | "heat_exchanger"
-    | "compressor" | "pump" | "mixer" | "splitter";
-  inlet_streams: IProcessStream[];
-  outlet_streams: IProcessStream[];          // mass balance: Σin = Σout
-  energy_duty: number;                       // energy balance
-}
+type IUnitOperation =
+  | IReactor            // sub_units: IUnitOperation[]  ← recursive flowsheet
+  | IDistColumn         // sub_units: IUnitOperation[]  ← condenser + reboiler inside
+  | IAbsorber | IStripper | IExtractor | ICrystallizer | IDryer | IEvaporator
+  | IHeatExchanger | ICondenser | IReboiler | IHeater | ICooler | IFurnace
+  | IMixer | ISplitter | IPump | ICompressor | IExpander | ITurbine | IValve
+  | ISeparator | IFilter | ICyclone | ICentrifuge | IMembrane | IAdsorber
+  | IPipe | IOrifice | ITank | IFlare | IEjector | ISpreadsheet | ...;
+
+type IReactor =                          // union within union
+  | ICSTR | IPFR | IBatchReactor | IGibbsReactor | IEquilibrium | IConversion;
+
+type IThermodynamicModel =              // governs phase equilibria
+  | IPengRobinson | ISRK | INRTL | IUNIQUAC | IWilson | ICPA | ISAFT
+  | IELECNRTL | ...;
 ```
 
-Mass conservation (Σ inlet = Σ outlet), energy balance, thermodynamic consistency — these are laws of physics, not opinions. Tools like ASPEN and HYSYS have provided deterministic validation for over 40 years.
+`IDistColumn` contains `IUnitOperation[]` — recursive like `IJsonSchema`. Each `IReactor` is itself a union — union within union. ASPEN and HYSYS have provided deterministic validation for over 40 years.
 
-**Interior Design** — Rigid constraints define spaces beneath aesthetics:
+**Construction (BIM)** — IFC 4.3 defines 1,300+ entity types:
 
 ```typescript
-interface IRoom {
-  type: "bedroom" | "living" | "kitchen" | "bathroom"
-    | "office" | "hallway" | "storage";
-  dimensions: IDimension3D;
-  openings: IOpening[];
-  fixtures: IFixture[];
-}
+// Collision detection, code compliance — all deterministic
 
-interface IOpening {
-  type: "door" | "window" | "sliding_door" | "arch";
-  width: number & Minimum<0>;      // door ≥ 900mm (accessibility)
-  height: number & Minimum<0>;
-  position: IPoint3D;
-  swing_direction?: "inward" | "outward" | "sliding";
-}
+type IfcElement =
+  | IfcWall              // components: IfcElement[]  ← recursive assembly
+  | IfcSlab | IfcBeam | IfcColumn | IfcRoof | IfcStair | IfcRamp | IfcFooting
+  | IfcDoor | IfcWindow | IfcCurtainWall | IfcRailing | IfcCovering | IfcPlate
+  | IfcPile | IfcMember | IfcChimney | IfcShadingDevice | IfcBuildingProxy | ...;
 
-interface IFixture {
-  type: "cabinet" | "counter" | "appliance"
-    | "furniture" | "lighting" | "plumbing";
-  position: IPoint3D;
-  dimensions: IDimension3D;
-  clearance_required: number;       // minimum clearance (mm)
-}
+type IfcDistributionElement =       // union within union (MEP)
+  | IfcPipeSegment | IfcPipeFitting | IfcDuctSegment | IfcDuctFitting
+  | IfcCableSegment | IfcCableCarrier | IfcJunctionBox | IfcOutlet | IfcSwitch
+  | IfcPump | IfcFan | IfcBoiler | IfcChiller | IfcCoil | IfcCondenser
+  | IfcCoolingTower | IfcValve | IfcSensor | IfcActuator | IfcAlarm
+  | IfcController | IfcFlowMeter | ...;
+
+type IfcSpatialElement =           // spatial hierarchy ← recursive
+  | IfcSite | IfcBuilding | IfcBuildingStorey | IfcSpace | IfcFacility
+  | IfcBridge;
 ```
 
-Minimum passage width (800mm), door width for accessibility (≥900mm), fire compartment regulations, emergency evacuation distances. BIM tools like Revit have provided collision detection for decades.
+`IfcWall` contains `IfcElement[]` — recursive like `IJsonSchema`. `IfcDistributionElement` is itself a union — union within union. BIM tools like Revit have provided collision detection for decades.
 
 **Control Systems** — Stability is mathematically provable:
 
 ```typescript
-interface IControlLoop {
-  type: "PID" | "MPC" | "LQR" | "feedforward" | "cascade";
-  plant_model: ITransferFunction;
-  setpoint: number;
-  sampling_rate: number & Minimum<0>;        // Hz
-  constraints: IConstraint[];
-}
+// Transfer function (fast) → Stability analysis (medium) → Time-domain sim (deep)
 
-interface ITransferFunction {
-  numerator: number[];                       // polynomial coefficients
-  denominator: number[];                     // degree ≥ numerator
-  delay: number & Minimum<0>;               // transport delay (sec)
-}
+type IController =
+  | IPID               // inner: IController  ← cascade recursion
+  | IMPC               // constraints: IConstraint[]  ← another union
+  | ILQR | ILQG | IHinf | IFeedforward | ICascade | IAdaptive
+  | IFuzzy | ISlidingMode | IBackstepping | IRobust | IGainScheduled;
+
+type IConstraint =                        // union within union
+  | IRangeConstraint | IRateConstraint | IStabilityConstraint
+  | ISafetyConstraint | IBandwidthConstraint | IRobustnessConstraint
+  | IEnergyConstraint;
+
+type IPlantModel =                        // subsystems: IPlantModel[] ← recursive
+  | ILinearPlant | INonlinearPlant | IDelayPlant | IHybridPlant
+  | ISwitchedPlant | IStateSpace | ITransferFunction | IZeroPoleGain
+  | IFreqResponse;
+
+type IEstimator =
+  | IKalmanFilter | IEKF | IUKF | IParticleFilter | ILuenberger;
 ```
 
-Bode plots, Nyquist plots, pole placement: over 60 years of analysis tool history. Transfer function validity (fast) → stability/gain-phase margin (medium) → time-domain simulation (deep).
+`ICascade.inner: IController` — recursive like `IJsonSchema`. `IMPC.constraints: IConstraint[]` — union within union. Bode, Nyquist, and pole-placement analysis: over 60 years of deterministic validation.
 
-Look at these types. They all have `type` fields with enumerated variants — `"logic" | "memory" | ...`, `"reactor" | "distillation" | ...`, `"bedroom" | "living" | ...`, `"PID" | "MPC" | ...`. Several nest recursively. The same union + tree structure as AutoBe's `IJsonSchema` and `IExpression`. This is not coincidence — it's the nature of engineering data. Appendix A.3 explains why.
+Look at these types. Every domain uses union types with enumerated variants — `IBlock` with 15+ block types, `IUnitOperation` with 30+ unit types, `IfcElement` from IFC 4.3's 1,300+ entity types, `IController` with 11+ controller types. All nest recursively. The same union + tree structure as AutoBe's `IJsonSchema` and `IExpression`. This is not coincidence — it's the nature of engineering data. Appendix A.3 explains why.
 
 > **Note**: The domain examples above were AI-recommended — all are engineering fields where deterministic validators have existed for decades, so the same structure applies in principle. However, as I'm a developer and not a domain expert, please treat the specific details as reference material.
 
@@ -1002,7 +1023,7 @@ We started at 6.75%. The industry said complex function calling doesn't work, an
 
 But there was no alternative — deterministic AI output requires structured output — so we built the harness, one failure mode at a time. Lenient parsing because JSON broke. Type coercion because types were wrong. Validation feedback because values were wrong. Compiler pipelines because the system needed consistency.
 
-AutoBe achieved 100% compilation across all four Qwen models. Not through better prompts, but through the accumulated engineering of every way things went wrong.
+AutoBe achieved 99.8%+ compilation across all five Qwen models. Not through better prompts, but through the accumulated engineering of every way things went wrong.
 
 Three things: type schemas that constrain outputs, compilers that verify results, and structured feedback that corrects errors. These three form a deterministic loop wrapping probabilistic models.
 
@@ -1081,10 +1102,10 @@ Engineering manages complexity through **hierarchical decomposition** — breaki
 
 All domains from Chapter 4 follow this pattern:
 
-- Semiconductors: `IBlock` → `sub_blocks: IBlock[]` (chip → block → sub-block)
-- Chemical processes: plant → section → unit → sub-unit (recursive process hierarchy)
-- Interior design: building → floor → room → zone (recursive spatial decomposition)
-- Control systems: cascade control — outer loop's output is inner loop's setpoint (recursive nesting)
+- Semiconductors: `IBlock` → `children: IBlock[]` (chip → block → sub-block)
+- Chemical processes: `IUnitOperation` → `sub_units: IUnitOperation[]` (plant → section → unit → sub-unit)
+- Construction (BIM): `IfcElement` → `components: IfcElement[]` (site → building → storey → space)
+- Control systems: `IController` → `inner: IController` (cascade — outer loop's output is inner loop's setpoint)
 
 Structurally identical to AutoBe's `IJsonSchema` (10 variants) and `IExpression` (30+ variants). All are ASTs — Abstract Syntax Trees. **Hierarchical decomposition is how engineers manage complexity, and hierarchical decomposition produces recursive union types.** Every deterministic engineering domain shares this structure.
 
