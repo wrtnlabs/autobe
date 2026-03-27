@@ -69,18 +69,25 @@ export class LLMClient {
     const outputTokens = response.usage?.completion_tokens || 0;
 
     const pricing = MODEL_PRICING[this.model];
-    const usageData: Record<string, number> = {
-      input: inputTokens,
-      output: outputTokens,
-    };
-    if (pricing) {
-      usageData.inputCost = (inputTokens / 1_000_000) * pricing.input;
-      usageData.outputCost = (outputTokens / 1_000_000) * pricing.output;
-    }
+    const inputCost = pricing
+      ? (inputTokens / 1_000_000) * pricing.input
+      : undefined;
+    const outputCost = pricing
+      ? (outputTokens / 1_000_000) * pricing.output
+      : undefined;
 
     generation?.end({
       output: content,
-      usage: usageData,
+      usage: { input: inputTokens, output: outputTokens },
+      ...(inputCost !== undefined && outputCost !== undefined
+        ? {
+            costDetails: {
+              input: inputCost,
+              output: outputCost,
+              total: inputCost + outputCost,
+            },
+          }
+        : {}),
     });
 
     const tokenUsage: TokenUsage = { input: inputTokens, output: outputTokens };
