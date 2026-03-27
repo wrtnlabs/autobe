@@ -25,5 +25,6 @@ website/LICENSE
 .idea
 .DS_Store
 
-.claude
+!.claude/settings.json
+
 *.temp.MD
