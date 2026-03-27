@@ -13,51 +13,20 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
 export interface IAutoBeInterfaceSchemaReviewApplication {
-  /**
-   * Process schema review task or preliminary data requests.
-   *
-   * Reviews and validates OpenAPI schema definitions to ensure quality,
-   * correctness, and compliance with domain requirements and system policies.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   task
-   */
+  /** Process task or retrieve preliminary data. */
   process(props: IAutoBeInterfaceSchemaReviewApplication.IProps): void;
 }
 export namespace IAutoBeInterfaceSchemaReviewApplication {
   export interface IProps {
     /**
-     * Think before you act.
-     *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
-     *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * Reasoning about your current state: what's missing (preliminary) or what
+     * you accomplished (completion).
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas) or final schema review (complete). When preliminary
-     * returns empty array, that type is removed from the union, physically
-     * preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request:
       | IComplete
@@ -73,12 +42,7 @@ export namespace IAutoBeInterfaceSchemaReviewApplication {
 
   /** Complete schema review with property-level revisions. */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Value "complete" indicates this is the final review submission after all
-     * preliminary data has been gathered.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /** Summary of issues found and fixes applied. */

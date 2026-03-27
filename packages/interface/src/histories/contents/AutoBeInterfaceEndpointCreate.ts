@@ -1,28 +1,16 @@
 import { AutoBeInterfaceEndpointDesign } from "./AutoBeInterfaceEndpointDesign";
 
 /**
- * Request to create a new endpoint.
- *
- * Use this when you identify a missing endpoint that should exist based on
- * requirements analysis. Common scenarios:
- *
- * - A required operation was accidentally omitted from initial generation
- * - A use case requires an endpoint that wasn't initially identified
- * - Review reveals gaps in API coverage for specific requirements
+ * Add a missing endpoint.
  *
  * @author Michael
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointCreate {
-  /**
-   * Reason for creating this endpoint.
-   *
-   * Explain which requirement this endpoint fulfills and why it was missing
-   * from the initial generation.
-   */
+  /** Why this endpoint is needed. */
   reason: string;
 
-  /** Type discriminator indicating this is a create operation. */
+  /** Type discriminator. */
   type: "create";
 
   /** The new endpoint to add. */

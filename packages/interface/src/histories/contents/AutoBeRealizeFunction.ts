@@ -5,14 +5,11 @@ import { AutoBeRealizeTransformerFunction } from "./AutoBeRealizeTransformerFunc
 /**
  * Discriminated union of all Realize function types.
  *
- * Encompasses all types of generated code during the Realize phase:
+ * The `type` discriminator distinguishes:
  *
  * - **AutoBeRealizeOperationFunction**: API operation implementations
  * - **AutoBeRealizeTransformerFunction**: DB → DTO transformers
  * - **AutoBeRealizeCollectorFunction**: DTO → DB collectors
- *
- * The `kind` discriminator enables type-safe pattern matching and ensures
- * proper handling of each function type's unique metadata.
  *
  * @author Samchon
  */

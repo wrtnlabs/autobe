@@ -3,12 +3,7 @@ import { IAutoBeRealizeAuthorizationWriteApplication } from "./IAutoBeRealizeAut
 
 export interface IAutoBeRealizeAuthorizationCorrectApplication {
   /**
-   * Process authentication component correction task or preliminary data
-   * requests.
-   *
-   * Fixes TypeScript compilation errors in authentication components through
-   * systematic error diagnosis. Provides error analysis, solution guidance, and
-   * corrected versions while preserving authentication logic.
+   * Process authentication correction task or preliminary data requests.
    *
    * @param next Request containing either preliminary data request or complete
    *   task
@@ -21,98 +16,49 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * For preliminary requests: what critical information is missing?
      *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * For completion: what did you acquire, what did you accomplish, why is it
+     * sufficient?
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getDatabaseSchemas) or final error correction (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union, physically preventing repeated calls.
      */
     request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
-  /**
-   * Request to fix authentication component errors.
-   *
-   * Executes targeted error correction to resolve TypeScript compilation issues
-   * in provider, decorator, and payload type. Applies systematic fixes while
-   * preserving all authentication logic and business requirements.
-   */
+  /** Request to fix authentication component compilation errors. */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Step 1: TypeScript compilation error analysis and diagnosis.
-     *
-     * AI identifies and categorizes all compilation errors (type mismatches,
-     * import issues, syntax errors) by component (providers/decorator/payload).
-     * Lists specific error messages with their locations and types for
-     * systematic troubleshooting.
+     * Categorize all compilation errors by component
+     * (provider/decorator/payload) with locations.
      */
     error_analysis: string;
 
-    /**
-     * Step 2: Solution guidance and fix recommendations.
-     *
-     * AI provides clear, actionable instructions on how to resolve each
-     * identified error. Includes specific steps like "add property X to
-     * interface Y", "update import path from A to B", or "change type from C to
-     * D". Focus on guidance rather than generating complete code
-     * implementations.
-     */
+    /** Actionable fix instructions for each identified error. */
     solution_guidance: string;
 
     /**
-     * Authentication Provider function configuration containing the function
-     * name and implementation code. The Provider handles JWT token
-     * verification, role validation, and database queries to authenticate
-     * users.
+     * Authentication Provider function (JWT verification, role validation, DB
+     * queries).
      */
     provider: IAutoBeRealizeAuthorizationWriteApplication.IProvider;
 
     /**
-     * Authentication Decorator configuration containing the decorator name and
-     * implementation code. The Decorator integrates with NestJS parameter
-     * decorators to automatically inject authenticated user data into
-     * Controller methods.
+     * Authentication Decorator (NestJS parameter decorator injecting
+     * authenticated user data).
      */
     decorator: IAutoBeRealizeAuthorizationWriteApplication.IDecorator;
 
     /**
-     * Authentication Payload Type configuration containing the payload type
-     * name and implementation code. The Payload Type is used to define the
-     * structure of the authenticated user data that will be injected into
-     * Controller methods when using the decorator. It serves as the TypeScript
-     * type for the parameter in Controller method signatures.
+     * Authentication Payload Type (TypeScript type for authenticated user data
+     * in Controller methods).
      */
     payload: IAutoBeRealizeAuthorizationWriteApplication.IPayloadType;
   }

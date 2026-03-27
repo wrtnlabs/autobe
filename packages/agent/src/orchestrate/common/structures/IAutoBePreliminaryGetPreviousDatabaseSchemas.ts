@@ -1,88 +1,19 @@
 import { tags } from "typia";
 
 /**
- * Request to retrieve database schemas from a previous version.
+ * Request to retrieve database schemas from the previous iteration.
  *
- * This type is used to load database schema definitions that were generated in
- * a **previous version** of the AutoBE generation pipeline. This is NOT about
- * re-requesting schemas within the same execution, but rather accessing
- * artifacts from an earlier version.
- *
- * **Use Case:** When regenerating or modifying the database schema based on
- * user change requests, agents need to reference the previously generated
- * database schemas to understand the existing database structure and what needs
- * to be modified.
- *
- * **Key Difference from `getDatabaseSchemas`:**
- *
- * - `getDatabaseSchemas`: Fetches schemas from the **current version** (the
- *   version being generated right now)
- * - `getPreviousDatabaseSchemas`: Fetches schemas from the **previous version**
- *   (the last successfully generated version)
- *
- * **Example Scenario:**
- *
- *     Initial generation:
- *     - DATABASE phase creates: users, posts, comments tables
- *     - Generation completes successfully
- *
- *     User: "Add email verification status to users"
- *
- *     Regeneration:
- *     - DATABASE phase starts regeneration
- *     - Calls getPreviousDatabaseSchemas(["users"])
- *       → Loads the previous version of users table schema
- *     - Creates new version with emailVerified field added
- *
- * **Waterfall + Spiral Pattern:**
- *
- * This aligns with AutoBE's regeneration cycles where:
- *
- * - Compilation failures trigger regeneration with corrections
- * - User modifications trigger new versions
- * - Previous schemas serve as reference for incremental changes
- *
- * @author Samchon
+ * Loads database table definitions from the last successfully generated
+ * version, used as reference context during regeneration or modification
+ * cycles.
  */
 export interface IAutoBePreliminaryGetPreviousDatabaseSchemas {
-  /**
-   * Type discriminator for the request.
-   *
-   * Determines which action to perform: preliminary data retrieval or actual
-   * task execution. Value "getPreviousDatabaseSchemas" indicates this is a
-   * preliminary data request for database schemas from a previous version.
-   */
+  /** Type discriminator. */
   type: "getPreviousDatabaseSchemas";
 
   /**
-   * List of database table names to retrieve from the previous version.
-   *
-   * These are table schema names that were generated in a previous version and
-   * are needed as reference context for the current regeneration.
-   *
-   * **Important Notes:**
-   *
-   * - These schemas MUST exist in the previous version
-   * - This function is only available when a previous version exists
-   * - Used for reference/comparison, not for re-requesting within same execution
-   * - Table names are in snake_case (e.g., "shopping_sale", "bbs_article")
-   *
-   * **When This Function is Available:**
-   *
-   * - When a previous version exists
-   * - When user requests modifications to existing database schema
-   * - During correction/regeneration cycles that need previous schema context
-   *
-   * **When This Function is NOT Available:**
-   *
-   * - During initial generation (no previous version exists)
-   * - No previous database schemas available for this orchestration task
-   *
-   * **Example Table Names:**
-   *
-   * - "users", "posts", "comments"
-   * - "shopping_sales", "shopping_orders", "shopping_products"
-   * - "bbs_articles", "bbs_article_files"
+   * Table names to retrieve from previous iteration. DO NOT request same names
+   * already requested in previous calls.
    */
   schemaNames: string[] & tags.MinItems<1>;
 }

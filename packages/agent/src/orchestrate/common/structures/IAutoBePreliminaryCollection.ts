@@ -7,15 +7,7 @@ import {
 
 import { IAnalysisSectionEntry } from "./IAnalysisSectionEntry";
 
-/**
- * Complete data collection for preliminary RAG system.
- *
- * Used in both `all` (globally available) and `local` (currently loaded)
- * contexts of `AutoBePreliminaryController`. Contains current iteration data
- * and optional previous iteration data for complement cycles.
- *
- * @author Samchon
- */
+/** Complete data collection for the preliminary RAG system. */
 export interface IAutoBePreliminaryCollection {
   /** Individual ### sections from analysis files for fine-grained retrieval. */
   analysisSections: IAnalysisSectionEntry[];

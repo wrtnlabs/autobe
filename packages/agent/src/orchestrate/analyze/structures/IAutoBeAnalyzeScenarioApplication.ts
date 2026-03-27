@@ -9,14 +9,8 @@ import { FixedAnalyzeTemplateFeature } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {
   /**
-   * Process scenario composition task or preliminary data requests.
-   *
-   * Composes project structure with actors and entities based on requirements.
-   * File structure is fixed (6-file SRS template); the LLM only determines
-   * actors, entities, prefix, and language.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * Compose project structure (actors, entities, prefix, language) or request
+   * preliminary data.
    */
   process(props: IAutoBeAnalyzeScenarioApplication.IProps): void;
 }
@@ -26,125 +20,58 @@ export namespace IAutoBeAnalyzeScenarioApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * For preliminary requests: what previous analysis sections are missing?
      *
-     * For preliminary requests (getPreviousAnalysisSections):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplished?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * For completion: is the DTO transformable or non-transformable? What
+     * actors, entities, and prefix were chosen based on requirements?
      */
     thinking?: string | null;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getPreviousAnalysisSections) or final scenario composition (complete).
-     * When preliminary returns empty array, that type is removed from the
-     * union, physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request: IComplete | IAutoBePreliminaryGetPreviousAnalysisSections;
   }
 
-  /**
-   * Request to compose project structure with actors and entities.
-   *
-   * The document file structure is fixed as 6-file SRS template. LLM only
-   * determines actors, entities, prefix, and language. Files are generated
-   * programmatically from FixedAnalyzeTemplate.
-   */
+  /** Compose project structure with actors and entities (6-file SRS template). */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
-    /** Reason for the analysis and composition of the project structure. */
+    /** Why these actors, entities, and prefix were chosen based on requirements. */
     reason: string;
 
-    /**
-     * Prefix for file names and variable names. This will be used for
-     * organizing documentation files.
-     *
-     * DO: Use camelCase naming convention.
-     */
+    /** Prefix for file/variable names (camelCase). */
     prefix: string & CamelCasePattern;
 
-    /**
-     * Actors to be assigned for the project.
-     *
-     * Each actor has:
-     *
-     * - `name`: Actor identifier (camelCase)
-     * - `kind`: "guest" | "member" | "admin"
-     * - `description`: Actor's permissions and capabilities
-     */
+    /** Actors for the project (name, kind, description). */
     actors: AutoBeAnalyze.IActor[];
 
     /**
-     * Language for document content. When specified by the user, this takes
-     * precedence over the locale setting for determining document language. Set
-     * to `null` if not specified.
+     * Language for document content. Overrides locale if set; null if not
+     * specified.
      */
     language: string | null;
 
     /**
-     * Core domain entities with their key attributes and relationships.
-     *
-     * These serve as the AUTHORITATIVE entity list — all downstream document
-     * writers (module, unit, section) MUST reference only these entities. This
-     * prevents hallucination and ensures cross-file consistency.
-     *
-     * Each entity should include:
-     *
-     * - `name`: PascalCase entity name (e.g., "Todo", "User", "Comment")
-     * - `attributes`: Key attributes with type hints (e.g., "title: text(1-500),
-     *   required")
-     * - `relationships`: How this entity relates to others (e.g., "belongsTo User
-     *   via userId")
-     *
-     * Include ALL domain entities that will appear in the requirements
-     * documents. Do NOT include meta-entities (InterpretationLog,
-     * ScopeDecisionLog, etc.) that describe the requirements process rather
-     * than the production system.
+     * AUTHORITATIVE entity list — all downstream writers MUST reference only
+     * these entities. Include ALL domain entities; do NOT include meta-entities
+     * describing the requirements process.
      */
     entities: AutoBeAnalyzeScenarioEntity[];
 
     /**
-     * High-level project features that activate conditional modules.
+     * Features activating conditional modules. DEFAULT IS EMPTY ARRAY [].
      *
      * WARNING: Wrong activation causes cascading hallucination across ALL SRS
-     * files. Each feature adds 2-3 conditional modules that downstream LLMs
-     * MUST fill with content — if the user never requested the feature, those
-     * modules get filled with hallucinated requirements.
+     * files. Include ONLY if user used exact trigger keywords:
      *
-     * DEFAULT IS EMPTY ARRAY []. Most projects need no features.
+     * - "file-storage": "file upload", "attachment", "image upload"
+     * - "real-time": "real-time", "WebSocket", "live updates", "chat"
+     * - "external-integration": "payment", "Stripe", "OAuth", "email service"
      *
-     * Activation rule: Include ONLY if the user used exact trigger keywords:
-     *
-     * - "file-storage": user said "file upload", "attachment", "image upload"
-     * - "real-time": user said "real-time", "WebSocket", "live updates", "chat"
-     * - "external-integration": user said "payment", "Stripe", "OAuth", "email
-     *   service"
-     *
-     * Standard CRUD with auth = features: []. Do NOT activate features based on
-     * inference or general context.
+     * Standard CRUD with auth = []. Do NOT activate based on inference.
      */
     features: FixedAnalyzeTemplateFeature[];
   }

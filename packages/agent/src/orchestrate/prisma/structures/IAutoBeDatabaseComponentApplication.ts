@@ -5,59 +5,21 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 
 export interface IAutoBeDatabaseComponentApplication {
-  /**
-   * Process table design task for a single component skeleton or preliminary
-   * data requests.
-   *
-   * Receives a component skeleton (namespace, filename, thinking, review,
-   * rationale already determined by DATABASE_GROUP phase) and fills in the
-   * tables field with complete table designs for that single component.
-   *
-   * This is NOT about creating or organizing multiple components. The component
-   * identity is fixed. This agent ONLY designs the tables that belong to the
-   * provided component skeleton.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   table design
-   */
+  /** Process table design task or retrieve preliminary data. */
   process(props: IAutoBeDatabaseComponentApplication.IProps): void;
 }
 
 export namespace IAutoBeDatabaseComponentApplication {
   export interface IProps {
     /**
-     * Think before you act.
-     *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
-     *
-     * For preliminary requests (getAnalysisSections,
-     * getPreviousAnalysisSections):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * Reasoning about your current state: what's missing (preliminary) or what
+     * you accomplished (completion).
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas) or final table design (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request:
       | IComplete
@@ -67,75 +29,27 @@ export namespace IAutoBeDatabaseComponentApplication {
   }
 
   /**
-   * Request to complete the database component by filling in table designs.
-   *
-   * Takes a component skeleton (namespace, filename already determined by
-   * DATABASE_GROUP phase) and fills in the tables field by designing all
-   * necessary database tables for this single component.
-   *
-   * This is NOT about creating multiple components - the component identity is
-   * already fixed. This is ONLY about designing the tables that belong to this
-   * single component.
+   * Complete the database component by filling in table designs for the given
+   * skeleton.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Analysis of the component's scope and table requirements.
-     *
-     * Documents the agent's understanding of this component's domain:
-     *
-     * - What is the component's business purpose (from the skeleton)?
-     * - What entities from the requirements belong to this component?
-     * - What relationships exist between these entities?
-     * - What normalization patterns were identified?
+     * Analysis of the component's scope, entities, relationships, and table
+     * requirements.
      */
     analysis: string;
 
-    /**
-     * Rationale for the table design decisions.
-     *
-     * Explains why tables were designed this way:
-     *
-     * - Why was each table created?
-     * - Why were certain entities kept separate vs combined?
-     * - What normalization principles were applied?
-     * - How do the tables fulfill the component's rationale?
-     */
+    /** Rationale for table design decisions and normalization choices. */
     rationale: string;
 
     /**
-     * Array of table designs for THIS SINGLE component.
+     * Table designs for this single component (snake_case, plural names).
      *
-     * Contains all database tables that belong to the component skeleton
-     * received as input. Each table design includes table name (snake_case,
-     * plural) and description explaining the table's purpose and contents.
-     *
-     * The AI agent must design tables based on:
-     *
-     * - The component's namespace and intended domain (from skeleton)
-     * - Business requirements from analysis sections
-     * - Previous database schemas for consistency
-     * - Normalization principles (3NF)
-     * - Relationship integrity
-     *
-     * CRITICAL CONSTRAINTS:
-     *
-     * - The namespace and filename are ALREADY DETERMINED by the component
-     *   skeleton
-     * - Do NOT create multiple components or reorganize component boundaries
-     * - Do NOT include thinking, review, decision, or rationale - those are
-     *   already in the skeleton
-     * - ALL tables generated here belong to THE SINGLE component skeleton
-     *   provided
-     * - ONLY provide the tables array - nothing else
+     * Namespace and filename are already determined by the skeleton. All tables
+     * must belong to this component only.
      */
     tables: AutoBeDatabaseComponentTableDesign[];
   }

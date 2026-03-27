@@ -1,53 +1,20 @@
 import { SnakeCasePattern } from "../../typings/SnakeCasePattern";
 
 /**
- * Request to create a new table in the component.
- *
- * Use this when you identify a missing table that should exist based on
- * requirements analysis. Common scenarios:
- *
- * - A required table was accidentally omitted from initial generation
- * - A use case requires a table that wasn't initially identified
- * - Review reveals gaps in data coverage for specific requirements
- * - Supporting tables needed (snapshots, settings, attachments, etc.)
+ * Add a missing table to the component.
  *
  * @author Michael
  */
 export interface AutoBeDatabaseComponentTableCreate {
-  /** Type discriminator indicating this is a create operation. */
+  /** Type discriminator. */
   type: "create";
 
-  /**
-   * Brief, concise reason for creating this table.
-   *
-   * Explain which requirement this table fulfills and why it was missing from
-   * the initial generation.
-   *
-   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
-   *
-   * @example
-   *   "Requirement 3.2 specifies order cancellation tracking, but no
-   *   table exists to store cancellation records with reasons and timestamps."
-   */
+  /** Why this table is needed. Keep concise — one or two sentences. */
   reason: string;
 
-  /**
-   * The new table name to add.
-   *
-   * Must follow snake_case naming convention with appropriate domain prefix.
-   */
+  /** Table name in snake_case with domain prefix. */
   table: string & SnakeCasePattern;
 
-  /**
-   * Brief, concise description of what this table stores.
-   *
-   * Explain the business purpose and what data this table will contain.
-   *
-   * **IMPORTANT**: Keep it **concise** - one or two sentences maximum
-   *
-   * @example
-   *   "Stores order cancellation records including cancellation reason,
-   *   timestamp, refund status, and reference to the original order."
-   */
+  /** Business purpose of this table. Keep concise. MUST be in English. */
   description: string;
 }

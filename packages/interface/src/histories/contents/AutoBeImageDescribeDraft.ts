@@ -1,13 +1,7 @@
 import { AutoBeUserImageConversateContent } from "../../events";
 
 export interface AutoBeImageDescribeDraft {
-  /**
-   * Image content that was analyzed.
-   *
-   * Contains the image content that was analyzed. This includes the image data
-   * and any additional information about the image, such as the image URL or
-   * base64-encoded data.
-   */
+  /** Image content that was analyzed. */
   image: AutoBeUserImageConversateContent;
 
   /**

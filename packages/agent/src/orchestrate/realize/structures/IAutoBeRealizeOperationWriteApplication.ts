@@ -4,26 +4,12 @@ import { IAutoBePreliminaryGetRealizeCollectors } from "../../common/structures/
 import { IAutoBePreliminaryGetRealizeTransformers } from "../../common/structures/IAutoBePreliminaryGetRealizeTransformers";
 
 /**
- * Function calling interface for generating API operation implementation
- * functions.
- *
- * Guides the AI agent through creating provider functions that implement
- * complete business logic for specific API endpoints. Each operation function
- * handles the full request-response lifecycle including validation,
- * authorization, database operations, and response formatting.
- *
- * The generation follows a structured RAG workflow: preliminary context
- * gathering (database schemas) → implementation planning → code generation →
- * review and refinement.
+ * Generates provider functions implementing business logic for API endpoints
+ * via plan/draft/revise workflow.
  */
 export interface IAutoBeRealizeOperationWriteApplication {
   /**
-   * Process operation function implementation task or preliminary data
-   * requests.
-   *
-   * Generates complete operation function implementation through three-phase
-   * workflow (plan → draft → revise). Ensures type safety, proper database
-   * query patterns, and API contract compliance.
+   * Process operation function generation task or preliminary data requests.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -36,35 +22,16 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * For preliminary requests: what critical information is missing and why?
      *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getDatabaseSchemas, getRealizeCollectors, getRealizeTransformers) or
-     * final implementation generation (complete). When preliminary returns
-     * empty array, that type is removed from the union, physically preventing
-     * repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -74,48 +41,28 @@ export namespace IAutoBeRealizeOperationWriteApplication {
       | IAutoBePreliminaryGetRealizeTransformers;
   }
 
-  /**
-   * Request to generate operation function implementation.
-   *
-   * Executes three-phase generation to create complete operation
-   * implementation. Follows plan → draft → revise pattern to ensure type
-   * safety, proper database query patterns, and API contract compliance.
-   */
+  /** Generate operation implementation via plan/draft/revise. */
   export interface IComplete {
     /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Operation implementation plan and strategy.
-     *
-     * Analyzes the operation function requirements, identifies related database
-     * schemas, and outlines the implementation approach. Includes schema
+     * Operation implementation plan. Analyze requirements, identify related
+     * database schemas, and outline implementation approach including schema
      * validation and API contract verification.
      */
     plan: string;
 
-    /**
-     * Initial implementation draft.
-     *
-     * The first complete implementation attempt based on the plan. May contain
-     * areas that need refinement in the review phase.
-     */
+    /** First complete implementation attempt based on the plan. */
     draft: string;
 
-    /**
-     * Revision and finalization phase.
-     *
-     * Reviews the draft implementation and produces the final code with all
-     * improvements and corrections applied.
-     */
+    /** Reviews draft and produces final code. */
     revise: IReviseProps;
   }
 
   export interface IReviseProps {
     /**
-     * Review and improvement suggestions.
-     *
-     * Identifies areas for improvement in the draft code, including:
+     * Identify improvements:
      *
      * - Type safety enhancements
      * - Database query optimizations
@@ -126,12 +73,8 @@ export namespace IAutoBeRealizeOperationWriteApplication {
     review: string;
 
     /**
-     * Final operation function code.
-     *
-     * The complete, production-ready implementation with all review suggestions
-     * applied.
-     *
-     * Returns `null` if the draft is already perfect and needs no changes.
+     * Final operation function code with all review improvements applied, or
+     * null if draft needs no changes.
      */
     final: string | null;
   }

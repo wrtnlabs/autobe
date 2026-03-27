@@ -6,10 +6,7 @@ import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/struc
 
 export interface IAutoBeDatabaseSchemaApplication {
   /**
-   * Process schema generation task or preliminary data requests.
-   *
-   * Generates database models for the target component following normalization
-   * principles and database design best practices.
+   * Process schema generation task or retrieve preliminary data.
    *
    * @param props Request containing either preliminary data request or complete
    *   task
@@ -21,35 +18,17 @@ export namespace IAutoBeDatabaseSchemaApplication {
     /**
      * Think before you act.
      *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
      *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * For completion: what key assets did you acquire, what did you accomplish,
+     * why is it sufficient? Summarize — don't enumerate every single item.
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getPreviousAnalysisSections,
-     * getPreviousDatabaseSchemas) or final schema generation (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union, physically preventing repeated calls.
      */
     request:
       | IComplete
@@ -59,85 +38,35 @@ export namespace IAutoBeDatabaseSchemaApplication {
   }
 
   /**
-   * Request to generate database schema models.
-   *
-   * Executes schema generation to create production-ready database models
-   * following normalization principles, relationship patterns, and indexing
-   * strategies.
+   * Generate production-ready database schema models with normalization and
+   * indexing.
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Strategic database design analysis and planning.
+     * Database design plan for the target table and any child tables (1NF
+     * decomposition).
      *
-     * Contains the database architecture strategy for the target table and any
-     * child tables needed for First Normal Form (1NF) compliance, including
-     * structure, relationships, normalization approach, indexing strategies,
-     * and business requirement mapping. This planning phase defines the
-     * blueprint for the model implementations.
-     *
-     * Key planning aspects:
-     *
-     * - Assignment validation: Extract targetTable as the assignment
-     * - Target table: The primary table matching targetTable is mandatory
-     * - Child tables: Additional tables to decompose repeating groups or
-     *   non-atomic values into separate normalized tables (1NF compliance)
-     * - Child table naming: Must use singular form of targetTable as prefix
-     *   (e.g., for "shopping_orders": "shopping_order_items")
-     * - Other tables: Identify existing tables from otherComponents for foreign
-     *   key relationships — never recreate them
-     * - Normalization: Strict adherence to 1NF, 2NF, 3NF principles
-     * - Snapshot architecture: Design for historical data preservation
-     * - Junction tables: Plan M:N relationships with proper naming
-     *   ({table1}_{table2})
-     * - Materialized views: Identify needs for mv_ prefixed denormalized tables
+     * Child table naming: singular form of targetTable as prefix (e.g.,
+     * "shopping_order_items"). Never recreate existing tables from
+     * otherComponents. Strict 1NF/2NF/3NF adherence. Junction tables:
+     * {table1}_{table2}. Materialized views: mv_ prefix.
      */
     plan: string;
 
     /**
-     * Schema definition containing the single target table model and any newly
-     * discovered table designs.
+     * Schema definition with exactly one
+     * {@link AutoBeDatabaseSchemaDefinition.model} (the target table).
+     * Additional child tables go in
+     * {@link AutoBeDatabaseSchemaDefinition.newDesigns} as name + description
+     * pairs.
      *
-     * The definition carries exactly one
-     * {@link AutoBeDatabaseSchemaDefinition.model} — the target table assigned
-     * to this call — so that the output stays within the LLM's maximum output
-     * token limit. If normalization (e.g. 1NF decomposition) requires
-     * additional child tables, declare them in
-     * {@link AutoBeDatabaseSchemaDefinition.newDesigns} as lightweight name +
-     * description pairs; they will be generated by their own dedicated pipeline
-     * calls.
-     *
-     * Model implementation requirements:
-     *
-     * - Primary keys: Always UUID type with field name "id"
-     * - Foreign keys: Proper IRelation configurations for all relationships
-     * - Business fields: Only raw data fields - no calculated or derived values
-     * - Data types: Limited to uuid, string, int, double, datetime, boolean, uri
-     * - Relationships: Correct patterns for 1:1, 1:N, and M:N
-     * - Indexes:
-     *
-     *   - UniqueIndexes: Business constraints and composite unique keys
-     *   - PlainIndexes: Multi-column query optimization (never single FK)
-     *   - GinIndexes: Full-text search on appropriate string fields
-     * - Materialized views: Tables prefixed with "mv_" have material flag set
-     * - Documentation: Comprehensive English descriptions with business context
-     *
-     * Quality standards:
-     *
-     * - Strict adherence to 3NF (Third Normal Form)
-     * - No denormalization except in materialized views (mv_ tables)
-     * - All foreign keys reference valid existing tables
-     * - Consistent created_at, updated_at, deleted_at patterns
-     * - Proper historical data preservation where needed
-     * - Optimized index strategy for expected query patterns
+     * Key rules: UUID "id" primary keys, data types limited to
+     * uuid/string/int/double/ datetime/boolean/uri, no derived values, strict
+     * 3NF, mv_ prefix for materialized views, consistent
+     * created_at/updated_at/deleted_at, PlainIndexes never single FK.
      */
     definition: AutoBeDatabaseSchemaDefinition;
   }
