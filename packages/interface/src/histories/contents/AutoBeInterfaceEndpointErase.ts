@@ -1,36 +1,21 @@
 import { AutoBeOpenApi } from "../../openapi/AutoBeOpenApi";
 
 /**
- * Request to erase an endpoint.
- *
- * Use this when an endpoint should be removed from the generated set:
- *
- * - Duplicate functionality with another endpoint
- * - Not derived from actual requirements (hallucinated)
- * - Violates RESTful conventions or business rules
- * - Security concern (exposes sensitive data inappropriately)
- * - Over-engineering (unnecessary granularity)
+ * Remove an invalid or duplicate endpoint.
  *
  * @author Michael
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointErase {
-  /**
-   * Reason for deletion.
-   *
-   * Explain why this endpoint should be removed and what issue it causes.
-   */
+  /** Why this endpoint should be removed. */
   reason: string;
 
   /**
-   * The endpoint to remove.
-   *
-   * ⚠️ CRITICAL: Must be from the "Endpoints for Review" list provided above.
-   * DO NOT reference endpoints that are not in the provided list. Must match
-   * exactly (path + method).
+   * Endpoint to remove. MUST match exactly (path + method) from the provided
+   * review list.
    */
   endpoint: AutoBeOpenApi.IEndpoint;
 
-  /** Type discriminator indicating this is an erase operation. */
+  /** Type discriminator. */
   type: "erase";
 }

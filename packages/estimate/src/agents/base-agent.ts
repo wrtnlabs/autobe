@@ -26,16 +26,60 @@ export abstract class BaseAgent {
   /** Run the agent evaluation */
   abstract evaluate(context: EvaluationContext): Promise<AgentResult>;
 
+  /**
+   * Extract the first JSON object from a string, handling markdown fences and
+   * surrounding text
+   */
+  private extractJson(raw: string): string {
+    // 1. Try to extract from markdown code fence (```json ... ``` or ``` ... ```)
+    const fenceMatch = raw.match(/```(?:json)?\s*\r?\n?([\s\S]*?)```/);
+    if (fenceMatch) return fenceMatch[1].trim();
+
+    // 2. Try to extract the first top-level { ... } or [ ... ] block
+    const firstBrace = raw.indexOf("{");
+    const firstBracket = raw.indexOf("[");
+    const start =
+      firstBrace >= 0 && (firstBracket < 0 || firstBrace < firstBracket)
+        ? firstBrace
+        : firstBracket;
+    if (start >= 0) {
+      const open = raw[start];
+      const close = open === "{" ? "}" : "]";
+      let depth = 0;
+      let inString = false;
+      let escape = false;
+      for (let i = start; i < raw.length; i++) {
+        const ch = raw[i];
+        if (escape) {
+          escape = false;
+          continue;
+        }
+        if (ch === "\\") {
+          escape = true;
+          continue;
+        }
+        if (ch === '"') {
+          inString = !inString;
+          continue;
+        }
+        if (inString) continue;
+        if (ch === open) depth++;
+        else if (ch === close) {
+          depth--;
+          if (depth === 0) return raw.slice(start, i + 1);
+        }
+      }
+    }
+
+    // 3. Fallback: return trimmed input as-is
+    return raw.trim();
+  }
+
   /** Parse JSON response from LLM */
   protected parseResponse(content: string): AgentParseResult {
     try {
-      let jsonStr = content;
-      if (jsonStr.includes("```json")) {
-        jsonStr = jsonStr.replace(/```json\n?/g, "").replace(/```\n?/g, "");
-      } else if (jsonStr.includes("```")) {
-        jsonStr = jsonStr.replace(/```\n?/g, "");
-      }
-      const parsed = JSON.parse(jsonStr.trim());
+      const jsonStr = this.extractJson(content);
+      const parsed = JSON.parse(jsonStr);
       // Sanitize issues: ensure each has required string fields
       const rawIssues: AgentIssue[] = (parsed.issues || [])
         .filter((i: unknown) => i && typeof i === "object")
@@ -72,7 +116,10 @@ export abstract class BaseAgent {
       }
       return result;
     } catch (_error) {
-      console.error(`  ⚠ ${this.constructor.name}: JSON parse failed`);
+      const preview = content.slice(0, 200).replace(/\n/g, "\\n");
+      console.error(
+        `  ⚠ ${this.constructor.name}: JSON parse failed — preview: ${preview}`,
+      );
       return {
         issues: [],
         score: 0,

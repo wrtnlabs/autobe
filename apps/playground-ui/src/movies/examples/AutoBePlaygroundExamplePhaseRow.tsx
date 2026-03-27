@@ -1,12 +1,12 @@
 import { IAutoBePlaygroundReplay } from "@autobe/interface";
+
 import {
-  Box,
-  TableCell,
-  TableRow,
   Tooltip,
-  Typography,
-  useTheme,
-} from "@mui/material";
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn, formatElapsed, formatTokens } from "@/utils";
 
 const PHASES = ["analyze", "database", "interface", "test", "realize"] as const;
 type PhaseName = (typeof PHASES)[number];
@@ -15,31 +15,24 @@ export function AutoBePlaygroundExamplePhaseRow(
   props: AutoBePlaygroundExamplePhaseRow.IProps,
 ) {
   const { phaseName, phase } = props;
-  const theme = useTheme();
   const label = phaseName.charAt(0).toUpperCase() + phaseName.slice(1);
 
   if (!phase) {
     return (
-      <TableRow>
-        <TableCell sx={{ py: 0.75, pr: 1, width: 16, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "grey.600" }} />
-        </TableCell>
-        <TableCell sx={{ py: 0.75, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.8rem" }}>
-            {label}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ py: 0.75, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.8rem" }}>
-            -
-          </Typography>
-        </TableCell>
-        <TableCell align="right" sx={{ py: 0.75, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: "text.disabled", fontSize: "0.8rem" }}>
-            -
-          </Typography>
-        </TableCell>
-      </TableRow>
+      <tr className="border-b border-border">
+        <td className="py-2 pr-1 w-4">
+          <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" />
+        </td>
+        <td className="py-2">
+          <span className="text-sm text-muted-foreground">{label}</span>
+        </td>
+        <td className="py-2">
+          <span className="text-sm text-muted-foreground">-</span>
+        </td>
+        <td className="py-2 text-right">
+          <span className="text-sm text-muted-foreground">-</span>
+        </td>
+      </tr>
     );
   }
 
@@ -50,16 +43,16 @@ export function AutoBePlaygroundExamplePhaseRow(
     : "-";
 
   const statusColor = phase.success
-    ? theme.palette.success.main
+    ? "bg-success"
     : Object.keys(phase.commodity).length !== 0
-      ? theme.palette.warning.main
-      : theme.palette.error.main;
+      ? "bg-warning"
+      : "bg-destructive";
 
   const textColor = phase.success
-    ? "text.primary"
+    ? "text-foreground"
     : Object.keys(phase.commodity).length !== 0
-      ? "warning.main"
-      : "error.main";
+      ? "text-warning"
+      : "text-destructive";
 
   const successRate =
     phase.aggregates?.total?.metric?.attempt > 0
@@ -71,48 +64,53 @@ export function AutoBePlaygroundExamplePhaseRow(
       : "0.0";
 
   const tooltipContent = phase.aggregates?.total ? (
-    <Box sx={{ p: 0.5 }}>
-      <Typography variant="caption" sx={{ fontWeight: 600, display: "block", mb: 0.5 }}>
-        {label} Phase
-      </Typography>
-      <Typography variant="caption" sx={{ display: "block" }}>
+    <div className="p-1 space-y-1">
+      <p className="font-semibold text-xs">{label} Phase</p>
+      <p className="text-xs">
         Tokens: {formatTokens(phase.aggregates.total.tokenUsage.total)}
-      </Typography>
-      <Typography variant="caption" sx={{ color: "grey.400", display: "block", ml: 1, fontSize: "0.65rem" }}>
+      </p>
+      <p className="text-xs text-muted-foreground ml-2">
         in: {formatTokens(phase.aggregates.total.tokenUsage.input.total)} / out:{" "}
         {formatTokens(phase.aggregates.total.tokenUsage.output.total)}
-      </Typography>
-      <Typography variant="caption" sx={{ display: "block", mt: 0.5 }}>
+      </p>
+      <p className="text-xs mt-1">
         Function Calls: {phase.aggregates.total.metric.success} /{" "}
         {phase.aggregates.total.metric.attempt}{" "}
-        <span style={{ color: theme.palette.success.main }}>({successRate}%)</span>
-      </Typography>
-    </Box>
-  ) : "";
+        <span className="text-success">({successRate}%)</span>
+      </p>
+    </div>
+  ) : null;
+
+  const row = (
+    <tr className="border-b border-border hover:bg-muted/50 cursor-pointer transition-colors">
+      <td className="py-2 pr-1 w-4">
+        <div className={cn("h-2.5 w-2.5 rounded-full", statusColor)} />
+      </td>
+      <td className="py-2 w-20">
+        <span className={cn("text-sm", textColor)}>{label}</span>
+      </td>
+      <td className="py-2">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {detail}
+        </span>
+      </td>
+      <td className="py-2 text-right w-[70px]">
+        <span className="text-sm text-muted-foreground whitespace-nowrap">
+          {phase.elapsed ? formatElapsed(phase.elapsed) : "-"}
+        </span>
+      </td>
+    </tr>
+  );
+
+  if (!tooltipContent) return row;
 
   return (
-    <Tooltip title={tooltipContent} placement="right" arrow>
-      <TableRow sx={{ "&:hover": { bgcolor: "action.hover" }, cursor: "pointer" }}>
-        <TableCell sx={{ py: 0.75, pr: 1, width: 16, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: statusColor }} />
-        </TableCell>
-        <TableCell sx={{ py: 0.75, width: 80, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: textColor, fontSize: "0.8rem" }}>
-            {label}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ py: 0.75, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem", whiteSpace: "nowrap" }}>
-            {detail}
-          </Typography>
-        </TableCell>
-        <TableCell align="right" sx={{ py: 0.75, width: 70, borderBottom: "1px solid", borderColor: "divider" }}>
-          <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.8rem", whiteSpace: "nowrap" }}>
-            {phase.elapsed ? formatElapsed(phase.elapsed) : "-"}
-          </Typography>
-        </TableCell>
-      </TableRow>
-    </Tooltip>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{row}</TooltipTrigger>
+        <TooltipContent side="right">{tooltipContent}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 export namespace AutoBePlaygroundExamplePhaseRow {
@@ -120,19 +118,4 @@ export namespace AutoBePlaygroundExamplePhaseRow {
     phaseName: PhaseName;
     phase: IAutoBePlaygroundReplay.IPhaseState | null;
   }
-}
-
-function formatElapsed(ms: number): string {
-  const s = Math.floor(ms / 1000) % 60;
-  const m = Math.floor(ms / 60000) % 60;
-  const h = Math.floor(ms / 3600000);
-  if (h > 0) return `${h}h ${m}m ${s}s`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
-}
-
-function formatTokens(num: number): string {
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(2)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return num.toString();
 }

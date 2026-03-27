@@ -50,11 +50,11 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.05, // 5%
-  requirementsCoverage: 0.2, // 20%
-  testCoverage: 0.2, // 20%
-  logicCompleteness: 0.3, // 30% (best discriminator of real quality)
-  apiCompleteness: 0.1, // 10%
+  documentQuality: 0.07, // 7% (M-1: increased from 5% for better doc incentive)
+  requirementsCoverage: 0.18, // 18%
+  testCoverage: 0.23, // 23% (best cross-model discriminator)
+  logicCompleteness: 0.3, // 30%
+  apiCompleteness: 0.07, // 7% (C-1: restored with improved evaluator discrimination)
   goldenSet: 0.15, // 15% (runtime functional testing)
   // Legacy (not used in score)
   requirements: 0,

@@ -1,69 +1,41 @@
 /**
- * Application interface for the Scenario Review agent.
- *
- * This agent reviews the scenario output against the user's original
- * requirements, checking entity coverage, hallucination, actor classification,
- * relationship completeness, and feature identification accuracy.
+ * Reviews scenario output against user requirements for entity coverage,
+ * hallucination, and consistency.
  */
 export interface IAutoBeAnalyzeScenarioReviewApplication {
   /**
-   * Process scenario review task.
-   *
-   * Reviews the scenario output and provides an approved/rejected verdict with
-   * structured feedback.
-   *
-   * @param props Request containing the review result
+   * Review scenario and provide approved/rejected verdict with structured
+   * feedback.
    */
   process(props: IAutoBeAnalyzeScenarioReviewApplicationProps): void;
 }
 
 export interface IAutoBeAnalyzeScenarioReviewApplicationProps {
   /**
-   * Think before you act.
-   *
-   * Before completing the review, reflect on your analysis:
-   *
-   * - Does every user-mentioned concept have a corresponding entity?
-   * - Are there entities the user never mentioned or implied?
-   * - Are actors correctly classified by identity boundary?
-   * - Are all entity relationships complete and bidirectional?
-   * - Are features correctly identified from user requirements?
+   * Reasoning about your current state: what's missing (preliminary) or what
+   * you accomplished (completion).
    */
   thinking?: string | null;
 
-  /** Review result. */
+  /** Action to perform: submit review verdict. */
   request: IAutoBeAnalyzeScenarioReviewApplicationComplete;
 }
 
 /** Request to complete the scenario review. */
 export interface IAutoBeAnalyzeScenarioReviewApplicationComplete {
-  /** Type discriminator for the request. */
+  /** Type discriminator for completion request. */
   type: "complete";
 
-  /**
-   * Whether the scenario passed review.
-   *
-   * Set to true if all review criteria pass. Set to false if any criterion
-   * fails.
-   */
+  /** Whether the scenario passed review. */
   approved: boolean;
 
   /**
-   * Detailed review feedback.
-   *
-   * When rejecting: describe each issue clearly so the scenario generator can
-   * fix them on the next attempt.
-   *
-   * When approving: may include minor observations.
+   * Detailed review feedback. When rejecting, describe issues clearly for the
+   * next attempt.
    */
   feedback: string;
 
-  /**
-   * Structured issues for targeted scenario regeneration.
-   *
-   * Each issue identifies a specific category and provides a concrete
-   * suggestion for fixing the scenario.
-   */
+  /** Structured issues for targeted scenario regeneration. */
   issues: IAutoBeAnalyzeScenarioReviewApplicationScenarioReviewIssue[];
 }
 

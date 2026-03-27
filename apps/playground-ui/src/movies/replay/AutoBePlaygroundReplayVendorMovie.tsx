@@ -1,5 +1,6 @@
 import { IAutoBePlaygroundSession } from "@autobe/interface";
-import { Box, Divider, Grid, Typography } from "@mui/material";
+
+import { Separator } from "@/components/ui/separator";
 
 import { AutoBePlaygroundReplayProjectMovie } from "./AutoBePlaygroundReplayProjectMovie";
 
@@ -8,27 +9,20 @@ export const AutoBePlaygroundReplayVendorMovie = ({
   sessions,
 }: AutoBePlaygroundReplayVendorMovie.IProps) => {
   return (
-    <Box sx={{ mb: { xs: 3, sm: 4, md: 5 } }}>
-      <Typography
-        variant="h5"
-        component="h2"
-        sx={{
-          mb: { xs: 2, sm: 2.5, md: 3 },
-          fontWeight: 600,
-          fontSize: { xs: "1.5rem", sm: "1.8rem", md: "2rem" },
-        }}
-      >
+    <div className="mb-6 sm:mb-8">
+      <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6">
         {vendor}
-      </Typography>
-      <Divider sx={{ mb: { xs: 1, sm: 1.5 } }} />
-      <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
+      </h2>
+      <Separator className="mb-3" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {sessions.map((session) => (
-          <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4 }} key={session.id}>
-            <AutoBePlaygroundReplayProjectMovie session={session} />
-          </Grid>
+          <AutoBePlaygroundReplayProjectMovie
+            key={session.id}
+            session={session}
+          />
         ))}
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
 };
 

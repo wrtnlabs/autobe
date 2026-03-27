@@ -100,7 +100,7 @@ function SectionLabel({ children }) {
 
 /* ── Expanded Detail Row (inline under table row) ── */
 
-function ExpandedDetail({ entries, projects }) {
+function ExpandedDetail({ entries, projects, onSelectEntry }) {
   const cols = projects.filter((p) => entries.find((e) => e.project === p));
 
   return (
@@ -113,7 +113,11 @@ function ExpandedDetail({ entries, projects }) {
         const h = heatmap(entry.totalScore);
 
         return (
-          <div key={p} style={{ background: "#0f172a", borderRadius: "8px", border: "1px solid #334155", overflow: "hidden" }}>
+          <div key={p} style={{ background: "#0f172a", borderRadius: "8px", border: "1px solid #334155", overflow: "hidden", cursor: "pointer", transition: "border-color 0.15s" }}
+            onClick={() => onSelectEntry && onSelectEntry(entry)}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#475569"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#334155"; }}
+          >
             {/* Project header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "#1e293b", borderBottom: "1px solid #334155" }}>
               <span style={{ fontSize: "13px", fontWeight: 700, color: "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px" }}>{entry.project}</span>
@@ -198,26 +202,69 @@ function ExpandedDetail({ entries, projects }) {
               </div>
             </div>
 
-            {/* Pipeline token usage (if available) */}
-            {entry.pipeline?.phases && (
-              <div style={{ padding: "10px 16px", borderTop: "1px solid #1e293b" }}>
-                <SectionLabel>Pipeline Token Usage</SectionLabel>
-                <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                  {Object.entries(entry.pipeline.phases).map(([name, tokens]) => {
-                    const total = (tokens.inputTokens || 0) + (tokens.outputTokens || 0);
-                    if (total === 0) return null;
-                    return (
-                      <div key={name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px" }}>
-                        <span style={{ color: "#94a3b8", textTransform: "capitalize" }}>{name}</span>
-                        <span style={{ color: "#64748b", fontVariantNumeric: "tabular-nums", fontFamily: "monospace", fontSize: "10px" }}>
-                          {(total / 1000).toFixed(1)}k tokens
-                        </span>
-                      </div>
-                    );
-                  })}
+            {/* Pipeline phases (waterfall timeline) */}
+            {entry.pipeline?.phases && (() => {
+              const pp = entry.pipeline.phases;
+              const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+              const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
+              const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
+              const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
+              const hasAny = phaseNames.some(n => pp[n]?.completed);
+              if (!hasAny) return null;
+              return (
+                <div style={{ padding: "10px 16px", borderTop: "1px solid #1e293b" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <SectionLabel>Pipeline Phases</SectionLabel>
+                    <span style={{ fontSize: "10px", color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
+                      Total: {fmtDuration(totalDur)}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    {phaseNames.map(name => {
+                      const p = pp[name];
+                      if (!p) return null;
+                      const dur = p.durationMs || 0;
+                      const pct = maxDur > 0 ? (dur / maxDur) * 100 : 0;
+                      const color = phaseColors[name];
+                      const detail = p.detail;
+                      let detailText = "";
+                      if (name === "analyze" && detail) {
+                        detailText = `${(detail.actors || []).length} actors, ${(detail.documents || []).length} docs`;
+                      } else if (name === "database" && detail) {
+                        detailText = `${detail.totalModels || 0} models, ${detail.totalEnums || 0} enums`;
+                      } else if (name === "interface" && detail) {
+                        detailText = `${(detail.operations || []).length} APIs`;
+                      } else if (name === "test" && detail) {
+                        detailText = `${(detail.functions || []).length} tests`;
+                      } else if (name === "realize" && detail) {
+                        detailText = `${(detail.functions || []).length} impls`;
+                        if (detail.compileResult) {
+                          detailText += detail.compileResult.success ? " ✓" : ` ✗ ${(detail.compileResult.errors || []).length} errors`;
+                        }
+                      }
+                      return (
+                        <div key={name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ width: "60px", fontSize: "10px", color: color, fontWeight: 600, textTransform: "capitalize", flexShrink: 0 }}>
+                            {name}
+                          </div>
+                          <div style={{ flex: 1, height: "6px", borderRadius: "3px", background: "#1e293b", position: "relative" }}>
+                            <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", borderRadius: "3px", background: color, opacity: p.completed ? 0.7 : 0.2, transition: "width 0.3s" }} />
+                          </div>
+                          <span style={{ width: "50px", textAlign: "right", fontSize: "10px", color: "#94a3b8", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
+                            {fmtDuration(dur)}
+                          </span>
+                          {detailText && (
+                            <span style={{ width: "110px", textAlign: "right", fontSize: "9px", color: "#64748b", flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {detailText}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Penalties */}
             {entry.penalties && (entry.penalties.duplication || entry.penalties.jsdoc) && (
@@ -275,10 +322,366 @@ function ExpandedDetail({ entries, projects }) {
   );
 }
 
+/* ── Score Detail Modal ── */
+
+const METRIC_LABELS = {
+  hasDocsFolder: "Docs Folder", hasReadme: "README", docFileCount: "Doc Files", totalDocLength: "Total Doc Length",
+  controllerCount: "Controllers", providerCount: "Providers", structureCount: "Structures",
+  requirementsDocCount: "Req Docs", hasRequirementsDocs: "Has Req Docs",
+  mappedControllers: "Mapped Controllers", unmappedControllers: "Unmapped Controllers", mappingRatio: "Mapping Ratio",
+  testCount: "Tests", totalRoutes: "Total Routes", coveredRoutes: "Covered Routes",
+  routeCoveragePercent: "Route Coverage %", stubTests: "Stub Tests", assertionTests: "Assertion Tests",
+  controllersAnalyzed: "Controllers Analyzed", runtimeVerified: "Runtime Verified",
+  definedMethods: "Defined Methods", testedMethods: "Tested Methods", routeAnalysis: "Route Analysis",
+  totalIncomplete: "Incomplete", criticalCount: "Critical", warningCount: "Warnings",
+  todoCount: "TODOs", fixmeCount: "FIXMEs", emptyMethods: "Empty Methods", emptyCatch: "Empty Catch",
+  totalEndpoints: "Endpoints", emptyEndpoints: "Empty", stubEndpoints: "Stubs",
+  implementedEndpoints: "Implemented", noProviderEndpoints: "No Provider",
+  passthroughEndpoints: "Passthrough", completionRate: "Completion %", implementationRate: "Implementation %",
+  totalFiles: "Total Files", filesWithErrors: "Files w/ Errors", errorRatio: "Error Ratio",
+  penalty: "Penalty", typeCriticalCount: "TS Critical", typeWarningCount: "TS Warnings",
+  prismaCriticalCount: "Prisma Critical", prismaWarningCount: "Prisma Warnings", softPass: "Soft Pass",
+  failedAt: "Failed At", reason: "Reason",
+};
+
+function formatMetricValue(key, val) {
+  if (val === true) return "Yes";
+  if (val === false) return "No";
+  if (key === "mappingRatio" || key === "errorRatio") return `${(val * 100).toFixed(1)}%`;
+  if (key === "totalDocLength" && typeof val === "number") return `${(val / 1024).toFixed(0)}KB`;
+  if (typeof val === "number" && val > 1000) return val.toLocaleString();
+  return String(val);
+}
+
+function ScoreDetailModal({ entry, onClose }) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", handler);
+    };
+  }, [onClose]);
+
+  const phases = entry.phases || {};
+  const meta = entry.meta || {};
+  const h = heatmap(entry.totalScore);
+
+  const sectionStyle = { padding: "16px 20px", borderBottom: "1px solid #1e293b" };
+  const metricRowStyle = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0", fontSize: "12px" };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.6)", fontFamily: FONT }}
+      onClick={onClose}
+    >
+      <div
+        style={{ width: "min(640px, 92vw)", maxHeight: "88vh", overflowY: "auto", background: "#0f172a", border: "1px solid #334155", borderRadius: "12px", boxShadow: "0 25px 50px rgba(0,0,0,0.5)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", background: "#1e293b", borderBottom: "1px solid #334155", borderRadius: "12px 12px 0 0" }}>
+          <div>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>{entry.project}</div>
+            <div style={{ fontSize: "18px", fontWeight: 700, color: "#f1f5f9", marginTop: "2px" }}>{entry.model}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "32px", fontWeight: 800, color: h.fg, fontVariantNumeric: "tabular-nums" }}>{entry.totalScore}</span>
+            <GradePill grade={entry.grade} large />
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", fontSize: "20px", cursor: "pointer", padding: "4px 8px", marginLeft: "8px" }}>✕</button>
+          </div>
+        </div>
+
+        {/* Meta bar */}
+        <div style={{ display: "flex", gap: "16px", padding: "10px 24px", fontSize: "11px", color: "#64748b", background: "#0d1425", borderBottom: "1px solid #1e293b", flexWrap: "wrap" }}>
+          {meta.evaluatedFiles != null && <span>Files: <b style={{ color: "#94a3b8" }}>{meta.evaluatedFiles}</b></span>}
+          {meta.totalDurationMs != null && <span>Eval time: <b style={{ color: "#94a3b8" }}>{fmtDuration(meta.totalDurationMs)}</b></span>}
+          {meta.evaluatedAt && <span>{new Date(meta.evaluatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
+          {entry.summary && (
+            <>
+              {entry.summary.criticalCount > 0 && <span style={{ color: "#f87171" }}><b>{entry.summary.criticalCount}</b> critical</span>}
+              {entry.summary.warningCount > 0 && <span style={{ color: "#fdba74" }}><b>{entry.summary.warningCount}</b> warnings</span>}
+              {entry.summary.suggestionCount > 0 && <span><b>{entry.summary.suggestionCount}</b> suggestions</span>}
+            </>
+          )}
+        </div>
+
+        {/* Pipeline Phases Detail */}
+        {entry.pipeline?.phases && (() => {
+          const pp = entry.pipeline.phases;
+          const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+          const phaseLabels = { analyze: "Analyze", database: "Database", interface: "Interface", test: "Test", realize: "Realize" };
+          const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
+          const phaseIcons = { analyze: "🔍", database: "🗄️", interface: "🔌", test: "🧪", realize: "⚙️" };
+          const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
+          const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
+          const totalTokens = entry.pipeline.totalTokens || 0;
+          const hasAny = phaseNames.some(n => pp[n]?.completed);
+          if (!hasAny) return null;
+          return (
+            <div style={sectionStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <SectionLabel>Pipeline Phases</SectionLabel>
+                <div style={{ display: "flex", gap: "12px", fontSize: "11px" }}>
+                  {totalTokens > 0 && <span style={{ color: "#64748b" }}>Tokens: <b style={{ color: "#94a3b8" }}>{totalTokens >= 1e6 ? `${(totalTokens / 1e6).toFixed(1)}M` : totalTokens >= 1e3 ? `${(totalTokens / 1e3).toFixed(0)}K` : totalTokens}</b></span>}
+                  <span style={{ color: "#64748b" }}>Total: <b style={{ color: "#94a3b8" }}>{fmtDuration(totalDur)}</b></span>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {phaseNames.map(name => {
+                  const p = pp[name];
+                  if (!p) return null;
+                  const dur = p.durationMs || 0;
+                  const pct = maxDur > 0 ? (dur / maxDur) * 100 : 0;
+                  const color = phaseColors[name];
+                  const detail = p.detail;
+
+                  // Build detail items
+                  const detailItems = [];
+                  if (name === "analyze" && detail) {
+                    if (detail.prefix) detailItems.push({ label: "Prefix", value: detail.prefix });
+                    detailItems.push({ label: "Actors", value: `${(detail.actors || []).length}` });
+                    detailItems.push({ label: "Documents", value: `${(detail.documents || []).length}` });
+                  } else if (name === "database" && detail) {
+                    detailItems.push({ label: "Models", value: `${detail.totalModels || 0}` });
+                    detailItems.push({ label: "Enums", value: `${detail.totalEnums || 0}` });
+                    detailItems.push({ label: "Schemas", value: `${(detail.schemas || []).length} files` });
+                    detailItems.push({ label: "Compiled", value: detail.compiled ? "✓" : "✗" });
+                  } else if (name === "interface" && detail) {
+                    detailItems.push({ label: "APIs", value: `${(detail.operations || []).length}` });
+                    detailItems.push({ label: "Auth", value: `${(detail.authorizations || []).length}` });
+                    if ((detail.missed || []).length > 0) detailItems.push({ label: "Missed", value: `${detail.missed.length}` });
+                  } else if (name === "test" && detail) {
+                    detailItems.push({ label: "Tests", value: `${(detail.functions || []).length}` });
+                    detailItems.push({ label: "Compiled", value: detail.compiled ? "✓" : "✗" });
+                  } else if (name === "realize" && detail) {
+                    detailItems.push({ label: "Impls", value: `${(detail.functions || []).length}` });
+                    if (detail.compileResult) {
+                      detailItems.push({ label: "Compiled", value: detail.compileResult.success ? "✓" : `✗ ${(detail.compileResult.errors || []).length}` });
+                    }
+                  }
+
+                  // Agent metrics
+                  const agentMetrics = detail?.agentMetrics;
+
+                  return (
+                    <div key={name} style={{ background: "#131b2e", borderRadius: "8px", padding: "10px 14px", border: `1px solid ${color}22` }}>
+                      {/* Phase header row */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                        <span style={{ fontSize: "13px" }}>{phaseIcons[name]}</span>
+                        <span style={{ fontSize: "12px", fontWeight: 700, color, flex: 1 }}>{phaseLabels[name]}</span>
+                        <span style={{ fontSize: "11px", color: p.completed ? "#4ade80" : "#f87171", fontWeight: 600 }}>
+                          {p.completed ? "Done" : "Failed"}
+                        </span>
+                        <span style={{ fontSize: "11px", color: "#94a3b8", fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
+                          {fmtDuration(dur)}
+                        </span>
+                      </div>
+                      {/* Duration bar */}
+                      <div style={{ height: "6px", borderRadius: "3px", background: "#1e293b", marginBottom: detailItems.length > 0 ? "8px" : "0" }}>
+                        <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", borderRadius: "3px", background: color, opacity: 0.6, transition: "width 0.3s" }} />
+                      </div>
+                      {/* Detail metrics */}
+                      {detailItems.length > 0 && (
+                        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: agentMetrics ? "6px" : "0" }}>
+                          {detailItems.map((d, i) => (
+                            <span key={i} style={{ fontSize: "11px", color: "#64748b" }}>
+                              {d.label}: <b style={{ color: d.value === "✗" || d.value.startsWith("✗") ? "#f87171" : d.value === "✓" ? "#4ade80" : "#cbd5e1" }}>{d.value}</b>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {/* Agent metrics */}
+                      {agentMetrics && (
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingTop: "4px", borderTop: "1px solid #1e293b" }}>
+                          {Object.entries(agentMetrics).map(([agentName, m]) => (
+                            <span key={agentName} style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "3px", background: "#1e293b" }}>
+                              <span style={{ color: "#94a3b8" }}>{agentName}</span>
+                              <span style={{ color: "#4ade80", marginLeft: "4px" }}>{m.success}</span>
+                              {m.failure > 0 && <span style={{ color: "#f87171", marginLeft: "2px" }}>/{m.failure}</span>}
+                              <span style={{ color: "#475569", marginLeft: "2px" }}>({m.attempt})</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Gate Section */}
+        {phases.gate && (
+          <div style={{ ...sectionStyle, background: phases.gate.passed ? "rgba(34,197,94,0.04)" : "rgba(239,68,68,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+              <SectionLabel>Compilation Gate</SectionLabel>
+              <span style={{ fontWeight: 700, fontSize: "13px", color: phases.gate.passed ? "#4ade80" : "#f87171" }}>
+                {phases.gate.passed ? "PASS" : "FAIL"} <span style={{ color: "#64748b", fontWeight: 500 }}>{phases.gate.score}/{phases.gate.maxScore}</span>
+              </span>
+            </div>
+            {/* Gate metrics grid */}
+            {phases.gate.metrics && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "4px 16px", marginBottom: "10px" }}>
+                {Object.entries(phases.gate.metrics).filter(([k]) => k !== "softPass" && k !== "failedAt" && k !== "reason").map(([k, v]) => (
+                  <div key={k} style={metricRowStyle}>
+                    <span style={{ color: "#64748b" }}>{METRIC_LABELS[k] || k}</span>
+                    <span style={{ color: v > 0 && (k.includes("Critical") || k.includes("Error") || k === "filesWithErrors") ? "#f87171" : v > 0 && k.includes("Warning") ? "#fdba74" : "#cbd5e1", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                      {formatMetricValue(k, v)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Gate failed reason */}
+            {phases.gate.metrics?.failedAt && (
+              <div style={{ padding: "8px 12px", borderRadius: "6px", background: "rgba(239,68,68,0.08)", marginBottom: "10px", fontSize: "12px" }}>
+                <span style={{ color: "#f87171", fontWeight: 600 }}>Failed at: </span>
+                <span style={{ color: "#fca5a5" }}>{phases.gate.metrics.failedAt}</span>
+                {phases.gate.metrics.reason && <div style={{ color: "#94a3b8", marginTop: "4px" }}>{phases.gate.metrics.reason}</div>}
+              </div>
+            )}
+            {/* All gate issues */}
+            {phases.gate.issuesByCode?.length > 0 && (
+              <div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>
+                  Compiler Issues ({phases.gate.issuesByCode.reduce((s, i) => s + i.count, 0)} total)
+                </div>
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  {phases.gate.issuesByCode.map((issue, idx) => (
+                    <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", padding: "4px 0", fontSize: "11px", borderBottom: "1px solid #0f172a" }}>
+                      <span style={{
+                        display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", marginTop: "4px", flexShrink: 0,
+                        background: issue.severity === "critical" ? "#f87171" : issue.severity === "warning" ? "#fdba74" : "#475569",
+                      }} />
+                      <span style={{ color: "#cbd5e1", fontWeight: 700, fontFamily: "monospace", fontSize: "10px", minWidth: "60px", flexShrink: 0 }}>{issue.code}</span>
+                      <span style={{ color: "#64748b", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>x{issue.count}</span>
+                      <span style={{ color: "#94a3b8", fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis" }}>{issue.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Scoring Phases */}
+        <div style={sectionStyle}>
+          <SectionLabel>Scoring Phases</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {PHASE_META.map(({ key, label, w }) => {
+              const phase = phases[key];
+              if (!phase) return null;
+              const pct = phase.maxScore > 0 ? (phase.score / phase.maxScore) * 100 : 0;
+              const ph = heatmap(phase.score);
+              const metrics = phase.metrics || {};
+              const visibleMetrics = Object.entries(metrics).filter(([k]) => k !== "cached" && k !== "originalDurationMs");
+              return (
+                <div key={key} style={{ background: "#131b2e", borderRadius: "8px", padding: "12px 14px", border: "1px solid #1e293b" }}>
+                  {/* Phase header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: 700, color: "#cbd5e1", flex: 1 }}>{label}</span>
+                    <span style={{ fontSize: "10px", color: "#64748b" }}>w:{w}%</span>
+                    <span style={{ fontSize: "14px", fontWeight: 700, color: ph.fg, fontVariantNumeric: "tabular-nums" }}>{phase.score}</span>
+                    <span style={{ fontSize: "10px", color: "#475569" }}>/{phase.maxScore}</span>
+                    {phase.durationMs > 0 && <span style={{ fontSize: "10px", color: "#475569" }}>{fmtDuration(phase.durationMs)}</span>}
+                  </div>
+                  {/* Progress bar */}
+                  <div style={{ height: "4px", borderRadius: "2px", background: "#1e293b", marginBottom: visibleMetrics.length > 0 ? "10px" : "0" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", borderRadius: "2px", background: ph.fg, opacity: 0.7 }} />
+                  </div>
+                  {/* Metrics */}
+                  {visibleMetrics.length > 0 && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "2px 16px" }}>
+                      {visibleMetrics.map(([k, v]) => (
+                        <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", padding: "2px 0" }}>
+                          <span style={{ color: "#64748b" }}>{METRIC_LABELS[k] || k}</span>
+                          <span style={{ color: (k === "criticalCount" || k === "totalIncomplete") && v > 0 ? "#f87171" : k === "warningCount" && v > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                            {formatMetricValue(k, v)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Explanation */}
+                  {phase.explanation?.reasons?.length > 0 && (
+                    <div style={{ marginTop: "8px", padding: "8px 10px", borderRadius: "6px", background: "rgba(239,68,68,0.06)" }}>
+                      {phase.explanation.reasons.map((r, i) => (
+                        <div key={i} style={{ fontSize: "11px", color: "#fca5a5", padding: "1px 0" }}>{r}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Penalties */}
+        {entry.penalties && (entry.penalties.duplication || entry.penalties.jsdoc) && (
+          <div style={sectionStyle}>
+            <SectionLabel>Penalties</SectionLabel>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {entry.penalties.duplication && (
+                <div style={{ padding: "8px 14px", borderRadius: "6px", background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.15)" }}>
+                  <div style={{ fontSize: "16px", fontWeight: 700, color: "#fdba74" }}>-{entry.penalties.duplication.amount}pt</div>
+                  <div style={{ fontSize: "11px", color: "#94a3b8" }}>Duplication ({entry.penalties.duplication.blocks} blocks)</div>
+                </div>
+              )}
+              {entry.penalties.jsdoc && (
+                <div style={{ padding: "8px 14px", borderRadius: "6px", background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.15)" }}>
+                  <div style={{ fontSize: "16px", fontWeight: 700, color: "#fdba74" }}>-{entry.penalties.jsdoc.amount}pt</div>
+                  <div style={{ fontSize: "11px", color: "#94a3b8" }}>JSDoc ({entry.penalties.jsdoc.missing} missing, {entry.penalties.jsdoc.ratio} coverage)</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Reference Data */}
+        {entry.reference && (
+          <div style={{ ...sectionStyle, borderBottom: "none" }}>
+            <SectionLabel>Reference Data</SectionLabel>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "4px 16px" }}>
+              {entry.reference.complexity && (
+                <>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Functions</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.totalFunctions}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Complex Fns</span><span style={{ color: entry.reference.complexity.complexFunctions > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.complexFunctions}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Max Complexity</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.maxComplexity}</span></div>
+                </>
+              )}
+              {entry.reference.duplication && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Dup Blocks</span><span style={{ color: entry.reference.duplication.totalBlocks > 50 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.duplication.totalBlocks}</span></div>
+              )}
+              {entry.reference.naming && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Naming Issues</span><span style={{ color: entry.reference.naming.totalIssues > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.naming.totalIssues}</span></div>
+              )}
+              {entry.reference.jsdoc && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>JSDoc Missing</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.jsdoc.totalMissing}</span></div>
+              )}
+              {entry.reference.schemaSync && (
+                <>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Schema Types</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.totalTypes}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Empty Types</span><span style={{ color: entry.reference.schemaSync.emptyTypes > 0 ? "#f87171" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.emptyTypes}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Mismatched Props</span><span style={{ color: entry.reference.schemaSync.mismatchedProperties > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.mismatchedProperties}</span></div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── Leaderboard Table ── */
 
 function LeaderboardTable({ entries, models, projects, allEntries }) {
   const [expanded, setExpanded] = useState(new Set());
+  const [modalEntry, setModalEntry] = useState(null);
 
   const lookup = {};
   for (const e of entries) {
@@ -430,7 +833,7 @@ function LeaderboardTable({ entries, models, projects, allEntries }) {
                   {isExpanded && modelEntries.length > 0 && (
                     <tr>
                       <td colSpan={projects.length + 3} style={{ padding: 0, borderBottom: "2px solid #334155", background: "#0c1322" }}>
-                        <ExpandedDetail entries={modelEntries} projects={projects} />
+                        <ExpandedDetail entries={modelEntries} projects={projects} onSelectEntry={setModalEntry} />
                       </td>
                     </tr>
                   )}
@@ -440,6 +843,7 @@ function LeaderboardTable({ entries, models, projects, allEntries }) {
           </tbody>
         </table>
       </div>
+      {modalEntry && <ScoreDetailModal entry={modalEntry} onClose={() => setModalEntry(null)} />}
     </div>
   );
 }
@@ -550,11 +954,6 @@ export function BenchmarkDashboard() {
     const t = setInterval(load, 30_000);
     return () => clearInterval(t);
   }, [load]);
-
-  useEffect(() => {
-    document.body.classList.add("benchmark-page");
-    return () => document.body.classList.remove("benchmark-page");
-  }, []);
 
   if (loading) {
     return (

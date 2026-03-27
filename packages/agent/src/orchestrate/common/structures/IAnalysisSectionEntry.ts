@@ -1,12 +1,6 @@
 /**
- * A single ### section extracted from an analysis file, enriched with parent
- * hierarchy context and numeric ID for LLM-friendly retrieval.
- *
- * Instead of loading entire analysis files (~110-120KB each), the preliminary
- * system can load individual sections (~200-600 words) identified by sequential
- * integer IDs.
- *
- * @author Juntak
+ * A single ### section extracted from an analysis file, with parent hierarchy
+ * context and numeric ID.
  */
 export interface IAnalysisSectionEntry {
   /**

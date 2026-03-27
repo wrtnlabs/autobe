@@ -231,73 +231,84 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     testFiles: string[],
   ): RouteCoverage.TestRouteTarget[] {
     const targets: RouteCoverage.TestRouteTarget[] = [];
-    const callPattern = /\.functional\.([\w.]+)\s*\(/g;
+    // H-4: Allow optional whitespace/newlines between segments for multiline calls
+    // Also match `functional.X.Y(` without leading dot (variable reference)
+    const callPatterns = [
+      /\.functional\s*\.\s*([\w]+(?:\s*\.\s*[\w]+)*)\s*\(/g,
+      /\bfunctional\s*\.\s*([\w]+(?:\s*\.\s*[\w]+)*)\s*\(/g,
+    ];
 
     for (const filePath of testFiles) {
       try {
         const content = fs.readFileSync(filePath, "utf-8");
         const seen = new Set<string>();
 
+        for (const callPattern of callPatterns) {
+          callPattern.lastIndex = 0;
+        }
+
         let match: RegExpExecArray | null;
-        while ((match = callPattern.exec(content)) !== null) {
-          const fullAccessor = match[1];
-          if (seen.has(fullAccessor)) continue;
-          seen.add(fullAccessor);
+        for (const callPattern of callPatterns) {
+          while ((match = callPattern.exec(content)) !== null) {
+            // Normalize whitespace from captured accessor
+            const fullAccessor = match[1].replace(/\s+/g, "");
+            if (seen.has(fullAccessor)) continue;
+            seen.add(fullAccessor);
 
-          const segments = fullAccessor.split(".");
-          if (segments.length < 2) continue;
+            const segments = fullAccessor.split(".");
+            if (segments.length < 2) continue;
 
-          const action = segments[segments.length - 1];
-          const pathSegments = segments.slice(0, -1);
-          const inferredMethods = inferMethodsFromAction(action);
+            const action = segments[segments.length - 1];
+            const pathSegments = segments.slice(0, -1);
+            const inferredMethods = inferMethodsFromAction(action);
 
-          // Primary target: action excluded from path (e.g. `.todos.create` → path=/todos, POST)
-          const inferredPath = "/" + pathSegments.join("/");
-          for (const inferredMethod of inferredMethods) {
-            targets.push({
-              filePath,
-              accessorSegments: segments,
-              inferredMethod,
-              inferredPath,
-            });
-          }
-
-          // Secondary target: action IS a path segment (e.g. `.auth.member.join` where
-          // route is `/auth/member/join` with POST). Include action in path so it can
-          // match routes where the action name appears as the URL suffix.
-          const actionNorm = TestCoverageEvaluator.normalizeSegment(action);
-          const methodKeywords = [
-            "at",
-            "index",
-            "get",
-            "find",
-            "search",
-            "list",
-            "read",
-            "create",
-            "store",
-            "update",
-            "patch",
-            "modify",
-            "erase",
-            "remove",
-            "destroy",
-            "put",
-            "replace",
-            "upsert",
-          ];
-          if (!methodKeywords.includes(actionNorm)) {
+            // Primary target: action excluded from path (e.g. `.todos.create` → path=/todos, POST)
+            const inferredPath = "/" + pathSegments.join("/");
             for (const inferredMethod of inferredMethods) {
               targets.push({
                 filePath,
                 accessorSegments: segments,
                 inferredMethod,
-                inferredPath: "/" + segments.join("/"),
+                inferredPath,
               });
             }
+
+            // Secondary target: action IS a path segment (e.g. `.auth.member.join` where
+            // route is `/auth/member/join` with POST). Include action in path so it can
+            // match routes where the action name appears as the URL suffix.
+            const actionNorm = TestCoverageEvaluator.normalizeSegment(action);
+            const methodKeywords = [
+              "at",
+              "index",
+              "get",
+              "find",
+              "search",
+              "list",
+              "read",
+              "create",
+              "store",
+              "update",
+              "patch",
+              "modify",
+              "erase",
+              "remove",
+              "destroy",
+              "put",
+              "replace",
+              "upsert",
+            ];
+            if (!methodKeywords.includes(actionNorm)) {
+              for (const inferredMethod of inferredMethods) {
+                targets.push({
+                  filePath,
+                  accessorSegments: segments,
+                  inferredMethod,
+                  inferredPath: "/" + segments.join("/"),
+                });
+              }
+            }
           }
-        }
-        callPattern.lastIndex = 0;
+        } // end for callPattern
       } catch {
         // skip unreadable files
       }
@@ -414,15 +425,16 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     // 3. Test quality (25 pts)
     const qualityScore = Math.round(quality.qualityRatio * 25);
 
-    // 4. Controller breadth (10 pts)
-    const wellCoveredControllers = analysis.controllerCoverage.filter(
-      (c) => c.coverageRatio > 0.5,
-    ).length;
-    const controllerBreadth =
+    // 4. Controller breadth (10 pts) — continuous scoring per controller
+    // Instead of a binary 50% cliff, use each controller's actual coverage ratio.
+    const avgControllerCoverage =
       analysis.controllerCoverage.length > 0
-        ? wellCoveredControllers / analysis.controllerCoverage.length
+        ? analysis.controllerCoverage.reduce(
+            (sum, c) => sum + c.coverageRatio,
+            0,
+          ) / analysis.controllerCoverage.length
         : 0;
-    const breadthScore = Math.round(controllerBreadth * 10);
+    const breadthScore = Math.round(avgControllerCoverage * 10);
 
     let score = routeScore + methodScore + qualityScore + breadthScore;
 
@@ -587,9 +599,10 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Apply mild discount (0.9x) for fallback mode since route-level analysis
-    // is unavailable, but don't hard-cap at 80 which unfairly penalizes models.
-    return Math.min(100, Math.round(score * 0.9));
+    // Fallback discount: continuous from 0.95x (high score) to 0.85x (low score)
+    // Higher-quality projects lose less from fallback mode; replaces flat 0.9x.
+    const fallbackMultiplier = 0.85 + (Math.min(score, 100) / 100) * 0.1;
+    return Math.min(100, Math.round(score * fallbackMultiplier));
   }
 
   // ── Runtime evaluation (unchanged) ────────────────────

@@ -1,39 +1,36 @@
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Toaster } from "@/components/ui/sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   IAutoBePlaygroundBenchmark,
   IAutoBePlaygroundSession,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import {
-  AddCircleOutline,
-  ReplayOutlined,
-  Science,
+  Database,
+  FlaskConical,
+  Loader2,
+  PlusCircle,
+  RotateCcw,
   Settings,
-  Storage,
-} from "@mui/icons-material";
-import {
-  AppBar,
-  Box,
-  Button,
-  CircularProgress,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  LinearProgress,
-  MenuItem,
-  Select,
-  Skeleton,
-  Stack,
-  Tab,
-  Tabs,
-  Toolbar,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
@@ -42,21 +39,16 @@ import { AutoBePlaygroundSettingsMovie } from "./movies/settings/AutoBePlaygroun
 import { getConnection } from "./utils/connection";
 
 export function AutoBePlaygroundReplayIndexApplication() {
-  const theme = useTheme();
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState("sessions");
 
-  // Sessions state
   const [sessions, setSessions] = useState<
     IAutoBePlaygroundSession.ISummary[] | null
   >(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
-
-  // Examples state
   const [benchmarks, setBenchmarks] = useState<
     IAutoBePlaygroundBenchmark[] | null
   >(null);
 
-  // Mock dialog state
   const [mockOpen, setMockOpen] = useState(false);
   const [mockVendor, setMockVendor] = useState("");
   const [mockProject, setMockProject] = useState("");
@@ -71,9 +63,8 @@ export function AutoBePlaygroundReplayIndexApplication() {
   }, []);
 
   const loadExamples = useCallback(async () => {
-    const list = await pApi.functional.autobe.playground.examples.index(
-      getConnection(),
-    );
+    const list =
+      await pApi.functional.autobe.playground.examples.index(getConnection());
     setBenchmarks(list);
   }, []);
 
@@ -95,7 +86,6 @@ export function AutoBePlaygroundReplayIndexApplication() {
     load().catch(console.error);
   }, [loadSessions, loadExamples]);
 
-  // Mock dialog helpers
   const benchmarkList = benchmarks ?? [];
   const uniqueVendors = benchmarkList.map((b) => b.vendor);
   const selectedBenchmark = benchmarkList.find((b) => b.vendor === mockVendor);
@@ -115,11 +105,14 @@ export function AutoBePlaygroundReplayIndexApplication() {
   const handleCreateMock = async () => {
     setCreating(true);
     try {
-      const session =
-        await pApi.functional.autobe.playground.sessions.create(
-          getConnection(),
-          { mock: { vendor: mockVendor, project: mockProject } },
-        );
+      const session = await pApi.functional.autobe.playground.sessions.create(
+        getConnection(),
+        {
+          vendor_id: "00000000-0000-0000-0000-000000000000",
+          model: "mock",
+          mock: { vendor: mockVendor, project: mockProject },
+        },
+      );
       window.location.href = `/?session-id=${session.id}`;
     } catch (err) {
       console.error("Failed to create mock session:", err);
@@ -130,236 +123,170 @@ export function AutoBePlaygroundReplayIndexApplication() {
   const loading = sessions === null || benchmarks === null;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AutoBE Playground
-          </Typography>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<AddCircleOutline />}
-            onClick={handleOpenMockDialog}
-            sx={{
-              color: theme.palette.common.white,
-              borderColor: alpha(theme.palette.common.white, 0.5),
-              mr: 2,
-              "&:hover": { borderColor: theme.palette.common.white },
-            }}
-          >
-            Mock
-          </Button>
-          {loading && (
-            <CircularProgress
-              size={24}
-              sx={{ color: theme.palette.common.white }}
-            />
-          )}
-        </Toolbar>
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{
-            bgcolor: alpha(theme.palette.common.black, 0.1),
-            "& .MuiTab-root": {
-              color: alpha(theme.palette.common.white, 0.7),
-            },
-            "& .Mui-selected": { color: theme.palette.common.white },
-            "& .MuiTabs-indicator": {
-              bgcolor: theme.palette.common.white,
-            },
-          }}
+    <div className="flex flex-col w-full h-full relative">
+      {/* Header */}
+      <header className="relative flex items-center h-14 px-4 bg-primary text-primary-foreground">
+        <h1 className="text-lg font-semibold flex-1">AutoBE Playground</h1>
+        <Button
+          variant="outline"
+          size="sm"
+          className="border-primary-foreground/50 text-primary-foreground hover:border-primary-foreground mr-4"
+          onClick={handleOpenMockDialog}
         >
-          <Tab
-            icon={<Storage sx={{ fontSize: 18 }} />}
-            iconPosition="start"
-            label="Sessions"
-          />
-          <Tab
-            icon={<Science sx={{ fontSize: 18 }} />}
-            iconPosition="start"
-            label="Examples"
-          />
-          <Tab
-            icon={<Settings sx={{ fontSize: 18 }} />}
-            iconPosition="start"
-            label="Settings"
-          />
-        </Tabs>
+          <PlusCircle className="h-4 w-4 mr-1" /> Mock
+        </Button>
+        {loading && <Loader2 className="h-5 w-5 animate-spin" />}
         {loading && (
-          <LinearProgress
-            variant="determinate"
+          <Progress
             value={loadingProgress}
-            sx={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 3,
-            }}
+            className="absolute bottom-0 left-0 right-0 h-0.5 rounded-none"
           />
         )}
-      </AppBar>
+      </header>
 
-      {loading && tab !== 2 ? (
-        <Box
-          sx={{
-            width: "100%",
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            bgcolor: theme.palette.background.default,
-          }}
-        >
-          <Container maxWidth="lg" sx={{ mt: 12 }}>
-            <Stack spacing={4} alignItems="center">
-              <Box sx={{ position: "relative", display: "inline-flex" }}>
-                <CircularProgress
-                  size={80}
-                  thickness={4}
-                  sx={{ color: theme.palette.primary.main }}
-                />
-                <Box
-                  sx={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <ReplayOutlined
-                    sx={{ fontSize: 32, color: theme.palette.primary.main }}
-                  />
-                </Box>
-              </Box>
-              <Typography
-                variant="h5"
-                sx={{ fontWeight: 500, color: theme.palette.text.primary }}
-              >
-                Loading...
-              </Typography>
-              <Box sx={{ width: "100%", mt: 4 }}>
-                <Stack spacing={3}>
+      <Tabs
+        value={tab}
+        onValueChange={setTab}
+        className="flex-1 flex flex-col overflow-hidden"
+      >
+        <TabsList className="mx-4 mt-2 w-fit">
+          <TabsTrigger value="sessions" className="gap-1.5">
+            <Database className="h-4 w-4" /> Sessions
+          </TabsTrigger>
+          <TabsTrigger value="examples" className="gap-1.5">
+            <FlaskConical className="h-4 w-4" /> Examples
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="gap-1.5">
+            <Settings className="h-4 w-4" /> Settings
+          </TabsTrigger>
+        </TabsList>
+
+        {loading && tab !== "settings" ? (
+          <div className="flex-1 flex items-center justify-center bg-background">
+            <div className="max-w-lg w-full px-4">
+              <div className="flex flex-col items-center gap-6">
+                <div className="relative">
+                  <Loader2 className="h-20 w-20 animate-spin text-primary" />
+                  <RotateCcw className="h-8 w-8 text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <h2 className="text-xl font-medium">Loading...</h2>
+                <div className="w-full mt-4 space-y-4">
                   {[1, 2, 3].map((i) => (
-                    <Skeleton
-                      key={i}
-                      variant="rounded"
-                      height={120}
-                      sx={{
-                        bgcolor: alpha(theme.palette.action.hover, 0.1),
-                      }}
-                    />
+                    <Skeleton key={i} className="h-[120px] w-full rounded-lg" />
                   ))}
-                </Stack>
-              </Box>
-            </Stack>
-          </Container>
-        </Box>
-      ) : (
-        <div style={{ width: "100%", flex: 1, overflow: "hidden" }}>
-          {/* Sessions Tab */}
-          {tab === 0 && sessions && (
-            <AutoBePlaygroundReplayIndexMovie sessions={sessions} />
-          )}
-
-          {/* Examples Tab */}
-          {tab === 1 && benchmarks && (
-            <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
-          )}
-
-          {/* Settings Tab */}
-          {tab === 2 && <AutoBePlaygroundSettingsMovie />}
-        </div>
-      )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            <TabsContent
+              value="sessions"
+              className="flex-1 overflow-hidden mt-0"
+            >
+              {sessions && (
+                <AutoBePlaygroundReplayIndexMovie sessions={sessions} />
+              )}
+            </TabsContent>
+            <TabsContent
+              value="examples"
+              className="flex-1 overflow-hidden mt-0"
+            >
+              {benchmarks && (
+                <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
+              )}
+            </TabsContent>
+            <TabsContent
+              value="settings"
+              className="flex-1 overflow-hidden mt-0"
+            >
+              <AutoBePlaygroundSettingsMovie />
+            </TabsContent>
+          </>
+        )}
+      </Tabs>
 
       {/* Mock Session Dialog */}
-      <Dialog
-        open={mockOpen}
-        onClose={() => setMockOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Create Mock Session</DialogTitle>
+      <Dialog open={mockOpen} onOpenChange={setMockOpen}>
         <DialogContent>
-          <Stack spacing={3} sx={{ mt: 1 }}>
+          <DialogHeader>
+            <DialogTitle>Create Mock Session</DialogTitle>
+            <DialogDescription>
+              Create a session using example replay data.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
             {benchmarkList.length === 0 ? (
-              <Box
-                sx={{ display: "flex", justifyContent: "center", py: 2 }}
-              >
-                <CircularProgress size={24} />
-              </Box>
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
             ) : (
               <>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Vendor / Model</InputLabel>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Vendor / Model</label>
                   <Select
                     value={mockVendor}
-                    label="Vendor / Model"
-                    onChange={(e) => {
-                      setMockVendor(e.target.value);
-                      const bench = benchmarkList.find(
-                        (b) => b.vendor === e.target.value,
-                      );
+                    onValueChange={(v) => {
+                      setMockVendor(v);
+                      const bench = benchmarkList.find((b) => b.vendor === v);
                       if (bench && bench.replays.length > 0)
                         setMockProject(bench.replays[0].project);
                     }}
                   >
-                    {uniqueVendors.map((v) => (
-                      <MenuItem key={v} value={v}>
-                        {v}
-                      </MenuItem>
-                    ))}
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {uniqueVendors.map((v) => (
+                        <SelectItem key={v} value={v}>
+                          {v}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
-                </FormControl>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Project</InputLabel>
-                  <Select
-                    value={mockProject}
-                    label="Project"
-                    onChange={(e) => setMockProject(e.target.value)}
-                  >
-                    {availableProjects.map((p) => (
-                      <MenuItem key={p} value={p}>
-                        {p}
-                      </MenuItem>
-                    ))}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Project</label>
+                  <Select value={mockProject} onValueChange={setMockProject}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableProjects.map((p) => (
+                        <SelectItem key={p} value={p}>
+                          {p}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
                   </Select>
-                </FormControl>
+                </div>
               </>
             )}
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setMockOpen(false)} disabled={creating}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateMock}
-            variant="contained"
-            disabled={creating || !mockVendor || !mockProject}
-            startIcon={
-              creating ? (
-                <CircularProgress size={16} />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setMockOpen(false)}
+              disabled={creating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateMock}
+              disabled={creating || !mockVendor || !mockProject}
+            >
+              {creating ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
               ) : (
-                <AddCircleOutline />
-              )
-            }
-          >
-            {creating ? "Creating..." : "Create"}
-          </Button>
-        </DialogActions>
+                <PlusCircle className="h-4 w-4 mr-1" />
+              )}
+              {creating ? "Creating..." : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
+
+      <Toaster position="bottom-center" />
     </div>
   );
 }

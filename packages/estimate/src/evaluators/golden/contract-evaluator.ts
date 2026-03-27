@@ -53,9 +53,10 @@ interface ContractTestResult extends ScenarioResult {
 
 // ── Score ratios (same structure as GoldenSetEvaluator) ─────
 
-const SCHEMA_MATCH_RATIO = 0.5; // response matches declared schema
-const STATUS_CODE_RATIO = 0.3; // correct HTTP status code
-const RESPONSE_TIME_RATIO = 0.2; // reasonable response time
+// C-3 + M-2: Response time removed (environment-dependent, not code quality)
+// Ratios aligned with GoldenSetEvaluator philosophy
+const SCHEMA_MATCH_RATIO = 0.6; // response matches declared schema
+const STATUS_CODE_RATIO = 0.4; // correct HTTP status code
 
 // ── Max endpoints to test (cost/time guard) ─────────────────
 
@@ -765,38 +766,24 @@ export class ContractEvaluator {
 
     const total = scoreable.length;
 
-    // 1. Status code score (30%) — 2xx success only
+    // 1. Status code score (40%) — 2xx success only
     const statusOk = scoreable.filter(
       (r) =>
         r.statusCode !== undefined && r.statusCode >= 200 && r.statusCode < 300,
     ).length;
     const statusScore = (statusOk / total) * 100;
 
-    // 2. Schema match score (50%) — responses match declared schema
+    // 2. Schema match score (60%) — responses match declared schema
     const withWarnings = scoreable.filter(
       (r) => r.responseWarnings.length > 0,
     ).length;
     const warningRatio = withWarnings / total;
-    const schemaScore = Math.max(0, 100 - warningRatio * 200);
+    const schemaScore = Math.round(100 * (1 - warningRatio));
 
-    // 3. Response time score (20%)
-    const timings = scoreable
-      .map((r) => r.durationMs)
-      .filter((d): d is number => d !== undefined);
-    let responseTimeScore = 100;
-    if (timings.length > 0) {
-      const sorted = [...timings].sort((a, b) => a - b);
-      const p95 = sorted[Math.floor(sorted.length * 0.95)];
-      if (p95 >= 5000) responseTimeScore = 0;
-      else if (p95 >= 2000) responseTimeScore = 30;
-      else if (p95 >= 1000) responseTimeScore = 60;
-      else if (p95 >= 500) responseTimeScore = 80;
-    }
+    // C-3: Response time removed from scoring (reference metrics only)
 
     return Math.round(
-      schemaScore * SCHEMA_MATCH_RATIO +
-        statusScore * STATUS_CODE_RATIO +
-        responseTimeScore * RESPONSE_TIME_RATIO,
+      schemaScore * SCHEMA_MATCH_RATIO + statusScore * STATUS_CODE_RATIO,
     );
   }
 

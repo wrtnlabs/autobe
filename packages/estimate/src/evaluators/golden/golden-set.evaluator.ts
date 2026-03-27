@@ -22,8 +22,9 @@ const CATEGORY_WEIGHTS: Record<ScenarioCategory, number> = {
 };
 
 /** Proportion of final score from each dimension */
-const CATEGORY_SCORE_RATIO = 0.7;
-const RESPONSE_TIME_RATIO = 0.15;
+// C-3: Response time removed from scoring (environment-dependent, not code quality)
+// Response time is still collected as reference metrics
+const CATEGORY_SCORE_RATIO = 0.85;
 const DATA_CONSISTENCY_RATIO = 0.15;
 
 export class GoldenSetEvaluator {
@@ -70,7 +71,9 @@ export class GoldenSetEvaluator {
       byCategory.set(cat, entry);
     }
 
-    // Compute active weights (redistribute weight of missing categories)
+    // H-3: Redistribute weights among present categories to ensure max=100
+    // Within a single project, all models face the same categories, so
+    // redistribution doesn't affect cross-model comparison
     let activeWeightSum = 0;
     for (const [cat, weight] of Object.entries(CATEGORY_WEIGHTS)) {
       if (weight > 0 && byCategory.has(cat as ScenarioCategory)) {
@@ -98,13 +101,28 @@ export class GoldenSetEvaluator {
     return { score, categoryMetrics };
   }
 
-  /** Calculate response time score (15% of total) */
+  /** Calculate response time score (15% of total) — continuous interpolation */
   private computeResponseTimeScore(p95: number): number {
     if (p95 <= 0) return 100;
-    if (p95 < 500) return 100;
-    if (p95 < 1000) return 80;
-    if (p95 < 2000) return 60;
-    if (p95 < 5000) return 30;
+    // Piecewise linear interpolation instead of discrete cliffs:
+    //   0–500ms → 100,  500–1000ms → 100→80,  1000–2000ms → 80→60,
+    //   2000–5000ms → 60→30,  5000–10000ms → 30→0,  >10000ms → 0
+    const tiers: [number, number][] = [
+      [0, 100],
+      [500, 100],
+      [1000, 80],
+      [2000, 60],
+      [5000, 30],
+      [10000, 0],
+    ];
+    for (let i = 1; i < tiers.length; i++) {
+      if (p95 <= tiers[i][0]) {
+        const [x0, y0] = tiers[i - 1];
+        const [x1, y1] = tiers[i];
+        const ratio = (p95 - x0) / (x1 - x0);
+        return Math.round(y0 + (y1 - y0) * ratio);
+      }
+    }
     return 0;
   }
 
@@ -183,7 +201,6 @@ export class GoldenSetEvaluator {
 
     const score = Math.round(
       categoryScore * CATEGORY_SCORE_RATIO +
-        responseTimeScore * RESPONSE_TIME_RATIO +
         consistencyScore * DATA_CONSISTENCY_RATIO,
     );
 

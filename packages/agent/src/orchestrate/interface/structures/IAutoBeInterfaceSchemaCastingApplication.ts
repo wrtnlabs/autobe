@@ -10,65 +10,26 @@ import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/s
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
 
 /**
- * Application interface for the Schema Refine agent.
- *
- * The Schema Refine agent detects and corrects degenerate type aliases where
- * complex data structures have been incorrectly simplified to primitive types
- * (`string`, `number`, `boolean`, `integer`).
- *
- * This agent analyzes JSDoc descriptions, database schema hints, and naming
- * conventions to identify mismatches between documented semantics and actual
- * type definitions, then provides corrected object schema definitions.
+ * Detects and corrects degenerate type aliases (primitives that should be
+ * objects).
  */
 export interface IAutoBeInterfaceSchemaCastingApplication {
-  /**
-   * Process schema refinement task or preliminary data requests.
-   *
-   * Analyzes a potentially degenerate primitive type alias and determines
-   * whether it should be refined into a proper object schema structure. Uses
-   * Chain-of-Thought reasoning to systematically evaluate the type.
-   *
-   * @param props Request containing either preliminary data request or
-   *   refinement completion
-   */
+  /** Process task or retrieve preliminary data. */
   process(props: IAutoBeInterfaceSchemaCastingApplication.IProps): void;
 }
 
 export namespace IAutoBeInterfaceSchemaCastingApplication {
-  /** Properties for schema refinement processing. */
+  /** Properties for schema casting processing. */
   export interface IProps {
     /**
-     * Think before you act.
-     *
-     * Before requesting preliminary data or completing your task, reflect on
-     * your current state and explain your reasoning:
-     *
-     * For preliminary requests (getAnalysisSections, getDatabaseSchemas, etc.):
-     *
-     * - What critical information is missing that you don't already have?
-     * - Why do you need it specifically right now?
-     * - Be brief - state the gap, don't list everything you have.
-     *
-     * For completion (complete):
-     *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
-     *
-     * This reflection helps you avoid duplicate requests and premature
-     * completion.
+     * Reasoning about your current state: what's missing (preliminary) or what
+     * you accomplished (completion).
      */
     thinking: string;
 
     /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations,
-     * getInterfaceSchemas, etc.) or final refinement decision (complete). When
-     * preliminary returns empty array, that type is removed from the union,
-     * physically preventing repeated calls.
+     * Action to perform. Exhausted preliminary types are removed from the
+     * union.
      */
     request:
       | IComplete
@@ -83,70 +44,31 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
   }
 
   /**
-   * Request to complete schema refinement analysis.
-   *
-   * Executes the final refinement decision after analyzing a potentially
-   * degenerate primitive type. Uses structured Chain-of-Thought reasoning
-   * through observation, reasoning, and verdict properties to ensure systematic
-   * evaluation before making a decision.
+   * Complete schema casting analysis via Chain-of-Thought (observation,
+   * reasoning, verdict).
    */
   export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final refinement
-     * decision request.
-     */
+    /** Type discriminator for completion request. */
     type: "complete";
 
     /**
-     * Observation of the current type and its documentation.
-     *
-     * Describe what you observe about the type being analyzed:
-     *
-     * - What is the current type definition? (e.g., `type IFoo = number`)
-     * - What does the JSDoc/description say about the type?
-     * - Are there any database schema hints (JSON field, etc.)?
-     * - What does the naming suggest? (e.g., "Distribution", "Preferences")
-     *
-     * This is purely descriptive - state facts without judgment.
+     * Factual observation of the current type definition, JSDoc, schema hints,
+     * and naming.
      */
     observation: string;
 
-    /**
-     * Reasoning about whether the type is degenerate.
-     *
-     * Analyze the observations and explain your reasoning:
-     *
-     * - Does the documentation describe a structure that contradicts the
-     *   primitive type?
-     * - Are there keywords suggesting complex structure? (key/value, array, list,
-     *   contains, mapping)
-     * - Is this a legitimate semantic alias? (e.g., `IUserId = string`)
-     * - What type SHOULD this be based on the evidence?
-     */
+    /** Reasoning about whether documentation contradicts the primitive type. */
     reasoning: string;
 
     /**
-     * Final verdict on whether to refine the type.
-     *
-     * State your conclusion clearly:
-     *
-     * - Is this a degenerate type that needs refinement, or a valid primitive?
-     * - Summarize the key evidence that led to this decision.
-     * - If refining, briefly describe what the correct type should be.
+     * Final verdict: "degenerate" (needs casting to object) or "valid
+     * primitive".
      */
     verdict: string;
 
     /**
-     * Casting design for the corrected object schema, or `null` if intentional.
-     *
-     * When the type is degenerate: provide the casting design with corrected
-     * object schema containing `databaseSchema`, `specification`,
-     * `description`, and `schema` fields.
-     *
-     * When the type is intentional (valid primitive alias): set to `null`.
+     * Corrected object schema casting design, or `null` if the primitive is
+     * intentional.
      */
     casting: AutoBeInterfaceSchemaCasting | null;
   }

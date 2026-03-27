@@ -31,6 +31,12 @@ export interface IAutoBeChatMainProps {
 
   /** Custom content to render when disconnected instead of the default placeholder */
   disconnectedContent?: React.ReactNode;
+
+  /** Hide the status info button (e.g. when a persistent status panel is shown) */
+  hideStatusButton?: boolean;
+
+  /** Disable the chat input (e.g. when required config like vendor/model is not selected) */
+  chatDisabled?: boolean;
 }
 
 export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
@@ -291,7 +297,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             props.configFields.length > 0 && (
               <AutoBeConfigButton fields={props.configFields || []} />
             )}
-          <AutoBeStatusButton />
+          {!props.hideStatusButton && <AutoBeStatusButton />}
         </div>
         <div
           style={{
@@ -378,6 +384,7 @@ export const AutoBeChatMain = (props: IAutoBeChatMainProps) => {
             }
             conversate={conversate}
             setError={props.setError}
+            disabled={props.chatDisabled}
           />
         </div>
       </div>

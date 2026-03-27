@@ -85,6 +85,14 @@ export const transformRealizeTransformerWriteHistory = async (
             )
             .join("\n")}
 
+          Here is the **Relation Mapping Table** for model \`${props.plan.databaseSchemaName}\`.
+          ONLY use propertyKey values from this table in select() — NEVER guess or derive from table names:
+
+          ${AutoBeRealizeTransformerProgrammer.formatRelationMappingTable({
+            application,
+            model,
+          })}
+
           Here is the list of database schema members you have to consider
           when writing select() function:
 

@@ -1,17 +1,19 @@
 import { IAutoBePlaygroundBenchmark } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
 import { AutoBeListener, IAutoBeConfig, IAutoBeServiceData } from "@autobe/ui";
-import { Chat, Science, Settings } from "@mui/icons-material";
+import { FlaskConical, Menu, MessageSquare, Settings } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
-  AppBar,
-  Tab,
-  Tabs,
-  Toolbar,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/utils";
 
 import { AutoBePlaygroundChatMovie } from "./movies/chat/AutoBePlaygroundChatMovie";
 import { AutoBePlaygroundExampleMovie } from "./movies/examples/AutoBePlaygroundExampleMovie";
@@ -20,19 +22,22 @@ import { AutoBeAgentSessionStorageServerStrategy } from "./strategy/AutoBeAgentS
 import { getConnection, getServerUrl } from "./utils/connection";
 import { getGlobalConfig } from "./utils/globalConfig";
 
-const TAB_HASHES = ["#chat", "#examples", "#settings"] as const;
+type ActiveView = "chat" | "examples";
+
+const TAB_HASHES: Record<string, ActiveView> = {
+  "#examples": "examples",
+};
 
 export function AutoBePlaygroundApplication() {
-  const theme = useTheme();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [tab, setTab] = useState(() => {
+  const [activeView, setActiveView] = useState<ActiveView>(() => {
     const hash = window.location.hash;
-    if (hash === "#examples") return 1;
-    if (hash === "#settings") return 2;
-    return 0;
+    return TAB_HASHES[hash] ?? "chat";
   });
+  const [settingsOpen, setSettingsOpen] = useState(
+    window.location.hash === "#settings",
+  );
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Vendor/model/locale/timezone selection state
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [selectedLocale, setSelectedLocale] = useState<string>(
@@ -41,33 +46,23 @@ export function AutoBePlaygroundApplication() {
   const [selectedTimezone, setSelectedTimezone] = useState<string>(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
-
-  // Mock mode state
   const [mockMode, setMockMode] = useState(false);
   const [mockVendor, setMockVendor] = useState<string | null>(null);
   const [mockProject, setMockProject] = useState<string | null>(null);
-
-  // Examples state
   const [benchmarks, setBenchmarks] = useState<
     IAutoBePlaygroundBenchmark[] | null
   >(null);
 
-  // Seed defaults from global config
   useEffect(() => {
     getGlobalConfig().then((cfg) => {
-      if (cfg.default_vendor_id && !selectedVendorId) {
+      if (cfg.default_vendor_id && !selectedVendorId)
         setSelectedVendorId(cfg.default_vendor_id);
-      }
-      if (cfg.default_model && !selectedModel) {
+      if (cfg.default_model && !selectedModel)
         setSelectedModel(cfg.default_model);
-      }
-      if (cfg.locale) {
-        setSelectedLocale(cfg.locale);
-      }
+      if (cfg.locale) setSelectedLocale(cfg.locale);
     });
   }, []);
 
-  // Load benchmarks
   const loadBenchmarks = useCallback(async () => {
     const list = await pApi.functional.autobe.playground.examples.index(
       getConnection(),
@@ -79,7 +74,17 @@ export function AutoBePlaygroundApplication() {
     loadBenchmarks().catch(console.error);
   }, [loadBenchmarks]);
 
-  // Playground service factory — reads vendor/model from component state
+  const navigate = (view: ActiveView) => {
+    setActiveView(view);
+    const hash = view === "chat" ? "#chat" : "#examples";
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}${hash}`,
+    );
+    setMobileMenuOpen(false);
+  };
+
   const serviceFactory = async (
     config: IAutoBeConfig,
   ): Promise<IAutoBeServiceData> => {
@@ -89,19 +94,12 @@ export function AutoBePlaygroundApplication() {
     let sessionId: string;
 
     if (config.sessionId != null && typeof config.sessionId === "string") {
-      // Reconnecting to existing session
       sessionId = config.sessionId;
     } else {
-      if (!selectedVendorId) {
-        throw new Error(
-          "No vendor selected. Please select a vendor before starting a session.",
-        );
-      }
-      if (!selectedModel) {
-        throw new Error(
-          "No model selected. Please select a model before starting a session.",
-        );
-      }
+      if (!selectedVendorId)
+        throw new Error("No vendor selected. Please select a vendor before starting a session.");
+      if (!selectedModel)
+        throw new Error("No model selected. Please select a model before starting a session.");
 
       const session =
         await pApi.functional.autobe.playground.sessions.create(connection, {
@@ -110,18 +108,12 @@ export function AutoBePlaygroundApplication() {
           locale: selectedLocale,
           timezone: selectedTimezone,
           ...(mockMode && mockVendor && mockProject
-            ? {
-                mock: {
-                  vendor: mockVendor,
-                  project: mockProject,
-                },
-              }
+            ? { mock: { vendor: mockVendor, project: mockProject } }
             : {}),
         });
       sessionId = session.id;
     }
 
-    // Connect to session via WebSocket
     const { driver: service, connector } =
       await pApi.functional.autobe.playground.sessions.connect(
         connection,
@@ -138,64 +130,96 @@ export function AutoBePlaygroundApplication() {
   };
 
   return (
-    <div
-      ref={scrollRef}
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <AppBar position="relative" component="div">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            AutoBE Playground
-          </Typography>
-          <Tabs
-            value={tab}
-            onChange={(_, v) => {
-              setTab(v);
-              window.history.replaceState(
-                null,
-                "",
-                `${window.location.pathname}${window.location.search}${TAB_HASHES[v]}`,
-              );
-            }}
-            sx={{
-              "& .MuiTab-root": {
-                color: alpha(theme.palette.common.white, 0.7),
-                minHeight: 64,
-              },
-              "& .MuiTab-root.Mui-selected": {
-                color: theme.palette.common.white,
-              },
-              "& .MuiTabs-indicator": {
-                bgcolor: theme.palette.common.white,
-              },
-            }}
+    <div className="flex h-screen w-screen bg-background">
+      {/* Desktop sidebar nav */}
+      <aside className="hidden lg:flex flex-col w-14 border-r bg-sidebar-background items-center py-3 gap-2">
+        <div className="flex-1 flex flex-col items-center gap-1">
+          <Button
+            variant={activeView === "chat" ? "secondary" : "ghost"}
+            size="icon"
+            className="h-10 w-10"
+            onClick={() => navigate("chat")}
+            title="Chat"
           >
-            <Tab
-              icon={<Chat sx={{ fontSize: 18 }} />}
-              iconPosition="start"
-              label="Chat"
-            />
-            <Tab
-              icon={<Science sx={{ fontSize: 18 }} />}
-              iconPosition="start"
-              label="Examples"
-            />
-            <Tab
-              icon={<Settings sx={{ fontSize: 18 }} />}
-              iconPosition="start"
-              label="Settings"
-            />
-          </Tabs>
-        </Toolbar>
-      </AppBar>
+            <MessageSquare className="h-5 w-5" />
+          </Button>
+          <Button
+            variant={activeView === "examples" ? "secondary" : "ghost"}
+            size="icon"
+            className="h-10 w-10"
+            onClick={() => navigate("examples")}
+            title="Examples"
+          >
+            <FlaskConical className="h-5 w-5" />
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10"
+          onClick={() => setSettingsOpen(true)}
+          title="Settings"
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
+      </aside>
 
-      <div style={{ width: "100%", flex: 1, overflow: "hidden" }}>
-        {tab === 0 && (
+      {/* Mobile top bar */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center h-12 px-3 bg-background border-b">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9"
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <span className="ml-2 text-sm font-semibold">AutoBE Playground</span>
+      </div>
+
+      {/* Mobile nav sheet */}
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="left" className="w-56 p-4">
+          <SheetTitle className="text-lg font-bold mb-4">AutoBE</SheetTitle>
+          <nav className="space-y-1">
+            <button
+              className={cn(
+                "w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                activeView === "chat"
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "hover:bg-accent",
+              )}
+              onClick={() => navigate("chat")}
+            >
+              <MessageSquare className="h-4 w-4" /> Chat
+            </button>
+            <button
+              className={cn(
+                "w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+                activeView === "examples"
+                  ? "bg-primary/10 text-primary font-medium"
+                  : "hover:bg-accent",
+              )}
+              onClick={() => navigate("examples")}
+            >
+              <FlaskConical className="h-4 w-4" /> Examples
+            </button>
+            <button
+              className="w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-accent transition-colors"
+              onClick={() => {
+                setSettingsOpen(true);
+                setMobileMenuOpen(false);
+              }}
+            >
+              <Settings className="h-4 w-4" /> Settings
+            </button>
+          </nav>
+        </SheetContent>
+      </Sheet>
+
+      {/* Main content */}
+      <main className={cn("flex-1 overflow-hidden", "lg:pt-0 pt-12")}>
+        {activeView === "chat" && (
           <AutoBePlaygroundChatMovie
             hideAppBar
             serviceFactory={serviceFactory}
@@ -219,11 +243,22 @@ export function AutoBePlaygroundApplication() {
             onMockProjectChange={setMockProject}
           />
         )}
-        {tab === 1 && benchmarks && (
+        {activeView === "examples" && benchmarks && (
           <AutoBePlaygroundExampleMovie benchmarks={benchmarks} />
         )}
-        {tab === 2 && <AutoBePlaygroundSettingsMovie />}
-      </div>
+      </main>
+
+      {/* Settings dialog overlay */}
+      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto p-0">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          <AutoBePlaygroundSettingsMovie />
+        </DialogContent>
+      </Dialog>
+
+      <Toaster position="bottom-center" />
     </div>
   );
 }

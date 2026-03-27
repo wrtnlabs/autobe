@@ -4,76 +4,38 @@ import { AutoBeOpenApi } from "../../openapi";
 import { CamelCasePattern } from "../../typings/CamelCasePattern";
 
 /**
- * Endpoint design with description and specification.
- *
- * Represents a single endpoint generated during the write phase, pairing the
- * endpoint definition (path + method) with a description of its purpose.
- *
- * This type formalizes the legacy
- * `IAutoBeInterfaceEndpointWriteApplication.IContent` structure for reuse
- * across the codebase. The description provides business context that helps:
- *
- * - Review agents validate that the endpoint fulfills actual requirements
- * - Operation generation create appropriate request/response schemas
- * - Schema design infer correct data structures
+ * Endpoint design with description, authorization, and endpoint definition.
  *
  * @author Michael
  * @author Samchon
  */
 export interface AutoBeInterfaceEndpointDesign {
-  /**
-   * Description of what this endpoint does.
-   *
-   * Functional description of the endpoint's purpose and business context.
-   * Should explain the use case and requirements this endpoint fulfills, not
-   * just repeat the path/method.
-   *
-   * Write concisely. Keep it brief and to the point.
-   */
+  /** Functional description of what this endpoint does and why. Keep concise. */
   description: string;
 
   /**
-   * Authorization actors associated with this API endpoint.
+   * Authorization actors associated with this endpoint (camelCase).
    *
-   * Specify actors that are **associated with** this endpoint. An actor should
-   * be included if:
+   * Include an actor if it can call this endpoint or the endpoint is
+   * semantically related to it (e.g., `/auth/users/login` → `["user"]`). Empty
+   * array for public endpoints.
    *
-   * 1. **The actor can call this endpoint**: The endpoint requires authentication
-   *    and only this actor type can access it.
-   * 2. **The endpoint is related to the actor**: If the endpoint path contains the
-   *    actor name (e.g., `/auth/users/login` → `"user"`), or the endpoint
-   *    serves that actor type, include the actor to indicate the relationship.
-   *
-   * ## Examples
-   *
-   * - `/auth/users/login` → `["user"]` (related to user)
-   * - `/auth/admins/join` → `["admin"]` (related to admin)
-   * - `/users/{userId}/profile` → `["user"]` (user can call)
-   * - `/products` → `[]` (public, no association)
-   *
-   * ## ⚠️ Actor Multiplication Effect
-   *
-   * Each actor may generate a separate endpoint. Minimize actors to prevent
-   * endpoint explosion.
-   *
-   * ## Naming Convention
-   *
-   * Use camelCase for all actor names (e.g., `"user"`, `"admin"`, `"seller"`).
+   * Each actor may generate a separate endpoint — minimize to prevent endpoint
+   * explosion.
    */
   authorizationActors: Array<string & CamelCasePattern & tags.MinLength<1>>;
 
   /**
-   * Authorization type of the API endpoint.
+   * Authorization type of the endpoint.
    *
-   * - `"login"`: User login endpoint that validates credentials
-   * - `"join"`: User registration endpoint that creates accounts
-   * - `"withdraw"`: User withdrawal/deactivation endpoint that deletes accounts
-   * - `"refresh"`: Token refresh endpoint that renews access tokens
-   * - `"session"`: Session related endpoint (e.g., logout, session management)
-   * - `"password"`: Password related endpoint (e.g., reset, change password)
-   * - `"management"`: Authentication-related endpoint other than above types
-   *   (e.g., email/phone verification, 2FA, OAuth, profile update)
-   * - `null`: All other endpoints (CRUD, business logic, etc.)
+   * - `"login"`: Credential validation
+   * - `"join"`: Account registration
+   * - `"withdraw"`: Account deactivation
+   * - `"refresh"`: Token renewal
+   * - `"session"`: Session management (logout, etc.)
+   * - `"password"`: Password reset/change
+   * - `"management"`: Other auth-related (2FA, OAuth, verification)
+   * - `null`: All other endpoints
    */
   authorizationType:
     | "login"

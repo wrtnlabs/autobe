@@ -1,39 +1,22 @@
 /**
- * Reference to an external entity needed by a collector function.
+ * External entity reference needed by a collector function.
  *
- * When a Create DTO doesn't contain all foreign key references needed to create
- * the Prisma record, those references come from either path parameters or auth
- * context. This interface tracks both the Prisma schema name and the source of
- * the reference.
- *
- * The source field indicates where the reference originates:
- *
- * - "from path parameter X" - Entity identifier from URL path (e.g., saleId)
- * - "from authorized actor" - Logged-in user entity (customer/seller/member)
- * - "from authorized session" - Current user session entity
- *
- * Each reference becomes an `IEntity` parameter in the collector's `collect()`
- * function signature.
+ * FK references not in the Create DTO come from path parameters or auth
+ * context. Each becomes an `IEntity` parameter in the collector's `collect()`
+ * signature.
  *
  * @author Samchon
  */
 export interface AutoBeRealizeCollectorReference {
-  /**
-   * Prisma schema name (table name) of the referenced entity.
-   *
-   * Examples: "shopping_sales", "shopping_customers", "bbs_members"
-   */
+  /** Prisma table name (e.g., "shopping_sales", "shopping_customers"). */
   databaseSchemaName: string;
 
   /**
-   * Source of this reference, describing where it originates.
+   * Source of this reference:
    *
-   * Possible formats:
-   *
-   * - "from path parameter {paramName}" - URL path parameter (e.g., "from path
-   *   parameter saleId")
-   * - "from authorized actor" - Logged-in user entity
-   * - "from authorized session" - Current user session entity
+   * - "from path parameter {paramName}" — URL path parameter
+   * - "from authorized actor" — logged-in user entity
+   * - "from authorized session" — current session entity
    */
   source: string;
 }

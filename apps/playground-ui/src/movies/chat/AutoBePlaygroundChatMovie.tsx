@@ -8,18 +8,15 @@ import {
   SearchParamsProvider,
 } from "@autobe/ui";
 import { useMediaQuery } from "@autobe/ui/hooks";
-import { AppBar, Toolbar, Typography } from "@mui/material";
 import { useState } from "react";
 
+import { StatusPanel } from "../../components/StatusPanel";
 import { AutoBePlaygroundSidebar } from "./AutoBePlaygroundSidebar";
 import { VendorModelSelector } from "./VendorModelSelector";
 
 export function AutoBePlaygroundChatMovie(
   props: AutoBePlaygroundChatMovie.IProps,
 ) {
-  //----
-  // STATES
-  //----
   const [, setError] = useState<Error | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -27,54 +24,27 @@ export function AutoBePlaygroundChatMovie(
     props.storageStrategyFactory(),
   );
 
-  //----
-  // RENDERERS
-  //----
   const isMinWidthLg = useMediaQuery(useMediaQuery.MIN_WIDTH_LG);
+  const isMinWidthXl = useMediaQuery(useMediaQuery.MIN_WIDTH_XL);
   const isMobile = !isMinWidthLg;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
+    <div className="w-full h-full flex flex-col relative">
       {!props.hideAppBar && (
-        <AppBar position="relative" component="div">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              {props.title ?? "AutoBE Playground"}
-            </Typography>
-          </Toolbar>
-        </AppBar>
+        <header className="flex items-center h-14 px-4 bg-primary text-primary-foreground">
+          <h1 className="text-lg font-semibold">
+            {props.title ?? "AutoBE Playground"}
+          </h1>
+        </header>
       )}
-      <div
-        style={{
-          width: "100%",
-          flexGrow: 1,
-          display: "flex",
-          flexDirection: "row",
-          overflow: "hidden",
-        }}
-      >
+      <div className="w-full flex-1 flex flex-row overflow-hidden">
         <SearchParamsProvider>
           <AutoBeAgentSessionListProvider storageStrategy={storageStrategy}>
             <AutoBeAgentProvider
               storageStrategy={storageStrategy}
               serviceFactory={props.serviceFactory}
             >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  width: "100%",
-                  height: "100%",
-                }}
-              >
+              <div className="flex flex-row w-full h-full">
                 {!props.hideSidebar && (
                   <AutoBePlaygroundSidebar
                     storageStrategy={storageStrategy}
@@ -87,6 +57,13 @@ export function AutoBePlaygroundChatMovie(
                   isReplay={props.isReplay}
                   isMobile={isMobile}
                   setError={setError}
+                  hideStatusButton={isMinWidthXl}
+                  chatDisabled={
+                    !props.isReplay &&
+                    (props.mockMode
+                      ? !props.mockVendor || !props.mockProject
+                      : !props.selectedVendorId || !props.selectedModel)
+                  }
                   disconnectedContent={
                     !props.isReplay ? (
                       <VendorModelSelector
@@ -97,10 +74,14 @@ export function AutoBePlaygroundChatMovie(
                         onVendorChange={props.onVendorChange ?? (() => {})}
                         onModelChange={props.onModelChange ?? (() => {})}
                         onLocaleChange={props.onLocaleChange ?? (() => {})}
-                        onTimezoneChange={props.onTimezoneChange ?? (() => {})}
+                        onTimezoneChange={
+                          props.onTimezoneChange ?? (() => {})
+                        }
                         benchmarks={props.benchmarks ?? []}
                         mockMode={props.mockMode ?? false}
-                        onMockModeChange={props.onMockModeChange ?? (() => {})}
+                        onMockModeChange={
+                          props.onMockModeChange ?? (() => {})
+                        }
                         mockVendor={props.mockVendor ?? null}
                         mockProject={props.mockProject ?? null}
                         onMockVendorChange={
@@ -113,6 +94,7 @@ export function AutoBePlaygroundChatMovie(
                     ) : undefined
                   }
                 />
+                {isMinWidthXl && <StatusPanel />}
               </div>
             </AutoBeAgentProvider>
           </AutoBeAgentSessionListProvider>
@@ -130,8 +112,6 @@ export namespace AutoBePlaygroundChatMovie {
     serviceFactory: AutoBeServiceFactory;
     isUnusedConfig?: boolean;
     storageStrategyFactory: () => IAutoBeAgentSessionStorageStrategy;
-
-    // Vendor/model/locale/timezone selection
     selectedVendorId?: string | null;
     selectedModel?: string | null;
     selectedLocale?: string;
@@ -140,8 +120,6 @@ export namespace AutoBePlaygroundChatMovie {
     onModelChange?: (model: string | null) => void;
     onLocaleChange?: (locale: string) => void;
     onTimezoneChange?: (timezone: string) => void;
-
-    // Mock mode
     benchmarks?: IAutoBePlaygroundBenchmark[];
     mockMode?: boolean;
     onMockModeChange?: (enabled: boolean) => void;

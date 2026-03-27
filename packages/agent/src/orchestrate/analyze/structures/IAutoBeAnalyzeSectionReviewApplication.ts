@@ -1,66 +1,33 @@
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /**
- * Application interface for the Cross-File Section Review agent.
- *
- * This agent reviews ALL files' section content together in a single LLM call,
- * providing cross-file validation for value consistency, terminology, Mermaid
- * diagram style, and EARS format (03-functional-requirements, 04-business-rules
- * only).
+ * Reviews all files' section content for cross-file value consistency,
+ * terminology, Mermaid style, and EARS format.
  */
 export interface IAutoBeAnalyzeSectionReviewApplication {
-  /**
-   * Process cross-file section review task or preliminary data requests.
-   *
-   * Reviews and validates section content across ALL files in a single call,
-   * ensuring cross-file consistency and uniformity.
-   *
-   * @param props Request containing either preliminary data request or complete
-   *   task
-   */
+  /** Review section content across all files for cross-file consistency. */
   process(props: IAutoBeAnalyzeSectionReviewApplicationProps): void;
 }
 
 export interface IAutoBeAnalyzeSectionReviewApplicationProps {
   /**
-   * Think before you act.
-   *
-   * Before requesting preliminary data or completing your task, reflect on your
-   * current state and explain your reasoning:
-   *
-   * For preliminary requests:
-   *
-   * - What additional context do you need for cross-file validation?
-   *
-   * For completion:
-   *
-   * - Is EARS format consistent across requirement files (03, 04)?
-   * - Are values and constraints consistent across all files?
-   * - Is terminology aligned across all files?
-   * - Are Mermaid diagram styles uniform?
+   * Reasoning about your current state: what's missing (preliminary) or what
+   * you accomplished (completion).
    */
   thinking?: string | null;
 
-  /** Type discriminator for the request. */
+  /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeSectionReviewApplicationComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
-/**
- * Request to complete the cross-file section review.
- *
- * Provides per-file review verdicts for all files' section content.
- */
+/** Complete the cross-file section review with per-file verdicts. */
 export interface IAutoBeAnalyzeSectionReviewApplicationComplete {
-  /** Type discriminator for the request. */
+  /** Type discriminator for completion request. */
   type: "complete";
 
-  /**
-   * Per-file review results.
-   *
-   * Each entry contains the verdict for one file's section content.
-   */
+  /** Per-file review results. */
   fileResults: IAutoBeAnalyzeSectionReviewApplicationFileResult[];
 }
 
@@ -69,56 +36,29 @@ export interface IAutoBeAnalyzeSectionReviewApplicationFileResult {
   /** Index of the file in the scenario's files array. */
   fileIndex: number;
 
-  /**
-   * Whether this file's section content passed review.
-   *
-   * If true: File's sections are consistent with other files. If false: File's
-   * sections must be regenerated with feedback.
-   */
+  /** Whether this file's section content passed review. */
   approved: boolean;
 
   /**
-   * Detailed review feedback for this file's section content.
-   *
-   * Cross-file review criteria evaluated:
-   *
-   * - EARS format compliance (03-functional-requirements, 04-business-rules only)
-   * - Value and constraint consistency
-   * - Terminology alignment
-   * - Mermaid diagram style uniformity
-   * - No prohibited content
-   *
-   * For rejected files:
-   *
-   * - Specific inconsistencies identified
-   * - Recommendations for alignment
+   * Cross-file review feedback. For rejected files, describe specific
+   * inconsistencies.
    */
   feedback: string;
 
   /**
-   * Structured review issues for targeted rewrites / patches.
-   *
-   * Optional for backward compatibility.
+   * Structured review issues for targeted rewrites. Optional for backward
+   * compatibility.
    */
   issues?: IAutoBeAnalyzeSectionReviewApplicationReviewIssue[] | null;
 
-  /**
-   * Revised sections for this file if modifications were made.
-   *
-   * Organized by moduleIndex and unitIndex. Set to `null` if no revisions were
-   * made.
-   */
+  /** Revised sections organized by moduleIndex/unitIndex. Null if no revisions. */
   revisedSections:
     | IAutoBeAnalyzeSectionReviewApplicationRevisedModuleSections[]
     | null;
 
   /**
-   * Specific module/unit pairs whose sections were rejected.
-   *
-   * When rejecting a file, identify EXACTLY which modules and units have
-   * problematic sections. Only these will be regenerated on retry.
-   *
-   * Set to null if all module/units need regeneration, or if approving.
+   * Module/unit pairs with rejected sections. Only these are regenerated on
+   * retry. Null if all module/units need regeneration, or if approving.
    */
   rejectedModuleUnits:
     | IAutoBeAnalyzeSectionReviewApplicationRejectedModuleUnit[]
@@ -130,59 +70,60 @@ export interface IAutoBeAnalyzeSectionReviewApplicationRejectedModuleUnit {
   /** Index of the module section. */
   moduleIndex: number;
 
-  /** Indices of units within this module that need section regeneration. */
+  /** Unit indices needing section regeneration. */
   unitIndices: number[];
 
-  /** Specific feedback for this module/unit group's issues. */
+  /** Feedback for this module/unit group's issues. */
   feedback: string;
 
   /**
-   * Structured issues scoped to this module/unit group.
-   *
-   * Optional for backward compatibility.
+   * Structured issues scoped to this module/unit group. Optional for backward
+   * compatibility.
    */
   issues?: IAutoBeAnalyzeSectionReviewApplicationReviewIssue[] | null;
 
   /**
-   * Per-unit mapping of specific section indices that need regeneration.
-   *
-   * Keys are unit indices (from `unitIndices`), values are arrays of section
-   * indices within that unit's `sectionSections[]` that failed review.
-   *
-   * When null/undefined or when a unitIndex is not present as a key, ALL
-   * sections for that unit are regenerated (backward-compatible fallback).
+   * Per-unit mapping of section indices needing regeneration. When null or a
+   * unitIndex is absent, ALL sections for that unit are regenerated.
    */
   sectionIndicesPerUnit?: Record<number, number[]> | null;
 }
 
+/** A specific review issue found during section content review. */
 export interface IAutoBeAnalyzeSectionReviewApplicationReviewIssue {
+  /** Rule violation code (e.g., "TERM-001", "VALUE-002"). */
   ruleCode: string;
+  /** Module index where the issue was found, or null if file-level. */
   moduleIndex: number | null;
+  /** Unit index where the issue was found, or null if module-level. */
   unitIndex: number | null;
+  /** Section index where the issue was found, or null if unit-level. */
   sectionIndex?: number | null;
+  /** Specific instruction for fixing this issue. */
   fixInstruction: string;
+  /** Supporting evidence from the source text. */
   evidence?: string | null;
 }
 
-/** Structure for revised sections of a single module. */
+/** Revised sections of a single module. */
 export interface IAutoBeAnalyzeSectionReviewApplicationRevisedModuleSections {
   /** Index of the module section. */
   moduleIndex: number;
 
-  /** Revised sections for each unit in this module. */
+  /** Revised sections for each unit. */
   units: IAutoBeAnalyzeSectionReviewApplicationRevisedUnitSections[];
 }
 
-/** Structure for revised sections of a single unit. */
+/** Revised sections of a single unit. */
 export interface IAutoBeAnalyzeSectionReviewApplicationRevisedUnitSections {
   /** Index of the unit section. */
   unitIndex: number;
 
-  /** Revised section sections for this unit. */
+  /** Revised subsections (#### level) within this unit. */
   sectionSections: IAutoBeAnalyzeSectionReviewApplicationRevisedSectionSection[];
 }
 
-/** Structure for a revised section. */
+/** A revised section. */
 export interface IAutoBeAnalyzeSectionReviewApplicationRevisedSectionSection {
   /** Title of the section. */
   title: string;

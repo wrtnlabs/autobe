@@ -58,6 +58,67 @@ export namespace AutoBeRealizeTransformerProgrammer {
     return Array.from(unique);
   }
 
+  export function getRelationMappingTable(props: {
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
+  }): Array<{
+    propertyKey: string;
+    targetModel: string;
+    relationType: string;
+    fkColumns: string;
+  }> {
+    const result: Array<{
+      propertyKey: string;
+      targetModel: string;
+      relationType: string;
+      fkColumns: string;
+    }> = [];
+
+    // belongsTo relations (forward FK on this model)
+    for (const f of props.model.foreignFields) {
+      result.push({
+        propertyKey: f.relation.name,
+        targetModel: f.relation.targetModel,
+        relationType: "belongsTo",
+        fkColumns: f.name,
+      });
+    }
+
+    // hasMany/hasOne relations (FK on the other model pointing to this model)
+    for (const file of props.application.files) {
+      for (const om of file.models) {
+        for (const fk of om.foreignFields) {
+          if (fk.relation.targetModel === props.model.name) {
+            result.push({
+              propertyKey: fk.relation.oppositeName,
+              targetModel: om.name,
+              relationType: fk.unique ? "hasOne" : "hasMany",
+              fkColumns: fk.name,
+            });
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  export function formatRelationMappingTable(props: {
+    application: AutoBeDatabase.IApplication;
+    model: AutoBeDatabase.IModel;
+  }): string {
+    const relations = getRelationMappingTable(props);
+    if (relations.length === 0) return "(no relations)";
+    return [
+      "| propertyKey | Target Model | Relation Type | FK Column(s) |",
+      "|---|---|---|---|",
+      ...relations.map(
+        (r) =>
+          `| ${r.propertyKey} | ${r.targetModel} | ${r.relationType} | ${r.fkColumns} |`,
+      ),
+    ].join("\n");
+  }
+
   export function getSelectMappingMetadata(props: {
     application: AutoBeDatabase.IApplication;
     model: AutoBeDatabase.IModel;
@@ -150,6 +211,7 @@ ${Object.keys(props.schema.properties)
     };
   }): IValidation.IError[] {
     const errors: IValidation.IError[] = [];
+    // mapping plans
     validateTransformMappings({
       document: props.document,
       errors,
@@ -162,6 +224,8 @@ ${Object.keys(props.schema.properties)
       plan: props.plan,
       selectMappings: props.selectMappings,
     });
+
+    // validate draft
     validateEmptyCode({
       plan: props.plan,
       content: props.draft,
@@ -175,6 +239,8 @@ ${Object.keys(props.schema.properties)
       path: "$input.request.draft",
       errors,
     });
+
+    // validate final
     if (props.revise.final !== null) {
       validateEmptyCode({
         plan: props.plan,

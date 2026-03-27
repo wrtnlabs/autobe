@@ -3,106 +3,72 @@ import {
   IAutoBePlaygroundVendor,
 } from "@autobe/interface";
 import pApi from "@autobe/playground-api";
-import {
-  Add,
-  Delete,
-  Edit,
-  Save,
-} from "@mui/icons-material";
-import {
-  Alert,
-  Autocomplete,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CircularProgress,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemText,
-  MenuItem,
-  Select,
-  Snackbar,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { Loader2, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+import { cn } from "@/utils";
 
 import { getConnection, getServerUrl } from "../../utils/connection";
 import { invalidateGlobalConfigCache } from "../../utils/globalConfig";
 
+const VENDOR_TEMPLATES = [
+  { name: "OpenAI", baseURL: "https://api.openai.com/v1" },
+  { name: "OpenRouter", baseURL: "https://openrouter.ai/api/v1" },
+  { name: "Ollama", baseURL: "http://localhost:11434/v1", apiKey: "autobe" },
+  { name: "LM Studio", baseURL: "http://localhost:1234/v1", apiKey: "autobe" },
+];
+
 const LOCALE_SUGGESTIONS = [
-  "en-US",
-  "ko-KR",
-  "ja-JP",
-  "zh-CN",
-  "zh-TW",
-  "es-ES",
-  "fr-FR",
-  "de-DE",
+  "en-US", "ko-KR", "ja-JP", "zh-CN", "zh-TW", "es-ES", "fr-FR", "de-DE",
 ];
 
 export const AutoBePlaygroundSettingsMovie = () => {
-  const theme = useTheme();
-
-  // Loading
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  // Config form state
   const [locale, setLocale] = useState("en-US");
   const [timezone, setTimezone] = useState("UTC");
   const [defaultVendorId, setDefaultVendorId] = useState<string | null>(null);
   const [defaultModel, setDefaultModel] = useState<string | null>(null);
   const [serverUrl, setServerUrl] = useState(getServerUrl());
-
-  // Vendors
   const [vendors, setVendors] = useState<IAutoBePlaygroundVendor[]>([]);
-
-  // Vendor dialog
   const [vendorDialogOpen, setVendorDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<IAutoBePlaygroundVendor | null>(null);
-  const [vendorForm, setVendorForm] = useState({
-    name: "",
-    apiKey: "",
-    baseURL: "",
-    semaphore: 16,
-  });
+  const [vendorForm, setVendorForm] = useState({ name: "", apiKey: "", baseURL: "", semaphore: 16 });
   const [vendorSaving, setVendorSaving] = useState(false);
-
-  // Feedback
-  const [snackbar, setSnackbar] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({ open: false, message: "", severity: "success" });
-
-  const showMessage = (message: string, severity: "success" | "error") =>
-    setSnackbar({ open: true, message, severity });
 
   const loadVendors = useCallback(async () => {
     try {
-      const page = await pApi.functional.autobe.playground.vendors.index(
-        getConnection(),
-        {},
-      );
+      const page = await pApi.functional.autobe.playground.vendors.index(getConnection(), {});
       setVendors(page.data);
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
@@ -113,14 +79,13 @@ export const AutoBePlaygroundSettingsMovie = () => {
           pApi.functional.autobe.playground.config.get(conn),
           loadVendors(),
         ]);
-
         setLocale(cfg.locale);
         setTimezone(cfg.timezone);
         setDefaultVendorId(cfg.default_vendor_id);
         setDefaultModel(cfg.default_model);
       } catch (err) {
         console.error("Failed to load settings:", err);
-        showMessage("Failed to load settings from server", "error");
+        toast.error("Failed to load settings from server");
       } finally {
         setLoading(false);
       }
@@ -132,27 +97,21 @@ export const AutoBePlaygroundSettingsMovie = () => {
     setSaving(true);
     try {
       localStorage.setItem("autobe_server_url", serverUrl);
-
       const body: IAutoBePlaygroundConfig.IUpdate = {
-        locale,
-        timezone,
+        locale, timezone,
         default_vendor_id: defaultVendorId as any,
         default_model: defaultModel,
       };
-      await pApi.functional.autobe.playground.config.update(
-        getConnection(),
-        body,
-      );
+      await pApi.functional.autobe.playground.config.update(getConnection(), body);
       invalidateGlobalConfigCache();
-      showMessage("Settings saved", "success");
+      toast.success("Settings saved");
     } catch {
-      showMessage("Failed to save settings", "error");
+      toast.error("Failed to save settings");
     } finally {
       setSaving(false);
     }
   };
 
-  // ---- Vendor CRUD ----
   const handleOpenCreateVendor = () => {
     setEditingVendor(null);
     setVendorForm({ name: "", apiKey: "", baseURL: "", semaphore: 16 });
@@ -161,12 +120,7 @@ export const AutoBePlaygroundSettingsMovie = () => {
 
   const handleOpenEditVendor = (v: IAutoBePlaygroundVendor) => {
     setEditingVendor(v);
-    setVendorForm({
-      name: v.name,
-      apiKey: "",
-      baseURL: "",
-      semaphore: v.semaphore,
-    });
+    setVendorForm({ name: v.name, apiKey: "", baseURL: "", semaphore: v.semaphore });
     setVendorDialogOpen(true);
   };
 
@@ -174,38 +128,31 @@ export const AutoBePlaygroundSettingsMovie = () => {
     setVendorSaving(true);
     try {
       if (editingVendor) {
-        await pApi.functional.autobe.playground.vendors.update(
-          getConnection(),
-          editingVendor.id as any,
-          {
-            name: vendorForm.name,
-            apiKey: vendorForm.apiKey || undefined,
-            baseURL: vendorForm.baseURL || null,
-            semaphore: vendorForm.semaphore,
-          },
-        );
-        showMessage(`Vendor "${vendorForm.name}" updated`, "success");
+        await pApi.functional.autobe.playground.vendors.update(getConnection(), editingVendor.id as any, {
+          name: vendorForm.name,
+          apiKey: vendorForm.apiKey || undefined,
+          baseURL: vendorForm.baseURL || null,
+          semaphore: vendorForm.semaphore,
+        });
+        toast.success(`Vendor "${vendorForm.name}" updated`);
       } else {
         if (!vendorForm.apiKey) {
-          showMessage("API Key is required for new vendors", "error");
+          toast.error("API Key is required for new vendors");
           setVendorSaving(false);
           return;
         }
-        await pApi.functional.autobe.playground.vendors.create(
-          getConnection(),
-          {
-            name: vendorForm.name,
-            apiKey: vendorForm.apiKey,
-            baseURL: vendorForm.baseURL || null,
-            semaphore: vendorForm.semaphore,
-          },
-        );
-        showMessage(`Vendor "${vendorForm.name}" created`, "success");
+        await pApi.functional.autobe.playground.vendors.create(getConnection(), {
+          name: vendorForm.name,
+          apiKey: vendorForm.apiKey,
+          baseURL: vendorForm.baseURL || null,
+          semaphore: vendorForm.semaphore,
+        });
+        toast.success(`Vendor "${vendorForm.name}" created`);
       }
       setVendorDialogOpen(false);
       await loadVendors();
     } catch {
-      showMessage("Failed to save vendor", "error");
+      toast.error("Failed to save vendor");
     } finally {
       setVendorSaving(false);
     }
@@ -213,362 +160,305 @@ export const AutoBePlaygroundSettingsMovie = () => {
 
   const handleDeleteVendor = async (v: IAutoBePlaygroundVendor) => {
     try {
-      await pApi.functional.autobe.playground.vendors.erase(
-        getConnection(),
-        v.id as any,
-      );
-      showMessage(`Vendor "${v.name}" deleted`, "success");
+      await pApi.functional.autobe.playground.vendors.erase(getConnection(), v.id as any);
+      toast.success(`Vendor "${v.name}" deleted`);
       if (defaultVendorId === v.id) setDefaultVendorId(null);
       await loadVendors();
     } catch {
-      showMessage("Failed to delete vendor", "error");
+      toast.error("Failed to delete vendor");
     }
   };
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          py: 12,
-        }}
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
     );
   }
 
   const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "100%",
-        overflow: "auto",
-        bgcolor: theme.palette.background.default,
-      }}
-    >
-      <Container maxWidth="sm" sx={{ py: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: 600, mb: 3 }}>
-          Playground Settings
-        </Typography>
+    <div className="w-full h-full overflow-auto bg-background">
+      <div className="mx-auto max-w-md px-4 py-8">
+        <h2 className="text-xl font-semibold mb-6">Playground Settings</h2>
 
-        <Stack spacing={3}>
+        <div className="space-y-6">
           {/* Server Connection */}
-          <Card variant="outlined">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Server Connection
+              </CardTitle>
+            </CardHeader>
             <CardContent>
-              <SectionTitle>Server Connection</SectionTitle>
-              <TextField
-                fullWidth
-                size="small"
-                label="Server URL"
-                value={serverUrl}
-                onChange={(e) => setServerUrl(e.target.value)}
-                placeholder="http://127.0.0.1:5890"
-              />
+              <div className="space-y-2">
+                <Label>Server URL</Label>
+                <Input
+                  value={serverUrl}
+                  onChange={(e) => setServerUrl(e.target.value)}
+                  placeholder="http://127.0.0.1:5890"
+                />
+              </div>
             </CardContent>
           </Card>
 
           {/* Vendors */}
-          <Card variant="outlined">
-            <CardContent>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                sx={{ mb: 1 }}
-              >
-                <SectionTitle sx={{ mb: 0 }}>Vendors</SectionTitle>
-                <Button
-                  size="small"
-                  startIcon={<Add />}
-                  onClick={handleOpenCreateVendor}
-                >
-                  Add
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Vendors
+                </CardTitle>
+                <Button size="sm" variant="outline" onClick={handleOpenCreateVendor}>
+                  <Plus className="h-3.5 w-3.5 mr-1" /> Add
                 </Button>
-              </Stack>
+              </div>
+            </CardHeader>
+            <CardContent>
               {vendors.length === 0 ? (
-                <Typography
-                  variant="body2"
-                  sx={{ color: "text.secondary", py: 2, textAlign: "center" }}
-                >
+                <p className="text-sm text-muted-foreground text-center py-4">
                   No vendors registered. Add one to get started.
-                </Typography>
+                </p>
               ) : (
-                <List dense disablePadding>
+                <div className="space-y-1.5">
                   {vendors.map((v) => (
-                    <ListItem
+                    <div
                       key={v.id}
-                      secondaryAction={
-                        <Stack direction="row" spacing={0.5}>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              size="small"
-                              onClick={() => handleOpenEditVendor(v)}
-                            >
-                              <Edit sx={{ fontSize: 16 }} />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              size="small"
-                              onClick={() => handleDeleteVendor(v)}
-                              sx={{
-                                "&:hover": {
-                                  color: theme.palette.error.main,
-                                },
-                              }}
-                            >
-                              <Delete sx={{ fontSize: 16 }} />
-                            </IconButton>
-                          </Tooltip>
-                        </Stack>
-                      }
-                      sx={{
-                        borderRadius: 1,
-                        mb: 0.5,
-                        bgcolor: alpha(theme.palette.action.hover, 0.04),
-                      }}
+                      className="flex items-center justify-between rounded-md bg-muted/40 px-3 py-2"
                     >
-                      <ListItemText
-                        primary={v.name}
-                        secondary={`Concurrency: ${v.semaphore}`}
-                        primaryTypographyProps={{
-                          variant: "body2",
-                          fontWeight: 500,
-                        }}
-                        secondaryTypographyProps={{
-                          variant: "caption",
-                        }}
-                      />
-                    </ListItem>
+                      <div>
+                        <p className="text-sm font-medium">{v.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Concurrency: {v.semaphore}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => handleOpenEditVendor(v)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Edit</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 hover:text-destructive"
+                                onClick={() => handleDeleteVendor(v)}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Delete</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
                   ))}
-                </List>
+                </div>
               )}
             </CardContent>
           </Card>
 
           {/* Localization */}
-          <Card variant="outlined">
-            <CardContent>
-              <SectionTitle>Localization</SectionTitle>
-              <Stack spacing={2}>
-                <Autocomplete
-                  freeSolo
-                  size="small"
-                  options={LOCALE_SUGGESTIONS}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Localization
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Locale</Label>
+                <Input
+                  placeholder="en-US"
+                  list="settings-locale-list"
                   value={locale}
-                  onInputChange={(_, value) => setLocale(value)}
-                  renderInput={(params) => (
-                    <TextField {...params} label="Locale" placeholder="en-US" />
-                  )}
+                  onChange={(e) => setLocale(e.target.value)}
                 />
-                <Autocomplete
-                  freeSolo
-                  size="small"
-                  options={[
-                    browserTimezone,
-                    "UTC",
-                    "America/New_York",
-                    "Europe/London",
-                    "Asia/Seoul",
-                    "Asia/Tokyo",
-                  ]}
+                <datalist id="settings-locale-list">
+                  {LOCALE_SUGGESTIONS.map((l) => <option key={l} value={l} />)}
+                </datalist>
+              </div>
+              <div className="space-y-2">
+                <Label>Timezone</Label>
+                <Input
+                  placeholder="UTC"
+                  list="settings-timezone-list"
                   value={timezone}
-                  onInputChange={(_, value) => setTimezone(value)}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Timezone"
-                      placeholder="UTC"
-                      helperText={`Browser timezone: ${browserTimezone}`}
-                    />
-                  )}
+                  onChange={(e) => setTimezone(e.target.value)}
                 />
-              </Stack>
+                <datalist id="settings-timezone-list">
+                  {[browserTimezone, "UTC", "America/New_York", "Europe/London", "Asia/Seoul", "Asia/Tokyo"].map(
+                    (t) => <option key={t} value={t} />,
+                  )}
+                </datalist>
+                <p className="text-xs text-muted-foreground">
+                  Browser timezone: {browserTimezone}
+                </p>
+              </div>
             </CardContent>
           </Card>
 
           {/* Default Vendor & Model */}
-          <Card variant="outlined">
-            <CardContent>
-              <SectionTitle>Default Vendor & Model</SectionTitle>
-              <Typography
-                variant="caption"
-                sx={{ display: "block", mb: 2, color: "text.secondary" }}
-              >
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Default Vendor & Model
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
                 Pre-fills the vendor and model selection on the chat page for new sessions.
-              </Typography>
-              <Stack spacing={2}>
-                <FormControl fullWidth size="small">
-                  <InputLabel>Default Vendor</InputLabel>
-                  <Select
-                    value={defaultVendorId ?? ""}
-                    label="Default Vendor"
-                    onChange={(e) =>
-                      setDefaultVendorId(e.target.value || null)
-                    }
-                  >
-                    <MenuItem value="">
-                      <em>None</em>
-                    </MenuItem>
+              </p>
+              <div className="space-y-2">
+                <Label>Default Vendor</Label>
+                <Select
+                  value={defaultVendorId ?? "__none__"}
+                  onValueChange={(v) => setDefaultVendorId(v === "__none__" ? null : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="None" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__none__">None</SelectItem>
                     {vendors.map((v) => (
-                      <MenuItem key={v.id} value={v.id}>
-                        {v.name}
-                      </MenuItem>
+                      <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
                     ))}
-                  </Select>
-                </FormControl>
-                <TextField
-                  fullWidth
-                  size="small"
-                  label="Default Model"
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Default Model</Label>
+                <Input
+                  placeholder="gpt-4.1"
                   value={defaultModel ?? ""}
                   onChange={(e) => setDefaultModel(e.target.value || null)}
-                  placeholder="gpt-4.1"
                 />
-              </Stack>
+              </div>
             </CardContent>
           </Card>
 
-          <Divider />
+          <Separator />
 
-          {/* Save Config */}
           <Button
-            variant="contained"
-            size="large"
-            startIcon={
-              saving ? (
-                <CircularProgress size={18} color="inherit" />
-              ) : (
-                <Save />
-              )
-            }
+            size="lg"
+            className="w-full"
             onClick={handleSaveConfig}
             disabled={saving}
           >
+            {saving ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
             {saving ? "Saving..." : "Save Settings"}
           </Button>
-        </Stack>
-      </Container>
+        </div>
+      </div>
 
       {/* Vendor Create / Edit Dialog */}
-      <Dialog
-        open={vendorDialogOpen}
-        onClose={() => setVendorDialogOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>
-          {editingVendor ? `Edit "${editingVendor.name}"` : "Add Vendor"}
-        </DialogTitle>
+      <Dialog open={vendorDialogOpen} onOpenChange={setVendorDialogOpen}>
         <DialogContent>
-          <Stack spacing={2} sx={{ mt: 1 }}>
-            <TextField
-              fullWidth
-              size="small"
-              label="Vendor Name"
-              value={vendorForm.name}
-              onChange={(e) =>
-                setVendorForm((f) => ({ ...f, name: e.target.value }))
-              }
-              placeholder="My OpenAI"
-              required
-            />
-            <TextField
-              fullWidth
-              size="small"
-              label="Base URL"
-              value={vendorForm.baseURL}
-              onChange={(e) =>
-                setVendorForm((f) => ({ ...f, baseURL: e.target.value }))
-              }
-              placeholder="https://api.openai.com/v1"
-            />
-            <TextField
-              fullWidth
-              size="small"
-              label="Concurrency Limit"
-              type="number"
-              value={vendorForm.semaphore}
-              onChange={(e) =>
-                setVendorForm((f) => ({
-                  ...f,
-                  semaphore: parseInt(e.target.value) || 16,
-                }))
-              }
-              slotProps={{ htmlInput: { min: 1, max: 100 } }}
-            />
-            <TextField
-              fullWidth
-              size="small"
-              label={
-                editingVendor
-                  ? "API Key (leave empty to keep current)"
-                  : "API Key"
-              }
-              value={vendorForm.apiKey}
-              onChange={(e) =>
-                setVendorForm((f) => ({ ...f, apiKey: e.target.value }))
-              }
-              placeholder="sk-..."
-              required={!editingVendor}
-              type="password"
-            />
-          </Stack>
+          <DialogHeader>
+            <DialogTitle>
+              {editingVendor ? `Edit "${editingVendor.name}"` : "Add Vendor"}
+            </DialogTitle>
+            <DialogDescription>
+              {editingVendor
+                ? "Update vendor settings."
+                : "Add a new AI vendor with API credentials."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            {!editingVendor && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">Template</Label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {VENDOR_TEMPLATES.map((t) => (
+                      <button
+                        key={t.name}
+                        type="button"
+                        className={cn(
+                          "inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+                          "hover:bg-accent hover:text-accent-foreground",
+                          vendorForm.name === t.name && vendorForm.baseURL === t.baseURL
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-background text-foreground",
+                        )}
+                        onClick={() => setVendorForm((f) => ({ ...f, name: t.name, baseURL: t.baseURL, apiKey: t.apiKey ?? "" }))}
+                      >
+                        {t.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <Separator />
+              </>
+            )}
+            <div className="space-y-2">
+              <Label>Vendor Name</Label>
+              <Input
+                placeholder="My OpenAI"
+                value={vendorForm.name}
+                onChange={(e) => setVendorForm((f) => ({ ...f, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Base URL</Label>
+              <Input
+                placeholder="https://api.openai.com/v1"
+                value={vendorForm.baseURL}
+                onChange={(e) => setVendorForm((f) => ({ ...f, baseURL: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Concurrency Limit</Label>
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={vendorForm.semaphore}
+                onChange={(e) => setVendorForm((f) => ({ ...f, semaphore: parseInt(e.target.value) || 16 }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>
+                {editingVendor ? "API Key (leave empty to keep current)" : "API Key"}
+              </Label>
+              <Input
+                type="password"
+                placeholder="sk-..."
+                value={vendorForm.apiKey}
+                onChange={(e) => setVendorForm((f) => ({ ...f, apiKey: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setVendorDialogOpen(false)} disabled={vendorSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveVendor} disabled={vendorSaving || !vendorForm.name}>
+              {vendorSaving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Save className="h-4 w-4 mr-1" />}
+              {vendorSaving ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
         </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setVendorDialogOpen(false)}
-            disabled={vendorSaving}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSaveVendor}
-            variant="contained"
-            disabled={vendorSaving || !vendorForm.name}
-            startIcon={
-              vendorSaving ? <CircularProgress size={16} /> : <Save />
-            }
-          >
-            {vendorSaving ? "Saving..." : "Save"}
-          </Button>
-        </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          severity={snackbar.severity}
-          onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Box>
+    </div>
   );
 };
-
-const SectionTitle = (
-  props: { children: React.ReactNode } & Record<string, any>,
-) => (
-  <Typography
-    variant="subtitle2"
-    {...props}
-    sx={{
-      mb: 2,
-      color: "text.secondary",
-      textTransform: "uppercase",
-      letterSpacing: 0.5,
-      ...props.sx,
-    }}
-  />
-);

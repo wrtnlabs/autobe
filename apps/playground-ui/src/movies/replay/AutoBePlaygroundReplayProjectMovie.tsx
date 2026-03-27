@@ -2,81 +2,34 @@ import {
   AutoBePhase,
   IAutoBePlaygroundSession,
 } from "@autobe/interface";
-import {
-  AccessTime,
-  ArrowForwardIos,
-  Token,
-} from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  Chip,
-  Divider,
-  Stack,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { ChevronRight, Clock, Coins } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { formatElapsed, formatTokens } from "@/utils";
 
 export const AutoBePlaygroundReplayProjectMovie = ({
   session,
 }: AutoBePlaygroundReplayProjectMovie.IProps) => {
-  const theme = useTheme();
-
-  const formatElapsedTime = (milliseconds: number): string => {
-    const seconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-
-    const paddedSeconds = (n: number) => n.toString().padStart(2, "0");
-
-    if (hours > 0) {
-      return `${hours}h ${minutes % 60}m ${paddedSeconds(seconds % 60)}s`;
-    } else if (minutes > 0) {
-      return ` ${minutes}m ${paddedSeconds(seconds % 60)}s`;
-    } else {
-      return `${paddedSeconds(seconds)}s`;
-    }
+  const phaseColorMap: Record<string, string> = {
+    analyze: "bg-info/10 text-info",
+    database: "bg-purple-500/10 text-purple-500",
+    interface: "bg-primary/10 text-primary",
+    test: "bg-warning/10 text-warning",
+    realize: "bg-success/10 text-success",
   };
 
-  const formatTokenCount = (count: number): string => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(2)}M`;
-    } else if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
-    }
-    return count.toString();
+  const vendorColorMap: Record<string, string> = {
+    Anthropic: "bg-destructive/10 text-destructive",
+    OpenAI: "bg-success/10 text-success",
+    Google: "bg-info/10 text-info",
   };
 
-  const getPhaseColor = (p: AutoBePhase | null) => {
-    const colors = {
-      analyze: theme.palette.info.main,
-      database: theme.palette.secondary.main,
-      interface: theme.palette.primary.main,
-      test: theme.palette.warning.main,
-      realize: theme.palette.success.main,
-    };
-    return colors[p as keyof typeof colors] ?? theme.palette.grey[500];
-  };
+  const phaseClasses = phaseColorMap[session.phase as AutoBePhase] ?? "bg-muted text-muted-foreground";
+  const vendorClasses = vendorColorMap[session.vendor.name] ?? "bg-muted text-muted-foreground";
 
-  const getVendorColor = (vendor: string) => {
-    const colors: Record<string, string> = {
-      Anthropic: theme.palette.error.main,
-      OpenAI: theme.palette.success.main,
-      Google: theme.palette.info.main,
-    };
-    return colors[vendor] || theme.palette.grey[500];
-  };
-
-  const phaseColor = getPhaseColor(session.phase);
-  const vendorColor = getVendorColor(session.vendor.name);
-
-  // Use aggregate token usage (already summed across all phases)
   const tokenUsage = session.token_usage.aggregate;
-
-  // Compute elapsed time from timestamps
   const elapsed =
     session.completed_at != null
       ? new Date(session.completed_at).getTime() -
@@ -86,229 +39,89 @@ export const AutoBePlaygroundReplayProjectMovie = ({
   const title = session.title ?? session.model;
 
   return (
-    <Card
-      sx={{
-        height: "100%",
-        transition: "all 0.3s ease-in-out",
-        border: `1px solid ${alpha(phaseColor, 0.2)}`,
-        "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: `0 8px 24px ${alpha(phaseColor, 0.2)}`,
-          borderColor: phaseColor,
-        },
-      }}
+    <a
+      href={`/replay/get?session-id=${session.id}`}
+      target="_blank"
+      className="block h-full"
     >
-      <CardActionArea
-        component="a"
-        href={`/replay/get?session-id=${session.id}`}
-        target="_blank"
-        sx={{ height: "100%" }}
-      >
-        <CardContent
-          sx={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            p: { xs: 2, sm: 2.5, md: 3 },
-          }}
-        >
+      <Card className="h-full transition-all hover:-translate-y-1 hover:shadow-lg hover:border-primary/50 cursor-pointer">
+        <CardContent className="h-full flex flex-col p-4 sm:p-5">
           {/* Header */}
-          <Box sx={{ mb: 2 }}>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              mb={1}
-            >
-              <Typography
-                variant="h6"
-                component="h2"
-                sx={{
-                  fontWeight: 600,
-                  fontSize: { xs: "1.2rem", sm: "1.4rem" },
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  maxWidth: "60%",
-                }}
-              >
+          <div className="mb-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg sm:text-xl font-semibold truncate max-w-[60%]">
                 {title}
-              </Typography>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <Chip
-                  label={session.vendor.name}
-                  size="small"
-                  sx={{
-                    backgroundColor: alpha(vendorColor, 0.1),
-                    color: vendorColor,
-                    fontWeight: 600,
-                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  }}
-                />
-                <ArrowForwardIos
-                  sx={{
-                    fontSize: 16,
-                    color: "text.secondary",
-                  }}
-                />
-              </Stack>
-            </Stack>
-            <Divider sx={{ mt: 1.5 }} />
-          </Box>
+              </h3>
+              <div className="flex items-center gap-2">
+                <Badge className={vendorClasses}>{session.vendor.name}</Badge>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+            <Separator className="mt-2" />
+          </div>
 
-          {/* Model & Phase Info */}
-          <Box sx={{ mb: 2 }}>
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", fontSize: "0.8rem" }}
-              >
-                Model:
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ fontWeight: 500, fontSize: "0.8rem" }}
-              >
-                {session.model}
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography
-                variant="body2"
-                sx={{ color: "text.secondary", fontSize: "0.8rem" }}
-              >
-                Phase:
-              </Typography>
+          {/* Model & Phase */}
+          <div className="mb-3 space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Model:</span>
+              <span className="text-sm font-medium">{session.model}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Phase:</span>
               {session.phase != null ? (
-                <Chip
-                  label={session.phase}
-                  size="small"
-                  sx={{
-                    backgroundColor: alpha(phaseColor, 0.1),
-                    color: phaseColor,
-                    fontWeight: 600,
-                    fontSize: "0.7rem",
-                    height: 22,
-                    textTransform: "capitalize",
-                  }}
-                />
+                <Badge className={phaseClasses} variant="secondary">
+                  {session.phase}
+                </Badge>
               ) : (
-                <Typography
-                  variant="body2"
-                  sx={{ color: "text.secondary", fontSize: "0.8rem" }}
-                >
+                <span className="text-sm text-muted-foreground">
                   Not started
-                </Typography>
+                </span>
               )}
               {session.completed_at != null && (
-                <Chip
-                  label="Completed"
-                  size="small"
-                  sx={{
-                    backgroundColor: alpha(theme.palette.success.main, 0.1),
-                    color: theme.palette.success.main,
-                    fontWeight: 600,
-                    fontSize: "0.7rem",
-                    height: 22,
-                  }}
-                />
+                <Badge className="bg-success/10 text-success" variant="secondary">
+                  Completed
+                </Badge>
               )}
-            </Stack>
-          </Box>
+            </div>
+          </div>
 
           {/* Stats */}
-          <Stack spacing={{ xs: 1.5, sm: 2 }} sx={{ flexGrow: 1 }}>
-            {/* Elapsed Time */}
-            <Box>
-              <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-                <AccessTime
-                  sx={{
-                    fontSize: 18,
-                    color: "text.secondary",
-                  }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  Elapsed Time
-                </Typography>
-              </Stack>
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 600,
-                  color: phaseColor,
-                  fontSize: {
-                    xs: "1rem",
-                    sm: "1.1rem",
-                    md: "1.25rem",
-                  },
-                }}
-              >
-                {formatElapsedTime(elapsed)}
-              </Typography>
-            </Box>
-
-            {/* Total Tokens */}
-            <Box>
-              <Stack direction="row" alignItems="center" spacing={1} mb={0.5}>
-                <Token
-                  sx={{
-                    fontSize: 18,
-                    color: "text.secondary",
-                  }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  Total Tokens
-                </Typography>
-              </Stack>
-              <Stack direction="row" spacing={2} alignItems="flex-start">
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: {
-                      xs: "1rem",
-                      sm: "1.1rem",
-                      md: "1.25rem",
-                    },
-                  }}
-                >
-                  {formatTokenCount(tokenUsage.total)}
-                </Typography>
-                <Stack direction="column" spacing={0} sx={{ mt: 0.2 }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: {
-                        xs: "0.7rem",
-                        sm: "0.75rem",
-                      },
-                      color: "text.secondary",
-                    }}
-                  >
-                    in: {formatTokenCount(tokenUsage.input.total)}
+          <div className="flex-1 space-y-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span className="text-sm">Elapsed Time</span>
+              </div>
+              <p className="text-base sm:text-lg font-semibold text-primary">
+                {formatElapsed(elapsed)}
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1 text-muted-foreground">
+                <Coins className="h-4 w-4" />
+                <span className="text-sm">Total Tokens</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <p className="text-base sm:text-lg font-semibold">
+                  {formatTokens(tokenUsage.total)}
+                </p>
+                <div className="mt-0.5">
+                  <p className="text-xs text-muted-foreground">
+                    in: {formatTokens(tokenUsage.input.total)}
                     {tokenUsage.input.cached > 0
-                      ? ` (${formatTokenCount(tokenUsage.input.cached)} cached)`
+                      ? ` (${formatTokens(tokenUsage.input.cached)} cached)`
                       : ""}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      fontSize: {
-                        xs: "0.7rem",
-                        sm: "0.75rem",
-                      },
-                      color: "text.secondary",
-                    }}
-                  >
-                    out: {formatTokenCount(tokenUsage.output.total)}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Box>
-          </Stack>
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    out: {formatTokens(tokenUsage.output.total)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </CardContent>
-      </CardActionArea>
-    </Card>
+      </Card>
+    </a>
   );
 };
 

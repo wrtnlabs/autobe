@@ -70,20 +70,14 @@ export class TypeEvaluator extends GateEvaluator {
       );
     }
 
-    // Read Prisma schema files if available
-    const prismaFiles =
-      context.files.prismaSchemas.length > 0
-        ? await this.readFilesAsRecord(
-            context.files.prismaSchemas,
-            context.project.rootPath,
-          )
-        : undefined;
+    // Do NOT pass raw .prisma files to the TypeScript compiler — they cause
+    // TS6054 (unsupported extension) and ESLint parse errors. The Prisma client
+    // stub generated above provides all necessary type information instead.
 
     try {
       const compiler = new AutoBeTypeScriptCompiler();
       const result = await compiler.compile({
         files: tsFiles,
-        prisma: prismaFiles,
       });
 
       return this.mapCompileResult(result);
@@ -304,8 +298,10 @@ export class TypeEvaluator extends GateEvaluator {
     } else if (enumNames.has(field.type)) {
       baseType = field.type;
     } else {
-      // Unknown type — use string as safe fallback
-      baseType = "string";
+      // Unknown type (e.g. Unsupported, composite types) — use 'any' to avoid
+      // false type errors from incorrect type assumptions. 'string' caused TS
+      // errors when code accessed properties on relation-like fields.
+      baseType = "any";
     }
 
     if (field.isArray) {

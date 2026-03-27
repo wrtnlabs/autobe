@@ -102,9 +102,13 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     ).length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 
-    // Continuous scoring: criticals cost 7 pts each, warnings cost 2 pts each.
-    // No cliffs — smooth degradation. Floor at 0.
-    const score = Math.max(0, 100 - criticalCount * 7 - warningCount * 2);
+    // H-2: Linear penalty — predictable and fair.
+    // Critical: 8pts each (cap 70). Warning: 2pts each (cap 20).
+    // Clear hierarchy: 1 critical (8pts) always > 1 warning (2pts).
+    // Previous sqrt formula had inverted incentives at boundary.
+    const criticalPenalty = Math.min(70, criticalCount * 8);
+    const warningPenalty = Math.min(20, warningCount * 2);
+    const score = Math.max(0, 100 - criticalPenalty - warningPenalty);
 
     return {
       phase: "logicCompleteness",
@@ -422,8 +426,9 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
 
     const duplicateRatio = maxCount / bodySignatures.length;
-    // Flag when >60% of methods share identical structure (minimum 4 identical)
-    if (maxCount >= 4 && duplicateRatio > 0.6) {
+    // M-3: Relaxed threshold — CRUD providers naturally have similar structure
+    // Flag when >75% of methods share identical structure (minimum 6 identical)
+    if (maxCount >= 6 && duplicateRatio > 0.75) {
       issues.push(
         createIssue({
           severity: "warning",

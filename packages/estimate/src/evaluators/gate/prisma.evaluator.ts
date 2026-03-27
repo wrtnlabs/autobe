@@ -1,4 +1,5 @@
 import { AutoBeDatabaseCompiler } from "@autobe/compiler";
+import path from "path";
 
 import type { EvaluationContext } from "../../types";
 import { createIssue } from "../../types";
@@ -14,18 +15,44 @@ export class PrismaEvaluator extends GateEvaluator {
 
   async checkGate(context: EvaluationContext): Promise<GateCheckResult> {
     if (context.files.prismaSchemas.length === 0) {
+      // If controllers/providers exist but no Prisma schema, the pipeline
+      // output is incomplete — flag as warning so gate score is penalized.
+      const hasCode =
+        context.files.controllers.length > 0 ||
+        context.files.providers.length > 0;
       return {
         passed: true,
-        issues: [],
-        metrics: { skipped: true, reason: "No Prisma schemas found" },
+        issues: hasCode
+          ? [
+              createIssue({
+                severity: "warning",
+                category: "prisma",
+                code: "P002",
+                message:
+                  "No Prisma schema found but controllers/providers exist — database layer may be missing",
+              }),
+            ]
+          : [],
+        metrics: {
+          skipped: !hasCode,
+          reason: hasCode
+            ? "No Prisma schema but code exists"
+            : "No Prisma schemas found",
+        },
       };
     }
 
     // Read all prisma schema files into Record<string, string>
-    const prismaFiles = await this.readFilesAsRecord(
+    // EmbedPrisma writes files to {tmpdir}/schemas/{key} without creating
+    // intermediate directories, so keys must be bare filenames (no subdirs).
+    const rawPrismaFiles = await this.readFilesAsRecord(
       context.files.prismaSchemas,
       context.project.rootPath,
     );
+    const prismaFiles: Record<string, string> = {};
+    for (const [key, value] of Object.entries(rawPrismaFiles)) {
+      prismaFiles[path.basename(key)] = value;
+    }
 
     if (Object.keys(prismaFiles).length === 0) {
       return {

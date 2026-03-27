@@ -67,18 +67,23 @@ function extractPhaseDetail(phase) {
   return detail;
 }
 
-// Map benchmark model names → test/results vendor/model paths
+// Map benchmark model names → vendor/model paths in autobe-examples
+// These map the report directory name to the autobe-examples directory structure.
+// Models not listed here are auto-discovered by scanning autobe-examples for matching model names.
 const MODEL_TO_RESULTS_PATH = {
-  "qwen3-80b": "qwen/qwen3-next-80b-a3b-instruct",
-  "qwen3-coder": "qwen/qwen3-coder-next",
-  "qwen3-30b": "qwen/qwen3-30b-a3b-thinking-2507",
-  "gpt-4.1-mini": "openai/gpt-4.1-mini",
-  "gpt-4.1": "openai/gpt-4.1",
-  "gpt-4.1-mini-v2": "openai/gpt-4.1-mini",
-  "claude-sonnet-4.6": "anthropic/claude-sonnet-4-6",
+  "claude-sonnet-4.6": "anthropic/claude-sonnet-4.6",
   "deepseek-v3.2": "deepseek/deepseek-v3.2",
-  "kimi-k2.5": "moonshotai/kimi-k2-0905",
-  "seed-2.0-mini": "bytedance-seed/seed-2.0-mini",
+  "minimax-m2.7": "minimax/minimax-m2.7",
+  "kimi-k2.5": "moonshotai/kimi-k2.5",
+  "gpt-5.4": "openai/gpt-5.4",
+  "gpt-5.4-mini": "openai/gpt-5.4-mini",
+  "gpt-5.4-nano": "openai/gpt-5.4-nano",
+  "qwen3-coder-next": "qwen/qwen3-coder-next",
+  "qwen3.5-122b-a10b": "qwen/qwen3.5-122b-a10b",
+  "qwen3.5-27b": "qwen/qwen3.5-27b",
+  "qwen3.5-35b-a3b": "qwen/qwen3.5-35b-a3b",
+  "qwen3.5-397b-a17b": "qwen/qwen3.5-397b-a17b",
+  "glm-5": "z-ai/glm-5",
 };
 
 const PIPELINE_PHASES = ["analyze", "database", "interface", "test", "realize"];
@@ -201,28 +206,48 @@ function extractRealizeDetail(event) {
   };
 }
 
-function extractPipelineData(testResultsDir, model, project) {
+/**
+ * Resolve the autobe data directory for a given model/project.
+ * Searches in order:
+ *   1. autobe-examples: {examplesDir}/{vendor}/{model}/{project}/autobe/
+ *   2. test/results (legacy nested): {testResultsDir}/{vendor}/{model}/{project}/realize/autobe/
+ */
+function resolveAutobeDir(testResultsDir, examplesDir, model, project) {
   const resultsPath = MODEL_TO_RESULTS_PATH[model];
   if (!resultsPath) return null;
 
-  const projectDir = path.join(testResultsDir, resultsPath, project);
-  if (!fs.existsSync(projectDir)) return null;
+  // Try autobe-examples first (flat structure: {project}/autobe/)
+  if (examplesDir) {
+    const exDir = path.join(examplesDir, resultsPath, project, "autobe");
+    if (fs.existsSync(exDir)) return exDir;
+  }
 
-  // Get tokenUsage from realize (has aggregate of all phases)
-  const realizeTokenPath = path.join(projectDir, "realize", "autobe", "tokenUsage.json");
+  // Fallback: test/results (nested structure: {project}/realize/autobe/)
+  const legacyDir = path.join(testResultsDir, resultsPath, project, "realize", "autobe");
+  if (fs.existsSync(legacyDir)) return legacyDir;
+
+  return null;
+}
+
+function extractPipelineData(testResultsDir, examplesDir, model, project) {
+  const autobeDir = resolveAutobeDir(testResultsDir, examplesDir, model, project);
+  if (!autobeDir) return null;
+
+  // Get tokenUsage (has aggregate of all phases)
+  const tokenPath = path.join(autobeDir, "tokenUsage.json");
   let tokenUsage = null;
-  if (fs.existsSync(realizeTokenPath)) {
+  if (fs.existsSync(tokenPath)) {
     try {
-      tokenUsage = JSON.parse(fs.readFileSync(realizeTokenPath, "utf-8"));
+      tokenUsage = JSON.parse(fs.readFileSync(tokenPath, "utf-8"));
     } catch {}
   }
 
-  // Get histories from realize (has all phase results)
-  const realizeHistoriesPath = path.join(projectDir, "realize", "autobe", "histories.json");
+  // Get histories (has all phase results)
+  const historiesPath = path.join(autobeDir, "histories.json");
   let histories = null;
-  if (fs.existsSync(realizeHistoriesPath)) {
+  if (fs.existsSync(historiesPath)) {
     try {
-      histories = JSON.parse(fs.readFileSync(realizeHistoriesPath, "utf-8"));
+      histories = JSON.parse(fs.readFileSync(historiesPath, "utf-8"));
     } catch {}
   }
 
@@ -299,10 +324,16 @@ function main() {
     "../../../packages/estimate/reports/benchmark",
   );
   const testResultsDir = path.resolve(__dirname, "../../../test/results");
+  // autobe-examples: sibling repo with generated project outputs
+  const examplesDir = path.resolve(__dirname, "../../../../autobe-examples");
   const outputPath = path.resolve(
     __dirname,
     "../public/benchmark-summary.json",
   );
+
+  if (fs.existsSync(examplesDir)) {
+    console.log(`Using autobe-examples: ${examplesDir}`);
+  }
 
   if (!fs.existsSync(reportsDir)) {
     console.error(`Reports directory not found: ${reportsDir}`);
@@ -342,7 +373,7 @@ function main() {
 
         const gateIssuesByCode = extractGateIssuesByCode(report.phases.gate);
 
-        const pipeline = extractPipelineData(testResultsDir, model, project);
+        const pipeline = extractPipelineData(testResultsDir, examplesDir, model, project);
 
         entries.push({
           model,

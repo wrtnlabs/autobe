@@ -1,3 +1,16 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { cn, formatTokens } from "@/utils";
 import {
   IAutoBePlaygroundSession,
   IAutoBePlaygroundVendor,
@@ -9,27 +22,7 @@ import {
   useAutoBeAgentSessionList,
   useSearchParams,
 } from "@autobe/ui";
-import { Add, ChevronLeft, ChevronRight, Delete } from "@mui/icons-material";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
-  FormControl,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemText,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-  alpha,
-  useTheme,
-} from "@mui/material";
+import { ChevronLeft, ChevronRight, Loader2, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { getConnection } from "../../utils/connection";
@@ -37,7 +30,6 @@ import { getConnection } from "../../utils/connection";
 export const AutoBePlaygroundSidebar = (
   props: AutoBePlaygroundSidebar.IProps,
 ) => {
-  const theme = useTheme();
   const { sessionList, refreshSessionList } = useAutoBeAgentSessionList();
   const { searchParams, setSearchParams } = useSearchParams();
   const activeSessionId = searchParams.get("session-id") ?? null;
@@ -45,8 +37,6 @@ export const AutoBePlaygroundSidebar = (
   const [sessions, setSessions] = useState<
     IAutoBePlaygroundSession.ISummary[] | null
   >(null);
-
-  // Filter state
   const [filterVendorId, setFilterVendorId] = useState<string | null>(null);
   const [filterModel, setFilterModel] = useState<string | null>(null);
   const [vendors, setVendors] = useState<IAutoBePlaygroundVendor[]>([]);
@@ -54,7 +44,6 @@ export const AutoBePlaygroundSidebar = (
     IAutoBePlaygroundVendorModel[]
   >([]);
 
-  // Load vendors for filter dropdown
   useEffect(() => {
     pApi.functional.autobe.playground.vendors
       .index(getConnection(), {})
@@ -62,7 +51,6 @@ export const AutoBePlaygroundSidebar = (
       .catch(console.error);
   }, []);
 
-  // Load models for selected vendor filter
   useEffect(() => {
     if (!filterVendorId) {
       setVendorModels([]);
@@ -121,123 +109,191 @@ export const AutoBePlaygroundSidebar = (
   const width = props.isCollapsed ? 48 : 300;
 
   return (
-    <Box
-      sx={{
-        width,
-        minWidth: width,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRight: `1px solid ${theme.palette.divider}`,
-        bgcolor: theme.palette.background.paper,
-        transition: "width 0.2s ease",
-        overflow: "hidden",
-      }}
+    <div
+      className={cn(
+        "h-full flex flex-col border-r bg-sidebar-background transition-all duration-200 overflow-hidden",
+      )}
+      style={{ width, minWidth: width }}
     >
       {/* Toggle + New Chat */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: props.isCollapsed ? "center" : "space-between",
-          alignItems: "center",
-          p: 0.5,
-          gap: 0.5,
-        }}
+      <div
+        className={cn(
+          "flex items-center p-1 gap-1",
+          props.isCollapsed ? "justify-center" : "justify-between",
+        )}
       >
         {!props.isCollapsed && (
           <Button
-            size="small"
-            variant="outlined"
-            startIcon={<Add sx={{ fontSize: 16 }} />}
+            variant="outline"
+            size="sm"
+            className="ml-1 text-xs"
             onClick={handleNewChat}
-            sx={{
-              ml: 0.5,
-              textTransform: "none",
-              fontSize: "0.75rem",
-              py: 0.25,
-            }}
           >
+            <Plus className="h-3.5 w-3.5 mr-1" />
             New Chat
           </Button>
         )}
-        <IconButton size="small" onClick={props.onToggle}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={props.onToggle}
+        >
           {props.isCollapsed ? (
-            <ChevronRight fontSize="small" />
+            <ChevronRight className="h-4 w-4" />
           ) : (
-            <ChevronLeft fontSize="small" />
+            <ChevronLeft className="h-4 w-4" />
           )}
-        </IconButton>
-      </Box>
+        </Button>
+      </div>
 
       {!props.isCollapsed && (
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <Divider />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Separator />
 
           {/* Filters */}
-          <Box sx={{ px: 1.5, py: 1 }}>
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", fontWeight: 600, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: 0.5, mb: 0.5, display: "block" }}
-            >
+          <div className="px-3 py-2 space-y-1.5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
               Filters
-            </Typography>
-            <FormControl fullWidth size="small" sx={{ mb: 0.5 }}>
-              <Select
-                value={filterVendorId ?? ""}
-                onChange={(e) => setFilterVendorId(e.target.value || null)}
-                displayEmpty
-                sx={{ fontSize: "0.75rem" }}
-              >
-                <MenuItem value="">
-                  <em>All Vendors</em>
-                </MenuItem>
+            </p>
+            <Select
+              value={filterVendorId ?? "__all__"}
+              onValueChange={(v) =>
+                setFilterVendorId(v === "__all__" ? null : v)
+              }
+            >
+              <SelectTrigger className="h-7 text-xs">
+                <SelectValue placeholder="All Vendors" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All Vendors</SelectItem>
                 {vendors.map((v) => (
-                  <MenuItem
-                    key={v.id}
-                    value={v.id}
-                    sx={{ fontSize: "0.75rem" }}
-                  >
+                  <SelectItem key={v.id} value={v.id} className="text-xs">
                     {v.name}
-                  </MenuItem>
+                  </SelectItem>
                 ))}
-              </Select>
-            </FormControl>
-            <Autocomplete
-              freeSolo
-              size="small"
-              options={vendorModels.map((m) => m.model)}
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Filter by model..."
+              list="sidebar-model-filter"
+              className="h-7 text-xs"
               value={filterModel ?? ""}
-              onInputChange={(_, value) => setFilterModel(value || null)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  placeholder="Filter by model..."
-                  sx={{ "& input": { fontSize: "0.75rem", py: 0.5 } }}
-                />
-              )}
+              onChange={(e) => setFilterModel(e.target.value || null)}
             />
-          </Box>
+            <datalist id="sidebar-model-filter">
+              {vendorModels.map((m) => (
+                <option key={m.model} value={m.model} />
+              ))}
+            </datalist>
+          </div>
 
-          <Divider />
+          <Separator />
 
           {/* Sessions */}
-          <Box sx={{ flex: 1, overflow: "auto" }}>
-            <Typography
-              variant="caption"
-              sx={{ color: "text.secondary", fontWeight: 600, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: 0.5, px: 1.5, pt: 1, pb: 0.5, display: "block" }}
-            >
+          <div className="px-3 pt-2 pb-1">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
               Sessions
-            </Typography>
-            <SessionsPanel
-              sessions={sessions}
-              activeSessionId={activeSessionId}
-              onSelect={handleSessionSelect}
-              onDelete={handleSessionDelete}
-            />
-          </Box>
-        </Box>
+            </p>
+          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="px-1.5 pb-2">
+              {sessions === null ? (
+                <div className="flex justify-center py-6">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                </div>
+              ) : sessions.length === 0 ? (
+                <p className="text-sm text-center text-muted-foreground py-6">
+                  No sessions yet
+                </p>
+              ) : (
+                <div className="space-y-0.5">
+                  {sessions.map((s) => {
+                    const isActive = s.id === activeSessionId;
+                    const title = s.title ?? s.model;
+                    const date = new Date(s.created_at);
+
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => handleSessionSelect(s.id)}
+                        className={cn(
+                          "group w-full flex items-start gap-2 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
+                          "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                          isActive && "bg-primary/10 font-semibold",
+                        )}
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className={cn(
+                              "text-[0.82rem] truncate",
+                              isActive ? "font-semibold" : "font-normal",
+                            )}
+                          >
+                            {title}
+                          </p>
+                          <p className="text-[0.68rem] text-muted-foreground truncate mt-0.5">
+                            {s.vendor?.name ?? "Unknown"} / {s.model}
+                          </p>
+                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                            <span className="text-xs text-muted-foreground">
+                              {date.toLocaleDateString()}
+                            </span>
+                            {s.phase && (
+                              <Badge
+                                variant="secondary"
+                                className="h-4 text-[0.65rem] px-1.5 capitalize"
+                              >
+                                {s.phase}
+                              </Badge>
+                            )}
+                            {s.completed_at && (
+                              <Badge
+                                variant="outline"
+                                className="h-4 text-[0.65rem] px-1.5 text-success border-success/30"
+                              >
+                                Done
+                              </Badge>
+                            )}
+                          </div>
+                          {s.token_usage.aggregate.total > 0 && (
+                            <p className="text-[0.65rem] text-muted-foreground mt-0.5">
+                              {formatTokens(s.token_usage.aggregate.total)} tokens
+                              {" (in: "}
+                              {formatTokens(s.token_usage.aggregate.input.total)}
+                              {s.token_usage.aggregate.input.cached > 0 && (
+                                <>
+                                  , {formatTokens(s.token_usage.aggregate.input.cached)}{" "}
+                                  cached
+                                </>
+                              )}
+                              {" / out: "}
+                              {formatTokens(s.token_usage.aggregate.output.total)}
+                              {")"}
+                            </p>
+                          )}
+                        </div>
+                        {!isActive && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-0 group-hover:opacity-100 hover:text-destructive shrink-0"
+                            onClick={(e) => handleSessionDelete(e, s.id)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 
@@ -247,152 +303,4 @@ export namespace AutoBePlaygroundSidebar {
     isCollapsed: boolean;
     onToggle: () => void;
   }
-}
-
-/* ------------------------------------------------------------------ */
-/*  Sessions Panel                                                     */
-/* ------------------------------------------------------------------ */
-const SessionsPanel = (props: {
-  sessions: IAutoBePlaygroundSession.ISummary[] | null;
-  activeSessionId: string | null;
-  onSelect: (id: string) => void;
-  onDelete: (e: React.MouseEvent, id: string) => void;
-}) => {
-  const theme = useTheme();
-
-  if (props.sessions === null) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress size={24} />
-      </Box>
-    );
-  }
-
-  if (props.sessions.length === 0) {
-    return (
-      <Typography
-        variant="body2"
-        sx={{ textAlign: "center", color: "text.secondary", py: 4 }}
-      >
-        No sessions yet
-      </Typography>
-    );
-  }
-
-  return (
-    <List dense disablePadding>
-      {props.sessions.map((s) => {
-        const isActive = s.id === props.activeSessionId;
-        const title = s.title ?? s.model;
-        const date = new Date(s.created_at);
-
-        return (
-          <ListItemButton
-            key={s.id}
-            selected={isActive}
-            onClick={() => props.onSelect(s.id)}
-            sx={{
-              py: 1,
-              px: 1.5,
-              "&.Mui-selected": {
-                bgcolor: alpha(theme.palette.primary.main, 0.08),
-              },
-            }}
-          >
-            <ListItemText
-              primary={
-                <Typography
-                  variant="body2"
-                  noWrap
-                  sx={{
-                    fontWeight: isActive ? 600 : 400,
-                    fontSize: "0.82rem",
-                  }}
-                >
-                  {title}
-                </Typography>
-              }
-              secondary={
-                <Stack direction="column" spacing={0.25} sx={{ mt: 0.25 }}>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    noWrap
-                    sx={{ fontSize: "0.68rem" }}
-                  >
-                    {s.vendor?.name ?? "Unknown"} / {s.model}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    spacing={0.5}
-                    alignItems="center"
-                    flexWrap="wrap"
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      {date.toLocaleDateString()}
-                    </Typography>
-                    {s.phase && (
-                      <Chip
-                        label={s.phase}
-                        size="small"
-                        sx={{
-                          height: 16,
-                          fontSize: "0.65rem",
-                          textTransform: "capitalize",
-                        }}
-                      />
-                    )}
-                    {s.completed_at && (
-                      <Chip
-                        label="Done"
-                        size="small"
-                        color="success"
-                        variant="outlined"
-                        sx={{ height: 16, fontSize: "0.65rem" }}
-                      />
-                    )}
-                  </Stack>
-                  {s.token_usage.total > 0 && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ fontSize: "0.65rem" }}
-                    >
-                      {formatTokens(s.token_usage.total)} tokens
-                      {" (in: "}
-                      {formatTokens(s.token_usage.input.total)}
-                      {s.token_usage.input.cached > 0 && (
-                        <>, {formatTokens(s.token_usage.input.cached)} cached</>
-                      )}
-                      {" / out: "}
-                      {formatTokens(s.token_usage.output.total)}
-                      {")"}
-                    </Typography>
-                  )}
-                </Stack>
-              }
-            />
-            {!isActive && (
-              <IconButton
-                size="small"
-                onClick={(e) => props.onDelete(e, s.id)}
-                sx={{
-                  opacity: 0.3,
-                  "&:hover": { opacity: 1, color: theme.palette.error.main },
-                }}
-              >
-                <Delete sx={{ fontSize: 16 }} />
-              </IconButton>
-            )}
-          </ListItemButton>
-        );
-      })}
-    </List>
-  );
-};
-
-function formatTokens(num: number): string {
-  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(2)}M`;
-  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
-  return num.toString();
 }

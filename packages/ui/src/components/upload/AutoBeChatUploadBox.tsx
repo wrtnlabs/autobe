@@ -66,8 +66,10 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
     }
   }, [text]);
 
+  const isDisabled = props.disabled === true;
+
   const conversate = async () => {
-    if (enabled === false) return;
+    if (enabled === false || isDisabled) return;
 
     if (text.trim().length === 0 && buckets.length === 0) {
       setEmptyText(true);
@@ -192,6 +194,9 @@ export const AutoBeChatUploadBox = (props: AutoBeChatUploadBox.IProps) => {
         transition: "all 0.2s",
         position: "relative",
         boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.12)",
+        ...(isDisabled
+          ? { opacity: 0.45, pointerEvents: "none" as const }
+          : {}),
       }}
     >
       {dragging ? (
@@ -417,6 +422,7 @@ export namespace AutoBeChatUploadBox {
     uploadConfig?: IAutoBeChatUploadConfig;
     conversate: (messages: AutoBeUserConversateContent[]) => Promise<void>;
     setError: (error: Error) => void;
+    disabled?: boolean;
   }
   export interface IListener {
     handleDragEnter: (event: React.DragEvent) => void;
