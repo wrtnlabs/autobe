@@ -53,18 +53,30 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         }),
       );
     } else {
-      // Non-empty ratio (max 40)
-      const nonEmptyRatio = (totalEndpoints - emptyEndpoints) / totalEndpoints;
-      score += Math.round(nonEmptyRatio * 40);
+      // C-1: Improved scoring — passthrough/stub penalized, real logic rewarded
+      // Substantive ratio: non-empty AND non-passthrough (max 35)
+      const substantiveEndpoints = Math.max(
+        0,
+        totalEndpoints - emptyEndpoints - passthroughEndpoints,
+      );
+      const substantiveRatio = substantiveEndpoints / totalEndpoints;
+      score += Math.round(substantiveRatio * 35);
 
-      // Implementation ratio (max 30)
+      // Real implementation ratio — endpoints with actual business logic (max 35)
       const implementationRatio = implementedEndpoints / totalEndpoints;
-      score += Math.round(implementationRatio * 30);
+      score += Math.round(implementationRatio * 35);
 
-      // Provider delegation ratio (max 30)
+      // Provider delegation ratio (max 20)
       const withProviderRatio =
         (totalEndpoints - noProviderEndpoints) / totalEndpoints;
-      score += Math.round(withProviderRatio * 30);
+      score += Math.round(withProviderRatio * 20);
+
+      // Stub-free bonus (max 10)
+      const cleanRatio = Math.max(
+        0,
+        (totalEndpoints - emptyEndpoints - stubEndpoints) / totalEndpoints,
+      );
+      score += Math.round(cleanRatio * 10);
 
       if (emptyEndpoints > 0) {
         issues.push(
@@ -99,16 +111,7 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
         );
       }
 
-      // Passthrough penalty: continuous from 0 (at 30%) to 20 (at 100%)
-      // Replaces cliff at 50% with smooth ramp starting at 30%
       if (passthroughEndpoints > 0) {
-        const passthroughRatio = passthroughEndpoints / totalEndpoints;
-        if (passthroughRatio > 0.3) {
-          const passthroughPenalty = Math.round(
-            ((passthroughRatio - 0.3) / 0.7) * 20,
-          );
-          score = Math.max(0, score - passthroughPenalty);
-        }
         issues.push(
           createIssue({
             severity: "warning",

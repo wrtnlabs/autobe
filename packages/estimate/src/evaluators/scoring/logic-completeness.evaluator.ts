@@ -102,20 +102,12 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     ).length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 
-    // Two-tier scoring: criticals have diminishing but heavy impact,
-    // warnings have lighter impact. This differentiates "1 critical + 50 warnings"
-    // from "15 criticals" — previously both scored 0.
-    //
-    // Critical penalty: 1→-15, 2→-27, 5→-50, 10→-70, 15→-80 (diminishing returns)
-    // Warning penalty:  capped at -20 total, scales logarithmically
-    const criticalPenalty =
-      criticalCount > 0
-        ? Math.round(15 * Math.sqrt(criticalCount) + criticalCount * 2)
-        : 0;
-    const warningPenalty =
-      warningCount > 0
-        ? Math.min(20, Math.round(8 * Math.log2(warningCount + 1)))
-        : 0;
+    // H-2: Linear penalty — predictable and fair.
+    // Critical: 8pts each (cap 70). Warning: 2pts each (cap 20).
+    // Clear hierarchy: 1 critical (8pts) always > 1 warning (2pts).
+    // Previous sqrt formula had inverted incentives at boundary.
+    const criticalPenalty = Math.min(70, criticalCount * 8);
+    const warningPenalty = Math.min(20, warningCount * 2);
     const score = Math.max(0, 100 - criticalPenalty - warningPenalty);
 
     return {
@@ -434,8 +426,9 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
     }
 
     const duplicateRatio = maxCount / bodySignatures.length;
-    // Flag when >60% of methods share identical structure (minimum 4 identical)
-    if (maxCount >= 4 && duplicateRatio > 0.6) {
+    // M-3: Relaxed threshold — CRUD providers naturally have similar structure
+    // Flag when >75% of methods share identical structure (minimum 6 identical)
+    if (maxCount >= 6 && duplicateRatio > 0.75) {
       issues.push(
         createIssue({
           severity: "warning",

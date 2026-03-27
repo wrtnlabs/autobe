@@ -53,9 +53,10 @@ interface ContractTestResult extends ScenarioResult {
 
 // ── Score ratios (same structure as GoldenSetEvaluator) ─────
 
-const SCHEMA_MATCH_RATIO = 0.5; // response matches declared schema
-const STATUS_CODE_RATIO = 0.3; // correct HTTP status code
-const RESPONSE_TIME_RATIO = 0.2; // reasonable response time
+// C-3 + M-2: Response time removed (environment-dependent, not code quality)
+// Ratios aligned with GoldenSetEvaluator philosophy
+const SCHEMA_MATCH_RATIO = 0.6; // response matches declared schema
+const STATUS_CODE_RATIO = 0.4; // correct HTTP status code
 
 // ── Max endpoints to test (cost/time guard) ─────────────────
 
@@ -765,54 +766,24 @@ export class ContractEvaluator {
 
     const total = scoreable.length;
 
-    // 1. Status code score (30%) — 2xx success only
+    // 1. Status code score (40%) — 2xx success only
     const statusOk = scoreable.filter(
       (r) =>
         r.statusCode !== undefined && r.statusCode >= 200 && r.statusCode < 300,
     ).length;
     const statusScore = (statusOk / total) * 100;
 
-    // 2. Schema match score (50%) — responses match declared schema
+    // 2. Schema match score (60%) — responses match declared schema
     const withWarnings = scoreable.filter(
       (r) => r.responseWarnings.length > 0,
     ).length;
     const warningRatio = withWarnings / total;
-    // Linear curve: 0% warnings → 100, 100% warnings → 0 (aligned with GoldenSetEvaluator)
     const schemaScore = Math.round(100 * (1 - warningRatio));
 
-    // 3. Response time score (20%)
-    const timings = scoreable
-      .map((r) => r.durationMs)
-      .filter((d): d is number => d !== undefined);
-    let responseTimeScore = 100;
-    if (timings.length > 0) {
-      const sorted = [...timings].sort((a, b) => a - b);
-      const p95 = sorted[Math.floor(sorted.length * 0.95)];
-      // Piecewise linear interpolation (aligned with GoldenSetEvaluator)
-      const tiers: [number, number][] = [
-        [0, 100],
-        [500, 100],
-        [1000, 80],
-        [2000, 60],
-        [5000, 30],
-        [10000, 0],
-      ];
-      responseTimeScore = 0;
-      for (let i = 1; i < tiers.length; i++) {
-        if (p95 <= tiers[i][0]) {
-          const [x0, y0] = tiers[i - 1];
-          const [x1, y1] = tiers[i];
-          const ratio = (p95 - x0) / (x1 - x0);
-          responseTimeScore = Math.round(y0 + (y1 - y0) * ratio);
-          break;
-        }
-      }
-    }
+    // C-3: Response time removed from scoring (reference metrics only)
 
     return Math.round(
-      schemaScore * SCHEMA_MATCH_RATIO +
-        statusScore * STATUS_CODE_RATIO +
-        responseTimeScore * RESPONSE_TIME_RATIO,
+      schemaScore * SCHEMA_MATCH_RATIO + statusScore * STATUS_CODE_RATIO,
     );
   }
 

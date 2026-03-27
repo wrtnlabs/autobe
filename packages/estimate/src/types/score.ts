@@ -50,11 +50,11 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
   // Gate (pass/fail, no weight)
   gate: 0,
   // New scoring phases
-  documentQuality: 0.05, // 5%
-  requirementsCoverage: 0.2, // 20%
-  testCoverage: 0.25, // 25% (best cross-model discriminator)
-  logicCompleteness: 0.35, // 35% (best discriminator of real quality)
-  apiCompleteness: 0, // 0% — reference only (AutoBE controller boilerplate gives 100 to all models)
+  documentQuality: 0.07, // 7% (M-1: increased from 5% for better doc incentive)
+  requirementsCoverage: 0.18, // 18%
+  testCoverage: 0.23, // 23% (best cross-model discriminator)
+  logicCompleteness: 0.3, // 30%
+  apiCompleteness: 0.07, // 7% (C-1: restored with improved evaluator discrimination)
   goldenSet: 0.15, // 15% (runtime functional testing)
   // Legacy (not used in score)
   requirements: 0,
@@ -75,6 +75,7 @@ export const PHASE_WEIGHTS: Record<Phase, number> = {
     PHASE_WEIGHTS.requirementsCoverage,
     PHASE_WEIGHTS.testCoverage,
     PHASE_WEIGHTS.logicCompleteness,
+    PHASE_WEIGHTS.apiCompleteness,
     PHASE_WEIGHTS.goldenSet,
   ].reduce((a, b) => a + b, 0);
   if (Math.abs(_activeWeightSum - 1.0) > 0.001) {

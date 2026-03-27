@@ -22,8 +22,9 @@ const CATEGORY_WEIGHTS: Record<ScenarioCategory, number> = {
 };
 
 /** Proportion of final score from each dimension */
-const CATEGORY_SCORE_RATIO = 0.7;
-const RESPONSE_TIME_RATIO = 0.15;
+// C-3: Response time removed from scoring (environment-dependent, not code quality)
+// Response time is still collected as reference metrics
+const CATEGORY_SCORE_RATIO = 0.85;
 const DATA_CONSISTENCY_RATIO = 0.15;
 
 export class GoldenSetEvaluator {
@@ -70,13 +71,23 @@ export class GoldenSetEvaluator {
       byCategory.set(cat, entry);
     }
 
-    // Use fixed weights — missing categories contribute 0 score (no redistribution)
-    // This prevents inflating scores when important categories are untested
+    // H-3: Redistribute weights among present categories to ensure max=100
+    // Within a single project, all models face the same categories, so
+    // redistribution doesn't affect cross-model comparison
+    let activeWeightSum = 0;
+    for (const [cat, weight] of Object.entries(CATEGORY_WEIGHTS)) {
+      if (weight > 0 && byCategory.has(cat as ScenarioCategory)) {
+        activeWeightSum += weight;
+      }
+    }
+
     let score = 0;
     const categoryMetrics: Record<string, unknown> = {};
 
     for (const [cat, entry] of byCategory) {
-      const normalizedWeight = CATEGORY_WEIGHTS[cat] ?? 0;
+      const rawWeight = CATEGORY_WEIGHTS[cat] ?? 0;
+      const normalizedWeight =
+        activeWeightSum > 0 ? rawWeight / activeWeightSum : 0;
       const catScore = entry.total > 0 ? (entry.passed / entry.total) * 100 : 0;
       score += catScore * normalizedWeight;
       categoryMetrics[cat] = {
@@ -190,7 +201,6 @@ export class GoldenSetEvaluator {
 
     const score = Math.round(
       categoryScore * CATEGORY_SCORE_RATIO +
-        responseTimeScore * RESPONSE_TIME_RATIO +
         consistencyScore * DATA_CONSISTENCY_RATIO,
     );
 

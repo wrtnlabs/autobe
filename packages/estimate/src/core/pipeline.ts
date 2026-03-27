@@ -628,7 +628,23 @@ export class EvaluationPipeline {
     let penalties: EvaluationResult["penalties"];
 
     if (!phases.gate.passed) {
-      totalScore = 0;
+      // H-1: Partial credit for gate failure based on severity
+      const gateMetrics = phases.gate.metrics || {};
+      const failedAt = gateMetrics.failedAt as string | undefined;
+      if (
+        failedAt === "no-source" ||
+        failedAt === "no-nestjs-artifacts" ||
+        failedAt === "runtime"
+      ) {
+        totalScore = 0; // completely broken — no code or server won't start
+      } else {
+        // Syntax/type failure: partial credit based on how many files are ok
+        const errorRatio = (gateMetrics.errorRatio as number) || 50;
+        totalScore = Math.min(
+          30,
+          Math.max(0, Math.round(30 * (1 - errorRatio / 100))),
+        );
+      }
     } else {
       // Calculate weighted score
       // When goldenSet is present, include it as a regular phase with its weight.
@@ -658,23 +674,22 @@ export class EvaluationPipeline {
       // providing meaningful penalty for poor gate scores.
       rawScore = Math.min(100, rawScore); // clamp before multiplier
       const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
+      // C-4: Softer gate multiplier — 0.85 at gate=0 to 1.0 at gate=100
+      // (was 0.7 to 1.0, too aggressive — made A grade unreachable)
       const gateMultiplier = phases.gate.passed
-        ? 0.7 + rawGateMultiplier * 0.3
+        ? 0.85 + rawGateMultiplier * 0.15
         : rawGateMultiplier;
       totalScore = Math.max(0, Math.round(rawScore * gateMultiplier));
 
       const penaltyData: NonNullable<EvaluationResult["penalties"]> = {};
 
-      // Warning penalty: scaled threshold based on project size, max -20
-      // Exclude infrastructure warnings (SDK mismatches) from penalty calculation
+      // M-5: Calculate all penalties first, then apply proportionally to avoid order dependence
       const INFRA_WARNING_PATTERNS = [
         "NestiaSimulator",
         "PlainFetcher",
         "MyGlobal",
         "unsupported extension",
       ];
-      // Exclude warnings already penalized via gate (TS diagnostics, Prisma)
-      // to prevent double-counting the same issues.
       const isGatePenalizedWarning = (w: Issue) =>
         /^TS\d+$/.test(w.code) || /^P\d+$/.test(w.code);
       const realWarnings = warnings.filter(
@@ -683,167 +698,152 @@ export class EvaluationPipeline {
           !isGatePenalizedWarning(w),
       );
       const totalFiles = context.files.typescript.length || 1;
+
+      // 1. Warning penalty (max 20)
       const warningRatio = realWarnings.length / totalFiles;
-      // Scale threshold by project size: small projects (<50 files) use 0.2,
-      // large projects (200+ files) use up to 0.35 — tighter than before
       const warningThreshold = Math.min(
         0.35,
         0.2 + Math.max(0, totalFiles - 50) * 0.001,
       );
+      let rawWarningPenalty = 0;
       if (warningRatio > warningThreshold) {
-        const warningPenalty = Math.min(
+        rawWarningPenalty = Math.min(
           20,
           Math.round((warningRatio - warningThreshold) * 8),
         );
-        totalScore = Math.max(0, totalScore - warningPenalty);
-        penaltyData.warning = {
-          amount: warningPenalty,
-          ratio: `${(warningRatio * 100).toFixed(0)}%`,
-        };
-        if (this.verbose) {
-          console.log(
-            `  Warning penalty: -${warningPenalty} (${realWarnings.length} warnings / ${totalFiles} files = ${penaltyData.warning.ratio}, threshold=${(warningThreshold * 100).toFixed(0)}%)`,
-          );
-        }
       }
 
-      // Duplication penalty — threshold scales with project size
+      // 2. Duplication penalty (max 5)
       const dupThreshold = Math.max(
         30,
         Math.min(80, Math.round(totalFiles * 0.5)),
       );
+      let rawDupPenalty = 0;
       if (reference.duplication.totalBlocks > dupThreshold) {
-        const dupPenalty = Math.min(
+        rawDupPenalty = Math.min(
           5,
           Math.round((reference.duplication.totalBlocks - dupThreshold) / 20),
         );
-        totalScore = Math.max(0, totalScore - dupPenalty);
+      }
+
+      // 3. JSDoc penalty (max 5)
+      let rawJsdocPenalty = 0;
+      let jsdocRatio = 0;
+      if (reference.jsdoc.totalMissing > 0) {
+        const jsdocDenom =
+          reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
+        jsdocRatio = reference.jsdoc.totalMissing / jsdocDenom;
+        if (jsdocRatio > 0.3) {
+          const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
+          rawJsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
+        }
+      }
+
+      // 4. Schema sync penalty (max 10)
+      let rawSyncPenalty = 0;
+      const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
+      const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
+      const mismatchRatio =
+        reference.schemaSync.mismatchedProperties / syncTotal;
+      const emptyThreshold = Math.min(
+        0.25,
+        0.15 + Math.max(0, syncTotal - 30) * 0.001,
+      );
+      const mismatchThreshold = Math.min(
+        0.15,
+        0.05 + Math.max(0, syncTotal - 30) * 0.001,
+      );
+      if (emptyRatio > emptyThreshold) {
+        rawSyncPenalty += Math.min(5, Math.round(emptyRatio * 10));
+      }
+      if (mismatchRatio > mismatchThreshold) {
+        rawSyncPenalty += Math.min(5, Math.round(mismatchRatio * 10));
+      }
+
+      // 5. Suggestion overflow penalty (max 10)
+      let rawSuggestionPenalty = 0;
+      const suggestionCount = suggestions.length;
+      const suggestionThreshold = Math.min(
+        1000,
+        500 + Math.max(0, totalFiles - 50) * 3,
+      );
+      if (suggestionCount > suggestionThreshold) {
+        const suggestionDivisor = Math.min(
+          400,
+          150 + Math.max(0, totalFiles - 50) * 1.5,
+        );
+        rawSuggestionPenalty = Math.min(
+          10,
+          Math.round(
+            (suggestionCount - suggestionThreshold) / suggestionDivisor,
+          ),
+        );
+      }
+
+      // Apply proportionally: cap total at 20 (C-4: reduced from 30)
+      const rawPenalties = [
+        rawWarningPenalty,
+        rawDupPenalty,
+        rawJsdocPenalty,
+        rawSyncPenalty,
+        rawSuggestionPenalty,
+      ];
+      const rawTotal = rawPenalties.reduce((s, p) => s + p, 0);
+      const MAX_COMBINED_PENALTY = 20;
+      const scale =
+        rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
+
+      const warningPenalty = Math.round(rawWarningPenalty * scale);
+      const dupPenalty = Math.round(rawDupPenalty * scale);
+      const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
+      const syncPenalty = Math.round(rawSyncPenalty * scale);
+      const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
+      const effectivePenalty =
+        warningPenalty +
+        dupPenalty +
+        jsdocPenalty +
+        syncPenalty +
+        suggestionPenalty;
+
+      totalScore = Math.max(0, totalScore - effectivePenalty);
+
+      if (warningPenalty > 0) {
+        penaltyData.warning = {
+          amount: warningPenalty,
+          ratio: `${(warningRatio * 100).toFixed(0)}%`,
+        };
+      }
+      if (dupPenalty > 0) {
         penaltyData.duplication = {
           amount: dupPenalty,
           blocks: reference.duplication.totalBlocks,
         };
-        if (this.verbose) {
-          console.log(
-            `  Duplication penalty: -${dupPenalty} (${reference.duplication.totalBlocks} blocks, threshold=${dupThreshold})`,
-          );
-        }
+      }
+      if (jsdocPenalty > 0) {
+        penaltyData.jsdoc = {
+          amount: jsdocPenalty,
+          missing: reference.jsdoc.totalMissing,
+          ratio: `${(jsdocRatio * 100).toFixed(0)}%`,
+        };
+      }
+      if (syncPenalty > 0) {
+        penaltyData.schemaSync = {
+          amount: syncPenalty,
+          emptyTypes: reference.schemaSync.emptyTypes,
+          mismatchedProperties: reference.schemaSync.mismatchedProperties,
+        };
+      }
+      if (suggestionPenalty > 0) {
+        penaltyData.suggestionOverflow = {
+          amount: suggestionPenalty,
+          count: suggestionCount,
+        };
       }
 
-      // JSDoc penalty — proportional to missing ratio, capped at 5
-      // Use totalApis (documentable symbols) as denominator, not file count
-      if (reference.jsdoc.totalMissing > 0) {
-        const jsdocDenom =
-          reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
-        const jsdocRatio = reference.jsdoc.totalMissing / jsdocDenom;
-        if (jsdocRatio > 0.3) {
-          // 30% missing → 0pt penalty, 100% missing → 5pt penalty
-          const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
-          const jsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
-          totalScore = Math.max(0, totalScore - jsdocPenalty);
-          penaltyData.jsdoc = {
-            amount: jsdocPenalty,
-            missing: reference.jsdoc.totalMissing,
-            ratio: `${(jsdocRatio * 100).toFixed(0)}%`,
-          };
-          if (this.verbose) {
-            console.log(
-              `  JSDoc penalty: -${jsdocPenalty} (${reference.jsdoc.totalMissing} missing, ${penaltyData.jsdoc.ratio})`,
-            );
-          }
-        }
-      }
-
-      // Empty interface + mismatch penalty (ratio-based, scaled by project size)
-      // Use minimum denominator of 10 to prevent small type counts from inflating ratios
-      {
-        let syncPenalty = 0;
-        const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
-        const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
-        const mismatchRatio =
-          reference.schemaSync.mismatchedProperties / syncTotal;
-
-        // Scale thresholds by project size: larger projects naturally have more edge cases
-        const emptyThreshold = Math.min(
-          0.25,
-          0.15 + Math.max(0, syncTotal - 30) * 0.001,
+      if (this.verbose && effectivePenalty > 0) {
+        console.log(
+          `  Penalties: -${effectivePenalty} (raw ${rawTotal}, cap ${MAX_COMBINED_PENALTY}, scale ${scale.toFixed(2)})`,
         );
-        const mismatchThreshold = Math.min(
-          0.15,
-          0.05 + Math.max(0, syncTotal - 30) * 0.001,
-        );
-
-        // Empty types: penalize when above threshold
-        if (emptyRatio > emptyThreshold) {
-          syncPenalty += Math.min(5, Math.round(emptyRatio * 10));
-        }
-        // Mismatched properties: penalize when above threshold
-        if (mismatchRatio > mismatchThreshold) {
-          syncPenalty += Math.min(5, Math.round(mismatchRatio * 10));
-        }
-        if (syncPenalty > 0) {
-          totalScore = Math.max(0, totalScore - syncPenalty);
-          penaltyData.schemaSync = {
-            amount: syncPenalty,
-            emptyTypes: reference.schemaSync.emptyTypes,
-            mismatchedProperties: reference.schemaSync.mismatchedProperties,
-          };
-          if (this.verbose) {
-            console.log(
-              `  Schema sync penalty: -${syncPenalty} (empty: ${reference.schemaSync.emptyTypes}/${syncTotal} = ${(emptyRatio * 100).toFixed(1)}%, mismatch: ${reference.schemaSync.mismatchedProperties}/${syncTotal} = ${(mismatchRatio * 100).toFixed(1)}%)`,
-            );
-          }
-        }
-      }
-
-      // Suggestion overflow penalty — threshold scales with project size
-      {
-        const suggestionCount = suggestions.length;
-        // Small projects: 500, large projects (200+ files): up to 1000
-        const suggestionThreshold = Math.min(
-          1000,
-          500 + Math.max(0, totalFiles - 50) * 3,
-        );
-        if (suggestionCount > suggestionThreshold) {
-          // Divisor scales with project size: small=150, large=400
-          const suggestionDivisor = Math.min(
-            400,
-            150 + Math.max(0, totalFiles - 50) * 1.5,
-          );
-          const suggestionPenalty = Math.min(
-            10,
-            Math.round(
-              (suggestionCount - suggestionThreshold) / suggestionDivisor,
-            ),
-          );
-          totalScore = Math.max(0, totalScore - suggestionPenalty);
-          penaltyData.suggestionOverflow = {
-            amount: suggestionPenalty,
-            count: suggestionCount,
-          };
-          if (this.verbose) {
-            console.log(
-              `  Suggestion overflow penalty: -${suggestionPenalty} (${suggestionCount} suggestions, threshold=${suggestionThreshold})`,
-            );
-          }
-        }
-      }
-
-      // Combined penalty cap — prevent penalty stacking from dominating
-      const totalPenaltyAmount = Object.values(penaltyData).reduce(
-        (sum, p) =>
-          sum + (typeof p === "object" && "amount" in p ? p.amount : 0),
-        0,
-      );
-      const MAX_COMBINED_PENALTY = 30;
-      if (totalPenaltyAmount > MAX_COMBINED_PENALTY) {
-        // Restore excess penalty
-        const excess = totalPenaltyAmount - MAX_COMBINED_PENALTY;
-        totalScore = Math.min(100, totalScore + excess);
-        if (this.verbose) {
-          console.log(
-            `  Penalty cap: restored ${excess}pts (total penalties ${totalPenaltyAmount} → ${MAX_COMBINED_PENALTY})`,
-          );
-        }
       }
 
       penalties = Object.keys(penaltyData).length > 0 ? penaltyData : undefined;

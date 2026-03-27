@@ -32,12 +32,20 @@ const USE_AGENT = process.argv.includes('--use-agent');
 const NO_DASHBOARD = process.argv.includes('--no-dashboard');
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
+// --exclude model1,model2,model3
+const excludeIdx = process.argv.findIndex(a => a === '--exclude');
+const EXCLUDE_MODELS = new Set(
+  excludeIdx >= 0 && process.argv[excludeIdx + 1]
+    ? process.argv[excludeIdx + 1].split(',').map(s => s.trim())
+    : []
+);
+
 if (USE_AGENT && !API_KEY) {
   console.error('OPENROUTER_API_KEY is required when using --use-agent');
   process.exit(1);
 }
 
-// ── Discover targets (all models, no exclusions) ───────────
+// ── Discover targets ────────────────────────────────────────
 const targets = [];
 const vendors = fs.readdirSync(examplesDir).filter(d => {
   const full = path.join(examplesDir, d);
@@ -48,6 +56,7 @@ for (const vendor of vendors) {
   const vendorPath = path.join(examplesDir, vendor);
   const models = fs.readdirSync(vendorPath).filter(d => fs.statSync(path.join(vendorPath, d)).isDirectory());
   for (const model of models) {
+    if (EXCLUDE_MODELS.has(model)) continue;
     const modelPath = path.join(vendorPath, model);
     const projects = fs.readdirSync(modelPath).filter(d => {
       const full = path.join(modelPath, d);

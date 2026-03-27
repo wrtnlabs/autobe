@@ -122,10 +122,11 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
           // Domain-based match
           const pDomain = this.extractDomain(pNorm);
           if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
-          // Containment: controller domain is a prefix/suffix of provider domain or vice versa
+          // H-5: Containment with stricter minimum length (5 chars, was 3)
+          // Prevents false positives like "cart" matching "shoppingcart" and "cartcheckout"
           if (
-            ctrlNorm.length >= 3 &&
-            pNorm.length >= 3 &&
+            ctrlNorm.length >= 5 &&
+            pNorm.length >= 5 &&
             (pNorm.includes(ctrlNorm) || ctrlNorm.includes(pNorm))
           )
             return true;
@@ -271,11 +272,18 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
       );
     }
 
-    // Provider depth — multiple providers per controller (max 10)
-    // Continuous: linearly interpolate from 0 (ratio=0) to 10 (ratio≥2)
+    // M-4: Provider depth — adjusted curve so ratio=1 gives 7pts (was 5)
+    // Simple CRUD controllers correctly have 1 provider; shouldn't be penalized heavily
+    // Continuous: 0→0, 1→7, 2→10
     if (counts.controllerCount > 0) {
       const ratio = counts.providerCount / counts.controllerCount;
-      score += Math.min(10, Math.round((ratio / 2) * 10));
+      const depthScore =
+        ratio >= 2
+          ? 10
+          : ratio >= 1
+            ? Math.round(7 + ((ratio - 1) / 1) * 3)
+            : Math.round(ratio * 7);
+      score += depthScore;
     }
 
     // Requirements docs exist (max 5, reduced from 10)
