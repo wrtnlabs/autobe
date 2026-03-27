@@ -29,7 +29,7 @@ export class LLMClient {
       throw new Error("AgentConfig.model is required");
     }
     this.model = config.model;
-    this.maxTokens = config.maxTokens || 4096;
+    this.maxTokens = config.maxTokens || 8192;
 
     this.client = new OpenAI({
       apiKey: config.apiKey,

@@ -30,6 +30,7 @@ const VALID_PROJECTS = new Set(['todo', 'bbs', 'reddit', 'shopping', 'erp', 'gau
 
 const USE_AGENT = process.argv.includes('--use-agent');
 const NO_DASHBOARD = process.argv.includes('--no-dashboard');
+const AUTO_DEPLOY = process.argv.includes('--auto-deploy');
 const API_KEY = process.env.OPENROUTER_API_KEY;
 
 // --exclude model1,model2,model3
@@ -261,6 +262,36 @@ async function main() {
 
   // Final aggregation
   triggerAggregation();
+
+  // Auto-deploy: commit & push benchmark data to trigger GitHub Pages rebuild
+  if (AUTO_DEPLOY) {
+    autoDeploy();
+  }
+}
+
+function autoDeploy() {
+  const files = [
+    'apps/dashboard-ui/public/benchmark-summary.json',
+    'website/public/benchmark/benchmark-summary.json',
+  ];
+  const repoRoot = path.resolve(__dirname, '../..');
+  try {
+    // Check if there are actual changes
+    const diff = execSync(`git diff --name-only -- ${files.join(' ')}`, { cwd: repoRoot, encoding: 'utf-8' }).trim();
+    if (!diff) {
+      console.log('\n⚡ No benchmark data changes to deploy.');
+      return;
+    }
+    console.log('\n⚡ Auto-deploying benchmark results...');
+    execSync(`git add ${files.join(' ')}`, { cwd: repoRoot, stdio: 'pipe' });
+    const msg = `chore(benchmark): auto-update results (${new Date().toISOString().slice(0, 10)})`;
+    execSync(`git commit -m "${msg}"`, { cwd: repoRoot, stdio: 'pipe' });
+    execSync('git push', { cwd: repoRoot, stdio: 'inherit' });
+    console.log('✓ Benchmark results pushed — website will auto-rebuild via GitHub Actions.');
+  } catch (err) {
+    console.error('⚠ Auto-deploy failed:', err.message);
+    console.error('  You can manually commit and push the benchmark-summary.json files.');
+  }
 }
 
 main().catch(err => {

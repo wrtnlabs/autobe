@@ -202,26 +202,69 @@ function ExpandedDetail({ entries, projects, onSelectEntry }) {
               </div>
             </div>
 
-            {/* Pipeline token usage (if available) */}
-            {entry.pipeline?.phases && (
-              <div style={{ padding: "10px 16px", borderTop: "1px solid #1e293b" }}>
-                <SectionLabel>Pipeline Token Usage</SectionLabel>
-                <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                  {Object.entries(entry.pipeline.phases).map(([name, tokens]) => {
-                    const total = (tokens.inputTokens || 0) + (tokens.outputTokens || 0);
-                    if (total === 0) return null;
-                    return (
-                      <div key={name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px" }}>
-                        <span style={{ color: "#94a3b8", textTransform: "capitalize" }}>{name}</span>
-                        <span style={{ color: "#64748b", fontVariantNumeric: "tabular-nums", fontFamily: "monospace", fontSize: "10px" }}>
-                          {(total / 1000).toFixed(1)}k tokens
-                        </span>
-                      </div>
-                    );
-                  })}
+            {/* Pipeline phases (waterfall timeline) */}
+            {entry.pipeline?.phases && (() => {
+              const pp = entry.pipeline.phases;
+              const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+              const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
+              const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
+              const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
+              const hasAny = phaseNames.some(n => pp[n]?.completed);
+              if (!hasAny) return null;
+              return (
+                <div style={{ padding: "10px 16px", borderTop: "1px solid #1e293b" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                    <SectionLabel>Pipeline Phases</SectionLabel>
+                    <span style={{ fontSize: "10px", color: "#64748b", fontVariantNumeric: "tabular-nums" }}>
+                      Total: {fmtDuration(totalDur)}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                    {phaseNames.map(name => {
+                      const p = pp[name];
+                      if (!p) return null;
+                      const dur = p.durationMs || 0;
+                      const pct = maxDur > 0 ? (dur / maxDur) * 100 : 0;
+                      const color = phaseColors[name];
+                      const detail = p.detail;
+                      let detailText = "";
+                      if (name === "analyze" && detail) {
+                        detailText = `${(detail.actors || []).length} actors, ${(detail.documents || []).length} docs`;
+                      } else if (name === "database" && detail) {
+                        detailText = `${detail.totalModels || 0} models, ${detail.totalEnums || 0} enums`;
+                      } else if (name === "interface" && detail) {
+                        detailText = `${(detail.operations || []).length} APIs`;
+                      } else if (name === "test" && detail) {
+                        detailText = `${(detail.functions || []).length} tests`;
+                      } else if (name === "realize" && detail) {
+                        detailText = `${(detail.functions || []).length} impls`;
+                        if (detail.compileResult) {
+                          detailText += detail.compileResult.success ? " ✓" : ` ✗ ${(detail.compileResult.errors || []).length} errors`;
+                        }
+                      }
+                      return (
+                        <div key={name} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <div style={{ width: "60px", fontSize: "10px", color: color, fontWeight: 600, textTransform: "capitalize", flexShrink: 0 }}>
+                            {name}
+                          </div>
+                          <div style={{ flex: 1, height: "6px", borderRadius: "3px", background: "#1e293b", position: "relative" }}>
+                            <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", borderRadius: "3px", background: color, opacity: p.completed ? 0.7 : 0.2, transition: "width 0.3s" }} />
+                          </div>
+                          <span style={{ width: "50px", textAlign: "right", fontSize: "10px", color: "#94a3b8", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
+                            {fmtDuration(dur)}
+                          </span>
+                          {detailText && (
+                            <span style={{ width: "110px", textAlign: "right", fontSize: "9px", color: "#64748b", flexShrink: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {detailText}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Penalties */}
             {entry.penalties && (entry.penalties.duplication || entry.penalties.jsdoc) && (
@@ -364,6 +407,112 @@ function ScoreDetailModal({ entry, onClose }) {
             </>
           )}
         </div>
+
+        {/* Pipeline Phases Detail */}
+        {entry.pipeline?.phases && (() => {
+          const pp = entry.pipeline.phases;
+          const phaseNames = ["analyze", "database", "interface", "test", "realize"];
+          const phaseLabels = { analyze: "Analyze", database: "Database", interface: "Interface", test: "Test", realize: "Realize" };
+          const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
+          const phaseIcons = { analyze: "🔍", database: "🗄️", interface: "🔌", test: "🧪", realize: "⚙️" };
+          const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
+          const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
+          const totalTokens = entry.pipeline.totalTokens || 0;
+          const hasAny = phaseNames.some(n => pp[n]?.completed);
+          if (!hasAny) return null;
+          return (
+            <div style={sectionStyle}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <SectionLabel>Pipeline Phases</SectionLabel>
+                <div style={{ display: "flex", gap: "12px", fontSize: "11px" }}>
+                  {totalTokens > 0 && <span style={{ color: "#64748b" }}>Tokens: <b style={{ color: "#94a3b8" }}>{totalTokens >= 1e6 ? `${(totalTokens / 1e6).toFixed(1)}M` : totalTokens >= 1e3 ? `${(totalTokens / 1e3).toFixed(0)}K` : totalTokens}</b></span>}
+                  <span style={{ color: "#64748b" }}>Total: <b style={{ color: "#94a3b8" }}>{fmtDuration(totalDur)}</b></span>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {phaseNames.map(name => {
+                  const p = pp[name];
+                  if (!p) return null;
+                  const dur = p.durationMs || 0;
+                  const pct = maxDur > 0 ? (dur / maxDur) * 100 : 0;
+                  const color = phaseColors[name];
+                  const detail = p.detail;
+
+                  // Build detail items
+                  const detailItems = [];
+                  if (name === "analyze" && detail) {
+                    if (detail.prefix) detailItems.push({ label: "Prefix", value: detail.prefix });
+                    detailItems.push({ label: "Actors", value: `${(detail.actors || []).length}` });
+                    detailItems.push({ label: "Documents", value: `${(detail.documents || []).length}` });
+                  } else if (name === "database" && detail) {
+                    detailItems.push({ label: "Models", value: `${detail.totalModels || 0}` });
+                    detailItems.push({ label: "Enums", value: `${detail.totalEnums || 0}` });
+                    detailItems.push({ label: "Schemas", value: `${(detail.schemas || []).length} files` });
+                    detailItems.push({ label: "Compiled", value: detail.compiled ? "✓" : "✗" });
+                  } else if (name === "interface" && detail) {
+                    detailItems.push({ label: "APIs", value: `${(detail.operations || []).length}` });
+                    detailItems.push({ label: "Auth", value: `${(detail.authorizations || []).length}` });
+                    if ((detail.missed || []).length > 0) detailItems.push({ label: "Missed", value: `${detail.missed.length}` });
+                  } else if (name === "test" && detail) {
+                    detailItems.push({ label: "Tests", value: `${(detail.functions || []).length}` });
+                    detailItems.push({ label: "Compiled", value: detail.compiled ? "✓" : "✗" });
+                  } else if (name === "realize" && detail) {
+                    detailItems.push({ label: "Impls", value: `${(detail.functions || []).length}` });
+                    if (detail.compileResult) {
+                      detailItems.push({ label: "Compiled", value: detail.compileResult.success ? "✓" : `✗ ${(detail.compileResult.errors || []).length}` });
+                    }
+                  }
+
+                  // Agent metrics
+                  const agentMetrics = detail?.agentMetrics;
+
+                  return (
+                    <div key={name} style={{ background: "#131b2e", borderRadius: "8px", padding: "10px 14px", border: `1px solid ${color}22` }}>
+                      {/* Phase header row */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                        <span style={{ fontSize: "13px" }}>{phaseIcons[name]}</span>
+                        <span style={{ fontSize: "12px", fontWeight: 700, color, flex: 1 }}>{phaseLabels[name]}</span>
+                        <span style={{ fontSize: "11px", color: p.completed ? "#4ade80" : "#f87171", fontWeight: 600 }}>
+                          {p.completed ? "Done" : "Failed"}
+                        </span>
+                        <span style={{ fontSize: "11px", color: "#94a3b8", fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
+                          {fmtDuration(dur)}
+                        </span>
+                      </div>
+                      {/* Duration bar */}
+                      <div style={{ height: "6px", borderRadius: "3px", background: "#1e293b", marginBottom: detailItems.length > 0 ? "8px" : "0" }}>
+                        <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", borderRadius: "3px", background: color, opacity: 0.6, transition: "width 0.3s" }} />
+                      </div>
+                      {/* Detail metrics */}
+                      {detailItems.length > 0 && (
+                        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: agentMetrics ? "6px" : "0" }}>
+                          {detailItems.map((d, i) => (
+                            <span key={i} style={{ fontSize: "11px", color: "#64748b" }}>
+                              {d.label}: <b style={{ color: d.value === "✗" || d.value.startsWith("✗") ? "#f87171" : d.value === "✓" ? "#4ade80" : "#cbd5e1" }}>{d.value}</b>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {/* Agent metrics */}
+                      {agentMetrics && (
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", paddingTop: "4px", borderTop: "1px solid #1e293b" }}>
+                          {Object.entries(agentMetrics).map(([agentName, m]) => (
+                            <span key={agentName} style={{ fontSize: "10px", padding: "2px 6px", borderRadius: "3px", background: "#1e293b" }}>
+                              <span style={{ color: "#94a3b8" }}>{agentName}</span>
+                              <span style={{ color: "#4ade80", marginLeft: "4px" }}>{m.success}</span>
+                              {m.failure > 0 && <span style={{ color: "#f87171", marginLeft: "2px" }}>/{m.failure}</span>}
+                              <span style={{ color: "#475569", marginLeft: "2px" }}>({m.attempt})</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Gate Section */}
         {phases.gate && (
