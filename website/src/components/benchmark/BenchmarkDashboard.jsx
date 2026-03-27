@@ -100,7 +100,7 @@ function SectionLabel({ children }) {
 
 /* ── Expanded Detail Row (inline under table row) ── */
 
-function ExpandedDetail({ entries, projects }) {
+function ExpandedDetail({ entries, projects, onSelectEntry }) {
   const cols = projects.filter((p) => entries.find((e) => e.project === p));
 
   return (
@@ -113,7 +113,11 @@ function ExpandedDetail({ entries, projects }) {
         const h = heatmap(entry.totalScore);
 
         return (
-          <div key={p} style={{ background: "#0f172a", borderRadius: "8px", border: "1px solid #334155", overflow: "hidden" }}>
+          <div key={p} style={{ background: "#0f172a", borderRadius: "8px", border: "1px solid #334155", overflow: "hidden", cursor: "pointer", transition: "border-color 0.15s" }}
+            onClick={() => onSelectEntry && onSelectEntry(entry)}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#475569"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#334155"; }}
+          >
             {/* Project header */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: "#1e293b", borderBottom: "1px solid #334155" }}>
               <span style={{ fontSize: "13px", fontWeight: 700, color: "#cbd5e1", textTransform: "uppercase", letterSpacing: "0.5px" }}>{entry.project}</span>
@@ -275,10 +279,260 @@ function ExpandedDetail({ entries, projects }) {
   );
 }
 
+/* ── Score Detail Modal ── */
+
+const METRIC_LABELS = {
+  hasDocsFolder: "Docs Folder", hasReadme: "README", docFileCount: "Doc Files", totalDocLength: "Total Doc Length",
+  controllerCount: "Controllers", providerCount: "Providers", structureCount: "Structures",
+  requirementsDocCount: "Req Docs", hasRequirementsDocs: "Has Req Docs",
+  mappedControllers: "Mapped Controllers", unmappedControllers: "Unmapped Controllers", mappingRatio: "Mapping Ratio",
+  testCount: "Tests", totalRoutes: "Total Routes", coveredRoutes: "Covered Routes",
+  routeCoveragePercent: "Route Coverage %", stubTests: "Stub Tests", assertionTests: "Assertion Tests",
+  controllersAnalyzed: "Controllers Analyzed", runtimeVerified: "Runtime Verified",
+  definedMethods: "Defined Methods", testedMethods: "Tested Methods", routeAnalysis: "Route Analysis",
+  totalIncomplete: "Incomplete", criticalCount: "Critical", warningCount: "Warnings",
+  todoCount: "TODOs", fixmeCount: "FIXMEs", emptyMethods: "Empty Methods", emptyCatch: "Empty Catch",
+  totalEndpoints: "Endpoints", emptyEndpoints: "Empty", stubEndpoints: "Stubs",
+  implementedEndpoints: "Implemented", noProviderEndpoints: "No Provider",
+  passthroughEndpoints: "Passthrough", completionRate: "Completion %", implementationRate: "Implementation %",
+  totalFiles: "Total Files", filesWithErrors: "Files w/ Errors", errorRatio: "Error Ratio",
+  penalty: "Penalty", typeCriticalCount: "TS Critical", typeWarningCount: "TS Warnings",
+  prismaCriticalCount: "Prisma Critical", prismaWarningCount: "Prisma Warnings", softPass: "Soft Pass",
+  failedAt: "Failed At", reason: "Reason",
+};
+
+function formatMetricValue(key, val) {
+  if (val === true) return "Yes";
+  if (val === false) return "No";
+  if (key === "mappingRatio" || key === "errorRatio") return `${(val * 100).toFixed(1)}%`;
+  if (key === "totalDocLength" && typeof val === "number") return `${(val / 1024).toFixed(0)}KB`;
+  if (typeof val === "number" && val > 1000) return val.toLocaleString();
+  return String(val);
+}
+
+function ScoreDetailModal({ entry, onClose }) {
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", handler);
+    };
+  }, [onClose]);
+
+  const phases = entry.phases || {};
+  const meta = entry.meta || {};
+  const h = heatmap(entry.totalScore);
+
+  const sectionStyle = { padding: "16px 20px", borderBottom: "1px solid #1e293b" };
+  const metricRowStyle = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "3px 0", fontSize: "12px" };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.6)", fontFamily: FONT }}
+      onClick={onClose}
+    >
+      <div
+        style={{ width: "min(640px, 92vw)", maxHeight: "88vh", overflowY: "auto", background: "#0f172a", border: "1px solid #334155", borderRadius: "12px", boxShadow: "0 25px 50px rgba(0,0,0,0.5)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 24px", background: "#1e293b", borderBottom: "1px solid #334155", borderRadius: "12px 12px 0 0" }}>
+          <div>
+            <div style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>{entry.project}</div>
+            <div style={{ fontSize: "18px", fontWeight: 700, color: "#f1f5f9", marginTop: "2px" }}>{entry.model}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span style={{ fontSize: "32px", fontWeight: 800, color: h.fg, fontVariantNumeric: "tabular-nums" }}>{entry.totalScore}</span>
+            <GradePill grade={entry.grade} large />
+            <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", fontSize: "20px", cursor: "pointer", padding: "4px 8px", marginLeft: "8px" }}>✕</button>
+          </div>
+        </div>
+
+        {/* Meta bar */}
+        <div style={{ display: "flex", gap: "16px", padding: "10px 24px", fontSize: "11px", color: "#64748b", background: "#0d1425", borderBottom: "1px solid #1e293b", flexWrap: "wrap" }}>
+          {meta.evaluatedFiles != null && <span>Files: <b style={{ color: "#94a3b8" }}>{meta.evaluatedFiles}</b></span>}
+          {meta.totalDurationMs != null && <span>Eval time: <b style={{ color: "#94a3b8" }}>{fmtDuration(meta.totalDurationMs)}</b></span>}
+          {meta.evaluatedAt && <span>{new Date(meta.evaluatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
+          {entry.summary && (
+            <>
+              {entry.summary.criticalCount > 0 && <span style={{ color: "#f87171" }}><b>{entry.summary.criticalCount}</b> critical</span>}
+              {entry.summary.warningCount > 0 && <span style={{ color: "#fdba74" }}><b>{entry.summary.warningCount}</b> warnings</span>}
+              {entry.summary.suggestionCount > 0 && <span><b>{entry.summary.suggestionCount}</b> suggestions</span>}
+            </>
+          )}
+        </div>
+
+        {/* Gate Section */}
+        {phases.gate && (
+          <div style={{ ...sectionStyle, background: phases.gate.passed ? "rgba(34,197,94,0.04)" : "rgba(239,68,68,0.06)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+              <SectionLabel>Compilation Gate</SectionLabel>
+              <span style={{ fontWeight: 700, fontSize: "13px", color: phases.gate.passed ? "#4ade80" : "#f87171" }}>
+                {phases.gate.passed ? "PASS" : "FAIL"} <span style={{ color: "#64748b", fontWeight: 500 }}>{phases.gate.score}/{phases.gate.maxScore}</span>
+              </span>
+            </div>
+            {/* Gate metrics grid */}
+            {phases.gate.metrics && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "4px 16px", marginBottom: "10px" }}>
+                {Object.entries(phases.gate.metrics).filter(([k]) => k !== "softPass" && k !== "failedAt" && k !== "reason").map(([k, v]) => (
+                  <div key={k} style={metricRowStyle}>
+                    <span style={{ color: "#64748b" }}>{METRIC_LABELS[k] || k}</span>
+                    <span style={{ color: v > 0 && (k.includes("Critical") || k.includes("Error") || k === "filesWithErrors") ? "#f87171" : v > 0 && k.includes("Warning") ? "#fdba74" : "#cbd5e1", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                      {formatMetricValue(k, v)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Gate failed reason */}
+            {phases.gate.metrics?.failedAt && (
+              <div style={{ padding: "8px 12px", borderRadius: "6px", background: "rgba(239,68,68,0.08)", marginBottom: "10px", fontSize: "12px" }}>
+                <span style={{ color: "#f87171", fontWeight: 600 }}>Failed at: </span>
+                <span style={{ color: "#fca5a5" }}>{phases.gate.metrics.failedAt}</span>
+                {phases.gate.metrics.reason && <div style={{ color: "#94a3b8", marginTop: "4px" }}>{phases.gate.metrics.reason}</div>}
+              </div>
+            )}
+            {/* All gate issues */}
+            {phases.gate.issuesByCode?.length > 0 && (
+              <div>
+                <div style={{ fontSize: "10px", fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>
+                  Compiler Issues ({phases.gate.issuesByCode.reduce((s, i) => s + i.count, 0)} total)
+                </div>
+                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  {phases.gate.issuesByCode.map((issue, idx) => (
+                    <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "8px", padding: "4px 0", fontSize: "11px", borderBottom: "1px solid #0f172a" }}>
+                      <span style={{
+                        display: "inline-block", width: "7px", height: "7px", borderRadius: "50%", marginTop: "4px", flexShrink: 0,
+                        background: issue.severity === "critical" ? "#f87171" : issue.severity === "warning" ? "#fdba74" : "#475569",
+                      }} />
+                      <span style={{ color: "#cbd5e1", fontWeight: 700, fontFamily: "monospace", fontSize: "10px", minWidth: "60px", flexShrink: 0 }}>{issue.code}</span>
+                      <span style={{ color: "#64748b", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>x{issue.count}</span>
+                      <span style={{ color: "#94a3b8", fontSize: "10px", overflow: "hidden", textOverflow: "ellipsis" }}>{issue.message}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Scoring Phases */}
+        <div style={sectionStyle}>
+          <SectionLabel>Scoring Phases</SectionLabel>
+          <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+            {PHASE_META.map(({ key, label, w }) => {
+              const phase = phases[key];
+              if (!phase) return null;
+              const pct = phase.maxScore > 0 ? (phase.score / phase.maxScore) * 100 : 0;
+              const ph = heatmap(phase.score);
+              const metrics = phase.metrics || {};
+              const visibleMetrics = Object.entries(metrics).filter(([k]) => k !== "cached" && k !== "originalDurationMs");
+              return (
+                <div key={key} style={{ background: "#131b2e", borderRadius: "8px", padding: "12px 14px", border: "1px solid #1e293b" }}>
+                  {/* Phase header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: 700, color: "#cbd5e1", flex: 1 }}>{label}</span>
+                    <span style={{ fontSize: "10px", color: "#64748b" }}>w:{w}%</span>
+                    <span style={{ fontSize: "14px", fontWeight: 700, color: ph.fg, fontVariantNumeric: "tabular-nums" }}>{phase.score}</span>
+                    <span style={{ fontSize: "10px", color: "#475569" }}>/{phase.maxScore}</span>
+                    {phase.durationMs > 0 && <span style={{ fontSize: "10px", color: "#475569" }}>{fmtDuration(phase.durationMs)}</span>}
+                  </div>
+                  {/* Progress bar */}
+                  <div style={{ height: "4px", borderRadius: "2px", background: "#1e293b", marginBottom: visibleMetrics.length > 0 ? "10px" : "0" }}>
+                    <div style={{ width: `${pct}%`, height: "100%", borderRadius: "2px", background: ph.fg, opacity: 0.7 }} />
+                  </div>
+                  {/* Metrics */}
+                  {visibleMetrics.length > 0 && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "2px 16px" }}>
+                      {visibleMetrics.map(([k, v]) => (
+                        <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", padding: "2px 0" }}>
+                          <span style={{ color: "#64748b" }}>{METRIC_LABELS[k] || k}</span>
+                          <span style={{ color: (k === "criticalCount" || k === "totalIncomplete") && v > 0 ? "#f87171" : k === "warningCount" && v > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
+                            {formatMetricValue(k, v)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Explanation */}
+                  {phase.explanation?.reasons?.length > 0 && (
+                    <div style={{ marginTop: "8px", padding: "8px 10px", borderRadius: "6px", background: "rgba(239,68,68,0.06)" }}>
+                      {phase.explanation.reasons.map((r, i) => (
+                        <div key={i} style={{ fontSize: "11px", color: "#fca5a5", padding: "1px 0" }}>{r}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Penalties */}
+        {entry.penalties && (entry.penalties.duplication || entry.penalties.jsdoc) && (
+          <div style={sectionStyle}>
+            <SectionLabel>Penalties</SectionLabel>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {entry.penalties.duplication && (
+                <div style={{ padding: "8px 14px", borderRadius: "6px", background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.15)" }}>
+                  <div style={{ fontSize: "16px", fontWeight: 700, color: "#fdba74" }}>-{entry.penalties.duplication.amount}pt</div>
+                  <div style={{ fontSize: "11px", color: "#94a3b8" }}>Duplication ({entry.penalties.duplication.blocks} blocks)</div>
+                </div>
+              )}
+              {entry.penalties.jsdoc && (
+                <div style={{ padding: "8px 14px", borderRadius: "6px", background: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.15)" }}>
+                  <div style={{ fontSize: "16px", fontWeight: 700, color: "#fdba74" }}>-{entry.penalties.jsdoc.amount}pt</div>
+                  <div style={{ fontSize: "11px", color: "#94a3b8" }}>JSDoc ({entry.penalties.jsdoc.missing} missing, {entry.penalties.jsdoc.ratio} coverage)</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Reference Data */}
+        {entry.reference && (
+          <div style={{ ...sectionStyle, borderBottom: "none" }}>
+            <SectionLabel>Reference Data</SectionLabel>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "4px 16px" }}>
+              {entry.reference.complexity && (
+                <>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Functions</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.totalFunctions}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Complex Fns</span><span style={{ color: entry.reference.complexity.complexFunctions > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.complexFunctions}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Max Complexity</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.complexity.maxComplexity}</span></div>
+                </>
+              )}
+              {entry.reference.duplication && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Dup Blocks</span><span style={{ color: entry.reference.duplication.totalBlocks > 50 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.duplication.totalBlocks}</span></div>
+              )}
+              {entry.reference.naming && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Naming Issues</span><span style={{ color: entry.reference.naming.totalIssues > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.naming.totalIssues}</span></div>
+              )}
+              {entry.reference.jsdoc && (
+                <div style={metricRowStyle}><span style={{ color: "#64748b" }}>JSDoc Missing</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.jsdoc.totalMissing}</span></div>
+              )}
+              {entry.reference.schemaSync && (
+                <>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Schema Types</span><span style={{ color: "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.totalTypes}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Empty Types</span><span style={{ color: entry.reference.schemaSync.emptyTypes > 0 ? "#f87171" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.emptyTypes}</span></div>
+                  <div style={metricRowStyle}><span style={{ color: "#64748b" }}>Mismatched Props</span><span style={{ color: entry.reference.schemaSync.mismatchedProperties > 0 ? "#fdba74" : "#cbd5e1", fontWeight: 600 }}>{entry.reference.schemaSync.mismatchedProperties}</span></div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── Leaderboard Table ── */
 
 function LeaderboardTable({ entries, models, projects, allEntries }) {
   const [expanded, setExpanded] = useState(new Set());
+  const [modalEntry, setModalEntry] = useState(null);
 
   const lookup = {};
   for (const e of entries) {
@@ -430,7 +684,7 @@ function LeaderboardTable({ entries, models, projects, allEntries }) {
                   {isExpanded && modelEntries.length > 0 && (
                     <tr>
                       <td colSpan={projects.length + 3} style={{ padding: 0, borderBottom: "2px solid #334155", background: "#0c1322" }}>
-                        <ExpandedDetail entries={modelEntries} projects={projects} />
+                        <ExpandedDetail entries={modelEntries} projects={projects} onSelectEntry={setModalEntry} />
                       </td>
                     </tr>
                   )}
@@ -440,6 +694,7 @@ function LeaderboardTable({ entries, models, projects, allEntries }) {
           </tbody>
         </table>
       </div>
+      {modalEntry && <ScoreDetailModal entry={modalEntry} onClose={() => setModalEntry(null)} />}
     </div>
   );
 }
