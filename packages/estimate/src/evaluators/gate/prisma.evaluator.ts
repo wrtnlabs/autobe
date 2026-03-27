@@ -1,4 +1,5 @@
 import { AutoBeDatabaseCompiler } from "@autobe/compiler";
+import path from "path";
 
 import type { EvaluationContext } from "../../types";
 import { createIssue } from "../../types";
@@ -42,10 +43,16 @@ export class PrismaEvaluator extends GateEvaluator {
     }
 
     // Read all prisma schema files into Record<string, string>
-    const prismaFiles = await this.readFilesAsRecord(
+    // EmbedPrisma writes files to {tmpdir}/schemas/{key} without creating
+    // intermediate directories, so keys must be bare filenames (no subdirs).
+    const rawPrismaFiles = await this.readFilesAsRecord(
       context.files.prismaSchemas,
       context.project.rootPath,
     );
+    const prismaFiles: Record<string, string> = {};
+    for (const [key, value] of Object.entries(rawPrismaFiles)) {
+      prismaFiles[path.basename(key)] = value;
+    }
 
     if (Object.keys(prismaFiles).length === 0) {
       return {
