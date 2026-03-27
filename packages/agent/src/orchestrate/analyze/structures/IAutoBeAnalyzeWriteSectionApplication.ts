@@ -1,22 +1,23 @@
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Application interface for the Section (###) generation agent.
  *
- * This agent is responsible for creating detailed sections within an approved
- * unit section structure, producing implementation-ready requirement
- * specifications.
+ * Combines preliminary context loading, section submission with external
+ * validation, and iterative correction into a single unified loop.
  */
 export interface IAutoBeAnalyzeWriteSectionApplication {
   /**
-   * Process section generation task or preliminary data requests.
+   * Process section generation, write submission, or preliminary data
+   * requests.
    *
-   * Creates detailed sections for a specific unit section, including complete
-   * content with Mermaid diagrams and, for requirement-heavy files
-   * (03-functional-requirements, 04-business-rules), EARS format requirements.
+   * Submit section content via `write` for external validation. If validation
+   * fails, diagnostics are provided and you should correct and resubmit.
+   * Call `complete` only after a successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write
+   *   submission, or completion confirmation
    */
   process(props: IAutoBeAnalyzeWriteSectionApplicationProps): void;
 }
@@ -32,31 +33,36 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    *
    * - What additional context do you need for detailed content?
    *
+   * For write submissions:
+   *
+   * - If this is an initial write, summarize your plan.
+   * - If this is a correction, what validation errors are you fixing and how?
+   *
    * For completion:
    *
-   * - How do the sections address the keywords from the unit section?
-   * - For 03/04 files: Are requirements specific and in EARS format?
-   * - For other files: Is content written in clear, descriptive prose?
-   * - Are Mermaid diagrams properly formatted?
+   * - Confirm that the last write passed validation successfully.
    */
   thinking?: string | null;
 
-  /** Type discriminator for the request. */
+  /**
+   * Action to perform. Exhausted preliminary types are removed from the
+   * union.
+   */
   request:
-    | IAutoBeAnalyzeWriteSectionApplicationComplete
+    | IAutoBeAnalyzeWriteSectionApplicationWrite
+    | IComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
 /**
- * Request to generate section content.
+ * Submit section content for external validation.
  *
- * Creates the detailed content within a unit section, including
- * implementation-ready requirements specifications with proper formatting and
- * diagrams.
+ * The submitted content will be validated for English-only text,
+ * technology-neutral language, and entity correctness.
  */
-export interface IAutoBeAnalyzeWriteSectionApplicationComplete {
-  /** Type discriminator for the request. */
-  type: "complete";
+export interface IAutoBeAnalyzeWriteSectionApplicationWrite {
+  /** Type discriminator for write submission. */
+  type: "write";
 
   /** Index of the grandparent module section. */
   moduleIndex: number;

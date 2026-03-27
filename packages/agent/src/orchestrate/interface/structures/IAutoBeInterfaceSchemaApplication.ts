@@ -7,18 +7,18 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceSchemaApplication {
   /**
-   * Process schema generation task or preliminary data requests.
+   * Process schema generation, write submission, or preliminary data requests.
    *
-   * Generates OpenAPI components containing named schema types and integrates
-   * them into the final OpenAPI specification. Processes all entity schemas,
-   * their variants, and related type definitions to ensure comprehensive and
-   * consistent API design.
+   * Submit schema designs via `write` for external validation. If validation
+   * fails, diagnostics are provided and you should correct and resubmit.
+   * Call `complete` only after a successful write validation.
    *
-   * @param props Request containing either preliminary data request or complete
-   *   task
+   * @param props Request containing preliminary data request, write
+   *   submission, or completion confirmation
    */
   process(props: IAutoBeInterfaceSchemaApplication.IProps): void;
 }
@@ -37,12 +37,14 @@ export namespace IAutoBeInterfaceSchemaApplication {
      * - Why do you need it specifically right now?
      * - Be brief - state the gap, don't list everything you have.
      *
-     * For completion (complete):
+     * For write submissions:
      *
-     * - What key assets did you acquire?
-     * - What did you accomplish?
-     * - Why is it sufficient to complete?
-     * - Summarize - don't enumerate every single item.
+     * - If this is an initial write, summarize your design plan.
+     * - If this is a correction, what validation errors are you fixing and how?
+     *
+     * For completion:
+     *
+     * - Confirm that the last write passed validation successfully.
      *
      * This reflection helps you avoid duplicate requests and premature
      * completion.
@@ -52,13 +54,17 @@ export namespace IAutoBeInterfaceSchemaApplication {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval
-     * (getAnalysisSections, getDatabaseSchemas, getInterfaceOperations) or
-     * final schema generation (complete). When preliminary returns empty array,
-     * that type is removed from the union, physically preventing repeated
-     * calls.
+     * Determines which action to perform:
+     *
+     * - Preliminary types: Load context data incrementally
+     * - `write`: Submit schema design for external validation
+     * - `complete`: Finalize after successful write validation
+     *
+     * When preliminary returns empty array, that type is removed from the
+     * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -70,21 +76,14 @@ export namespace IAutoBeInterfaceSchemaApplication {
   }
 
   /**
-   * Request to generate a single OpenAPI schema component.
+   * Submit schema design for external validation.
    *
-   * Executes schema generation to create a type definition for a specific DTO
-   * type. Each invocation handles one schema component to ensure accuracy and
-   * clear responsibility.
+   * The submitted design will be validated against the database schema,
+   * operation requirements, and JSON schema structure rules.
    */
-  export interface IComplete {
-    /**
-     * Type discriminator for the request.
-     *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
-     */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Analysis of the type's purpose and context.
