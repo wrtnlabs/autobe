@@ -124,8 +124,7 @@ async function process(
     ctx.state().database?.result.data.files.flatMap((f) => f.models) ?? [];
 
   const preliminary = new AutoBePreliminaryController<PreliminaryKinds>({
-    application:
-      typia.json.application<IAutoBeInterfaceSchemaApplication>(),
+    application: typia.json.application<IAutoBeInterfaceSchemaApplication>(),
     source: SOURCE,
     kinds: [
       "analysisSections",

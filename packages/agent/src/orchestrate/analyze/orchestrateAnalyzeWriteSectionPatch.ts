@@ -216,9 +216,7 @@ function applySectionMerge(
   ) {
     const targetSet = new Set(sectionIndices);
     finalSectionSections = writeData.sectionSections.map((section, idx) =>
-      targetSet.has(idx)
-        ? section
-        : previousSectionEvent.sectionSections[idx]!,
+      targetSet.has(idx) ? section : previousSectionEvent.sectionSections[idx]!,
     );
   }
   return finalSectionSections;

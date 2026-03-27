@@ -9,15 +9,14 @@ import { IComplete } from "../../common/structures/IComplete";
  */
 export interface IAutoBeAnalyzeWriteSectionApplication {
   /**
-   * Process section generation, write submission, or preliminary data
-   * requests.
+   * Process section generation, write submission, or preliminary data requests.
    *
    * Submit section content via `write` for external validation. If validation
-   * fails, diagnostics are provided and you should correct and resubmit.
-   * Call `complete` only after a successful write validation.
+   * fails, diagnostics are provided and you should correct and resubmit. Call
+   * `complete` only after a successful write validation.
    *
-   * @param props Request containing preliminary data request, write
-   *   submission, or completion confirmation
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
   process(props: IAutoBeAnalyzeWriteSectionApplicationProps): void;
 }
@@ -44,10 +43,7 @@ export interface IAutoBeAnalyzeWriteSectionApplicationProps {
    */
   thinking?: string | null;
 
-  /**
-   * Action to perform. Exhausted preliminary types are removed from the
-   * union.
-   */
+  /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
     | IAutoBeAnalyzeWriteSectionApplicationWrite
     | IComplete
