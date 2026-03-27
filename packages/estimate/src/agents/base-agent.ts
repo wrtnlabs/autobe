@@ -26,7 +26,10 @@ export abstract class BaseAgent {
   /** Run the agent evaluation */
   abstract evaluate(context: EvaluationContext): Promise<AgentResult>;
 
-  /** Extract the first JSON object from a string, handling markdown fences and surrounding text */
+  /**
+   * Extract the first JSON object from a string, handling markdown fences and
+   * surrounding text
+   */
   private extractJson(raw: string): string {
     // 1. Try to extract from markdown code fence (```json ... ``` or ``` ... ```)
     const fenceMatch = raw.match(/```(?:json)?\s*\r?\n?([\s\S]*?)```/);
