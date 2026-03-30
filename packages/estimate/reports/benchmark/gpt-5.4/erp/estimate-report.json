@@ -1,0 +1,4491 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp",
+  "totalScore": 80,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 97,
+      "maxScore": 100,
+      "weightedScore": 97,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774845541824-r6l8x2is3h8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2352",
+          "message": "Conversion of type 'hrm_time_tracking_employees' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\n  Index signature for type 'string' is missing in type 'hrm_time_tracking_employees'.",
+          "location": {
+            "file": "src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleId.ts",
+            "line": 2481
+          },
+          "id": "type-error-1774845541824-ghx0splvaq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'Promise<hrm_time_tracking_role_permissions>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_role_permissions>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 1575
+          },
+          "id": "type-error-1774845541824-uu4u029mf0n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<hrm_time_tracking_reports> | Promise<hrm_time_tracking_report_employee_filters>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<hrm_time_tracking_reports> | Promise<hrm_time_tracking_report_employee_filters>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteHrmTimeTrackingReportsReportIdEmployeeFiltersEmployeeFilterId.ts",
+            "line": 1220
+          },
+          "id": "type-error-1774845541824-0gtwc4rtehxq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingManagerActivityLogsSearch.ts",
+            "line": 2817
+          },
+          "id": "type-error-1774845541824-5am60yly4st",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingManagerEmployeesEmployeeIdContracts.ts",
+            "line": 1877
+          },
+          "id": "type-error-1774845541824-53dsnpm7gj4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2724",
+          "message": "'\"src/prisma/client\".Prisma' has no exported member named 'hrm_time_tracking_role_permissionsCreateManyInput'. Did you mean 'hrm_time_tracking_role_permissionsCreateInput'?",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 3140
+          },
+          "id": "type-error-1774845541824-pphk5kul6q9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'Prisma.hrm_time_tracking_role_permissionsCreateManyInput[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type 'Prisma.hrm_time_tracking_role_permissionsCreateManyInput[]'.",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 3854
+          },
+          "id": "type-error-1774845541824-e7abjymb147",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingReports.ts",
+            "line": 4964
+          },
+          "id": "type-error-1774845541824-ocn9bftpx8c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<number> | Promise<hrm_time_tracking_reports[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<hrm_time_tracking_reports[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingReports.ts",
+            "line": 5017
+          },
+          "id": "type-error-1774845541824-hcoi944wx3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_employee_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_employee_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; }[]'.",
+          "location": {
+            "file": "src/providers/patchHrmTimeTrackingReportsReportIdEmployeeFilters.ts",
+            "line": 3258
+          },
+          "id": "type-error-1774845541824-jvg098z9j2b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: unknown; hrm_time_tracking_role_id: string; permission: unknown; created_at: unknown; updated_at: unknown; deleted_at: unknown; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: unknown; hrm_time_tracking_role_id: string; permission: unknown; created_at: unknown; updated_at: unknown; deleted_at: unknown; }[]'.",
+          "location": {
+            "file": "src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 3364
+          },
+          "id": "type-error-1774845541824-8df9ylsuqok",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'Promise<{ count: number; }>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<{ count: number; }>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postHrmTimeTrackingReportsReportIdProjectFilters.ts",
+            "line": 3063
+          },
+          "id": "type-error-1774845541824-iucleijg8gl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_project_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_project_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+          "location": {
+            "file": "src/providers/postHrmTimeTrackingReportsReportIdProjectFilters.ts",
+            "line": 3145
+          },
+          "id": "type-error-1774845541824-0xbe8sgaeyl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'Promise<hrm_time_tracking_departments>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_departments>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putHrmTimeTrackingManagerDepartmentsDepartmentId.ts",
+            "line": 2942
+          },
+          "id": "type-error-1774845541824-lw5w3mbbvls",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'Promise<hrm_time_tracking_role_permissions>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_role_permissions>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 3963
+          },
+          "id": "type-error-1774845541824-0xbm132mnns",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 8757,
+      "metrics": {
+        "totalFiles": 412,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 3,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 12,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 90,
+      "maxScore": 100,
+      "weightedScore": 6.300000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 782805,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 47,
+        "providerCount": 158,
+        "structureCount": 56,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 47,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 67,
+      "maxScore": 100,
+      "weightedScore": 15.41,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 384,
+        "controllerCount": 47,
+        "routeAnalysis": true,
+        "totalRoutes": 149,
+        "coveredRoutes": 81,
+        "routeCoveragePercent": 54,
+        "definedMethods": "PATCH,GET,POST,PUT,DELETE",
+        "testedMethods": "GET,PUT,PATCH,DELETE",
+        "controllersAnalyzed": 46,
+        "stubTests": 27,
+        "assertionTests": 357,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 154,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 154,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 1467,
+      "complexFunctions": 26,
+      "maxComplexity": 86,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId\" has complexity 25 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542231-xw8d0hrrjxa",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingReportsReportId\" has complexity 32 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportId.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542227-jqea2ha4c3",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingProjectsProjectIdTasksTaskId\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingProjectsProjectIdTasksTaskId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542234-bltaauisk1s",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingProjectsProjectId\" has complexity 29 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingProjectsProjectId.ts",
+            "line": 16
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542229-okibsd2qumi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putHrmTimeTrackingOwnerPasswordResetsPasswordResetId\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 15
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542233-h0dq5ywxwpv",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingOwnerOrganizationsOrganizationIdInvitationsInvitationId\" has complexity 39 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdInvitationsInvitationId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542239-sju0sg3ojmk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putHrmTimeTrackingOwnerEmployeesEmployeeIdContractsContractId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerEmployeesEmployeeIdContractsContractId.ts",
+            "line": 16
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542240-n5u6oyfb0uo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putHrmTimeTrackingManagerEmployeesEmployeeIdContractsContractId\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingManagerEmployeesEmployeeIdContractsContractId.ts",
+            "line": 16
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542241-t0fu7pierpf",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingEmployeeTimesheetsTimesheetId\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingEmployeeTimesheetsTimesheetId.ts",
+            "line": 21
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542242-gzedwx4iwjo",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmTimeTrackingEmployeeTimelogsTimelogId\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingEmployeeTimelogsTimelogId.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542246-ped9rd9x6sa",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"postHrmTimeTrackingReports\" has complexity 54 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingReports.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542249-jct578ic3wq",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"postHrmTimeTrackingOwnerPasswordResets\" has complexity 31 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 15
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542253-md92j7s7ne",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postHrmTimeTrackingManagerEmployeesEmployeeIdContracts\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerEmployeesEmployeeIdContracts.ts",
+            "line": 15
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542261-divdmlj5pvj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postHrmTimeTrackingAuthEmployeeRefresh\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthEmployeeRefresh.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542273-c0duyndbzn",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingReportsReportIdSnapshots\" has complexity 27 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingReportsReportIdSnapshots.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542277-7ebiadviuip",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingReports\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingReports.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542278-ogmqlqbt49",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingProjectBudgetAlerts\" has complexity 86 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542283-qzg1mbckffo",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwners\" has complexity 30 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 16
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542286-25ea5m2mjrl",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwnerSessions\" has complexity 23 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerSessions.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542287-x1s9ewt70g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingOwnerReportsWeeklySummaries\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerReportsWeeklySummaries.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542314-tysjbagnlx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingOwnerPasswordResets\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 15
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542316-iiduzzt43gl",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwnerOrganizationsOrganizationIdInvitations\" has complexity 32 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdInvitations.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542293-k7osvjwavnl",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwnerOrganizations\" has complexity 25 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerOrganizations.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542290-cew3s4ms3hq",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwnerEmployeesEmployeeIdContracts\" has complexity 35 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerEmployeesEmployeeIdContracts.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542292-4nt3lrjp8kn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingOwnerDepartments\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerDepartments.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542311-myyg14pbzr8",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingOwnerActivityLogsSearch\" has complexity 31 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542294-qxuwhdt2do",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingManagers\" has complexity 30 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingManagers.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542302-9dkvmcu29kw",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingManagerReportsWeeklySummaries\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingManagerReportsWeeklySummaries.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542296-5klf17tyrwt",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingManagerEmployeesEmployeeIdContracts\" has complexity 29 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingManagerEmployeesEmployeeIdContracts.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542305-2xd8qhuxw9u",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingManagerActivityLogsSearch\" has complexity 24 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingManagerActivityLogsSearch.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542304-rk2jguke48",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingEmployees\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployees.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542306-1k3mkqm67ff",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingEmployeeWeeklySummaries\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeWeeklySummaries.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542310-mcw6brph8gp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 22
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542307-0r63xof0geen",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmTimeTrackingEmployeeTimesheets\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheets.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542308-fl5sqnp4v9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingEmployeeTimers\" has complexity 26 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimers.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542315-yt578898n3p",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingEmployeeTimelogs\" has complexity 23 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimelogs.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542309-0mfg2m58gcq",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmTimeTrackingActivityLogs\" has complexity 51 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingActivityLogs.ts",
+            "line": 16
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845542312-h1wrf8xnrq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"deleteHrmTimeTrackingProjectsProjectIdTasksTaskId\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/deleteHrmTimeTrackingProjectsProjectIdTasksTaskId.ts",
+            "line": 13
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845542325-vkkpvplpbl",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 230,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/roles/HrmtimetrackingOwnerOrganizationsRolesController.ts",
+            "line": 155
+          },
+          "id": "duplication-1774845542568-75d32559gex",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/roles/HrmtimetrackingOwnerOrganizationsRolesController.ts",
+            "line": 224
+          },
+          "id": "duplication-1774845542568-jmepuj2zhfg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/roles/HrmtimetrackingOwnerOrganizationsRolesController.ts",
+            "line": 281
+          },
+          "id": "duplication-1774845542568-69guw20rpa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 128
+          },
+          "id": "duplication-1774845542568-9s0742yo5zk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 129
+          },
+          "id": "duplication-1774845542568-cbslk0dfkc8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 130
+          },
+          "id": "duplication-1774845542568-1gwkjuktvzu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 131
+          },
+          "id": "duplication-1774845542568-k5thpqowvu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 132
+          },
+          "id": "duplication-1774845542568-nli667jf1ms",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 133
+          },
+          "id": "duplication-1774845542568-2p4rtt933hx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 134
+          },
+          "id": "duplication-1774845542568-ky9gyawm5sj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 135
+          },
+          "id": "duplication-1774845542568-wua9nzaehio",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 136
+          },
+          "id": "duplication-1774845542568-kn3r7cd7uap",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 137
+          },
+          "id": "duplication-1774845542568-72k7k1fn3xl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 138
+          },
+          "id": "duplication-1774845542568-r8wpp4r6km",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 139
+          },
+          "id": "duplication-1774845542568-kbtst6t9c3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 140
+          },
+          "id": "duplication-1774845542568-fxhb3j8sbd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 141
+          },
+          "id": "duplication-1774845542568-blpzxpm72ig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 142
+          },
+          "id": "duplication-1774845542568-z2gabzzzr3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 143
+          },
+          "id": "duplication-1774845542568-gxmh9qwde9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 144
+          },
+          "id": "duplication-1774845542568-76yfv31hedb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 145
+          },
+          "id": "duplication-1774845542568-5o981loiju6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 146
+          },
+          "id": "duplication-1774845542568-77u0myofhjm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 147
+          },
+          "id": "duplication-1774845542568-j9lfk8h9cbl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 224
+          },
+          "id": "duplication-1774845542568-rg55hp8ptfj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 225
+          },
+          "id": "duplication-1774845542568-meewbowtyjk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 226
+          },
+          "id": "duplication-1774845542568-8a1sjqa2jhv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 227
+          },
+          "id": "duplication-1774845542568-ej43swftrie",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 228
+          },
+          "id": "duplication-1774845542568-nz03o3m1zlh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 229
+          },
+          "id": "duplication-1774845542568-i2la8xwjim",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 230
+          },
+          "id": "duplication-1774845542568-jxccw3otx2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 231
+          },
+          "id": "duplication-1774845542568-cbjh7gsaetg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 236
+          },
+          "id": "duplication-1774845542568-u8ldmzxj9rn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 237
+          },
+          "id": "duplication-1774845542568-3osxn6d021",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 238
+          },
+          "id": "duplication-1774845542568-uca6ubjz3i9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 239
+          },
+          "id": "duplication-1774845542568-al05mon7lyd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 240
+          },
+          "id": "duplication-1774845542568-qdzcn9i2a8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 263
+          },
+          "id": "duplication-1774845542568-yommre3a5k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 264
+          },
+          "id": "duplication-1774845542568-lpyth0zyg4m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 265
+          },
+          "id": "duplication-1774845542568-hqb4ywlyhom",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 266
+          },
+          "id": "duplication-1774845542568-0881eea7qqj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 267
+          },
+          "id": "duplication-1774845542568-t11n40xnrdb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 268
+          },
+          "id": "duplication-1774845542568-doefoy4mj6p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 269
+          },
+          "id": "duplication-1774845542568-qbdem7crf9g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 270
+          },
+          "id": "duplication-1774845542568-hqlf6idogm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 271
+          },
+          "id": "duplication-1774845542568-hc5aa5896as",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 272
+          },
+          "id": "duplication-1774845542568-oqc15rlkou",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 273
+          },
+          "id": "duplication-1774845542568-8xbp9vh0gka",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 274
+          },
+          "id": "duplication-1774845542568-oqkomlc1t7f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 283
+          },
+          "id": "duplication-1774845542568-blyy40cwjra",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 284
+          },
+          "id": "duplication-1774845542568-rdllxgwr1k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 285
+          },
+          "id": "duplication-1774845542568-fecnic87n7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 286
+          },
+          "id": "duplication-1774845542568-3txwrvk2dg5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 287
+          },
+          "id": "duplication-1774845542568-ihxvteibr8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 288
+          },
+          "id": "duplication-1774845542568-oljg9fg3nzd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 289
+          },
+          "id": "duplication-1774845542568-zt12kru3s7o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportIdTaskFiltersTaskFilterId.ts",
+            "line": 290
+          },
+          "id": "duplication-1774845542568-0d089yfkkgs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportId.ts",
+            "line": 26
+          },
+          "id": "duplication-1774845542568-ezattu8o4g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845542568-tv6wsagx6i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845542568-5zvc9cx19hn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingReportsReportId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-r1tei5ue4a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 70
+          },
+          "id": "duplication-1774845542568-xznm9vat3qm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 84
+          },
+          "id": "duplication-1774845542568-cjxb2nht6h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 85
+          },
+          "id": "duplication-1774845542568-hnd03bjbj4b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 86
+          },
+          "id": "duplication-1774845542568-ve7zvh227jd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 87
+          },
+          "id": "duplication-1774845542568-tms2tw8ii1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 92
+          },
+          "id": "duplication-1774845542568-nrtap2aoktn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 93
+          },
+          "id": "duplication-1774845542568-kqg5oqr2m29",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 94
+          },
+          "id": "duplication-1774845542568-kgnjq0hcyu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 95
+          },
+          "id": "duplication-1774845542568-rfe7ursqvo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerPasswordResetsPasswordResetId.ts",
+            "line": 153
+          },
+          "id": "duplication-1774845542568-2ac67hrols8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 11
+          },
+          "id": "duplication-1774845542568-9i8d5wfyxgc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 67
+          },
+          "id": "duplication-1774845542568-i7ux1v5d3ho",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 68
+          },
+          "id": "duplication-1774845542568-oulnycy83cm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 69
+          },
+          "id": "duplication-1774845542568-p05d2nzt4ac",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 70
+          },
+          "id": "duplication-1774845542568-n7h8rsao6gc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 71
+          },
+          "id": "duplication-1774845542568-mu50oqmvvn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774845542568-umk47r8sl7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845542568-8klyk5fem4y",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845542568-ms4rv7d1k9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-09o59dbo92me",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845542568-rwgjq5k6hyg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845542568-jr2cn68dyxd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 44
+          },
+          "id": "duplication-1774845542568-k2gg6tjgfkt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 45
+          },
+          "id": "duplication-1774845542568-mlwj8do4ni",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 46
+          },
+          "id": "duplication-1774845542568-x8uqmkilk1k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 47
+          },
+          "id": "duplication-1774845542568-2u6k8cih39x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 48
+          },
+          "id": "duplication-1774845542568-apeswo0ghb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 92
+          },
+          "id": "duplication-1774845542568-ru7khdg22",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingOwnerDepartmentsDepartmentId.ts",
+            "line": 93
+          },
+          "id": "duplication-1774845542568-3dql291iyig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingManagerEmployeesEmployeeIdContractsContractId.ts",
+            "line": 39
+          },
+          "id": "duplication-1774845542568-ilzlt8gdekp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingManagerEmployeesEmployeeIdContractsContractId.ts",
+            "line": 40
+          },
+          "id": "duplication-1774845542568-4jle2s1d3zd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/putHrmTimeTrackingManagerEmployeesEmployeeIdContractsContractId.ts",
+            "line": 41
+          },
+          "id": "duplication-1774845542568-tfarwdozxb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 49
+          },
+          "id": "duplication-1774845542568-2rfyjb1jvfq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 50
+          },
+          "id": "duplication-1774845542568-yu0lh18grvl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerReportsReportIdExecutions.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845542568-rsut074e5e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 104
+          },
+          "id": "duplication-1774845542568-vxsdfvzenag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 120
+          },
+          "id": "duplication-1774845542568-skub2mm2k5d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 121
+          },
+          "id": "duplication-1774845542568-7dt3rfqxi4h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 122
+          },
+          "id": "duplication-1774845542568-507fs9irghg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 123
+          },
+          "id": "duplication-1774845542568-z7ku1hlt9kl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 124
+          },
+          "id": "duplication-1774845542568-8depydj5pmk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 125
+          },
+          "id": "duplication-1774845542568-m8ybumo3vs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 126
+          },
+          "id": "duplication-1774845542568-354jy7gnesq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerPasswordResets.ts",
+            "line": 127
+          },
+          "id": "duplication-1774845542568-z0488jnwru",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-kem9b8kojx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845542568-8dlkx5h4w8p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 102
+          },
+          "id": "duplication-1774845542568-1guwl9bfnhy",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 103
+          },
+          "id": "duplication-1774845542568-h5zkl8rp43o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 104
+          },
+          "id": "duplication-1774845542568-l86z0us09tp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 105
+          },
+          "id": "duplication-1774845542568-za6l2v93h4m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 106
+          },
+          "id": "duplication-1774845542568-dyxgraxbgfl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 107
+          },
+          "id": "duplication-1774845542568-qg5n82e9eh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+            "line": 108
+          },
+          "id": "duplication-1774845542568-7xriw2jpode",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 43
+          },
+          "id": "duplication-1774845542568-6ycywem6x2y",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 44
+          },
+          "id": "duplication-1774845542568-08opaxit7p3b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 45
+          },
+          "id": "duplication-1774845542568-hjcaic8wqk8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 46
+          },
+          "id": "duplication-1774845542568-mclxwclg96",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 92
+          },
+          "id": "duplication-1774845542568-rksxu81gb4o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 93
+          },
+          "id": "duplication-1774845542568-iq3x505s5to",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 94
+          },
+          "id": "duplication-1774845542568-0lezcwps1qj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 95
+          },
+          "id": "duplication-1774845542568-77anyk1fo8s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 96
+          },
+          "id": "duplication-1774845542568-vvhyhy4tis",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 97
+          },
+          "id": "duplication-1774845542568-5hpvsy51b3v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 98
+          },
+          "id": "duplication-1774845542568-i6dn6exhag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 99
+          },
+          "id": "duplication-1774845542568-119remc4x2b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingOwnerDepartments.ts",
+            "line": 100
+          },
+          "id": "duplication-1774845542568-aki0qyh5fv9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 25
+          },
+          "id": "duplication-1774845542568-uqmap0hsl5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 26
+          },
+          "id": "duplication-1774845542568-k4n393nx19o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerTimesheetsTimesheetIdReject.ts",
+            "line": 51
+          },
+          "id": "duplication-1774845542568-u7glh42fw08",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerTimesheetsTimesheetIdReject.ts",
+            "line": 52
+          },
+          "id": "duplication-1774845542568-21k2l7xs8e3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerReportsReportIdExecutions.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845542568-as7lz4u81b7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerReportsReportIdExecutions.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-edshhyaflis",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingManagerReportsReportIdExecutions.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845542568-ejm21fylz5t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 132
+          },
+          "id": "duplication-1774845542568-25bi8c3yot5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 133
+          },
+          "id": "duplication-1774845542568-1c3ez7frfet",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 134
+          },
+          "id": "duplication-1774845542568-v9qioutbber",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 135
+          },
+          "id": "duplication-1774845542568-sw2lbnf37c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 136
+          },
+          "id": "duplication-1774845542568-a8i3blwjheq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 137
+          },
+          "id": "duplication-1774845542568-daxzno4rb56",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 138
+          },
+          "id": "duplication-1774845542568-btnd199ijg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerRefresh.ts",
+            "line": 139
+          },
+          "id": "duplication-1774845542568-cnr1g3nqe6w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerLogin.ts",
+            "line": 103
+          },
+          "id": "duplication-1774845542568-vy53s34thwn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthOwnerLogin.ts",
+            "line": 104
+          },
+          "id": "duplication-1774845542568-asylqx3q1f8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/postHrmTimeTrackingAuthEmployeeRefresh.ts",
+            "line": 109
+          },
+          "id": "duplication-1774845542568-16ng9xbsyer",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 25
+          },
+          "id": "duplication-1774845542568-ifk03dxzcds",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 26
+          },
+          "id": "duplication-1774845542568-yxhjleyn06",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845542568-14fie9ir2i5h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845542568-m2f2p9zcd1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-o1l5oybs3ps",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845542568-d8uk3rwtrgh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 32
+          },
+          "id": "duplication-1774845542568-2p5bl24jt3m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 33
+          },
+          "id": "duplication-1774845542568-5fo3p6xtt7e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 34
+          },
+          "id": "duplication-1774845542568-7ng517rble2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 35
+          },
+          "id": "duplication-1774845542568-rmthbjxetd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjects.ts",
+            "line": 36
+          },
+          "id": "duplication-1774845542568-rxahpcfmor",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 158
+          },
+          "id": "duplication-1774845542568-03fyfo1eca3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 159
+          },
+          "id": "duplication-1774845542568-rnjtfcodoa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 160
+          },
+          "id": "duplication-1774845542568-va8i9sx1ou",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 161
+          },
+          "id": "duplication-1774845542568-a37h6mh4wmi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 162
+          },
+          "id": "duplication-1774845542568-9o9s91vb836",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 163
+          },
+          "id": "duplication-1774845542568-rqwx3gwrp9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 164
+          },
+          "id": "duplication-1774845542568-swqdbsnbav",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 165
+          },
+          "id": "duplication-1774845542568-c24ugjl9al",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 166
+          },
+          "id": "duplication-1774845542568-xdqcp3sz45",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 167
+          },
+          "id": "duplication-1774845542568-a5o6i0uktdc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 168
+          },
+          "id": "duplication-1774845542568-ywve62hv9if",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 169
+          },
+          "id": "duplication-1774845542568-316buvzh4n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 170
+          },
+          "id": "duplication-1774845542568-ikjsx62q9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 171
+          },
+          "id": "duplication-1774845542568-ba7vj6i1sw9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 236
+          },
+          "id": "duplication-1774845542568-reg1bzwdnir",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingProjectBudgetAlerts.ts",
+            "line": 237
+          },
+          "id": "duplication-1774845542568-r1v2dyjdrug",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 77
+          },
+          "id": "duplication-1774845542568-hebyf73yqf6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 110
+          },
+          "id": "duplication-1774845542568-capqbacw69s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 111
+          },
+          "id": "duplication-1774845542568-6nnjpmsalnd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 112
+          },
+          "id": "duplication-1774845542568-09qh4ix5amw8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 113
+          },
+          "id": "duplication-1774845542568-71vmq29vh8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 114
+          },
+          "id": "duplication-1774845542568-bp6kqam7g5f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 115
+          },
+          "id": "duplication-1774845542568-i264qy62f3s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 116
+          },
+          "id": "duplication-1774845542568-tfo4cndl4u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwners.ts",
+            "line": 117
+          },
+          "id": "duplication-1774845542568-amin5ovyh7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 72
+          },
+          "id": "duplication-1774845542568-9vg7y0fqr8l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 73
+          },
+          "id": "duplication-1774845542568-g95g8bdyvkd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 74
+          },
+          "id": "duplication-1774845542568-b166ur55mb5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 75
+          },
+          "id": "duplication-1774845542568-ca5hznux2t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 76
+          },
+          "id": "duplication-1774845542568-xfnbspwlo48",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 77
+          },
+          "id": "duplication-1774845542568-kf14netkib9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 78
+          },
+          "id": "duplication-1774845542568-jbuk4th57lq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 79
+          },
+          "id": "duplication-1774845542568-w3cttbgi5iq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 80
+          },
+          "id": "duplication-1774845542568-15r03u3twuqi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 81
+          },
+          "id": "duplication-1774845542568-key1l6ze49r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 82
+          },
+          "id": "duplication-1774845542568-8oeirznznhk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 83
+          },
+          "id": "duplication-1774845542568-37hkcvehh9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 84
+          },
+          "id": "duplication-1774845542568-cup5fdtbnos",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 85
+          },
+          "id": "duplication-1774845542568-u8mklirr0q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerTimesheetsTimesheetIdSnapshots.ts",
+            "line": 86
+          },
+          "id": "duplication-1774845542568-efbzpgyaqo7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdRoles.ts",
+            "line": 24
+          },
+          "id": "duplication-1774845542568-4jllnhxt4z3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerEmployeesEmployeeIdContracts.ts",
+            "line": 194
+          },
+          "id": "duplication-1774845542568-1ldcpytg3sy",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerEmployeesEmployeeIdContracts.ts",
+            "line": 195
+          },
+          "id": "duplication-1774845542568-5hjn611exsl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 52
+          },
+          "id": "duplication-1774845542568-7vg9r1u1np9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 53
+          },
+          "id": "duplication-1774845542568-m2t2i2oigsr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 54
+          },
+          "id": "duplication-1774845542568-v4pjgr1xki",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 55
+          },
+          "id": "duplication-1774845542568-x8olk7z942s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 56
+          },
+          "id": "duplication-1774845542568-zjdl9gvigzg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 69
+          },
+          "id": "duplication-1774845542568-dcb5qs1614o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 70
+          },
+          "id": "duplication-1774845542568-ujmvv56t4r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingOwnerActivityLogsSearch.ts",
+            "line": 71
+          },
+          "id": "duplication-1774845542568-jd7r5fgfs2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845542568-ryu51fy6ru",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845542568-x55gsjhba1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845542568-ky2g6rd8dr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845542568-lkq7jmocqr9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845542568-1lobwtt7wj4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 32
+          },
+          "id": "duplication-1774845542568-vgi2gybnjt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 48
+          },
+          "id": "duplication-1774845542568-hdv6s7mxchc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 49
+          },
+          "id": "duplication-1774845542568-hyik020aicb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 50
+          },
+          "id": "duplication-1774845542568-tze6568q589",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 51
+          },
+          "id": "duplication-1774845542568-2tfnthvk3p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 52
+          },
+          "id": "duplication-1774845542568-9vjxfezlbxr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 53
+          },
+          "id": "duplication-1774845542568-novt2v7qcpl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 54
+          },
+          "id": "duplication-1774845542568-ocifob4ov8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 55
+          },
+          "id": "duplication-1774845542568-l7rlc1coo9j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 56
+          },
+          "id": "duplication-1774845542568-mga3m538ua",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheetsTimesheetIdTimelogs.ts",
+            "line": 71
+          },
+          "id": "duplication-1774845542568-699a3enn8pi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheets.ts",
+            "line": 24
+          },
+          "id": "duplication-1774845542568-b5gm0wb7dvu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/patchHrmTimeTrackingEmployeeTimesheets.ts",
+            "line": 25
+          },
+          "id": "duplication-1774845542568-fx6au91sxb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/getHrmTimeTrackingReportsReportIdEmployeeFiltersEmployeeFilterId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774845542568-lp8php8fpio",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/getHrmTimeTrackingReportsReportIdEmployeeFiltersEmployeeFilterId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774845542568-ozokk8zw4p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/getHrmTimeTrackingReportsReportIdEmployeeFiltersEmployeeFilterId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774845542568-g88oo5umd1h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774845542568-q7xdnqngrsj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774845542568-hc0327f7vk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774845542568-di298avoz6u",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmtimetrackingOwnerPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/password-resets/HrmtimetrackingOwnerPassword_resetsController.ts",
+            "line": 14
+          },
+          "id": "naming-1774845542574-eny351b5esw",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 47,
+      "totalApis": 48,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/projects/HrmtimetrackingProjectsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542635-ac9oqi0bxjr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingProjectbudgetalertsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/projectBudgetAlerts/HrmtimetrackingProjectbudgetalertsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542630-xh9bqoshmk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/reports/HrmtimetrackingReportsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542631-xm02ibrih19",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOrganizationweeklysummariesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/organizationWeeklySummaries/HrmtimetrackingOrganizationweeklysummariesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542631-bwfsfbpaode",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/managers/HrmtimetrackingManagersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542635-eld39i1anpk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owners/HrmtimetrackingOwnersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542631-npx4m383a58",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingActivitylogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/activityLogs/HrmtimetrackingActivitylogsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542634-16icqnn63sx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employees/HrmtimetrackingEmployeesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542634-zyaf42rc9er",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/projects/tasks/HrmtimetrackingProjectsTasksController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542632-2mdaepetiax",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingProjectsMembershipsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/projects/memberships/HrmtimetrackingProjectsMembershipsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542633-3poxeigvhzw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingReportsTaskfiltersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/reports/taskFilters/HrmtimetrackingReportsTaskfiltersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845542639-sx44zyihso",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingReportsProjectfiltersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/reports/projectFilters/HrmtimetrackingReportsProjectfiltersController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774845542633-yeo4e9ovnjg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingReportsEmployeefiltersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/reports/employeeFilters/HrmtimetrackingReportsEmployeefiltersController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542635-ozp3zkzc24h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingReportsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/reports/snapshots/HrmtimetrackingReportsSnapshotsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542636-6ir8zy8m2x2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/timesheets/HrmtimetrackingOwnerTimesheetsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542634-nl9iuu7uqto",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/sessions/HrmtimetrackingOwnerSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845542637-xf4ezcksx5f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/departments/HrmtimetrackingOwnerDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542636-gdwsm7jnsf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingAuthOwnerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/auth/owner/HrmtimetrackingAuthOwnerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542637-okdbslku0w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/HrmtimetrackingOwnerOrganizationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542644-sm23bragytb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/profile/HrmtimetrackingOwnerProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542639-sdpap01vsgp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/password-resets/HrmtimetrackingOwnerPassword_resetsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774845542638-qjwqh9l43ao",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingAuthEmployeeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/auth/employee/HrmtimetrackingAuthEmployeeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542638-o16b71bnyr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingAuthManagerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/auth/manager/HrmtimetrackingAuthManagerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542639-75m0834cbd9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/timesheets/HrmtimetrackingManagerTimesheetsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542640-bzo931z0l4c",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/departments/HrmtimetrackingManagerDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542643-9pif9cnj78w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/timesheets/HrmtimetrackingEmployeeTimesheetsController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774845542642-ez7938zmy9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeWeeklysummariesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/weeklySummaries/HrmtimetrackingEmployeeWeeklysummariesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845542639-nj55yrs7zr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeTimersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/timers/HrmtimetrackingEmployeeTimersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542640-jnks2bzws5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/timelogs/HrmtimetrackingEmployeeTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542641-wlhsdh9rf8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/organizations/HrmtimetrackingEmployeeOrganizationsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542641-2rvn4dwfpul",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/dashboard/HrmtimetrackingEmployeeDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542642-ywfiv17llgn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingProjectsTasksHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/projects/tasks/histories/HrmtimetrackingProjectsTasksHistoriesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542643-r4ikwdvikd9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerTimesheetsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/timesheets/snapshots/HrmtimetrackingOwnerTimesheetsSnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542644-l9raupucdvo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerReportsWeeklysummariesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/reports/weeklySummaries/HrmtimetrackingOwnerReportsWeeklysummariesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542647-9zut9ps0rac",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerReportsExecutionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/reports/executions/HrmtimetrackingOwnerReportsExecutionsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542644-k5ig9mp8qio",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerActivitylogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/activityLogs/search/HrmtimetrackingOwnerActivitylogsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542645-2zqz3zc6non",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerEmployeesContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/employees/contracts/HrmtimetrackingOwnerEmployeesContractsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542645-cm8cx0g8oi5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerOrganizationsRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/roles/HrmtimetrackingOwnerOrganizationsRolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542647-i8awb0mtms",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerOrganizationsInvitationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/invitations/HrmtimetrackingOwnerOrganizationsInvitationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542646-06y9meo9eynk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerReportsWeeklysummariesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/reports/weeklySummaries/HrmtimetrackingManagerReportsWeeklysummariesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542647-jikpmj4219",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerReportsExecutionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/reports/executions/HrmtimetrackingManagerReportsExecutionsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845542647-04j6zim8dn8e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerTimesheetsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/timesheets/snapshots/HrmtimetrackingManagerTimesheetsSnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542647-jpobk9majw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerEmployeesContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/employees/contracts/HrmtimetrackingManagerEmployeesContractsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542648-diagghxwohs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingManagerActivitylogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/manager/activityLogs/search/HrmtimetrackingManagerActivitylogsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845542647-aoil7k2bcsd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeTimesheetsTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/timesheets/timelogs/HrmtimetrackingEmployeeTimesheetsTimelogsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774845542649-0f98xlqr7bdn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingEmployeeTimesheetsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/employee/timesheets/snapshots/HrmtimetrackingEmployeeTimesheetsSnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845542650-mqlv56j0q5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingOwnerOrganizationsRolesPermissionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/erp/src/controllers/hrmTimeTracking/owner/organizations/roles/permissions/HrmtimetrackingOwnerOrganizationsRolesPermissionsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845542649-fc2r736b6vu",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 159,
+      "emptyTypes": 1,
+      "mismatchedProperties": 5,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"report\" not found in Prisma model \"hrm_time_tracking_reports\"",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingReportTaskFilter.ts",
+            "line": 22
+          },
+          "id": "completeness-1774845542677-0k74op23h7ds",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"task\" not found in Prisma model \"hrm_time_tracking_tasks\"",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingReportTaskFilter.ts",
+            "line": 30
+          },
+          "id": "completeness-1774845542677-d7zv69zdlnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"report\" not found in Prisma model \"hrm_time_tracking_reports\"",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingReportProjectFilter.ts",
+            "line": 22
+          },
+          "id": "completeness-1774845542677-ulau3txdp3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"project\" not found in Prisma model \"hrm_time_tracking_projects\"",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingReportProjectFilter.ts",
+            "line": 30
+          },
+          "id": "completeness-1774845542677-3lxv27ny2su",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"body\" not found — referenced by @x-autobe-database-schema-property hrm_time_tracking_employee_id",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingReportEmployeeFilter.ts",
+            "line": 43
+          },
+          "id": "completeness-1774845542678-f10vyq97vjq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: ISummary = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/IHrmTimeTrackingOwner.ts",
+            "line": 215
+          },
+          "id": "completeness-1774845542678-olu9147473",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 16,
+    "criticalCount": 0,
+    "warningCount": 12,
+    "suggestionCount": 4
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774845541824-r6l8x2is3h8",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2352",
+      "message": "Conversion of type 'hrm_time_tracking_employees' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\n  Index signature for type 'string' is missing in type 'hrm_time_tracking_employees'.",
+      "location": {
+        "file": "src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleId.ts",
+        "line": 2481
+      },
+      "id": "type-error-1774845541824-ghx0splvaq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'Promise<hrm_time_tracking_role_permissions>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_role_permissions>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+        "line": 1575
+      },
+      "id": "type-error-1774845541824-uu4u029mf0n",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<hrm_time_tracking_reports> | Promise<hrm_time_tracking_report_employee_filters>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<hrm_time_tracking_reports> | Promise<hrm_time_tracking_report_employee_filters>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteHrmTimeTrackingReportsReportIdEmployeeFiltersEmployeeFilterId.ts",
+        "line": 1220
+      },
+      "id": "type-error-1774845541824-0gtwc4rtehxq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'Prisma.hrm_time_tracking_role_permissionsCreateManyInput[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type 'Prisma.hrm_time_tracking_role_permissionsCreateManyInput[]'.",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+        "line": 3854
+      },
+      "id": "type-error-1774845541824-e7abjymb147",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<number> | Promise<hrm_time_tracking_reports[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<hrm_time_tracking_reports[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingReports.ts",
+        "line": 5017
+      },
+      "id": "type-error-1774845541824-hcoi944wx3k",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_employee_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_employee_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; }[]'.",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingReportsReportIdEmployeeFilters.ts",
+        "line": 3258
+      },
+      "id": "type-error-1774845541824-jvg098z9j2b",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: unknown; hrm_time_tracking_role_id: string; permission: unknown; created_at: unknown; updated_at: unknown; deleted_at: unknown; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: unknown; hrm_time_tracking_role_id: string; permission: unknown; created_at: unknown; updated_at: unknown; deleted_at: unknown; }[]'.",
+      "location": {
+        "file": "src/providers/postHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+        "line": 3364
+      },
+      "id": "type-error-1774845541824-8df9ylsuqok",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'Promise<{ count: number; }>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<{ count: number; }>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postHrmTimeTrackingReportsReportIdProjectFilters.ts",
+        "line": 3063
+      },
+      "id": "type-error-1774845541824-iucleijg8gl",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_project_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; hrm_time_tracking_report_id: string; hrm_time_tracking_project_id: string & Format<\"uuid\">; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+      "location": {
+        "file": "src/providers/postHrmTimeTrackingReportsReportIdProjectFilters.ts",
+        "line": 3145
+      },
+      "id": "type-error-1774845541824-0xbe8sgaeyl",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'Promise<hrm_time_tracking_departments>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_departments>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putHrmTimeTrackingManagerDepartmentsDepartmentId.ts",
+        "line": 2942
+      },
+      "id": "type-error-1774845541824-lw5w3mbbvls",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'Promise<hrm_time_tracking_role_permissions>[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type 'Promise<hrm_time_tracking_role_permissions>[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissionsPermissionId.ts",
+        "line": 3963
+      },
+      "id": "type-error-1774845541824-0xbm132mnns",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingManagerActivityLogsSearch.ts",
+        "line": 2817
+      },
+      "id": "type-error-1774845541824-5am60yly4st",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingManagerEmployeesEmployeeIdContracts.ts",
+        "line": 1877
+      },
+      "id": "type-error-1774845541824-53dsnpm7gj4",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2724",
+      "message": "'\"src/prisma/client\".Prisma' has no exported member named 'hrm_time_tracking_role_permissionsCreateManyInput'. Did you mean 'hrm_time_tracking_role_permissionsCreateInput'?",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingOwnerOrganizationsOrganizationIdRolesRoleIdPermissions.ts",
+        "line": 3140
+      },
+      "id": "type-error-1774845541824-pphk5kul6q9",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/patchHrmTimeTrackingReports.ts",
+        "line": 4964
+      },
+      "id": "type-error-1774845541824-ocn9bftpx8c",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:39:02.679Z",
+    "totalDurationMs": 9369,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 412
+  },
+  "penalties": {
+    "duplication": {
+      "amount": 5,
+      "blocks": 230
+    },
+    "jsdoc": {
+      "amount": 5,
+      "missing": 47,
+      "ratio": "98%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 3241,
+    "totalFiles": 412,
+    "totalLines": 54764,
+    "avgLinesPerFile": 133,
+    "largestFile": "src/api/functional/hrmTimeTracking/employee/timesheets/index.ts",
+    "largestFileSizeKB": 53,
+    "controllers": 47,
+    "providers": 158,
+    "structures": 56,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

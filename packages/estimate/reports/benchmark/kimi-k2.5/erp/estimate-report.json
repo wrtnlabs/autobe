@@ -1,0 +1,2306 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp",
+  "totalScore": 87,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 89,
+      "maxScore": 100,
+      "weightedScore": 89,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774845495466-w7psbribmo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmGuestSessions.ts",
+            "line": 1600
+          },
+          "id": "type-error-1774845495466-kkh5dslbwb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 2717
+          },
+          "id": "type-error-1774845495466-dtibft9qmhd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 3109
+          },
+          "id": "type-error-1774845495466-ezqbglh4ij6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.start_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 3463
+          },
+          "id": "type-error-1774845495466-erwns3a43gj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.start_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 3599
+          },
+          "id": "type-error-1774845495466-zi7je7uchak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.end_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 3906
+          },
+          "id": "type-error-1774845495466-32mm7ivkxxl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.end_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 4034
+          },
+          "id": "type-error-1774845495466-igjovcebnt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 4351
+          },
+          "id": "type-error-1774845495466-dow6vct6rj8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberContracts.ts",
+            "line": 4487
+          },
+          "id": "type-error-1774845495466-3i9d5jo992u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.start_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 2210
+          },
+          "id": "type-error-1774845495466-a5qunr6s72t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.start_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 2334
+          },
+          "id": "type-error-1774845495466-h04k6zuxvwh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.end_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 2623
+          },
+          "id": "type-error-1774845495466-8vrzu9disqq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.end_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 2741
+          },
+          "id": "type-error-1774845495466-l7evv6yrbk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.budget_hours' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 3037
+          },
+          "id": "type-error-1774845495466-4i888ph6irq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.budget_hours' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjects.ts",
+            "line": 3157
+          },
+          "id": "type-error-1774845495466-th3aiaot9vo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.due_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 4186
+          },
+          "id": "type-error-1774845495466-go1d74okn3t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.due_date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 4332
+          },
+          "id": "type-error-1774845495466-ufll62nw7ad",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 4669
+          },
+          "id": "type-error-1774845495466-fjaup3orrcj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 4841
+          },
+          "id": "type-error-1774845495466-xztqyh86iv9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.estimated_hours' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 5210
+          },
+          "id": "type-error-1774845495466-ddsal9ug6km",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'where.estimated_hours' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 5393
+          },
+          "id": "type-error-1774845495466-96htvqpsuin",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberRoles.ts",
+            "line": 2272
+          },
+          "id": "type-error-1774845495466-47i0usut6o5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchErpHrmMemberRoles.ts",
+            "line": 2395
+          },
+          "id": "type-error-1774845495466-fng994uegz",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
+            "line": 2627
+          },
+          "id": "type-error-1774845495466-t9h8fd95tu9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<erp_hrm_timelogs> | Promise<erp_hrm_timers>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_timelogs> | Promise<erp_hrm_timers>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
+            "line": 2681
+          },
+          "id": "type-error-1774845495466-x7axvhnwj6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; role_id: string; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+          "location": {
+            "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
+            "line": 3759
+          },
+          "id": "type-error-1774845495466-med4evvma3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'erp_hrm_members' is not assignable to parameter of type 'erp_hrm_organization_members'.\n  Type 'erp_hrm_members' is missing the following properties from type 'erp_hrm_organization_members': organization_id, user_id, role_id, department_id, and 14 more.",
+          "location": {
+            "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
+            "line": 2671
+          },
+          "id": "type-error-1774845495466-5plqlww5xci",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'erp_hrm_departments'.",
+          "location": {
+            "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
+            "line": 1597
+          },
+          "id": "type-error-1774845495466-z94ul9kitd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'erp_hrm_departments'.",
+          "location": {
+            "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
+            "line": 1789
+          },
+          "id": "type-error-1774845495466-fxkeq5snc9v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'erp_hrm_projects'.",
+          "location": {
+            "file": "src/transformers/ErpHrmProjectTransformer.ts",
+            "line": 1903
+          },
+          "id": "type-error-1774845495466-44uihq6si0d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1383
+          },
+          "id": "type-error-1774845495466-prch7m5cx9j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1401
+          },
+          "id": "type-error-1774845495466-rzro589t07g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1422
+          },
+          "id": "type-error-1774845495466-tegsil7oy5f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1444
+          },
+          "id": "type-error-1774845495466-e1pki42q3f4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1468
+          },
+          "id": "type-error-1774845495466-6cogzqfde6q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1492
+          },
+          "id": "type-error-1774845495466-a7gjqbmqn0w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+            "line": 1523
+          },
+          "id": "type-error-1774845495466-cwudxa82z4m",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 5641,
+      "metrics": {
+        "totalFiles": 244,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 11,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 34,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 88,
+      "maxScore": 100,
+      "weightedScore": 6.16,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 520668,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 23,
+        "providerCount": 87,
+        "structureCount": 36,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 23,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 79,
+      "maxScore": 100,
+      "weightedScore": 18.17,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 232,
+        "controllerCount": 23,
+        "routeAnalysis": true,
+        "totalRoutes": 82,
+        "coveredRoutes": 56,
+        "routeCoveragePercent": 68,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PATCH,PUT,DELETE",
+        "controllersAnalyzed": 22,
+        "stubTests": 10,
+        "assertionTests": 222,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 84,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 84,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 781,
+      "complexFunctions": 9,
+      "maxComplexity": 53,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberTimesheetsTimesheetId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberTimesheetsTimesheetId.ts",
+            "line": 23
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495650-afeawqhp634",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberTimersTimerId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberTimersTimerId.ts",
+            "line": 22
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495651-mozjun6t77p",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmMemberTimelogsTimelogId\" has complexity 29 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberTimelogsTimelogId.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495652-djhshqm90y",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmMemberProjectsProjectIdTasksTaskId\" has complexity 25 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495653-pwbh3acryvs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberProjectsProjectId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495654-8inl84c62lx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putErpHrmMemberOrganizationMembersOrganizationMemberId\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberOrganizationMembersOrganizationMemberId.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495655-1fb7pqi4lce",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberTimesheets\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimesheets.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495666-f6vdncooxlm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberTimers\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimers.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495666-uw1nuvf132j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberTimelogs\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimelogs.ts",
+            "line": 24
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495668-az92cgacvs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasksTaskIdHistories.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495670-qvko5wi2u3",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberProjectsProjectIdTasks\" has complexity 34 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495671-qwnorxwcreo",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberProjectsProjectIdMembers\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjectsProjectIdMembers.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495672-4cpx3t8jkns",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberProjects\" has complexity 23 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjects.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495677-0h64o1sf58ms",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberOrganizationsOrganizationIdActivityLogs\" has complexity 34 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberOrganizationsOrganizationIdActivityLogs.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495678-5ww84cvtoct",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmMemberOrganizations\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberOrganizations.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774845495678-j4v3e6kag8i",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberMembers\" has complexity 23 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberMembers.ts",
+            "line": 21
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495675-ro302z1kgik",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmMemberContracts\" has complexity 53 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberContracts.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774845495680-mpkooabxovc",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 44,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+            "line": 187
+          },
+          "id": "duplication-1774845495843-c8e3pf9a5l8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+            "line": 188
+          },
+          "id": "duplication-1774845495843-r6z91lrnfg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 28
+          },
+          "id": "duplication-1774845495843-xw1a8p2ocdf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 29
+          },
+          "id": "duplication-1774845495843-5h0nlsnivgv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845495843-g39kda5xez",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845495843-wbozfeo4d5a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774845495843-aa4ztdwfa5h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 33
+          },
+          "id": "duplication-1774845495843-ek1eymp3386",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
+            "line": 11
+          },
+          "id": "duplication-1774845495843-2vy6shw8lxi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
+            "line": 13
+          },
+          "id": "duplication-1774845495843-y7euhnwaqf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845495843-shl7618idws",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
+            "line": 32
+          },
+          "id": "duplication-1774845495843-nftnkcpbns",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberOrganizationsOrganizationId.ts",
+            "line": 53
+          },
+          "id": "duplication-1774845495843-phpq0ozw01",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberDepartmentsDepartmentId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774845495843-fj93rv1uku4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 17
+          },
+          "id": "duplication-1774845495843-ccnnvmapis4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 18
+          },
+          "id": "duplication-1774845495843-kgpb6vrws9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
+            "line": 30
+          },
+          "id": "duplication-1774845495843-gt3nfkz8ipl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
+            "line": 31
+          },
+          "id": "duplication-1774845495843-zd8ccbawbz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
+            "line": 24
+          },
+          "id": "duplication-1774845495843-j7iyfe7cg1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
+            "line": 25
+          },
+          "id": "duplication-1774845495843-uw46xzgdkx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimesheets.ts",
+            "line": 117
+          },
+          "id": "duplication-1774845495843-8vbg8o390tv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimers.ts",
+            "line": 108
+          },
+          "id": "duplication-1774845495843-o4koojwduch",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
+            "line": 23
+          },
+          "id": "duplication-1774845495843-emlmjlpgaj5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
+            "line": 25
+          },
+          "id": "duplication-1774845495843-asb6ilaaey",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
+            "line": 26
+          },
+          "id": "duplication-1774845495843-06bsoflc8zzc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
+            "line": 27
+          },
+          "id": "duplication-1774845495843-lkp4orjluu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjects.ts",
+            "line": 115
+          },
+          "id": "duplication-1774845495843-22c4s0x55mb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
+            "line": 40
+          },
+          "id": "duplication-1774845495843-y6nydl30m6h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
+            "line": 41
+          },
+          "id": "duplication-1774845495843-0bmo76n63kr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
+            "line": 42
+          },
+          "id": "duplication-1774845495843-gs0it5oi5sk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
+            "line": 43
+          },
+          "id": "duplication-1774845495843-hwn1ao9p8p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberOrganizationsOrganizationIdActivityLogsActivityLogIdDetailsDetailId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774845495843-x0f2blesrdc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774845495843-jvlp8i5vl3a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
+            "line": 19
+          },
+          "id": "duplication-1774845495843-quz787yimch",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774845495843-tep4b0yputn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774845495843-4fdd1niusow",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 19
+          },
+          "id": "duplication-1774845495843-gzn5754poj4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774845495843-avjdk0rhny",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774845495843-5qqvfheg6wi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+            "line": 9
+          },
+          "id": "duplication-1774845495843-n3c450urrgc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+            "line": 10
+          },
+          "id": "duplication-1774845495843-0v23b1rt7vrp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+            "line": 11
+          },
+          "id": "duplication-1774845495843-ls7lcitoo5j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+            "line": 12
+          },
+          "id": "duplication-1774845495843-xibwf0lzyel",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
+            "line": 13
+          },
+          "id": "duplication-1774845495843-qemrxfpt2a",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ErphrmMemberOrganizationsActivity_logsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774845495845-hv3ta24dam",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ErphrmMemberOrganizationsActivity_logsDetailsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774845495845-g411dxoz7t",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 23,
+      "totalApis": 24,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845495871-0m0hsaa70t5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/guest/sessions/ErphrmGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845495871-kdxidy33029",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/guest/ErphrmAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774845495873-7f82c934iil",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495873-bnpbg3g2t6q",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/ErphrmMemberRolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495877-h7ztocltz07",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timer/ErphrmMemberTimerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845495873-syw08a46eik",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774845495874-wqpyermktja",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timesheets/ErphrmMemberTimesheetsController.ts",
+            "line": 18
+          },
+          "id": "jsdoc-1774845495873-gi6g8o1zfm7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationmembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495875-1i8se6ceslb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/members/ErphrmMemberMembersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845495874-y1sj47ssa",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/departments/ErphrmMemberDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495874-oh434w2lki9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/contracts/ErphrmMemberContractsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495875-hfzw8p5y0e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberRolesPermissionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/permissions/ErphrmMemberRolesPermissionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774845495879-0y1n1pcc63gp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
+            "line": 18
+          },
+          "id": "jsdoc-1774845495886-cmhd8yka0a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/ErphrmMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774845495875-vso8pu5v90e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495876-n69ainxhdyo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495877-q053rcrmhlg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774845495876-dqrqg868p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProfileAvatarController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/avatar/ErphrmMemberProfileAvatarController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845495876-2w28oajpnxa",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsActivity_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845495877-1wte4eiyl3p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsLogoController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/logo/ErphrmMemberOrganizationsLogoController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774845495877-44obtawj2se",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsTasksHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/histories/ErphrmMemberProjectsTasksHistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845495878-u9r57a81ogq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsActivity_logsDetailsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774845495878-q0w4owybtlo",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 105,
+      "emptyTypes": 0,
+      "mismatchedProperties": 12,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property organizationMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimesheet.ts",
+            "line": 94
+          },
+          "id": "completeness-1774845495890-i16od041xoo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property reviewedBy",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimesheet.ts",
+            "line": 102
+          },
+          "id": "completeness-1774845495890-my56aknf2bs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property organizationMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimesheet.ts",
+            "line": 350
+          },
+          "id": "completeness-1774845495890-ysom8ze0l6b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property reviewedBy",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimesheet.ts",
+            "line": 358
+          },
+          "id": "completeness-1774845495890-g73wz6srjhf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmMember\" not found — referenced by @x-autobe-database-schema-property changedByMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmTaskHistory.ts",
+            "line": 171
+          },
+          "id": "completeness-1774845495890-h1g9wc8sreu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmRole\" not found — referenced by @x-autobe-database-schema-property role",
+          "location": {
+            "file": "src/api/structures/IErpHrmRolePermission.ts",
+            "line": 37
+          },
+          "id": "completeness-1774845495891-3f0p19j451i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmProject\" not found — referenced by @x-autobe-database-schema-property project",
+          "location": {
+            "file": "src/api/structures/IErpHrmProjectMember.ts",
+            "line": 30
+          },
+          "id": "completeness-1774845495891-sojlms5r8n8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property organizationMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmProjectMember.ts",
+            "line": 38
+          },
+          "id": "completeness-1774845495891-jl3ojcn2w9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmDepartment\" not found — referenced by @x-autobe-database-schema-property children",
+          "location": {
+            "file": "src/api/structures/IErpHrmDepartment.ts",
+            "line": 53
+          },
+          "id": "completeness-1774845495891-t1a1fbabdnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property organizationMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmContract.ts",
+            "line": 343
+          },
+          "id": "completeness-1774845495891-hr1c57qc2in",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganization\" not found — referenced by @x-autobe-database-schema-property organization",
+          "location": {
+            "file": "src/api/structures/IErpHrmActivityLog.ts",
+            "line": 64
+          },
+          "id": "completeness-1774845495892-2xucn4o9nm6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmOrganizationMember\" not found — referenced by @x-autobe-database-schema-property actorMember",
+          "location": {
+            "file": "src/api/structures/IErpHrmActivityLog.ts",
+            "line": 72
+          },
+          "id": "completeness-1774845495892-n8moacy5maj",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 38,
+    "criticalCount": 0,
+    "warningCount": 34,
+    "suggestionCount": 4
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774845495466-w7psbribmo",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.start_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 3463
+      },
+      "id": "type-error-1774845495466-erwns3a43gj",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.start_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 3599
+      },
+      "id": "type-error-1774845495466-zi7je7uchak",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.end_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 3906
+      },
+      "id": "type-error-1774845495466-32mm7ivkxxl",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.end_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 4034
+      },
+      "id": "type-error-1774845495466-igjovcebnt",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 4351
+      },
+      "id": "type-error-1774845495466-dow6vct6rj8",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 4487
+      },
+      "id": "type-error-1774845495466-3i9d5jo992u",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.start_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 2210
+      },
+      "id": "type-error-1774845495466-a5qunr6s72t",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.start_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 2334
+      },
+      "id": "type-error-1774845495466-h04k6zuxvwh",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.end_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 2623
+      },
+      "id": "type-error-1774845495466-8vrzu9disqq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.end_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 2741
+      },
+      "id": "type-error-1774845495466-l7evv6yrbk",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.budget_hours' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 3037
+      },
+      "id": "type-error-1774845495466-4i888ph6irq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.budget_hours' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjects.ts",
+        "line": 3157
+      },
+      "id": "type-error-1774845495466-th3aiaot9vo",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.due_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 4186
+      },
+      "id": "type-error-1774845495466-go1d74okn3t",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.due_date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 4332
+      },
+      "id": "type-error-1774845495466-ufll62nw7ad",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 4669
+      },
+      "id": "type-error-1774845495466-fjaup3orrcj",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 4841
+      },
+      "id": "type-error-1774845495466-xztqyh86iv9",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.estimated_hours' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 5210
+      },
+      "id": "type-error-1774845495466-ddsal9ug6km",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'where.estimated_hours' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
+        "line": 5393
+      },
+      "id": "type-error-1774845495466-96htvqpsuin",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberRoles.ts",
+        "line": 2272
+      },
+      "id": "type-error-1774845495466-47i0usut6o5",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberRoles.ts",
+        "line": 2395
+      },
+      "id": "type-error-1774845495466-fng994uegz",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<erp_hrm_timelogs> | Promise<erp_hrm_timers>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<erp_hrm_timelogs> | Promise<erp_hrm_timers>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
+        "line": 2681
+      },
+      "id": "type-error-1774845495466-x7axvhnwj6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; role_id: string; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+      "location": {
+        "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
+        "line": 3759
+      },
+      "id": "type-error-1774845495466-med4evvma3",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'erp_hrm_members' is not assignable to parameter of type 'erp_hrm_organization_members'.\n  Type 'erp_hrm_members' is missing the following properties from type 'erp_hrm_organization_members': organization_id, user_id, role_id, department_id, and 14 more.",
+      "location": {
+        "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
+        "line": 2671
+      },
+      "id": "type-error-1774845495466-5plqlww5xci",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'erp_hrm_departments'.",
+      "location": {
+        "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
+        "line": 1597
+      },
+      "id": "type-error-1774845495466-z94ul9kitd",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'erp_hrm_departments'.",
+      "location": {
+        "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
+        "line": 1789
+      },
+      "id": "type-error-1774845495466-fxkeq5snc9v",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'erp_hrm_projects'.",
+      "location": {
+        "file": "src/transformers/ErpHrmProjectTransformer.ts",
+        "line": 1903
+      },
+      "id": "type-error-1774845495466-44uihq6si0d",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1383
+      },
+      "id": "type-error-1774845495466-prch7m5cx9j",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1401
+      },
+      "id": "type-error-1774845495466-rzro589t07g",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1422
+      },
+      "id": "type-error-1774845495466-tegsil7oy5f",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1444
+      },
+      "id": "type-error-1774845495466-e1pki42q3f4",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1468
+      },
+      "id": "type-error-1774845495466-6cogzqfde6q",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1492
+      },
+      "id": "type-error-1774845495466-a7gjqbmqn0w",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
+        "line": 1523
+      },
+      "id": "type-error-1774845495466-cwudxa82z4m",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmGuestSessions.ts",
+        "line": 1600
+      },
+      "id": "type-error-1774845495466-kkh5dslbwb",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 2717
+      },
+      "id": "type-error-1774845495466-dtibft9qmhd",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'FloatFilter'.",
+      "location": {
+        "file": "src/providers/patchErpHrmMemberContracts.ts",
+        "line": 3109
+      },
+      "id": "type-error-1774845495466-ezqbglh4ij6",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
+        "line": 2627
+      },
+      "id": "type-error-1774845495466-t9h8fd95tu9",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:38:15.892Z",
+    "totalDurationMs": 5975,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 244
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 23,
+      "ratio": "96%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1300,
+    "totalFiles": 244,
+    "totalLines": 31363,
+    "avgLinesPerFile": 129,
+    "largestFile": "src/api/functional/erpHrm/member/timesheets/index.ts",
+    "largestFileSizeKB": 35,
+    "controllers": 23,
+    "providers": 87,
+    "structures": 36,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

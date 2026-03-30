@@ -1,3 +1,5 @@
-reports/
+reports/*
+!reports/benchmark/
+reports/benchmark/**/*.md
 dist/
 *.log

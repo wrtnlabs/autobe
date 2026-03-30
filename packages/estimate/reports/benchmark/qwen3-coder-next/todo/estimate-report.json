@@ -1,0 +1,850 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo",
+  "totalScore": 86,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 92,
+      "maxScore": 100,
+      "weightedScore": 92,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774600988033-tubmkmi64bs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2305",
+          "message": "Module '\"../../../../providers/postTodoAppAuthMemberRefresh\"' has no exported member 'postTodoAppAuthMemberRefresh'.",
+          "location": {
+            "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 418
+          },
+          "id": "type-error-1774600988033-9m723vplobp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '{ member: MemberPayload; todoId: string; }' is not assignable to parameter of type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.\n  Property 'body' is missing in type '{ member: MemberPayload; todoId: string; }' but required in type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.",
+          "location": {
+            "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "line": 2910
+          },
+          "id": "type-error-1774600988033-6dr5l3qqt5r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'ITodoAppEditHistoryEntry | null' is not assignable to type 'ITodoAppEditHistoryEntry'.\n  Type 'null' is not assignable to type 'ITodoAppEditHistoryEntry'.",
+          "location": {
+            "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
+            "line": 1935
+          },
+          "id": "type-error-1774600988033-9shq2zhm2hs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2307",
+          "message": "Cannot find module './MyGlobal' or its corresponding type declarations.",
+          "location": {
+            "file": "src/providers/authorize/guestAuthorize.ts",
+            "line": 101
+          },
+          "id": "type-error-1774600988033-2h8b4jcf7lf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '$executeRaw' does not exist on type 'TransactionClient'.",
+          "location": {
+            "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
+            "line": 1237
+          },
+          "id": "type-error-1774600988033-s6yqbpa03s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'join' does not exist on type 'typeof Prisma'.",
+          "location": {
+            "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
+            "line": 1413
+          },
+          "id": "type-error-1774600988033-p0msynym8q",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 2440
+          },
+          "id": "type-error-1774600988033-qonbrcphci",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 3247
+          },
+          "id": "type-error-1774600988033-qrxa4v15b2f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 4004
+          },
+          "id": "type-error-1774600988033-xf7rylfxnk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'created_at' does not exist on type '{}'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 4859
+          },
+          "id": "type-error-1774600988033-zovvaetptbg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'created_at' does not exist on type '{}'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 5244
+          },
+          "id": "type-error-1774600988033-wyapu9bwbno",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'edited_at' does not exist on type '{}'.",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 5628
+          },
+          "id": "type-error-1774600988033-k7dmcjnwvs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberTrash.ts",
+            "line": 1522
+          },
+          "id": "type-error-1774600988033-h1a92tipn0u",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberTrash.ts",
+            "line": 1639
+          },
+          "id": "type-error-1774600988033-z3t15j3gun",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberTrash.ts",
+            "line": 1756
+          },
+          "id": "type-error-1774600988033-12jwuy99p3yd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchTodoAppMemberTrash.ts",
+            "line": 1811
+          },
+          "id": "type-error-1774600988033-1g9ll9fktx3",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 6543,
+      "metrics": {
+        "totalFiles": 113,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 8,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 9,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 93,
+      "maxScore": 100,
+      "weightedScore": 6.510000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 198288,
+        "cached": true,
+        "originalDurationMs": 34
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 13,
+        "providerCount": 31,
+        "structureCount": 16,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 13,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 81,
+      "maxScore": 100,
+      "weightedScore": 18.630000000000003,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 56,
+        "controllerCount": 13,
+        "routeAnalysis": true,
+        "totalRoutes": 27,
+        "coveredRoutes": 20,
+        "routeCoveragePercent": 74,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "controllersAnalyzed": 13,
+        "stubTests": 7,
+        "assertionTests": 49,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 9
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 92,
+      "maxScore": 100,
+      "weightedScore": 27.599999999999998,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 1,
+        "criticalCount": 1,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 19
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 27,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 27,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 19
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 254,
+      "complexFunctions": 1,
+      "maxComplexity": 45,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchTodoAppMemberAnalyticsActivities\" has complexity 45 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600988429-mviwdzk7la",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/postTodoAppMemberTrashTodoIdRestore.ts",
+            "line": 10
+          },
+          "id": "duplication-1774600988592-s57mqu3ra7s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/patchTodoAppMemberTrash.ts",
+            "line": 11
+          },
+          "id": "duplication-1774600988592-fiji750gqfi",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberTodosEdit_historyController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "line": 10
+          },
+          "id": "naming-1774600988548-5jdbx4h5wav",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberTodosToggle_completeController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
+            "line": 10
+          },
+          "id": "naming-1774600988548-esvyx7fewgw",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 13,
+      "totalApis": 14,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774600988608-nggg1key3o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988607-nwt2oczi4nd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthAdminController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/admin/TodoappAuthAdminController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988610-fc0qdhbdqsq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774600988608-9tt4mogucdh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberUsersMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/users/me/TodoappMemberUsersMeController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774600988609-mopcaea1jk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberAnalyticsActivitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/analytics/activities/TodoappMemberAnalyticsActivitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600988610-4ru6d702rul",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/dashboard/TodoappMemberDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988609-l4gyhrqp2aj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774600988623-6zspcuxikfi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774600988626-xpfm7btqlb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdit_historyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988625-i7e75299r6g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/me/TodoappMemberProfileMeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600988624-3ekkkmayzf7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988627-hxzvmlj3bl5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosToggle_completeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600988627-cdczuam4if8",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 37,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"todo_app_members\"",
+          "location": {
+            "file": "src/api/structures/ITodoAppMemberSession.ts",
+            "line": 13
+          },
+          "id": "completeness-1774600988636-dlf79c2bje",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"members\" not found — referenced by @x-autobe-database-schema-property email",
+          "location": {
+            "file": "src/api/structures/ITodoAppMemberSession.ts",
+            "line": 62
+          },
+          "id": "completeness-1774600988636-6taxejpefx8",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 17,
+    "criticalCount": 0,
+    "warningCount": 10,
+    "suggestionCount": 7
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774600988033-tubmkmi64bs",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2305",
+      "message": "Module '\"../../../../providers/postTodoAppAuthMemberRefresh\"' has no exported member 'postTodoAppAuthMemberRefresh'.",
+      "location": {
+        "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+        "line": 418
+      },
+      "id": "type-error-1774600988033-9m723vplobp",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '{ member: MemberPayload; todoId: string; }' is not assignable to parameter of type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.\n  Property 'body' is missing in type '{ member: MemberPayload; todoId: string; }' but required in type '{ member: MemberPayload; todoId: string & Format<\"uuid\">; body: { page?: number | undefined; limit?: number | undefined; }; }'.",
+      "location": {
+        "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+        "line": 2910
+      },
+      "id": "type-error-1774600988033-6dr5l3qqt5r",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'ITodoAppEditHistoryEntry | null' is not assignable to type 'ITodoAppEditHistoryEntry'.\n  Type 'null' is not assignable to type 'ITodoAppEditHistoryEntry'.",
+      "location": {
+        "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
+        "line": 1935
+      },
+      "id": "type-error-1774600988033-9shq2zhm2hs",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2307",
+      "message": "Cannot find module './MyGlobal' or its corresponding type declarations.",
+      "location": {
+        "file": "src/providers/authorize/guestAuthorize.ts",
+        "line": 101
+      },
+      "id": "type-error-1774600988033-2h8b4jcf7lf",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '$executeRaw' does not exist on type 'TransactionClient'.",
+      "location": {
+        "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
+        "line": 1237
+      },
+      "id": "type-error-1774600988033-s6yqbpa03s",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'join' does not exist on type 'typeof Prisma'.",
+      "location": {
+        "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
+        "line": 1413
+      },
+      "id": "type-error-1774600988033-p0msynym8q",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'created_at' does not exist on type '{}'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 4859
+      },
+      "id": "type-error-1774600988033-zovvaetptbg",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'created_at' does not exist on type '{}'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 5244
+      },
+      "id": "type-error-1774600988033-wyapu9bwbno",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'edited_at' does not exist on type '{}'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 5628
+      },
+      "id": "type-error-1774600988033-k7dmcjnwvs",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 2440
+      },
+      "id": "type-error-1774600988033-qonbrcphci",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 3247
+      },
+      "id": "type-error-1774600988033-qrxa4v15b2f",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
+        "line": 4004
+      },
+      "id": "type-error-1774600988033-xf7rylfxnk",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberTrash.ts",
+        "line": 1522
+      },
+      "id": "type-error-1774600988033-h1a92tipn0u",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberTrash.ts",
+        "line": 1639
+      },
+      "id": "type-error-1774600988033-z3t15j3gun",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberTrash.ts",
+        "line": 1756
+      },
+      "id": "type-error-1774600988033-12jwuy99p3yd",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchTodoAppMemberTrash.ts",
+        "line": 1811
+      },
+      "id": "type-error-1774600988033-1g9ll9fktx3",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-27T08:43:08.640Z",
+    "totalDurationMs": 6949,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 113
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 13,
+      "ratio": "93%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 302,
+    "totalFiles": 113,
+    "totalLines": 8291,
+    "avgLinesPerFile": 73,
+    "largestFile": "src/api/functional/todoApp/auth/admin/index.ts",
+    "largestFileSizeKB": 13,
+    "controllers": 13,
+    "providers": 31,
+    "structures": 16,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

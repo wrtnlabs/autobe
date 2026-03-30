@@ -1,0 +1,1323 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit",
+  "totalScore": 86,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 98,
+      "maxScore": 100,
+      "weightedScore": 98,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774601015327-1rwtvcpcmgp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'.",
+          "location": {
+            "file": "src/controllers/redditPlatform/auth/guest/RedditplatformAuthGuestController.ts",
+            "line": 2860
+          },
+          "id": "type-error-1774601015327-g0tfgfgeh0t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'.",
+          "location": {
+            "file": "src/controllers/redditPlatform/auth/member/RedditplatformAuthMemberController.ts",
+            "line": 3888
+          },
+          "id": "type-error-1774601015327-oizlnkotwx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: ILogin; }'.",
+          "location": {
+            "file": "src/controllers/redditPlatform/auth/member/RedditplatformAuthMemberController.ts",
+            "line": 7090
+          },
+          "id": "type-error-1774601015327-dcib9vjdcv6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteRedditPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 1627
+          },
+          "id": "type-error-1774601015327-wg13ylpj3yf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteRedditPlatformMemberSubscriptionsSubscriptionId.ts",
+            "line": 1511
+          },
+          "id": "type-error-1774601015327-7a27ke72w46",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 3949
+          },
+          "id": "type-error-1774601015327-vakxy5ndvz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereInput.created_at' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 4077
+          },
+          "id": "type-error-1774601015327-146jpuxkbbq",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 7029,
+      "metrics": {
+        "totalFiles": 223,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 2,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 5,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 88,
+      "maxScore": 100,
+      "weightedScore": 6.16,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 472713,
+        "cached": true,
+        "originalDurationMs": 100
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 29,
+        "providerCount": 65,
+        "structureCount": 35,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 29,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 72,
+      "maxScore": 100,
+      "weightedScore": 16.560000000000002,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 162,
+        "controllerCount": 29,
+        "routeAnalysis": true,
+        "totalRoutes": 60,
+        "coveredRoutes": 36,
+        "routeCoveragePercent": 60,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PUT,DELETE",
+        "controllersAnalyzed": 28,
+        "stubTests": 1,
+        "assertionTests": 161,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 32
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 53
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 62,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 62,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 59
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 592,
+      "complexFunctions": 1,
+      "maxComplexity": 31,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putRedditPlatformMemberReportsReportId\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/putRedditPlatformMemberReportsReportId.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601015725-2766nbbzczx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putRedditPlatformMemberProfile\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/putRedditPlatformMemberProfile.ts",
+            "line": 16
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601015726-9nfhcagrvr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putRedditPlatformMemberCommunitiesCommunityId\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/putRedditPlatformMemberCommunitiesCommunityId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601015729-4f7szx1ahre",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditPlatformMemberFeedsHome\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601015751-nsjzua4nqr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchRedditPlatformFeedsPopular\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsPopular.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601015752-dmgxav5jnuc",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"getRedditPlatformMemberCommunitiesCommunityIdReports\" has complexity 31 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/getRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774601015767-xjmngftnwtf",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 31,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/feeds/community/RedditplatformFeedsCommunityController.ts",
+            "line": 29
+          },
+          "id": "duplication-1774601015917-j6dq5klxnae",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/feeds/community/RedditplatformFeedsCommunityController.ts",
+            "line": 30
+          },
+          "id": "duplication-1774601015917-kxwo73razvt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/postRedditPlatformMemberReportsReportIdDismiss.ts",
+            "line": 39
+          },
+          "id": "duplication-1774601015917-drmwdspvp9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/postRedditPlatformMemberReportsReportIdApprove.ts",
+            "line": 16
+          },
+          "id": "duplication-1774601015917-ioghu8wglia",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/postRedditPlatformMemberReportsReportIdApprove.ts",
+            "line": 17
+          },
+          "id": "duplication-1774601015917-a1gyarnitb6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/postRedditPlatformMemberPostsPostIdComments.ts",
+            "line": 33
+          },
+          "id": "duplication-1774601015917-hiveb9sbg2b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/postRedditPlatformMemberPostsPostIdComments.ts",
+            "line": 34
+          },
+          "id": "duplication-1774601015917-p5ppm5dx7jp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformPosts.ts",
+            "line": 14
+          },
+          "id": "duplication-1774601015917-t2af6whjy3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformPosts.ts",
+            "line": 15
+          },
+          "id": "duplication-1774601015917-sfqlkjodhw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformPosts.ts",
+            "line": 61
+          },
+          "id": "duplication-1774601015917-ipnfsnqqmg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformPosts.ts",
+            "line": 76
+          },
+          "id": "duplication-1774601015917-6jae058g5lu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberPostsPostIdCommentsCommentIdEditHistories.ts",
+            "line": 92
+          },
+          "id": "duplication-1774601015917-6erktmbf7cj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberPostsPostIdCommentsCommentIdEditHistories.ts",
+            "line": 93
+          },
+          "id": "duplication-1774601015917-xbzv96y6vy",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 87
+          },
+          "id": "duplication-1774601015917-s8agqwjklx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 88
+          },
+          "id": "duplication-1774601015917-i74uradkzc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 89
+          },
+          "id": "duplication-1774601015917-3mamiokbjw2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 90
+          },
+          "id": "duplication-1774601015917-cultcuxllzj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 91
+          },
+          "id": "duplication-1774601015917-8yf36ql7uj4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 92
+          },
+          "id": "duplication-1774601015917-1xqyu3wdhne",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 126
+          },
+          "id": "duplication-1774601015917-jvpy4xo3kj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 127
+          },
+          "id": "duplication-1774601015917-pk68ix7d39h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformMemberFeedsHome.ts",
+            "line": 128
+          },
+          "id": "duplication-1774601015917-93w9e0c93pq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsPopular.ts",
+            "line": 99
+          },
+          "id": "duplication-1774601015917-bhfkgd5vr28",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsCommunityCommunityId.ts",
+            "line": 12
+          },
+          "id": "duplication-1774601015917-6m17sf7jgqk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsCommunityCommunityId.ts",
+            "line": 14
+          },
+          "id": "duplication-1774601015917-rjrtnezrjw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsCommunityCommunityId.ts",
+            "line": 15
+          },
+          "id": "duplication-1774601015917-dvsp2u7qavb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformFeedsCommunityCommunityId.ts",
+            "line": 16
+          },
+          "id": "duplication-1774601015917-b1pyqx5xkid",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/patchRedditPlatformCommunitiesSearch.ts",
+            "line": 12
+          },
+          "id": "duplication-1774601015917-asw0ixzso0l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/getRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 46
+          },
+          "id": "duplication-1774601015917-v5mxwjgive",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/getRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 47
+          },
+          "id": "duplication-1774601015917-26bsm8062lr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/providers/getRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 93
+          },
+          "id": "duplication-1774601015917-8vcp6xy7wuh",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditplatformMemberEmail_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/email-verifications/RedditplatformMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774601015918-31h8gh7ky07",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditplatformMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/password-resets/RedditplatformMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774601015965-gejda0agzga",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditplatformMemberPostsCommentsEdit_historiesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/posts/comments/edit-histories/RedditplatformMemberPostsCommentsEdit_historiesController.ts",
+            "line": 12
+          },
+          "id": "naming-1774601015937-8aczqh2b5cn",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 29,
+      "totalApis": 30,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/communities/RedditplatformCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016040-s0enboe4q8i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/posts/RedditplatformPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016041-yh21lptnlml",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/sessions/RedditplatformMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016041-dcahxenu58",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/members/RedditplatformMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016040-rsnxsjfgsrh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/profile/RedditplatformMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016041-6moibwglcdb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/subscriptions/RedditplatformMemberSubscriptionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774601016041-acjxqjgdyvw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/reports/RedditplatformMemberReportsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601016046-0soj9vwroyk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/posts/RedditplatformMemberPostsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601016042-98myj3vvw6u",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/email-verifications/RedditplatformMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016042-746u27zj61b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/password-resets/RedditplatformMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016043-jvv0me1jkos",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/feeds/popular/RedditplatformFeedsPopularController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601016052-bvzfsfencss",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformFeedsCommunityController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/feeds/community/RedditplatformFeedsCommunityController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601016043-xle8bwnhb8q",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/communities/posts/RedditplatformCommunitiesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601016043-oicgpluphe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformCommunitiesSearchController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/communities/search/RedditplatformCommunitiesSearchController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601016047-90vmbiwamop",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/communities/moderators/RedditplatformCommunitiesModeratorsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016044-f64wk5e63ci",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/communities/RedditplatformMemberCommunitiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016049-shehhjlgkh8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformPostsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/posts/snapshots/RedditplatformPostsSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016047-j6t4c3azld9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/auth/member/RedditplatformAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016055-v9a9o0rt2ya",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberReportsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/reports/snapshots/RedditplatformMemberReportsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016048-dqjx8h8g7dt",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/posts/comments/RedditplatformMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016050-kn82fqf0rv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/posts/comments/RedditplatformPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016051-kiq5rwsslcc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/auth/guest/RedditplatformAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601016052-cafer04x6ol",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberFeedsHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/feeds/home/RedditplatformMemberFeedsHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601016051-yho9kz72olm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/communities/reports/RedditplatformMemberCommunitiesReportsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016055-k63buhhh6r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/communities/moderators/RedditplatformMemberCommunitiesModeratorsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601016052-y6oqio2qdi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/communities/subscriptions/RedditplatformMemberCommunitiesSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601016057-aesn0vzs8g9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/communities/bans/RedditplatformMemberCommunitiesBansController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601016053-60war6oxvjn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/posts/comments/votes/RedditplatformMemberPostsCommentsVotesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601016056-b7m2026so",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditplatformMemberPostsCommentsEdit_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/reddit/src/controllers/redditPlatform/member/posts/comments/edit-histories/RedditplatformMemberPostsCommentsEdit_historiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601016056-w8bttqe1qvd",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 81,
+      "emptyTypes": 1,
+      "mismatchedProperties": 7,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"report\" not found in Prisma model \"reddit_platform_reports\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformReportSnapshot.ts",
+            "line": 28
+          },
+          "id": "completeness-1774601016075-uhsjrdvbtk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"moderator\" not found in Prisma model \"reddit_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformReportSnapshot.ts",
+            "line": 36
+          },
+          "id": "completeness-1774601016075-iujmkp16s1f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: IDismiss = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformReport.ts",
+            "line": 122
+          },
+          "id": "completeness-1774601016075-zyi97o7qio",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"reddit_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformPostVote.ts",
+            "line": 54
+          },
+          "id": "completeness-1774601016075-ck8fg6dhnse",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"post\" not found in Prisma model \"reddit_platform_posts\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformPostVote.ts",
+            "line": 62
+          },
+          "id": "completeness-1774601016075-1b2mz4d7vq9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"author\" not found in Prisma model \"reddit_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformPostSnapshot.ts",
+            "line": 172
+          },
+          "id": "completeness-1774601016075-qjrqv1g9x9a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"community\" not found in Prisma model \"reddit_platform_communities\"",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformPostSnapshot.ts",
+            "line": 180
+          },
+          "id": "completeness-1774601016075-bkv3q11jurd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"auth\" not found — referenced by @x-autobe-database-schema-property reddit_platform_member_id",
+          "location": {
+            "file": "src/api/structures/IRedditPlatformMemberEmailVerification.ts",
+            "line": 94
+          },
+          "id": "completeness-1774601016075-qfoak1lzbf",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 8,
+    "criticalCount": 0,
+    "warningCount": 5,
+    "suggestionCount": 3
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774601015327-1rwtvcpcmgp",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteRedditPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+        "line": 1627
+      },
+      "id": "type-error-1774601015327-wg13ylpj3yf",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<reddit_platform_communities> | Promise<reddit_platform_community_subscriptions>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteRedditPlatformMemberSubscriptionsSubscriptionId.ts",
+        "line": 1511
+      },
+      "id": "type-error-1774601015327-7a27ke72w46",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+        "line": 3949
+      },
+      "id": "type-error-1774601015327-vakxy5ndvz",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereInput.created_at' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchRedditPlatformMemberCommunitiesCommunityIdReports.ts",
+        "line": 4077
+      },
+      "id": "type-error-1774601015327-146jpuxkbbq",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'.",
+      "location": {
+        "file": "src/controllers/redditPlatform/auth/guest/RedditplatformAuthGuestController.ts",
+        "line": 2860
+      },
+      "id": "type-error-1774601015327-g0tfgfgeh0t",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: IJoin; }'.",
+      "location": {
+        "file": "src/controllers/redditPlatform/auth/member/RedditplatformAuthMemberController.ts",
+        "line": 3888
+      },
+      "id": "type-error-1774601015327-oizlnkotwx",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'ip' does not exist in type '{ body: ILogin; }'.",
+      "location": {
+        "file": "src/controllers/redditPlatform/auth/member/RedditplatformAuthMemberController.ts",
+        "line": 7090
+      },
+      "id": "type-error-1774601015327-dcib9vjdcv6",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-27T08:43:36.076Z",
+    "totalDurationMs": 7500,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 223
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 29,
+      "ratio": "97%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 978,
+    "totalFiles": 223,
+    "totalLines": 22162,
+    "avgLinesPerFile": 99,
+    "largestFile": "src/api/functional/redditPlatform/member/reports/index.ts",
+    "largestFileSizeKB": 26,
+    "controllers": 29,
+    "providers": 65,
+    "structures": 35,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

@@ -1,0 +1,822 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo",
+  "totalScore": 88,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 96,
+      "maxScore": 100,
+      "weightedScore": 96,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774601217714-0lx36x0u4fm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2307",
+          "message": "Cannot find module '../../providers/authorize/memberAuthorize' or its corresponding type declarations.",
+          "location": {
+            "file": "src/decorators/MemberAuth.ts",
+            "line": 189
+          },
+          "id": "type-error-1774601217714-i0btafuni4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]'.",
+          "location": {
+            "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+            "line": 3658
+          },
+          "id": "type-error-1774601217714-dhlldx5r3hw",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2640,
+      "metrics": {
+        "totalFiles": 84,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 4,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 3,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 98673,
+        "cached": true,
+        "originalDurationMs": 41
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 7,
+        "providerCount": 23,
+        "structureCount": 11,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 7,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 78,
+      "maxScore": 100,
+      "weightedScore": 17.94,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 59,
+        "controllerCount": 7,
+        "routeAnalysis": true,
+        "totalRoutes": 20,
+        "coveredRoutes": 13,
+        "routeCoveragePercent": 65,
+        "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "controllersAnalyzed": 7,
+        "stubTests": 3,
+        "assertionTests": 56,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 14
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 21
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 20,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 20,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 20
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 200,
+      "complexFunctions": 0,
+      "maxComplexity": 15,
+      "issues": []
+    },
+    "duplication": {
+      "totalBlocks": 38,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+            "line": 110
+          },
+          "id": "duplication-1774601217823-l1mumzxv9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+            "line": 111
+          },
+          "id": "duplication-1774601217823-m9begr78h1r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+            "line": 10
+          },
+          "id": "duplication-1774601217823-chl48l16tk7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
+            "line": 11
+          },
+          "id": "duplication-1774601217823-jt02o8r4wak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 49
+          },
+          "id": "duplication-1774601217823-twiyl8wndm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 50
+          },
+          "id": "duplication-1774601217823-gfrdmlv64wi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 51
+          },
+          "id": "duplication-1774601217823-65585vxdy9l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 52
+          },
+          "id": "duplication-1774601217823-ajnlkj0mi2c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 53
+          },
+          "id": "duplication-1774601217823-7g5tuhkfzt3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 54
+          },
+          "id": "duplication-1774601217823-an267lb3cr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 67
+          },
+          "id": "duplication-1774601217823-yeke5nn9r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 68
+          },
+          "id": "duplication-1774601217823-jkg7csqbk3r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 69
+          },
+          "id": "duplication-1774601217823-wscd24osnjp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 70
+          },
+          "id": "duplication-1774601217823-na6tymdzvkl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 71
+          },
+          "id": "duplication-1774601217823-zvrzrnqmfsj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 72
+          },
+          "id": "duplication-1774601217823-9dxis6djnee",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 73
+          },
+          "id": "duplication-1774601217823-o2aybi17m6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 74
+          },
+          "id": "duplication-1774601217823-m3eh5iel58b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 75
+          },
+          "id": "duplication-1774601217823-bugxuzq55nq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
+            "line": 76
+          },
+          "id": "duplication-1774601217823-inklillglie",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 11
+          },
+          "id": "duplication-1774601217823-ri66z6tjcce",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 12
+          },
+          "id": "duplication-1774601217823-p0e1x34h4g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 13
+          },
+          "id": "duplication-1774601217823-svxgn6ejeu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 14
+          },
+          "id": "duplication-1774601217823-g1v9wciq0ak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 15
+          },
+          "id": "duplication-1774601217823-okfgeqqfwx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 52
+          },
+          "id": "duplication-1774601217823-yj1sfleo9p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 53
+          },
+          "id": "duplication-1774601217823-eci6mywzoqd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 54
+          },
+          "id": "duplication-1774601217823-25s6tiyz8tt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 55
+          },
+          "id": "duplication-1774601217823-mja1858h1do",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 56
+          },
+          "id": "duplication-1774601217823-9afwnc9tnzg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 57
+          },
+          "id": "duplication-1774601217823-aky3knj67jd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 58
+          },
+          "id": "duplication-1774601217823-z6kbk9s96q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 59
+          },
+          "id": "duplication-1774601217823-0xtkkxd9feii",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 60
+          },
+          "id": "duplication-1774601217823-o8wof0qkzlj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 61
+          },
+          "id": "duplication-1774601217823-5k48875ddjx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 62
+          },
+          "id": "duplication-1774601217823-z5amlupq1pc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 63
+          },
+          "id": "duplication-1774601217823-i2ge9ggkaz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
+            "line": 64
+          },
+          "id": "duplication-1774601217823-st5w6yj7xj8",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 7,
+      "totalApis": 8,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601217831-7ewqqqt9aue",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601217830-siwhyhiv0oc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601217830-vqqey3va33",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601217830-mm65t0v6h0r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774601217832-akl6je9gft6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774601217830-dzrym153y4t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberTodosEdithistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601217833-xy8ba4mm8ye",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 27,
+      "emptyTypes": 0,
+      "mismatchedProperties": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IPrivateTodoAppTodo\" not found — referenced by @x-autobe-database-schema-property todo",
+          "location": {
+            "file": "src/api/structures/IPrivateTodoAppTodoEditHistory.ts",
+            "line": 61
+          },
+          "id": "completeness-1774601217845-ep5mnb82tdg",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 3,
+    "criticalCount": 0,
+    "warningCount": 3,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774601217714-0lx36x0u4fm",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2307",
+      "message": "Cannot find module '../../providers/authorize/memberAuthorize' or its corresponding type declarations.",
+      "location": {
+        "file": "src/decorators/MemberAuth.ts",
+        "line": 189
+      },
+      "id": "type-error-1774601217714-i0btafuni4",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '({ id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; title: string & MinLength<1>; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; description: string | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; start_date: Date | null; } | { id: string; private_todo_app_todo_id: string & Format<\"uuid\">; created_at: Date; due_date: Date | null; })[]'.",
+      "location": {
+        "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
+        "line": 3658
+      },
+      "id": "type-error-1774601217714-dhlldx5r3hw",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-27T08:46:57.845Z",
+    "totalDurationMs": 2739,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 84
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 7,
+      "ratio": "88%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 275,
+    "totalFiles": 84,
+    "totalLines": 6835,
+    "avgLinesPerFile": 81,
+    "largestFile": "src/api/functional/privateTodoApp/member/todos/index.ts",
+    "largestFileSizeKB": 27,
+    "controllers": 7,
+    "providers": 23,
+    "structures": 11,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

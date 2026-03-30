@@ -1,0 +1,1820 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit",
+  "totalScore": 87,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 89,
+      "maxScore": 100,
+      "weightedScore": 89,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774601202395-0axaz8qf87tw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 1953
+          },
+          "id": "type-error-1774601202395-184ulu8hgrz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
+            "line": 1509
+          },
+          "id": "type-error-1774601202395-6w2eupq2joh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
+            "line": 2884
+          },
+          "id": "type-error-1774601202395-utwhybiz8j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+          "location": {
+            "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
+            "line": 1852
+          },
+          "id": "type-error-1774601202395-ytjt68gmx6o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS7006",
+          "message": "Parameter 's' implicitly has an 'any' type.",
+          "location": {
+            "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
+            "line": 2168
+          },
+          "id": "type-error-1774601202395-iu61tvgikt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 2093
+          },
+          "id": "type-error-1774601202395-gnnaq2xvsq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 7542
+          },
+          "id": "type-error-1774601202395-3ra94qxf723",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 2512
+          },
+          "id": "type-error-1774601202395-417qcooami7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 4245
+          },
+          "id": "type-error-1774601202395-i73qw1i9o7f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 2631
+          },
+          "id": "type-error-1774601202395-nh34j7kxjue",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 3756
+          },
+          "id": "type-error-1774601202395-nn0f25rufie",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/putCommunityPlatformMemberVotesVoteId.ts",
+            "line": 5643
+          },
+          "id": "type-error-1774601202395-m1fboqjuhyh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+            "line": 1182
+          },
+          "id": "type-error-1774601202395-7we1pliqcru",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+            "line": 1200
+          },
+          "id": "type-error-1774601202395-rkq0ysws37c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+            "line": 1223
+          },
+          "id": "type-error-1774601202395-c62svtw87kv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+            "line": 1249
+          },
+          "id": "type-error-1774601202395-w6vk978qea",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1443
+          },
+          "id": "type-error-1774601202395-9g2o31kik2q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1461
+          },
+          "id": "type-error-1774601202395-qwgwnpqcg2i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1484
+          },
+          "id": "type-error-1774601202395-vmvj5dttu6j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1510
+          },
+          "id": "type-error-1774601202395-jhvpxc67e5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1536
+          },
+          "id": "type-error-1774601202395-klu9kb0ibj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type 'boolean' is not assignable to type 'true'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+            "line": 1562
+          },
+          "id": "type-error-1774601202395-qs7bbzqub3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'community_platform_posts'.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformPostTransformer.ts",
+            "line": 2627
+          },
+          "id": "type-error-1774601202395-by4eeypans5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'community_platform_report_posts' is not assignable to parameter of type 'community_platform_posts'.\n  Type 'community_platform_report_posts' is missing the following properties from type 'community_platform_posts': author_id, community_id, title, post_type, and 9 more.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
+            "line": 2700
+          },
+          "id": "type-error-1774601202395-0mv60ca2506i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'community_platform_report_comments' is not assignable to parameter of type 'community_platform_comments'.\n  Type 'community_platform_report_comments' is missing the following properties from type 'community_platform_comments': community_platform_member_id, community_platform_post_id, parent_comment_id, content, and 9 more.",
+          "location": {
+            "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
+            "line": 2916
+          },
+          "id": "type-error-1774601202395-kv1krwsu9v",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 4292,
+      "metrics": {
+        "totalFiles": 185,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 11,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 26,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 84,
+      "maxScore": 100,
+      "weightedScore": 5.880000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 204638,
+        "cached": true,
+        "originalDurationMs": 72
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 24,
+        "providerCount": 61,
+        "structureCount": 23,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 24,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 81,
+      "maxScore": 100,
+      "weightedScore": 18.630000000000003,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 159,
+        "controllerCount": 24,
+        "routeAnalysis": true,
+        "totalRoutes": 57,
+        "coveredRoutes": 41,
+        "routeCoveragePercent": 72,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PUT,DELETE,PATCH",
+        "controllersAnalyzed": 23,
+        "stubTests": 10,
+        "assertionTests": 149,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 18
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 46
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 58,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 58,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 50
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 544,
+      "complexFunctions": 0,
+      "maxComplexity": 18,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityPlatformMemberVotes\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774601202564-g9kpwndyhj",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 56,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 180
+          },
+          "id": "duplication-1774601202664-ay3o6c6pmrn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 181
+          },
+          "id": "duplication-1774601202664-f1te970a27",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 182
+          },
+          "id": "duplication-1774601202664-dpv3jthx8cm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 11
+          },
+          "id": "duplication-1774601202664-n6uuo4v9ico",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 12
+          },
+          "id": "duplication-1774601202664-2ef83ca7hjr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 14
+          },
+          "id": "duplication-1774601202664-xmsx4x0fhkq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 15
+          },
+          "id": "duplication-1774601202664-1sj8x6f6rzw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 16
+          },
+          "id": "duplication-1774601202664-8wdggzsdyrp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 17
+          },
+          "id": "duplication-1774601202664-knjxedewrp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 18
+          },
+          "id": "duplication-1774601202664-su5nkuibmtq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 19
+          },
+          "id": "duplication-1774601202664-b7udit2s21s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 24
+          },
+          "id": "duplication-1774601202664-jj9w7bf93b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 25
+          },
+          "id": "duplication-1774601202664-xptf3rkslbh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 26
+          },
+          "id": "duplication-1774601202664-i8ndtl6awsn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 27
+          },
+          "id": "duplication-1774601202664-fofi1mdtln",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdReportsReportId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774601202664-ww60xpxjmc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 87
+          },
+          "id": "duplication-1774601202664-ajff6igy7le",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 88
+          },
+          "id": "duplication-1774601202664-xz8638ubk9b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 89
+          },
+          "id": "duplication-1774601202664-kdijmtrdv99",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 90
+          },
+          "id": "duplication-1774601202664-u18r83uigv8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
+            "line": 91
+          },
+          "id": "duplication-1774601202664-5xl9aqi1bkd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 25
+          },
+          "id": "duplication-1774601202664-4qkc3ckxdln",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
+            "line": 87
+          },
+          "id": "duplication-1774601202664-zqwxb7s796o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
+            "line": 88
+          },
+          "id": "duplication-1774601202664-3qwijneqwq2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
+            "line": 89
+          },
+          "id": "duplication-1774601202664-z1lqjmoozca",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 58
+          },
+          "id": "duplication-1774601202664-mmb65id4b7p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 59
+          },
+          "id": "duplication-1774601202664-00m7ddxo19mk8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 60
+          },
+          "id": "duplication-1774601202664-b4p73o0dhmg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 61
+          },
+          "id": "duplication-1774601202664-66pim9lim7i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 62
+          },
+          "id": "duplication-1774601202664-ie2fqqubjtp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 63
+          },
+          "id": "duplication-1774601202664-spvb45t4s7r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 117
+          },
+          "id": "duplication-1774601202664-7yv97rrv284",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 118
+          },
+          "id": "duplication-1774601202664-8d6xtohvuuf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 119
+          },
+          "id": "duplication-1774601202664-wkmgmwitdkd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 120
+          },
+          "id": "duplication-1774601202664-ph063emd8jc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 121
+          },
+          "id": "duplication-1774601202664-aanlti9csdl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 211
+          },
+          "id": "duplication-1774601202664-td36t7n0db",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 212
+          },
+          "id": "duplication-1774601202664-hg6o7rxw1wi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 213
+          },
+          "id": "duplication-1774601202664-mi3myh914r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 214
+          },
+          "id": "duplication-1774601202664-u0bljmbihq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 215
+          },
+          "id": "duplication-1774601202664-ym97e1c952b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 272
+          },
+          "id": "duplication-1774601202664-fcxpi58llim",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 273
+          },
+          "id": "duplication-1774601202664-hhclx42fvg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 274
+          },
+          "id": "duplication-1774601202664-lbed8fxosrg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 275
+          },
+          "id": "duplication-1774601202664-9xtul1jg3xt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
+            "line": 276
+          },
+          "id": "duplication-1774601202664-8jz9kgo696",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
+            "line": 28
+          },
+          "id": "duplication-1774601202664-dpw6re3i4n5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 7
+          },
+          "id": "duplication-1774601202664-l2e74ft78gn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+            "line": 9
+          },
+          "id": "duplication-1774601202664-hsl9vmf9k5i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 16
+          },
+          "id": "duplication-1774601202664-6l678hliiag",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 17
+          },
+          "id": "duplication-1774601202664-gdxhcgsih7v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774601202664-hl1uzaitkno",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774601202664-gn4fgdpetg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774601202664-d1rb4ls4x2q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774601202664-zdnzpu5f6ph",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774601202664-xobfqhadnp9",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 24,
+      "totalApis": 25,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformFilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/files/CommunityplatformFilesController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774601202687-xkbzum8623",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/members/CommunityplatformMembersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202687-vxusr4we78",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202687-u26oh1ud3o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/CommunityplatformPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202687-9ehxjotbi5v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/votes/CommunityplatformMemberVotesController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601202688-d4gkrlxzsrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/sessions/CommunityplatformMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601202688-gcpqmisezos",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774601202689-9sxxldubg1",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/profile/CommunityplatformMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202688-lx58203cl8b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601202689-ohub9j5tugd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202690-xe2j7klgvs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601202690-vrroq1qxgq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601202689-lz2b7q3svta",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/comments/CommunityplatformPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774601202690-i0u70v867m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/communities/posts/CommunityplatformCommunitiesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601202690-smv6krk7oaf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/reports/CommunityplatformMemberCommunitiesReportsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774601202691-5izr9wvktkk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601202691-wgzctf7to5o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774601202693-yhuvskjujn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/comments/CommunityplatformMemberCommunitiesCommentsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601202691-o4fyvu7npma",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/posts/CommunityplatformMemberCommunitiesPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601202692-50xdybl1z6s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601202692-1ljra54dllb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774601202692-jjnla2cultb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/comments/votes/CommunityplatformPostsCommentsVotesController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774601202693-sli9tqdmpp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberHomePostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/home/posts/CommunityplatformMemberHomePostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774601202693-kl5ikvw5ga",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsCommentsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/vote/CommunityplatformMemberPostsCommentsVoteController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774601202694-iwxyhxufvp",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 61,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityPlatformMember\" not found — referenced by @x-autobe-database-schema-property author",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformPost.ts",
+            "line": 38
+          },
+          "id": "completeness-1774601202702-w3l89ylw3f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityPlatformCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformPost.ts",
+            "line": 46
+          },
+          "id": "completeness-1774601202702-xjtdepc5km",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 26,
+    "criticalCount": 0,
+    "warningCount": 26,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774601202395-0axaz8qf87tw",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+        "line": 1953
+      },
+      "id": "type-error-1774601202395-184ulu8hgrz",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
+        "line": 1509
+      },
+      "id": "type-error-1774601202395-6w2eupq2joh",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
+        "line": 2884
+      },
+      "id": "type-error-1774601202395-utwhybiz8j",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '$queryRaw' does not exist on type 'PrismaClient'.",
+      "location": {
+        "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
+        "line": 1852
+      },
+      "id": "type-error-1774601202395-ytjt68gmx6o",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "location": {
+        "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
+        "line": 2168
+      },
+      "id": "type-error-1774601202395-iu61tvgikt",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
+        "line": 2093
+      },
+      "id": "type-error-1774601202395-gnnaq2xvsq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
+        "line": 7542
+      },
+      "id": "type-error-1774601202395-3ra94qxf723",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_post_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postCommunityPlatformMemberVotes.ts",
+        "line": 2512
+      },
+      "id": "type-error-1774601202395-417qcooami7",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/postCommunityPlatformMemberVotes.ts",
+        "line": 4245
+      },
+      "id": "type-error-1774601202395-i73qw1i9o7f",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+        "line": 2631
+      },
+      "id": "type-error-1774601202395-nh34j7kxjue",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
+        "line": 3756
+      },
+      "id": "type-error-1774601202395-nn0f25rufie",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<community_platform_members> | Promise<community_platform_comments> | Promise<community_platform_comment_votes>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/putCommunityPlatformMemberVotesVoteId.ts",
+        "line": 5643
+      },
+      "id": "type-error-1774601202395-m1fboqjuhyh",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+        "line": 1182
+      },
+      "id": "type-error-1774601202395-7we1pliqcru",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+        "line": 1200
+      },
+      "id": "type-error-1774601202395-rkq0ysws37c",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+        "line": 1223
+      },
+      "id": "type-error-1774601202395-c62svtw87kv",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
+        "line": 1249
+      },
+      "id": "type-error-1774601202395-w6vk978qea",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1443
+      },
+      "id": "type-error-1774601202395-9g2o31kik2q",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1461
+      },
+      "id": "type-error-1774601202395-qwgwnpqcg2i",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1484
+      },
+      "id": "type-error-1774601202395-vmvj5dttu6j",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1510
+      },
+      "id": "type-error-1774601202395-jhvpxc67e5",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1536
+      },
+      "id": "type-error-1774601202395-klu9kb0ibj",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type 'boolean' is not assignable to type 'true'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
+        "line": 1562
+      },
+      "id": "type-error-1774601202395-qs7bbzqub3",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'community_platform_posts'.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformPostTransformer.ts",
+        "line": 2627
+      },
+      "id": "type-error-1774601202395-by4eeypans5",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'community_platform_report_posts' is not assignable to parameter of type 'community_platform_posts'.\n  Type 'community_platform_report_posts' is missing the following properties from type 'community_platform_posts': author_id, community_id, title, post_type, and 9 more.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
+        "line": 2700
+      },
+      "id": "type-error-1774601202395-0mv60ca2506i",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'community_platform_report_comments' is not assignable to parameter of type 'community_platform_comments'.\n  Type 'community_platform_report_comments' is missing the following properties from type 'community_platform_comments': community_platform_member_id, community_platform_post_id, parent_comment_id, content, and 9 more.",
+      "location": {
+        "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
+        "line": 2916
+      },
+      "id": "type-error-1774601202395-kv1krwsu9v",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-27T08:46:42.703Z",
+    "totalDurationMs": 4511,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 185
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 24,
+      "ratio": "96%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 789,
+    "totalFiles": 185,
+    "totalLines": 18894,
+    "avgLinesPerFile": 102,
+    "largestFile": "src/api/functional/communityPlatform/member/votes/index.ts",
+    "largestFileSizeKB": 22,
+    "controllers": 24,
+    "providers": 61,
+    "structures": 23,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

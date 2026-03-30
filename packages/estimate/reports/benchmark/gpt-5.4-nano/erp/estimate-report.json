@@ -1,0 +1,2158 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp",
+  "totalScore": 57,
+  "grade": "F",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 96,
+      "maxScore": 100,
+      "weightedScore": 96,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774600908894-qx2426myojh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+            "line": 1247
+          },
+          "id": "type-error-1774600908894-l3xz512pm7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_guests[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_guests[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+            "line": 1298
+          },
+          "id": "type-error-1774600908894-z9fucb8xvt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS7006",
+          "message": "Parameter 'r' implicitly has an 'any' type.",
+          "location": {
+            "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+            "line": 1937
+          },
+          "id": "type-error-1774600908894-oc5b1h2mo59",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property 'organization_id' does not exist on type 'erp_hrm_time_tracking_members'.",
+          "location": {
+            "file": "src/providers/getErpHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
+            "line": 1461
+          },
+          "id": "type-error-1774600908894-rew3307ms8a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+            "line": 2732
+          },
+          "id": "type-error-1774600908894-fl77x96o4pv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+            "line": 2752
+          },
+          "id": "type-error-1774600908894-vuytm6gyoxk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+            "line": 2981
+          },
+          "id": "type-error-1774600908894-oao85r1j6pm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+            "line": 3001
+          },
+          "id": "type-error-1774600908894-f7lxa64qcgf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+            "line": 3301
+          },
+          "id": "type-error-1774600908894-c8fv4fuq25g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+            "line": 3507
+          },
+          "id": "type-error-1774600908894-uvycjt9i7dc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_contracts[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_contracts[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+            "line": 3558
+          },
+          "id": "type-error-1774600908894-bns4kvln42d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS7006",
+          "message": "Parameter 'r' implicitly has an 'any' type.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+            "line": 4501
+          },
+          "id": "type-error-1774600908894-hkwjboawavc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+            "line": 1328
+          },
+          "id": "type-error-1774600908894-oz1d2ml4uq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_project_memberships[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_project_memberships[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+            "line": 1382
+          },
+          "id": "type-error-1774600908894-8g7nnwvj7gm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS7006",
+          "message": "Parameter 'm' implicitly has an 'any' type.",
+          "location": {
+            "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+            "line": 2579
+          },
+          "id": "type-error-1774600908894-gxz97sb48ck",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; erp_hrm_time_tracking_report_output_id: string; metric_name: string; metric_value: number; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; erp_hrm_time_tracking_report_output_id: string; metric_name: string; metric_value: number; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+          "location": {
+            "file": "src/providers/postErpHrmTimeTrackingMemberReportDefinitionsGenerate.ts",
+            "line": 6411
+          },
+          "id": "type-error-1774600908894-re0tehquhhe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'erp_hrm_time_tracking_report_definitions'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
+            "line": 1838
+          },
+          "id": "type-error-1774600908894-ry2bouaim6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2339",
+          "message": "Property '_count' does not exist on type 'erp_hrm_time_tracking_report_definitions'.",
+          "location": {
+            "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
+            "line": 1892
+          },
+          "id": "type-error-1774600908894-mdjrm5ied3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'erp_hrm_time_tracking_organizations' is not assignable to parameter of type 'erp_hrm_time_tracking_members'.\n  Type 'erp_hrm_time_tracking_organizations' is missing the following properties from type 'erp_hrm_time_tracking_members': email, password_hash, sessions, passwordResets, and 6 more.",
+          "location": {
+            "file": "src/transformers/ErpHrmTimeTrackingTimelogTransformer.ts",
+            "line": 2547
+          },
+          "id": "type-error-1774600908894-oergawochl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'erp_hrm_time_tracking_organizations' is not assignable to parameter of type 'erp_hrm_time_tracking_members'.\n  Type 'erp_hrm_time_tracking_organizations' is missing the following properties from type 'erp_hrm_time_tracking_members': email, password_hash, sessions, passwordResets, and 6 more.",
+          "location": {
+            "file": "src/transformers/ErpHrmTimeTrackingTimesheetAtSummaryTransformer.ts",
+            "line": 1739
+          },
+          "id": "type-error-1774600908894-8s4bw47msdj",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 7710,
+      "metrics": {
+        "totalFiles": 362,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 4,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 13,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 89,
+      "maxScore": 100,
+      "weightedScore": 6.23,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 699845,
+        "cached": true,
+        "originalDurationMs": 274
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 98,
+      "maxScore": 100,
+      "weightedScore": 17.64,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 47,
+        "providerCount": 125,
+        "structureCount": 44,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 46,
+        "unmappedControllers": 1,
+        "mappingRatio": 0.9787234042553191,
+        "cached": true,
+        "originalDurationMs": 1
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 79,
+      "maxScore": 100,
+      "weightedScore": 18.17,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 320,
+        "controllerCount": 47,
+        "routeAnalysis": true,
+        "totalRoutes": 112,
+        "coveredRoutes": 80,
+        "routeCoveragePercent": 71,
+        "definedMethods": "POST,GET,PATCH,PUT,DELETE",
+        "testedMethods": "PATCH,POST,GET,PUT,DELETE",
+        "controllersAnalyzed": 41,
+        "stubTests": 24,
+        "assertionTests": 296,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 66
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 24,
+      "maxScore": 100,
+      "weightedScore": 7.199999999999999,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 12,
+        "criticalCount": 9,
+        "warningCount": 3,
+        "todoCount": 3,
+        "fixmeCount": 0,
+        "emptyMethods": 4,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 178
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 122,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 122,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 193
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 1097,
+      "complexFunctions": 7,
+      "maxComplexity": 29,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmTimeTrackingReportGenerationRunsReportGenerationRunId\" has complexity 24 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingReportGenerationRunsReportGenerationRunId.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909306-srumsard6y",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFiltersFilterId\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingReportDefinitionsReportDefinitionIdFiltersFilterId.ts",
+            "line": 15
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909308-jmq3l271ndf",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putErpHrmTimeTrackingMemberProjectsProjectIdTasksTaskId\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909314-aghpqmiwcs",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmTimeTrackingReportGenerationRunsReportGenerationRunIdOutputs\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingReportGenerationRunsReportGenerationRunIdOutputs.ts",
+            "line": 16
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909370-lyw5ce3ain",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmTimeTrackingMemberTimelogSnapshots\" has complexity 24 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberTimelogSnapshots.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909380-rc56kekf529",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmTimeTrackingMemberContracts\" has complexity 29 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909390-u63ywl17gp8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchErpHrmTimeTrackingMemberActivityLogSnapshotsSearch\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsSearch.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774600909393-hoy5j0lawyb",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchErpHrmTimeTrackingMemberActivityLogEntries\" has complexity 24 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774600909396-mszp9vhboe",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 15,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
+            "line": 141
+          },
+          "id": "duplication-1774600909692-cs987dq641n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
+            "line": 142
+          },
+          "id": "duplication-1774600909692-5myze7johlw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 124
+          },
+          "id": "duplication-1774600909692-62zmruq0yt8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 125
+          },
+          "id": "duplication-1774600909692-lmrv9yym1lj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774600909692-vdip4wfy28r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
+            "line": 25
+          },
+          "id": "duplication-1774600909692-z2663nfztc8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
+            "line": 26
+          },
+          "id": "duplication-1774600909692-q9dnt6lmit",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/putErpHrmTimeTrackingMemberTimesheetsTimesheetId.ts",
+            "line": 27
+          },
+          "id": "duplication-1774600909692-uirblw7742e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/postErpHrmTimeTrackingMemberProjectsProjectIdMembershipsBulkAssign.ts",
+            "line": 10
+          },
+          "id": "duplication-1774600909692-z9r8yjlwap9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+            "line": 94
+          },
+          "id": "duplication-1774600909692-94ba6kdlu7t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+            "line": 95
+          },
+          "id": "duplication-1774600909692-y3gmo7otqqo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberProjectsProjectIdMemberships.ts",
+            "line": 115
+          },
+          "id": "duplication-1774600909692-v9r311xqknj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogsTargetEntitiesTimeline.ts",
+            "line": 9
+          },
+          "id": "duplication-1774600909692-dur13l9h5tp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsTargetEntitiesTimeline.ts",
+            "line": 9
+          },
+          "id": "duplication-1774600909692-i312h4ggg4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/providers/patchErpHrmTimeTrackingMemberActivityLogSnapshotsTargetEntitiesTimeline.ts",
+            "line": 10
+          },
+          "id": "duplication-1774600909692-gzdqley6ra",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ErphrmtimetrackingMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/password-resets/ErphrmtimetrackingMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774600909602-u289k7akvp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"ErphrmtimetrackingMemberEmail_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/email-verifications/ErphrmtimetrackingMemberEmail_verificationsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774600909599-cr5e98i0bsc",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 47,
+      "totalApis": 48,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportoutputsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputs/ErphrmtimetrackingReportoutputsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909632-pty2gm2qq9h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportoutputmetricsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputMetrics/ErphrmtimetrackingReportoutputmetricsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909632-sodmidne07",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportgenerationrunsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportGenerationRuns/ErphrmtimetrackingReportgenerationrunsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909633-5eopuksx4z4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportdefinitionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/ErphrmtimetrackingReportdefinitionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774600909634-0pq60xlv1nfp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportoutputsMetricsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportOutputs/metrics/ErphrmtimetrackingReportoutputsMetricsController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774600909633-889ssx3dgc8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportgenerationrunsOutputsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportGenerationRuns/outputs/ErphrmtimetrackingReportgenerationrunsOutputsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774600909635-9wxyg5gtm1g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportdefinitionsReportgenerationrunsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/reportGenerationRuns/ErphrmtimetrackingReportdefinitionsReportgenerationrunsController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774600909640-8i1uis8mv3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportdefinitionsFiltersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/filters/ErphrmtimetrackingReportdefinitionsFiltersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909643-yx1r6n6shve",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingReportdefinitionsDimensionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/reportDefinitions/dimensions/ErphrmtimetrackingReportdefinitionsDimensionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909636-iozeoasssrf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/guest/sessions/ErphrmtimetrackingGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909636-3kz8awj897k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingGuestGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/guest/guests/ErphrmtimetrackingGuestGuestsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909636-3tglmwd027h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheets/ErphrmtimetrackingMemberTimesheetsController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774600909638-3gv6s0r5jvj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimersessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timerSessions/ErphrmtimetrackingMemberTimersessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909636-agdktffv86o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimesheetversioninglocksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheetVersioningLocks/ErphrmtimetrackingMemberTimesheetversioninglocksController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774600909638-jpoy5hpdd4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimelogsnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timelogSnapshots/ErphrmtimetrackingMemberTimelogsnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774600909639-j1u3bkk3f8l",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timelogs/ErphrmtimetrackingMemberTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909641-cvu3ztdl6ik",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberPersonaldashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/personalDashboard/ErphrmtimetrackingMemberPersonaldashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909640-vxrtouco67",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/ErphrmtimetrackingMemberProjectsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909639-a6hjk2eidq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/password-resets/ErphrmtimetrackingMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774600909642-mt1463iq99",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/members/ErphrmtimetrackingMemberMembersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909640-30q42pq2zo7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/organizations/ErphrmtimetrackingMemberOrganizationsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774600909646-pjq52tlh6d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/departments/ErphrmtimetrackingMemberDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909642-r0k0m91e36",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/email-verifications/ErphrmtimetrackingMemberEmail_verificationsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909641-m4cejxisr9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/dashboard/ErphrmtimetrackingMemberDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909640-76sipcr5tmu",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberContractsnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/contractSnapshots/ErphrmtimetrackingMemberContractsnapshotsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909643-fklywg0kqhe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogentrysnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntrySnapshots/ErphrmtimetrackingMemberActivitylogentrysnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774600909644-fs1xx5gxd1v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogentriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogEntries/ErphrmtimetrackingMemberActivitylogentriesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909649-8zonorr9ugw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/contracts/ErphrmtimetrackingMemberContractsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909645-ld70ezjp61k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/member/ErphrmtimetrackingAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909646-6kvfb4ccw0m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimesheetsApproveController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timesheets/approve/ErphrmtimetrackingMemberTimesheetsApproveController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909644-nnq6c41hmkm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberReportgenerationrunsExportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportGenerationRuns/exports/ErphrmtimetrackingMemberReportgenerationrunsExportsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909645-wwqt5414fni",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsPreviewController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/preview/ErphrmtimetrackingMemberReportdefinitionsPreviewController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909648-45fu1jvagx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsTasktreeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/taskTree/ErphrmtimetrackingMemberProjectsTasktreeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909647-30qvwkuhd68",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsMembershipsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/memberships/ErphrmtimetrackingMemberProjectsMembershipsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774600909647-1mu40vk9g8m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsAssignedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/assigned/ErphrmtimetrackingMemberProjectsAssignedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909646-n8t7u8ghlr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberReportdefinitionsGenerateController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/reportDefinitions/generate/ErphrmtimetrackingMemberReportdefinitionsGenerateController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909648-hhpnikytl3l",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/tasks/ErphrmtimetrackingMemberProjectsTasksController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774600909650-laj4bn8sn0d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberDepartmentsTreeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/departments/tree/ErphrmtimetrackingMemberDepartmentsTreeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909648-d49zeoxskgo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogsnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogSnapshots/search/ErphrmtimetrackingMemberActivitylogsnapshotsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909651-j6nekmi0b8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingAuthGuestJoinController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/guest/join/ErphrmtimetrackingAuthGuestJoinController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774600909651-e2b0ujrdghc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogs/search/ErphrmtimetrackingMemberActivitylogsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909648-h45b84gknea",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingAuthGuestRefreshController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/auth/guest/refresh/ErphrmtimetrackingAuthGuestRefreshController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774600909651-8cdy1wl81xe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberTimersessionsCurrentStopController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/timerSessions/current/stop/ErphrmtimetrackingMemberTimersessionsCurrentStopController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909651-82q6ofbjyek",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberProjectsMembershipsBulkassignController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/projects/memberships/bulkAssign/ErphrmtimetrackingMemberProjectsMembershipsBulkassignController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909648-yxzdbgv1e0b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberOrganizationsTimezoneRebuildController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/organizations/timezone/rebuild/ErphrmtimetrackingMemberOrganizationsTimezoneRebuildController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774600909652-iin73yrka8d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogsnapshotsTargetentitiesTimelineController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogSnapshots/targetEntities/timeline/ErphrmtimetrackingMemberActivitylogsnapshotsTargetentitiesTimelineController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909651-y0gzkxvxijg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmtimetrackingMemberActivitylogsTargetentitiesTimelineController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/erp/src/controllers/erpHrmTimeTracking/member/activityLogs/targetEntities/timeline/ErphrmtimetrackingMemberActivitylogsTargetentitiesTimelineController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774600909652-ydgoxv0hhl",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 132,
+      "emptyTypes": 1,
+      "mismatchedProperties": 47,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property timesheet_id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
+            "line": 72
+          },
+          "id": "completeness-1774600909710-h9dn1u3zyvl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property locked_by_user_id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
+            "line": 80
+          },
+          "id": "completeness-1774600909710-7veglx26mm5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property lock_reason",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheetVersioningLock.ts",
+            "line": 88
+          },
+          "id": "completeness-1774600909710-hhxdf54hu7c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property submitted_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
+            "line": 147
+          },
+          "id": "completeness-1774600909710-8tsq37ui4u3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property approved_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
+            "line": 155
+          },
+          "id": "completeness-1774600909710-nhvsml11be",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property rejected_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimesheet.ts",
+            "line": 163
+          },
+          "id": "completeness-1774600909710-tj9ignrzu9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property employee_id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimerSession.ts",
+            "line": 218
+          },
+          "id": "completeness-1774600909710-59m88cpzzgj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property description",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimerSession.ts",
+            "line": 266
+          },
+          "id": "completeness-1774600909710-k1d4xmo3p8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 17
+          },
+          "id": "completeness-1774600909710-4q4b5gkrafv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property work_date",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 65
+          },
+          "id": "completeness-1774600909710-he8nmfv4lyj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property start_time",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 73
+          },
+          "id": "completeness-1774600909710-4f7jz4kwv85",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property end_time",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 81
+          },
+          "id": "completeness-1774600909710-4e6xqc6jwe2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property duration_minutes",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 89
+          },
+          "id": "completeness-1774600909710-k8istas1lye",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property note",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 97
+          },
+          "id": "completeness-1774600909710-cyubk1ghnap",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property created_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 105
+          },
+          "id": "completeness-1774600909710-bd7qv3hdv1i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property updated_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 113
+          },
+          "id": "completeness-1774600909710-hkleywfsb0r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property deleted_at",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 121
+          },
+          "id": "completeness-1774600909710-8euwprjcadv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property work_date",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 192
+          },
+          "id": "completeness-1774600909710-iw2jmo7gsq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property start_time",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 200
+          },
+          "id": "completeness-1774600909710-jkatxt9f09f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property end_time",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 208
+          },
+          "id": "completeness-1774600909710-23ya81mad36",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property duration_minutes",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 216
+          },
+          "id": "completeness-1774600909710-57ef1yn15s4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property note",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 224
+          },
+          "id": "completeness-1774600909710-o47hdv9qc8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IErpHrmTimeTrackingTimelog\" not found — referenced by @x-autobe-database-schema-property erp_hrm_time_tracking_project_id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingTimelog.ts",
+            "line": 232
+          },
+          "id": "completeness-1774600909710-u5f9gp6iorr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property name",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 154
+          },
+          "id": "completeness-1774600909711-007lt19lbkh47",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property description",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 162
+          },
+          "id": "completeness-1774600909711-3r5dif3fc1l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property logo_url",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 170
+          },
+          "id": "completeness-1774600909711-unmprc2mr1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property currency_code",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 178
+          },
+          "id": "completeness-1774600909711-ebczuhtu1le",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property timezone",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 186
+          },
+          "id": "completeness-1774600909711-efollt1yafv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property fiscal_start_month",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 194
+          },
+          "id": "completeness-1774600909711-93wgk0n1pg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: ISummary = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingOrganization.ts",
+            "line": 233
+          },
+          "id": "completeness-1774600909711-uhwoubqv60e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property password_hash",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingMember.ts",
+            "line": 147
+          },
+          "id": "completeness-1774600909711-ee6xge2az7l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property ip",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
+            "line": 79
+          },
+          "id": "completeness-1774600909712-ma2jfns2wrf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property href",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
+            "line": 87
+          },
+          "id": "completeness-1774600909712-mexo010xyh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property referrer",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingGuestSession.ts",
+            "line": 95
+          },
+          "id": "completeness-1774600909712-rlyinh1pyh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property email",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingGuest.ts",
+            "line": 32
+          },
+          "id": "completeness-1774600909712-bw6dho3olel",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property password_hash",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingGuest.ts",
+            "line": 40
+          },
+          "id": "completeness-1774600909712-p973mknfva",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property name",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
+            "line": 151
+          },
+          "id": "completeness-1774600909712-ystu3wbdhsr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property description",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
+            "line": 159
+          },
+          "id": "completeness-1774600909712-u81e4py3me",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property parent_department_id",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingDepartment.ts",
+            "line": 167
+          },
+          "id": "completeness-1774600909712-0cent2tpj45k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property contract_number",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 324
+          },
+          "id": "completeness-1774600909712-t3b07aeldk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property contract_title",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 332
+          },
+          "id": "completeness-1774600909712-n7g12r8f0x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property pay_amount",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 340
+          },
+          "id": "completeness-1774600909712-x4fgpi6mwne",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property pay_currency",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 348
+          },
+          "id": "completeness-1774600909712-dxezrqaohco",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property pay_frequency",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 356
+          },
+          "id": "completeness-1774600909712-wco6iq033xq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property work_term_start_date",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 364
+          },
+          "id": "completeness-1774600909712-qgc4i3279n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property work_term_end_date",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 372
+          },
+          "id": "completeness-1774600909712-qg17e6ti1uh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property notes",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 380
+          },
+          "id": "completeness-1774600909712-jlpj2b0wrsl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property status",
+          "location": {
+            "file": "src/api/structures/IErpHrmTimeTrackingContract.ts",
+            "line": 388
+          },
+          "id": "completeness-1774600909712-ri7ttj5d2z",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 21,
+    "criticalCount": 0,
+    "warningCount": 13,
+    "suggestionCount": 8
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774600908894-qx2426myojh",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_guests[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_guests[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+        "line": 1298
+      },
+      "id": "type-error-1774600908894-z9fucb8xvt",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS7006",
+      "message": "Parameter 'r' implicitly has an 'any' type.",
+      "location": {
+        "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+        "line": 1937
+      },
+      "id": "type-error-1774600908894-oc5b1h2mo59",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property 'organization_id' does not exist on type 'erp_hrm_time_tracking_members'.",
+      "location": {
+        "file": "src/providers/getErpHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
+        "line": 1461
+      },
+      "id": "type-error-1774600908894-rew3307ms8a",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_contracts[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_contracts[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+        "line": 3558
+      },
+      "id": "type-error-1774600908894-bns4kvln42d",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS7006",
+      "message": "Parameter 'r' implicitly has an 'any' type.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+        "line": 4501
+      },
+      "id": "type-error-1774600908894-hkwjboawavc",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<number> | Promise<erp_hrm_time_tracking_project_memberships[]>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<number> | Promise<erp_hrm_time_tracking_project_memberships[]>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+        "line": 1382
+      },
+      "id": "type-error-1774600908894-8g7nnwvj7gm",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS7006",
+      "message": "Parameter 'm' implicitly has an 'any' type.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+        "line": 2579
+      },
+      "id": "type-error-1774600908894-gxz97sb48ck",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; erp_hrm_time_tracking_report_output_id: string; metric_name: string; metric_value: number; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; erp_hrm_time_tracking_report_output_id: string; metric_name: string; metric_value: number; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+      "location": {
+        "file": "src/providers/postErpHrmTimeTrackingMemberReportDefinitionsGenerate.ts",
+        "line": 6411
+      },
+      "id": "type-error-1774600908894-re0tehquhhe",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'erp_hrm_time_tracking_report_definitions'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
+        "line": 1838
+      },
+      "id": "type-error-1774600908894-ry2bouaim6",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2339",
+      "message": "Property '_count' does not exist on type 'erp_hrm_time_tracking_report_definitions'.",
+      "location": {
+        "file": "src/transformers/ErpHrmTimeTrackingReportDefinitionTransformer.ts",
+        "line": 1892
+      },
+      "id": "type-error-1774600908894-mdjrm5ied3",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'erp_hrm_time_tracking_organizations' is not assignable to parameter of type 'erp_hrm_time_tracking_members'.\n  Type 'erp_hrm_time_tracking_organizations' is missing the following properties from type 'erp_hrm_time_tracking_members': email, password_hash, sessions, passwordResets, and 6 more.",
+      "location": {
+        "file": "src/transformers/ErpHrmTimeTrackingTimelogTransformer.ts",
+        "line": 2547
+      },
+      "id": "type-error-1774600908894-oergawochl",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'erp_hrm_time_tracking_organizations' is not assignable to parameter of type 'erp_hrm_time_tracking_members'.\n  Type 'erp_hrm_time_tracking_organizations' is missing the following properties from type 'erp_hrm_time_tracking_members': email, password_hash, sessions, passwordResets, and 6 more.",
+      "location": {
+        "file": "src/transformers/ErpHrmTimeTrackingTimesheetAtSummaryTransformer.ts",
+        "line": 1739
+      },
+      "id": "type-error-1774600908894-8s4bw47msdj",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/getErpHrmTimeTrackingGuestGuests.ts",
+        "line": 1247
+      },
+      "id": "type-error-1774600908894-l3xz512pm7",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+        "line": 2732
+      },
+      "id": "type-error-1774600908894-fl77x96o4pv",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+        "line": 2752
+      },
+      "id": "type-error-1774600908894-vuytm6gyoxk",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+        "line": 2981
+      },
+      "id": "type-error-1774600908894-oao85r1j6pm",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.QueryMode' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.QueryMode'?",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberActivityLogEntries.ts",
+        "line": 3001
+      },
+      "id": "type-error-1774600908894-f7lxa64qcgf",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+        "line": 3301
+      },
+      "id": "type-error-1774600908894-c8fv4fuq25g",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberContracts.ts",
+        "line": 3507
+      },
+      "id": "type-error-1774600908894-uvycjt9i7dc",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/patchErpHrmTimeTrackingMemberProjectsAssigned.ts",
+        "line": 1328
+      },
+      "id": "type-error-1774600908894-oz1d2ml4uq",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-27T08:41:49.712Z",
+    "totalDurationMs": 8300,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 362
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 47,
+      "ratio": "98%"
+    },
+    "schemaSync": {
+      "amount": 4,
+      "emptyTypes": 1,
+      "mismatchedProperties": 47
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 2186,
+    "totalFiles": 362,
+    "totalLines": 43166,
+    "avgLinesPerFile": 119,
+    "largestFile": "src/api/functional/erpHrmTimeTracking/member/timesheets/index.ts",
+    "largestFileSizeKB": 48,
+    "controllers": 47,
+    "providers": 125,
+    "structures": 44,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}
