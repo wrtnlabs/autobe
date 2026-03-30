@@ -1,0 +1,471 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo",
+  "totalScore": 81,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846425333-3f3efz26p8t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+            "line": 2721
+          },
+          "id": "type-error-1774846425333-r9tmbfav03a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+            "line": 2829
+          },
+          "id": "type-error-1774846425333-48vnmgos8x9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+            "line": 2909
+          },
+          "id": "type-error-1774846425333-rly6wmdztx",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 8060,
+      "metrics": {
+        "totalFiles": 82,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 1,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 92059,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 7,
+        "providerCount": 17,
+        "structureCount": 13,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 7,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 53,
+      "maxScore": 100,
+      "weightedScore": 12.190000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 39,
+        "controllerCount": 7,
+        "routeAnalysis": true,
+        "totalRoutes": 14,
+        "coveredRoutes": 4,
+        "routeCoveragePercent": 29,
+        "definedMethods": "POST,PUT,PATCH,GET",
+        "testedMethods": "POST,PUT,GET",
+        "controllersAnalyzed": 7,
+        "stubTests": 0,
+        "assertionTests": 39,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 14,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 14,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 159,
+      "complexFunctions": 0,
+      "maxComplexity": 19,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberPasswordResets\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846425507-mftzofbn3jb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoGuestSessions\" has complexity 19 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/providers/patchMultiUserTodoGuestSessions.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846425511-5nbc50408cf",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 0,
+      "issues": []
+    },
+    "naming": {
+      "totalIssues": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberTodo_historiesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/todo-histories/MultiusertodoMemberTodo_historiesController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846425563-sx8shaspox",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/password-resets/MultiusertodoMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846425551-b31oaj29d1o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846425560-terayld7by",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 7,
+      "totalApis": 8,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846425588-umdk5egafh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846425585-2b43weud01j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425586-0r4h0molc8ja",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoGuestProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/guest/profile/MultiusertodoGuestProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846425587-botx71ihdwm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodo_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/todo-histories/MultiusertodoMemberTodo_historiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425588-7lrygn7r6vn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/password-resets/MultiusertodoMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425589-ztp6lwwbkgm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425588-6sxsi0ll9nm",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 29,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodoHistory.ts",
+            "line": 146
+          },
+          "id": "completeness-1774846425597-2vkitxo5tof",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoMemberSession.ts",
+            "line": 21
+          },
+          "id": "completeness-1774846425597-fmq3nlkf92n",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 4,
+    "criticalCount": 0,
+    "warningCount": 1,
+    "suggestionCount": 3
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846425333-3f3efz26p8t",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+        "line": 2721
+      },
+      "id": "type-error-1774846425333-r9tmbfav03a",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+        "line": 2829
+      },
+      "id": "type-error-1774846425333-48vnmgos8x9",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
+        "line": 2909
+      },
+      "id": "type-error-1774846425333-rly6wmdztx",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:53:45.598Z",
+    "totalDurationMs": 8208,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 82
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 7,
+      "ratio": "88%"
+    },
+    "schemaSync": {
+      "amount": 1,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 236,
+    "totalFiles": 82,
+    "totalLines": 5843,
+    "avgLinesPerFile": 71,
+    "largestFile": "src/api/functional/multiUserTodo/auth/member/index.ts",
+    "largestFileSizeKB": 12,
+    "controllers": 7,
+    "providers": 17,
+    "structures": 13,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

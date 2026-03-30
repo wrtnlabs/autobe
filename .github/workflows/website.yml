@@ -6,14 +6,18 @@ on:
     paths:
       - "packages/*/src/**"
       - "packages/*/package.json"
+      - "packages/estimate/reports/benchmark/**"
       - "website/**"
+      - "apps/dashboard-ui/**"
       - package.json
       - .github/workflows/website.yml
   pull_request:
     paths:
       - "packages/*/src/**"
       - "packages/*/package.json"
+      - "packages/estimate/reports/benchmark/**"
       - "website/**"
+      - "apps/dashboard-ui/**"
       - package.json
       - .github/workflows/website.yml
 jobs:
@@ -27,6 +31,8 @@ jobs:
       - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
       - name: Root
         run: pnpm install
+      - name: Aggregate benchmark data
+        run: node apps/dashboard-ui/scripts/aggregate-benchmarks.mjs
       - name: Website
         run: pnpm run build
         working-directory: website

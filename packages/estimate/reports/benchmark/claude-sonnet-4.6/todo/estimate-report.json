@@ -1,0 +1,403 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo",
+  "totalScore": 87,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846109568-cmrb7rxwfm5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2724",
+          "message": "'\"src/prisma/client\".Prisma' has no exported member named 'todo_app_todosDefaultArgs'. Did you mean 'todo_app_todosDeleteArgs'?",
+          "location": {
+            "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
+            "line": 695
+          },
+          "id": "type-error-1774846109568-6boytcn3vyn",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2989,
+      "metrics": {
+        "totalFiles": 90,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 1,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 132332,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 9,
+        "providerCount": 24,
+        "structureCount": 12,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 9,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 70,
+      "maxScore": 100,
+      "weightedScore": 16.1,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 53,
+        "controllerCount": 9,
+        "routeAnalysis": true,
+        "totalRoutes": 21,
+        "coveredRoutes": 11,
+        "routeCoveragePercent": 52,
+        "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "testedMethods": "GET,PUT,POST,PATCH,DELETE",
+        "controllersAnalyzed": 9,
+        "stubTests": 2,
+        "assertionTests": 51,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 21,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 21,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 205,
+      "complexFunctions": 0,
+      "maxComplexity": 14,
+      "issues": []
+    },
+    "duplication": {
+      "totalBlocks": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846109651-jte3b3klp0p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846109651-aemzi9o3b17",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846109651-e0btbitqyfv",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 0,
+      "issues": []
+    },
+    "jsdoc": {
+      "totalMissing": 9,
+      "totalApis": 10,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846109659-w4jlwxy1jk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846109659-pq3cqgida8m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846109661-kahq0629wy",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846109659-kouwj5kmwwe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberAccountsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846109660-48mky2kfejx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846109660-axf4b1qhdp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdithistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846109660-nyj17oozzwr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosTrashedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/trashed/TodoappMemberTodosTrashedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846109660-str003ucifp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosPermanentController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/permanent/TodoappMemberTodosPermanentController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846109660-r0je1dof6hi",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 27,
+      "emptyTypes": 0,
+      "mismatchedProperties": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"e\" not found — referenced by @x-autobe-database-schema-property password_hash",
+          "location": {
+            "file": "src/api/structures/ITodoAppMember.ts",
+            "line": 170
+          },
+          "id": "completeness-1774846109666-jxn0ytnxcaj",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 2,
+    "criticalCount": 0,
+    "warningCount": 1,
+    "suggestionCount": 1
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846109568-cmrb7rxwfm5",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2724",
+      "message": "'\"src/prisma/client\".Prisma' has no exported member named 'todo_app_todosDefaultArgs'. Did you mean 'todo_app_todosDeleteArgs'?",
+      "location": {
+        "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
+        "line": 695
+      },
+      "id": "type-error-1774846109568-6boytcn3vyn",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:48:29.666Z",
+    "totalDurationMs": 3090,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 90
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 9,
+      "ratio": "90%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 325,
+    "totalFiles": 90,
+    "totalLines": 6735,
+    "avgLinesPerFile": 75,
+    "largestFile": "src/api/functional/todoApp/member/todos/index.ts",
+    "largestFileSizeKB": 35,
+    "controllers": 9,
+    "providers": 24,
+    "structures": 12,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

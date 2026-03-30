@@ -8,101 +8,112 @@ const CHAT_MESSAGE =
 const TABS = [
   {
     name: "schema.prisma",
-    code: `model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  password  String
-  role      UserRole @default(CUSTOMER)
-  cart      Cart?
-  orders    Order[]
-  createdAt DateTime @default(now())
+    code: `/// Product listings with seller, category, and pricing
+/// @namespace Products
+model shopping_mall_products {
+  id                        String @id @db.Uuid
+  shopping_mall_seller_id   String @db.Uuid
+  shopping_mall_category_id String @db.Uuid
+  code                      String
+  name                      String
+  description               String
+  base_price                Float  @db.DoublePrecision
+  stock_status              String
+  status                    String
+  main_image_url            String? @db.VarChar(80000)
+  created_at                DateTime @default(now())
+
+  seller   shopping_mall_sellers   @relation(fields: [shopping_mall_seller_id])
+  category shopping_mall_categories @relation(fields: [shopping_mall_category_id])
+  variants shopping_mall_product_variants[]
+
+  @@index([shopping_mall_seller_id])
+  @@index([shopping_mall_category_id])
+  @@index([status])
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  stock       Int      @default(0)
-  category    Category @relation(fields: [categoryId])
-  categoryId  String
-  cartItems   CartItem[]
-}
+/// Product variant options with individual pricing
+model shopping_mall_product_variants {
+  id                       String @id @db.Uuid
+  shopping_mall_product_id String @db.Uuid
+  name                     String
+  price_delta              Float  @db.DoublePrecision
+  stock_quantity            Int
+  created_at               DateTime @default(now())
 
-model Order {
-  id        String      @id @default(uuid())
-  user      User        @relation(fields: [userId])
-  userId    String
-  items     OrderItem[]
-  total     Float
-  status    OrderStatus @default(PENDING)
-  payment   Payment?
-  createdAt DateTime    @default(now())
+  product shopping_mall_products @relation(fields: [shopping_mall_product_id])
+
+  @@index([shopping_mall_product_id])
 }`,
   },
   {
     name: "products.controller.ts",
-    code: `@Controller("products")
-export class ProductsController {
-  constructor(
-    private readonly productsService: ProductsService,
-  ) {}
+    code: `import { TypedBody, TypedParam, TypedRoute } from "@nestia/core";
+import { Controller } from "@nestjs/common";
 
-  @Get()
-  async findAll(
-    @Query() query: FindProductsDto,
-  ): Promise<PaginatedResponse<Product>> {
-    return this.productsService.findAll(query);
+import { IShoppingMallProduct } from "../api/structures/IShoppingMallProduct";
+import { IPage } from "../api/structures/IPage";
+
+@Controller("shoppingMall/products")
+export class ShoppingmallProductsController {
+  /**
+   * Search and filter products across all sellers.
+   *
+   * Supports full-text search, category filtering,
+   * price range constraints, and stock availability.
+   */
+  @TypedRoute.Patch()
+  public async search(
+    @TypedBody()
+    body: IShoppingMallProduct.IRequest,
+  ): Promise<IPage<IShoppingMallProduct.ISummary>> {
+    return typia.random<IPage<IShoppingMallProduct.ISummary>>();
   }
 
-  @Get(":id")
-  async findOne(
-    @Param("id") id: string,
-  ): Promise<Product> {
-    return this.productsService.findOne(id);
-  }
-
-  @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async create(
-    @Body() dto: CreateProductDto,
-  ): Promise<Product> {
-    return this.productsService.create(dto);
+  /**
+   * Get detailed product information by ID.
+   */
+  @TypedRoute.Get(":productId")
+  public async at(
+    @TypedParam("productId")
+    productId: string,
+  ): Promise<IShoppingMallProduct> {
+    return typia.random<IShoppingMallProduct>();
   }
 }`,
   },
   {
     name: "products.e2e.ts",
-    code: `describe("ProductsController (e2e)", () => {
-  it("GET /products — returns paginated list", async () => {
-    const res = await request(app.getHttpServer())
-      .get("/products")
-      .query({ page: 1, limit: 10 })
-      .expect(200);
+    code: `import api from "@ORGANIZATION/PROJECT-api";
+import { TestValidator } from "@nestia/e2e";
+import typia, { tags } from "typia";
 
-    expect(res.body.data).toBeInstanceOf(Array);
-    expect(res.body.meta.total).toBeDefined();
-  });
+export async function test_api_product_search(
+  connection: api.IConnection,
+): Promise<void> {
+  const result = await api.functional.shoppingMall
+    .products.search(connection, {
+      name: "wireless",
+      minPrice: 10,
+      maxPrice: 500,
+      sortBy: "newest",
+      page: 1,
+      limit: 20,
+    });
+  typia.assert(result);
+  TestValidator.predicate("has data")(
+    () => result.data.length > 0,
+  );
 
-  it("POST /products — admin can create", async () => {
-    const res = await request(app.getHttpServer())
-      .post("/products")
-      .set("Authorization", \`Bearer \${adminToken}\`)
-      .send({
-        name: "Wireless Headphones",
-        description: "Noise-cancelling",
-        price: 79.99,
-        stock: 150,
-        categoryId: categoryId,
-      })
-      .expect(201);
-
-    expect(res.body.id).toBeDefined();
-    expect(res.body.name).toBe("Wireless Headphones");
-  });
-});`,
+  const detail = await api.functional.shoppingMall
+    .products.at(connection, {
+      productId: result.data[0].id,
+    });
+  typia.assert(detail);
+  TestValidator.predicate("matches")(
+    () => detail.id === result.data[0].id,
+  );
+}`,
   },
 ];
 
@@ -114,71 +125,66 @@ const TAB_RESULTS: {
   {
     title: "Database Schema",
     items: [
-      { label: "Models", value: "12" },
-      { label: "Relations", value: "18" },
-      { label: "Enums", value: "3" },
-      { label: "Indexes", value: "8" },
+      { label: "Models", value: "42" },
+      { label: "Relations", value: "68" },
+      { label: "Indexes", value: "94" },
     ],
-    extra: "Prisma validated · 0 errors",
+    extra: "14 schema files · Prisma validated",
   },
   {
     title: "API Endpoints",
     items: [
-      { label: "GET", value: "/products" },
-      { label: "POST", value: "/products" },
-      { label: "GET", value: "/cart" },
-      { label: "POST", value: "/orders" },
-      { label: "POST", value: "/auth/login" },
-      { label: "POST", value: "/payments" },
+      { label: "Controllers", value: "26" },
+      { label: "Endpoints", value: "107+" },
+      { label: "Decorators", value: "@nestia/core" },
     ],
-    extra: "+ 41 more endpoints",
+    extra: "TypedRoute · TypedBody · TypedParam",
   },
   {
     title: "Test Coverage",
     items: [
-      { label: "Test suites", value: "24" },
-      { label: "Test cases", value: "156" },
-      { label: "Assertions", value: "480+" },
-      { label: "Coverage", value: "100%" },
+      { label: "Test suites", value: "105" },
+      { label: "Validator", value: "typia.assert" },
+      { label: "Runner", value: "@nestia/e2e" },
     ],
-    extra: "All tests passing",
+    extra: "SDK-based · type-safe assertions",
   },
 ];
 
 const INITIAL_PIPELINE_STEPS = [
   "Analyzing requirements",
-  "Generating database schema",
-  "Generating API specification",
-  "Generating E2E tests",
+  "Generating Prisma schema",
+  "Running Prisma compiler",
+  "Generating OpenAPI spec",
   "Compiling TypeScript",
 ];
 
 const TAB_PIPELINE_STEPS = [
   [
     "Parsing entity relationships",
+    "Generating @@index directives",
     "Validating Prisma schema",
-    "Generating indexes",
-    "Schema compiled",
+    "14 schema files compiled",
   ],
   [
-    "Generating controllers",
-    "Applying guards & decorators",
-    "Validating routes",
-    "API compiled",
+    "@nestia/core decorators applied",
+    "TypedRoute · TypedBody resolved",
+    "107+ endpoints generated",
+    "API compiled · 0 errors",
   ],
   [
-    "Generating test suites",
-    "Creating assertions",
-    "Validating coverage",
-    "Tests compiled",
+    "typia assertions injected",
+    "TestValidator predicates wired",
+    "SDK functional calls linked",
+    "105 test suites compiled",
   ],
 ];
 
 const KEYWORDS =
-  /\b(model|enum|import|export|class|const|let|async|await|return|describe|it|expect)\b/;
-const DECORATORS = /(@\w+)/;
+  /\b(model|enum|import|export|from|class|const|let|async|await|return|public|void|function|type)\b/;
+const DECORATORS = /(@\w+|@@\w+)/;
 const STRINGS = /(["'`])(?:(?=(\\?))\2.)*?\1/;
-const TYPES = /\b(String|Int|Float|Boolean|DateTime|Promise|Array)\b/;
+const TYPES = /\b(String|Int|Float|Boolean|DateTime|Promise|Array|IConnection)\b/;
 const NUMBERS = /\b(\d+\.?\d*)\b/;
 
 function HighlightedLine({ text }: { text: string }) {

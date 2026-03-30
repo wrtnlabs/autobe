@@ -1,0 +1,2011 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit",
+  "totalScore": 87,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846293511-kwjst47llf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2305",
+          "message": "Module '\"../../../../../providers/postCommunityPlatformAdminCommunitiesCommunityIdBans\"' has no exported member 'postCommunityPlatformAdminCommunitiesCommunityIdBans'.",
+          "location": {
+            "file": "src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
+            "line": 972
+          },
+          "id": "type-error-1774846293511-p2hcz7gcdfe",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2749",
+          "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+          "location": {
+            "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
+            "line": 1647
+          },
+          "id": "type-error-1774846293511-acx2lc7l5an",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 4808,
+      "metrics": {
+        "totalFiles": 246,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 2,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 87,
+      "maxScore": 100,
+      "weightedScore": 6.090000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 243891,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 31,
+        "providerCount": 89,
+        "structureCount": 31,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 31,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 79,
+      "maxScore": 100,
+      "weightedScore": 18.17,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 216,
+        "controllerCount": 31,
+        "routeAnalysis": true,
+        "totalRoutes": 80,
+        "coveredRoutes": 57,
+        "routeCoveragePercent": 71,
+        "definedMethods": "PATCH,GET,PUT,DELETE,POST",
+        "testedMethods": "GET,PATCH,PUT,DELETE,POST",
+        "controllersAnalyzed": 30,
+        "stubTests": 28,
+        "assertionTests": 188,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 85,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 85,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 777,
+      "complexFunctions": 4,
+      "maxComplexity": 35,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPlatformMemberPosts\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberPosts.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846293698-ho2zcsm1dni",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPlatformGuestPosts\" has complexity 35 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformGuestPosts.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846293703-h9me3czbro",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityPlatformAdminReports\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846293710-5pfmjtxei68",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPlatformAdminPosts\" has complexity 26 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminPosts.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846293706-ppgf3r30apj",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchCommunityPlatformAdminPasswordResets\" has complexity 28 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminPasswordResets.ts",
+            "line": 19
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846293707-j28iclvs72k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchCommunityPlatformAdminCommunitiesCommunityIdModerationRoles\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationRoles.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846293708-vk3c0sthfbr",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 101,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846293816-tlj2c2vuzz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846293816-7nrsgoqrlai",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 61
+          },
+          "id": "duplication-1774846293816-tgmke1o23dd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 62
+          },
+          "id": "duplication-1774846293816-nftoajpiqus",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 63
+          },
+          "id": "duplication-1774846293816-bnlgd4v4j6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 64
+          },
+          "id": "duplication-1774846293816-b1pq3h77kjg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846293816-r3gy1n8la9m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberPostsPostId.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846293816-gk8ebsyvhb9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 28
+          },
+          "id": "duplication-1774846293816-cwqhi4zpk0w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 29
+          },
+          "id": "duplication-1774846293816-dermd2n5g5q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 30
+          },
+          "id": "duplication-1774846293816-om1t3k32z3i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdSubscriptions.ts",
+            "line": 31
+          },
+          "id": "duplication-1774846293816-plepi57ulu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846293816-jtfz6extt28",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846293816-0t4i0ssm9z6p",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846293816-w2rquh0vgch",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846293816-c61zglba41c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846293816-9ybtki9w25q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846293816-5ojhtt4ycwo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 9 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberRefresh.ts",
+            "line": 53
+          },
+          "id": "duplication-1774846293816-h9u66a0av2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberRefresh.ts",
+            "line": 54
+          },
+          "id": "duplication-1774846293816-x1lr8090jeh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846293816-fn33vmls3ms",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846293816-0s0a1frmxcde",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthAdminLogin.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846293816-61t7mrq55tb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAuthAdminLogin.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846293816-xmzk3439u0k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846293816-kds9gl2kpo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846293816-gdn1pb2xnrj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+            "line": 14
+          },
+          "id": "duplication-1774846293816-5jkf2dlny1t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+            "line": 15
+          },
+          "id": "duplication-1774846293816-l4245iz436",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/postCommunityPlatformAdminReportsReportIdDismiss.ts",
+            "line": 16
+          },
+          "id": "duplication-1774846293816-4luzk2011i8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 72
+          },
+          "id": "duplication-1774846293816-r6xbf02fg19",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 73
+          },
+          "id": "duplication-1774846293816-6lj4d927tw9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 74
+          },
+          "id": "duplication-1774846293816-ckxbea8hmrl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 75
+          },
+          "id": "duplication-1774846293816-vpqxuctz6p7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 88
+          },
+          "id": "duplication-1774846293816-8c0f8zwma6r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
+            "line": 89
+          },
+          "id": "duplication-1774846293816-edgvsonv9qo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberPosts.ts",
+            "line": 128
+          },
+          "id": "duplication-1774846293816-sgra1a2rcpf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberPosts.ts",
+            "line": 152
+          },
+          "id": "duplication-1774846293816-fcfr9j9kc3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
+            "line": 82
+          },
+          "id": "duplication-1774846293816-ao2esba0jkm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
+            "line": 83
+          },
+          "id": "duplication-1774846293816-65qibtsdbz9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
+            "line": 84
+          },
+          "id": "duplication-1774846293816-q7wjauu92z",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesSubscribed.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846293816-tmjn1vty7x",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 131
+          },
+          "id": "duplication-1774846293816-pbepsyu1lsn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 132
+          },
+          "id": "duplication-1774846293816-n384s0z96z",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 133
+          },
+          "id": "duplication-1774846293816-4u3rj6pfgb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 134
+          },
+          "id": "duplication-1774846293816-w6zmekw2uj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 135
+          },
+          "id": "duplication-1774846293816-2kw0jmlbfml",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 136
+          },
+          "id": "duplication-1774846293816-sfiwd29qb7j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 137
+          },
+          "id": "duplication-1774846293816-0ah8354gdzr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 138
+          },
+          "id": "duplication-1774846293816-n7rojw0sxuo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 139
+          },
+          "id": "duplication-1774846293816-npdhtbimge",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 146
+          },
+          "id": "duplication-1774846293816-hy2ev3ai4wa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 147
+          },
+          "id": "duplication-1774846293816-1hurozla4o7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationRoles.ts",
+            "line": 148
+          },
+          "id": "duplication-1774846293816-xf3hx4z44eb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 89
+          },
+          "id": "duplication-1774846293816-jmvzd3dspem",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 7 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846293816-flids6sboyk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 92
+          },
+          "id": "duplication-1774846293816-8wfmraixxz9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 93
+          },
+          "id": "duplication-1774846293816-rr1og8scsh9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 94
+          },
+          "id": "duplication-1774846293816-mimt72xhw1h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 95
+          },
+          "id": "duplication-1774846293816-4mr7ltinr1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 96
+          },
+          "id": "duplication-1774846293816-w3efk78ds5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 97
+          },
+          "id": "duplication-1774846293816-poaey693jv9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 98
+          },
+          "id": "duplication-1774846293816-oafzljf56hs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 99
+          },
+          "id": "duplication-1774846293816-2hv9km56rot",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 100
+          },
+          "id": "duplication-1774846293816-ela4l7zifcn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 101
+          },
+          "id": "duplication-1774846293816-xtmscqjld2",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 102
+          },
+          "id": "duplication-1774846293816-0o5nfcb32uuq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 128
+          },
+          "id": "duplication-1774846293816-bt6mfn5qat5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 129
+          },
+          "id": "duplication-1774846293816-kd60nb3kpf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdBans.ts",
+            "line": 130
+          },
+          "id": "duplication-1774846293816-0i12az149fr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 76
+          },
+          "id": "duplication-1774846293816-fmlqyzc3nn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 77
+          },
+          "id": "duplication-1774846293816-titt43jdu2a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 78
+          },
+          "id": "duplication-1774846293816-qepmvxdlcja",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 79
+          },
+          "id": "duplication-1774846293816-8ls9ou459tb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 80
+          },
+          "id": "duplication-1774846293816-82y2fmm7u9u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 81
+          },
+          "id": "duplication-1774846293816-499k1whzp22",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 82
+          },
+          "id": "duplication-1774846293816-ifro6ebypz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846293816-dfc79ffw0m6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 86
+          },
+          "id": "duplication-1774846293816-lot2l09vib",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 103
+          },
+          "id": "duplication-1774846293816-4li4atihc66",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 117
+          },
+          "id": "duplication-1774846293816-l3jfvjao7up",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 118
+          },
+          "id": "duplication-1774846293816-78g60dep68f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 119
+          },
+          "id": "duplication-1774846293816-6xy79w6pfrm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminReports.ts",
+            "line": 120
+          },
+          "id": "duplication-1774846293816-3o7qa42c2fv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846293816-a5vghh95z24",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdReports.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846293816-it2n9l1wye8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846293816-9l38j9vst8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
+            "line": 47
+          },
+          "id": "duplication-1774846293816-x8ykgstxbis",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberReportsReportId.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846293816-8x3pa72l7c5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846293816-4e8hno06dky",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846293816-eo7jyewswla",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846293816-sic0dag7zyp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846293816-g48kb9prx3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationRolesModerationRoleId.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846293816-pqaesm3ogx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformMemberCommentsCommentId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846293816-p6dcymcpive",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformGuestPostsPostId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846293816-p38qfsq2k7c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/getCommunityPlatformGuestPostsPostId.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846293816-bdvy0a03eee",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 16
+          },
+          "id": "duplication-1774846293816-cft1pulo407",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 17
+          },
+          "id": "duplication-1774846293816-o4sns6oucx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846293816-1rp25evmcuz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 19
+          },
+          "id": "duplication-1774846293816-8oia4emosx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846293816-tpalsm7gr5j",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"CommunityplatformAdminPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846293820-ntkd6mx6sv",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 31,
+      "totalApis": 32,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846293842-0hypjxwhn39b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/subscriptions/CommunityplatformMemberSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293843-k5qhm6jbfqr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293843-hjyab5y2866",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846293843-3n5pi1ptvf3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846293847-b33bxa5geqb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846293844-gzrmiuznerv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/CommunityplatformMemberCommentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293844-hkcyis0krzg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthAdminController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/auth/admin/CommunityplatformAuthAdminController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846293844-eyzinwpq0v4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293845-lxil5ys9p58",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformGuestPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/posts/CommunityplatformGuestPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293845-dkoy225x89",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/profile/CommunityplatformMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846293845-dr34duf6uqk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/sessions/CommunityplatformGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293846-cadbgid59yv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformGuestCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/communities/CommunityplatformGuestCommunitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293846-aok6q1l0iyj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformGuestCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/guest/comments/CommunityplatformGuestCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293846-40iknzkb9pd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/reports/CommunityplatformAdminReportsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846293846-fo7b02kybgc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/posts/CommunityplatformAdminPostsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846293847-xggvrhxt90g",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293848-bp4wimi2o5j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/CommunityplatformAdminCommunitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293847-q9nlpmqd5po",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/comments/CommunityplatformAdminCommentsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846293848-ebudj6lqoze",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminAdminsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/admins/CommunityplatformAdminAdminsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293848-zslxybup88a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscriptions/CommunityplatformMemberCommunitiesSubscriptionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846293849-enz45a0x798",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesModerationrolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/moderationRoles/CommunityplatformMemberCommunitiesModerationrolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293850-e4t9yxp3nds",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSubscribedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/subscribed/CommunityplatformMemberCommunitiesSubscribedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293849-2lta8e4ursp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293850-lulzlhgwu6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846293851-ric0g269eaq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/comments/vote/CommunityplatformMemberCommentsVoteController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293851-agwdjehhqa7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293852-b29yzqgasj9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846293851-46k8sp2rjhx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/reports/CommunityplatformAdminCommunitiesReportsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846293852-322fcdmo3uq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesModerationrolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/moderationRoles/CommunityplatformAdminCommunitiesModerationrolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293852-voiggr55l7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/reddit/src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846293853-4laq6pvh9qa",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 77,
+      "emptyTypes": 3,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: ISummary = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformMember.ts",
+            "line": 302
+          },
+          "id": "completeness-1774846293865-jnzd0e4xf7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: IRefresh = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformGuest.ts",
+            "line": 29
+          },
+          "id": "completeness-1774846293865-uifyn8kpm4b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: IJoin = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformGuest.ts",
+            "line": 34
+          },
+          "id": "completeness-1774846293865-z20txouyms",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityPlatformMember\" not found — referenced by @x-autobe-database-schema-property member",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformCommunitySubscription.ts",
+            "line": 129
+          },
+          "id": "completeness-1774846293865-7j688iv1rkj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"ICommunityPlatformCommunity\" not found — referenced by @x-autobe-database-schema-property community",
+          "location": {
+            "file": "src/api/structures/ICommunityPlatformCommunitySubscription.ts",
+            "line": 137
+          },
+          "id": "completeness-1774846293865-d2ebrrdwu5",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 3,
+    "criticalCount": 0,
+    "warningCount": 2,
+    "suggestionCount": 1
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846293511-kwjst47llf",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2305",
+      "message": "Module '\"../../../../../providers/postCommunityPlatformAdminCommunitiesCommunityIdBans\"' has no exported member 'postCommunityPlatformAdminCommunitiesCommunityIdBans'.",
+      "location": {
+        "file": "src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
+        "line": 972
+      },
+      "id": "type-error-1774846293511-p2hcz7gcdfe",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2749",
+      "message": "'Prisma.SortOrder' refers to a value, but is being used as a type here. Did you mean 'typeof Prisma.SortOrder'?",
+      "location": {
+        "file": "src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
+        "line": 1647
+      },
+      "id": "type-error-1774846293511-acx2lc7l5an",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:51:33.866Z",
+    "totalDurationMs": 5081,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 246
+  },
+  "penalties": {
+    "duplication": {
+      "amount": 1,
+      "blocks": 101
+    },
+    "jsdoc": {
+      "amount": 5,
+      "missing": 31,
+      "ratio": "97%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1233,
+    "totalFiles": 246,
+    "totalLines": 25554,
+    "avgLinesPerFile": 104,
+    "largestFile": "src/api/functional/communityPlatform/member/communities/moderationRoles/index.ts",
+    "largestFileSizeKB": 28,
+    "controllers": 31,
+    "providers": 89,
+    "structures": 31,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

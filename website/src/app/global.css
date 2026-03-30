@@ -21,6 +21,22 @@
   margin: 0 !important;
 }
 
+/* ── Blog page: hide docs sidebar ── */
+.blog-page ~ .nextra-sidebar-container,
+.blog-page ~ .nextra-sidebar,
+:has(.blog-page) > .nextra-sidebar-container,
+:has(.blog-page) > .nextra-sidebar,
+:has(.blog-page) aside.nextra-sidebar-container,
+:has(.blog-page) button[aria-label="Toggle Sidebar"] {
+  display: none !important;
+}
+:has(.blog-page) article {
+  max-width: 100% !important;
+}
+:has(.blog-page) main {
+  max-width: 100% !important;
+}
+
 /* ── Code showcase compile result animation ── */
 @keyframes fadeSlideUp {
   from {

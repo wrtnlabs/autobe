@@ -1,0 +1,3058 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp",
+  "totalScore": 79,
+  "grade": "C",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 91,
+      "maxScore": 100,
+      "weightedScore": 91,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846506016-8cdwaw8ulww",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2739",
+          "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, role, employee, project, created_at",
+          "location": {
+            "file": "src/controllers/hrmPlatform/member/projects/my/HrmplatformMemberProjectsMyController.ts",
+            "line": 3003
+          },
+          "id": "type-error-1774846506016-g702clqekx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+            "line": 2278
+          },
+          "id": "type-error-1774846506016-brzns3tm97n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'count._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+            "line": 2589
+          },
+          "id": "type-error-1774846506016-9brx38bus0q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'count._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+            "line": 2674
+          },
+          "id": "type-error-1774846506016-bpfwhh4hdml",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'count._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+            "line": 2761
+          },
+          "id": "type-error-1774846506016-5k7bop11o4g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'timelogAggregation._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/getHrmPlatformMemberProjectsProjectIdAnalyticsBudget.ts",
+            "line": 1889
+          },
+          "id": "type-error-1774846506016-q332nci52cf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'totalHoursResult._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberDashboardOrganization.ts",
+            "line": 2943
+          },
+          "id": "type-error-1774846506016-dp7jc5t9po",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'hoursTodayResult._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberDashboardPersonal.ts",
+            "line": 4196
+          },
+          "id": "type-error-1774846506016-jjxetecp53k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'hoursThisWeekResult._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberDashboardPersonal.ts",
+            "line": 4738
+          },
+          "id": "type-error-1774846506016-u5evfc87qia",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberEmployeeDepartmentHistories.ts",
+            "line": 1670
+          },
+          "id": "type-error-1774846506016-r91v5j5jeap",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberEmployeeDepartmentHistories.ts",
+            "line": 1967
+          },
+          "id": "type-error-1774846506016-kbazh4ff9k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2694",
+          "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberOrganizations.ts",
+            "line": 1169
+          },
+          "id": "type-error-1774846506016-swebp8tf7mg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'totalAggregate._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 2762
+          },
+          "id": "type-error-1774846506016-5x5agftglsx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 3063
+          },
+          "id": "type-error-1774846506016-hmxrmlt2486",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'eb._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 3527
+          },
+          "id": "type-error-1774846506016-zwjww5bxmw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 4088
+          },
+          "id": "type-error-1774846506016-yqfdh4v4b0j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'tb._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 4646
+          },
+          "id": "type-error-1774846506016-1vzdz5ffwop",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 5174
+          },
+          "id": "type-error-1774846506016-g4fexohniz5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'db._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 5444
+          },
+          "id": "type-error-1774846506016-et5v5nje84",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type 'unknown' is not assignable to parameter of type '(string & Format<\"date-time\">) | Date'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 5622
+          },
+          "id": "type-error-1774846506016-721ayq82ogr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2353",
+          "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 5985
+          },
+          "id": "type-error-1774846506016-ggykkzsfeww",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'bb._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 6202
+          },
+          "id": "type-error-1774846506016-i8ndsqwbgrq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'dateRangeAggregate._min' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 7140
+          },
+          "id": "type-error-1774846506016-qhn8mlf615e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'dateRangeAggregate._min' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 7194
+          },
+          "id": "type-error-1774846506016-85wg7kepiqk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'dateRangeAggregate._max' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 7329
+          },
+          "id": "type-error-1774846506016-pnypmf8fcy",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'dateRangeAggregate._max' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 7383
+          },
+          "id": "type-error-1774846506016-xbli5shvnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'aggregated._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 2560
+          },
+          "id": "type-error-1774846506016-7fuw0wnt5q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'aggregated._count' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 2661
+          },
+          "id": "type-error-1774846506016-ulauz36mj6a",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'billableAgg._sum' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 2876
+          },
+          "id": "type-error-1774846506016-sc1yvcynuc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereConditions.date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberReportsWeeklySummary.ts",
+            "line": 1785
+          },
+          "id": "type-error-1774846506016-spbn7l8p9pq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS18046",
+          "message": "'whereConditions.date' is of type 'unknown'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberReportsWeeklySummary.ts",
+            "line": 1886
+          },
+          "id": "type-error-1774846506016-zizkj0nt9yc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberRolesRoleIdPermissions.ts",
+            "line": 3374
+          },
+          "id": "type-error-1774846506016-weckgbplwe9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "type-error",
+          "code": "TS2488",
+          "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberTimersTimerIdStop.ts",
+            "line": 2271
+          },
+          "id": "type-error-1774846506016-tk3mkzxixkb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2345",
+          "message": "Argument of type '(Promise<hrm_platform_timers> | Promise<hrm_platform_timelogs>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<hrm_platform_timers> | Promise<hrm_platform_timelogs>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+          "location": {
+            "file": "src/providers/patchHrmPlatformMemberTimersTimerIdStop.ts",
+            "line": 2325
+          },
+          "id": "type-error-1774846506016-wcjdlphnq0r",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 6537,
+      "metrics": {
+        "totalFiles": 281,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 9,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 25,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 91,
+      "maxScore": 100,
+      "weightedScore": 6.370000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 326327,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 31,
+        "providerCount": 92,
+        "structureCount": 49,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 31,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 71,
+      "maxScore": 100,
+      "weightedScore": 16.330000000000002,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 173,
+        "controllerCount": 31,
+        "routeAnalysis": true,
+        "totalRoutes": 89,
+        "coveredRoutes": 48,
+        "routeCoveragePercent": 54,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "GET,DELETE,POST,PATCH,PUT",
+        "controllersAnalyzed": 31,
+        "stubTests": 1,
+        "assertionTests": 172,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 92,
+      "maxScore": 100,
+      "weightedScore": 27.599999999999998,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 1,
+        "criticalCount": 1,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 89,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 89,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 838,
+      "complexFunctions": 8,
+      "maxComplexity": 38,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmPlatformMemberTimelogsTimelogId\" has complexity 27 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberTimelogsTimelogId.ts",
+            "line": 23
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506191-pwa3izll0eh",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmPlatformMemberProjectsProjectIdTasksTaskId\" has complexity 28 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberProjectsProjectIdTasksTaskId.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506193-k94xzql4br",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"putHrmPlatformMemberEmployeesEmployeeId\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberEmployeesEmployeeId.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506196-vhbgeap3iu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"putHrmPlatformMemberDepartmentsDepartmentId\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberDepartmentsDepartmentId.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506197-1d6mqyougih",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"postHrmPlatformMemberProjectsProjectIdTasks\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformMemberProjectsProjectIdTasks.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506200-fi91yey2c7o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberTimesheets\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506224-jucgp61xgo",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmPlatformMemberTimelogs\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 22
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506218-6kqxx32d8b3",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmPlatformMemberReportsTime\" has complexity 38 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506232-0y0wg1prjq3",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmPlatformMemberReportsProjectBudget\" has complexity 29 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsProjectBudget.ts",
+            "line": 18
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506220-zvfvoov6ggf",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmPlatformMemberProjectsProjectIdTasks\" has complexity 21 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberProjectsProjectIdTasks.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506222-wy02gj5upo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberProjectsProjectIdMembers\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberProjectsProjectIdMembers.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506226-anm8zadfu98",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberProjectsProjectIdAnalyticsTime\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+            "line": 15
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506229-te2okfqcwm8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberEmployeesEmployeeIdContracts\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberEmployeesEmployeeIdContracts.ts",
+            "line": 20
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506227-cs9npj805hf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberEmployeeDepartmentHistories\" has complexity 18 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberEmployeeDepartmentHistories.ts",
+            "line": 21
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506234-nr2ssh3c6w9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchHrmPlatformMemberDashboardPersonal\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberDashboardPersonal.ts",
+            "line": 28
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846506235-ri9l6pb0xx",
+          "autoFixable": false
+        },
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchHrmPlatformMemberContracts\" has complexity 26 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberContracts.ts",
+            "line": 20
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846506241-10t0hgbxw5k",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 92,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberProfile.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846506394-tbiupdrrgpm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberProfile.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846506394-1nsjdfuzwqa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberProfile.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846506394-lshxdgnfq8g",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/putHrmPlatformMemberProfile.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846506394-su1zmkgnc3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformMemberTimers.ts",
+            "line": 26
+          },
+          "id": "duplication-1774846506394-90kdz44tsrr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformMemberTimers.ts",
+            "line": 27
+          },
+          "id": "duplication-1774846506394-z0w07ni2dx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846506394-8rv9mb92m2l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 92
+          },
+          "id": "duplication-1774846506394-j03374h63j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 93
+          },
+          "id": "duplication-1774846506394-hrzqg8ilhkf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 94
+          },
+          "id": "duplication-1774846506394-44o6w9js1lv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 95
+          },
+          "id": "duplication-1774846506394-ze8cp7km3ji",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/postHrmPlatformAuthMemberLogin.ts",
+            "line": 96
+          },
+          "id": "duplication-1774846506394-jn7mu59zua",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 17
+          },
+          "id": "duplication-1774846506394-r92vm09hdig",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdSubmit.ts",
+            "line": 18
+          },
+          "id": "duplication-1774846506394-8uh9tld11gc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 39
+          },
+          "id": "duplication-1774846506394-q119jn99z1o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 40
+          },
+          "id": "duplication-1774846506394-r72fzihvum",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 41
+          },
+          "id": "duplication-1774846506394-6omp7e0e0ma",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 42
+          },
+          "id": "duplication-1774846506394-krnsz4ahmmg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846506394-stxh9d3z92",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheetsTimesheetIdReject.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846506394-nxaa5n2guhc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 83
+          },
+          "id": "duplication-1774846506394-894esa1u4sd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 11 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 84
+          },
+          "id": "duplication-1774846506394-2t7eu6b6cvl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 11 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846506394-1igf87epkfdh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 11 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 86
+          },
+          "id": "duplication-1774846506394-8xmvz2taol",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 11 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 87
+          },
+          "id": "duplication-1774846506394-1ghfketb691",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 11 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 88
+          },
+          "id": "duplication-1774846506394-w3ay3rs9ax",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 89
+          },
+          "id": "duplication-1774846506394-mldlzz6rmbj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 90
+          },
+          "id": "duplication-1774846506394-fd546ceepq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 91
+          },
+          "id": "duplication-1774846506394-k2mm4ztjck",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 3 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 92
+          },
+          "id": "duplication-1774846506394-5dpqb9ffj3j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 93
+          },
+          "id": "duplication-1774846506394-l0mi888uevo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimesheets.ts",
+            "line": 99
+          },
+          "id": "duplication-1774846506394-najsckx9zz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 57
+          },
+          "id": "duplication-1774846506394-7oa8ggxh24e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846506394-3rl9pdci9wb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846506394-un57oucx0je",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846506394-0xxkr65iygf",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 67
+          },
+          "id": "duplication-1774846506394-89tlpq5joop",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 68
+          },
+          "id": "duplication-1774846506394-89h2fj9eeux",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 69
+          },
+          "id": "duplication-1774846506394-xojg6wgt96k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 70
+          },
+          "id": "duplication-1774846506394-qweo8casni",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 71
+          },
+          "id": "duplication-1774846506394-dbd4wuq4ii",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 9 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 72
+          },
+          "id": "duplication-1774846506394-hl07lsfhozw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 85
+          },
+          "id": "duplication-1774846506394-td4x8j4fmut",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 110
+          },
+          "id": "duplication-1774846506394-pn7cw8nyzip",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 111
+          },
+          "id": "duplication-1774846506394-tc5td36h4ai",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 112
+          },
+          "id": "duplication-1774846506394-p9h1rq10jlk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 113
+          },
+          "id": "duplication-1774846506394-j096ruf00f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 114
+          },
+          "id": "duplication-1774846506394-pjinl4gwrh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 115
+          },
+          "id": "duplication-1774846506394-ue8fgfl2e6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 116
+          },
+          "id": "duplication-1774846506394-f5nfsqzr9en",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 6 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 117
+          },
+          "id": "duplication-1774846506394-tgpfcaf38nd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 7 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 123
+          },
+          "id": "duplication-1774846506394-esda56jyrmh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 7 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 124
+          },
+          "id": "duplication-1774846506394-smdo8430pte",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 143
+          },
+          "id": "duplication-1774846506394-dn0soxxnvak",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 5 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberTimelogs.ts",
+            "line": 144
+          },
+          "id": "duplication-1774846506394-na4vqkum8u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 178
+          },
+          "id": "duplication-1774846506394-xe4rf73heq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 179
+          },
+          "id": "duplication-1774846506394-0kdcu4t1dcdg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 180
+          },
+          "id": "duplication-1774846506394-xxdnjkllgs",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 181
+          },
+          "id": "duplication-1774846506394-2l8yvvna6kg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 182
+          },
+          "id": "duplication-1774846506394-chak3ablxcv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 183
+          },
+          "id": "duplication-1774846506394-fcpc4trlsk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 184
+          },
+          "id": "duplication-1774846506394-y515gsug42",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 185
+          },
+          "id": "duplication-1774846506394-9t4tcthnovp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 4 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 214
+          },
+          "id": "duplication-1774846506394-1ifdi7m5yrb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 215
+          },
+          "id": "duplication-1774846506394-tez01x7us4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 216
+          },
+          "id": "duplication-1774846506394-sjckbgs63d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 217
+          },
+          "id": "duplication-1774846506394-5e906t2bwne",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 248
+          },
+          "id": "duplication-1774846506394-c8fixpnk1m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 249
+          },
+          "id": "duplication-1774846506394-0crn7aiyn50v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 250
+          },
+          "id": "duplication-1774846506394-e1gv1vry49",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 251
+          },
+          "id": "duplication-1774846506394-1fllibo9o68i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 252
+          },
+          "id": "duplication-1774846506394-yuep4ljsehi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 273
+          },
+          "id": "duplication-1774846506394-n8kgi6gdz4",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 274
+          },
+          "id": "duplication-1774846506394-eygy54fofk",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 275
+          },
+          "id": "duplication-1774846506394-w87ocl6psqi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 276
+          },
+          "id": "duplication-1774846506394-sbe4xhd7ea",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 277
+          },
+          "id": "duplication-1774846506394-rrm9ybdecme",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 278
+          },
+          "id": "duplication-1774846506394-7xc14e7vq9t",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 279
+          },
+          "id": "duplication-1774846506394-hsl5o1tqwa6",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 280
+          },
+          "id": "duplication-1774846506394-cyn6izynkjc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 281
+          },
+          "id": "duplication-1774846506394-nw6uo8tdaqq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 282
+          },
+          "id": "duplication-1774846506394-mlpbohkyan",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 283
+          },
+          "id": "duplication-1774846506394-frg3y5q33f7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 284
+          },
+          "id": "duplication-1774846506394-s1heeq4oq3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 285
+          },
+          "id": "duplication-1774846506394-5fjp5fffd69",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 286
+          },
+          "id": "duplication-1774846506394-dlho04r1ry",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 287
+          },
+          "id": "duplication-1774846506394-wmd3izkyqd7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 288
+          },
+          "id": "duplication-1774846506394-g924l725q39",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 313
+          },
+          "id": "duplication-1774846506394-zudcnkv223k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberReportsTime.ts",
+            "line": 314
+          },
+          "id": "duplication-1774846506394-odzjlqyjksl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberEmployeesEmployeeIdContracts.ts",
+            "line": 125
+          },
+          "id": "duplication-1774846506394-qbx2kxi7m6f",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/providers/patchHrmPlatformMemberEmployeesEmployeeIdContracts.ts",
+            "line": 126
+          },
+          "id": "duplication-1774846506394-4k5m6z9x5pk",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 4,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmplatformMemberEmployee_department_historiesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/employee-department-histories/HrmplatformMemberEmployee_department_historiesController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846506400-ai5g49kq81v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmplatformMemberActivity_logsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/activity-logs/HrmplatformMemberActivity_logsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846506400-vef2wnu4p1q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmplatformMemberReportsWeekly_summaryController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/reports/weekly-summary/HrmplatformMemberReportsWeekly_summaryController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846506401-cmm0h7jlp7e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmplatformMemberReportsProject_budgetController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/reports/project-budget/HrmplatformMemberReportsProject_budgetController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846506401-aeo88a1c9d",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 31,
+      "totalApis": 32,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/guests/HrmplatformGuestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506431-9k0h5dnt6in",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/members/HrmplatformMembersController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846506431-g9s1q4154lr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/auth/member/HrmplatformAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506432-ze10fxbv5i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/auth/guest/HrmplatformAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846506432-5a5mynd5nyi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/guest/sessions/HrmplatformGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846506432-uh85q115tir",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberTimesheetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/timesheets/HrmplatformMemberTimesheetsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846506434-fwlbm2bdr8m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberTimersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/timers/HrmplatformMemberTimersController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846506433-l4vz3ahurd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/timelogs/HrmplatformMemberTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506433-u3rutec9zyb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/roles/HrmplatformMemberRolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506434-t3yk2bbtz1j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/HrmplatformMemberProjectsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506435-ao13wgkc7zf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/profile/HrmplatformMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506435-9zr69awnidv",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/organizations/HrmplatformMemberOrganizationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506436-4l54mlyogb8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberEmployeesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/employees/HrmplatformMemberEmployeesController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846506437-slieeqptndl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberEmployee_department_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/employee-department-histories/HrmplatformMemberEmployee_department_historiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846506439-i5dfnpt8ai",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/departments/HrmplatformMemberDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506438-r9bowel7tw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/contracts/HrmplatformMemberContractsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846506436-bsqghotgwjt",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberActivity_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/activity-logs/HrmplatformMemberActivity_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846506438-o6fe96dmau",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberRolesPermissionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/roles/permissions/HrmplatformMemberRolesPermissionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846506439-uyhol3sftrq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberReportsWeekly_summaryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/reports/weekly-summary/HrmplatformMemberReportsWeekly_summaryController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846506438-ydchdzl07s",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberReportsTimeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/reports/time/HrmplatformMemberReportsTimeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506439-chwuxrwkz0p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberReportsProject_budgetController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/reports/project-budget/HrmplatformMemberReportsProject_budgetController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846506439-bbyw8wvvlmm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/tasks/HrmplatformMemberProjectsTasksController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506440-6bq82pbz086",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsMyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/my/HrmplatformMemberProjectsMyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506445-wmeqqx5715",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/members/HrmplatformMemberProjectsMembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846506441-4cvoqmfcgmf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberEmployeesContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/employees/contracts/HrmplatformMemberEmployeesContractsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846506440-udl0g86yht",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberDashboardPersonalController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/dashboard/personal/HrmplatformMemberDashboardPersonalController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506441-kructodq3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberDashboardOrganizationController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/dashboard/organization/HrmplatformMemberDashboardOrganizationController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506441-ysw0bx4shl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberDashboardProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/dashboard/projects/HrmplatformMemberDashboardProjectsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506441-ycqs3h6r8hi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsTasksHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/tasks/histories/HrmplatformMemberProjectsTasksHistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846506442-s0ivdwgc1w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsAnalyticsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/analytics/budget/HrmplatformMemberProjectsAnalyticsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506442-567u5sptkp2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmplatformMemberProjectsAnalyticsTimeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-397b-a17b/erp/src/controllers/hrmPlatform/member/projects/analytics/time/HrmplatformMemberProjectsAnalyticsTimeController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846506442-9y1kowm3myh",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 130,
+      "emptyTypes": 0,
+      "mismatchedProperties": 23,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformMember\" not found — referenced by @x-autobe-database-schema-property reviewedBy",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimesheet.ts",
+            "line": 144
+          },
+          "id": "completeness-1774846506487-48mi1ngod3q",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimesheet.ts",
+            "line": 152
+          },
+          "id": "completeness-1774846506487-qh96956ny09",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimer.ts",
+            "line": 23
+          },
+          "id": "completeness-1774846506487-irks1gvqkz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformProject\" not found — referenced by @x-autobe-database-schema-property project",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimer.ts",
+            "line": 31
+          },
+          "id": "completeness-1774846506487-cb8q7e9i4hi",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformTask\" not found — referenced by @x-autobe-database-schema-property task",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimer.ts",
+            "line": 39
+          },
+          "id": "completeness-1774846506487-4zruyw6gdk8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimelog.ts",
+            "line": 170
+          },
+          "id": "completeness-1774846506487-929zwm7qedw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformProject\" not found — referenced by @x-autobe-database-schema-property project",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimelog.ts",
+            "line": 178
+          },
+          "id": "completeness-1774846506487-wr5cm08gw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformTask\" not found — referenced by @x-autobe-database-schema-property task",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTimelog.ts",
+            "line": 186
+          },
+          "id": "completeness-1774846506487-2tlmuyz6os8",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformMember\" not found — referenced by @x-autobe-database-schema-property user",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTaskHistory.ts",
+            "line": 45
+          },
+          "id": "completeness-1774846506487-gtkw35yfh0e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"user\" not found in Prisma model \"hrm_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformTaskHistory.ts",
+            "line": 90
+          },
+          "id": "completeness-1774846506487-btrnp5mulwp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformProjectMember.ts",
+            "line": 125
+          },
+          "id": "completeness-1774846506488-5mn52wipjx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformProject\" not found — referenced by @x-autobe-database-schema-property project",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformProjectMember.ts",
+            "line": 133
+          },
+          "id": "completeness-1774846506488-rhprnhv5z",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"hrm_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformMemberSession.ts",
+            "line": 183
+          },
+          "id": "completeness-1774846506488-4ydspcthsnt",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"employee\" not found in Prisma model \"hrm_platform_employees\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 23
+          },
+          "id": "completeness-1774846506488-m73skmt2m3n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"department\" not found in Prisma model \"hrm_platform_departments\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 31
+          },
+          "id": "completeness-1774846506488-uc0xxemfy8r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"changedBy\" not found in Prisma model \"hrm_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 39
+          },
+          "id": "completeness-1774846506488-0vko0g0i6twn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"employee\" not found in Prisma model \"hrm_platform_employees\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 76
+          },
+          "id": "completeness-1774846506488-z73tzzmm5up",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"department\" not found in Prisma model \"hrm_platform_departments\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 84
+          },
+          "id": "completeness-1774846506488-v0ri8bzpw9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"changedBy\" not found in Prisma model \"hrm_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeDepartmentHistory.ts",
+            "line": 92
+          },
+          "id": "completeness-1774846506488-1d3clincqr7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeContract.ts",
+            "line": 21
+          },
+          "id": "completeness-1774846506488-v0na8pixqbj",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"IHrmPlatformEmployee\" not found — referenced by @x-autobe-database-schema-property employee",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformEmployeeContract.ts",
+            "line": 154
+          },
+          "id": "completeness-1774846506488-zk9btnkmupn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"organization\" not found in Prisma model \"hrm_platform_organizations\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformDepartment.ts",
+            "line": 45
+          },
+          "id": "completeness-1774846506488-s71jp63dq1",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"hrm_platform_members\"",
+          "location": {
+            "file": "src/api/structures/IHrmPlatformActivityLog.ts",
+            "line": 131
+          },
+          "id": "completeness-1774846506488-d9nnorpj2c7",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 35,
+    "criticalCount": 0,
+    "warningCount": 25,
+    "suggestionCount": 10
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846506016-8cdwaw8ulww",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'count._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+        "line": 2589
+      },
+      "id": "type-error-1774846506016-9brx38bus0q",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'count._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+        "line": 2674
+      },
+      "id": "type-error-1774846506016-bpfwhh4hdml",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'count._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+        "line": 2761
+      },
+      "id": "type-error-1774846506016-5k7bop11o4g",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'timelogAggregation._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/getHrmPlatformMemberProjectsProjectIdAnalyticsBudget.ts",
+        "line": 1889
+      },
+      "id": "type-error-1774846506016-q332nci52cf",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'totalHoursResult._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberDashboardOrganization.ts",
+        "line": 2943
+      },
+      "id": "type-error-1774846506016-dp7jc5t9po",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'hoursTodayResult._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberDashboardPersonal.ts",
+        "line": 4196
+      },
+      "id": "type-error-1774846506016-jjxetecp53k",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'hoursThisWeekResult._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberDashboardPersonal.ts",
+        "line": 4738
+      },
+      "id": "type-error-1774846506016-u5evfc87qia",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'totalAggregate._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 2762
+      },
+      "id": "type-error-1774846506016-5x5agftglsx",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'eb._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 3527
+      },
+      "id": "type-error-1774846506016-zwjww5bxmw",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'tb._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 4646
+      },
+      "id": "type-error-1774846506016-1vzdz5ffwop",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'db._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 5444
+      },
+      "id": "type-error-1774846506016-et5v5nje84",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type 'unknown' is not assignable to parameter of type '(string & Format<\"date-time\">) | Date'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 5622
+      },
+      "id": "type-error-1774846506016-721ayq82ogr",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'bb._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 6202
+      },
+      "id": "type-error-1774846506016-i8ndsqwbgrq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'dateRangeAggregate._min' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 7140
+      },
+      "id": "type-error-1774846506016-qhn8mlf615e",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'dateRangeAggregate._min' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 7194
+      },
+      "id": "type-error-1774846506016-85wg7kepiqk",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'dateRangeAggregate._max' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 7329
+      },
+      "id": "type-error-1774846506016-pnypmf8fcy",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'dateRangeAggregate._max' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 7383
+      },
+      "id": "type-error-1774846506016-xbli5shvnc",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'aggregated._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+        "line": 2560
+      },
+      "id": "type-error-1774846506016-7fuw0wnt5q",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'aggregated._count' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+        "line": 2661
+      },
+      "id": "type-error-1774846506016-ulauz36mj6a",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'billableAgg._sum' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberReportsTime.ts",
+        "line": 2876
+      },
+      "id": "type-error-1774846506016-sc1yvcynuc",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereConditions.date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberReportsWeeklySummary.ts",
+        "line": 1785
+      },
+      "id": "type-error-1774846506016-spbn7l8p9pq",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS18046",
+      "message": "'whereConditions.date' is of type 'unknown'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberReportsWeeklySummary.ts",
+        "line": 1886
+      },
+      "id": "type-error-1774846506016-zizkj0nt9yc",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string; role_id: string & Format<\"uuid\">; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string; role_id: string & Format<\"uuid\">; permission: string; created_at: Date; updated_at: Date; deleted_at: null; }[]'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberRolesRoleIdPermissions.ts",
+        "line": 3374
+      },
+      "id": "type-error-1774846506016-weckgbplwe9",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2345",
+      "message": "Argument of type '(Promise<hrm_platform_timers> | Promise<hrm_platform_timelogs>)[]' is not assignable to parameter of type '(tx: TransactionClient) => Promise<unknown>'.\n  Type '(Promise<hrm_platform_timers> | Promise<hrm_platform_timelogs>)[]' provides no match for the signature '(tx: TransactionClient): Promise<unknown>'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberTimersTimerIdStop.ts",
+        "line": 2325
+      },
+      "id": "type-error-1774846506016-wcjdlphnq0r",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2739",
+      "message": "Type 'ISummary[]' is missing the following properties from type 'ISummary': id, role, employee, project, created_at",
+      "location": {
+        "file": "src/controllers/hrmPlatform/member/projects/my/HrmplatformMemberProjectsMyController.ts",
+        "line": 3003
+      },
+      "id": "type-error-1774846506016-g702clqekx",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/getHrmPlatformMemberDashboardProjects.ts",
+        "line": 2278
+      },
+      "id": "type-error-1774846506016-brzns3tm97n",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberEmployeeDepartmentHistories.ts",
+        "line": 1670
+      },
+      "id": "type-error-1774846506016-r91v5j5jeap",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberEmployeeDepartmentHistories.ts",
+        "line": 1967
+      },
+      "id": "type-error-1774846506016-kbazh4ff9k",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2694",
+      "message": "Namespace '\"src/prisma/client\".Prisma' has no exported member 'DateTimeFilter'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberOrganizations.ts",
+        "line": 1169
+      },
+      "id": "type-error-1774846506016-swebp8tf7mg",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 3063
+      },
+      "id": "type-error-1774846506016-hmxrmlt2486",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 4088
+      },
+      "id": "type-error-1774846506016-yqfdh4v4b0j",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 5174
+      },
+      "id": "type-error-1774846506016-g4fexohniz5",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2353",
+      "message": "Object literal may only specify known properties, and 'by' does not exist in type 'PrismaFindArgs'.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberProjectsProjectIdAnalyticsTime.ts",
+        "line": 5985
+      },
+      "id": "type-error-1774846506016-ggykkzsfeww",
+      "autoFixable": false
+    },
+    {
+      "severity": "suggestion",
+      "category": "type-error",
+      "code": "TS2488",
+      "message": "Type 'unknown' must have a '[Symbol.iterator]()' method that returns an iterator.",
+      "location": {
+        "file": "src/providers/patchHrmPlatformMemberTimersTimerIdStop.ts",
+        "line": 2271
+      },
+      "id": "type-error-1774846506016-tk3mkzxixkb",
+      "autoFixable": false
+    }
+  ],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:55:06.490Z",
+    "totalDurationMs": 6919,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 281
+  },
+  "penalties": {
+    "duplication": {
+      "amount": 1,
+      "blocks": 92
+    },
+    "jsdoc": {
+      "amount": 5,
+      "missing": 31,
+      "ratio": "97%"
+    },
+    "schemaSync": {
+      "amount": 2,
+      "emptyTypes": 0,
+      "mismatchedProperties": 23
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 1421,
+    "totalFiles": 281,
+    "totalLines": 32557,
+    "avgLinesPerFile": 116,
+    "largestFile": "src/api/functional/hrmPlatform/member/employees/index.ts",
+    "largestFileSizeKB": 29,
+    "controllers": 31,
+    "providers": 92,
+    "structures": 49,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

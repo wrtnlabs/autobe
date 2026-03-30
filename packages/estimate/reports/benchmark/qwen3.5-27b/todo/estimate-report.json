@@ -1,0 +1,832 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo",
+  "totalScore": 88,
+  "grade": "B",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 98,
+      "maxScore": 100,
+      "weightedScore": 98,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846462226-pkzhailbv8c",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2322",
+          "message": "Type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]'.",
+          "location": {
+            "file": "src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
+            "line": 4187
+          },
+          "id": "type-error-1774846462226-fjeme5toz08",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 2196,
+      "metrics": {
+        "totalFiles": 81,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 2,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 2,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 94,
+      "maxScore": 100,
+      "weightedScore": 6.580000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 238531,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 7,
+        "providerCount": 21,
+        "structureCount": 11,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 7,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 78,
+      "maxScore": 100,
+      "weightedScore": 17.94,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 49,
+        "controllerCount": 7,
+        "routeAnalysis": true,
+        "totalRoutes": 18,
+        "coveredRoutes": 12,
+        "routeCoveragePercent": 67,
+        "definedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "testedMethods": "POST,GET,PUT,PATCH,DELETE",
+        "controllersAnalyzed": 7,
+        "stubTests": 2,
+        "assertionTests": 47,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 30,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 0,
+        "criticalCount": 0,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 18,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 18,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 183,
+      "complexFunctions": 0,
+      "maxComplexity": 20,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberTodosTodoId\" has complexity 20 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
+            "line": 17
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846462275-gwszyyzls5",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberTodos\" has complexity 17 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTodos.ts",
+            "line": 19
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846462276-dmvt064zbxv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "complexity",
+          "code": "C002",
+          "message": "Function \"patchMultiUserTodoMemberSessions\" has complexity 16 (recommended: 15)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberSessions.ts",
+            "line": 18
+          },
+          "suggestion": "Consider simplifying this function",
+          "id": "complexity-1774846462276-aq7e71bu07n",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 35,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 38
+          },
+          "id": "duplication-1774846462300-rwgbf60ueqg",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 39
+          },
+          "id": "duplication-1774846462300-1hmx4x3v1af",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846462300-l5mdcr8r1cd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846462300-t0lvli8a2og",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/putMultiUserTodoMemberTrashTodoIdRestore.ts",
+            "line": 13
+          },
+          "id": "duplication-1774846462300-3fhc5a704mw",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 48
+          },
+          "id": "duplication-1774846462300-lbno5ot5ne",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 49
+          },
+          "id": "duplication-1774846462300-0cmxkz2o7c4b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846462300-69l135hv7wn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846462300-ih6o208yx",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846462300-o7m6vaqfhz",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 53
+          },
+          "id": "duplication-1774846462300-iaizq250p6e",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 54
+          },
+          "id": "duplication-1774846462300-v6vkbxlpign",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 55
+          },
+          "id": "duplication-1774846462300-fix917ax3k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 56
+          },
+          "id": "duplication-1774846462300-2y59acjmucd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 57
+          },
+          "id": "duplication-1774846462300-hbtcee0aoxe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 58
+          },
+          "id": "duplication-1774846462300-sm8rs8i6hf7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 59
+          },
+          "id": "duplication-1774846462300-65lsg4vwecr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 60
+          },
+          "id": "duplication-1774846462300-km1kct1jxu",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 61
+          },
+          "id": "duplication-1774846462300-exd1n5dfzv",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 62
+          },
+          "id": "duplication-1774846462300-1pdk3usr1ho",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 63
+          },
+          "id": "duplication-1774846462300-0i1wo1pjnc0r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 64
+          },
+          "id": "duplication-1774846462300-0844h031n51u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 65
+          },
+          "id": "duplication-1774846462300-g6tgerq8e1n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 66
+          },
+          "id": "duplication-1774846462300-16rqtchzrsy",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 67
+          },
+          "id": "duplication-1774846462300-v2j2puavw6j",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 68
+          },
+          "id": "duplication-1774846462300-7ra50f98eh7",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
+            "line": 69
+          },
+          "id": "duplication-1774846462300-tnsoh1iyzp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846462300-9u4graspc3",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 68
+          },
+          "id": "duplication-1774846462300-7jx7049ljat",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 69
+          },
+          "id": "duplication-1774846462300-mozndq40z9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 70
+          },
+          "id": "duplication-1774846462300-ve38cdcafe9",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 71
+          },
+          "id": "duplication-1774846462300-0xbqlw1xt5zc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/patchMultiUserTodoMemberTrash.ts",
+            "line": 72
+          },
+          "id": "duplication-1774846462300-c0kt7zdupn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteMultiUserTodoMemberTrashTodoId.ts",
+            "line": 8
+          },
+          "id": "duplication-1774846462300-5v3svhj79lq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/providers/deleteMultiUserTodoMemberTrashTodoId.ts",
+            "line": 9
+          },
+          "id": "duplication-1774846462300-b04n9tqo83",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 1,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberTodosEdit_historiesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/edit-histories/MultiusertodoMemberTodosEdit_historiesController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846462301-gaeeruwrujb",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 7,
+      "totalApis": 8,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846462306-891e71jg12b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTrashController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/trash/MultiusertodoMemberTrashController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846462306-agk01ixy1i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846462306-f0rd2lm1l4e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846462307-j4uhkf87vof",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846462307-b3jhb1nmt8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846462307-jo7d44qz3ms",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosEdit_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-27b/todo/src/controllers/multiUserTodo/member/todos/edit-histories/MultiusertodoMemberTodosEdit_historiesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846462308-5ms01gey43k",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 25,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 69
+          },
+          "id": "completeness-1774846462311-zri1umzlly",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Column \"member\" not found in Prisma model \"multi_user_todo_members\"",
+          "location": {
+            "file": "src/api/structures/IMultiUserTodoTodo.ts",
+            "line": 210
+          },
+          "id": "completeness-1774846462311-nboookrg0h",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 2,
+    "criticalCount": 0,
+    "warningCount": 2,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846462226-pkzhailbv8c",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2322",
+      "message": "Type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]' is not assignable to type 'Record<string, unknown>'.\n  Index signature for type 'string' is missing in type '{ id: string & Format<\"uuid\">; multi_user_todo_todos_id: string & Format<\"uuid\">; edit_timestamp: Date; field_name: string; old_value: string; new_value: string; created_at: Date; }[]'.",
+      "location": {
+        "file": "src/providers/patchMultiUserTodoMemberTodosTodoId.ts",
+        "line": 4187
+      },
+      "id": "type-error-1774846462226-fjeme5toz08",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:54:22.315Z",
+    "totalDurationMs": 2553,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 81
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 4,
+      "missing": 7,
+      "ratio": "88%"
+    },
+    "schemaSync": {
+      "amount": 1,
+      "emptyTypes": 0,
+      "mismatchedProperties": 2
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 260,
+    "totalFiles": 81,
+    "totalLines": 6351,
+    "avgLinesPerFile": 78,
+    "largestFile": "src/api/functional/multiUserTodo/member/todos/index.ts",
+    "largestFileSizeKB": 22,
+    "controllers": 7,
+    "providers": 21,
+    "structures": 11,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

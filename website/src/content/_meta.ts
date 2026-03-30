@@ -18,8 +18,12 @@ const meta: MetaRecord = {
     display: "hidden",
   },
   blog: {
+    display: "hidden",
+  },
+  "blog-articles": {
     type: "page",
     title: "📝 Blog Articles",
+    href: "/blog",
   },
   benchmark: {
     type: "page",

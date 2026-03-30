@@ -1,0 +1,825 @@
+{
+  "targetPath": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo",
+  "totalScore": 78,
+  "grade": "C",
+  "phases": {
+    "gate": {
+      "phase": "gate",
+      "passed": true,
+      "score": 99,
+      "maxScore": 100,
+      "weightedScore": 99,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2554",
+          "message": "Expected 0 arguments, but got 1.",
+          "location": {
+            "file": "src/MyGlobal.ts",
+            "line": 903
+          },
+          "id": "type-error-1774846350892-sixeksa8mgo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "type-error",
+          "code": "TS2305",
+          "message": "Module '\"@nestjs/common\"' has no exported member 'ParameterDecorator'.",
+          "location": {
+            "file": "src/decorators/MemberAuth.ts",
+            "line": 104
+          },
+          "id": "type-error-1774846350892-ph52u9usafa",
+          "autoFixable": false
+        }
+      ],
+      "durationMs": 3952,
+      "metrics": {
+        "totalFiles": 134,
+        "filesWithErrors": 0,
+        "errorRatio": 0,
+        "penalty": 1,
+        "typeCriticalCount": 0,
+        "typeWarningCount": 2,
+        "prismaCriticalCount": 0,
+        "prismaWarningCount": 0,
+        "softPass": true
+      }
+    },
+    "documentQuality": {
+      "phase": "documentQuality",
+      "passed": true,
+      "score": 89,
+      "maxScore": 100,
+      "weightedScore": 6.23,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "hasDocsFolder": true,
+        "hasReadme": true,
+        "docFileCount": 6,
+        "totalDocLength": 165777,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "requirementsCoverage": {
+      "phase": "requirementsCoverage",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 18,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "controllerCount": 16,
+        "providerCount": 38,
+        "structureCount": 17,
+        "requirementsDocCount": 6,
+        "hasRequirementsDocs": true,
+        "mappedControllers": 16,
+        "unmappedControllers": 0,
+        "mappingRatio": 1,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "testCoverage": {
+      "phase": "testCoverage",
+      "passed": true,
+      "score": 71,
+      "maxScore": 100,
+      "weightedScore": 16.330000000000002,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "testCount": 83,
+        "controllerCount": 16,
+        "routeAnalysis": true,
+        "totalRoutes": 35,
+        "coveredRoutes": 20,
+        "routeCoveragePercent": 57,
+        "definedMethods": "POST,PATCH,GET,PUT,DELETE",
+        "testedMethods": "POST,GET,PATCH,PUT,DELETE",
+        "controllersAnalyzed": 15,
+        "stubTests": 6,
+        "assertionTests": 77,
+        "runtimeVerified": false,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "logicCompleteness": {
+      "phase": "logicCompleteness",
+      "passed": true,
+      "score": 76,
+      "maxScore": 100,
+      "weightedScore": 22.8,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalIncomplete": 3,
+        "criticalCount": 3,
+        "warningCount": 0,
+        "todoCount": 0,
+        "fixmeCount": 0,
+        "emptyMethods": 0,
+        "emptyCatch": 0,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    },
+    "apiCompleteness": {
+      "phase": "apiCompleteness",
+      "passed": true,
+      "score": 100,
+      "maxScore": 100,
+      "weightedScore": 7.000000000000001,
+      "issues": [],
+      "durationMs": 0,
+      "metrics": {
+        "totalEndpoints": 35,
+        "emptyEndpoints": 0,
+        "stubEndpoints": 0,
+        "implementedEndpoints": 35,
+        "noProviderEndpoints": 0,
+        "passthroughEndpoints": 0,
+        "completionRate": 100,
+        "implementationRate": 100,
+        "cached": true,
+        "originalDurationMs": 0
+      }
+    }
+  },
+  "reference": {
+    "complexity": {
+      "totalFunctions": 349,
+      "complexFunctions": 1,
+      "maxComplexity": 22,
+      "issues": [
+        {
+          "severity": "critical",
+          "category": "complexity",
+          "code": "C001",
+          "message": "Function \"patchTodoAppMemberTodos\" has complexity 22 (max: 20)",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodos.ts",
+            "line": 17
+          },
+          "suggestion": "Consider breaking this function into smaller functions",
+          "id": "complexity-1774846350967-j5a27671wdp",
+          "autoFixable": false
+        }
+      ]
+    },
+    "duplication": {
+      "totalBlocks": 24,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 50
+          },
+          "id": "duplication-1774846351026-tj0rargb8ho",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 51
+          },
+          "id": "duplication-1774846351026-4bzrobrv5db",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 52
+          },
+          "id": "duplication-1774846351026-nk091cse4s",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 105
+          },
+          "id": "duplication-1774846351026-fzjoulxtl5d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 106
+          },
+          "id": "duplication-1774846351026-aaz1dx9g9la",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 107
+          },
+          "id": "duplication-1774846351026-x002wfmwhvr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 8
+          },
+          "id": "duplication-1774846351026-qmut0dlfdqo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 9
+          },
+          "id": "duplication-1774846351026-d62hd967o3l",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 10
+          },
+          "id": "duplication-1774846351026-gfqthi23b8w",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846351026-wsle9b60igr",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 12
+          },
+          "id": "duplication-1774846351026-x7jlumds9qc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 20
+          },
+          "id": "duplication-1774846351026-k0nv4ef3guo",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 21
+          },
+          "id": "duplication-1774846351026-bjoq24gk7m",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 22
+          },
+          "id": "duplication-1774846351026-vpkobhzd8v",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 23
+          },
+          "id": "duplication-1774846351026-jfzt8vzreih",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 24
+          },
+          "id": "duplication-1774846351026-enmvgmq6zlp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/putTodoAppMemberTodosTodoIdRestore.ts",
+            "line": 25
+          },
+          "id": "duplication-1774846351026-t4dfo7dpeb",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 10
+          },
+          "id": "duplication-1774846351026-kmkkh9cr9r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 11
+          },
+          "id": "duplication-1774846351026-886of8qw7jm",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 43
+          },
+          "id": "duplication-1774846351026-3yuvrd17xzh",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 44
+          },
+          "id": "duplication-1774846351026-cx517ezhdd",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 45
+          },
+          "id": "duplication-1774846351026-sbmjbstf9fn",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/patchTodoAppMemberTodosTodoIdHistoryEntries.ts",
+            "line": 46
+          },
+          "id": "duplication-1774846351026-tds4n2pjm2b",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/providers/getTodoAppMemberTodosTodoIdHistoryHistoryEntryId.ts",
+            "line": 9
+          },
+          "id": "duplication-1774846351026-qmt1ue6wu7",
+          "autoFixable": false
+        }
+      ]
+    },
+    "naming": {
+      "totalIssues": 3,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberPassword_resetsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846351027-anq74vu4kjc",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberEmail_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846351028-x97j0k4831r",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"TodoappMemberTodosHistory_entriesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846351029-0kuolwd3h7il",
+          "autoFixable": false
+        }
+      ]
+    },
+    "jsdoc": {
+      "totalMissing": 16,
+      "totalApis": 17,
+      "issues": [
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappGuestsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/guests/TodoappGuestsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846351041-2oiv36fpikg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846351042-f6guilvsg5t",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/guest/sessions/TodoappGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846351041-v60kfv3drkr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/profiles/TodoappMemberProfilesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846351042-ynwrdq490i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846351042-wne9ow5iww",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/password-resets/TodoappMemberPassword_resetsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846351042-4xpa785jp3e",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/email-verifications/TodoappMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846351043-b5pqiom93o6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/members/TodoappMemberMembersController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846351043-xx68joh8rkr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846351044-gflopxobrmu",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestRefreshController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/guest/refresh/TodoappAuthGuestRefreshController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846351044-n3gbl2rcjwq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestJoinController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/auth/guest/join/TodoappAuthGuestJoinController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846351045-1kuk9pamst8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosHistory_entriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history-entries/TodoappMemberTodosHistory_entriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846351045-j9lovz4yx4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosRestoreController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/restore/TodoappMemberTodosRestoreController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846351045-7e5xeihon8p",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/snapshots/TodoappMemberTodosSnapshotsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846351046-6ebue3m16nn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846351047-v5ngawzhx3f",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosHistoryOrderindexesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-nano/todo/src/controllers/todoApp/member/todos/history/orderIndexes/TodoappMemberTodosHistoryOrderindexesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846351047-95ijstv7hbu",
+          "autoFixable": false
+        }
+      ]
+    },
+    "schemaSync": {
+      "totalTypes": 43,
+      "emptyTypes": 2,
+      "mismatchedProperties": 2,
+      "issues": [
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property token",
+          "location": {
+            "file": "src/api/structures/ITodoAppMemberPasswordReset.ts",
+            "line": 80
+          },
+          "id": "completeness-1774846351058-7f0wndzcz67",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC002",
+          "message": "Prisma model \"request\" not found — referenced by @x-autobe-database-schema-property token",
+          "location": {
+            "file": "src/api/structures/ITodoAppMemberPasswordReset.ts",
+            "line": 88
+          },
+          "id": "completeness-1774846351058-2ndlp3smk7i",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: IRefresh = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/ITodoAppGuest.ts",
+            "line": 172
+          },
+          "id": "completeness-1774846351058-mydaty3yhq",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "completeness",
+          "code": "SYNC001",
+          "message": "Empty type alias: ISummary = {} — missing properties",
+          "location": {
+            "file": "src/api/structures/ITodoAppGuest.ts",
+            "line": 177
+          },
+          "id": "completeness-1774846351058-yt7p42q0p8m",
+          "autoFixable": false
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalIssues": 2,
+    "criticalCount": 0,
+    "warningCount": 2,
+    "suggestionCount": 0
+  },
+  "criticalIssues": [],
+  "warnings": [
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2554",
+      "message": "Expected 0 arguments, but got 1.",
+      "location": {
+        "file": "src/MyGlobal.ts",
+        "line": 903
+      },
+      "id": "type-error-1774846350892-sixeksa8mgo",
+      "autoFixable": false
+    },
+    {
+      "severity": "warning",
+      "category": "type-error",
+      "code": "TS2305",
+      "message": "Module '\"@nestjs/common\"' has no exported member 'ParameterDecorator'.",
+      "location": {
+        "file": "src/decorators/MemberAuth.ts",
+        "line": 104
+      },
+      "id": "type-error-1774846350892-ph52u9usafa",
+      "autoFixable": false
+    }
+  ],
+  "suggestions": [],
+  "meta": {
+    "evaluatedAt": "2026-03-30T04:52:31.058Z",
+    "totalDurationMs": 4108,
+    "estimateVersion": "0.30.4",
+    "evaluatedFiles": 134
+  },
+  "penalties": {
+    "jsdoc": {
+      "amount": 5,
+      "missing": 16,
+      "ratio": "94%"
+    }
+  },
+  "performanceMetrics": {
+    "totalSizeKB": 554,
+    "totalFiles": 134,
+    "totalLines": 12186,
+    "avgLinesPerFile": 91,
+    "largestFile": "src/api/functional/todoApp/member/todos/history/index.ts",
+    "largestFileSizeKB": 32,
+    "controllers": 16,
+    "providers": 38,
+    "structures": 17,
+    "tests": 0
+  },
+  "agentEvaluations": []
+}

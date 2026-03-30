@@ -412,21 +412,29 @@ export class TestCoverageEvaluator extends BaseEvaluator {
   ): number {
     if (analysis.totalRoutes === 0) return 0;
 
-    // 1. Route coverage (50 pts)
-    const routeScore = Math.round(analysis.routeCoverageRatio * 50);
+    // 1. Route coverage ratio (25 pts) — what fraction of routes are tested
+    const ratioScore = Math.round(analysis.routeCoverageRatio * 25);
 
-    // 2. Method diversity (15 pts)
+    // 2. Absolute coverage (25 pts) — reward testing MORE routes (log curve)
+    // Prevents models from gaming score by generating fewer endpoints.
+    // Scale: 5→9pts, 10→17pts, 15→21pts, 20→23pts, 25+=25pts
+    const absScore = Math.min(
+      25,
+      Math.round((25 * Math.log2(analysis.coveredRoutes + 1)) / Math.log2(26)),
+    );
+    const routeScore = ratioScore + absScore;
+
+    // 3. Method diversity (15 pts)
     const methodDiversity =
       analysis.definedMethods.size > 0
         ? analysis.testedMethods.size / analysis.definedMethods.size
         : 0;
     const methodScore = Math.round(methodDiversity * 15);
 
-    // 3. Test quality (25 pts)
+    // 4. Test quality (25 pts)
     const qualityScore = Math.round(quality.qualityRatio * 25);
 
-    // 4. Controller breadth (10 pts) — continuous scoring per controller
-    // Instead of a binary 50% cliff, use each controller's actual coverage ratio.
+    // 5. Controller breadth (10 pts) — continuous scoring per controller
     const avgControllerCoverage =
       analysis.controllerCoverage.length > 0
         ? analysis.controllerCoverage.reduce(
