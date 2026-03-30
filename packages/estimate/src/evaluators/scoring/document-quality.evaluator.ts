@@ -257,7 +257,7 @@ export class DocumentQualityEvaluator extends BaseEvaluator {
     else if (sectionMatches.length >= 1) score += 1;
 
     // Code blocks presence (max 5) — good READMEs have examples
-    const codeBlocks = (content.match(/```/g) || []).length / 2;
+    const codeBlocks = Math.floor((content.match(/```/g) || []).length / 2);
     if (codeBlocks >= 3) score += 5;
     else if (codeBlocks >= 1) score += 3;
 

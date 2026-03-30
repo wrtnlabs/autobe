@@ -126,9 +126,11 @@ export class ContractEvaluator {
       }
     }
 
-    const total = results.length;
-    const passed = results.filter((r) => r.passed).length;
-    const timings = results
+    const scoreable = results.filter((r) => !r.skipped);
+    const skipped = results.length - scoreable.length;
+    const total = scoreable.length;
+    const passed = scoreable.filter((r) => r.passed).length;
+    const timings = scoreable
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
     const avgMs =
@@ -146,6 +148,7 @@ export class ContractEvaluator {
       durationMs: Math.round(performance.now() - startTime),
       metrics: {
         contractEndpoints: total,
+        contractSkipped: skipped,
         contractPassed: passed,
         contractFailed: total - passed,
         contractPassRate: Math.round((passed / Math.max(total, 1)) * 100),

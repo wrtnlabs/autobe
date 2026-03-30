@@ -798,12 +798,14 @@ export class EvaluationPipeline {
       const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
       const syncPenalty = Math.round(rawSyncPenalty * scale);
       const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
-      const effectivePenalty =
+      const effectivePenalty = Math.min(
+        MAX_COMBINED_PENALTY,
         warningPenalty +
-        dupPenalty +
-        jsdocPenalty +
-        syncPenalty +
-        suggestionPenalty;
+          dupPenalty +
+          jsdocPenalty +
+          syncPenalty +
+          suggestionPenalty,
+      );
 
       totalScore = Math.max(0, totalScore - effectivePenalty);
 
