@@ -769,12 +769,10 @@ export class ContractEvaluator {
 
     const total = scoreable.length;
 
-    // 1. Status code score (40%) — 2xx success only
-    const statusOk = scoreable.filter(
-      (r) =>
-        r.statusCode !== undefined && r.statusCode >= 200 && r.statusCode < 300,
-    ).length;
-    const statusScore = (statusOk / total) * 100;
+    // 1. Status code score (40%) — 2xx success or expected 4xx (400/401/403 etc.)
+    //    "passed" already incorporates validateStatusCode(), so use it directly
+    const statusOk = scoreable.filter((r) => r.passed).length;
+    const statusScore = Math.round((statusOk / total) * 100);
 
     // 2. Schema match score (60%) — responses match declared schema
     const withWarnings = scoreable.filter(

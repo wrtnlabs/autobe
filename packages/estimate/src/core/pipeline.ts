@@ -732,7 +732,8 @@ export class EvaluationPipeline {
       if (reference.jsdoc.totalMissing > 0) {
         const jsdocDenom =
           reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
-        jsdocRatio = reference.jsdoc.totalMissing / jsdocDenom;
+        jsdocRatio =
+          jsdocDenom > 0 ? reference.jsdoc.totalMissing / jsdocDenom : 0;
         if (jsdocRatio > 0.3) {
           const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
           rawJsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
@@ -741,6 +742,10 @@ export class EvaluationPipeline {
 
       // 4. Schema sync penalty (max 10)
       let rawSyncPenalty = 0;
+      // If no types exist at all, apply minimum penalty (missing schema)
+      if (reference.schemaSync.totalTypes === 0) {
+        rawSyncPenalty = 3;
+      }
       const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
       const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
       const mismatchRatio =

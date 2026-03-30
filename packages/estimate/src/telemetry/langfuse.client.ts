@@ -23,7 +23,13 @@ export function getLangfuse(): Langfuse | null {
 
 export async function flushLangfuse(): Promise<void> {
   if (client) {
-    await client.flushAsync();
+    try {
+      await client.flushAsync();
+    } catch (err) {
+      console.warn(
+        `Langfuse flush failed: ${err instanceof Error ? err.message : err}`,
+      );
+    }
   }
 }
 

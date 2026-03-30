@@ -16,16 +16,22 @@ const SCORING_PHASE_KEYS = [
   "logicCompleteness",
   "apiCompleteness",
 ] as const;
-const baseSum = SCORING_PHASE_KEYS.reduce(
-  (sum, k) => sum + PHASE_WEIGHTS[k],
-  0,
-);
-const WEIGHTS: Record<string, string> = Object.fromEntries(
-  SCORING_PHASE_KEYS.map((k) => [
-    k,
-    `${Math.round((PHASE_WEIGHTS[k] / baseSum) * 100)}%`,
-  ]),
-);
+
+/** Compute normalized weight strings, optionally including goldenSet */
+function computeWeights(includeGoldenSet: boolean): Record<string, string> {
+  const keys: string[] = [...SCORING_PHASE_KEYS];
+  if (includeGoldenSet) keys.push("goldenSet");
+  const sum = keys.reduce(
+    (s, k) => s + (PHASE_WEIGHTS[k as keyof typeof PHASE_WEIGHTS] ?? 0),
+    0,
+  );
+  return Object.fromEntries(
+    keys.map((k) => [
+      k,
+      `${Math.round(((PHASE_WEIGHTS[k as keyof typeof PHASE_WEIGHTS] ?? 0) / sum) * 100)}%`,
+    ]),
+  );
+}
 
 /** Maximum number of issues to display in a table before truncating */
 const MAX_DISPLAY_ISSUES = 20;
@@ -64,16 +70,23 @@ function renderOverallScore(result: ExtendedResult): string {
 
   let breakdown = "";
   if (hasAgents) {
+    const hasGolden = !!result.phases.goldenSet;
+    const activeKeys: string[] = [...SCORING_PHASE_KEYS];
+    if (hasGolden) activeKeys.push("goldenSet");
+    const activeSum = activeKeys.reduce(
+      (s, k) => s + (PHASE_WEIGHTS[k as keyof typeof PHASE_WEIGHTS] ?? 0),
+      0,
+    );
     const phaseScore = Math.round(
-      SCORING_PHASE_KEYS.reduce(
+      activeKeys.reduce(
         (sum, key) =>
           sum +
           ((result.phases[key as keyof typeof result.phases] as PhaseResult)
-            .score *
-            PHASE_WEIGHTS[key]) /
-            baseSum,
+            ?.score ?? 0) *
+            ((PHASE_WEIGHTS[key as keyof typeof PHASE_WEIGHTS] ?? 0) /
+              activeSum),
         0,
-      ) * 100,
+      ),
     );
     const agentAvg =
       agents.reduce((sum, a) => sum + a.score, 0) / agents.length;
@@ -103,11 +116,13 @@ ${breakdown}
 
 function renderScoringPhases(result: ExtendedResult): string {
   const gateStatus = result.phases.gate.passed ? "✅ Pass" : "❌ Fail";
+  const hasGolden = !!result.phases.goldenSet;
+  const weights = computeWeights(hasGolden);
 
   const phaseRows = SCORING_PHASES.map((phase) => {
     const phaseResult = result.phases[phase];
     const phaseName = PHASE_NAMES[phase];
-    const weight = WEIGHTS[phase];
+    const weight = weights[phase];
     const status = getStatusEmoji(
       phaseResult.score,
       phaseResult.metrics?.skipped as boolean,
@@ -116,8 +131,8 @@ function renderScoringPhases(result: ExtendedResult): string {
   }).join("\n");
 
   // Golden Set row (optional — only present with --golden --run-tests)
-  const goldenRow = result.phases.goldenSet
-    ? `| ${PHASE_NAMES.goldenSet} | ${result.phases.goldenSet.score}/100 | ${Math.round(PHASE_WEIGHTS.goldenSet * 100)}% | ${getStatusEmoji(result.phases.goldenSet.score)} |`
+  const goldenRow = hasGolden
+    ? `| ${PHASE_NAMES.goldenSet} | ${result.phases.goldenSet!.score}/100 | ${weights["goldenSet"]} | ${getStatusEmoji(result.phases.goldenSet!.score)} |`
     : "";
 
   return `

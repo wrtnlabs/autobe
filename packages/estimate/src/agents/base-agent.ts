@@ -95,7 +95,7 @@ export abstract class BaseAgent {
       const result: AgentParseResult = {
         issues: rawIssues,
         score:
-          typeof parsed.score === "number"
+          typeof parsed.score === "number" && Number.isFinite(parsed.score)
             ? Math.max(0, Math.min(100, parsed.score))
             : 0,
         summary:
@@ -420,7 +420,10 @@ export abstract class BaseAgent {
     return [...seen.values()];
   }
 
-  /** Check if two descriptions are similar (>60% word overlap) */
+  /**
+   * Check if two descriptions are similar using Jaccard similarity (>50%
+   * overlap)
+   */
   private isSimilar(a: string, b: string): boolean {
     const wordsA = new Set(
       a
@@ -441,8 +444,10 @@ export abstract class BaseAgent {
       if (wordsB.has(word)) overlap++;
     }
 
-    const similarity = overlap / Math.min(wordsA.size, wordsB.size);
-    return similarity > 0.6;
+    // Jaccard: intersection / union — symmetric and avoids inflation
+    const union = wordsA.size + wordsB.size - overlap;
+    const similarity = union > 0 ? overlap / union : 0;
+    return similarity > 0.5;
   }
 
   /** Read file contents for evaluation */

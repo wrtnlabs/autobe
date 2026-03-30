@@ -252,15 +252,19 @@ export class ApiCompletenessEvaluator extends BaseEvaluator {
                   /[;{}]/.test(l),
                 ).length;
 
-                // Single-line passthrough: `{ return (await)? this.xxx.yyy(...); }`
+                // Passthrough: body is only `return (await)? this.xxx.yyy(...);`
+                // Collapse whitespace to handle multi-line formatting
+                const normalizedBody = bodyText.replace(/\s+/g, " ").trim();
                 const isSinglePassthrough =
-                  /^\{\s*return\s+(?:await\s+)?this\.\w+\.\w+\s*\([^)]*\)\s*;?\s*\}$/s.test(
-                    bodyText,
+                  /^\{\s*return\s+(?:await\s+)?this\.\w+\.\w+\s*\([^)]*\)\s*;?\s*\}$/.test(
+                    normalizedBody,
                   );
 
                 // Real logic requires: multiple statements, conditionals, loops,
                 // variable assignments, or error handling with actual logic
-                const hasConditional = /\b(if|switch|[?:])\s*\(/.test(bodyText);
+                const hasConditional =
+                  /\b(if|switch)\s*\(/.test(bodyText) ||
+                  /\?\s*[^:]+\s*:/.test(bodyText);
                 const hasLoop = /\b(for|while)\s*\(/.test(bodyText);
                 const hasVariableWork = /\b(const|let|var)\s+\w+\s*=/.test(
                   bodyText,

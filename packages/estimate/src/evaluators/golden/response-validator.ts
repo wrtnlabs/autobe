@@ -124,7 +124,7 @@ export function validateResponse(
     }
   }
 
-  return { valid: true, warnings };
+  return { valid: warnings.length === 0, warnings };
 }
 
 /**
