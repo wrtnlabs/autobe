@@ -97,7 +97,7 @@ export abstract class BaseAgent {
         score:
           typeof parsed.score === "number"
             ? Math.max(0, Math.min(100, parsed.score))
-            : 0,
+            : 100,
         summary:
           typeof parsed.summary === "string"
             ? parsed.summary

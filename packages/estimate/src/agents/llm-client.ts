@@ -58,7 +58,6 @@ export class LLMClient {
       max_tokens: this.maxTokens,
       temperature: 0,
       seed: 42,
-      response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
