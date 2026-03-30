@@ -51,7 +51,13 @@ export class PrismaEvaluator extends GateEvaluator {
     );
     const prismaFiles: Record<string, string> = {};
     for (const [key, value] of Object.entries(rawPrismaFiles)) {
-      prismaFiles[path.basename(key)] = value;
+      const basename = path.basename(key);
+      if (prismaFiles[basename]) {
+        console.warn(
+          `  ⚠ Prisma schema filename collision: ${key} overwrites existing ${basename}`,
+        );
+      }
+      prismaFiles[basename] = value;
     }
 
     if (Object.keys(prismaFiles).length === 0) {
