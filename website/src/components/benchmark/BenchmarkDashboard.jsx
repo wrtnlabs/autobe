@@ -414,7 +414,6 @@ function ScoreDetailModal({ entry, onClose }) {
           const phaseNames = ["analyze", "database", "interface", "test", "realize"];
           const phaseLabels = { analyze: "Analyze", database: "Database", interface: "Interface", test: "Test", realize: "Realize" };
           const phaseColors = { analyze: "#818cf8", database: "#34d399", interface: "#fbbf24", test: "#f472b6", realize: "#60a5fa" };
-          const phaseIcons = { analyze: "🔍", database: "🗄️", interface: "🔌", test: "🧪", realize: "⚙️" };
           const maxDur = Math.max(...phaseNames.map(n => pp[n]?.durationMs || 0), 1);
           const totalDur = phaseNames.reduce((s, n) => s + (pp[n]?.durationMs || 0), 0);
           const totalTokens = entry.pipeline.totalTokens || 0;
@@ -470,7 +469,6 @@ function ScoreDetailModal({ entry, onClose }) {
                     <div key={name} style={{ background: "#131b2e", borderRadius: "8px", padding: "10px 14px", border: `1px solid ${color}22` }}>
                       {/* Phase header row */}
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                        <span style={{ fontSize: "13px" }}>{phaseIcons[name]}</span>
                         <span style={{ fontSize: "12px", fontWeight: 700, color, flex: 1 }}>{phaseLabels[name]}</span>
                         <span style={{ fontSize: "11px", color: p.completed ? "#4ade80" : "#f87171", fontWeight: 600 }}>
                           {p.completed ? "Done" : "Failed"}
