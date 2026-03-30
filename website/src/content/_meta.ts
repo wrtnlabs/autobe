@@ -27,7 +27,7 @@ const meta: MetaRecord = {
   },
   benchmark: {
     type: "page",
-    title: "📊 Benchmark",
+    title: "📊 Estimate",
     theme: {
       layout: "full",
       toc: false,

@@ -1,8 +1,8 @@
 import { BenchmarkDashboard } from "../../components/benchmark/BenchmarkDashboard";
 
 export const metadata = {
-  title: "Benchmark - AutoBE",
-  description: "AutoBE multi-model benchmark results across projects",
+  title: "Estimate - AutoBE",
+  description: "AutoBE multi-model estimate results across projects",
 };
 
 export default function BenchmarkPage() {
