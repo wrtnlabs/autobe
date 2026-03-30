@@ -420,9 +420,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     // Scale: 5→9pts, 10→17pts, 15→21pts, 20→23pts, 25+=25pts
     const absScore = Math.min(
       25,
-      Math.round(
-        25 * Math.log2(analysis.coveredRoutes + 1) / Math.log2(26),
-      ),
+      Math.round((25 * Math.log2(analysis.coveredRoutes + 1)) / Math.log2(26)),
     );
     const routeScore = ratioScore + absScore;
 
