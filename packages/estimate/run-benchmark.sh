@@ -163,7 +163,7 @@ echo "Done: $PASSED passed, $FAILED failed (total $TOTAL)"
 read_score() {
   local report="$1"
   if [ -f "$report" ]; then
-    node -e "const r=require('$report');process.stdout.write(r.totalScore+'('+r.grade+')');\" 2>/dev/null || echo "?"
+    node -e "const r=require('$report');process.stdout.write(r.totalScore+'('+r.grade+')');" 2>/dev/null || echo "?"
   else
     echo "--"
   fi
