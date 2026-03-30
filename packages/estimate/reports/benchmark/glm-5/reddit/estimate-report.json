@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774601202395-0axaz8qf87tw",
+          "id": "type-error-1774846542282-mth97et8cpd",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 1953
           },
-          "id": "type-error-1774601202395-184ulu8hgrz",
+          "id": "type-error-1774846542282-kr214hq4xhc",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
             "line": 1509
           },
-          "id": "type-error-1774601202395-6w2eupq2joh",
+          "id": "type-error-1774846542282-8oamwfg4crd",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
             "line": 2884
           },
-          "id": "type-error-1774601202395-utwhybiz8j",
+          "id": "type-error-1774846542282-yjbo2npc3pg",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
             "line": 1852
           },
-          "id": "type-error-1774601202395-ytjt68gmx6o",
+          "id": "type-error-1774846542282-ewbjvqz47gb",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
             "line": 2168
           },
-          "id": "type-error-1774601202395-iu61tvgikt",
+          "id": "type-error-1774846542282-9ulihutm9ad",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 2093
           },
-          "id": "type-error-1774601202395-gnnaq2xvsq",
+          "id": "type-error-1774846542282-21kmdb0gd0wj",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 7542
           },
-          "id": "type-error-1774601202395-3ra94qxf723",
+          "id": "type-error-1774846542282-awinyjbxocl",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 2512
           },
-          "id": "type-error-1774601202395-417qcooami7",
+          "id": "type-error-1774846542282-rw4pvcx0rzb",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 4245
           },
-          "id": "type-error-1774601202395-i73qw1i9o7f",
+          "id": "type-error-1774846542282-mzrzm838d1l",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 2631
           },
-          "id": "type-error-1774601202395-nh34j7kxjue",
+          "id": "type-error-1774846542282-znq4dkrkha",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 3756
           },
-          "id": "type-error-1774601202395-nn0f25rufie",
+          "id": "type-error-1774846542282-ee70wka8rtm",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/putCommunityPlatformMemberVotesVoteId.ts",
             "line": 5643
           },
-          "id": "type-error-1774601202395-m1fboqjuhyh",
+          "id": "type-error-1774846542282-w5jvq5lr9mk",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
             "line": 1182
           },
-          "id": "type-error-1774601202395-7we1pliqcru",
+          "id": "type-error-1774846542282-v1isdxqkzk9",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
             "line": 1200
           },
-          "id": "type-error-1774601202395-rkq0ysws37c",
+          "id": "type-error-1774846542282-hv7h90qu9xp",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
             "line": 1223
           },
-          "id": "type-error-1774601202395-c62svtw87kv",
+          "id": "type-error-1774846542282-nval28spwws",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
             "line": 1249
           },
-          "id": "type-error-1774601202395-w6vk978qea",
+          "id": "type-error-1774846542282-kthz7stx9k",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1443
           },
-          "id": "type-error-1774601202395-9g2o31kik2q",
+          "id": "type-error-1774846542282-1hr97yy72ji",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1461
           },
-          "id": "type-error-1774601202395-qwgwnpqcg2i",
+          "id": "type-error-1774846542282-ro1z8d6awa9",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1484
           },
-          "id": "type-error-1774601202395-vmvj5dttu6j",
+          "id": "type-error-1774846542282-p9uj1rl7lck",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1510
           },
-          "id": "type-error-1774601202395-jhvpxc67e5",
+          "id": "type-error-1774846542282-ryfxvusik58",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1536
           },
-          "id": "type-error-1774601202395-klu9kb0ibj",
+          "id": "type-error-1774846542282-dmqmjm7inb4",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
             "line": 1562
           },
-          "id": "type-error-1774601202395-qs7bbzqub3",
+          "id": "type-error-1774846542282-oiywo23ugfc",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/transformers/CommunityPlatformPostTransformer.ts",
             "line": 2627
           },
-          "id": "type-error-1774601202395-by4eeypans5",
+          "id": "type-error-1774846542282-guqtfvpdcr8",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
             "line": 2700
           },
-          "id": "type-error-1774601202395-0mv60ca2506i",
+          "id": "type-error-1774846542282-uv8gq4fy6o",
           "autoFixable": false
         },
         {
@@ -319,11 +319,11 @@
             "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
             "line": 2916
           },
-          "id": "type-error-1774601202395-kv1krwsu9v",
+          "id": "type-error-1774846542282-1d7igjahgio",
           "autoFixable": false
         }
       ],
-      "durationMs": 4292,
+      "durationMs": 3467,
       "metrics": {
         "totalFiles": 185,
         "filesWithErrors": 0,
@@ -350,7 +350,7 @@
         "docFileCount": 6,
         "totalDocLength": 204638,
         "cached": true,
-        "originalDurationMs": 72
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -396,7 +396,7 @@
         "assertionTests": 149,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 18
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -416,7 +416,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 46
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -437,7 +437,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 50
+        "originalDurationMs": 0
       }
     }
   },
@@ -457,7 +457,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601202564-g9kpwndyhj",
+          "id": "complexity-1774846542400-gesg2t155c",
           "autoFixable": false
         }
       ]
@@ -474,7 +474,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
             "line": 180
           },
-          "id": "duplication-1774601202664-ay3o6c6pmrn",
+          "id": "duplication-1774846542483-3xen60ov7zu",
           "autoFixable": false
         },
         {
@@ -486,7 +486,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
             "line": 181
           },
-          "id": "duplication-1774601202664-f1te970a27",
+          "id": "duplication-1774846542483-ooxoxls0rlf",
           "autoFixable": false
         },
         {
@@ -498,7 +498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
             "line": 182
           },
-          "id": "duplication-1774601202664-dpv3jthx8cm",
+          "id": "duplication-1774846542483-ugyw5mct0y",
           "autoFixable": false
         },
         {
@@ -510,7 +510,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 11
           },
-          "id": "duplication-1774601202664-n6uuo4v9ico",
+          "id": "duplication-1774846542483-loe63wx6tra",
           "autoFixable": false
         },
         {
@@ -522,7 +522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 12
           },
-          "id": "duplication-1774601202664-2ef83ca7hjr",
+          "id": "duplication-1774846542483-zs45f7ckgf",
           "autoFixable": false
         },
         {
@@ -534,7 +534,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 14
           },
-          "id": "duplication-1774601202664-xmsx4x0fhkq",
+          "id": "duplication-1774846542483-926ft9xbgqw",
           "autoFixable": false
         },
         {
@@ -546,7 +546,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 15
           },
-          "id": "duplication-1774601202664-1sj8x6f6rzw",
+          "id": "duplication-1774846542483-hu3liy4t9bj",
           "autoFixable": false
         },
         {
@@ -558,7 +558,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 16
           },
-          "id": "duplication-1774601202664-8wdggzsdyrp",
+          "id": "duplication-1774846542483-yxzy09jlmvc",
           "autoFixable": false
         },
         {
@@ -570,7 +570,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 17
           },
-          "id": "duplication-1774601202664-knjxedewrp",
+          "id": "duplication-1774846542483-vuasuw1erbo",
           "autoFixable": false
         },
         {
@@ -582,7 +582,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 18
           },
-          "id": "duplication-1774601202664-su5nkuibmtq",
+          "id": "duplication-1774846542483-2iklefudznf",
           "autoFixable": false
         },
         {
@@ -594,7 +594,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 19
           },
-          "id": "duplication-1774601202664-b7udit2s21s",
+          "id": "duplication-1774846542483-vjh5dg1i1t",
           "autoFixable": false
         },
         {
@@ -606,7 +606,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 24
           },
-          "id": "duplication-1774601202664-jj9w7bf93b",
+          "id": "duplication-1774846542483-bqlquxztp8q",
           "autoFixable": false
         },
         {
@@ -618,7 +618,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 25
           },
-          "id": "duplication-1774601202664-xptf3rkslbh",
+          "id": "duplication-1774846542483-gajv4onsxk5",
           "autoFixable": false
         },
         {
@@ -630,7 +630,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 26
           },
-          "id": "duplication-1774601202664-i8ndtl6awsn",
+          "id": "duplication-1774846542483-hreb3l1d22v",
           "autoFixable": false
         },
         {
@@ -642,7 +642,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 27
           },
-          "id": "duplication-1774601202664-fofi1mdtln",
+          "id": "duplication-1774846542483-wok06n5mqi",
           "autoFixable": false
         },
         {
@@ -654,7 +654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 27
           },
-          "id": "duplication-1774601202664-ww60xpxjmc",
+          "id": "duplication-1774846542483-qnaegc11voc",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 87
           },
-          "id": "duplication-1774601202664-ajff6igy7le",
+          "id": "duplication-1774846542483-l2gflvz3ctc",
           "autoFixable": false
         },
         {
@@ -678,7 +678,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 88
           },
-          "id": "duplication-1774601202664-xz8638ubk9b",
+          "id": "duplication-1774846542483-z3srozz4rn",
           "autoFixable": false
         },
         {
@@ -690,7 +690,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 89
           },
-          "id": "duplication-1774601202664-kdijmtrdv99",
+          "id": "duplication-1774846542483-0r4ycllf8mvp",
           "autoFixable": false
         },
         {
@@ -702,7 +702,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 90
           },
-          "id": "duplication-1774601202664-u18r83uigv8",
+          "id": "duplication-1774846542483-gjpjh0nyhal",
           "autoFixable": false
         },
         {
@@ -714,7 +714,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberVotes.ts",
             "line": 91
           },
-          "id": "duplication-1774601202664-5xl9aqi1bkd",
+          "id": "duplication-1774846542483-fmfh57j0nfn",
           "autoFixable": false
         },
         {
@@ -726,7 +726,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 25
           },
-          "id": "duplication-1774601202664-4qkc3ckxdln",
+          "id": "duplication-1774846542483-er57ofpre7v",
           "autoFixable": false
         },
         {
@@ -738,7 +738,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 87
           },
-          "id": "duplication-1774601202664-zqwxb7s796o",
+          "id": "duplication-1774846542483-34gut86qc1",
           "autoFixable": false
         },
         {
@@ -750,7 +750,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 88
           },
-          "id": "duplication-1774601202664-3qwijneqwq2",
+          "id": "duplication-1774846542483-fcfjx5nrq1v",
           "autoFixable": false
         },
         {
@@ -762,7 +762,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 89
           },
-          "id": "duplication-1774601202664-z1lqjmoozca",
+          "id": "duplication-1774846542483-vho6nd39ajn",
           "autoFixable": false
         },
         {
@@ -774,7 +774,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 58
           },
-          "id": "duplication-1774601202664-mmb65id4b7p",
+          "id": "duplication-1774846542483-ahvac3filtc",
           "autoFixable": false
         },
         {
@@ -786,7 +786,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 59
           },
-          "id": "duplication-1774601202664-00m7ddxo19mk8",
+          "id": "duplication-1774846542483-ehyzdbsrr9r",
           "autoFixable": false
         },
         {
@@ -798,7 +798,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 60
           },
-          "id": "duplication-1774601202664-b4p73o0dhmg",
+          "id": "duplication-1774846542483-6mfl4jp23g5",
           "autoFixable": false
         },
         {
@@ -810,7 +810,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 61
           },
-          "id": "duplication-1774601202664-66pim9lim7i",
+          "id": "duplication-1774846542483-n696n0ncpbm",
           "autoFixable": false
         },
         {
@@ -822,7 +822,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 62
           },
-          "id": "duplication-1774601202664-ie2fqqubjtp",
+          "id": "duplication-1774846542483-1mybh2eblbr",
           "autoFixable": false
         },
         {
@@ -834,7 +834,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 63
           },
-          "id": "duplication-1774601202664-spvb45t4s7r",
+          "id": "duplication-1774846542483-braqjlxlm8e",
           "autoFixable": false
         },
         {
@@ -846,7 +846,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 117
           },
-          "id": "duplication-1774601202664-7yv97rrv284",
+          "id": "duplication-1774846542483-0bivbdefbuw",
           "autoFixable": false
         },
         {
@@ -858,7 +858,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 118
           },
-          "id": "duplication-1774601202664-8d6xtohvuuf",
+          "id": "duplication-1774846542483-wu8tv5p3g0g",
           "autoFixable": false
         },
         {
@@ -870,7 +870,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 119
           },
-          "id": "duplication-1774601202664-wkmgmwitdkd",
+          "id": "duplication-1774846542483-x7jxs4evazl",
           "autoFixable": false
         },
         {
@@ -882,7 +882,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 120
           },
-          "id": "duplication-1774601202664-ph063emd8jc",
+          "id": "duplication-1774846542483-ou3svpxyn1",
           "autoFixable": false
         },
         {
@@ -894,7 +894,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 121
           },
-          "id": "duplication-1774601202664-aanlti9csdl",
+          "id": "duplication-1774846542483-hpkcz1was4",
           "autoFixable": false
         },
         {
@@ -906,7 +906,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 211
           },
-          "id": "duplication-1774601202664-td36t7n0db",
+          "id": "duplication-1774846542483-d26nlgsohm",
           "autoFixable": false
         },
         {
@@ -918,7 +918,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 212
           },
-          "id": "duplication-1774601202664-hg6o7rxw1wi",
+          "id": "duplication-1774846542483-r0qr28k5ieh",
           "autoFixable": false
         },
         {
@@ -930,7 +930,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 213
           },
-          "id": "duplication-1774601202664-mi3myh914r",
+          "id": "duplication-1774846542483-r3gjbu6mgt",
           "autoFixable": false
         },
         {
@@ -942,7 +942,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 214
           },
-          "id": "duplication-1774601202664-u0bljmbihq",
+          "id": "duplication-1774846542483-kkydl83k8iq",
           "autoFixable": false
         },
         {
@@ -954,7 +954,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 215
           },
-          "id": "duplication-1774601202664-ym97e1c952b",
+          "id": "duplication-1774846542483-ns07n7tbr98",
           "autoFixable": false
         },
         {
@@ -966,7 +966,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 272
           },
-          "id": "duplication-1774601202664-fcxpi58llim",
+          "id": "duplication-1774846542483-28jy6tht4wf",
           "autoFixable": false
         },
         {
@@ -978,7 +978,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 273
           },
-          "id": "duplication-1774601202664-hhclx42fvg",
+          "id": "duplication-1774846542483-sj30798b5bd",
           "autoFixable": false
         },
         {
@@ -990,7 +990,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 274
           },
-          "id": "duplication-1774601202664-lbed8fxosrg",
+          "id": "duplication-1774846542483-y2p3ca0ae8",
           "autoFixable": false
         },
         {
@@ -1002,7 +1002,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 275
           },
-          "id": "duplication-1774601202664-9xtul1jg3xt",
+          "id": "duplication-1774846542483-8h48lpn7j19",
           "autoFixable": false
         },
         {
@@ -1014,7 +1014,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberVotes.ts",
             "line": 276
           },
-          "id": "duplication-1774601202664-8jz9kgo696",
+          "id": "duplication-1774846542483-6bctpkm86du",
           "autoFixable": false
         },
         {
@@ -1026,7 +1026,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 28
           },
-          "id": "duplication-1774601202664-dpw6re3i4n5",
+          "id": "duplication-1774846542483-0jph8099z0ii",
           "autoFixable": false
         },
         {
@@ -1038,7 +1038,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 7
           },
-          "id": "duplication-1774601202664-l2e74ft78gn",
+          "id": "duplication-1774846542483-dzdi99pth3e",
           "autoFixable": false
         },
         {
@@ -1050,7 +1050,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
             "line": 9
           },
-          "id": "duplication-1774601202664-hsl9vmf9k5i",
+          "id": "duplication-1774846542483-spdf1mf6rx",
           "autoFixable": false
         },
         {
@@ -1062,7 +1062,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 16
           },
-          "id": "duplication-1774601202664-6l678hliiag",
+          "id": "duplication-1774846542483-q49dmfsfcio",
           "autoFixable": false
         },
         {
@@ -1074,7 +1074,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 17
           },
-          "id": "duplication-1774601202664-gdxhcgsih7v",
+          "id": "duplication-1774846542483-9jfffwmqrq",
           "autoFixable": false
         },
         {
@@ -1086,7 +1086,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 18
           },
-          "id": "duplication-1774601202664-hl1uzaitkno",
+          "id": "duplication-1774846542483-23awgomrvxp",
           "autoFixable": false
         },
         {
@@ -1098,7 +1098,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 20
           },
-          "id": "duplication-1774601202664-gn4fgdpetg",
+          "id": "duplication-1774846542483-cpos18dwsg4",
           "autoFixable": false
         },
         {
@@ -1110,7 +1110,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 21
           },
-          "id": "duplication-1774601202664-d1rb4ls4x2q",
+          "id": "duplication-1774846542483-hh079m2arcn",
           "autoFixable": false
         },
         {
@@ -1122,7 +1122,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 22
           },
-          "id": "duplication-1774601202664-zdnzpu5f6ph",
+          "id": "duplication-1774846542483-ggm43tofcwj",
           "autoFixable": false
         },
         {
@@ -1134,7 +1134,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/providers/deleteCommunityPlatformMemberPostsPostId.ts",
             "line": 23
           },
-          "id": "duplication-1774601202664-xobfqhadnp9",
+          "id": "duplication-1774846542483-dcqodqad8k",
           "autoFixable": false
         }
       ]
@@ -1151,24 +1151,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformFilesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/files/CommunityplatformFilesController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774601202687-xkbzum8623",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
           "message": "Class \"CommunityplatformMembersController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/members/CommunityplatformMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601202687-vxusr4we78",
+          "id": "jsdoc-1774846542502-1oyycr0nr6k",
           "autoFixable": false
         },
         {
@@ -1180,7 +1168,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601202687-u26oh1ud3o",
+          "id": "jsdoc-1774846542503-d1erczy6ljd",
           "autoFixable": false
         },
         {
@@ -1192,19 +1180,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/CommunityplatformPostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601202687-9ehxjotbi5v",
+          "id": "jsdoc-1774846542503-zgano17nh6",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberVotesController\" missing JSDoc",
+          "message": "Class \"CommunityplatformFilesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/votes/CommunityplatformMemberVotesController.ts",
-            "line": 14
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/files/CommunityplatformFilesController.ts",
+            "line": 8
           },
-          "id": "jsdoc-1774601202688-d4gkrlxzsrr",
+          "id": "jsdoc-1774846542503-6csoz0ddlfm",
           "autoFixable": false
         },
         {
@@ -1216,19 +1204,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/sessions/CommunityplatformMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601202688-gcpqmisezos",
+          "id": "jsdoc-1774846542503-osvgexyi7x",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformMemberVotesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
-            "line": 13
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/votes/CommunityplatformMemberVotesController.ts",
+            "line": 14
           },
-          "id": "jsdoc-1774601202689-9sxxldubg1",
+          "id": "jsdoc-1774846542504-q8h8bsfiyor",
           "autoFixable": false
         },
         {
@@ -1240,7 +1228,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/profile/CommunityplatformMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601202688-lx58203cl8b",
+          "id": "jsdoc-1774846542503-suvceqsccf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846542504-rx30wc64r6m",
           "autoFixable": false
         },
         {
@@ -1252,31 +1252,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601202689-ohub9j5tugd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774601202690-xe2j7klgvs",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774601202690-vrroq1qxgq",
+          "id": "jsdoc-1774846542505-ndd6f35y6zg",
           "autoFixable": false
         },
         {
@@ -1288,7 +1264,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601202689-lz2b7q3svta",
+          "id": "jsdoc-1774846542505-v4mnsyc5b9r",
           "autoFixable": false
         },
         {
@@ -1300,7 +1276,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/comments/CommunityplatformPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601202690-i0u70v867m",
+          "id": "jsdoc-1774846542505-2bguhojnrre",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846542505-yooh9zmtc2o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846542505-ctxikdjidjv",
           "autoFixable": false
         },
         {
@@ -1312,7 +1312,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/communities/posts/CommunityplatformCommunitiesPostsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774601202690-smv6krk7oaf",
+          "id": "jsdoc-1774846542506-f3q74yhrtub",
           "autoFixable": false
         },
         {
@@ -1324,19 +1324,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/reports/CommunityplatformMemberCommunitiesReportsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601202691-5izr9wvktkk",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774601202691-wgzctf7to5o",
+          "id": "jsdoc-1774846542508-2m0dy0vhz9e",
           "autoFixable": false
         },
         {
@@ -1348,19 +1336,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774601202693-yhuvskjujn",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/comments/CommunityplatformMemberCommunitiesCommentsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774601202691-o4fyvu7npma",
+          "id": "jsdoc-1774846542506-i3oyqj7h2v",
           "autoFixable": false
         },
         {
@@ -1372,43 +1348,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/posts/CommunityplatformMemberCommunitiesPostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601202692-50xdybl1z6s",
+          "id": "jsdoc-1774846542506-jixsdpv0xmk",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsCommentsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformMemberCommunitiesCommentsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601202692-1ljra54dllb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsVoteController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774601202692-jjnla2cultb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformPostsCommentsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/comments/votes/CommunityplatformPostsCommentsVotesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/comments/CommunityplatformMemberCommunitiesCommentsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774601202693-sli9tqdmpp",
+          "id": "jsdoc-1774846542507-dgoxr80fzp",
           "autoFixable": false
         },
         {
@@ -1420,7 +1372,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/home/posts/CommunityplatformMemberHomePostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601202693-kl5ikvw5ga",
+          "id": "jsdoc-1774846542507-pizz7bbmiwd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/communities/bans/CommunityplatformMemberCommunitiesBansController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846542507-wllhovemq79",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/vote/CommunityplatformMemberPostsVoteController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846542508-c9ibrqntjjg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846542508-1lh3vhtif86",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/posts/comments/votes/CommunityplatformPostsCommentsVotesController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846542509-7g3tc05h2po",
           "autoFixable": false
         },
         {
@@ -1432,7 +1432,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/reddit/src/controllers/communityPlatform/member/posts/comments/vote/CommunityplatformMemberPostsCommentsVoteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601202694-iwxyhxufvp",
+          "id": "jsdoc-1774846542509-stepedqv7wb",
           "autoFixable": false
         }
       ]
@@ -1451,7 +1451,7 @@
             "file": "src/api/structures/ICommunityPlatformPost.ts",
             "line": 38
           },
-          "id": "completeness-1774601202702-w3l89ylw3f",
+          "id": "completeness-1774846542515-ymabxznbzs",
           "autoFixable": false
         },
         {
@@ -1463,7 +1463,7 @@
             "file": "src/api/structures/ICommunityPlatformPost.ts",
             "line": 46
           },
-          "id": "completeness-1774601202702-xjtdepc5km",
+          "id": "completeness-1774846542515-k4lp44cbiee",
           "autoFixable": false
         }
       ]
@@ -1486,7 +1486,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774601202395-0axaz8qf87tw",
+      "id": "type-error-1774846542282-mth97et8cpd",
       "autoFixable": false
     },
     {
@@ -1498,7 +1498,7 @@
         "file": "src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
         "line": 1953
       },
-      "id": "type-error-1774601202395-184ulu8hgrz",
+      "id": "type-error-1774846542282-kr214hq4xhc",
       "autoFixable": false
     },
     {
@@ -1510,7 +1510,7 @@
         "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
         "line": 1509
       },
-      "id": "type-error-1774601202395-6w2eupq2joh",
+      "id": "type-error-1774846542282-8oamwfg4crd",
       "autoFixable": false
     },
     {
@@ -1522,7 +1522,7 @@
         "file": "src/providers/deleteCommunityPlatformMemberVotesVoteId.ts",
         "line": 2884
       },
-      "id": "type-error-1774601202395-utwhybiz8j",
+      "id": "type-error-1774846542282-yjbo2npc3pg",
       "autoFixable": false
     },
     {
@@ -1534,7 +1534,7 @@
         "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
         "line": 1852
       },
-      "id": "type-error-1774601202395-ytjt68gmx6o",
+      "id": "type-error-1774846542282-ewbjvqz47gb",
       "autoFixable": false
     },
     {
@@ -1546,7 +1546,7 @@
         "file": "src/providers/patchCommunityPlatformMemberHomePosts.ts",
         "line": 2168
       },
-      "id": "type-error-1774601202395-iu61tvgikt",
+      "id": "type-error-1774846542282-9ulihutm9ad",
       "autoFixable": false
     },
     {
@@ -1558,7 +1558,7 @@
         "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
         "line": 2093
       },
-      "id": "type-error-1774601202395-gnnaq2xvsq",
+      "id": "type-error-1774846542282-21kmdb0gd0wj",
       "autoFixable": false
     },
     {
@@ -1570,7 +1570,7 @@
         "file": "src/providers/patchCommunityPlatformMemberVotes.ts",
         "line": 7542
       },
-      "id": "type-error-1774601202395-3ra94qxf723",
+      "id": "type-error-1774846542282-awinyjbxocl",
       "autoFixable": false
     },
     {
@@ -1582,7 +1582,7 @@
         "file": "src/providers/postCommunityPlatformMemberVotes.ts",
         "line": 2512
       },
-      "id": "type-error-1774601202395-417qcooami7",
+      "id": "type-error-1774846542282-rw4pvcx0rzb",
       "autoFixable": false
     },
     {
@@ -1594,7 +1594,7 @@
         "file": "src/providers/postCommunityPlatformMemberVotes.ts",
         "line": 4245
       },
-      "id": "type-error-1774601202395-i73qw1i9o7f",
+      "id": "type-error-1774846542282-mzrzm838d1l",
       "autoFixable": false
     },
     {
@@ -1606,7 +1606,7 @@
         "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
         "line": 2631
       },
-      "id": "type-error-1774601202395-nh34j7kxjue",
+      "id": "type-error-1774846542282-znq4dkrkha",
       "autoFixable": false
     },
     {
@@ -1618,7 +1618,7 @@
         "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdVote.ts",
         "line": 3756
       },
-      "id": "type-error-1774601202395-nn0f25rufie",
+      "id": "type-error-1774846542282-ee70wka8rtm",
       "autoFixable": false
     },
     {
@@ -1630,7 +1630,7 @@
         "file": "src/providers/putCommunityPlatformMemberVotesVoteId.ts",
         "line": 5643
       },
-      "id": "type-error-1774601202395-m1fboqjuhyh",
+      "id": "type-error-1774846542282-w5jvq5lr9mk",
       "autoFixable": false
     },
     {
@@ -1642,7 +1642,7 @@
         "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
         "line": 1182
       },
-      "id": "type-error-1774601202395-7we1pliqcru",
+      "id": "type-error-1774846542282-v1isdxqkzk9",
       "autoFixable": false
     },
     {
@@ -1654,7 +1654,7 @@
         "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
         "line": 1200
       },
-      "id": "type-error-1774601202395-rkq0ysws37c",
+      "id": "type-error-1774846542282-hv7h90qu9xp",
       "autoFixable": false
     },
     {
@@ -1666,7 +1666,7 @@
         "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
         "line": 1223
       },
-      "id": "type-error-1774601202395-c62svtw87kv",
+      "id": "type-error-1774846542282-nval28spwws",
       "autoFixable": false
     },
     {
@@ -1678,7 +1678,7 @@
         "file": "src/transformers/CommunityPlatformCommentAtSummaryTransformer.ts",
         "line": 1249
       },
-      "id": "type-error-1774601202395-w6vk978qea",
+      "id": "type-error-1774846542282-kthz7stx9k",
       "autoFixable": false
     },
     {
@@ -1690,7 +1690,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1443
       },
-      "id": "type-error-1774601202395-9g2o31kik2q",
+      "id": "type-error-1774846542282-1hr97yy72ji",
       "autoFixable": false
     },
     {
@@ -1702,7 +1702,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1461
       },
-      "id": "type-error-1774601202395-qwgwnpqcg2i",
+      "id": "type-error-1774846542282-ro1z8d6awa9",
       "autoFixable": false
     },
     {
@@ -1714,7 +1714,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1484
       },
-      "id": "type-error-1774601202395-vmvj5dttu6j",
+      "id": "type-error-1774846542282-p9uj1rl7lck",
       "autoFixable": false
     },
     {
@@ -1726,7 +1726,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1510
       },
-      "id": "type-error-1774601202395-jhvpxc67e5",
+      "id": "type-error-1774846542282-ryfxvusik58",
       "autoFixable": false
     },
     {
@@ -1738,7 +1738,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1536
       },
-      "id": "type-error-1774601202395-klu9kb0ibj",
+      "id": "type-error-1774846542282-dmqmjm7inb4",
       "autoFixable": false
     },
     {
@@ -1750,7 +1750,7 @@
         "file": "src/transformers/CommunityPlatformCommentTransformer.ts",
         "line": 1562
       },
-      "id": "type-error-1774601202395-qs7bbzqub3",
+      "id": "type-error-1774846542282-oiywo23ugfc",
       "autoFixable": false
     },
     {
@@ -1762,7 +1762,7 @@
         "file": "src/transformers/CommunityPlatformPostTransformer.ts",
         "line": 2627
       },
-      "id": "type-error-1774601202395-by4eeypans5",
+      "id": "type-error-1774846542282-guqtfvpdcr8",
       "autoFixable": false
     },
     {
@@ -1774,7 +1774,7 @@
         "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
         "line": 2700
       },
-      "id": "type-error-1774601202395-0mv60ca2506i",
+      "id": "type-error-1774846542282-uv8gq4fy6o",
       "autoFixable": false
     },
     {
@@ -1786,14 +1786,14 @@
         "file": "src/transformers/CommunityPlatformReportAtSummaryTransformer.ts",
         "line": 2916
       },
-      "id": "type-error-1774601202395-kv1krwsu9v",
+      "id": "type-error-1774846542282-1d7igjahgio",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:46:42.703Z",
-    "totalDurationMs": 4511,
+    "evaluatedAt": "2026-03-30T04:55:42.516Z",
+    "totalDurationMs": 3650,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 185
   },

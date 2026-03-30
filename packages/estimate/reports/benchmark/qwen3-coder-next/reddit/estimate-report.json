@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774600958917-pizcd1zrfbq",
+          "id": "type-error-1774846365886-hq9q85gbxcj",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/redditLike/guest/posts/revisions/RedditlikeGuestPostsRevisionsController.ts",
             "line": 7378
           },
-          "id": "type-error-1774600958917-phboh6zi1fp",
+          "id": "type-error-1774846365886-smykjpmzlg",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
             "line": 580
           },
-          "id": "type-error-1774600958917-ttwpxg8zvo",
+          "id": "type-error-1774846365886-b3p0ub74xjf",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
             "line": 393
           },
-          "id": "type-error-1774600958917-7uzrbs5vy58",
+          "id": "type-error-1774846365886-csz3ldr5mkl",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
             "line": 2565
           },
-          "id": "type-error-1774600958917-oysr2apmyd",
+          "id": "type-error-1774846365886-cuy0ym3o1yj",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
             "line": 476
           },
-          "id": "type-error-1774600958917-ngn429e4ekn",
+          "id": "type-error-1774846365886-quj4yefw8d",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
             "line": 373
           },
-          "id": "type-error-1774600958917-48su5soehh7",
+          "id": "type-error-1774846365886-pge3ktyov4",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/deleteRedditLikeModeratorCommentsCommentId.ts",
             "line": 1481
           },
-          "id": "type-error-1774600958917-x2r40txe9dm",
+          "id": "type-error-1774846365886-7f2rud481hw",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/getRedditLikeAdminBansBanId.ts",
             "line": 1070
           },
-          "id": "type-error-1774600958917-dyuz5v20iew",
+          "id": "type-error-1774846365886-0snh6nwuzdnr",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 2201
           },
-          "id": "type-error-1774600958917-g2wkea9wnyg",
+          "id": "type-error-1774846365886-1gsbelujjng",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 4744
           },
-          "id": "type-error-1774600958917-1fqf8q08vcp",
+          "id": "type-error-1774846365886-75e8afgoo3n",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5212
           },
-          "id": "type-error-1774600958917-v2wuviwjmzh",
+          "id": "type-error-1774846365886-009cmgofgarw7",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5241
           },
-          "id": "type-error-1774600958917-e59rctvoxo",
+          "id": "type-error-1774846365886-11wig1zt69sg",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5289
           },
-          "id": "type-error-1774600958917-cqrp691lr4f",
+          "id": "type-error-1774846365886-s3ti5m2b2w",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5318
           },
-          "id": "type-error-1774600958917-8z4gpydsile",
+          "id": "type-error-1774846365886-ihl7rhwog3",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5470
           },
-          "id": "type-error-1774600958917-c2d85xxpiyo",
+          "id": "type-error-1774846365886-o3sy2x8ynr",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5730
           },
-          "id": "type-error-1774600958917-dc9fgc0f9id",
+          "id": "type-error-1774846365886-9gl2xe0ogvw",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/getRedditLikeAdminDashboard.ts",
             "line": 5780
           },
-          "id": "type-error-1774600958917-9htnpkldv3",
+          "id": "type-error-1774846365886-4pegdjq1gkq",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
             "line": 2149
           },
-          "id": "type-error-1774600958917-qk8ja9ptuen",
+          "id": "type-error-1774846365886-6d7tprgb6xu",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
             "line": 2204
           },
-          "id": "type-error-1774600958917-hkt6hzzgn6",
+          "id": "type-error-1774846365886-yc553k6d3on",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
             "line": 2685
           },
-          "id": "type-error-1774600958917-0mwf87mv5jjk",
+          "id": "type-error-1774846365886-pvlqfeclz6",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
             "line": 2743
           },
-          "id": "type-error-1774600958917-jgj065766u",
+          "id": "type-error-1774846365886-vb0q414985",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
             "line": 1788
           },
-          "id": "type-error-1774600958917-dg714iody5d",
+          "id": "type-error-1774846365886-qgdmw179i5o",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
             "line": 2116
           },
-          "id": "type-error-1774600958917-ubbat1053n",
+          "id": "type-error-1774846365886-a3cx5svqj4d",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
             "line": 2153
           },
-          "id": "type-error-1774600958917-840664ui98m",
+          "id": "type-error-1774846365886-4qtp9qinmwg",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "file": "src/providers/patchRedditLikeMemberPopular.ts",
             "line": 3305
           },
-          "id": "type-error-1774600958917-4t9aeyllfwq",
+          "id": "type-error-1774846365886-hynf1ple2e7",
           "autoFixable": false
         },
         {
@@ -331,7 +331,7 @@
             "file": "src/providers/patchRedditLikeMemberPopular.ts",
             "line": 3594
           },
-          "id": "type-error-1774600958917-qzrylo8228",
+          "id": "type-error-1774846365886-umwo228pyh",
           "autoFixable": false
         },
         {
@@ -343,7 +343,7 @@
             "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
             "line": 2017
           },
-          "id": "type-error-1774600958917-7r9jqrhkdty",
+          "id": "type-error-1774846365886-7my97tf092v",
           "autoFixable": false
         },
         {
@@ -355,7 +355,7 @@
             "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
             "line": 2385
           },
-          "id": "type-error-1774600958917-c7r16434ayi",
+          "id": "type-error-1774846365886-s3ma563hse",
           "autoFixable": false
         },
         {
@@ -367,7 +367,7 @@
             "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
             "line": 2422
           },
-          "id": "type-error-1774600958917-ltngszz7pgd",
+          "id": "type-error-1774846365886-ofvo0m9l1g",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "file": "src/providers/postRedditLikeMemberPostsPostIdRevisions.ts",
             "line": 1516
           },
-          "id": "type-error-1774600958917-ka44parr23",
+          "id": "type-error-1774846365886-w8hetnkztxn",
           "autoFixable": false
         },
         {
@@ -391,7 +391,7 @@
             "file": "src/transformers/RedditLikeCommentTransformer.ts",
             "line": 7579
           },
-          "id": "type-error-1774600958917-p87cowu98pd",
+          "id": "type-error-1774846365886-9v50btsey85",
           "autoFixable": false
         },
         {
@@ -403,7 +403,7 @@
             "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
             "line": 1525
           },
-          "id": "type-error-1774600958917-94knd2rslc",
+          "id": "type-error-1774846365886-nuk9e6g51",
           "autoFixable": false
         },
         {
@@ -415,7 +415,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 2341
           },
-          "id": "type-error-1774600958917-z733qrnkdud",
+          "id": "type-error-1774846365886-eidracpbrlq",
           "autoFixable": false
         },
         {
@@ -427,7 +427,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 2468
           },
-          "id": "type-error-1774600958917-z2i6w54f4l",
+          "id": "type-error-1774846365886-padyu6054h",
           "autoFixable": false
         },
         {
@@ -439,7 +439,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 2514
           },
-          "id": "type-error-1774600958917-5374te3ldy2",
+          "id": "type-error-1774846365886-xtcvh3a5b4i",
           "autoFixable": false
         },
         {
@@ -451,7 +451,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 2569
           },
-          "id": "type-error-1774600958917-5esax5bvgha",
+          "id": "type-error-1774846365886-04g7ra71xaqx",
           "autoFixable": false
         },
         {
@@ -463,11 +463,11 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 2619
           },
-          "id": "type-error-1774600958917-qtnxhjc1qy9",
+          "id": "type-error-1774846365886-zwpv0k34yd",
           "autoFixable": false
         }
       ],
-      "durationMs": 7938,
+      "durationMs": 5967,
       "metrics": {
         "totalFiles": 322,
         "filesWithErrors": 0,
@@ -494,7 +494,7 @@
         "docFileCount": 6,
         "totalDocLength": 430913,
         "cached": true,
-        "originalDurationMs": 118
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -515,7 +515,7 @@
         "unmappedControllers": 1,
         "mappingRatio": 0.9818181818181818,
         "cached": true,
-        "originalDurationMs": 1
+        "originalDurationMs": 0
       }
     },
     "testCoverage": {
@@ -540,7 +540,7 @@
         "assertionTests": 207,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 43
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -560,7 +560,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 58
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -581,7 +581,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 65
+        "originalDurationMs": 0
       }
     }
   },
@@ -601,7 +601,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774600959138-bpy36nh82ii",
+          "id": "complexity-1774846366112-b2wkvkw6aqp",
           "autoFixable": false
         },
         {
@@ -614,7 +614,7 @@
             "line": 21
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600959136-6d5v8er1ari",
+          "id": "complexity-1774846366113-tbyfdunzspe",
           "autoFixable": false
         },
         {
@@ -627,7 +627,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600959139-7s399ug3sbs",
+          "id": "complexity-1774846366115-tcor1v5k8",
           "autoFixable": false
         }
       ]
@@ -641,10 +641,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 4 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/home/RedditlikeMemberHomeController.ts",
-            "line": 47
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/popular/RedditlikeMemberPopularController.ts",
+            "line": 27
           },
-          "id": "duplication-1774600959462-29lq7rtxryv",
+          "id": "duplication-1774846366222-3lkbt3qycti",
           "autoFixable": false
         },
         {
@@ -656,7 +656,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/popular/RedditlikeGuestPopularController.ts",
             "line": 27
           },
-          "id": "duplication-1774600959462-2si7sr2d29v",
+          "id": "duplication-1774846366222-h0mvfzmv748",
           "autoFixable": false
         },
         {
@@ -668,7 +668,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 28
           },
-          "id": "duplication-1774600959462-hnho0hirev",
+          "id": "duplication-1774846366222-9p5y7oegog",
           "autoFixable": false
         },
         {
@@ -680,7 +680,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 29
           },
-          "id": "duplication-1774600959462-6m51qwmgfwo",
+          "id": "duplication-1774846366222-mjgnl8fyhb",
           "autoFixable": false
         },
         {
@@ -692,7 +692,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 30
           },
-          "id": "duplication-1774600959462-6qz8v85s8rs",
+          "id": "duplication-1774846366222-7agci3shfy",
           "autoFixable": false
         },
         {
@@ -704,7 +704,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 31
           },
-          "id": "duplication-1774600959462-3t9o2k8x5oe",
+          "id": "duplication-1774846366222-3fwt8fhvy4p",
           "autoFixable": false
         },
         {
@@ -716,7 +716,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 32
           },
-          "id": "duplication-1774600959462-yu19t7xyqmj",
+          "id": "duplication-1774846366222-ugo3tmm698h",
           "autoFixable": false
         },
         {
@@ -728,7 +728,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 33
           },
-          "id": "duplication-1774600959462-e2qt8a3w48j",
+          "id": "duplication-1774846366222-6wzfc3l2yod",
           "autoFixable": false
         },
         {
@@ -740,7 +740,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 34
           },
-          "id": "duplication-1774600959462-j1gxl5pa8ok",
+          "id": "duplication-1774846366222-of1xl9ya79",
           "autoFixable": false
         },
         {
@@ -752,7 +752,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 35
           },
-          "id": "duplication-1774600959462-ftopn4mvmsa",
+          "id": "duplication-1774846366222-7y1vnpsp6cl",
           "autoFixable": false
         },
         {
@@ -764,7 +764,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 36
           },
-          "id": "duplication-1774600959462-74o7jfca89c",
+          "id": "duplication-1774846366222-67o7oyc6x4g",
           "autoFixable": false
         },
         {
@@ -776,7 +776,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 37
           },
-          "id": "duplication-1774600959462-n90g2cyfe8l",
+          "id": "duplication-1774846366222-q5q4a7aeq8",
           "autoFixable": false
         },
         {
@@ -788,7 +788,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 38
           },
-          "id": "duplication-1774600959462-95kvbnwnp2p",
+          "id": "duplication-1774846366222-9ng3myufoda",
           "autoFixable": false
         },
         {
@@ -800,7 +800,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 39
           },
-          "id": "duplication-1774600959462-0aq523yxsjks",
+          "id": "duplication-1774846366222-d4xs19rt1pi",
           "autoFixable": false
         },
         {
@@ -812,7 +812,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 40
           },
-          "id": "duplication-1774600959462-9wl61eky735",
+          "id": "duplication-1774846366222-ty3o1w1e3b",
           "autoFixable": false
         },
         {
@@ -824,7 +824,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 41
           },
-          "id": "duplication-1774600959462-xaphptvy9",
+          "id": "duplication-1774846366222-9r9q7zh7vc",
           "autoFixable": false
         },
         {
@@ -836,7 +836,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 42
           },
-          "id": "duplication-1774600959462-0ybkpbmxo3a",
+          "id": "duplication-1774846366222-8eotdrz82tp",
           "autoFixable": false
         },
         {
@@ -848,7 +848,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 43
           },
-          "id": "duplication-1774600959462-flr4fnioppm",
+          "id": "duplication-1774846366222-iv06pr8oa5",
           "autoFixable": false
         },
         {
@@ -860,7 +860,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 44
           },
-          "id": "duplication-1774600959462-nldjx4kgcls",
+          "id": "duplication-1774846366222-gu2yhhetauw",
           "autoFixable": false
         },
         {
@@ -872,7 +872,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 45
           },
-          "id": "duplication-1774600959462-57230hkzb2v",
+          "id": "duplication-1774846366222-ry2in6p74mq",
           "autoFixable": false
         },
         {
@@ -884,7 +884,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 46
           },
-          "id": "duplication-1774600959462-dj3o6rviv2l",
+          "id": "duplication-1774846366222-a59ipmt3rdd",
           "autoFixable": false
         },
         {
@@ -896,7 +896,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 47
           },
-          "id": "duplication-1774600959462-w2hk9u7dj7",
+          "id": "duplication-1774846366222-n0bltfibs6",
           "autoFixable": false
         },
         {
@@ -908,7 +908,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 48
           },
-          "id": "duplication-1774600959462-caqrxpd4btr",
+          "id": "duplication-1774846366222-4owh8wyd12j",
           "autoFixable": false
         },
         {
@@ -920,7 +920,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 49
           },
-          "id": "duplication-1774600959462-5vrsvh7n4sh",
+          "id": "duplication-1774846366222-szsj01hio6g",
           "autoFixable": false
         },
         {
@@ -932,7 +932,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 50
           },
-          "id": "duplication-1774600959462-0m04nqiq7xhn",
+          "id": "duplication-1774846366222-v0orc1ucben",
           "autoFixable": false
         },
         {
@@ -944,7 +944,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 51
           },
-          "id": "duplication-1774600959462-6u0e828envx",
+          "id": "duplication-1774846366222-umkj0m8296",
           "autoFixable": false
         },
         {
@@ -956,7 +956,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 52
           },
-          "id": "duplication-1774600959462-7qbe0vzu5gc",
+          "id": "duplication-1774846366222-baw5flx7i34",
           "autoFixable": false
         },
         {
@@ -968,7 +968,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 53
           },
-          "id": "duplication-1774600959462-66vhtd2ebxx",
+          "id": "duplication-1774846366222-h3m3nboie4w",
           "autoFixable": false
         },
         {
@@ -980,7 +980,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 54
           },
-          "id": "duplication-1774600959462-z4y6znqwmk",
+          "id": "duplication-1774846366222-46x5n9h5p64",
           "autoFixable": false
         },
         {
@@ -992,7 +992,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 55
           },
-          "id": "duplication-1774600959462-72k0o7wdy1g",
+          "id": "duplication-1774846366222-sh743hrswt",
           "autoFixable": false
         },
         {
@@ -1004,7 +1004,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 56
           },
-          "id": "duplication-1774600959462-5gzwxxl1axl",
+          "id": "duplication-1774846366222-cluox5eh3w5",
           "autoFixable": false
         },
         {
@@ -1016,7 +1016,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 57
           },
-          "id": "duplication-1774600959462-ysx70corw2",
+          "id": "duplication-1774846366222-mlt0046uh7m",
           "autoFixable": false
         },
         {
@@ -1028,7 +1028,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 58
           },
-          "id": "duplication-1774600959462-0n68n0ussiio",
+          "id": "duplication-1774846366222-4l9m58uttz",
           "autoFixable": false
         },
         {
@@ -1040,7 +1040,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 59
           },
-          "id": "duplication-1774600959462-2rufpzzpsnb",
+          "id": "duplication-1774846366222-15ha508dll9",
           "autoFixable": false
         },
         {
@@ -1052,7 +1052,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 60
           },
-          "id": "duplication-1774600959462-i2qjbhxxzbl",
+          "id": "duplication-1774846366222-kxlgweu1el",
           "autoFixable": false
         },
         {
@@ -1064,7 +1064,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 61
           },
-          "id": "duplication-1774600959462-82ph2h05xe4",
+          "id": "duplication-1774846366222-mngw8r205v",
           "autoFixable": false
         },
         {
@@ -1076,7 +1076,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 62
           },
-          "id": "duplication-1774600959462-ty8lz7khn1",
+          "id": "duplication-1774846366222-jtrjviyspzb",
           "autoFixable": false
         },
         {
@@ -1088,7 +1088,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 63
           },
-          "id": "duplication-1774600959462-n37uvf8bvo",
+          "id": "duplication-1774846366222-ohz33z1i8c9",
           "autoFixable": false
         },
         {
@@ -1100,7 +1100,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 64
           },
-          "id": "duplication-1774600959462-0iy56r89hurj",
+          "id": "duplication-1774846366222-cawj3herorh",
           "autoFixable": false
         },
         {
@@ -1112,7 +1112,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 65
           },
-          "id": "duplication-1774600959462-bez5xg5l05",
+          "id": "duplication-1774846366222-1ct5c1seohv",
           "autoFixable": false
         },
         {
@@ -1124,7 +1124,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 66
           },
-          "id": "duplication-1774600959462-edrnoeiai5",
+          "id": "duplication-1774846366222-gl2secupdj",
           "autoFixable": false
         },
         {
@@ -1136,7 +1136,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 67
           },
-          "id": "duplication-1774600959462-hvkadds2gj",
+          "id": "duplication-1774846366222-oo97jxm1sj",
           "autoFixable": false
         },
         {
@@ -1148,7 +1148,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 68
           },
-          "id": "duplication-1774600959462-qau9y8t5fra",
+          "id": "duplication-1774846366222-0ruq36m0mlll",
           "autoFixable": false
         },
         {
@@ -1160,7 +1160,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 69
           },
-          "id": "duplication-1774600959462-0cgyl1f5zrep",
+          "id": "duplication-1774846366222-7bsai9p4bhb",
           "autoFixable": false
         },
         {
@@ -1172,7 +1172,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 70
           },
-          "id": "duplication-1774600959462-2710uzw7t6",
+          "id": "duplication-1774846366222-bmj0uoq3dm6",
           "autoFixable": false
         },
         {
@@ -1184,7 +1184,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 71
           },
-          "id": "duplication-1774600959462-kgxniqyckub",
+          "id": "duplication-1774846366222-fcftbplpeyr",
           "autoFixable": false
         },
         {
@@ -1196,7 +1196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 72
           },
-          "id": "duplication-1774600959462-7l4c5ueqo8b",
+          "id": "duplication-1774846366222-xr7e28u04e",
           "autoFixable": false
         },
         {
@@ -1208,7 +1208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 73
           },
-          "id": "duplication-1774600959462-ghkm06zsysg",
+          "id": "duplication-1774846366222-thv57v41xy",
           "autoFixable": false
         },
         {
@@ -1220,7 +1220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 74
           },
-          "id": "duplication-1774600959462-de93qwmlcgs",
+          "id": "duplication-1774846366222-051wt8lyai9n",
           "autoFixable": false
         },
         {
@@ -1232,7 +1232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 75
           },
-          "id": "duplication-1774600959462-24lal2d6yib",
+          "id": "duplication-1774846366222-1o4pgrpxd2oi",
           "autoFixable": false
         },
         {
@@ -1244,7 +1244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 76
           },
-          "id": "duplication-1774600959462-iz84np24bx9",
+          "id": "duplication-1774846366222-no3j9hs1e8",
           "autoFixable": false
         },
         {
@@ -1256,7 +1256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 77
           },
-          "id": "duplication-1774600959462-o5exvinyues",
+          "id": "duplication-1774846366222-gkl17mboypb",
           "autoFixable": false
         },
         {
@@ -1268,7 +1268,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 78
           },
-          "id": "duplication-1774600959462-sm97xno1cc",
+          "id": "duplication-1774846366222-cs9cvpi8q9",
           "autoFixable": false
         },
         {
@@ -1280,7 +1280,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 79
           },
-          "id": "duplication-1774600959462-r96rcu2l4s",
+          "id": "duplication-1774846366222-tqqrxmgv6t",
           "autoFixable": false
         },
         {
@@ -1292,7 +1292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 80
           },
-          "id": "duplication-1774600959462-igud4ldn8u",
+          "id": "duplication-1774846366222-nil74adb4bk",
           "autoFixable": false
         },
         {
@@ -1304,7 +1304,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 81
           },
-          "id": "duplication-1774600959462-664s6hl60lm",
+          "id": "duplication-1774846366222-bre5il5ub8s",
           "autoFixable": false
         },
         {
@@ -1316,7 +1316,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 82
           },
-          "id": "duplication-1774600959462-1g9tjahhzfh",
+          "id": "duplication-1774846366222-w7yryvzfo1c",
           "autoFixable": false
         },
         {
@@ -1328,7 +1328,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 83
           },
-          "id": "duplication-1774600959462-my9xw5owol",
+          "id": "duplication-1774846366222-ovkdogim7fs",
           "autoFixable": false
         },
         {
@@ -1340,7 +1340,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 84
           },
-          "id": "duplication-1774600959462-3vcftpbhh6v",
+          "id": "duplication-1774846366222-xwmfqy0zkv",
           "autoFixable": false
         },
         {
@@ -1352,7 +1352,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 85
           },
-          "id": "duplication-1774600959462-42j6pwr1o8j",
+          "id": "duplication-1774846366222-vqmy5finf7o",
           "autoFixable": false
         },
         {
@@ -1364,7 +1364,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 86
           },
-          "id": "duplication-1774600959462-rqyhldnrt3b",
+          "id": "duplication-1774846366222-95us801gpr7",
           "autoFixable": false
         },
         {
@@ -1376,7 +1376,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 87
           },
-          "id": "duplication-1774600959462-sgydgdhmv3",
+          "id": "duplication-1774846366222-j3po2w43f7",
           "autoFixable": false
         },
         {
@@ -1388,7 +1388,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 88
           },
-          "id": "duplication-1774600959462-sl7ekm4k45m",
+          "id": "duplication-1774846366222-ab0hfleh9e",
           "autoFixable": false
         },
         {
@@ -1400,7 +1400,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 91
           },
-          "id": "duplication-1774600959462-xifi9ehjk5",
+          "id": "duplication-1774846366222-y6cnvz5iujr",
           "autoFixable": false
         },
         {
@@ -1412,7 +1412,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 92
           },
-          "id": "duplication-1774600959462-wa164jqb61",
+          "id": "duplication-1774846366222-194s40hca82",
           "autoFixable": false
         },
         {
@@ -1424,7 +1424,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 94
           },
-          "id": "duplication-1774600959462-5atykx8k8e4",
+          "id": "duplication-1774846366222-r5m821zwxe",
           "autoFixable": false
         },
         {
@@ -1436,7 +1436,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 95
           },
-          "id": "duplication-1774600959462-nni3joxd6js",
+          "id": "duplication-1774846366222-hubm8sqjj2j",
           "autoFixable": false
         },
         {
@@ -1448,7 +1448,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 96
           },
-          "id": "duplication-1774600959462-hp8vvaydfbo",
+          "id": "duplication-1774846366222-l6pj2qt8li",
           "autoFixable": false
         },
         {
@@ -1460,7 +1460,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 97
           },
-          "id": "duplication-1774600959462-3y5ly8alih",
+          "id": "duplication-1774846366222-easwdrjmtz",
           "autoFixable": false
         },
         {
@@ -1472,7 +1472,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 98
           },
-          "id": "duplication-1774600959462-cbmu45irfg5",
+          "id": "duplication-1774846366222-ipmuk9vglos",
           "autoFixable": false
         },
         {
@@ -1484,7 +1484,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 99
           },
-          "id": "duplication-1774600959462-j4h9j2k3iic",
+          "id": "duplication-1774846366222-m3pxmi894l",
           "autoFixable": false
         },
         {
@@ -1496,7 +1496,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 100
           },
-          "id": "duplication-1774600959462-qal8c98dj9g",
+          "id": "duplication-1774846366222-vclx9wm4ls",
           "autoFixable": false
         },
         {
@@ -1508,7 +1508,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 101
           },
-          "id": "duplication-1774600959462-bevyagjd1c",
+          "id": "duplication-1774846366222-n53dqk52xn",
           "autoFixable": false
         },
         {
@@ -1520,7 +1520,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 102
           },
-          "id": "duplication-1774600959462-kkmwwk4jo18",
+          "id": "duplication-1774846366222-13tux1r5if",
           "autoFixable": false
         },
         {
@@ -1532,7 +1532,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 103
           },
-          "id": "duplication-1774600959462-aeoke326yf4",
+          "id": "duplication-1774846366222-hzxdgrnjix4",
           "autoFixable": false
         },
         {
@@ -1544,7 +1544,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 104
           },
-          "id": "duplication-1774600959462-2z1q8hcz9hi",
+          "id": "duplication-1774846366222-zaivgov19br",
           "autoFixable": false
         },
         {
@@ -1556,7 +1556,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 105
           },
-          "id": "duplication-1774600959462-fb60hwa42jk",
+          "id": "duplication-1774846366222-7356p07um6y",
           "autoFixable": false
         },
         {
@@ -1568,7 +1568,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 106
           },
-          "id": "duplication-1774600959462-t3j0jlz1uld",
+          "id": "duplication-1774846366222-80a3dijcwe2",
           "autoFixable": false
         },
         {
@@ -1580,7 +1580,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 107
           },
-          "id": "duplication-1774600959462-x69mjvprgkt",
+          "id": "duplication-1774846366222-hj2k5acyfq",
           "autoFixable": false
         },
         {
@@ -1592,7 +1592,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 108
           },
-          "id": "duplication-1774600959462-apwk63x7ewl",
+          "id": "duplication-1774846366222-phq4njv03k",
           "autoFixable": false
         },
         {
@@ -1604,7 +1604,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 109
           },
-          "id": "duplication-1774600959462-ef4fkg7bbh9",
+          "id": "duplication-1774846366222-sryti8t7gkd",
           "autoFixable": false
         },
         {
@@ -1616,7 +1616,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 110
           },
-          "id": "duplication-1774600959462-nr0y4912zxb",
+          "id": "duplication-1774846366222-9bbostajkb",
           "autoFixable": false
         },
         {
@@ -1628,7 +1628,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 111
           },
-          "id": "duplication-1774600959462-rz2q2ss8e3j",
+          "id": "duplication-1774846366222-nvklhpa539",
           "autoFixable": false
         },
         {
@@ -1640,7 +1640,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 112
           },
-          "id": "duplication-1774600959462-e2g3husju4",
+          "id": "duplication-1774846366222-6k9qbf3no1n",
           "autoFixable": false
         },
         {
@@ -1652,7 +1652,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 113
           },
-          "id": "duplication-1774600959462-jidox5deeso",
+          "id": "duplication-1774846366222-rgeh117u71",
           "autoFixable": false
         },
         {
@@ -1664,7 +1664,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 114
           },
-          "id": "duplication-1774600959462-30vlqv0xz5g",
+          "id": "duplication-1774846366222-r160xwyjsd",
           "autoFixable": false
         },
         {
@@ -1676,7 +1676,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 115
           },
-          "id": "duplication-1774600959462-bo3qfs2cfas",
+          "id": "duplication-1774846366222-j3voeb43uxf",
           "autoFixable": false
         },
         {
@@ -1688,7 +1688,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 41
           },
-          "id": "duplication-1774600959462-n2cyxsvpkg",
+          "id": "duplication-1774846366222-eqlt1dkv4f9",
           "autoFixable": false
         },
         {
@@ -1700,7 +1700,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 42
           },
-          "id": "duplication-1774600959462-y0jok64hdud",
+          "id": "duplication-1774846366222-hly3despoph",
           "autoFixable": false
         },
         {
@@ -1712,7 +1712,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 43
           },
-          "id": "duplication-1774600959462-kycble4lnvp",
+          "id": "duplication-1774846366222-g2d6p1crljh",
           "autoFixable": false
         },
         {
@@ -1724,7 +1724,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 44
           },
-          "id": "duplication-1774600959462-6wsvciw1t9q",
+          "id": "duplication-1774846366222-p00gx92nbud",
           "autoFixable": false
         },
         {
@@ -1736,7 +1736,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 45
           },
-          "id": "duplication-1774600959462-0u35pfnzdozq",
+          "id": "duplication-1774846366222-toadcyy70o",
           "autoFixable": false
         },
         {
@@ -1748,7 +1748,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 46
           },
-          "id": "duplication-1774600959462-jejcmbf42qm",
+          "id": "duplication-1774846366222-ldu1vvdmafc",
           "autoFixable": false
         },
         {
@@ -1760,7 +1760,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeModeratorCommunitiesCommunityIdReports.ts",
             "line": 47
           },
-          "id": "duplication-1774600959462-5njx2g27myy",
+          "id": "duplication-1774846366222-dohlx2ba0rw",
           "autoFixable": false
         },
         {
@@ -1772,7 +1772,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsPostIdSnapshots.ts",
             "line": 47
           },
-          "id": "duplication-1774600959462-r2xzza3guzg",
+          "id": "duplication-1774846366222-hh4hb9rv0t",
           "autoFixable": false
         },
         {
@@ -1784,7 +1784,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsPopular.ts",
             "line": 13
           },
-          "id": "duplication-1774600959462-pfcpvbo3nhm",
+          "id": "duplication-1774846366222-4e78g5bufim",
           "autoFixable": false
         },
         {
@@ -1796,7 +1796,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsPopular.ts",
             "line": 14
           },
-          "id": "duplication-1774600959462-bv2x3nnpge",
+          "id": "duplication-1774846366222-009lv8o8zgkr6",
           "autoFixable": false
         },
         {
@@ -1808,7 +1808,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsPopular.ts",
             "line": 15
           },
-          "id": "duplication-1774600959462-0gs1i5flnufw",
+          "id": "duplication-1774846366222-zrs85zwa9oh",
           "autoFixable": false
         },
         {
@@ -1820,7 +1820,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 50
           },
-          "id": "duplication-1774600959462-92du3q8ms0k",
+          "id": "duplication-1774846366222-p9agsow44v",
           "autoFixable": false
         },
         {
@@ -1832,7 +1832,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 51
           },
-          "id": "duplication-1774600959462-bsxecbabbnm",
+          "id": "duplication-1774846366222-7mudfyrw7g",
           "autoFixable": false
         },
         {
@@ -1844,7 +1844,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 52
           },
-          "id": "duplication-1774600959462-jbl932fe12m",
+          "id": "duplication-1774846366222-7u4mc1e05td",
           "autoFixable": false
         },
         {
@@ -1856,7 +1856,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 53
           },
-          "id": "duplication-1774600959462-cb2zdkkghti",
+          "id": "duplication-1774846366222-184qik8pgw2",
           "autoFixable": false
         },
         {
@@ -1868,7 +1868,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 54
           },
-          "id": "duplication-1774600959462-m48b4jbv1u",
+          "id": "duplication-1774846366222-2wj2mm9oo2j",
           "autoFixable": false
         },
         {
@@ -1880,7 +1880,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 55
           },
-          "id": "duplication-1774600959462-40xi7t0z9ke",
+          "id": "duplication-1774846366222-asreq5s76k",
           "autoFixable": false
         },
         {
@@ -1892,7 +1892,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 56
           },
-          "id": "duplication-1774600959462-onpcf2mx5po",
+          "id": "duplication-1774846366222-tyurpb6lous",
           "autoFixable": false
         },
         {
@@ -1904,7 +1904,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPostsHome.ts",
             "line": 57
           },
-          "id": "duplication-1774600959462-b8jnxm0u9d",
+          "id": "duplication-1774846366222-uanlax2ddcf",
           "autoFixable": false
         },
         {
@@ -1916,7 +1916,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPopular.ts",
             "line": 43
           },
-          "id": "duplication-1774600959462-6swly5the4n",
+          "id": "duplication-1774846366222-soq9bsbea6k",
           "autoFixable": false
         },
         {
@@ -1928,7 +1928,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPopular.ts",
             "line": 45
           },
-          "id": "duplication-1774600959462-mixqjls10q",
+          "id": "duplication-1774846366222-xv73iplyga9",
           "autoFixable": false
         },
         {
@@ -1940,7 +1940,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPopular.ts",
             "line": 46
           },
-          "id": "duplication-1774600959462-pvoopb0p6y",
+          "id": "duplication-1774846366222-ku9t14iuu4",
           "autoFixable": false
         },
         {
@@ -1952,7 +1952,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPopular.ts",
             "line": 47
           },
-          "id": "duplication-1774600959462-uup83fhsihi",
+          "id": "duplication-1774846366222-8h12qn6rrk5",
           "autoFixable": false
         },
         {
@@ -1964,7 +1964,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeMemberPopular.ts",
             "line": 48
           },
-          "id": "duplication-1774600959462-abewqmhjdes",
+          "id": "duplication-1774846366222-lixodtdgnwd",
           "autoFixable": false
         },
         {
@@ -1976,7 +1976,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 14
           },
-          "id": "duplication-1774600959462-edxzonf0vlw",
+          "id": "duplication-1774846366222-8723tibhsv4",
           "autoFixable": false
         },
         {
@@ -1988,7 +1988,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 15
           },
-          "id": "duplication-1774600959462-p0c1rofgwj",
+          "id": "duplication-1774846366222-i2f1ymyv1wd",
           "autoFixable": false
         },
         {
@@ -2000,7 +2000,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 16
           },
-          "id": "duplication-1774600959462-m6t6i2ubbpl",
+          "id": "duplication-1774846366222-uhkntypcloa",
           "autoFixable": false
         },
         {
@@ -2012,7 +2012,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 17
           },
-          "id": "duplication-1774600959462-l0y7su2i3yb",
+          "id": "duplication-1774846366222-x12d8aqt4i",
           "autoFixable": false
         },
         {
@@ -2024,7 +2024,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 18
           },
-          "id": "duplication-1774600959462-ojqz4qvu4g",
+          "id": "duplication-1774846366222-kgn2wao0z9a",
           "autoFixable": false
         },
         {
@@ -2036,7 +2036,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 19
           },
-          "id": "duplication-1774600959462-o10hxg7uv0f",
+          "id": "duplication-1774846366222-1lxoknj3gihi",
           "autoFixable": false
         },
         {
@@ -2048,7 +2048,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 20
           },
-          "id": "duplication-1774600959462-l0c2o4r39v",
+          "id": "duplication-1774846366222-uf3iscssq1b",
           "autoFixable": false
         },
         {
@@ -2060,7 +2060,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 21
           },
-          "id": "duplication-1774600959462-njmxxnmsfxp",
+          "id": "duplication-1774846366222-0gkzlp3fzv2",
           "autoFixable": false
         },
         {
@@ -2072,7 +2072,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 22
           },
-          "id": "duplication-1774600959462-eor5kdc5jq8",
+          "id": "duplication-1774846366222-9gdw2jfp4t",
           "autoFixable": false
         },
         {
@@ -2084,7 +2084,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPostsPopular.ts",
             "line": 23
           },
-          "id": "duplication-1774600959462-k858eg6x5t",
+          "id": "duplication-1774846366222-uus56kevpti",
           "autoFixable": false
         },
         {
@@ -2096,7 +2096,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 40
           },
-          "id": "duplication-1774600959462-iuq6lac7lr",
+          "id": "duplication-1774846366222-nztfb0t4yx",
           "autoFixable": false
         },
         {
@@ -2108,7 +2108,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 41
           },
-          "id": "duplication-1774600959462-ou3ev9nztbh",
+          "id": "duplication-1774846366222-0nf74mmp7c6a",
           "autoFixable": false
         },
         {
@@ -2120,7 +2120,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 42
           },
-          "id": "duplication-1774600959462-p5qjg11rqvo",
+          "id": "duplication-1774846366222-pfehhntt0b",
           "autoFixable": false
         },
         {
@@ -2132,7 +2132,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 43
           },
-          "id": "duplication-1774600959462-m6u4ybd0olh",
+          "id": "duplication-1774846366222-9lictyx1uam",
           "autoFixable": false
         },
         {
@@ -2144,7 +2144,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 44
           },
-          "id": "duplication-1774600959462-2w6cnx6rj3r",
+          "id": "duplication-1774846366222-cp9kqcry7bk",
           "autoFixable": false
         },
         {
@@ -2156,7 +2156,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 45
           },
-          "id": "duplication-1774600959462-ulcfxizsvhh",
+          "id": "duplication-1774846366222-84h8k01r54b",
           "autoFixable": false
         },
         {
@@ -2168,7 +2168,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 46
           },
-          "id": "duplication-1774600959462-m6ljlhqv79a",
+          "id": "duplication-1774846366222-y01nqjijrjb",
           "autoFixable": false
         },
         {
@@ -2180,7 +2180,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 47
           },
-          "id": "duplication-1774600959462-qr0i9dghors",
+          "id": "duplication-1774846366222-e3s9dmcdm4f",
           "autoFixable": false
         },
         {
@@ -2192,7 +2192,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 48
           },
-          "id": "duplication-1774600959462-ic2mknr9qch",
+          "id": "duplication-1774846366222-58xhpb1ygo9",
           "autoFixable": false
         },
         {
@@ -2204,7 +2204,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/patchRedditLikeGuestPopular.ts",
             "line": 49
           },
-          "id": "duplication-1774600959462-7lc1qy719dj",
+          "id": "duplication-1774846366222-s1t7rwok2f",
           "autoFixable": false
         },
         {
@@ -2216,7 +2216,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/getRedditLikeAdminDashboard.ts",
             "line": 86
           },
-          "id": "duplication-1774600959462-hfced7h6fj9",
+          "id": "duplication-1774846366222-rcovxh75o09",
           "autoFixable": false
         },
         {
@@ -2228,7 +2228,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/getRedditLikeAdminDashboard.ts",
             "line": 87
           },
-          "id": "duplication-1774600959462-s561hbe4gmf",
+          "id": "duplication-1774846366222-nd1un8nlds8",
           "autoFixable": false
         },
         {
@@ -2240,7 +2240,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/providers/getRedditLikeAdminDashboard.ts",
             "line": 88
           },
-          "id": "duplication-1774600959462-fxryuvzv2pq",
+          "id": "duplication-1774846366222-k00nnk3zc5",
           "autoFixable": false
         }
       ]
@@ -2252,24 +2252,12 @@
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"RedditlikeMemberVote_statisticsController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
-            "line": 10
-          },
-          "id": "naming-1774600959432-pl9neoduc1h",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
           "message": "Class \"RedditlikeModeratorPassword_resetsController\" should be PascalCase",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/password-resets/RedditlikeModeratorPassword_resetsController.ts",
             "line": 10
           },
-          "id": "naming-1774600959433-uybvbkijeu",
+          "id": "naming-1774846366223-u5mo3ei37jd",
           "autoFixable": false
         },
         {
@@ -2281,7 +2269,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/moderator-roles/RedditlikeModeratorModerator_rolesController.ts",
             "line": 10
           },
-          "id": "naming-1774600959433-7sfme45oewd",
+          "id": "naming-1774846366224-5tjhlgwc3jl",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberVote_statisticsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846366223-hfhfftbegur",
           "autoFixable": false
         },
         {
@@ -2293,7 +2293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/moderator-roles/RedditlikeAdminModerator_rolesController.ts",
             "line": 10
           },
-          "id": "naming-1774600959434-lifbpy5933",
+          "id": "naming-1774846366224-qfqvks9j08",
           "autoFixable": false
         },
         {
@@ -2305,19 +2305,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/vote-statistics/RedditlikeGuestVote_statisticsController.ts",
             "line": 10
           },
-          "id": "naming-1774600959435-anf4qdjq0mg",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"RedditlikeMemberPostsVote_summaryController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
-            "line": 10
-          },
-          "id": "naming-1774600959436-u62rcqav579",
+          "id": "naming-1774846366226-on8oycvpok",
           "autoFixable": false
         },
         {
@@ -2329,7 +2317,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/moderator-roles/RedditlikeModeratorCommunitiesModerator_rolesController.ts",
             "line": 11
           },
-          "id": "naming-1774600959438-felt9rl3v5k",
+          "id": "naming-1774846366227-9zf18gtj4n",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"RedditlikeMemberPostsVote_summaryController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846366227-fuzucz4t4gq",
           "autoFixable": false
         },
         {
@@ -2341,7 +2341,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/moderator-roles/RedditlikeAdminCommunitiesModerator_rolesController.ts",
             "line": 14
           },
-          "id": "naming-1774600959463-t2t11fyesea",
+          "id": "naming-1774846366230-7leezmhxmo9",
           "autoFixable": false
         },
         {
@@ -2353,7 +2353,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/vote-summary/RedditlikeGuestPostsVote_summaryController.ts",
             "line": 10
           },
-          "id": "naming-1774600959464-0rjglpay6ur",
+          "id": "naming-1774846366229-it60rwodfcn",
           "autoFixable": false
         }
       ]
@@ -2371,127 +2371,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/communities/RedditlikeCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959494-tgrjkjzaf6d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberVote_statisticsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959495-0wiahdby0gem",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberSubscriptionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959495-h07pfdypvz5",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959495-jd1oaaf60ek",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommunitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/RedditlikeMemberCommunitiesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959495-0av0loxb5sre",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberHomeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/home/RedditlikeMemberHomeController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959495-604tatloy4",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774600959496-wsjgzbws09p",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/popular/RedditlikeMemberPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959496-7tojwxw1vt",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959496-06isr5llps6g",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/sessions/RedditlikeModeratorSessionsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774600959496-5uhggqcxan2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/profile/RedditlikeModeratorProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959496-74hr5p1r9b9",
+          "id": "jsdoc-1774846366247-d6hhr7l99ak",
           "autoFixable": false
         },
         {
@@ -2503,7 +2383,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959497-xs8v6agg2",
+          "id": "jsdoc-1774846366247-fzk104wekpw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/profile/RedditlikeModeratorProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366247-ccu0h1bd0i9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/sessions/RedditlikeModeratorSessionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846366248-hdqgbsrx9j5",
           "autoFixable": false
         },
         {
@@ -2515,7 +2419,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/password-resets/RedditlikeModeratorPassword_resetsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959497-prhpzvpzewd",
+          "id": "jsdoc-1774846366248-gt1nhoklnev",
           "autoFixable": false
         },
         {
@@ -2527,7 +2431,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/moderator-roles/RedditlikeModeratorModerator_rolesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959497-u7v62tic5pg",
+          "id": "jsdoc-1774846366248-entaeahcck",
           "autoFixable": false
         },
         {
@@ -2539,19 +2443,103 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/comments/RedditlikeModeratorCommentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600959497-jyd81izgpd8",
+          "id": "jsdoc-1774846366248-d88gpktl8cc",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeAdminReportsController\" missing JSDoc",
+          "message": "Class \"RedditlikeMemberVote_statisticsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/reports/RedditlikeAdminReportsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366248-rbcajuukxs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366248-fajmj9xkszb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366248-ip3eto5vvrk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/popular/RedditlikeMemberPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366249-kw780dozmq9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/RedditlikeMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600959497-2c3q71i39xf",
+          "id": "jsdoc-1774846366249-i136x148m8r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/home/RedditlikeMemberHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366249-ph3b9o2w0tp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846366250-frduzx01c0v",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366250-abheig09ig",
           "autoFixable": false
         },
         {
@@ -2563,7 +2551,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/moderator-roles/RedditlikeAdminModerator_rolesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959497-43hs3gspcmy",
+          "id": "jsdoc-1774846366249-vkfnbpwzbta",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAdminReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/reports/RedditlikeAdminReportsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366249-qjso34ou7n",
           "autoFixable": false
         },
         {
@@ -2575,31 +2575,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/dashboard/RedditlikeAdminDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959497-l7z3ufvknu",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAdminBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/bans/RedditlikeAdminBansController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959498-3nsqrmj39ur",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestVote_statisticsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/vote-statistics/RedditlikeGuestVote_statisticsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959498-sxkmqxhbfug",
+          "id": "jsdoc-1774846366250-k7za1v3ivbj",
           "autoFixable": false
         },
         {
@@ -2611,7 +2587,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/auth/moderator/RedditlikeAuthModeratorController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959501-2nd6deh13rn",
+          "id": "jsdoc-1774846366251-mmz1f08irx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAdminBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/bans/RedditlikeAdminBansController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366250-kpylgjjwwl",
           "autoFixable": false
         },
         {
@@ -2623,7 +2611,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959504-6rzz4r6o42",
+          "id": "jsdoc-1774846366251-or7lu5dgf5",
           "autoFixable": false
         },
         {
@@ -2635,7 +2623,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774600959498-ct38zaf3zl",
+          "id": "jsdoc-1774846366251-17i41anahz5",
           "autoFixable": false
         },
         {
@@ -2647,19 +2635,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/auth/admin/RedditlikeAuthAdminController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959498-gh458f9cr8d",
+          "id": "jsdoc-1774846366251-wswr0q6izaq",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeGuestPostsController\" missing JSDoc",
+          "message": "Class \"RedditlikeGuestVote_statisticsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/RedditlikeGuestPostsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/vote-statistics/RedditlikeGuestVote_statisticsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959498-dzs8c42jjt8",
+          "id": "jsdoc-1774846366251-zpi5ohp94t",
           "autoFixable": false
         },
         {
@@ -2671,151 +2659,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/popular/RedditlikeGuestPopularController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959498-mby2w1c0pso",
+          "id": "jsdoc-1774846366251-glkscc5hlpg",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeMemberCommunitiesMyController\" missing JSDoc",
+          "message": "Class \"RedditlikeGuestPostsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/my/RedditlikeMemberCommunitiesMyController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/RedditlikeGuestPostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959499-ydrzpw7mhvr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommunitiesPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/posts/RedditlikeMemberCommunitiesPostsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959499-o9splxw1e29",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsVote_summaryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959499-kb0hp7a2jp",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959499-2vdkxvsa69j",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsRevisionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/revisions/RedditlikeMemberPostsRevisionsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774600959499-6szv2490g5j",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/snapshots/RedditlikeMemberPostsSnapshotsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959500-qsgticrrha",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/reports/RedditlikeMemberPostsReportsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959500-8gs31mxpatb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/popular/RedditlikeMemberPostsPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959500-rq9afrqy609",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsHomeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/home/RedditlikeMemberPostsHomeController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959500-fe5ebz57nqs",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959500-alapnmou5dt",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommentsVoteController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/vote/RedditlikeMemberCommentsVoteController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959500-na6c72py1q",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberCommentsReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/reports/RedditlikeMemberCommentsReportsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959501-s7v1fm2spn9",
+          "id": "jsdoc-1774846366252-d1k9hslvt2r",
           "autoFixable": false
         },
         {
@@ -2827,43 +2683,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959501-9ftu9ucn95p",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorCommunitiesReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/reports/RedditlikeModeratorCommunitiesReportsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959501-yotn1fdp9la",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorCommunitiesMyController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/my/RedditlikeModeratorCommunitiesMyController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959501-neevsmjq7y",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorCommunitiesModerator_rolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/moderator-roles/RedditlikeModeratorCommunitiesModerator_rolesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600959501-14fa66phvgaa",
+          "id": "jsdoc-1774846366252-soc8cc0puwd",
           "autoFixable": false
         },
         {
@@ -2875,7 +2695,187 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/comments/vote/RedditlikeModeratorCommentsVoteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600959502-3zkwa6td3y",
+          "id": "jsdoc-1774846366252-n9q38kt23a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/reports/RedditlikeModeratorCommunitiesReportsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366252-ug6k5a1khkj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorCommunitiesMyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/my/RedditlikeModeratorCommunitiesMyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366252-82h88esaeeg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorCommunitiesModerator_rolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/moderator/communities/moderator-roles/RedditlikeModeratorCommunitiesModerator_rolesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366252-zpmquu7jt5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/posts/RedditlikeMemberCommunitiesPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366252-bobuxbx876",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommunitiesMyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/communities/my/RedditlikeMemberCommunitiesMyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366253-0gs9o5rpw99",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366253-64z6i76hdv3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsVote_summaryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366253-4e7yipmfjj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/snapshots/RedditlikeMemberPostsSnapshotsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366253-s4qp5ff3gum",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsRevisionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/revisions/RedditlikeMemberPostsRevisionsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846366253-nedrf7jqze",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/reports/RedditlikeMemberPostsReportsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366253-9brnu4fabj4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/popular/RedditlikeMemberPostsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366254-ht68jibbdjq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/home/RedditlikeMemberPostsHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846366254-rt79oh7nsr",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsVoteController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/vote/RedditlikeMemberCommentsVoteController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366254-m5al2200um",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberCommentsReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/comments/reports/RedditlikeMemberCommentsReportsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366254-83dpsnfduil",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366254-k1sub68euh",
           "autoFixable": false
         },
         {
@@ -2887,7 +2887,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/search/content/RedditlikeAdminSearchContentController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959502-12neawho8yr",
+          "id": "jsdoc-1774846366254-1de6jsbysp5",
           "autoFixable": false
         },
         {
@@ -2899,43 +2899,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/moderation/conduct/RedditlikeAdminModerationConductController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959502-j679lphxdd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAdminCommunitiesMyController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/my/RedditlikeAdminCommunitiesMyController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600959502-q7a99np23ie",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAdminCommunitiesModerator_rolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/moderator-roles/RedditlikeAdminCommunitiesModerator_rolesController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774600959502-52yqv2133ir",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAdminCommunitiesBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/bans/RedditlikeAdminCommunitiesBansController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774600959503-cqqaw5vn4ce",
+          "id": "jsdoc-1774846366254-0roqz1cottsd",
           "autoFixable": false
         },
         {
@@ -2947,7 +2911,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/reports/RedditlikeAdminCommunitiesReportsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959503-490bj6kckav",
+          "id": "jsdoc-1774846366255-vv016u2q1u9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAdminCommunitiesMyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/my/RedditlikeAdminCommunitiesMyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846366255-1l2eln0qg86",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAdminCommunitiesModerator_rolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/moderator-roles/RedditlikeAdminCommunitiesModerator_rolesController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846366255-ac2klcf48ne",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAdminCommunitiesBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/admin/communities/bans/RedditlikeAdminCommunitiesBansController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846366255-77yzwatq362",
           "autoFixable": false
         },
         {
@@ -2959,7 +2959,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/communities/posts/RedditlikeGuestCommunitiesPostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959503-e1ihr5xvolg",
+          "id": "jsdoc-1774846366255-0iqboar8tk7s",
           "autoFixable": false
         },
         {
@@ -2971,7 +2971,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/vote-summary/RedditlikeGuestPostsVote_summaryController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600959503-fnskq7hyxbi",
+          "id": "jsdoc-1774846366256-0a2iyhujok5p",
           "autoFixable": false
         },
         {
@@ -2983,7 +2983,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/snapshots/RedditlikeGuestPostsSnapshotsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600959503-0li4fsx22mpr",
+          "id": "jsdoc-1774846366256-kt9wcqoiwbi",
           "autoFixable": false
         },
         {
@@ -2995,7 +2995,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/revisions/RedditlikeGuestPostsRevisionsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774600959504-ou6h92xnz6m",
+          "id": "jsdoc-1774846366256-v2twhil3c3n",
           "autoFixable": false
         },
         {
@@ -3007,7 +3007,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/popular/RedditlikeGuestPostsPopularController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959504-qr3m3ncde5",
+          "id": "jsdoc-1774846366256-r3dtbqgzi2",
           "autoFixable": false
         },
         {
@@ -3019,7 +3019,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/reddit/src/controllers/redditLike/guest/posts/comments/RedditlikeGuestPostsCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600959504-3crkqvx86ii",
+          "id": "jsdoc-1774846366256-zvj9nfh12gi",
           "autoFixable": false
         }
       ]
@@ -3038,7 +3038,7 @@
             "file": "src/api/structures/IRedditLikePost.ts",
             "line": 201
           },
-          "id": "completeness-1774600959521-c1074t7uq3e",
+          "id": "completeness-1774846366267-umbpa2bein",
           "autoFixable": false
         },
         {
@@ -3050,7 +3050,7 @@
             "file": "src/api/structures/IRedditLikePost.ts",
             "line": 302
           },
-          "id": "completeness-1774600959521-416swfrg6wd",
+          "id": "completeness-1774846366267-e025upgg4b8",
           "autoFixable": false
         },
         {
@@ -3062,7 +3062,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 124
           },
-          "id": "completeness-1774600959521-w1dbuii8flm",
+          "id": "completeness-1774846366268-g7gzmusql9",
           "autoFixable": false
         },
         {
@@ -3074,7 +3074,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 132
           },
-          "id": "completeness-1774600959521-elxy3s3y96l",
+          "id": "completeness-1774846366268-37am4ucexez",
           "autoFixable": false
         },
         {
@@ -3086,7 +3086,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 219
           },
-          "id": "completeness-1774600959521-ob7ey14ndog",
+          "id": "completeness-1774846366268-2pnzgctgtsn",
           "autoFixable": false
         },
         {
@@ -3098,7 +3098,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 235
           },
-          "id": "completeness-1774600959521-0li672363z0d",
+          "id": "completeness-1774846366268-g7fh3wx644p",
           "autoFixable": false
         },
         {
@@ -3110,7 +3110,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 243
           },
-          "id": "completeness-1774600959521-spno06tafp",
+          "id": "completeness-1774846366268-54gb2n3l52n",
           "autoFixable": false
         },
         {
@@ -3122,7 +3122,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 251
           },
-          "id": "completeness-1774600959521-xyyf9w3r95",
+          "id": "completeness-1774846366268-hn7vjt5o2dj",
           "autoFixable": false
         },
         {
@@ -3134,7 +3134,7 @@
             "file": "src/api/structures/IRedditLikeMember.ts",
             "line": 259
           },
-          "id": "completeness-1774600959521-a28oe5yiopi",
+          "id": "completeness-1774846366268-207if1awwse",
           "autoFixable": false
         },
         {
@@ -3146,7 +3146,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 13
           },
-          "id": "completeness-1774600959521-r1ywkkqe0o",
+          "id": "completeness-1774846366268-ya1wcmhweh",
           "autoFixable": false
         },
         {
@@ -3158,7 +3158,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 21
           },
-          "id": "completeness-1774600959521-zf2wbgmj62j",
+          "id": "completeness-1774846366268-7syjg0psc5t",
           "autoFixable": false
         },
         {
@@ -3170,7 +3170,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 29
           },
-          "id": "completeness-1774600959521-6ubwvlbqwly",
+          "id": "completeness-1774846366268-hiee7tmbnp7",
           "autoFixable": false
         },
         {
@@ -3182,7 +3182,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 37
           },
-          "id": "completeness-1774600959521-62urhbjichv",
+          "id": "completeness-1774846366268-gtqlh0ojf4",
           "autoFixable": false
         },
         {
@@ -3194,7 +3194,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 45
           },
-          "id": "completeness-1774600959521-5qbdm949ckc",
+          "id": "completeness-1774846366268-qsctkgq28gh",
           "autoFixable": false
         },
         {
@@ -3206,7 +3206,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 147
           },
-          "id": "completeness-1774600959521-wd3bmm0ejr",
+          "id": "completeness-1774846366268-2mqw9kpjpie",
           "autoFixable": false
         },
         {
@@ -3218,7 +3218,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 155
           },
-          "id": "completeness-1774600959521-sfppe8rj32s",
+          "id": "completeness-1774846366268-2vze5076afj",
           "autoFixable": false
         },
         {
@@ -3230,7 +3230,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 202
           },
-          "id": "completeness-1774600959521-f7g7o9d2q75",
+          "id": "completeness-1774846366268-tv9eehetr9m",
           "autoFixable": false
         },
         {
@@ -3242,7 +3242,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 211
           },
-          "id": "completeness-1774600959521-2jsw4q1yo08",
+          "id": "completeness-1774846366268-prbdq3777fd",
           "autoFixable": false
         },
         {
@@ -3254,7 +3254,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 218
           },
-          "id": "completeness-1774600959521-hdszd0e5ml",
+          "id": "completeness-1774846366268-5drpaiw6n7b",
           "autoFixable": false
         },
         {
@@ -3266,7 +3266,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 226
           },
-          "id": "completeness-1774600959521-lgo5813sc9a",
+          "id": "completeness-1774846366268-wwus165waa",
           "autoFixable": false
         },
         {
@@ -3278,7 +3278,7 @@
             "file": "src/api/structures/IRedditLikeBan.ts",
             "line": 144
           },
-          "id": "completeness-1774600959521-ze2f5qpa9kk",
+          "id": "completeness-1774846366268-twg81jr9hx9",
           "autoFixable": false
         },
         {
@@ -3290,7 +3290,7 @@
             "file": "src/api/structures/IRedditLikeBan.ts",
             "line": 152
           },
-          "id": "completeness-1774600959521-tryngf5lnhm",
+          "id": "completeness-1774846366268-bdobqx3gv9f",
           "autoFixable": false
         }
       ]
@@ -3313,7 +3313,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774600958917-pizcd1zrfbq",
+      "id": "type-error-1774846365886-hq9q85gbxcj",
       "autoFixable": false
     },
     {
@@ -3325,7 +3325,7 @@
         "file": "src/controllers/redditLike/guest/posts/revisions/RedditlikeGuestPostsRevisionsController.ts",
         "line": 7378
       },
-      "id": "type-error-1774600958917-phboh6zi1fp",
+      "id": "type-error-1774846365886-smykjpmzlg",
       "autoFixable": false
     },
     {
@@ -3337,7 +3337,7 @@
         "file": "src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
         "line": 580
       },
-      "id": "type-error-1774600958917-ttwpxg8zvo",
+      "id": "type-error-1774846365886-b3p0ub74xjf",
       "autoFixable": false
     },
     {
@@ -3349,7 +3349,7 @@
         "file": "src/controllers/redditLike/member/posts/vote-summary/RedditlikeMemberPostsVote_summaryController.ts",
         "line": 393
       },
-      "id": "type-error-1774600958917-7uzrbs5vy58",
+      "id": "type-error-1774846365886-csz3ldr5mkl",
       "autoFixable": false
     },
     {
@@ -3361,7 +3361,7 @@
         "file": "src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
         "line": 2565
       },
-      "id": "type-error-1774600958917-oysr2apmyd",
+      "id": "type-error-1774846365886-cuy0ym3o1yj",
       "autoFixable": false
     },
     {
@@ -3373,7 +3373,7 @@
         "file": "src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
         "line": 476
       },
-      "id": "type-error-1774600958917-ngn429e4ekn",
+      "id": "type-error-1774846365886-quj4yefw8d",
       "autoFixable": false
     },
     {
@@ -3385,7 +3385,7 @@
         "file": "src/controllers/redditLike/member/vote-statistics/RedditlikeMemberVote_statisticsController.ts",
         "line": 373
       },
-      "id": "type-error-1774600958917-48su5soehh7",
+      "id": "type-error-1774846365886-pge3ktyov4",
       "autoFixable": false
     },
     {
@@ -3397,7 +3397,7 @@
         "file": "src/providers/deleteRedditLikeModeratorCommentsCommentId.ts",
         "line": 1481
       },
-      "id": "type-error-1774600958917-x2r40txe9dm",
+      "id": "type-error-1774846365886-7f2rud481hw",
       "autoFixable": false
     },
     {
@@ -3409,7 +3409,7 @@
         "file": "src/providers/getRedditLikeAdminBansBanId.ts",
         "line": 1070
       },
-      "id": "type-error-1774600958917-dyuz5v20iew",
+      "id": "type-error-1774846365886-0snh6nwuzdnr",
       "autoFixable": false
     },
     {
@@ -3421,7 +3421,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 2201
       },
-      "id": "type-error-1774600958917-g2wkea9wnyg",
+      "id": "type-error-1774846365886-1gsbelujjng",
       "autoFixable": false
     },
     {
@@ -3433,7 +3433,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 4744
       },
-      "id": "type-error-1774600958917-1fqf8q08vcp",
+      "id": "type-error-1774846365886-75e8afgoo3n",
       "autoFixable": false
     },
     {
@@ -3445,7 +3445,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5212
       },
-      "id": "type-error-1774600958917-v2wuviwjmzh",
+      "id": "type-error-1774846365886-009cmgofgarw7",
       "autoFixable": false
     },
     {
@@ -3457,7 +3457,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5241
       },
-      "id": "type-error-1774600958917-e59rctvoxo",
+      "id": "type-error-1774846365886-11wig1zt69sg",
       "autoFixable": false
     },
     {
@@ -3469,7 +3469,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5289
       },
-      "id": "type-error-1774600958917-cqrp691lr4f",
+      "id": "type-error-1774846365886-s3ti5m2b2w",
       "autoFixable": false
     },
     {
@@ -3481,7 +3481,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5318
       },
-      "id": "type-error-1774600958917-8z4gpydsile",
+      "id": "type-error-1774846365886-ihl7rhwog3",
       "autoFixable": false
     },
     {
@@ -3493,7 +3493,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5470
       },
-      "id": "type-error-1774600958917-c2d85xxpiyo",
+      "id": "type-error-1774846365886-o3sy2x8ynr",
       "autoFixable": false
     },
     {
@@ -3505,7 +3505,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5730
       },
-      "id": "type-error-1774600958917-dc9fgc0f9id",
+      "id": "type-error-1774846365886-9gl2xe0ogvw",
       "autoFixable": false
     },
     {
@@ -3517,7 +3517,7 @@
         "file": "src/providers/getRedditLikeAdminDashboard.ts",
         "line": 5780
       },
-      "id": "type-error-1774600958917-9htnpkldv3",
+      "id": "type-error-1774846365886-4pegdjq1gkq",
       "autoFixable": false
     },
     {
@@ -3529,7 +3529,7 @@
         "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
         "line": 2149
       },
-      "id": "type-error-1774600958917-qk8ja9ptuen",
+      "id": "type-error-1774846365886-6d7tprgb6xu",
       "autoFixable": false
     },
     {
@@ -3541,7 +3541,7 @@
         "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
         "line": 2204
       },
-      "id": "type-error-1774600958917-hkt6hzzgn6",
+      "id": "type-error-1774846365886-yc553k6d3on",
       "autoFixable": false
     },
     {
@@ -3553,7 +3553,7 @@
         "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
         "line": 2685
       },
-      "id": "type-error-1774600958917-0mwf87mv5jjk",
+      "id": "type-error-1774846365886-pvlqfeclz6",
       "autoFixable": false
     },
     {
@@ -3565,7 +3565,7 @@
         "file": "src/providers/patchRedditLikeAdminSearchContent.ts",
         "line": 2743
       },
-      "id": "type-error-1774600958917-jgj065766u",
+      "id": "type-error-1774846365886-vb0q414985",
       "autoFixable": false
     },
     {
@@ -3577,7 +3577,7 @@
         "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
         "line": 2116
       },
-      "id": "type-error-1774600958917-ubbat1053n",
+      "id": "type-error-1774846365886-a3cx5svqj4d",
       "autoFixable": false
     },
     {
@@ -3589,7 +3589,7 @@
         "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
         "line": 2153
       },
-      "id": "type-error-1774600958917-840664ui98m",
+      "id": "type-error-1774846365886-4qtp9qinmwg",
       "autoFixable": false
     },
     {
@@ -3601,7 +3601,7 @@
         "file": "src/providers/patchRedditLikeMemberPopular.ts",
         "line": 3594
       },
-      "id": "type-error-1774600958917-qzrylo8228",
+      "id": "type-error-1774846365886-umwo228pyh",
       "autoFixable": false
     },
     {
@@ -3613,7 +3613,7 @@
         "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
         "line": 2385
       },
-      "id": "type-error-1774600958917-c7r16434ayi",
+      "id": "type-error-1774846365886-s3ma563hse",
       "autoFixable": false
     },
     {
@@ -3625,7 +3625,7 @@
         "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
         "line": 2422
       },
-      "id": "type-error-1774600958917-ltngszz7pgd",
+      "id": "type-error-1774846365886-ofvo0m9l1g",
       "autoFixable": false
     },
     {
@@ -3637,7 +3637,7 @@
         "file": "src/providers/postRedditLikeMemberPostsPostIdRevisions.ts",
         "line": 1516
       },
-      "id": "type-error-1774600958917-ka44parr23",
+      "id": "type-error-1774846365886-w8hetnkztxn",
       "autoFixable": false
     },
     {
@@ -3649,7 +3649,7 @@
         "file": "src/transformers/RedditLikeCommentTransformer.ts",
         "line": 7579
       },
-      "id": "type-error-1774600958917-p87cowu98pd",
+      "id": "type-error-1774846365886-9v50btsey85",
       "autoFixable": false
     },
     {
@@ -3661,7 +3661,7 @@
         "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
         "line": 1525
       },
-      "id": "type-error-1774600958917-94knd2rslc",
+      "id": "type-error-1774846365886-nuk9e6g51",
       "autoFixable": false
     },
     {
@@ -3673,7 +3673,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 2341
       },
-      "id": "type-error-1774600958917-z733qrnkdud",
+      "id": "type-error-1774846365886-eidracpbrlq",
       "autoFixable": false
     },
     {
@@ -3685,7 +3685,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 2468
       },
-      "id": "type-error-1774600958917-z2i6w54f4l",
+      "id": "type-error-1774846365886-padyu6054h",
       "autoFixable": false
     },
     {
@@ -3697,7 +3697,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 2514
       },
-      "id": "type-error-1774600958917-5374te3ldy2",
+      "id": "type-error-1774846365886-xtcvh3a5b4i",
       "autoFixable": false
     },
     {
@@ -3709,7 +3709,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 2569
       },
-      "id": "type-error-1774600958917-5esax5bvgha",
+      "id": "type-error-1774846365886-04g7ra71xaqx",
       "autoFixable": false
     },
     {
@@ -3721,7 +3721,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 2619
       },
-      "id": "type-error-1774600958917-qtnxhjc1qy9",
+      "id": "type-error-1774846365886-zwpv0k34yd",
       "autoFixable": false
     }
   ],
@@ -3735,7 +3735,7 @@
         "file": "src/providers/patchRedditLikeMemberCommunitiesMy.ts",
         "line": 1788
       },
-      "id": "type-error-1774600958917-dg714iody5d",
+      "id": "type-error-1774846365886-qgdmw179i5o",
       "autoFixable": false
     },
     {
@@ -3747,7 +3747,7 @@
         "file": "src/providers/patchRedditLikeMemberPopular.ts",
         "line": 3305
       },
-      "id": "type-error-1774600958917-4t9aeyllfwq",
+      "id": "type-error-1774846365886-hynf1ple2e7",
       "autoFixable": false
     },
     {
@@ -3759,13 +3759,13 @@
         "file": "src/providers/patchRedditLikeModeratorCommunitiesMy.ts",
         "line": 2017
       },
-      "id": "type-error-1774600958917-7r9jqrhkdty",
+      "id": "type-error-1774846365886-7my97tf092v",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:42:39.522Z",
-    "totalDurationMs": 8455,
+    "evaluatedAt": "2026-03-30T04:52:46.268Z",
+    "totalDurationMs": 6229,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 322
   },

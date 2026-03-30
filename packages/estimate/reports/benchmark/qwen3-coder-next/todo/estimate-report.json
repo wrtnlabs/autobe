@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774600988033-tubmkmi64bs",
+          "id": "type-error-1774846386472-8848fjgx694",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
             "line": 418
           },
-          "id": "type-error-1774600988033-9m723vplobp",
+          "id": "type-error-1774846386472-1jft1jmogbv",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
             "line": 2910
           },
-          "id": "type-error-1774600988033-6dr5l3qqt5r",
+          "id": "type-error-1774846386472-age3a09lv6p",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
             "line": 1935
           },
-          "id": "type-error-1774600988033-9shq2zhm2hs",
+          "id": "type-error-1774846386472-z2trnl1co4i",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/authorize/guestAuthorize.ts",
             "line": 101
           },
-          "id": "type-error-1774600988033-2h8b4jcf7lf",
+          "id": "type-error-1774846386472-aerxtcwzhw8",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
             "line": 1237
           },
-          "id": "type-error-1774600988033-s6yqbpa03s",
+          "id": "type-error-1774846386472-5zdl56432v5",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
             "line": 1413
           },
-          "id": "type-error-1774600988033-p0msynym8q",
+          "id": "type-error-1774846386472-m2cwbzvqcmh",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 2440
           },
-          "id": "type-error-1774600988033-qonbrcphci",
+          "id": "type-error-1774846386472-7m5nfygecy6",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 3247
           },
-          "id": "type-error-1774600988033-qrxa4v15b2f",
+          "id": "type-error-1774846386472-bpa4le1cbd9",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 4004
           },
-          "id": "type-error-1774600988033-xf7rylfxnk",
+          "id": "type-error-1774846386472-1h2d1yqmsqk",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 4859
           },
-          "id": "type-error-1774600988033-zovvaetptbg",
+          "id": "type-error-1774846386472-foyj25bygsk",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 5244
           },
-          "id": "type-error-1774600988033-wyapu9bwbno",
+          "id": "type-error-1774846386472-2593lt8dwds",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
             "line": 5628
           },
-          "id": "type-error-1774600988033-k7dmcjnwvs",
+          "id": "type-error-1774846386472-bj64i7edvoe",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchTodoAppMemberTrash.ts",
             "line": 1522
           },
-          "id": "type-error-1774600988033-h1a92tipn0u",
+          "id": "type-error-1774846386472-9yka56e3cja",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchTodoAppMemberTrash.ts",
             "line": 1639
           },
-          "id": "type-error-1774600988033-z3t15j3gun",
+          "id": "type-error-1774846386472-zt3n3k7jmoj",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchTodoAppMemberTrash.ts",
             "line": 1756
           },
-          "id": "type-error-1774600988033-12jwuy99p3yd",
+          "id": "type-error-1774846386472-3apk9b5xqxg",
           "autoFixable": false
         },
         {
@@ -211,11 +211,11 @@
             "file": "src/providers/patchTodoAppMemberTrash.ts",
             "line": 1811
           },
-          "id": "type-error-1774600988033-1g9ll9fktx3",
+          "id": "type-error-1774846386472-6x5fyl9542t",
           "autoFixable": false
         }
       ],
-      "durationMs": 6543,
+      "durationMs": 3638,
       "metrics": {
         "totalFiles": 113,
         "filesWithErrors": 0,
@@ -242,7 +242,7 @@
         "docFileCount": 6,
         "totalDocLength": 198288,
         "cached": true,
-        "originalDurationMs": 34
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -288,7 +288,7 @@
         "assertionTests": 49,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 9
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -308,7 +308,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 19
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -329,7 +329,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 19
+        "originalDurationMs": 0
       }
     }
   },
@@ -349,7 +349,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774600988429-mviwdzk7la",
+          "id": "complexity-1774846386576-dd7rhivrkjs",
           "autoFixable": false
         }
       ]
@@ -366,7 +366,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/postTodoAppMemberTrashTodoIdRestore.ts",
             "line": 10
           },
-          "id": "duplication-1774600988592-s57mqu3ra7s",
+          "id": "duplication-1774846386614-l4d095fca4",
           "autoFixable": false
         },
         {
@@ -378,7 +378,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/providers/patchTodoAppMemberTrash.ts",
             "line": 11
           },
-          "id": "duplication-1774600988592-fiji750gqfi",
+          "id": "duplication-1774846386614-kg835uimq1d",
           "autoFixable": false
         }
       ]
@@ -390,24 +390,24 @@
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberTodosEdit_historyController\" should be PascalCase",
+          "message": "Class \"TodoappMemberTodosToggle_completeController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
             "line": 10
           },
-          "id": "naming-1774600988548-5jdbx4h5wav",
+          "id": "naming-1774846386602-m2b1ppjp8ia",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"TodoappMemberTodosToggle_completeController\" should be PascalCase",
+          "message": "Class \"TodoappMemberTodosEdit_historyController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
             "line": 10
           },
-          "id": "naming-1774600988548-esvyx7fewgw",
+          "id": "naming-1774846386603-0pyfp2yup1cp",
           "autoFixable": false
         }
       ]
@@ -420,12 +420,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
-            "line": 9
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
+            "line": 13
           },
-          "id": "jsdoc-1774600988608-nggg1key3o",
+          "id": "jsdoc-1774846386617-fahxd268lcd",
           "autoFixable": false
         },
         {
@@ -437,79 +437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600988607-nwt2oczi4nd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappAuthAdminController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/admin/TodoappAuthAdminController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600988610-fc0qdhbdqsq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTrashController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/trash/TodoappMemberTrashController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774600988608-9tt4mogucdh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberUsersMeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/users/me/TodoappMemberUsersMeController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774600988609-mopcaea1jk",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberAnalyticsActivitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/analytics/activities/TodoappMemberAnalyticsActivitiesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774600988610-4ru6d702rul",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/dashboard/TodoappMemberDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600988609-l4gyhrqp2aj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774600988623-6zspcuxikfi",
+          "id": "jsdoc-1774846386618-7npcyphweyw",
           "autoFixable": false
         },
         {
@@ -521,19 +449,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774600988626-xpfm7btqlb",
+          "id": "jsdoc-1774846386618-k42r0m7ddpj",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosEdit_historyController\" missing JSDoc",
+          "message": "Class \"TodoappMemberDashboardController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/dashboard/TodoappMemberDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600988625-i7e75299r6g",
+          "id": "jsdoc-1774846386618-o439i22kox",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846386619-gvwahxoj4k7",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846386619-b48pj1hd3x",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappAuthAdminController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/auth/admin/TodoappAuthAdminController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846386621-ukx9tc4hng",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberAnalyticsActivitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/analytics/activities/TodoappMemberAnalyticsActivitiesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846386619-qvhr3bybujl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberUsersMeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/users/me/TodoappMemberUsersMeController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846386619-mrpnh1s0w6",
           "autoFixable": false
         },
         {
@@ -545,19 +533,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/profile/me/TodoappMemberProfileMeController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600988624-3ekkkmayzf7",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600988627-hxzvmlj3bl5",
+          "id": "jsdoc-1774846386619-rp3i36qwbj",
           "autoFixable": false
         },
         {
@@ -569,7 +545,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/toggle-complete/TodoappMemberTodosToggle_completeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600988627-cdczuam4if8",
+          "id": "jsdoc-1774846386620-5riyeufhpva",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosHistoryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846386620-ez5nltucq6c",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdit_historyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/todo/src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846386620-e17334lf5ws",
           "autoFixable": false
         }
       ]
@@ -588,7 +588,7 @@
             "file": "src/api/structures/ITodoAppMemberSession.ts",
             "line": 13
           },
-          "id": "completeness-1774600988636-dlf79c2bje",
+          "id": "completeness-1774846386627-3uhachmn4l6",
           "autoFixable": false
         },
         {
@@ -600,7 +600,7 @@
             "file": "src/api/structures/ITodoAppMemberSession.ts",
             "line": 62
           },
-          "id": "completeness-1774600988636-6taxejpefx8",
+          "id": "completeness-1774846386627-yfv7e35a018",
           "autoFixable": false
         }
       ]
@@ -623,7 +623,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774600988033-tubmkmi64bs",
+      "id": "type-error-1774846386472-8848fjgx694",
       "autoFixable": false
     },
     {
@@ -635,7 +635,7 @@
         "file": "src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
         "line": 418
       },
-      "id": "type-error-1774600988033-9m723vplobp",
+      "id": "type-error-1774846386472-1jft1jmogbv",
       "autoFixable": false
     },
     {
@@ -647,7 +647,7 @@
         "file": "src/controllers/todoApp/member/todos/edit-history/TodoappMemberTodosEdit_historyController.ts",
         "line": 2910
       },
-      "id": "type-error-1774600988033-6dr5l3qqt5r",
+      "id": "type-error-1774846386472-age3a09lv6p",
       "autoFixable": false
     },
     {
@@ -659,7 +659,7 @@
         "file": "src/controllers/todoApp/member/todos/history/TodoappMemberTodosHistoryController.ts",
         "line": 1935
       },
-      "id": "type-error-1774600988033-9shq2zhm2hs",
+      "id": "type-error-1774846386472-z2trnl1co4i",
       "autoFixable": false
     },
     {
@@ -671,7 +671,7 @@
         "file": "src/providers/authorize/guestAuthorize.ts",
         "line": 101
       },
-      "id": "type-error-1774600988033-2h8b4jcf7lf",
+      "id": "type-error-1774846386472-aerxtcwzhw8",
       "autoFixable": false
     },
     {
@@ -683,7 +683,7 @@
         "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
         "line": 1237
       },
-      "id": "type-error-1774600988033-s6yqbpa03s",
+      "id": "type-error-1774846386472-5zdl56432v5",
       "autoFixable": false
     },
     {
@@ -695,7 +695,7 @@
         "file": "src/providers/deleteTodoAppMemberUsersMe.ts",
         "line": 1413
       },
-      "id": "type-error-1774600988033-p0msynym8q",
+      "id": "type-error-1774846386472-m2cwbzvqcmh",
       "autoFixable": false
     },
     {
@@ -707,7 +707,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 4859
       },
-      "id": "type-error-1774600988033-zovvaetptbg",
+      "id": "type-error-1774846386472-foyj25bygsk",
       "autoFixable": false
     },
     {
@@ -719,7 +719,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 5244
       },
-      "id": "type-error-1774600988033-wyapu9bwbno",
+      "id": "type-error-1774846386472-2593lt8dwds",
       "autoFixable": false
     },
     {
@@ -731,7 +731,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 5628
       },
-      "id": "type-error-1774600988033-k7dmcjnwvs",
+      "id": "type-error-1774846386472-bj64i7edvoe",
       "autoFixable": false
     }
   ],
@@ -745,7 +745,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 2440
       },
-      "id": "type-error-1774600988033-qonbrcphci",
+      "id": "type-error-1774846386472-7m5nfygecy6",
       "autoFixable": false
     },
     {
@@ -757,7 +757,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 3247
       },
-      "id": "type-error-1774600988033-qrxa4v15b2f",
+      "id": "type-error-1774846386472-bpa4le1cbd9",
       "autoFixable": false
     },
     {
@@ -769,7 +769,7 @@
         "file": "src/providers/patchTodoAppMemberAnalyticsActivities.ts",
         "line": 4004
       },
-      "id": "type-error-1774600988033-xf7rylfxnk",
+      "id": "type-error-1774846386472-1h2d1yqmsqk",
       "autoFixable": false
     },
     {
@@ -781,7 +781,7 @@
         "file": "src/providers/patchTodoAppMemberTrash.ts",
         "line": 1522
       },
-      "id": "type-error-1774600988033-h1a92tipn0u",
+      "id": "type-error-1774846386472-9yka56e3cja",
       "autoFixable": false
     },
     {
@@ -793,7 +793,7 @@
         "file": "src/providers/patchTodoAppMemberTrash.ts",
         "line": 1639
       },
-      "id": "type-error-1774600988033-z3t15j3gun",
+      "id": "type-error-1774846386472-zt3n3k7jmoj",
       "autoFixable": false
     },
     {
@@ -805,7 +805,7 @@
         "file": "src/providers/patchTodoAppMemberTrash.ts",
         "line": 1756
       },
-      "id": "type-error-1774600988033-12jwuy99p3yd",
+      "id": "type-error-1774846386472-3apk9b5xqxg",
       "autoFixable": false
     },
     {
@@ -817,13 +817,13 @@
         "file": "src/providers/patchTodoAppMemberTrash.ts",
         "line": 1811
       },
-      "id": "type-error-1774600988033-1g9ll9fktx3",
+      "id": "type-error-1774846386472-6x5fyl9542t",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:43:08.640Z",
-    "totalDurationMs": 6949,
+    "evaluatedAt": "2026-03-30T04:53:06.628Z",
+    "totalDurationMs": 4211,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 113
   },

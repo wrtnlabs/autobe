@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845387321-vvxcldmwqn",
+          "id": "type-error-1774846084507-gpqvcocjibe",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchCommunityGuestSessions.ts",
             "line": 1294
           },
-          "id": "type-error-1774845387321-3j930pumvtf",
+          "id": "type-error-1774846084507-zex46kye1fm",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchCommunityGuestSessions.ts",
             "line": 1738
           },
-          "id": "type-error-1774845387321-wh15fh5scg",
+          "id": "type-error-1774846084507-xf24tkl32j",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 2188
           },
-          "id": "type-error-1774845387321-ktie9kd9m4b",
+          "id": "type-error-1774846084507-wxu4d9bdhc",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchCommunityPosts.ts",
             "line": 2558
           },
-          "id": "type-error-1774845387321-njd4zfkjyk",
+          "id": "type-error-1774846084507-6qnvc7hrkat",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
             "line": 1983
           },
-          "id": "type-error-1774845387321-s815cxvhuoc",
+          "id": "type-error-1774846084507-vm1c4oqpwei",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
             "line": 1190
           },
-          "id": "type-error-1774845387321-derjpjktlos",
+          "id": "type-error-1774846084507-sjk9tmbxgtt",
           "autoFixable": false
         },
         {
@@ -103,11 +103,11 @@
             "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
             "line": 1845
           },
-          "id": "type-error-1774845387321-u7unle7v9i",
+          "id": "type-error-1774846084507-m2pyeq58ekh",
           "autoFixable": false
         }
       ],
-      "durationMs": 7215,
+      "durationMs": 8097,
       "metrics": {
         "totalFiles": 226,
         "filesWithErrors": 0,
@@ -241,7 +241,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845387606-nd5rn07pjm7",
+          "id": "complexity-1774846084890-871ur7n9449",
           "autoFixable": false
         },
         {
@@ -254,7 +254,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845387608-cwufrlilnc7",
+          "id": "complexity-1774846084886-njad41ijwd",
           "autoFixable": false
         },
         {
@@ -267,7 +267,7 @@
             "line": 21
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845387615-uij7m2rxec",
+          "id": "complexity-1774846084889-s2j6hwa4rh",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845387614-rtod81iwxr",
+          "id": "complexity-1774846084894-m85gdfzn6w",
           "autoFixable": false
         },
         {
@@ -293,7 +293,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845387616-qnuv4zcfkc",
+          "id": "complexity-1774846084893-hkbarslmmts",
           "autoFixable": false
         },
         {
@@ -306,7 +306,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845387615-2zuy9nonkk",
+          "id": "complexity-1774846084898-ld3a9m26hco",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845387623-jvrtp0s732",
+          "id": "complexity-1774846084897-cut18q2wm4",
           "autoFixable": false
         }
       ]
@@ -336,7 +336,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 99
           },
-          "id": "duplication-1774845387739-vng4xehrz3",
+          "id": "duplication-1774846085032-1fgns2nw57v",
           "autoFixable": false
         },
         {
@@ -348,7 +348,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 165
           },
-          "id": "duplication-1774845387739-921g7syxww",
+          "id": "duplication-1774846085032-kna9aj2gn49",
           "autoFixable": false
         },
         {
@@ -360,7 +360,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 24
           },
-          "id": "duplication-1774845387739-jq9sgk6nq3o",
+          "id": "duplication-1774846085032-7j55vg4qdby",
           "autoFixable": false
         },
         {
@@ -372,7 +372,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 25
           },
-          "id": "duplication-1774845387739-hgtcht10qc7",
+          "id": "duplication-1774846085032-w2vyzh5tk1",
           "autoFixable": false
         },
         {
@@ -384,7 +384,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 26
           },
-          "id": "duplication-1774845387739-pwbdndm2ccn",
+          "id": "duplication-1774846085032-65z9gwet12c",
           "autoFixable": false
         },
         {
@@ -396,7 +396,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdVotes.ts",
             "line": 27
           },
-          "id": "duplication-1774845387739-38bvt2vi3w8",
+          "id": "duplication-1774846085032-t8njw7hh1fo",
           "autoFixable": false
         },
         {
@@ -408,7 +408,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberPostsPostIdCommentsCommentIdVotesVoteId.ts",
             "line": 13
           },
-          "id": "duplication-1774845387739-9m4z55qowqr",
+          "id": "duplication-1774846085032-y9fgyh6zcct",
           "autoFixable": false
         },
         {
@@ -420,7 +420,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 29
           },
-          "id": "duplication-1774845387739-xk10k0tf9i",
+          "id": "duplication-1774846085032-gfmb8sef59g",
           "autoFixable": false
         },
         {
@@ -432,7 +432,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 30
           },
-          "id": "duplication-1774845387739-cjgb3bjn5n",
+          "id": "duplication-1774846085032-pykqcgg3xsb",
           "autoFixable": false
         },
         {
@@ -444,7 +444,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityIdReportsReportId.ts",
             "line": 31
           },
-          "id": "duplication-1774845387739-bnno05ltcln",
+          "id": "duplication-1774846085032-kfji8gozscd",
           "autoFixable": false
         },
         {
@@ -456,7 +456,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 22
           },
-          "id": "duplication-1774845387739-0y3sv3a49vf9",
+          "id": "duplication-1774846085032-huo0o855bxj",
           "autoFixable": false
         },
         {
@@ -468,7 +468,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 23
           },
-          "id": "duplication-1774845387739-rf9uuecf18",
+          "id": "duplication-1774846085032-rhj59fa2lk",
           "autoFixable": false
         },
         {
@@ -480,7 +480,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 24
           },
-          "id": "duplication-1774845387739-ezaatrhb6l",
+          "id": "duplication-1774846085032-9wxax920fo",
           "autoFixable": false
         },
         {
@@ -492,7 +492,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 25
           },
-          "id": "duplication-1774845387739-nd2m8crovf",
+          "id": "duplication-1774846085032-ik2iqp48vtl",
           "autoFixable": false
         },
         {
@@ -504,7 +504,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 26
           },
-          "id": "duplication-1774845387739-ikv8ykfbxd",
+          "id": "duplication-1774846085032-fyriage6f44",
           "autoFixable": false
         },
         {
@@ -516,7 +516,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 27
           },
-          "id": "duplication-1774845387739-cvyj9znipgu",
+          "id": "duplication-1774846085032-gfbyvezp8xv",
           "autoFixable": false
         },
         {
@@ -528,7 +528,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 28
           },
-          "id": "duplication-1774845387739-dm75340hb0i",
+          "id": "duplication-1774846085032-iata413x5yc",
           "autoFixable": false
         },
         {
@@ -540,7 +540,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/putCommunityMemberCommunitiesCommunityId.ts",
             "line": 29
           },
-          "id": "duplication-1774845387739-lmn5ox0hufs",
+          "id": "duplication-1774846085032-ajpw70im09",
           "autoFixable": false
         },
         {
@@ -552,7 +552,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdReportsReportIdDismiss.ts",
             "line": 13
           },
-          "id": "duplication-1774845387740-rukx5f5hlzq",
+          "id": "duplication-1774846085032-6zah42ufes8",
           "autoFixable": false
         },
         {
@@ -564,7 +564,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
             "line": 27
           },
-          "id": "duplication-1774845387740-7hcbdzl627g",
+          "id": "duplication-1774846085032-vv4lb2y1fo9",
           "autoFixable": false
         },
         {
@@ -576,7 +576,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
             "line": 90
           },
-          "id": "duplication-1774845387740-891uysdqgs",
+          "id": "duplication-1774846085032-ptnc66qyi3",
           "autoFixable": false
         },
         {
@@ -588,7 +588,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/postCommunityAuthGuestRefresh.ts",
             "line": 91
           },
-          "id": "duplication-1774845387740-wl10mombx7m",
+          "id": "duplication-1774846085032-cc9fsjoey3j",
           "autoFixable": false
         },
         {
@@ -600,7 +600,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 42
           },
-          "id": "duplication-1774845387740-yoc2o41nwd",
+          "id": "duplication-1774846085032-gm95swo5cnh",
           "autoFixable": false
         },
         {
@@ -612,7 +612,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 76
           },
-          "id": "duplication-1774845387740-rs7emdc6ush",
+          "id": "duplication-1774846085032-cpcgm1tmj6w",
           "autoFixable": false
         },
         {
@@ -624,7 +624,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityUserProfilesUserProfileIdPosts.ts",
             "line": 77
           },
-          "id": "duplication-1774845387740-ek3bqvssubm",
+          "id": "duplication-1774846085032-87ivskuv84o",
           "autoFixable": false
         },
         {
@@ -636,7 +636,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 23
           },
-          "id": "duplication-1774845387740-cdkrphd4o1j",
+          "id": "duplication-1774846085032-cj2bs15nyfn",
           "autoFixable": false
         },
         {
@@ -648,7 +648,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 24
           },
-          "id": "duplication-1774845387740-efw7ex2ge7a",
+          "id": "duplication-1774846085032-zrk5dvgd519",
           "autoFixable": false
         },
         {
@@ -660,7 +660,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 25
           },
-          "id": "duplication-1774845387740-j1n4rnvbeg",
+          "id": "duplication-1774846085032-u8lkiv4xb7r",
           "autoFixable": false
         },
         {
@@ -672,7 +672,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 26
           },
-          "id": "duplication-1774845387740-7u51dnswedx",
+          "id": "duplication-1774846085032-1ib67qojbbji",
           "autoFixable": false
         },
         {
@@ -684,7 +684,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 27
           },
-          "id": "duplication-1774845387740-i4bmr8rko9p",
+          "id": "duplication-1774846085032-4mvtc47f30a",
           "autoFixable": false
         },
         {
@@ -696,7 +696,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 28
           },
-          "id": "duplication-1774845387740-vniy58nldxr",
+          "id": "duplication-1774846085032-3ihqjcoxnmq",
           "autoFixable": false
         },
         {
@@ -708,7 +708,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 29
           },
-          "id": "duplication-1774845387740-hlm3e6b1kub",
+          "id": "duplication-1774846085032-cxku0zz7lr6",
           "autoFixable": false
         },
         {
@@ -720,7 +720,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 30
           },
-          "id": "duplication-1774845387740-b1s20cvcrd",
+          "id": "duplication-1774846085032-d3e6vgf7a8e",
           "autoFixable": false
         },
         {
@@ -732,7 +732,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 31
           },
-          "id": "duplication-1774845387740-27tyc8ovy2q",
+          "id": "duplication-1774846085032-g7h368r7o5",
           "autoFixable": false
         },
         {
@@ -744,7 +744,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 32
           },
-          "id": "duplication-1774845387740-uv04i7g70mj",
+          "id": "duplication-1774846085032-8rc65fxyp2a",
           "autoFixable": false
         },
         {
@@ -756,7 +756,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdCommentsCommentIdVotes.ts",
             "line": 33
           },
-          "id": "duplication-1774845387740-yv2de5f5o7",
+          "id": "duplication-1774846085032-wbo4p9jooi",
           "autoFixable": false
         },
         {
@@ -768,7 +768,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 74
           },
-          "id": "duplication-1774845387740-x2q7h62muwe",
+          "id": "duplication-1774846085032-ekr36xm6k8f",
           "autoFixable": false
         },
         {
@@ -780,7 +780,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 75
           },
-          "id": "duplication-1774845387740-g9gdnvlqvy8",
+          "id": "duplication-1774846085032-uni0w15hky8",
           "autoFixable": false
         },
         {
@@ -792,7 +792,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 76
           },
-          "id": "duplication-1774845387740-wfatrwj14b",
+          "id": "duplication-1774846085032-cjhhbvudgrv",
           "autoFixable": false
         },
         {
@@ -804,7 +804,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 77
           },
-          "id": "duplication-1774845387740-nav4mos7jjp",
+          "id": "duplication-1774846085032-25m6d5whbih",
           "autoFixable": false
         },
         {
@@ -816,7 +816,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 78
           },
-          "id": "duplication-1774845387740-t9xfh01loq",
+          "id": "duplication-1774846085032-tiq64gsk6cb",
           "autoFixable": false
         },
         {
@@ -828,7 +828,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 79
           },
-          "id": "duplication-1774845387740-8p9ld7totu3",
+          "id": "duplication-1774846085032-kdocao7lun",
           "autoFixable": false
         },
         {
@@ -840,7 +840,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 80
           },
-          "id": "duplication-1774845387740-pckeztu11hr",
+          "id": "duplication-1774846085032-qqgx2hdrc3n",
           "autoFixable": false
         },
         {
@@ -852,7 +852,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 81
           },
-          "id": "duplication-1774845387740-su6klel6i3h",
+          "id": "duplication-1774846085032-gyfwd84kewd",
           "autoFixable": false
         },
         {
@@ -864,7 +864,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 82
           },
-          "id": "duplication-1774845387740-q6yaajbach",
+          "id": "duplication-1774846085032-tifezzos1p",
           "autoFixable": false
         },
         {
@@ -876,7 +876,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 83
           },
-          "id": "duplication-1774845387740-bc7dbd2j94j",
+          "id": "duplication-1774846085032-z8gv7zmc5fk",
           "autoFixable": false
         },
         {
@@ -888,7 +888,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 84
           },
-          "id": "duplication-1774845387740-0gb20oyxznal",
+          "id": "duplication-1774846085032-iylvx87ux5k",
           "autoFixable": false
         },
         {
@@ -900,7 +900,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 85
           },
-          "id": "duplication-1774845387740-9doj7msisse",
+          "id": "duplication-1774846085032-2d9sq9gighs",
           "autoFixable": false
         },
         {
@@ -912,7 +912,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityPostsPostIdComments.ts",
             "line": 86
           },
-          "id": "duplication-1774845387740-a74pupg54s",
+          "id": "duplication-1774846085032-t3gbyn2d5a",
           "autoFixable": false
         },
         {
@@ -924,7 +924,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
             "line": 63
           },
-          "id": "duplication-1774845387740-u2k3s4na7a",
+          "id": "duplication-1774846085032-wpvcyxiiwv",
           "autoFixable": false
         },
         {
@@ -936,7 +936,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdVotes.ts",
             "line": 64
           },
-          "id": "duplication-1774845387740-o8cxl9e12ml",
+          "id": "duplication-1774846085032-s5ypxcuxz88",
           "autoFixable": false
         },
         {
@@ -948,7 +948,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 86
           },
-          "id": "duplication-1774845387740-o3gmrb4k8o",
+          "id": "duplication-1774846085032-zuxb5lqjvcr",
           "autoFixable": false
         },
         {
@@ -960,7 +960,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 91
           },
-          "id": "duplication-1774845387740-a62qd5nizg6",
+          "id": "duplication-1774846085032-4m90mp6uo2t",
           "autoFixable": false
         },
         {
@@ -972,7 +972,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 95
           },
-          "id": "duplication-1774845387740-so6sm0mm7h",
+          "id": "duplication-1774846085032-29pgupsxup4",
           "autoFixable": false
         },
         {
@@ -984,7 +984,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 96
           },
-          "id": "duplication-1774845387740-ikpsvz7oe2",
+          "id": "duplication-1774846085032-qy48au6elx",
           "autoFixable": false
         },
         {
@@ -996,7 +996,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
             "line": 97
           },
-          "id": "duplication-1774845387740-gs2r1fq8tf",
+          "id": "duplication-1774846085032-yxaivzky2ug",
           "autoFixable": false
         },
         {
@@ -1008,7 +1008,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 27
           },
-          "id": "duplication-1774845387740-bebeaqgm9bw",
+          "id": "duplication-1774846085032-wl6al6afucj",
           "autoFixable": false
         },
         {
@@ -1020,7 +1020,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 28
           },
-          "id": "duplication-1774845387740-v1v0t0kgspn",
+          "id": "duplication-1774846085032-s68oba5odsp",
           "autoFixable": false
         },
         {
@@ -1032,7 +1032,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityMemberCommunitiesCommunityIdReports.ts",
             "line": 29
           },
-          "id": "duplication-1774845387740-cj2m412xbvq",
+          "id": "duplication-1774846085032-949lq1xzbag",
           "autoFixable": false
         },
         {
@@ -1044,7 +1044,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
             "line": 98
           },
-          "id": "duplication-1774845387740-a9zldscx24h",
+          "id": "duplication-1774846085032-u6yjww2kita",
           "autoFixable": false
         },
         {
@@ -1056,7 +1056,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/patchCommunityCommunitiesCommunityIdPosts.ts",
             "line": 99
           },
-          "id": "duplication-1774845387740-60stjs82m6m",
+          "id": "duplication-1774846085032-mjryft8zes",
           "autoFixable": false
         },
         {
@@ -1068,7 +1068,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 8
           },
-          "id": "duplication-1774845387740-1htmr989jkz",
+          "id": "duplication-1774846085032-c8rlb2crz9s",
           "autoFixable": false
         },
         {
@@ -1080,7 +1080,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 9
           },
-          "id": "duplication-1774845387740-796he1arskb",
+          "id": "duplication-1774846085032-nd2jhajv1fo",
           "autoFixable": false
         },
         {
@@ -1092,7 +1092,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 10
           },
-          "id": "duplication-1774845387740-6mrgf8szshj",
+          "id": "duplication-1774846085032-92zswz3wrkf",
           "autoFixable": false
         },
         {
@@ -1104,7 +1104,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 11
           },
-          "id": "duplication-1774845387740-0e8g14173l4",
+          "id": "duplication-1774846085032-0wgz8njo0y7r",
           "autoFixable": false
         },
         {
@@ -1116,7 +1116,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 12
           },
-          "id": "duplication-1774845387740-4y1dgdodyet",
+          "id": "duplication-1774846085032-fxce47qmai",
           "autoFixable": false
         },
         {
@@ -1128,7 +1128,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 13
           },
-          "id": "duplication-1774845387740-82hqfuuqv22",
+          "id": "duplication-1774846085032-vufnw5w70gf",
           "autoFixable": false
         },
         {
@@ -1140,7 +1140,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 14
           },
-          "id": "duplication-1774845387740-r3b37flhtmr",
+          "id": "duplication-1774846085032-9alg926b39",
           "autoFixable": false
         },
         {
@@ -1152,7 +1152,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/providers/deleteCommunityMemberPostsPostIdVotes.ts",
             "line": 15
           },
-          "id": "duplication-1774845387740-xr1ua5z447",
+          "id": "duplication-1774846085032-2har2hrka8",
           "autoFixable": false
         }
       ]
@@ -1174,19 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/members/CommunityMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387768-cdq1ep0y7c",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/CommunityPostsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845387770-97sxzmqjif9",
+          "id": "jsdoc-1774846085056-vg6xjp1iy2r",
           "autoFixable": false
         },
         {
@@ -1198,7 +1186,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/CommunityUserprofilesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387770-q56lvoj0x0c",
+          "id": "jsdoc-1774846085055-8g05nq6txos",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/CommunityPostsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085056-mykqohzhen",
           "autoFixable": false
         },
         {
@@ -1210,7 +1210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/CommunityCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387770-4ki9177zgdp",
+          "id": "jsdoc-1774846085057-j4d3j6428m",
           "autoFixable": false
         },
         {
@@ -1222,7 +1222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guests/CommunityGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387770-dmwf5oypeam",
+          "id": "jsdoc-1774846085056-jt9fzee15be",
           "autoFixable": false
         },
         {
@@ -1234,7 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/CommunityPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387771-0k911yxmkjm",
+          "id": "jsdoc-1774846085057-5a08kohxdp2",
           "autoFixable": false
         },
         {
@@ -1246,19 +1246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/posts/CommunityCommunitiesPostsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845387772-rcqac682n5b",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityUserprofilesPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/posts/CommunityUserprofilesPostsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845387772-p7y7o2w6e9l",
+          "id": "jsdoc-1774846085057-oyybfvm6dtf",
           "autoFixable": false
         },
         {
@@ -1270,31 +1258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/communities/moderators/CommunityCommunitiesModeratorsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387773-d8huqthkul",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityUserprofilesKarmalogsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/karmaLogs/CommunityUserprofilesKarmalogsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845387778-7jufsxytipn",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityUserprofilesCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/comments/CommunityUserprofilesCommentsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845387773-6phhqlwi8qk",
+          "id": "jsdoc-1774846085058-s2iov35si2",
           "autoFixable": false
         },
         {
@@ -1306,19 +1270,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/sessions/CommunityGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845387774-nfe2kr68fwq",
+          "id": "jsdoc-1774846085057-ii0zki9ttv8",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityAuthGuestController\" missing JSDoc",
+          "message": "Class \"CommunityUserprofilesPostsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/guest/CommunityAuthGuestController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/posts/CommunityUserprofilesPostsController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845387775-otdr4k6np2m",
+          "id": "jsdoc-1774846085058-k63dp7atbpc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesKarmalogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/karmaLogs/CommunityUserprofilesKarmalogsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085058-ygswny9w2de",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityUserprofilesCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/userProfiles/comments/CommunityUserprofilesCommentsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085058-pozgs3d8v7f",
           "autoFixable": false
         },
         {
@@ -1330,7 +1318,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/member/CommunityAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387776-4t92osmudji",
+          "id": "jsdoc-1774846085059-xukfr6ex2c9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/auth/guest/CommunityAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846085059-4lhpzgjhf49",
           "autoFixable": false
         },
         {
@@ -1342,7 +1342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/subscriptions/CommunityMemberSubscriptionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845387778-kqfnwx8se5h",
+          "id": "jsdoc-1774846085060-2nyj7vfc09k",
           "autoFixable": false
         },
         {
@@ -1354,43 +1354,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/CommunityMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845387777-kt9kmm2x2wa",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/profile/CommunityMemberProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845387779-oqi9oqm6h3c",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberFeedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/feed/CommunityMemberFeedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845387779-we7nfehays",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/CommunityMemberPostsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845387779-yw1v9nouosk",
+          "id": "jsdoc-1774846085062-2apaigvw957",
           "autoFixable": false
         },
         {
@@ -1402,7 +1366,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/posts/comments/votes/CommunityPostsCommentsVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387784-apmfosmcx7w",
+          "id": "jsdoc-1774846085061-bi9fzcwp1r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/CommunityMemberPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085061-dbbf2336nzo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberFeedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/feed/CommunityMemberFeedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846085060-a54ttm06yrd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/profile/CommunityMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846085061-6kgw57ktbvc",
           "autoFixable": false
         },
         {
@@ -1414,19 +1414,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/subscriptions/CommunityMemberCommunitiesSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845387780-w55x20leuck",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityMemberCommunitiesReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/reports/CommunityMemberCommunitiesReportsController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774845387781-4snwnbf0ky6",
+          "id": "jsdoc-1774846085064-zqvxjbrcpng",
           "autoFixable": false
         },
         {
@@ -1438,7 +1426,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/posts/CommunityMemberCommunitiesPostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845387780-jj5yqrrhns",
+          "id": "jsdoc-1774846085064-qris4od3n9h",
           "autoFixable": false
         },
         {
@@ -1450,7 +1438,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/moderators/CommunityMemberCommunitiesModeratorsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845387781-auxb07o3x9u",
+          "id": "jsdoc-1774846085062-ltb19shbv2j",
           "autoFixable": false
         },
         {
@@ -1462,7 +1450,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/bans/CommunityMemberCommunitiesBansController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774845387782-myarl176vr8",
+          "id": "jsdoc-1774846085063-60pnatypfk4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityMemberCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/communities/reports/CommunityMemberCommunitiesReportsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846085064-1dvrnp9j50d",
           "autoFixable": false
         },
         {
@@ -1474,7 +1474,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/votes/CommunityMemberPostsVotesController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845387783-uoebdbqhj3d",
+          "id": "jsdoc-1774846085065-acy7rctb7w",
           "autoFixable": false
         },
         {
@@ -1486,7 +1486,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/CommunityMemberPostsCommentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845387783-z57cvw5uxea",
+          "id": "jsdoc-1774846085066-oorleajkz6",
           "autoFixable": false
         },
         {
@@ -1498,7 +1498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/guest/posts/comments/replies/CommunityGuestPostsCommentsRepliesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845387783-9z9atf3x02",
+          "id": "jsdoc-1774846085065-nsifetkfumo",
           "autoFixable": false
         },
         {
@@ -1510,7 +1510,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/votes/CommunityMemberPostsCommentsVotesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845387784-0ps4twurpvp",
+          "id": "jsdoc-1774846085066-8lm4thvcbcu",
           "autoFixable": false
         },
         {
@@ -1522,7 +1522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/reddit/src/controllers/community/member/posts/comments/replies/CommunityMemberPostsCommentsRepliesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845387784-5ry91kj77l7",
+          "id": "jsdoc-1774846085066-dkbjky4ir0c",
           "autoFixable": false
         }
       ]
@@ -1541,7 +1541,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 28
           },
-          "id": "completeness-1774845387808-m64iu8dcy2r",
+          "id": "completeness-1774846085079-5a6pw8p12x9",
           "autoFixable": false
         },
         {
@@ -1553,7 +1553,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 36
           },
-          "id": "completeness-1774845387808-j783gx0a6f",
+          "id": "completeness-1774846085079-ynvdzn6q95d",
           "autoFixable": false
         },
         {
@@ -1565,7 +1565,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 44
           },
-          "id": "completeness-1774845387808-laglnr4jzp",
+          "id": "completeness-1774846085079-yeamok4t7ji",
           "autoFixable": false
         },
         {
@@ -1577,7 +1577,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 52
           },
-          "id": "completeness-1774845387808-8olajtmrj0l",
+          "id": "completeness-1774846085079-hj1opu6nv68",
           "autoFixable": false
         },
         {
@@ -1589,7 +1589,7 @@
             "file": "src/api/structures/ICommunityReport.ts",
             "line": 60
           },
-          "id": "completeness-1774845387808-6lye4pc2q4p",
+          "id": "completeness-1774846085079-mu8hpvcan3j",
           "autoFixable": false
         },
         {
@@ -1601,7 +1601,7 @@
             "file": "src/api/structures/ICommunityCommunity.ts",
             "line": 45
           },
-          "id": "completeness-1774845387807-h5q6m0iug09",
+          "id": "completeness-1774846085080-dl3virm8atl",
           "autoFixable": false
         },
         {
@@ -1613,7 +1613,7 @@
             "file": "src/api/structures/ICommunityCommentVote.ts",
             "line": 141
           },
-          "id": "completeness-1774845387807-3zl1z628pie",
+          "id": "completeness-1774846085079-5d5kxncaupq",
           "autoFixable": false
         }
       ]
@@ -1636,7 +1636,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845387321-vvxcldmwqn",
+      "id": "type-error-1774846084507-gpqvcocjibe",
       "autoFixable": false
     },
     {
@@ -1648,7 +1648,7 @@
         "file": "src/providers/postCommunityMemberCommunitiesCommunityIdPosts.ts",
         "line": 1983
       },
-      "id": "type-error-1774845387321-s815cxvhuoc",
+      "id": "type-error-1774846084507-vm1c4oqpwei",
       "autoFixable": false
     },
     {
@@ -1660,7 +1660,7 @@
         "file": "src/transformers/CommunityCommunityAtSummaryTransformer.ts",
         "line": 1190
       },
-      "id": "type-error-1774845387321-derjpjktlos",
+      "id": "type-error-1774846084507-sjk9tmbxgtt",
       "autoFixable": false
     }
   ],
@@ -1674,7 +1674,7 @@
         "file": "src/providers/patchCommunityGuestSessions.ts",
         "line": 1294
       },
-      "id": "type-error-1774845387321-3j930pumvtf",
+      "id": "type-error-1774846084507-zex46kye1fm",
       "autoFixable": false
     },
     {
@@ -1686,7 +1686,7 @@
         "file": "src/providers/patchCommunityGuestSessions.ts",
         "line": 1738
       },
-      "id": "type-error-1774845387321-wh15fh5scg",
+      "id": "type-error-1774846084507-xf24tkl32j",
       "autoFixable": false
     },
     {
@@ -1698,7 +1698,7 @@
         "file": "src/providers/patchCommunityMemberPostsPostIdCommentsCommentIdReplies.ts",
         "line": 2188
       },
-      "id": "type-error-1774845387321-ktie9kd9m4b",
+      "id": "type-error-1774846084507-wxu4d9bdhc",
       "autoFixable": false
     },
     {
@@ -1710,7 +1710,7 @@
         "file": "src/providers/patchCommunityPosts.ts",
         "line": 2558
       },
-      "id": "type-error-1774845387321-njd4zfkjyk",
+      "id": "type-error-1774846084507-6qnvc7hrkat",
       "autoFixable": false
     },
     {
@@ -1722,13 +1722,13 @@
         "file": "src/transformers/CommunityPostAtSummaryTransformer.ts",
         "line": 1845
       },
-      "id": "type-error-1774845387321-u7unle7v9i",
+      "id": "type-error-1774846084507-m2pyeq58ekh",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:36:27.808Z",
-    "totalDurationMs": 7530,
+    "evaluatedAt": "2026-03-30T04:48:05.081Z",
+    "totalDurationMs": 8432,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 226
   },

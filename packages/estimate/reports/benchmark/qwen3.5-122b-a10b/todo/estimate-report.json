@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774601038206-1n37l80bdsgh",
+          "id": "type-error-1774846425333-3f3efz26p8t",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
             "line": 2721
           },
-          "id": "type-error-1774601038206-nnmeh4jplb",
+          "id": "type-error-1774846425333-r9tmbfav03a",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
             "line": 2829
           },
-          "id": "type-error-1774601038206-a0681xgi4gg",
+          "id": "type-error-1774846425333-48vnmgos8x9",
           "autoFixable": false
         },
         {
@@ -55,11 +55,11 @@
             "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
             "line": 2909
           },
-          "id": "type-error-1774601038206-ksmre7hfw8a",
+          "id": "type-error-1774846425333-rly6wmdztx",
           "autoFixable": false
         }
       ],
-      "durationMs": 4531,
+      "durationMs": 8060,
       "metrics": {
         "totalFiles": 82,
         "filesWithErrors": 0,
@@ -86,7 +86,7 @@
         "docFileCount": 6,
         "totalDocLength": 92059,
         "cached": true,
-        "originalDurationMs": 21
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -132,7 +132,7 @@
         "assertionTests": 39,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 5
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -152,7 +152,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 10
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -173,7 +173,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 12
+        "originalDurationMs": 0
       }
     }
   },
@@ -193,7 +193,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601038434-0gbeth0je4z",
+          "id": "complexity-1774846425507-mftzofbn3jb",
           "autoFixable": false
         },
         {
@@ -206,7 +206,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601038440-d07nsi07ngh",
+          "id": "complexity-1774846425511-5nbc50408cf",
           "autoFixable": false
         }
       ]
@@ -227,19 +227,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/todo-histories/MultiusertodoMemberTodo_historiesController.ts",
             "line": 12
           },
-          "id": "naming-1774601038555-gsqv7fadxwl",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
-            "line": 12
-          },
-          "id": "naming-1774601038557-093vyyggjrf9",
+          "id": "naming-1774846425563-sx8shaspox",
           "autoFixable": false
         },
         {
@@ -251,7 +239,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/password-resets/MultiusertodoMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774601038555-8v0nj7hxqfi",
+          "id": "naming-1774846425551-b31oaj29d1o",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846425560-terayld7by",
           "autoFixable": false
         }
       ]
@@ -269,7 +269,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601038567-ntu6hmuiidj",
+          "id": "jsdoc-1774846425588-umdk5egafh",
           "autoFixable": false
         },
         {
@@ -281,19 +281,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774601038567-gxcmk6b3pop",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberTodo_historiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/todo-histories/MultiusertodoMemberTodo_historiesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601038569-ggijn4en3ik",
+          "id": "jsdoc-1774846425585-2b43weud01j",
           "autoFixable": false
         },
         {
@@ -305,31 +293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601038570-istm5bnzojb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601038568-ef57lbc97dd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberPassword_resetsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/password-resets/MultiusertodoMemberPassword_resetsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601038570-sc22f1onpw8",
+          "id": "jsdoc-1774846425586-0r4h0molc8ja",
           "autoFixable": false
         },
         {
@@ -341,7 +305,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/guest/profile/MultiusertodoGuestProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601038570-ciqyngsbpn8",
+          "id": "jsdoc-1774846425587-botx71ihdwm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodo_historiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/todo-histories/MultiusertodoMemberTodo_historiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425588-7lrygn7r6vn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/password-resets/MultiusertodoMemberPassword_resetsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425589-ztp6lwwbkgm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-122b-a10b/todo/src/controllers/multiUserTodo/member/email-verifications/MultiusertodoMemberEmail_verificationsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846425588-6sxsi0ll9nm",
           "autoFixable": false
         }
       ]
@@ -360,7 +360,7 @@
             "file": "src/api/structures/IMultiUserTodoTodoHistory.ts",
             "line": 146
           },
-          "id": "completeness-1774601038582-5fiidtqyehy",
+          "id": "completeness-1774846425597-2vkitxo5tof",
           "autoFixable": false
         },
         {
@@ -372,7 +372,7 @@
             "file": "src/api/structures/IMultiUserTodoMemberSession.ts",
             "line": 21
           },
-          "id": "completeness-1774601038583-fhwro8typun",
+          "id": "completeness-1774846425597-fmq3nlkf92n",
           "autoFixable": false
         }
       ]
@@ -395,7 +395,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774601038206-1n37l80bdsgh",
+      "id": "type-error-1774846425333-3f3efz26p8t",
       "autoFixable": false
     }
   ],
@@ -409,7 +409,7 @@
         "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
         "line": 2721
       },
-      "id": "type-error-1774601038206-nnmeh4jplb",
+      "id": "type-error-1774846425333-r9tmbfav03a",
       "autoFixable": false
     },
     {
@@ -421,7 +421,7 @@
         "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
         "line": 2829
       },
-      "id": "type-error-1774601038206-a0681xgi4gg",
+      "id": "type-error-1774846425333-48vnmgos8x9",
       "autoFixable": false
     },
     {
@@ -433,13 +433,13 @@
         "file": "src/providers/patchMultiUserTodoMemberPasswordResets.ts",
         "line": 2909
       },
-      "id": "type-error-1774601038206-ksmre7hfw8a",
+      "id": "type-error-1774846425333-rly6wmdztx",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:43:58.585Z",
-    "totalDurationMs": 4765,
+    "evaluatedAt": "2026-03-30T04:53:45.598Z",
+    "totalDurationMs": 8208,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 82
   },

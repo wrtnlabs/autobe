@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845465842-370lx0uu7kr",
+          "id": "type-error-1774846161571-crtbszi9g7i",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/redditClone/communities/icons/RedditcloneCommunitiesIconsController.ts",
             "line": 2460
           },
-          "id": "type-error-1774845465842-ib7mk2ttvj",
+          "id": "type-error-1774846161571-bc8cuzbvf28",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/deleteRedditCloneMemberFilesFileId.ts",
             "line": 1283
           },
-          "id": "type-error-1774845465842-psdmgqwf3c",
+          "id": "type-error-1774846161571-9ix0wqze99g",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/deleteRedditCloneMemberPostsPostId.ts",
             "line": 1558
           },
-          "id": "type-error-1774845465842-0hlqrvv4laa9",
+          "id": "type-error-1774846161571-uex973uufa",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/getRedditCloneMemberMembersSessions.ts",
             "line": 2472
           },
-          "id": "type-error-1774845465842-td3r2t5ffv8",
+          "id": "type-error-1774846161571-stbm7k9u6y",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/getRedditCloneMemberMembersSessionsSessionId.ts",
             "line": 4737
           },
-          "id": "type-error-1774845465842-9x5k6ghwgt8",
+          "id": "type-error-1774846161571-kueckuwszff",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/getRedditClonePostsPostIdVotesVoteId.ts",
             "line": 1858
           },
-          "id": "type-error-1774845465842-2hxkd1w8n4t",
+          "id": "type-error-1774846161571-s4u609960e",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
             "line": 2735
           },
-          "id": "type-error-1774845465842-jkscs3bx18",
+          "id": "type-error-1774846161571-uobf471qarm",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
             "line": 2873
           },
-          "id": "type-error-1774845465842-ebi2iu15g5",
+          "id": "type-error-1774846161571-tpp8d2w67y",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
             "line": 3013
           },
-          "id": "type-error-1774845465842-adr7nroa8yk",
+          "id": "type-error-1774846161571-1xgp52t0f00i",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
             "line": 3153
           },
-          "id": "type-error-1774845465842-ndb9h8l39zh",
+          "id": "type-error-1774846161571-we3id193ydf",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchRedditCloneMemberCommunitiesCommunityName.ts",
             "line": 1920
           },
-          "id": "type-error-1774845465842-twou9w2g21",
+          "id": "type-error-1774846161571-10cnbjo7kj2m",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchRedditCloneMemberCommunitiesCommunityName.ts",
             "line": 2154
           },
-          "id": "type-error-1774845465842-s96sed7mnn",
+          "id": "type-error-1774846161571-ycd6ujmb6q",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7411
           },
-          "id": "type-error-1774845465842-nune96hfszm",
+          "id": "type-error-1774846161571-lkbxgvel39s",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7484
           },
-          "id": "type-error-1774845465842-xihyhh41y2",
+          "id": "type-error-1774846161571-q1wl4mds5v",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7551
           },
-          "id": "type-error-1774845465842-lmhnijcyb7",
+          "id": "type-error-1774846161571-ip7nkzd51d",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7627
           },
-          "id": "type-error-1774845465842-5jsdwe19hrv",
+          "id": "type-error-1774846161571-f4fuagvtixo",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7716
           },
-          "id": "type-error-1774845465842-st6o67lynl",
+          "id": "type-error-1774846161571-egrxxvf1no",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7818
           },
-          "id": "type-error-1774845465842-qtf4uk8d4bc",
+          "id": "type-error-1774846161571-0arkjrag7ren",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 7920
           },
-          "id": "type-error-1774845465842-ldq6pr9nhvr",
+          "id": "type-error-1774846161571-7kxflzuwxow",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8015
           },
-          "id": "type-error-1774845465842-i6z0x92m6z",
+          "id": "type-error-1774846161571-orfpcdjrad",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8062
           },
-          "id": "type-error-1774845465842-kxruq11ci4k",
+          "id": "type-error-1774846161571-t828oqnmw4",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8102
           },
-          "id": "type-error-1774845465842-0r15br1h8n8",
+          "id": "type-error-1774846161571-n0f5hy4cilo",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8149
           },
-          "id": "type-error-1774845465842-uv6vbfna4o",
+          "id": "type-error-1774846161571-cfkyvul9v3k",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8181
           },
-          "id": "type-error-1774845465842-blf82gubd7u",
+          "id": "type-error-1774846161571-5mnezh2bqkf",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8228
           },
-          "id": "type-error-1774845465842-bss8ouy2rs9",
+          "id": "type-error-1774846161571-03m7kpezdwlm",
           "autoFixable": false
         },
         {
@@ -331,7 +331,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8258
           },
-          "id": "type-error-1774845465842-ivg3o8oq5zj",
+          "id": "type-error-1774846161571-bueozncddxf",
           "autoFixable": false
         },
         {
@@ -343,7 +343,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8350
           },
-          "id": "type-error-1774845465842-34kghwhps3a",
+          "id": "type-error-1774846161571-gcxa9uep9hl",
           "autoFixable": false
         },
         {
@@ -355,7 +355,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8397
           },
-          "id": "type-error-1774845465842-wohde438ks",
+          "id": "type-error-1774846161571-6nui7bpydue",
           "autoFixable": false
         },
         {
@@ -367,7 +367,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8464
           },
-          "id": "type-error-1774845465842-4wmey30ynor",
+          "id": "type-error-1774846161571-fxhi441exo6",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8564
           },
-          "id": "type-error-1774845465842-pptvlxegzb",
+          "id": "type-error-1774846161571-7a173v2w4v9",
           "autoFixable": false
         },
         {
@@ -391,7 +391,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8691
           },
-          "id": "type-error-1774845465842-h7y1s179vro",
+          "id": "type-error-1774846161571-1q7068e5hpy",
           "autoFixable": false
         },
         {
@@ -403,7 +403,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8816
           },
-          "id": "type-error-1774845465842-zirjn7rgtug",
+          "id": "type-error-1774846161571-ack3gypd2p9",
           "autoFixable": false
         },
         {
@@ -415,7 +415,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8961
           },
-          "id": "type-error-1774845465842-0zdq7uh5zwz",
+          "id": "type-error-1774846161571-a9gfgdusjx8",
           "autoFixable": false
         },
         {
@@ -427,7 +427,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 8961
           },
-          "id": "type-error-1774845465842-bpdj2httoi5",
+          "id": "type-error-1774846161571-ml9g3fc1y2",
           "autoFixable": false
         },
         {
@@ -439,7 +439,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9096
           },
-          "id": "type-error-1774845465842-tob22vy435",
+          "id": "type-error-1774846161571-sr5gc6ss0j",
           "autoFixable": false
         },
         {
@@ -451,7 +451,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9096
           },
-          "id": "type-error-1774845465842-hi6gd6kje3r",
+          "id": "type-error-1774846161571-0gdgf66v9ip",
           "autoFixable": false
         },
         {
@@ -463,7 +463,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9234
           },
-          "id": "type-error-1774845465842-jey89jcqxl8",
+          "id": "type-error-1774846161571-2f3a9zqgnii",
           "autoFixable": false
         },
         {
@@ -475,7 +475,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9234
           },
-          "id": "type-error-1774845465842-wxicwypfl3p",
+          "id": "type-error-1774846161571-wz90tygt6jh",
           "autoFixable": false
         },
         {
@@ -487,7 +487,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9512
           },
-          "id": "type-error-1774845465842-mz2mpio5h2",
+          "id": "type-error-1774846161571-47xc95euwr",
           "autoFixable": false
         },
         {
@@ -499,7 +499,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9602
           },
-          "id": "type-error-1774845465842-wjkp9do2ows",
+          "id": "type-error-1774846161571-oxglp5wbffs",
           "autoFixable": false
         },
         {
@@ -511,7 +511,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9691
           },
-          "id": "type-error-1774845465842-3ve1mif0i0n",
+          "id": "type-error-1774846161571-z1fur0yw9li",
           "autoFixable": false
         },
         {
@@ -523,7 +523,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9789
           },
-          "id": "type-error-1774845465842-hua5xzkd6rg",
+          "id": "type-error-1774846161571-tst49yjw35a",
           "autoFixable": false
         },
         {
@@ -535,7 +535,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 9888
           },
-          "id": "type-error-1774845465842-jjs5bo3tewl",
+          "id": "type-error-1774846161571-cpfvcbkltib",
           "autoFixable": false
         },
         {
@@ -547,7 +547,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10000
           },
-          "id": "type-error-1774845465842-elct1hur6r",
+          "id": "type-error-1774846161571-j10j47x8ofq",
           "autoFixable": false
         },
         {
@@ -559,7 +559,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10112
           },
-          "id": "type-error-1774845465842-ewxi5h5mdbl",
+          "id": "type-error-1774846161571-nebq5bo8e69",
           "autoFixable": false
         },
         {
@@ -571,7 +571,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10217
           },
-          "id": "type-error-1774845465842-lgiiitgiw2",
+          "id": "type-error-1774846161571-29s56ingceb",
           "autoFixable": false
         },
         {
@@ -583,7 +583,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10291
           },
-          "id": "type-error-1774845465842-wqbv0nni6o",
+          "id": "type-error-1774846161571-x6o6yj79psg",
           "autoFixable": false
         },
         {
@@ -595,7 +595,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10345
           },
-          "id": "type-error-1774845465842-sznfvssyxp",
+          "id": "type-error-1774846161571-rm7nio1uuqr",
           "autoFixable": false
         },
         {
@@ -607,7 +607,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10402
           },
-          "id": "type-error-1774845465842-9jmbk39ta54",
+          "id": "type-error-1774846161571-7wqzn879ui2",
           "autoFixable": false
         },
         {
@@ -619,7 +619,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10448
           },
-          "id": "type-error-1774845465842-jpmma9t1mef",
+          "id": "type-error-1774846161571-tu6peem7l2q",
           "autoFixable": false
         },
         {
@@ -631,7 +631,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10505
           },
-          "id": "type-error-1774845465842-p8ixik2r7z",
+          "id": "type-error-1774846161571-ixqleepwwxc",
           "autoFixable": false
         },
         {
@@ -643,7 +643,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10549
           },
-          "id": "type-error-1774845465842-dh0jmw381q",
+          "id": "type-error-1774846161571-nf43e6k56r",
           "autoFixable": false
         },
         {
@@ -655,7 +655,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10651
           },
-          "id": "type-error-1774845465842-oauxuv137r",
+          "id": "type-error-1774846161571-oi3kwfid72",
           "autoFixable": false
         },
         {
@@ -667,7 +667,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10708
           },
-          "id": "type-error-1774845465842-1q0ruvyvaqa",
+          "id": "type-error-1774846161571-hg0mhcncidt",
           "autoFixable": false
         },
         {
@@ -679,7 +679,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10775
           },
-          "id": "type-error-1774845465842-mxc782ej3s",
+          "id": "type-error-1774846161571-l674s3cijq",
           "autoFixable": false
         },
         {
@@ -691,7 +691,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 10902
           },
-          "id": "type-error-1774845465842-tt7cmp3qpl",
+          "id": "type-error-1774846161571-svz06s2ycd",
           "autoFixable": false
         },
         {
@@ -703,7 +703,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11039
           },
-          "id": "type-error-1774845465842-xm7jit9dr7",
+          "id": "type-error-1774846161571-a12h7g8yrbr",
           "autoFixable": false
         },
         {
@@ -715,7 +715,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11174
           },
-          "id": "type-error-1774845465842-r2f2j6byg3b",
+          "id": "type-error-1774846161571-yakxin8pb",
           "autoFixable": false
         },
         {
@@ -727,7 +727,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11329
           },
-          "id": "type-error-1774845465842-1bolxhktp0si",
+          "id": "type-error-1774846161571-p74hkqbav8s",
           "autoFixable": false
         },
         {
@@ -739,7 +739,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11329
           },
-          "id": "type-error-1774845465842-7fe9ginua8k",
+          "id": "type-error-1774846161571-tcycaiqlvns",
           "autoFixable": false
         },
         {
@@ -751,7 +751,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11474
           },
-          "id": "type-error-1774845465842-1wltbjy2ds9",
+          "id": "type-error-1774846161571-gdxcbvvxfpu",
           "autoFixable": false
         },
         {
@@ -763,7 +763,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11474
           },
-          "id": "type-error-1774845465842-qauqceqgghf",
+          "id": "type-error-1774846161571-ngdl1vu1v09",
           "autoFixable": false
         },
         {
@@ -775,7 +775,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11622
           },
-          "id": "type-error-1774845465842-b4h7s9w978w",
+          "id": "type-error-1774846161571-dov164qavbf",
           "autoFixable": false
         },
         {
@@ -787,7 +787,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 11622
           },
-          "id": "type-error-1774845465842-nm53qpmir4",
+          "id": "type-error-1774846161571-ot2qxfobd8j",
           "autoFixable": false
         },
         {
@@ -799,7 +799,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 12441
           },
-          "id": "type-error-1774845465842-bkc3ikxrskv",
+          "id": "type-error-1774846161571-6tm1leycohh",
           "autoFixable": false
         },
         {
@@ -811,7 +811,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 12521
           },
-          "id": "type-error-1774845465842-hzcl5ns2ugt",
+          "id": "type-error-1774846161571-8f11aigsdjj",
           "autoFixable": false
         },
         {
@@ -823,7 +823,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 12570
           },
-          "id": "type-error-1774845465842-g6v9vb91nf8",
+          "id": "type-error-1774846161571-wa210cioo1i",
           "autoFixable": false
         },
         {
@@ -835,7 +835,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 13388
           },
-          "id": "type-error-1774845465842-q87p4k9h9ap",
+          "id": "type-error-1774846161571-1usi9m8jrovi",
           "autoFixable": false
         },
         {
@@ -847,7 +847,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 13494
           },
-          "id": "type-error-1774845465842-gn43hp5nzha",
+          "id": "type-error-1774846161571-g81sue89g5",
           "autoFixable": false
         },
         {
@@ -859,7 +859,7 @@
             "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 13555
           },
-          "id": "type-error-1774845465842-ttzxigtef4",
+          "id": "type-error-1774846161571-a4b7rpbm88m",
           "autoFixable": false
         },
         {
@@ -871,7 +871,7 @@
             "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 1744
           },
-          "id": "type-error-1774845465842-ip8bwtep69p",
+          "id": "type-error-1774846161571-f07xj1ggu6",
           "autoFixable": false
         },
         {
@@ -883,7 +883,7 @@
             "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 1839
           },
-          "id": "type-error-1774845465842-ce9tc3ysy3m",
+          "id": "type-error-1774846161571-pqe31y2bhyg",
           "autoFixable": false
         },
         {
@@ -895,7 +895,7 @@
             "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 2250
           },
-          "id": "type-error-1774845465842-fcihypolx8",
+          "id": "type-error-1774846161571-ol9lwqfznso",
           "autoFixable": false
         },
         {
@@ -907,7 +907,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 7160
           },
-          "id": "type-error-1774845465842-f6eek9arnod",
+          "id": "type-error-1774846161571-lcf3qe3ueyg",
           "autoFixable": false
         },
         {
@@ -919,7 +919,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 7236
           },
-          "id": "type-error-1774845465842-zmsaa42vce",
+          "id": "type-error-1774846161571-4b4hzc62s5x",
           "autoFixable": false
         },
         {
@@ -931,7 +931,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 7281
           },
-          "id": "type-error-1774845465842-lbxx4gls9zm",
+          "id": "type-error-1774846161571-8g5gxgechsa",
           "autoFixable": false
         },
         {
@@ -943,7 +943,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 7968
           },
-          "id": "type-error-1774845465842-2gugrk2z83t",
+          "id": "type-error-1774846161571-pobg0mniig",
           "autoFixable": false
         },
         {
@@ -955,7 +955,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 8026
           },
-          "id": "type-error-1774845465842-t07hszs7w3g",
+          "id": "type-error-1774846161571-18qe37xvhyr",
           "autoFixable": false
         },
         {
@@ -967,7 +967,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 8208
           },
-          "id": "type-error-1774845465842-fwsb70hpgc",
+          "id": "type-error-1774846161571-ih4ioi33dxs",
           "autoFixable": false
         },
         {
@@ -979,7 +979,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 8779
           },
-          "id": "type-error-1774845465842-nc2krzc5dg",
+          "id": "type-error-1774846161571-vy6sqtzgbb",
           "autoFixable": false
         },
         {
@@ -991,7 +991,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 8940
           },
-          "id": "type-error-1774845465842-x3tvzcib2ls",
+          "id": "type-error-1774846161571-z5466by9qc",
           "autoFixable": false
         },
         {
@@ -1003,7 +1003,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 9044
           },
-          "id": "type-error-1774845465842-5y5wq887j5u",
+          "id": "type-error-1774846161571-g0gyq7husu",
           "autoFixable": false
         },
         {
@@ -1015,7 +1015,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 10044
           },
-          "id": "type-error-1774845465842-d2bcsoi035t",
+          "id": "type-error-1774846161571-6c96diystdx",
           "autoFixable": false
         },
         {
@@ -1027,7 +1027,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 10126
           },
-          "id": "type-error-1774845465842-m2rzbxpfihc",
+          "id": "type-error-1774846161571-dhenc2trq2",
           "autoFixable": false
         },
         {
@@ -1039,7 +1039,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 10177
           },
-          "id": "type-error-1774845465842-fchnxcy38aa",
+          "id": "type-error-1774846161571-u9e44hs175",
           "autoFixable": false
         },
         {
@@ -1051,7 +1051,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 11119
           },
-          "id": "type-error-1774845465842-glrmh9kgu28",
+          "id": "type-error-1774846161571-825oo5avxf",
           "autoFixable": false
         },
         {
@@ -1063,7 +1063,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 11259
           },
-          "id": "type-error-1774845465842-vtn00a4oajl",
+          "id": "type-error-1774846161571-xgbdzi1mxp",
           "autoFixable": false
         },
         {
@@ -1075,7 +1075,7 @@
             "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 11332
           },
-          "id": "type-error-1774845465842-urdjy144wkg",
+          "id": "type-error-1774846161571-82rum8sgtyl",
           "autoFixable": false
         },
         {
@@ -1087,7 +1087,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6126
           },
-          "id": "type-error-1774845465842-x1yzs4wlogc",
+          "id": "type-error-1774846161571-mhtd6tqwfbm",
           "autoFixable": false
         },
         {
@@ -1099,7 +1099,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6163
           },
-          "id": "type-error-1774845465842-qg6q5ddhr7",
+          "id": "type-error-1774846161571-gmqe5cc2qew",
           "autoFixable": false
         },
         {
@@ -1111,7 +1111,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6201
           },
-          "id": "type-error-1774845465842-gzn5oz0pe78",
+          "id": "type-error-1774846161571-ybhxdvw9w5",
           "autoFixable": false
         },
         {
@@ -1123,7 +1123,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6225
           },
-          "id": "type-error-1774845465842-zq0vgph7uug",
+          "id": "type-error-1774846161571-828wt4sf69g",
           "autoFixable": false
         },
         {
@@ -1135,7 +1135,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6233
           },
-          "id": "type-error-1774845465842-6jbfi2owaw3",
+          "id": "type-error-1774846161571-jsajtwcmn0d",
           "autoFixable": false
         },
         {
@@ -1147,7 +1147,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6294
           },
-          "id": "type-error-1774845465842-y4l0hdtvsp9",
+          "id": "type-error-1774846161571-hzwgtbj32xv",
           "autoFixable": false
         },
         {
@@ -1159,7 +1159,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6356
           },
-          "id": "type-error-1774845465842-zryna0r3msg",
+          "id": "type-error-1774846161571-c0jgzjcpmt4",
           "autoFixable": false
         },
         {
@@ -1171,7 +1171,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6427
           },
-          "id": "type-error-1774845465842-fyjmq6qtrqq",
+          "id": "type-error-1774846161571-o2p86kgi8he",
           "autoFixable": false
         },
         {
@@ -1183,7 +1183,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6511
           },
-          "id": "type-error-1774845465842-1hzlf63slmmh",
+          "id": "type-error-1774846161571-qtqrpdzdngg",
           "autoFixable": false
         },
         {
@@ -1195,7 +1195,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6608
           },
-          "id": "type-error-1774845465842-jlme7rsgco",
+          "id": "type-error-1774846161571-mobls6jybp",
           "autoFixable": false
         },
         {
@@ -1207,7 +1207,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6705
           },
-          "id": "type-error-1774845465842-w9mmgpbuars",
+          "id": "type-error-1774846161571-fwk30dxcm9n",
           "autoFixable": false
         },
         {
@@ -1219,7 +1219,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6795
           },
-          "id": "type-error-1774845465842-ktwcu70zkh",
+          "id": "type-error-1774846161571-r30omjcljo",
           "autoFixable": false
         },
         {
@@ -1231,7 +1231,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6878
           },
-          "id": "type-error-1774845465842-y2lcgt6i9mf",
+          "id": "type-error-1774846161571-56i2qcssxm2",
           "autoFixable": false
         },
         {
@@ -1243,7 +1243,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 6953
           },
-          "id": "type-error-1774845465842-svewvi4subr",
+          "id": "type-error-1774846161571-uu4bxyyqppc",
           "autoFixable": false
         },
         {
@@ -1255,7 +1255,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7026
           },
-          "id": "type-error-1774845465842-ydpb57e1ih9",
+          "id": "type-error-1774846161571-fjxgz86od5f",
           "autoFixable": false
         },
         {
@@ -1267,7 +1267,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7113
           },
-          "id": "type-error-1774845465842-6alw98tu7u",
+          "id": "type-error-1774846161571-anvsxjkvk2k",
           "autoFixable": false
         },
         {
@@ -1279,7 +1279,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7223
           },
-          "id": "type-error-1774845465842-q18h25jsrqk",
+          "id": "type-error-1774846161571-cx37j6mimvu",
           "autoFixable": false
         },
         {
@@ -1291,7 +1291,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7318
           },
-          "id": "type-error-1774845465842-la4ho292y7f",
+          "id": "type-error-1774846161571-w6xl8iqjfsb",
           "autoFixable": false
         },
         {
@@ -1303,7 +1303,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7421
           },
-          "id": "type-error-1774845465842-ex7y4h3pa88",
+          "id": "type-error-1774846161571-ptjryea1m4",
           "autoFixable": false
         },
         {
@@ -1315,7 +1315,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7543
           },
-          "id": "type-error-1774845465842-1fu7d8sj0ts",
+          "id": "type-error-1774846161571-8u57xdpvsw",
           "autoFixable": false
         },
         {
@@ -1327,7 +1327,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7543
           },
-          "id": "type-error-1774845465842-0fbrvqdqanob",
+          "id": "type-error-1774846161571-efhcxgbgjs",
           "autoFixable": false
         },
         {
@@ -1339,7 +1339,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7673
           },
-          "id": "type-error-1774845465842-mtwq53n3t4m",
+          "id": "type-error-1774846161571-pw0wqqz8wbd",
           "autoFixable": false
         },
         {
@@ -1351,7 +1351,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7673
           },
-          "id": "type-error-1774845465842-4thahen3lzk",
+          "id": "type-error-1774846161571-egbqbhgwpm8",
           "autoFixable": false
         },
         {
@@ -1363,7 +1363,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7788
           },
-          "id": "type-error-1774845465842-mrda4d30lv",
+          "id": "type-error-1774846161571-7tc8tpe89op",
           "autoFixable": false
         },
         {
@@ -1375,7 +1375,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 7788
           },
-          "id": "type-error-1774845465842-zody4gwqm4n",
+          "id": "type-error-1774846161571-j5qls45iqyp",
           "autoFixable": false
         },
         {
@@ -1387,7 +1387,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8055
           },
-          "id": "type-error-1774845465842-jcz65ot1wvl",
+          "id": "type-error-1774846161571-bwkp1klsg7o",
           "autoFixable": false
         },
         {
@@ -1399,7 +1399,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8105
           },
-          "id": "type-error-1774845465842-r5gjbkpjdz",
+          "id": "type-error-1774846161571-gnd1fs2q7bf",
           "autoFixable": false
         },
         {
@@ -1411,7 +1411,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8158
           },
-          "id": "type-error-1774845465842-8p6woydy5i5",
+          "id": "type-error-1774846161571-layo8eyb6",
           "autoFixable": false
         },
         {
@@ -1423,7 +1423,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8201
           },
-          "id": "type-error-1774845465842-17s9zripoqp",
+          "id": "type-error-1774846161571-y54i28yjae",
           "autoFixable": false
         },
         {
@@ -1435,7 +1435,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8252
           },
-          "id": "type-error-1774845465842-9l9mz52znhu",
+          "id": "type-error-1774846161571-kg2z56wjb9",
           "autoFixable": false
         },
         {
@@ -1447,7 +1447,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8321
           },
-          "id": "type-error-1774845465842-3uag0eho2s1",
+          "id": "type-error-1774846161571-yerdg69izi9",
           "autoFixable": false
         },
         {
@@ -1459,7 +1459,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8390
           },
-          "id": "type-error-1774845465842-0p2e40zillvj",
+          "id": "type-error-1774846161571-uf7a8ie5iqe",
           "autoFixable": false
         },
         {
@@ -1471,7 +1471,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8468
           },
-          "id": "type-error-1774845465842-bp1b3mc5oyd",
+          "id": "type-error-1774846161571-bma4412z82p",
           "autoFixable": false
         },
         {
@@ -1483,7 +1483,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8563
           },
-          "id": "type-error-1774845465842-ousxxvf5ywl",
+          "id": "type-error-1774846161571-o26mjvqjcs",
           "autoFixable": false
         },
         {
@@ -1495,7 +1495,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8616
           },
-          "id": "type-error-1774845465842-g590cd58gad",
+          "id": "type-error-1774846161571-wj1szbt8qkq",
           "autoFixable": false
         },
         {
@@ -1507,7 +1507,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8678
           },
-          "id": "type-error-1774845465842-9anworqm0b9",
+          "id": "type-error-1774846161571-ms0emau6h7r",
           "autoFixable": false
         },
         {
@@ -1519,7 +1519,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8752
           },
-          "id": "type-error-1774845465842-dq8ipbjxn5h",
+          "id": "type-error-1774846161571-fv73z7r1i7m",
           "autoFixable": false
         },
         {
@@ -1531,7 +1531,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8825
           },
-          "id": "type-error-1774845465842-twpquw6nwjm",
+          "id": "type-error-1774846161571-cqxrr2dpfsg",
           "autoFixable": false
         },
         {
@@ -1543,7 +1543,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8921
           },
-          "id": "type-error-1774845465842-ohsh5rkr65h",
+          "id": "type-error-1774846161571-ewrmnpkzsrt",
           "autoFixable": false
         },
         {
@@ -1555,7 +1555,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 8986
           },
-          "id": "type-error-1774845465842-ac9jl9426j",
+          "id": "type-error-1774846161571-atot47ebk8i",
           "autoFixable": false
         },
         {
@@ -1567,7 +1567,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9075
           },
-          "id": "type-error-1774845465842-5rth4wcb9qy",
+          "id": "type-error-1774846161571-z2qsri6ktt",
           "autoFixable": false
         },
         {
@@ -1579,7 +1579,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9183
           },
-          "id": "type-error-1774845465842-wwtizroyj2m",
+          "id": "type-error-1774846161571-pl7yz4q1olm",
           "autoFixable": false
         },
         {
@@ -1591,7 +1591,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9280
           },
-          "id": "type-error-1774845465842-y38tc53z01t",
+          "id": "type-error-1774846161571-jhetx1zp9ma",
           "autoFixable": false
         },
         {
@@ -1603,7 +1603,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9360
           },
-          "id": "type-error-1774845465842-8j54zkg5tep",
+          "id": "type-error-1774846161571-mvahyouu2d",
           "autoFixable": false
         },
         {
@@ -1615,7 +1615,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9495
           },
-          "id": "type-error-1774845465842-udxm1v32bjl",
+          "id": "type-error-1774846161571-f2qa6cl4jl7",
           "autoFixable": false
         },
         {
@@ -1627,7 +1627,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9553
           },
-          "id": "type-error-1774845465842-jhcoh0fnpo",
+          "id": "type-error-1774846161571-hufh790ng4i",
           "autoFixable": false
         },
         {
@@ -1639,7 +1639,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9633
           },
-          "id": "type-error-1774845465842-e09m517dk0i",
+          "id": "type-error-1774846161571-ysa1vacizdl",
           "autoFixable": false
         },
         {
@@ -1651,7 +1651,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9732
           },
-          "id": "type-error-1774845465842-8md98n0emap",
+          "id": "type-error-1774846161571-lw2ryvm7jxo",
           "autoFixable": false
         },
         {
@@ -1663,7 +1663,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9820
           },
-          "id": "type-error-1774845465842-dkx94eitxz9",
+          "id": "type-error-1774846161571-yuhm1krot6d",
           "autoFixable": false
         },
         {
@@ -1675,7 +1675,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 9893
           },
-          "id": "type-error-1774845465842-pq59k36zqx",
+          "id": "type-error-1774846161571-6aicy2zh0ck",
           "autoFixable": false
         },
         {
@@ -1687,7 +1687,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10002
           },
-          "id": "type-error-1774845465842-09c27p4o405n",
+          "id": "type-error-1774846161571-syimhtdwqij",
           "autoFixable": false
         },
         {
@@ -1699,7 +1699,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10056
           },
-          "id": "type-error-1774845465842-ubybm4qk2x",
+          "id": "type-error-1774846161571-a1jfswtqndk",
           "autoFixable": false
         },
         {
@@ -1711,7 +1711,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10118
           },
-          "id": "type-error-1774845465842-pzgbv5ri3g",
+          "id": "type-error-1774846161571-9hrwc7lque",
           "autoFixable": false
         },
         {
@@ -1723,7 +1723,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10213
           },
-          "id": "type-error-1774845465842-ijsiik2bz1f",
+          "id": "type-error-1774846161571-352bomweh6o",
           "autoFixable": false
         },
         {
@@ -1735,7 +1735,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10281
           },
-          "id": "type-error-1774845465842-24a3cb7cp9x",
+          "id": "type-error-1774846161571-914v9yewmtj",
           "autoFixable": false
         },
         {
@@ -1747,7 +1747,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 10350
           },
-          "id": "type-error-1774845465842-ikq73scv0r",
+          "id": "type-error-1774846161571-mij8kni1glp",
           "autoFixable": false
         },
         {
@@ -1759,7 +1759,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11064
           },
-          "id": "type-error-1774845465842-vwysykejy7",
+          "id": "type-error-1774846161571-d6ystjlfq4l",
           "autoFixable": false
         },
         {
@@ -1771,7 +1771,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11113
           },
-          "id": "type-error-1774845465842-850re3hb6ka",
+          "id": "type-error-1774846161571-dnwprcexqao",
           "autoFixable": false
         },
         {
@@ -1783,7 +1783,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11163
           },
-          "id": "type-error-1774845465842-ggsdmqdks1d",
+          "id": "type-error-1774846161571-p0x6m2m61zi",
           "autoFixable": false
         },
         {
@@ -1795,7 +1795,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11416
           },
-          "id": "type-error-1774845465842-rv3okks9h9a",
+          "id": "type-error-1774846161571-9m1d4nsi3pj",
           "autoFixable": false
         },
         {
@@ -1807,7 +1807,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11463
           },
-          "id": "type-error-1774845465842-xb8d866fbjd",
+          "id": "type-error-1774846161571-m3rnofqt8hf",
           "autoFixable": false
         },
         {
@@ -1819,7 +1819,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11511
           },
-          "id": "type-error-1774845465842-dfnlnxjyap6",
+          "id": "type-error-1774846161571-v5ewemnld7",
           "autoFixable": false
         },
         {
@@ -1831,7 +1831,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11743
           },
-          "id": "type-error-1774845465842-5hc3yvwm0ea",
+          "id": "type-error-1774846161571-pp4yoxj20dn",
           "autoFixable": false
         },
         {
@@ -1843,7 +1843,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11790
           },
-          "id": "type-error-1774845465842-o6e78tcl7gj",
+          "id": "type-error-1774846161571-xxjtp20vl79",
           "autoFixable": false
         },
         {
@@ -1855,7 +1855,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 11838
           },
-          "id": "type-error-1774845465842-2k8td099tk3",
+          "id": "type-error-1774846161571-071ncr0ctiim",
           "autoFixable": false
         },
         {
@@ -1867,7 +1867,7 @@
             "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 12382
           },
-          "id": "type-error-1774845465842-vjlqewq612j",
+          "id": "type-error-1774846161571-74qffe5uq7x",
           "autoFixable": false
         },
         {
@@ -1879,7 +1879,7 @@
             "file": "src/providers/putRedditCloneMemberPostsPostIdVotesVoteId.ts",
             "line": 3032
           },
-          "id": "type-error-1774845465842-wdu9yieyexi",
+          "id": "type-error-1774846161571-8euphtmvh8x",
           "autoFixable": false
         },
         {
@@ -1891,7 +1891,7 @@
             "file": "src/transformers/RedditCloneCommunityBanTransformer.ts",
             "line": 2660
           },
-          "id": "type-error-1774845465842-6ar1hcpwns4",
+          "id": "type-error-1774846161571-ju37b2m7n7",
           "autoFixable": false
         },
         {
@@ -1903,7 +1903,7 @@
             "file": "src/transformers/RedditCloneFileAssociationAtSummaryTransformer.ts",
             "line": 3630
           },
-          "id": "type-error-1774845465842-eh9lhgfd7gv",
+          "id": "type-error-1774846161571-r29ce8ogdh",
           "autoFixable": false
         },
         {
@@ -1915,7 +1915,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 5648
           },
-          "id": "type-error-1774845465842-hi4w4oejun",
+          "id": "type-error-1774846161571-tijjo6ciugt",
           "autoFixable": false
         },
         {
@@ -1927,7 +1927,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 5781
           },
-          "id": "type-error-1774845465842-v8ff5uj5sm",
+          "id": "type-error-1774846161571-xeuqn4sola",
           "autoFixable": false
         },
         {
@@ -1939,7 +1939,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 5907
           },
-          "id": "type-error-1774845465842-vcnzwg436pn",
+          "id": "type-error-1774846161571-cxy65ztfloh",
           "autoFixable": false
         },
         {
@@ -1951,7 +1951,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6069
           },
-          "id": "type-error-1774845465842-rowtd7p1vud",
+          "id": "type-error-1774846161571-rhdxwl9uw",
           "autoFixable": false
         },
         {
@@ -1963,7 +1963,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6223
           },
-          "id": "type-error-1774845465842-emylrh90skg",
+          "id": "type-error-1774846161571-xlsyhsh1ke",
           "autoFixable": false
         },
         {
@@ -1975,7 +1975,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6375
           },
-          "id": "type-error-1774845465842-0zuu5ae7807j",
+          "id": "type-error-1774846161571-y2gaprg77vh",
           "autoFixable": false
         },
         {
@@ -1987,7 +1987,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6544
           },
-          "id": "type-error-1774845465842-re5m1aa6n57",
+          "id": "type-error-1774846161571-3myl8eg8jkf",
           "autoFixable": false
         },
         {
@@ -1999,7 +1999,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6727
           },
-          "id": "type-error-1774845465842-hcmwh9contw",
+          "id": "type-error-1774846161571-zdslycwwlm",
           "autoFixable": false
         },
         {
@@ -2011,7 +2011,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 6887
           },
-          "id": "type-error-1774845465842-p4dvz3mbqzi",
+          "id": "type-error-1774846161571-h5kefpmwsb9",
           "autoFixable": false
         },
         {
@@ -2023,7 +2023,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 7061
           },
-          "id": "type-error-1774845465842-4us6o2ynp96",
+          "id": "type-error-1774846161571-9n2ka1wmwj",
           "autoFixable": false
         },
         {
@@ -2035,7 +2035,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
             "line": 7260
           },
-          "id": "type-error-1774845465842-gdgd78eq22h",
+          "id": "type-error-1774846161571-8i63jccsqoc",
           "autoFixable": false
         },
         {
@@ -2047,7 +2047,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 3434
           },
-          "id": "type-error-1774845465842-1f966ydnqaf",
+          "id": "type-error-1774846161571-i5jlp6zmkwn",
           "autoFixable": false
         },
         {
@@ -2059,7 +2059,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4256
           },
-          "id": "type-error-1774845465842-a4lusrmm1v4",
+          "id": "type-error-1774846161571-wzlzfl4562",
           "autoFixable": false
         },
         {
@@ -2071,7 +2071,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4397
           },
-          "id": "type-error-1774845465842-qjaul8s32yk",
+          "id": "type-error-1774846161571-aar7dd3uf2s",
           "autoFixable": false
         },
         {
@@ -2083,7 +2083,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4547
           },
-          "id": "type-error-1774845465842-x3bnm797kk",
+          "id": "type-error-1774846161571-g8h1pdbuy3l",
           "autoFixable": false
         },
         {
@@ -2095,7 +2095,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4689
           },
-          "id": "type-error-1774845465842-ddlj67jw7h",
+          "id": "type-error-1774846161571-12rbi4amu0e",
           "autoFixable": false
         },
         {
@@ -2107,7 +2107,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4829
           },
-          "id": "type-error-1774845465842-uz0citi8ci",
+          "id": "type-error-1774846161571-sn8k507oyjj",
           "autoFixable": false
         },
         {
@@ -2119,7 +2119,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 4986
           },
-          "id": "type-error-1774845465842-d3pqw5fyxu",
+          "id": "type-error-1774846161571-ooyeaeu3a3",
           "autoFixable": false
         },
         {
@@ -2131,7 +2131,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 5158
           },
-          "id": "type-error-1774845465842-h99rbqr4hs9",
+          "id": "type-error-1774846161571-0t7uzhlrvjt",
           "autoFixable": false
         },
         {
@@ -2143,7 +2143,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 5306
           },
-          "id": "type-error-1774845465842-loreepwniki",
+          "id": "type-error-1774846161571-6ke9unb2rg",
           "autoFixable": false
         },
         {
@@ -2155,7 +2155,7 @@
             "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
             "line": 5481
           },
-          "id": "type-error-1774845465842-laxpcgofn3",
+          "id": "type-error-1774846161571-uedsvqaxqjk",
           "autoFixable": false
         },
         {
@@ -2167,7 +2167,7 @@
             "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
             "line": 3887
           },
-          "id": "type-error-1774845465842-13rnc6gooqpe",
+          "id": "type-error-1774846161571-m1jitqsoict",
           "autoFixable": false
         },
         {
@@ -2179,7 +2179,7 @@
             "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
             "line": 4067
           },
-          "id": "type-error-1774845465843-ob5fvp5oy3",
+          "id": "type-error-1774846161571-9zjoyny0tcr",
           "autoFixable": false
         },
         {
@@ -2191,11 +2191,11 @@
             "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
             "line": 4388
           },
-          "id": "type-error-1774845465843-ugtqyak5lwo",
+          "id": "type-error-1774846161571-267bof9q2gt",
           "autoFixable": false
         }
       ],
-      "durationMs": 7225,
+      "durationMs": 7117,
       "metrics": {
         "totalFiles": 286,
         "filesWithErrors": 0,
@@ -2329,7 +2329,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466101-jjq408gzp5a",
+          "id": "complexity-1774846161758-qgyux0okv7k",
           "autoFixable": false
         },
         {
@@ -2342,7 +2342,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466106-pohj7f5sy4",
+          "id": "complexity-1774846161764-yhil5r1q4gh",
           "autoFixable": false
         },
         {
@@ -2355,7 +2355,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466108-x7mz28g6tjm",
+          "id": "complexity-1774846161764-rrlen8och1e",
           "autoFixable": false
         },
         {
@@ -2368,7 +2368,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466109-1lna4lk65ri",
+          "id": "complexity-1774846161766-wgwrlhlmmti",
           "autoFixable": false
         },
         {
@@ -2381,7 +2381,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466118-mvqizmtm0x",
+          "id": "complexity-1774846161768-2vizkm6vgvl",
           "autoFixable": false
         },
         {
@@ -2394,7 +2394,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845466110-gfzpnac5wcv",
+          "id": "complexity-1774846161770-5yeoi1jz4yp",
           "autoFixable": false
         },
         {
@@ -2407,7 +2407,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466113-ojblxwb1zi",
+          "id": "complexity-1774846161769-a3iy49hh6nv",
           "autoFixable": false
         },
         {
@@ -2420,7 +2420,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845466115-jufi66xm4zo",
+          "id": "complexity-1774846161773-fywokx3l0f6",
           "autoFixable": false
         },
         {
@@ -2433,7 +2433,7 @@
             "line": 26
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845466117-mvqi6he8g3p",
+          "id": "complexity-1774846161775-wiebcmyku98",
           "autoFixable": false
         },
         {
@@ -2446,7 +2446,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466122-isducchnbqk",
+          "id": "complexity-1774846161776-7c1lad5tpzq",
           "autoFixable": false
         },
         {
@@ -2459,7 +2459,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466120-0ur0yccfptbo",
+          "id": "complexity-1774846161778-qdqs5djfeje",
           "autoFixable": false
         },
         {
@@ -2472,7 +2472,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466122-vsgv94qxquf",
+          "id": "complexity-1774846161779-5275gjlm90f",
           "autoFixable": false
         },
         {
@@ -2485,7 +2485,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845466126-wc672r02i7j",
+          "id": "complexity-1774846161780-acsqoz88yod",
           "autoFixable": false
         },
         {
@@ -2498,7 +2498,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845466124-urer2vv9g1q",
+          "id": "complexity-1774846161784-rxqunuiji28",
           "autoFixable": false
         }
       ]
@@ -2515,7 +2515,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/reports/RedditcloneMemberReportsController.ts",
             "line": 225
           },
-          "id": "duplication-1774845466251-iez1fnzwbmk",
+          "id": "duplication-1774846161920-uoraitmy1im",
           "autoFixable": false
         },
         {
@@ -2527,7 +2527,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/reports/RedditcloneMemberReportsController.ts",
             "line": 226
           },
-          "id": "duplication-1774845466251-rvub9qg4xm",
+          "id": "duplication-1774846161920-8swiupxn12c",
           "autoFixable": false
         },
         {
@@ -2539,7 +2539,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/popular/RedditcloneMemberPostsPopularController.ts",
             "line": 50
           },
-          "id": "duplication-1774845466251-e2fgvz51b4",
+          "id": "duplication-1774846161920-tz5ev2zvsz",
           "autoFixable": false
         },
         {
@@ -2551,7 +2551,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/popular/RedditcloneMemberPostsPopularController.ts",
             "line": 51
           },
-          "id": "duplication-1774845466251-npajw31ee0l",
+          "id": "duplication-1774846161920-42s9ybysmaj",
           "autoFixable": false
         },
         {
@@ -2563,7 +2563,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/putRedditCloneMemberReportsReportId.ts",
             "line": 14
           },
-          "id": "duplication-1774845466251-ownlyr6w1s",
+          "id": "duplication-1774846161920-0g7xv9obr00j",
           "autoFixable": false
         },
         {
@@ -2575,7 +2575,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/putRedditCloneMemberCommunitiesCommunityNameBansBanId.ts",
             "line": 26
           },
-          "id": "duplication-1774845466251-1dg2ouflkeg",
+          "id": "duplication-1774846161920-q62uzs2zzyk",
           "autoFixable": false
         },
         {
@@ -2587,7 +2587,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/putRedditCloneMemberCommunitiesCommunityNameBansBanId.ts",
             "line": 27
           },
-          "id": "duplication-1774845466252-j77plsba8d",
+          "id": "duplication-1774846161920-3u8osqh7w69",
           "autoFixable": false
         },
         {
@@ -2599,7 +2599,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/putRedditCloneMemberCommunitiesCommunityNameBansBanId.ts",
             "line": 28
           },
-          "id": "duplication-1774845466252-19lrd8oo4c1",
+          "id": "duplication-1774846161920-jfbig6mxo1f",
           "autoFixable": false
         },
         {
@@ -2611,7 +2611,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneMemberReportsReportIdApprove.ts",
             "line": 15
           },
-          "id": "duplication-1774845466252-u1zg8er9i5f",
+          "id": "duplication-1774846161920-cap1gea80p7",
           "autoFixable": false
         },
         {
@@ -2623,7 +2623,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneMemberReportsReportIdApprove.ts",
             "line": 16
           },
-          "id": "duplication-1774845466252-ghr48lgx0l8",
+          "id": "duplication-1774846161920-49coif8ruz7",
           "autoFixable": false
         },
         {
@@ -2635,7 +2635,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberLogin.ts",
             "line": 61
           },
-          "id": "duplication-1774845466252-v4mpct6ujt",
+          "id": "duplication-1774846161920-gee1u6mak95",
           "autoFixable": false
         },
         {
@@ -2647,7 +2647,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 118
           },
-          "id": "duplication-1774845466252-bwcqqfv2bn",
+          "id": "duplication-1774846161920-mwp0fpao11",
           "autoFixable": false
         },
         {
@@ -2659,7 +2659,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 119
           },
-          "id": "duplication-1774845466252-6um714j12hf",
+          "id": "duplication-1774846161920-vr4k6msjs7h",
           "autoFixable": false
         },
         {
@@ -2671,7 +2671,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 120
           },
-          "id": "duplication-1774845466252-35zmb7ay6ct",
+          "id": "duplication-1774846161920-ods2v19tg3",
           "autoFixable": false
         },
         {
@@ -2683,7 +2683,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 139
           },
-          "id": "duplication-1774845466252-88vh66xo5l5",
+          "id": "duplication-1774846161920-01mj8iyhtgch",
           "autoFixable": false
         },
         {
@@ -2695,7 +2695,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 140
           },
-          "id": "duplication-1774845466252-fr7os8avurj",
+          "id": "duplication-1774846161920-3iab4zc5ls",
           "autoFixable": false
         },
         {
@@ -2707,7 +2707,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 141
           },
-          "id": "duplication-1774845466252-9mzelu8xnd",
+          "id": "duplication-1774846161920-5kn0j22v9pg",
           "autoFixable": false
         },
         {
@@ -2719,7 +2719,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 142
           },
-          "id": "duplication-1774845466252-kc3cul7n42c",
+          "id": "duplication-1774846161920-wdjf2l6j8fq",
           "autoFixable": false
         },
         {
@@ -2731,7 +2731,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 143
           },
-          "id": "duplication-1774845466252-i9p51kdza2",
+          "id": "duplication-1774846161920-7hh7p0pqieb",
           "autoFixable": false
         },
         {
@@ -2743,7 +2743,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/postRedditCloneAuthMemberJoin.ts",
             "line": 144
           },
-          "id": "duplication-1774845466252-9yxt51dyz1r",
+          "id": "duplication-1774846161920-2j0tlphkf2j",
           "autoFixable": false
         },
         {
@@ -2755,7 +2755,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditClonePosts.ts",
             "line": 91
           },
-          "id": "duplication-1774845466252-nlb1qc71y7e",
+          "id": "duplication-1774846161920-51cuwezw80a",
           "autoFixable": false
         },
         {
@@ -2767,7 +2767,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditClonePosts.ts",
             "line": 92
           },
-          "id": "duplication-1774845466252-v6puctkczsk",
+          "id": "duplication-1774846161920-34ory4nnfom",
           "autoFixable": false
         },
         {
@@ -2779,7 +2779,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditClonePosts.ts",
             "line": 93
           },
-          "id": "duplication-1774845466252-27aisn930fq",
+          "id": "duplication-1774846161920-ztn6guaa8g",
           "autoFixable": false
         },
         {
@@ -2791,7 +2791,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditClonePosts.ts",
             "line": 94
           },
-          "id": "duplication-1774845466252-b5jfv5f3s2r",
+          "id": "duplication-1774846161920-g6quxs0zj8",
           "autoFixable": false
         },
         {
@@ -2803,7 +2803,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 73
           },
-          "id": "duplication-1774845466252-5lapx8mzw7v",
+          "id": "duplication-1774846161920-3brvebgl9qh",
           "autoFixable": false
         },
         {
@@ -2815,7 +2815,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 74
           },
-          "id": "duplication-1774845466252-lc8g5eaobu",
+          "id": "duplication-1774846161920-ju6nxdofylh",
           "autoFixable": false
         },
         {
@@ -2827,7 +2827,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 75
           },
-          "id": "duplication-1774845466252-1guu7h7df5b",
+          "id": "duplication-1774846161920-dn3snqmh6is",
           "autoFixable": false
         },
         {
@@ -2839,7 +2839,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 76
           },
-          "id": "duplication-1774845466252-57m7sfc1bui",
+          "id": "duplication-1774846161920-ad0eq5uy2fg",
           "autoFixable": false
         },
         {
@@ -2851,7 +2851,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 83
           },
-          "id": "duplication-1774845466252-945sywxjt0u",
+          "id": "duplication-1774846161920-8pth5lkunep",
           "autoFixable": false
         },
         {
@@ -2863,7 +2863,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 84
           },
-          "id": "duplication-1774845466252-7rl3qs2tu49",
+          "id": "duplication-1774846161920-smi72he7i8",
           "autoFixable": false
         },
         {
@@ -2875,7 +2875,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 85
           },
-          "id": "duplication-1774845466252-zzot92oqbfq",
+          "id": "duplication-1774846161920-17alvtzqedj",
           "autoFixable": false
         },
         {
@@ -2887,7 +2887,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 86
           },
-          "id": "duplication-1774845466252-zti357rmweb",
+          "id": "duplication-1774846161920-dn30k2ps439",
           "autoFixable": false
         },
         {
@@ -2899,7 +2899,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 107
           },
-          "id": "duplication-1774845466252-i65w3yhpwv9",
+          "id": "duplication-1774846161920-a63lyrgjg9q",
           "autoFixable": false
         },
         {
@@ -2911,7 +2911,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 131
           },
-          "id": "duplication-1774845466252-zm3hs2n2299",
+          "id": "duplication-1774846161920-nq4d70i2pwd",
           "autoFixable": false
         },
         {
@@ -2923,7 +2923,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 153
           },
-          "id": "duplication-1774845466252-no8mpijtuq",
+          "id": "duplication-1774846161920-vtph45q39d9",
           "autoFixable": false
         },
         {
@@ -2935,7 +2935,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 154
           },
-          "id": "duplication-1774845466252-bgl8apnrwba",
+          "id": "duplication-1774846161920-j7y4zpyuwzq",
           "autoFixable": false
         },
         {
@@ -2947,7 +2947,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 155
           },
-          "id": "duplication-1774845466252-dscdfve281f",
+          "id": "duplication-1774846161920-1ikbu0royqh",
           "autoFixable": false
         },
         {
@@ -2959,7 +2959,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 156
           },
-          "id": "duplication-1774845466252-15da46znijq",
+          "id": "duplication-1774846161920-is06qptzaen",
           "autoFixable": false
         },
         {
@@ -2971,7 +2971,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
             "line": 157
           },
-          "id": "duplication-1774845466252-eqphr4hve1a",
+          "id": "duplication-1774846161920-kx5nqdos0nn",
           "autoFixable": false
         },
         {
@@ -2983,7 +2983,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 15
           },
-          "id": "duplication-1774845466252-5uszspmmo6r",
+          "id": "duplication-1774846161920-wuqsufzb9i",
           "autoFixable": false
         },
         {
@@ -2995,7 +2995,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 16
           },
-          "id": "duplication-1774845466252-55ufqgp71wj",
+          "id": "duplication-1774846161920-hv59wo26ihg",
           "autoFixable": false
         },
         {
@@ -3007,7 +3007,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 17
           },
-          "id": "duplication-1774845466252-7vym46cnlfq",
+          "id": "duplication-1774846161920-2jcwg0drufb",
           "autoFixable": false
         },
         {
@@ -3019,7 +3019,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 78
           },
-          "id": "duplication-1774845466252-y9ej35std9k",
+          "id": "duplication-1774846161920-7221mwt2tfj",
           "autoFixable": false
         },
         {
@@ -3031,7 +3031,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberReportsHistory.ts",
             "line": 79
           },
-          "id": "duplication-1774845466252-ga0cj4a1qgn",
+          "id": "duplication-1774846161920-dnz1dr94ahk",
           "autoFixable": false
         },
         {
@@ -3043,7 +3043,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 60
           },
-          "id": "duplication-1774845466252-t31xyx5h1g",
+          "id": "duplication-1774846161920-yefk6kk8nw",
           "autoFixable": false
         },
         {
@@ -3055,7 +3055,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 61
           },
-          "id": "duplication-1774845466252-9c0jrg6kzxo",
+          "id": "duplication-1774846161920-qysnvfy7rd",
           "autoFixable": false
         },
         {
@@ -3067,7 +3067,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 62
           },
-          "id": "duplication-1774845466252-pu9x2161ju",
+          "id": "duplication-1774846161920-g6lbfojzuv",
           "autoFixable": false
         },
         {
@@ -3079,7 +3079,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 63
           },
-          "id": "duplication-1774845466252-koqz3n9uv9o",
+          "id": "duplication-1774846161920-67ot5citd1x",
           "autoFixable": false
         },
         {
@@ -3091,7 +3091,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 64
           },
-          "id": "duplication-1774845466252-omqtw1kync",
+          "id": "duplication-1774846161920-tslkk4651m",
           "autoFixable": false
         },
         {
@@ -3103,7 +3103,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsPostIdComments.ts",
             "line": 65
           },
-          "id": "duplication-1774845466252-34s5w1tb3sm",
+          "id": "duplication-1774846161920-sjg2ae6foh",
           "autoFixable": false
         },
         {
@@ -3115,7 +3115,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 101
           },
-          "id": "duplication-1774845466252-vn72gq9wptl",
+          "id": "duplication-1774846161920-ysbp588d4tb",
           "autoFixable": false
         },
         {
@@ -3127,7 +3127,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 102
           },
-          "id": "duplication-1774845466252-x0o9530kvqf",
+          "id": "duplication-1774846161920-lgn4blhncl",
           "autoFixable": false
         },
         {
@@ -3139,7 +3139,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 103
           },
-          "id": "duplication-1774845466252-ww2wzc27lsk",
+          "id": "duplication-1774846161920-kr88n53zqv",
           "autoFixable": false
         },
         {
@@ -3151,7 +3151,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 104
           },
-          "id": "duplication-1774845466252-7v7a7f6gbfu",
+          "id": "duplication-1774846161920-tzr7a6xpwzi",
           "autoFixable": false
         },
         {
@@ -3163,7 +3163,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 105
           },
-          "id": "duplication-1774845466252-pk7s6uq814",
+          "id": "duplication-1774846161920-fp6tl3cu9zl",
           "autoFixable": false
         },
         {
@@ -3175,7 +3175,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 110
           },
-          "id": "duplication-1774845466252-7vk9my9vlts",
+          "id": "duplication-1774846161920-bi4kq3nhz5n",
           "autoFixable": false
         },
         {
@@ -3187,7 +3187,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 111
           },
-          "id": "duplication-1774845466252-9o5m9ll2pjt",
+          "id": "duplication-1774846161920-hconknaz6rd",
           "autoFixable": false
         },
         {
@@ -3199,7 +3199,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 112
           },
-          "id": "duplication-1774845466252-zm4q88rhqrn",
+          "id": "duplication-1774846161920-aun5p11g0af",
           "autoFixable": false
         },
         {
@@ -3211,7 +3211,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 113
           },
-          "id": "duplication-1774845466252-j3kkhopp2zs",
+          "id": "duplication-1774846161920-vx0p4c3jryp",
           "autoFixable": false
         },
         {
@@ -3223,7 +3223,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 114
           },
-          "id": "duplication-1774845466252-wldivns6hh7",
+          "id": "duplication-1774846161920-0wtnb7w4wjxd",
           "autoFixable": false
         },
         {
@@ -3235,7 +3235,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 115
           },
-          "id": "duplication-1774845466252-ygvlsu5uxt",
+          "id": "duplication-1774846161920-jko1pxs8k7",
           "autoFixable": false
         },
         {
@@ -3247,7 +3247,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 116
           },
-          "id": "duplication-1774845466252-j5qk7f9sydh",
+          "id": "duplication-1774846161920-z9huy9nitjb",
           "autoFixable": false
         },
         {
@@ -3259,7 +3259,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 117
           },
-          "id": "duplication-1774845466252-1xsj3ta4ie3",
+          "id": "duplication-1774846161920-86f2marh0ek",
           "autoFixable": false
         },
         {
@@ -3271,7 +3271,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 118
           },
-          "id": "duplication-1774845466252-xpu1s2e52q9",
+          "id": "duplication-1774846161920-cc6osp7hgxf",
           "autoFixable": false
         },
         {
@@ -3283,7 +3283,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 119
           },
-          "id": "duplication-1774845466252-thfys62mxkn",
+          "id": "duplication-1774846161920-1ycewew4vu7",
           "autoFixable": false
         },
         {
@@ -3295,7 +3295,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 120
           },
-          "id": "duplication-1774845466252-cpajx00rar",
+          "id": "duplication-1774846161920-d1qk1840al8",
           "autoFixable": false
         },
         {
@@ -3307,7 +3307,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberPostsHome.ts",
             "line": 121
           },
-          "id": "duplication-1774845466252-bvjyxyu2e4u",
+          "id": "duplication-1774846161920-7r6griqzvc9",
           "autoFixable": false
         },
         {
@@ -3319,7 +3319,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneMemberCommunitiesCommunityNameBans.ts",
             "line": 118
           },
-          "id": "duplication-1774845466252-23j1lq65wo2",
+          "id": "duplication-1774846161920-vtwhpetoiq",
           "autoFixable": false
         },
         {
@@ -3331,7 +3331,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/patchRedditCloneGuestUsersUsernamePosts.ts",
             "line": 121
           },
-          "id": "duplication-1774845466252-qq5bks9fzi",
+          "id": "duplication-1774846161920-4nt2h9vgi3g",
           "autoFixable": false
         },
         {
@@ -3343,7 +3343,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/deleteRedditCloneMemberCommunitiesCommunityNameReportsReportId.ts",
             "line": 20
           },
-          "id": "duplication-1774845466252-wqrpwryv52",
+          "id": "duplication-1774846161920-5md3kv3j2xx",
           "autoFixable": false
         },
         {
@@ -3355,7 +3355,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/providers/deleteRedditCloneMemberCommunitiesCommunityNameReportsReportId.ts",
             "line": 21
           },
-          "id": "duplication-1774845466252-an9puy0292n",
+          "id": "duplication-1774846161920-mibmsw9ed4",
           "autoFixable": false
         }
       ]
@@ -3372,7 +3372,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/file-associations/RedditcloneFile_associationsController.ts",
             "line": 10
           },
-          "id": "naming-1774845466253-26aze86zmbe",
+          "id": "naming-1774846161921-3s0jxuq6z2w",
           "autoFixable": false
         },
         {
@@ -3384,7 +3384,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/file-associations/RedditcloneMemberFile_associationsController.ts",
             "line": 12
           },
-          "id": "naming-1774845466256-ffi8fjwx33",
+          "id": "naming-1774846161927-zqrtd69vt2o",
           "autoFixable": false
         }
       ]
@@ -3397,12 +3397,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditclonePostsController\" missing JSDoc",
+          "message": "Class \"RedditcloneMembersController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/posts/RedditclonePostsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/members/RedditcloneMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466290-xo8dv6cas1",
+          "id": "jsdoc-1774846161969-44wmut8ub8a",
           "autoFixable": false
         },
         {
@@ -3414,19 +3414,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/users/RedditcloneUsersController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845466290-0my4uk75s7zr",
+          "id": "jsdoc-1774846161969-ir0ek9fghjo",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneMembersController\" missing JSDoc",
+          "message": "Class \"RedditclonePostsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/members/RedditcloneMembersController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/posts/RedditclonePostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466290-6o5k6zmsvkd",
+          "id": "jsdoc-1774846161970-g4vgnvhfxuo",
           "autoFixable": false
         },
         {
@@ -3438,19 +3438,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/files/RedditcloneFilesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466290-uh2c014im8c",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneFile_associationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/file-associations/RedditcloneFile_associationsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845466290-3kwelq4xb4f",
+          "id": "jsdoc-1774846161971-vi50f75srd",
           "autoFixable": false
         },
         {
@@ -3462,7 +3450,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/communities/RedditcloneCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466290-484fqk3irzd",
+          "id": "jsdoc-1774846161971-nxaoc4ite17",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneFile_associationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/file-associations/RedditcloneFile_associationsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846161971-jrbkkyqa6w8",
           "autoFixable": false
         },
         {
@@ -3474,67 +3474,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/comments/RedditcloneCommentsController.ts",
             "line": 8
           },
-          "id": "jsdoc-1774845466290-pohoakm5gte",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditclonePostsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/posts/votes/RedditclonePostsVotesController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845466291-546oxu39dqf",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneFilesScansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/files/scans/RedditcloneFilesScansController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845466291-fdstazum1pe",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneFilesThumbnailsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/files/thumbnails/RedditcloneFilesThumbnailsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845466291-e8xcskx4j9k",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/sessions/RedditcloneMemberSessionsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845466291-v40sc1410qc",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberSubscriptionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/subscriptions/RedditcloneMemberSubscriptionsController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774845466292-df0y17nnow",
+          "id": "jsdoc-1774846161972-zptj3agonq8",
           "autoFixable": false
         },
         {
@@ -3546,7 +3486,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/reports/RedditcloneMemberReportsController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774845466292-4oc0k5nlzz",
+          "id": "jsdoc-1774846161973-pxbnx1zftl8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/sessions/RedditcloneMemberSessionsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161972-10a4p3281gh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberSubscriptionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/subscriptions/RedditcloneMemberSubscriptionsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846161973-a09a6ydm55m",
           "autoFixable": false
         },
         {
@@ -3558,7 +3522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/profile/RedditcloneMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466292-zg0ioo1itsr",
+          "id": "jsdoc-1774846161973-o95ol1jafp",
           "autoFixable": false
         },
         {
@@ -3570,19 +3534,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/RedditcloneMemberPostsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466293-64jirkehbcq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberFilesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/files/RedditcloneMemberFilesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845466293-kjbzmg2wr3l",
+          "id": "jsdoc-1774846161974-1tbhuyrk0b3",
           "autoFixable": false
         },
         {
@@ -3594,7 +3546,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/file-associations/RedditcloneMemberFile_associationsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466293-4sjr0i7j5j6",
+          "id": "jsdoc-1774846161974-vhile54xea",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberFilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/files/RedditcloneMemberFilesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846161975-g46citjnj9p",
           "autoFixable": false
         },
         {
@@ -3606,7 +3570,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/comments/RedditcloneMemberCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466293-fll338rsrrc",
+          "id": "jsdoc-1774846161974-zmuiesk1qn",
           "autoFixable": false
         },
         {
@@ -3618,43 +3582,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/RedditcloneMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466293-ac29fy5ianc",
+          "id": "jsdoc-1774846161975-boooixpm899",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneAuthGuestController\" missing JSDoc",
+          "message": "Class \"RedditclonePostsVotesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/auth/guest/RedditcloneAuthGuestController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/posts/votes/RedditclonePostsVotesController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845466294-jwdrb2avbim",
+          "id": "jsdoc-1774846161975-v25zx5e9nu8",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneAuthMemberController\" missing JSDoc",
+          "message": "Class \"RedditcloneFilesThumbnailsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/auth/member/RedditcloneAuthMemberController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/files/thumbnails/RedditcloneFilesThumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845466294-i7ipo2f9ywd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneCommunitiesIconsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/communities/icons/RedditcloneCommunitiesIconsController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774845466294-rlxcluxjl9i",
+          "id": "jsdoc-1774846161975-wv2q0jtie1t",
           "autoFixable": false
         },
         {
@@ -3666,91 +3618,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/communities/moderators/RedditcloneCommunitiesModeratorsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466294-nbchmqfdgir",
+          "id": "jsdoc-1774846161976-od2d14rxcr",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneGuestUsersCommentsController\" missing JSDoc",
+          "message": "Class \"RedditcloneFilesScansController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/users/comments/RedditcloneGuestUsersCommentsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/files/scans/RedditcloneFilesScansController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774845466294-sg7af1kvqln",
+          "id": "jsdoc-1774846161976-5nr6jdobied",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneGuestUsersPostsController\" missing JSDoc",
+          "message": "Class \"RedditcloneCommunitiesIconsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/users/posts/RedditcloneGuestUsersPostsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/communities/icons/RedditcloneCommunitiesIconsController.ts",
+            "line": 8
           },
-          "id": "jsdoc-1774845466294-p8qehrbqme9",
+          "id": "jsdoc-1774846161976-5cmt3siuuza",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneGuestCommunitiesPostsController\" missing JSDoc",
+          "message": "Class \"RedditcloneAuthGuestController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/communities/posts/RedditcloneGuestCommunitiesPostsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/auth/guest/RedditcloneAuthGuestController.ts",
+            "line": 9
           },
-          "id": "jsdoc-1774845466294-vu933m4xai",
+          "id": "jsdoc-1774846161976-dp5t68hm359",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneGuestPostsCommentsController\" missing JSDoc",
+          "message": "Class \"RedditcloneAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/posts/comments/RedditcloneGuestPostsCommentsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/auth/member/RedditcloneAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774845466295-i8jvv3rds2d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneGuestPostsPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/posts/popular/RedditcloneGuestPostsPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845466295-1pb23nw7z72",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberReportsHistoryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/reports/history/RedditcloneMemberReportsHistoryController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845466295-vj8govim1d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberUsersPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/users/posts/RedditcloneMemberUsersPostsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845466295-2xbtk0hb9p9",
+          "id": "jsdoc-1774846161976-r8w2gczjnv",
           "autoFixable": false
         },
         {
@@ -3762,31 +3678,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/users/comments/RedditcloneMemberUsersCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466295-aot717l54d",
+          "id": "jsdoc-1774846161977-f1cuy93lcxh",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneMemberPostsPopularController\" missing JSDoc",
+          "message": "Class \"RedditcloneMemberUsersPostsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/popular/RedditcloneMemberPostsPopularController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/users/posts/RedditcloneMemberUsersPostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466295-8z926pz48o4",
+          "id": "jsdoc-1774846161977-i4qrcwu6rv",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditcloneMemberPostsHomeController\" missing JSDoc",
+          "message": "Class \"RedditcloneMemberReportsHistoryController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/home/RedditcloneMemberPostsHomeController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/reports/history/RedditcloneMemberReportsHistoryController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466295-a56n1pcrwgn",
+          "id": "jsdoc-1774846161977-tvdzc5jj1s",
           "autoFixable": false
         },
         {
@@ -3798,7 +3714,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/votes/RedditcloneMemberPostsVotesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466296-vrqykfgmoyk",
+          "id": "jsdoc-1774846161977-cwagm1fmzc8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberPostsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/popular/RedditcloneMemberPostsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161977-kzzoh2ubeo",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberPostsHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/home/RedditcloneMemberPostsHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161978-gipf096qyx",
           "autoFixable": false
         },
         {
@@ -3810,7 +3750,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/posts/comments/RedditcloneMemberPostsCommentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466296-ef59eupv9zb",
+          "id": "jsdoc-1774846161978-gbp6jh5wtle",
           "autoFixable": false
         },
         {
@@ -3822,7 +3762,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/members/sessions/RedditcloneMemberMembersSessionsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845466296-amajd96je5h",
+          "id": "jsdoc-1774846161978-ezstq58b0kp",
           "autoFixable": false
         },
         {
@@ -3834,19 +3774,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/reports/RedditcloneMemberCommunitiesReportsController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774845466298-qaonxblfzmo",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditcloneMemberCommunitiesModeratorsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/moderators/RedditcloneMemberCommunitiesModeratorsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845466297-xkw5hq5k0y",
+          "id": "jsdoc-1774846161980-icx62tj9hd",
           "autoFixable": false
         },
         {
@@ -3858,7 +3786,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/posts/RedditcloneMemberCommunitiesPostsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466297-qoheco74f4i",
+          "id": "jsdoc-1774846161982-pkbkx6jf2ko",
           "autoFixable": false
         },
         {
@@ -3870,7 +3798,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/bans/RedditcloneMemberCommunitiesBansController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845466296-qkyjizj8qwb",
+          "id": "jsdoc-1774846161979-nbk3ymk5hvn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneGuestCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/communities/posts/RedditcloneGuestCommunitiesPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161978-1dpwaln7iab",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneGuestPostsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/posts/popular/RedditcloneGuestPostsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161979-too8t5b5rbi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/moderators/RedditcloneMemberCommunitiesModeratorsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846161980-2anegog89vj",
           "autoFixable": false
         },
         {
@@ -3882,7 +3846,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/icons/RedditcloneMemberCommunitiesIconsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845466297-mumznuomr5",
+          "id": "jsdoc-1774846161981-cdhq8hqyzii",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneGuestPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/posts/comments/RedditcloneGuestPostsCommentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161980-s11c7dw199",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneGuestUsersPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/users/posts/RedditcloneGuestUsersPostsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161980-oahs63g151n",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditcloneGuestUsersCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/guest/users/comments/RedditcloneGuestUsersCommentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846161982-ovdlnwhytsi",
           "autoFixable": false
         },
         {
@@ -3894,7 +3894,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/members/sessions/all/RedditcloneMemberMembersSessionsAllController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845466298-5t70mi441bf",
+          "id": "jsdoc-1774846161983-skdsdljxua",
           "autoFixable": false
         },
         {
@@ -3906,7 +3906,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/reddit/src/controllers/redditClone/member/communities/users/search/RedditcloneMemberCommunitiesUsersController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845466298-i0t2snhyd0s",
+          "id": "jsdoc-1774846161984-1m5upeppmhp",
           "autoFixable": false
         }
       ]
@@ -3925,7 +3925,7 @@
             "file": "src/api/structures/IRedditCloneReport.ts",
             "line": 244
           },
-          "id": "completeness-1774845466311-04p8qrweytw9",
+          "id": "completeness-1774846162003-hlkzvhitol",
           "autoFixable": false
         },
         {
@@ -3937,7 +3937,7 @@
             "file": "src/api/structures/IRedditClonePostTextContent.ts",
             "line": 123
           },
-          "id": "completeness-1774845466311-sgmp5xatthc",
+          "id": "completeness-1774846162004-fqvjqddsgvc",
           "autoFixable": false
         },
         {
@@ -3949,7 +3949,7 @@
             "file": "src/api/structures/IRedditClonePostTextContent.ts",
             "line": 131
           },
-          "id": "completeness-1774845466311-l64t0tstr0e",
+          "id": "completeness-1774846162004-n7rv4v82ps",
           "autoFixable": false
         },
         {
@@ -3961,7 +3961,7 @@
             "file": "src/api/structures/IRedditCloneModeratorSnapshot.ts",
             "line": 30
           },
-          "id": "completeness-1774845466312-dlxmhi5u63d",
+          "id": "completeness-1774846162003-iievb1x52qj",
           "autoFixable": false
         },
         {
@@ -3973,7 +3973,7 @@
             "file": "src/api/structures/IRedditCloneModeratorSnapshot.ts",
             "line": 38
           },
-          "id": "completeness-1774845466312-nefyfjwkca",
+          "id": "completeness-1774846162003-erx01auznip",
           "autoFixable": false
         },
         {
@@ -3985,7 +3985,7 @@
             "file": "src/api/structures/IRedditCloneModeratorSnapshot.ts",
             "line": 46
           },
-          "id": "completeness-1774845466312-q0m0wjdhwbg",
+          "id": "completeness-1774846162003-k4mxi2ar5da",
           "autoFixable": false
         },
         {
@@ -3997,7 +3997,7 @@
             "file": "src/api/structures/IRedditCloneFileThumbnail.ts",
             "line": 69
           },
-          "id": "completeness-1774845466310-a9h61u5bxx",
+          "id": "completeness-1774846162004-e35jnosjoak",
           "autoFixable": false
         },
         {
@@ -4009,7 +4009,7 @@
             "file": "src/api/structures/IRedditCloneFileScan.ts",
             "line": 77
           },
-          "id": "completeness-1774845466311-nqnjy3vf8zq",
+          "id": "completeness-1774846162003-h3j09c90b6k",
           "autoFixable": false
         },
         {
@@ -4021,7 +4021,7 @@
             "file": "src/api/structures/IRedditCloneCommunityBan.ts",
             "line": 69
           },
-          "id": "completeness-1774845466312-syak0rcih3q",
+          "id": "completeness-1774846162003-j1g4mlkhelo",
           "autoFixable": false
         }
       ]
@@ -4044,7 +4044,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845465842-370lx0uu7kr",
+      "id": "type-error-1774846161571-crtbszi9g7i",
       "autoFixable": false
     },
     {
@@ -4056,7 +4056,7 @@
         "file": "src/controllers/redditClone/communities/icons/RedditcloneCommunitiesIconsController.ts",
         "line": 2460
       },
-      "id": "type-error-1774845465842-ib7mk2ttvj",
+      "id": "type-error-1774846161571-bc8cuzbvf28",
       "autoFixable": false
     },
     {
@@ -4068,7 +4068,7 @@
         "file": "src/providers/deleteRedditCloneMemberFilesFileId.ts",
         "line": 1283
       },
-      "id": "type-error-1774845465842-psdmgqwf3c",
+      "id": "type-error-1774846161571-9ix0wqze99g",
       "autoFixable": false
     },
     {
@@ -4080,7 +4080,7 @@
         "file": "src/providers/deleteRedditCloneMemberPostsPostId.ts",
         "line": 1558
       },
-      "id": "type-error-1774845465842-0hlqrvv4laa9",
+      "id": "type-error-1774846161571-uex973uufa",
       "autoFixable": false
     },
     {
@@ -4092,7 +4092,7 @@
         "file": "src/providers/getRedditCloneMemberMembersSessions.ts",
         "line": 2472
       },
-      "id": "type-error-1774845465842-td3r2t5ffv8",
+      "id": "type-error-1774846161571-stbm7k9u6y",
       "autoFixable": false
     },
     {
@@ -4104,7 +4104,7 @@
         "file": "src/providers/getRedditCloneMemberMembersSessionsSessionId.ts",
         "line": 4737
       },
-      "id": "type-error-1774845465842-9x5k6ghwgt8",
+      "id": "type-error-1774846161571-kueckuwszff",
       "autoFixable": false
     },
     {
@@ -4116,7 +4116,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7411
       },
-      "id": "type-error-1774845465842-nune96hfszm",
+      "id": "type-error-1774846161571-lkbxgvel39s",
       "autoFixable": false
     },
     {
@@ -4128,7 +4128,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7484
       },
-      "id": "type-error-1774845465842-xihyhh41y2",
+      "id": "type-error-1774846161571-q1wl4mds5v",
       "autoFixable": false
     },
     {
@@ -4140,7 +4140,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7551
       },
-      "id": "type-error-1774845465842-lmhnijcyb7",
+      "id": "type-error-1774846161571-ip7nkzd51d",
       "autoFixable": false
     },
     {
@@ -4152,7 +4152,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7627
       },
-      "id": "type-error-1774845465842-5jsdwe19hrv",
+      "id": "type-error-1774846161571-f4fuagvtixo",
       "autoFixable": false
     },
     {
@@ -4164,7 +4164,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7716
       },
-      "id": "type-error-1774845465842-st6o67lynl",
+      "id": "type-error-1774846161571-egrxxvf1no",
       "autoFixable": false
     },
     {
@@ -4176,7 +4176,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7818
       },
-      "id": "type-error-1774845465842-qtf4uk8d4bc",
+      "id": "type-error-1774846161571-0arkjrag7ren",
       "autoFixable": false
     },
     {
@@ -4188,7 +4188,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 7920
       },
-      "id": "type-error-1774845465842-ldq6pr9nhvr",
+      "id": "type-error-1774846161571-7kxflzuwxow",
       "autoFixable": false
     },
     {
@@ -4200,7 +4200,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8015
       },
-      "id": "type-error-1774845465842-i6z0x92m6z",
+      "id": "type-error-1774846161571-orfpcdjrad",
       "autoFixable": false
     },
     {
@@ -4212,7 +4212,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8062
       },
-      "id": "type-error-1774845465842-kxruq11ci4k",
+      "id": "type-error-1774846161571-t828oqnmw4",
       "autoFixable": false
     },
     {
@@ -4224,7 +4224,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8102
       },
-      "id": "type-error-1774845465842-0r15br1h8n8",
+      "id": "type-error-1774846161571-n0f5hy4cilo",
       "autoFixable": false
     },
     {
@@ -4236,7 +4236,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8149
       },
-      "id": "type-error-1774845465842-uv6vbfna4o",
+      "id": "type-error-1774846161571-cfkyvul9v3k",
       "autoFixable": false
     },
     {
@@ -4248,7 +4248,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8181
       },
-      "id": "type-error-1774845465842-blf82gubd7u",
+      "id": "type-error-1774846161571-5mnezh2bqkf",
       "autoFixable": false
     },
     {
@@ -4260,7 +4260,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8228
       },
-      "id": "type-error-1774845465842-bss8ouy2rs9",
+      "id": "type-error-1774846161571-03m7kpezdwlm",
       "autoFixable": false
     },
     {
@@ -4272,7 +4272,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8258
       },
-      "id": "type-error-1774845465842-ivg3o8oq5zj",
+      "id": "type-error-1774846161571-bueozncddxf",
       "autoFixable": false
     },
     {
@@ -4284,7 +4284,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8350
       },
-      "id": "type-error-1774845465842-34kghwhps3a",
+      "id": "type-error-1774846161571-gcxa9uep9hl",
       "autoFixable": false
     },
     {
@@ -4296,7 +4296,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8397
       },
-      "id": "type-error-1774845465842-wohde438ks",
+      "id": "type-error-1774846161571-6nui7bpydue",
       "autoFixable": false
     },
     {
@@ -4308,7 +4308,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8464
       },
-      "id": "type-error-1774845465842-4wmey30ynor",
+      "id": "type-error-1774846161571-fxhi441exo6",
       "autoFixable": false
     },
     {
@@ -4320,7 +4320,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8564
       },
-      "id": "type-error-1774845465842-pptvlxegzb",
+      "id": "type-error-1774846161571-7a173v2w4v9",
       "autoFixable": false
     },
     {
@@ -4332,7 +4332,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8691
       },
-      "id": "type-error-1774845465842-h7y1s179vro",
+      "id": "type-error-1774846161571-1q7068e5hpy",
       "autoFixable": false
     },
     {
@@ -4344,7 +4344,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8816
       },
-      "id": "type-error-1774845465842-zirjn7rgtug",
+      "id": "type-error-1774846161571-ack3gypd2p9",
       "autoFixable": false
     },
     {
@@ -4356,7 +4356,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 8961
       },
-      "id": "type-error-1774845465842-0zdq7uh5zwz",
+      "id": "type-error-1774846161571-a9gfgdusjx8",
       "autoFixable": false
     },
     {
@@ -4368,7 +4368,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9096
       },
-      "id": "type-error-1774845465842-tob22vy435",
+      "id": "type-error-1774846161571-sr5gc6ss0j",
       "autoFixable": false
     },
     {
@@ -4380,7 +4380,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9234
       },
-      "id": "type-error-1774845465842-jey89jcqxl8",
+      "id": "type-error-1774846161571-2f3a9zqgnii",
       "autoFixable": false
     },
     {
@@ -4392,7 +4392,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9512
       },
-      "id": "type-error-1774845465842-mz2mpio5h2",
+      "id": "type-error-1774846161571-47xc95euwr",
       "autoFixable": false
     },
     {
@@ -4404,7 +4404,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9602
       },
-      "id": "type-error-1774845465842-wjkp9do2ows",
+      "id": "type-error-1774846161571-oxglp5wbffs",
       "autoFixable": false
     },
     {
@@ -4416,7 +4416,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9691
       },
-      "id": "type-error-1774845465842-3ve1mif0i0n",
+      "id": "type-error-1774846161571-z1fur0yw9li",
       "autoFixable": false
     },
     {
@@ -4428,7 +4428,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9789
       },
-      "id": "type-error-1774845465842-hua5xzkd6rg",
+      "id": "type-error-1774846161571-tst49yjw35a",
       "autoFixable": false
     },
     {
@@ -4440,7 +4440,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 9888
       },
-      "id": "type-error-1774845465842-jjs5bo3tewl",
+      "id": "type-error-1774846161571-cpfvcbkltib",
       "autoFixable": false
     },
     {
@@ -4452,7 +4452,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10000
       },
-      "id": "type-error-1774845465842-elct1hur6r",
+      "id": "type-error-1774846161571-j10j47x8ofq",
       "autoFixable": false
     },
     {
@@ -4464,7 +4464,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10112
       },
-      "id": "type-error-1774845465842-ewxi5h5mdbl",
+      "id": "type-error-1774846161571-nebq5bo8e69",
       "autoFixable": false
     },
     {
@@ -4476,7 +4476,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10217
       },
-      "id": "type-error-1774845465842-lgiiitgiw2",
+      "id": "type-error-1774846161571-29s56ingceb",
       "autoFixable": false
     },
     {
@@ -4488,7 +4488,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10291
       },
-      "id": "type-error-1774845465842-wqbv0nni6o",
+      "id": "type-error-1774846161571-x6o6yj79psg",
       "autoFixable": false
     },
     {
@@ -4500,7 +4500,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10345
       },
-      "id": "type-error-1774845465842-sznfvssyxp",
+      "id": "type-error-1774846161571-rm7nio1uuqr",
       "autoFixable": false
     },
     {
@@ -4512,7 +4512,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10402
       },
-      "id": "type-error-1774845465842-9jmbk39ta54",
+      "id": "type-error-1774846161571-7wqzn879ui2",
       "autoFixable": false
     },
     {
@@ -4524,7 +4524,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10448
       },
-      "id": "type-error-1774845465842-jpmma9t1mef",
+      "id": "type-error-1774846161571-tu6peem7l2q",
       "autoFixable": false
     },
     {
@@ -4536,7 +4536,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10505
       },
-      "id": "type-error-1774845465842-p8ixik2r7z",
+      "id": "type-error-1774846161571-ixqleepwwxc",
       "autoFixable": false
     },
     {
@@ -4548,7 +4548,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10549
       },
-      "id": "type-error-1774845465842-dh0jmw381q",
+      "id": "type-error-1774846161571-nf43e6k56r",
       "autoFixable": false
     },
     {
@@ -4560,7 +4560,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10651
       },
-      "id": "type-error-1774845465842-oauxuv137r",
+      "id": "type-error-1774846161571-oi3kwfid72",
       "autoFixable": false
     },
     {
@@ -4572,7 +4572,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10708
       },
-      "id": "type-error-1774845465842-1q0ruvyvaqa",
+      "id": "type-error-1774846161571-hg0mhcncidt",
       "autoFixable": false
     },
     {
@@ -4584,7 +4584,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10775
       },
-      "id": "type-error-1774845465842-mxc782ej3s",
+      "id": "type-error-1774846161571-l674s3cijq",
       "autoFixable": false
     },
     {
@@ -4596,7 +4596,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 10902
       },
-      "id": "type-error-1774845465842-tt7cmp3qpl",
+      "id": "type-error-1774846161571-svz06s2ycd",
       "autoFixable": false
     },
     {
@@ -4608,7 +4608,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 11039
       },
-      "id": "type-error-1774845465842-xm7jit9dr7",
+      "id": "type-error-1774846161571-a12h7g8yrbr",
       "autoFixable": false
     },
     {
@@ -4620,7 +4620,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 11174
       },
-      "id": "type-error-1774845465842-r2f2j6byg3b",
+      "id": "type-error-1774846161571-yakxin8pb",
       "autoFixable": false
     },
     {
@@ -4632,7 +4632,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 11329
       },
-      "id": "type-error-1774845465842-1bolxhktp0si",
+      "id": "type-error-1774846161571-p74hkqbav8s",
       "autoFixable": false
     },
     {
@@ -4644,7 +4644,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 11474
       },
-      "id": "type-error-1774845465842-1wltbjy2ds9",
+      "id": "type-error-1774846161571-gdxcbvvxfpu",
       "autoFixable": false
     },
     {
@@ -4656,7 +4656,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 11622
       },
-      "id": "type-error-1774845465842-b4h7s9w978w",
+      "id": "type-error-1774846161571-dov164qavbf",
       "autoFixable": false
     },
     {
@@ -4668,7 +4668,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 12441
       },
-      "id": "type-error-1774845465842-bkc3ikxrskv",
+      "id": "type-error-1774846161571-6tm1leycohh",
       "autoFixable": false
     },
     {
@@ -4680,7 +4680,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 12521
       },
-      "id": "type-error-1774845465842-hzcl5ns2ugt",
+      "id": "type-error-1774846161571-8f11aigsdjj",
       "autoFixable": false
     },
     {
@@ -4692,7 +4692,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 12570
       },
-      "id": "type-error-1774845465842-g6v9vb91nf8",
+      "id": "type-error-1774846161571-wa210cioo1i",
       "autoFixable": false
     },
     {
@@ -4704,7 +4704,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 13388
       },
-      "id": "type-error-1774845465842-q87p4k9h9ap",
+      "id": "type-error-1774846161571-1usi9m8jrovi",
       "autoFixable": false
     },
     {
@@ -4716,7 +4716,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 13494
       },
-      "id": "type-error-1774845465842-gn43hp5nzha",
+      "id": "type-error-1774846161571-g81sue89g5",
       "autoFixable": false
     },
     {
@@ -4728,7 +4728,7 @@
         "file": "src/providers/patchRedditCloneMemberPostsHome.ts",
         "line": 13555
       },
-      "id": "type-error-1774845465842-ttzxigtef4",
+      "id": "type-error-1774846161571-a4b7rpbm88m",
       "autoFixable": false
     },
     {
@@ -4740,7 +4740,7 @@
         "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
         "line": 1744
       },
-      "id": "type-error-1774845465842-ip8bwtep69p",
+      "id": "type-error-1774846161571-f07xj1ggu6",
       "autoFixable": false
     },
     {
@@ -4752,7 +4752,7 @@
         "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
         "line": 1839
       },
-      "id": "type-error-1774845465842-ce9tc3ysy3m",
+      "id": "type-error-1774846161571-pqe31y2bhyg",
       "autoFixable": false
     },
     {
@@ -4764,7 +4764,7 @@
         "file": "src/providers/patchRedditCloneMemberReportsHistory.ts",
         "line": 2250
       },
-      "id": "type-error-1774845465842-fcihypolx8",
+      "id": "type-error-1774846161571-ol9lwqfznso",
       "autoFixable": false
     },
     {
@@ -4776,7 +4776,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 7160
       },
-      "id": "type-error-1774845465842-f6eek9arnod",
+      "id": "type-error-1774846161571-lcf3qe3ueyg",
       "autoFixable": false
     },
     {
@@ -4788,7 +4788,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 7236
       },
-      "id": "type-error-1774845465842-zmsaa42vce",
+      "id": "type-error-1774846161571-4b4hzc62s5x",
       "autoFixable": false
     },
     {
@@ -4800,7 +4800,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 7281
       },
-      "id": "type-error-1774845465842-lbxx4gls9zm",
+      "id": "type-error-1774846161571-8g5gxgechsa",
       "autoFixable": false
     },
     {
@@ -4812,7 +4812,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 7968
       },
-      "id": "type-error-1774845465842-2gugrk2z83t",
+      "id": "type-error-1774846161571-pobg0mniig",
       "autoFixable": false
     },
     {
@@ -4824,7 +4824,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 8026
       },
-      "id": "type-error-1774845465842-t07hszs7w3g",
+      "id": "type-error-1774846161571-18qe37xvhyr",
       "autoFixable": false
     },
     {
@@ -4836,7 +4836,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 8208
       },
-      "id": "type-error-1774845465842-fwsb70hpgc",
+      "id": "type-error-1774846161571-ih4ioi33dxs",
       "autoFixable": false
     },
     {
@@ -4848,7 +4848,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 8779
       },
-      "id": "type-error-1774845465842-nc2krzc5dg",
+      "id": "type-error-1774846161571-vy6sqtzgbb",
       "autoFixable": false
     },
     {
@@ -4860,7 +4860,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 8940
       },
-      "id": "type-error-1774845465842-x3tvzcib2ls",
+      "id": "type-error-1774846161571-z5466by9qc",
       "autoFixable": false
     },
     {
@@ -4872,7 +4872,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 9044
       },
-      "id": "type-error-1774845465842-5y5wq887j5u",
+      "id": "type-error-1774846161571-g0gyq7husu",
       "autoFixable": false
     },
     {
@@ -4884,7 +4884,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 10044
       },
-      "id": "type-error-1774845465842-d2bcsoi035t",
+      "id": "type-error-1774846161571-6c96diystdx",
       "autoFixable": false
     },
     {
@@ -4896,7 +4896,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 10126
       },
-      "id": "type-error-1774845465842-m2rzbxpfihc",
+      "id": "type-error-1774846161571-dhenc2trq2",
       "autoFixable": false
     },
     {
@@ -4908,7 +4908,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 10177
       },
-      "id": "type-error-1774845465842-fchnxcy38aa",
+      "id": "type-error-1774846161571-u9e44hs175",
       "autoFixable": false
     },
     {
@@ -4920,7 +4920,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 11119
       },
-      "id": "type-error-1774845465842-glrmh9kgu28",
+      "id": "type-error-1774846161571-825oo5avxf",
       "autoFixable": false
     },
     {
@@ -4932,7 +4932,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 11259
       },
-      "id": "type-error-1774845465842-vtn00a4oajl",
+      "id": "type-error-1774846161571-xgbdzi1mxp",
       "autoFixable": false
     },
     {
@@ -4944,7 +4944,7 @@
         "file": "src/providers/patchRedditCloneMemberUsersUsernameComments.ts",
         "line": 11332
       },
-      "id": "type-error-1774845465842-urdjy144wkg",
+      "id": "type-error-1774846161571-82rum8sgtyl",
       "autoFixable": false
     },
     {
@@ -4956,7 +4956,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6126
       },
-      "id": "type-error-1774845465842-x1yzs4wlogc",
+      "id": "type-error-1774846161571-mhtd6tqwfbm",
       "autoFixable": false
     },
     {
@@ -4968,7 +4968,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6163
       },
-      "id": "type-error-1774845465842-qg6q5ddhr7",
+      "id": "type-error-1774846161571-gmqe5cc2qew",
       "autoFixable": false
     },
     {
@@ -4980,7 +4980,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6201
       },
-      "id": "type-error-1774845465842-gzn5oz0pe78",
+      "id": "type-error-1774846161571-ybhxdvw9w5",
       "autoFixable": false
     },
     {
@@ -4992,7 +4992,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6225
       },
-      "id": "type-error-1774845465842-zq0vgph7uug",
+      "id": "type-error-1774846161571-828wt4sf69g",
       "autoFixable": false
     },
     {
@@ -5004,7 +5004,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6233
       },
-      "id": "type-error-1774845465842-6jbfi2owaw3",
+      "id": "type-error-1774846161571-jsajtwcmn0d",
       "autoFixable": false
     },
     {
@@ -5016,7 +5016,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6294
       },
-      "id": "type-error-1774845465842-y4l0hdtvsp9",
+      "id": "type-error-1774846161571-hzwgtbj32xv",
       "autoFixable": false
     },
     {
@@ -5028,7 +5028,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6356
       },
-      "id": "type-error-1774845465842-zryna0r3msg",
+      "id": "type-error-1774846161571-c0jgzjcpmt4",
       "autoFixable": false
     },
     {
@@ -5040,7 +5040,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6427
       },
-      "id": "type-error-1774845465842-fyjmq6qtrqq",
+      "id": "type-error-1774846161571-o2p86kgi8he",
       "autoFixable": false
     },
     {
@@ -5052,7 +5052,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6511
       },
-      "id": "type-error-1774845465842-1hzlf63slmmh",
+      "id": "type-error-1774846161571-qtqrpdzdngg",
       "autoFixable": false
     },
     {
@@ -5064,7 +5064,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6608
       },
-      "id": "type-error-1774845465842-jlme7rsgco",
+      "id": "type-error-1774846161571-mobls6jybp",
       "autoFixable": false
     },
     {
@@ -5076,7 +5076,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6705
       },
-      "id": "type-error-1774845465842-w9mmgpbuars",
+      "id": "type-error-1774846161571-fwk30dxcm9n",
       "autoFixable": false
     },
     {
@@ -5088,7 +5088,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6795
       },
-      "id": "type-error-1774845465842-ktwcu70zkh",
+      "id": "type-error-1774846161571-r30omjcljo",
       "autoFixable": false
     },
     {
@@ -5100,7 +5100,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6878
       },
-      "id": "type-error-1774845465842-y2lcgt6i9mf",
+      "id": "type-error-1774846161571-56i2qcssxm2",
       "autoFixable": false
     },
     {
@@ -5112,7 +5112,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 6953
       },
-      "id": "type-error-1774845465842-svewvi4subr",
+      "id": "type-error-1774846161571-uu4bxyyqppc",
       "autoFixable": false
     },
     {
@@ -5124,7 +5124,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7026
       },
-      "id": "type-error-1774845465842-ydpb57e1ih9",
+      "id": "type-error-1774846161571-fjxgz86od5f",
       "autoFixable": false
     },
     {
@@ -5136,7 +5136,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7113
       },
-      "id": "type-error-1774845465842-6alw98tu7u",
+      "id": "type-error-1774846161571-anvsxjkvk2k",
       "autoFixable": false
     },
     {
@@ -5148,7 +5148,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7223
       },
-      "id": "type-error-1774845465842-q18h25jsrqk",
+      "id": "type-error-1774846161571-cx37j6mimvu",
       "autoFixable": false
     },
     {
@@ -5160,7 +5160,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7318
       },
-      "id": "type-error-1774845465842-la4ho292y7f",
+      "id": "type-error-1774846161571-w6xl8iqjfsb",
       "autoFixable": false
     },
     {
@@ -5172,7 +5172,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7421
       },
-      "id": "type-error-1774845465842-ex7y4h3pa88",
+      "id": "type-error-1774846161571-ptjryea1m4",
       "autoFixable": false
     },
     {
@@ -5184,7 +5184,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7543
       },
-      "id": "type-error-1774845465842-1fu7d8sj0ts",
+      "id": "type-error-1774846161571-8u57xdpvsw",
       "autoFixable": false
     },
     {
@@ -5196,7 +5196,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7673
       },
-      "id": "type-error-1774845465842-mtwq53n3t4m",
+      "id": "type-error-1774846161571-pw0wqqz8wbd",
       "autoFixable": false
     },
     {
@@ -5208,7 +5208,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 7788
       },
-      "id": "type-error-1774845465842-mrda4d30lv",
+      "id": "type-error-1774846161571-7tc8tpe89op",
       "autoFixable": false
     },
     {
@@ -5220,7 +5220,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8055
       },
-      "id": "type-error-1774845465842-jcz65ot1wvl",
+      "id": "type-error-1774846161571-bwkp1klsg7o",
       "autoFixable": false
     },
     {
@@ -5232,7 +5232,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8105
       },
-      "id": "type-error-1774845465842-r5gjbkpjdz",
+      "id": "type-error-1774846161571-gnd1fs2q7bf",
       "autoFixable": false
     },
     {
@@ -5244,7 +5244,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8158
       },
-      "id": "type-error-1774845465842-8p6woydy5i5",
+      "id": "type-error-1774846161571-layo8eyb6",
       "autoFixable": false
     },
     {
@@ -5256,7 +5256,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8201
       },
-      "id": "type-error-1774845465842-17s9zripoqp",
+      "id": "type-error-1774846161571-y54i28yjae",
       "autoFixable": false
     },
     {
@@ -5268,7 +5268,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8252
       },
-      "id": "type-error-1774845465842-9l9mz52znhu",
+      "id": "type-error-1774846161571-kg2z56wjb9",
       "autoFixable": false
     },
     {
@@ -5280,7 +5280,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8321
       },
-      "id": "type-error-1774845465842-3uag0eho2s1",
+      "id": "type-error-1774846161571-yerdg69izi9",
       "autoFixable": false
     },
     {
@@ -5292,7 +5292,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8390
       },
-      "id": "type-error-1774845465842-0p2e40zillvj",
+      "id": "type-error-1774846161571-uf7a8ie5iqe",
       "autoFixable": false
     },
     {
@@ -5304,7 +5304,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8468
       },
-      "id": "type-error-1774845465842-bp1b3mc5oyd",
+      "id": "type-error-1774846161571-bma4412z82p",
       "autoFixable": false
     },
     {
@@ -5316,7 +5316,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8563
       },
-      "id": "type-error-1774845465842-ousxxvf5ywl",
+      "id": "type-error-1774846161571-o26mjvqjcs",
       "autoFixable": false
     },
     {
@@ -5328,7 +5328,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8616
       },
-      "id": "type-error-1774845465842-g590cd58gad",
+      "id": "type-error-1774846161571-wj1szbt8qkq",
       "autoFixable": false
     },
     {
@@ -5340,7 +5340,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8678
       },
-      "id": "type-error-1774845465842-9anworqm0b9",
+      "id": "type-error-1774846161571-ms0emau6h7r",
       "autoFixable": false
     },
     {
@@ -5352,7 +5352,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8752
       },
-      "id": "type-error-1774845465842-dq8ipbjxn5h",
+      "id": "type-error-1774846161571-fv73z7r1i7m",
       "autoFixable": false
     },
     {
@@ -5364,7 +5364,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8825
       },
-      "id": "type-error-1774845465842-twpquw6nwjm",
+      "id": "type-error-1774846161571-cqxrr2dpfsg",
       "autoFixable": false
     },
     {
@@ -5376,7 +5376,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8921
       },
-      "id": "type-error-1774845465842-ohsh5rkr65h",
+      "id": "type-error-1774846161571-ewrmnpkzsrt",
       "autoFixable": false
     },
     {
@@ -5388,7 +5388,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 8986
       },
-      "id": "type-error-1774845465842-ac9jl9426j",
+      "id": "type-error-1774846161571-atot47ebk8i",
       "autoFixable": false
     },
     {
@@ -5400,7 +5400,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9075
       },
-      "id": "type-error-1774845465842-5rth4wcb9qy",
+      "id": "type-error-1774846161571-z2qsri6ktt",
       "autoFixable": false
     },
     {
@@ -5412,7 +5412,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9183
       },
-      "id": "type-error-1774845465842-wwtizroyj2m",
+      "id": "type-error-1774846161571-pl7yz4q1olm",
       "autoFixable": false
     },
     {
@@ -5424,7 +5424,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9280
       },
-      "id": "type-error-1774845465842-y38tc53z01t",
+      "id": "type-error-1774846161571-jhetx1zp9ma",
       "autoFixable": false
     },
     {
@@ -5436,7 +5436,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9360
       },
-      "id": "type-error-1774845465842-8j54zkg5tep",
+      "id": "type-error-1774846161571-mvahyouu2d",
       "autoFixable": false
     },
     {
@@ -5448,7 +5448,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9495
       },
-      "id": "type-error-1774845465842-udxm1v32bjl",
+      "id": "type-error-1774846161571-f2qa6cl4jl7",
       "autoFixable": false
     },
     {
@@ -5460,7 +5460,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9553
       },
-      "id": "type-error-1774845465842-jhcoh0fnpo",
+      "id": "type-error-1774846161571-hufh790ng4i",
       "autoFixable": false
     },
     {
@@ -5472,7 +5472,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9633
       },
-      "id": "type-error-1774845465842-e09m517dk0i",
+      "id": "type-error-1774846161571-ysa1vacizdl",
       "autoFixable": false
     },
     {
@@ -5484,7 +5484,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9732
       },
-      "id": "type-error-1774845465842-8md98n0emap",
+      "id": "type-error-1774846161571-lw2ryvm7jxo",
       "autoFixable": false
     },
     {
@@ -5496,7 +5496,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9820
       },
-      "id": "type-error-1774845465842-dkx94eitxz9",
+      "id": "type-error-1774846161571-yuhm1krot6d",
       "autoFixable": false
     },
     {
@@ -5508,7 +5508,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 9893
       },
-      "id": "type-error-1774845465842-pq59k36zqx",
+      "id": "type-error-1774846161571-6aicy2zh0ck",
       "autoFixable": false
     },
     {
@@ -5520,7 +5520,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10002
       },
-      "id": "type-error-1774845465842-09c27p4o405n",
+      "id": "type-error-1774846161571-syimhtdwqij",
       "autoFixable": false
     },
     {
@@ -5532,7 +5532,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10056
       },
-      "id": "type-error-1774845465842-ubybm4qk2x",
+      "id": "type-error-1774846161571-a1jfswtqndk",
       "autoFixable": false
     },
     {
@@ -5544,7 +5544,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10118
       },
-      "id": "type-error-1774845465842-pzgbv5ri3g",
+      "id": "type-error-1774846161571-9hrwc7lque",
       "autoFixable": false
     },
     {
@@ -5556,7 +5556,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10213
       },
-      "id": "type-error-1774845465842-ijsiik2bz1f",
+      "id": "type-error-1774846161571-352bomweh6o",
       "autoFixable": false
     },
     {
@@ -5568,7 +5568,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10281
       },
-      "id": "type-error-1774845465842-24a3cb7cp9x",
+      "id": "type-error-1774846161571-914v9yewmtj",
       "autoFixable": false
     },
     {
@@ -5580,7 +5580,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 10350
       },
-      "id": "type-error-1774845465842-ikq73scv0r",
+      "id": "type-error-1774846161571-mij8kni1glp",
       "autoFixable": false
     },
     {
@@ -5592,7 +5592,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11064
       },
-      "id": "type-error-1774845465842-vwysykejy7",
+      "id": "type-error-1774846161571-d6ystjlfq4l",
       "autoFixable": false
     },
     {
@@ -5604,7 +5604,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11113
       },
-      "id": "type-error-1774845465842-850re3hb6ka",
+      "id": "type-error-1774846161571-dnwprcexqao",
       "autoFixable": false
     },
     {
@@ -5616,7 +5616,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11163
       },
-      "id": "type-error-1774845465842-ggsdmqdks1d",
+      "id": "type-error-1774846161571-p0x6m2m61zi",
       "autoFixable": false
     },
     {
@@ -5628,7 +5628,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11416
       },
-      "id": "type-error-1774845465842-rv3okks9h9a",
+      "id": "type-error-1774846161571-9m1d4nsi3pj",
       "autoFixable": false
     },
     {
@@ -5640,7 +5640,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11463
       },
-      "id": "type-error-1774845465842-xb8d866fbjd",
+      "id": "type-error-1774846161571-m3rnofqt8hf",
       "autoFixable": false
     },
     {
@@ -5652,7 +5652,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11511
       },
-      "id": "type-error-1774845465842-dfnlnxjyap6",
+      "id": "type-error-1774846161571-v5ewemnld7",
       "autoFixable": false
     },
     {
@@ -5664,7 +5664,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11743
       },
-      "id": "type-error-1774845465842-5hc3yvwm0ea",
+      "id": "type-error-1774846161571-pp4yoxj20dn",
       "autoFixable": false
     },
     {
@@ -5676,7 +5676,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11790
       },
-      "id": "type-error-1774845465842-o6e78tcl7gj",
+      "id": "type-error-1774846161571-xxjtp20vl79",
       "autoFixable": false
     },
     {
@@ -5688,7 +5688,7 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 11838
       },
-      "id": "type-error-1774845465842-2k8td099tk3",
+      "id": "type-error-1774846161571-071ncr0ctiim",
       "autoFixable": false
     },
     {
@@ -5700,7 +5700,7 @@
         "file": "src/providers/putRedditCloneMemberPostsPostIdVotesVoteId.ts",
         "line": 3032
       },
-      "id": "type-error-1774845465842-wdu9yieyexi",
+      "id": "type-error-1774846161571-8euphtmvh8x",
       "autoFixable": false
     },
     {
@@ -5712,7 +5712,7 @@
         "file": "src/transformers/RedditCloneCommunityBanTransformer.ts",
         "line": 2660
       },
-      "id": "type-error-1774845465842-6ar1hcpwns4",
+      "id": "type-error-1774846161571-ju37b2m7n7",
       "autoFixable": false
     },
     {
@@ -5724,7 +5724,7 @@
         "file": "src/transformers/RedditCloneFileAssociationAtSummaryTransformer.ts",
         "line": 3630
       },
-      "id": "type-error-1774845465842-eh9lhgfd7gv",
+      "id": "type-error-1774846161571-r29ce8ogdh",
       "autoFixable": false
     },
     {
@@ -5736,7 +5736,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 5648
       },
-      "id": "type-error-1774845465842-hi4w4oejun",
+      "id": "type-error-1774846161571-tijjo6ciugt",
       "autoFixable": false
     },
     {
@@ -5748,7 +5748,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 5781
       },
-      "id": "type-error-1774845465842-v8ff5uj5sm",
+      "id": "type-error-1774846161571-xeuqn4sola",
       "autoFixable": false
     },
     {
@@ -5760,7 +5760,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 5907
       },
-      "id": "type-error-1774845465842-vcnzwg436pn",
+      "id": "type-error-1774846161571-cxy65ztfloh",
       "autoFixable": false
     },
     {
@@ -5772,7 +5772,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6069
       },
-      "id": "type-error-1774845465842-rowtd7p1vud",
+      "id": "type-error-1774846161571-rhdxwl9uw",
       "autoFixable": false
     },
     {
@@ -5784,7 +5784,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6223
       },
-      "id": "type-error-1774845465842-emylrh90skg",
+      "id": "type-error-1774846161571-xlsyhsh1ke",
       "autoFixable": false
     },
     {
@@ -5796,7 +5796,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6375
       },
-      "id": "type-error-1774845465842-0zuu5ae7807j",
+      "id": "type-error-1774846161571-y2gaprg77vh",
       "autoFixable": false
     },
     {
@@ -5808,7 +5808,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6544
       },
-      "id": "type-error-1774845465842-re5m1aa6n57",
+      "id": "type-error-1774846161571-3myl8eg8jkf",
       "autoFixable": false
     },
     {
@@ -5820,7 +5820,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6727
       },
-      "id": "type-error-1774845465842-hcmwh9contw",
+      "id": "type-error-1774846161571-zdslycwwlm",
       "autoFixable": false
     },
     {
@@ -5832,7 +5832,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 6887
       },
-      "id": "type-error-1774845465842-p4dvz3mbqzi",
+      "id": "type-error-1774846161571-h5kefpmwsb9",
       "autoFixable": false
     },
     {
@@ -5844,7 +5844,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 7061
       },
-      "id": "type-error-1774845465842-4us6o2ynp96",
+      "id": "type-error-1774846161571-9n2ka1wmwj",
       "autoFixable": false
     },
     {
@@ -5856,7 +5856,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtInvertTransformer.ts",
         "line": 7260
       },
-      "id": "type-error-1774845465842-gdgd78eq22h",
+      "id": "type-error-1774846161571-8i63jccsqoc",
       "autoFixable": false
     },
     {
@@ -5868,7 +5868,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 3434
       },
-      "id": "type-error-1774845465842-1f966ydnqaf",
+      "id": "type-error-1774846161571-i5jlp6zmkwn",
       "autoFixable": false
     },
     {
@@ -5880,7 +5880,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4256
       },
-      "id": "type-error-1774845465842-a4lusrmm1v4",
+      "id": "type-error-1774846161571-wzlzfl4562",
       "autoFixable": false
     },
     {
@@ -5892,7 +5892,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4397
       },
-      "id": "type-error-1774845465842-qjaul8s32yk",
+      "id": "type-error-1774846161571-aar7dd3uf2s",
       "autoFixable": false
     },
     {
@@ -5904,7 +5904,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4547
       },
-      "id": "type-error-1774845465842-x3bnm797kk",
+      "id": "type-error-1774846161571-g8h1pdbuy3l",
       "autoFixable": false
     },
     {
@@ -5916,7 +5916,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4689
       },
-      "id": "type-error-1774845465842-ddlj67jw7h",
+      "id": "type-error-1774846161571-12rbi4amu0e",
       "autoFixable": false
     },
     {
@@ -5928,7 +5928,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4829
       },
-      "id": "type-error-1774845465842-uz0citi8ci",
+      "id": "type-error-1774846161571-sn8k507oyjj",
       "autoFixable": false
     },
     {
@@ -5940,7 +5940,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 4986
       },
-      "id": "type-error-1774845465842-d3pqw5fyxu",
+      "id": "type-error-1774846161571-ooyeaeu3a3",
       "autoFixable": false
     },
     {
@@ -5952,7 +5952,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 5158
       },
-      "id": "type-error-1774845465842-h99rbqr4hs9",
+      "id": "type-error-1774846161571-0t7uzhlrvjt",
       "autoFixable": false
     },
     {
@@ -5964,7 +5964,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 5306
       },
-      "id": "type-error-1774845465842-loreepwniki",
+      "id": "type-error-1774846161571-6ke9unb2rg",
       "autoFixable": false
     },
     {
@@ -5976,7 +5976,7 @@
         "file": "src/transformers/RedditCloneMemberSessionAtSummaryTransformer.ts",
         "line": 5481
       },
-      "id": "type-error-1774845465842-laxpcgofn3",
+      "id": "type-error-1774846161571-uedsvqaxqjk",
       "autoFixable": false
     },
     {
@@ -5988,7 +5988,7 @@
         "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
         "line": 3887
       },
-      "id": "type-error-1774845465842-13rnc6gooqpe",
+      "id": "type-error-1774846161571-m1jitqsoict",
       "autoFixable": false
     },
     {
@@ -6000,7 +6000,7 @@
         "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
         "line": 4067
       },
-      "id": "type-error-1774845465843-ob5fvp5oy3",
+      "id": "type-error-1774846161571-9zjoyny0tcr",
       "autoFixable": false
     },
     {
@@ -6012,7 +6012,7 @@
         "file": "src/transformers/RedditCloneMemberSessionTransformer.ts",
         "line": 4388
       },
-      "id": "type-error-1774845465843-ugtqyak5lwo",
+      "id": "type-error-1774846161571-267bof9q2gt",
       "autoFixable": false
     }
   ],
@@ -6026,7 +6026,7 @@
         "file": "src/providers/getRedditClonePostsPostIdVotesVoteId.ts",
         "line": 1858
       },
-      "id": "type-error-1774845465842-2hxkd1w8n4t",
+      "id": "type-error-1774846161571-s4u609960e",
       "autoFixable": false
     },
     {
@@ -6038,7 +6038,7 @@
         "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
         "line": 2735
       },
-      "id": "type-error-1774845465842-jkscs3bx18",
+      "id": "type-error-1774846161571-uobf471qarm",
       "autoFixable": false
     },
     {
@@ -6050,7 +6050,7 @@
         "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
         "line": 2873
       },
-      "id": "type-error-1774845465842-ebi2iu15g5",
+      "id": "type-error-1774846161571-tpp8d2w67y",
       "autoFixable": false
     },
     {
@@ -6062,7 +6062,7 @@
         "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
         "line": 3013
       },
-      "id": "type-error-1774845465842-adr7nroa8yk",
+      "id": "type-error-1774846161571-1xgp52t0f00i",
       "autoFixable": false
     },
     {
@@ -6074,7 +6074,7 @@
         "file": "src/providers/patchRedditCloneGuestPostsPopular.ts",
         "line": 3153
       },
-      "id": "type-error-1774845465842-ndb9h8l39zh",
+      "id": "type-error-1774846161571-we3id193ydf",
       "autoFixable": false
     },
     {
@@ -6086,7 +6086,7 @@
         "file": "src/providers/patchRedditCloneMemberCommunitiesCommunityName.ts",
         "line": 1920
       },
-      "id": "type-error-1774845465842-twou9w2g21",
+      "id": "type-error-1774846161571-10cnbjo7kj2m",
       "autoFixable": false
     },
     {
@@ -6098,7 +6098,7 @@
         "file": "src/providers/patchRedditCloneMemberCommunitiesCommunityName.ts",
         "line": 2154
       },
-      "id": "type-error-1774845465842-s96sed7mnn",
+      "id": "type-error-1774846161571-ycd6ujmb6q",
       "autoFixable": false
     },
     {
@@ -6110,13 +6110,13 @@
         "file": "src/providers/postRedditCloneAuthMemberLogin.ts",
         "line": 12382
       },
-      "id": "type-error-1774845465842-vjlqewq612j",
+      "id": "type-error-1774846161571-74qffe5uq7x",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:37:46.316Z",
-    "totalDurationMs": 7560,
+    "evaluatedAt": "2026-03-30T04:49:22.004Z",
+    "totalDurationMs": 7463,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 286
   },

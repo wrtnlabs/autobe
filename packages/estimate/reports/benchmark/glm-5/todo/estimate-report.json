@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774601217714-0lx36x0u4fm",
+          "id": "type-error-1774846558964-v018osajm9",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/decorators/MemberAuth.ts",
             "line": 189
           },
-          "id": "type-error-1774601217714-i0btafuni4",
+          "id": "type-error-1774846558964-ts08bt9ytcq",
           "autoFixable": false
         },
         {
@@ -43,11 +43,11 @@
             "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
             "line": 3658
           },
-          "id": "type-error-1774601217714-dhlldx5r3hw",
+          "id": "type-error-1774846558964-ouiivx0934",
           "autoFixable": false
         }
       ],
-      "durationMs": 2640,
+      "durationMs": 4629,
       "metrics": {
         "totalFiles": 84,
         "filesWithErrors": 0,
@@ -74,7 +74,7 @@
         "docFileCount": 6,
         "totalDocLength": 98673,
         "cached": true,
-        "originalDurationMs": 41
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -120,7 +120,7 @@
         "assertionTests": 56,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 14
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -140,7 +140,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 21
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -161,7 +161,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 20
+        "originalDurationMs": 0
       }
     }
   },
@@ -184,7 +184,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 110
           },
-          "id": "duplication-1774601217823-l1mumzxv9h",
+          "id": "duplication-1774846559079-z3f8yjpf3nq",
           "autoFixable": false
         },
         {
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 111
           },
-          "id": "duplication-1774601217823-m9begr78h1r",
+          "id": "duplication-1774846559079-tstah7bknhj",
           "autoFixable": false
         },
         {
@@ -208,7 +208,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 10
           },
-          "id": "duplication-1774601217823-chl48l16tk7",
+          "id": "duplication-1774846559079-edhhhe54jdu",
           "autoFixable": false
         },
         {
@@ -220,7 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppMemberTrashTodoIdRestore.ts",
             "line": 11
           },
-          "id": "duplication-1774601217823-jt02o8r4wak",
+          "id": "duplication-1774846559079-hl4j0j9gc6",
           "autoFixable": false
         },
         {
@@ -232,7 +232,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1774601217823-twiyl8wndm",
+          "id": "duplication-1774846559079-9gg7pqd4saa",
           "autoFixable": false
         },
         {
@@ -244,7 +244,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1774601217823-gfrdmlv64wi",
+          "id": "duplication-1774846559079-q7308h54x7o",
           "autoFixable": false
         },
         {
@@ -256,7 +256,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1774601217823-65585vxdy9l",
+          "id": "duplication-1774846559079-cl16jam8kl5",
           "autoFixable": false
         },
         {
@@ -268,7 +268,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1774601217823-ajnlkj0mi2c",
+          "id": "duplication-1774846559079-kiacv655pme",
           "autoFixable": false
         },
         {
@@ -280,7 +280,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1774601217823-7g5tuhkfzt3",
+          "id": "duplication-1774846559079-b6nu7s8plb4",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1774601217823-an267lb3cr",
+          "id": "duplication-1774846559079-g5boj27fwji",
           "autoFixable": false
         },
         {
@@ -304,7 +304,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 67
           },
-          "id": "duplication-1774601217823-yeke5nn9r",
+          "id": "duplication-1774846559079-epm0m5evtv",
           "autoFixable": false
         },
         {
@@ -316,7 +316,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 68
           },
-          "id": "duplication-1774601217823-jkg7csqbk3r",
+          "id": "duplication-1774846559079-g1mympxhcou",
           "autoFixable": false
         },
         {
@@ -328,7 +328,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 69
           },
-          "id": "duplication-1774601217823-wscd24osnjp",
+          "id": "duplication-1774846559079-dci2m7i9hk",
           "autoFixable": false
         },
         {
@@ -340,7 +340,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 70
           },
-          "id": "duplication-1774601217823-na6tymdzvkl",
+          "id": "duplication-1774846559079-wl4e57e93ql",
           "autoFixable": false
         },
         {
@@ -352,7 +352,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 71
           },
-          "id": "duplication-1774601217823-zvrzrnqmfsj",
+          "id": "duplication-1774846559079-nxy8cpgx5c",
           "autoFixable": false
         },
         {
@@ -364,7 +364,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 72
           },
-          "id": "duplication-1774601217823-9dxis6djnee",
+          "id": "duplication-1774846559079-x31giadi9fo",
           "autoFixable": false
         },
         {
@@ -376,7 +376,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 73
           },
-          "id": "duplication-1774601217823-o2aybi17m6",
+          "id": "duplication-1774846559079-ledqnpcbdib",
           "autoFixable": false
         },
         {
@@ -388,7 +388,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 74
           },
-          "id": "duplication-1774601217823-m3eh5iel58b",
+          "id": "duplication-1774846559079-2qseh7wzf82",
           "autoFixable": false
         },
         {
@@ -400,7 +400,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 75
           },
-          "id": "duplication-1774601217823-bugxuzq55nq",
+          "id": "duplication-1774846559079-wo5chk760ae",
           "autoFixable": false
         },
         {
@@ -412,7 +412,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/postPrivateTodoAppAuthMemberLogin.ts",
             "line": 76
           },
-          "id": "duplication-1774601217823-inklillglie",
+          "id": "duplication-1774846559079-pkpga8si81h",
           "autoFixable": false
         },
         {
@@ -424,7 +424,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 11
           },
-          "id": "duplication-1774601217823-ri66z6tjcce",
+          "id": "duplication-1774846559079-431re9780te",
           "autoFixable": false
         },
         {
@@ -436,7 +436,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 12
           },
-          "id": "duplication-1774601217823-p0e1x34h4g",
+          "id": "duplication-1774846559079-gvgg4093kf",
           "autoFixable": false
         },
         {
@@ -448,7 +448,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 13
           },
-          "id": "duplication-1774601217823-svxgn6ejeu",
+          "id": "duplication-1774846559079-lajs32ghog",
           "autoFixable": false
         },
         {
@@ -460,7 +460,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 14
           },
-          "id": "duplication-1774601217823-g1v9wciq0ak",
+          "id": "duplication-1774846559079-3zins5xeu1u",
           "autoFixable": false
         },
         {
@@ -472,7 +472,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 15
           },
-          "id": "duplication-1774601217823-okfgeqqfwx",
+          "id": "duplication-1774846559079-ahzuoffw18n",
           "autoFixable": false
         },
         {
@@ -484,7 +484,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 52
           },
-          "id": "duplication-1774601217823-yj1sfleo9p",
+          "id": "duplication-1774846559079-boriuj5ky09",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 53
           },
-          "id": "duplication-1774601217823-eci6mywzoqd",
+          "id": "duplication-1774846559079-5ndfpqvyhzt",
           "autoFixable": false
         },
         {
@@ -508,7 +508,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 54
           },
-          "id": "duplication-1774601217823-25s6tiyz8tt",
+          "id": "duplication-1774846559079-bct57axxv09",
           "autoFixable": false
         },
         {
@@ -520,7 +520,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 55
           },
-          "id": "duplication-1774601217823-mja1858h1do",
+          "id": "duplication-1774846559079-itrhaxich5c",
           "autoFixable": false
         },
         {
@@ -532,7 +532,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 56
           },
-          "id": "duplication-1774601217823-9afwnc9tnzg",
+          "id": "duplication-1774846559079-sdxy84pkl1s",
           "autoFixable": false
         },
         {
@@ -544,7 +544,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 57
           },
-          "id": "duplication-1774601217823-aky3knj67jd",
+          "id": "duplication-1774846559079-9rjp9uzhcai",
           "autoFixable": false
         },
         {
@@ -556,7 +556,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 58
           },
-          "id": "duplication-1774601217823-z6kbk9s96q",
+          "id": "duplication-1774846559079-hgzd6tfq1g",
           "autoFixable": false
         },
         {
@@ -568,7 +568,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 59
           },
-          "id": "duplication-1774601217823-0xtkkxd9feii",
+          "id": "duplication-1774846559079-udsasl9r0sk",
           "autoFixable": false
         },
         {
@@ -580,7 +580,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 60
           },
-          "id": "duplication-1774601217823-o8wof0qkzlj",
+          "id": "duplication-1774846559079-xoc45ykyrxb",
           "autoFixable": false
         },
         {
@@ -592,7 +592,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 61
           },
-          "id": "duplication-1774601217823-5k48875ddjx",
+          "id": "duplication-1774846559079-uav4x8je9vs",
           "autoFixable": false
         },
         {
@@ -604,7 +604,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 62
           },
-          "id": "duplication-1774601217823-z5amlupq1pc",
+          "id": "duplication-1774846559079-wimwbqz9i6j",
           "autoFixable": false
         },
         {
@@ -616,7 +616,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 63
           },
-          "id": "duplication-1774601217823-i2ge9ggkaz",
+          "id": "duplication-1774846559079-sklkxglxkbs",
           "autoFixable": false
         },
         {
@@ -628,7 +628,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/providers/patchPrivateTodoAppMemberTrash.ts",
             "line": 64
           },
-          "id": "duplication-1774601217823-st5w6yj7xj8",
+          "id": "duplication-1774846559079-14y1a1w3j9p",
           "autoFixable": false
         }
       ]
@@ -650,19 +650,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/member/PrivatetodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601217831-7ewqqqt9aue",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601217830-siwhyhiv0oc",
+          "id": "jsdoc-1774846559086-gs2wcbzwnij",
           "autoFixable": false
         },
         {
@@ -674,7 +662,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/auth/guest/PrivatetodoappAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774601217830-vqqey3va33",
+          "id": "jsdoc-1774846559089-002xxa9j3cwbd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"PrivatetodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/sessions/PrivatetodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846559087-0i3jaeo0939",
           "autoFixable": false
         },
         {
@@ -686,7 +686,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/profile/PrivatetodoappMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601217830-mm65t0v6h0r",
+          "id": "jsdoc-1774846559086-52w07ecoor3",
           "autoFixable": false
         },
         {
@@ -698,7 +698,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/PrivatetodoappMemberTodosController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774601217832-akl6je9gft6",
+          "id": "jsdoc-1774846559087-1nghzbr41lj",
           "autoFixable": false
         },
         {
@@ -710,7 +710,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/trash/PrivatetodoappMemberTrashController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601217830-dzrym153y4t",
+          "id": "jsdoc-1774846559088-4qsow33d7fb",
           "autoFixable": false
         },
         {
@@ -722,7 +722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/z-ai/glm-5/todo/src/controllers/privateTodoApp/member/todos/editHistories/PrivatetodoappMemberTodosEdithistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601217833-xy8ba4mm8ye",
+          "id": "jsdoc-1774846559088-5igxpp7i59i",
           "autoFixable": false
         }
       ]
@@ -741,7 +741,7 @@
             "file": "src/api/structures/IPrivateTodoAppTodoEditHistory.ts",
             "line": 61
           },
-          "id": "completeness-1774601217845-ep5mnb82tdg",
+          "id": "completeness-1774846559091-6l6tpq08bbj",
           "autoFixable": false
         }
       ]
@@ -764,7 +764,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774601217714-0lx36x0u4fm",
+      "id": "type-error-1774846558964-v018osajm9",
       "autoFixable": false
     },
     {
@@ -776,7 +776,7 @@
         "file": "src/decorators/MemberAuth.ts",
         "line": 189
       },
-      "id": "type-error-1774601217714-i0btafuni4",
+      "id": "type-error-1774846558964-ts08bt9ytcq",
       "autoFixable": false
     },
     {
@@ -788,14 +788,14 @@
         "file": "src/providers/putPrivateTodoAppMemberTodosTodoId.ts",
         "line": 3658
       },
-      "id": "type-error-1774601217714-dhlldx5r3hw",
+      "id": "type-error-1774846558964-ouiivx0934",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:46:57.845Z",
-    "totalDurationMs": 2739,
+    "evaluatedAt": "2026-03-30T04:55:59.092Z",
+    "totalDurationMs": 4739,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 84
   },

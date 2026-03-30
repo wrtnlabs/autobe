@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845495466-w7psbribmo",
+          "id": "type-error-1774846189684-3htqu4so4yr",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchErpHrmGuestSessions.ts",
             "line": 1600
           },
-          "id": "type-error-1774845495466-kkh5dslbwb",
+          "id": "type-error-1774846189684-55eri82vkgi",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 2717
           },
-          "id": "type-error-1774845495466-dtibft9qmhd",
+          "id": "type-error-1774846189684-08gs81w81qyt",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3109
           },
-          "id": "type-error-1774845495466-ezqbglh4ij6",
+          "id": "type-error-1774846189684-u8gn0wu7ew",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3463
           },
-          "id": "type-error-1774845495466-erwns3a43gj",
+          "id": "type-error-1774846189684-yqshjkfamfj",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3599
           },
-          "id": "type-error-1774845495466-zi7je7uchak",
+          "id": "type-error-1774846189684-ab455gpdf35",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 3906
           },
-          "id": "type-error-1774845495466-32mm7ivkxxl",
+          "id": "type-error-1774846189684-8fi7ci322m4",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4034
           },
-          "id": "type-error-1774845495466-igjovcebnt",
+          "id": "type-error-1774846189684-nkt1ahaaxdc",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4351
           },
-          "id": "type-error-1774845495466-dow6vct6rj8",
+          "id": "type-error-1774846189684-d9tnlm019rc",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchErpHrmMemberContracts.ts",
             "line": 4487
           },
-          "id": "type-error-1774845495466-3i9d5jo992u",
+          "id": "type-error-1774846189684-lyiwm22x1cs",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2210
           },
-          "id": "type-error-1774845495466-a5qunr6s72t",
+          "id": "type-error-1774846189684-3kwzt8li3rw",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2334
           },
-          "id": "type-error-1774845495466-h04k6zuxvwh",
+          "id": "type-error-1774846189684-h3oay3p2ph8",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2623
           },
-          "id": "type-error-1774845495466-8vrzu9disqq",
+          "id": "type-error-1774846189684-bcxmzlb9u2i",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 2741
           },
-          "id": "type-error-1774845495466-l7evv6yrbk",
+          "id": "type-error-1774846189684-szdrisv8zxc",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 3037
           },
-          "id": "type-error-1774845495466-4i888ph6irq",
+          "id": "type-error-1774846189684-kxdimz4aj4c",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchErpHrmMemberProjects.ts",
             "line": 3157
           },
-          "id": "type-error-1774845495466-th3aiaot9vo",
+          "id": "type-error-1774846189684-l5wmnr2m34",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4186
           },
-          "id": "type-error-1774845495466-go1d74okn3t",
+          "id": "type-error-1774846189684-ise8t9hh1bg",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4332
           },
-          "id": "type-error-1774845495466-ufll62nw7ad",
+          "id": "type-error-1774846189684-610uvi0w4gr",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4669
           },
-          "id": "type-error-1774845495466-fjaup3orrcj",
+          "id": "type-error-1774846189684-5p8ap3q29zs",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 4841
           },
-          "id": "type-error-1774845495466-xztqyh86iv9",
+          "id": "type-error-1774846189684-u1r3zxbgvrl",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 5210
           },
-          "id": "type-error-1774845495466-ddsal9ug6km",
+          "id": "type-error-1774846189684-jakokiovmgk",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
             "line": 5393
           },
-          "id": "type-error-1774845495466-96htvqpsuin",
+          "id": "type-error-1774846189684-twgu0ck5tz",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/providers/patchErpHrmMemberRoles.ts",
             "line": 2272
           },
-          "id": "type-error-1774845495466-47i0usut6o5",
+          "id": "type-error-1774846189684-b9q1o23ffba",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/providers/patchErpHrmMemberRoles.ts",
             "line": 2395
           },
-          "id": "type-error-1774845495466-fng994uegz",
+          "id": "type-error-1774846189684-czoz0dpmc9",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
             "line": 2627
           },
-          "id": "type-error-1774845495466-t9h8fd95tu9",
+          "id": "type-error-1774846189684-hcup9anb4i",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
             "line": 2681
           },
-          "id": "type-error-1774845495466-x7axvhnwj6",
+          "id": "type-error-1774846189684-qupcs252vs",
           "autoFixable": false
         },
         {
@@ -331,7 +331,7 @@
             "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
             "line": 3759
           },
-          "id": "type-error-1774845495466-med4evvma3",
+          "id": "type-error-1774846189684-loirzh0atzf",
           "autoFixable": false
         },
         {
@@ -343,7 +343,7 @@
             "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
             "line": 2671
           },
-          "id": "type-error-1774845495466-5plqlww5xci",
+          "id": "type-error-1774846189684-9iqwon2nwxd",
           "autoFixable": false
         },
         {
@@ -355,7 +355,7 @@
             "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
             "line": 1597
           },
-          "id": "type-error-1774845495466-z94ul9kitd",
+          "id": "type-error-1774846189684-8wnrwcs5698",
           "autoFixable": false
         },
         {
@@ -367,7 +367,7 @@
             "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
             "line": 1789
           },
-          "id": "type-error-1774845495466-fxkeq5snc9v",
+          "id": "type-error-1774846189684-nzl5apyev6p",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "file": "src/transformers/ErpHrmProjectTransformer.ts",
             "line": 1903
           },
-          "id": "type-error-1774845495466-44uihq6si0d",
+          "id": "type-error-1774846189684-kgvpbm969mm",
           "autoFixable": false
         },
         {
@@ -391,7 +391,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1383
           },
-          "id": "type-error-1774845495466-prch7m5cx9j",
+          "id": "type-error-1774846189684-kpu5qruilvo",
           "autoFixable": false
         },
         {
@@ -403,7 +403,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1401
           },
-          "id": "type-error-1774845495466-rzro589t07g",
+          "id": "type-error-1774846189684-it7l7c4vi",
           "autoFixable": false
         },
         {
@@ -415,7 +415,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1422
           },
-          "id": "type-error-1774845495466-tegsil7oy5f",
+          "id": "type-error-1774846189684-4xi53r96jsx",
           "autoFixable": false
         },
         {
@@ -427,7 +427,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1444
           },
-          "id": "type-error-1774845495466-e1pki42q3f4",
+          "id": "type-error-1774846189684-exoear9rqfw",
           "autoFixable": false
         },
         {
@@ -439,7 +439,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1468
           },
-          "id": "type-error-1774845495466-6cogzqfde6q",
+          "id": "type-error-1774846189684-geyzosho8t9",
           "autoFixable": false
         },
         {
@@ -451,7 +451,7 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1492
           },
-          "id": "type-error-1774845495466-a7gjqbmqn0w",
+          "id": "type-error-1774846189684-03n75fc0510e",
           "autoFixable": false
         },
         {
@@ -463,11 +463,11 @@
             "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
             "line": 1523
           },
-          "id": "type-error-1774845495466-cwudxa82z4m",
+          "id": "type-error-1774846189684-m6d7s0wd5gj",
           "autoFixable": false
         }
       ],
-      "durationMs": 5641,
+      "durationMs": 4918,
       "metrics": {
         "totalFiles": 244,
         "filesWithErrors": 0,
@@ -601,7 +601,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495650-afeawqhp634",
+          "id": "complexity-1774846189860-shkr3w4kjem",
           "autoFixable": false
         },
         {
@@ -614,7 +614,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495651-mozjun6t77p",
+          "id": "complexity-1774846189861-i7fd2zm1b3m",
           "autoFixable": false
         },
         {
@@ -627,7 +627,7 @@
             "line": 23
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495652-djhshqm90y",
+          "id": "complexity-1774846189864-9xipsxy2tok",
           "autoFixable": false
         },
         {
@@ -640,7 +640,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495653-pwbh3acryvs",
+          "id": "complexity-1774846189863-uqc2bmuwftq",
           "autoFixable": false
         },
         {
@@ -653,7 +653,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495654-8inl84c62lx",
+          "id": "complexity-1774846189862-ky8th4dakp",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495655-1fb7pqi4lce",
+          "id": "complexity-1774846189866-mq7085dybh",
           "autoFixable": false
         },
         {
@@ -679,7 +679,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495666-f6vdncooxlm",
+          "id": "complexity-1774846189879-34x4symfdyk",
           "autoFixable": false
         },
         {
@@ -692,7 +692,7 @@
             "line": 24
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495666-uw1nuvf132j",
+          "id": "complexity-1774846189878-1wgzo55n7r7",
           "autoFixable": false
         },
         {
@@ -705,7 +705,7 @@
             "line": 24
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495668-az92cgacvs",
+          "id": "complexity-1774846189881-bjoj66l1arc",
           "autoFixable": false
         },
         {
@@ -718,7 +718,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495670-qvko5wi2u3",
+          "id": "complexity-1774846189884-pw34nq7ttr",
           "autoFixable": false
         },
         {
@@ -731,7 +731,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495671-qwnorxwcreo",
+          "id": "complexity-1774846189886-2xciz64yhd7",
           "autoFixable": false
         },
         {
@@ -744,7 +744,7 @@
             "line": 23
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495672-4cpx3t8jkns",
+          "id": "complexity-1774846189881-k3doi24znzi",
           "autoFixable": false
         },
         {
@@ -757,7 +757,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495677-0h64o1sf58ms",
+          "id": "complexity-1774846189891-e8tbqeotu49",
           "autoFixable": false
         },
         {
@@ -770,7 +770,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495678-5ww84cvtoct",
+          "id": "complexity-1774846189884-x4b72td5nl7",
           "autoFixable": false
         },
         {
@@ -783,7 +783,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845495678-j4v3e6kag8i",
+          "id": "complexity-1774846189885-9k264vniban",
           "autoFixable": false
         },
         {
@@ -796,7 +796,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495675-ro302z1kgik",
+          "id": "complexity-1774846189888-r9yzozkijs",
           "autoFixable": false
         },
         {
@@ -809,7 +809,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845495680-mpkooabxovc",
+          "id": "complexity-1774846189893-gltct3nad6",
           "autoFixable": false
         }
       ]
@@ -826,7 +826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
             "line": 187
           },
-          "id": "duplication-1774845495843-c8e3pf9a5l8",
+          "id": "duplication-1774846190036-ei4lp7d1bpk",
           "autoFixable": false
         },
         {
@@ -838,7 +838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
             "line": 188
           },
-          "id": "duplication-1774845495843-r6z91lrnfg",
+          "id": "duplication-1774846190036-ncvthj21i9",
           "autoFixable": false
         },
         {
@@ -850,7 +850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 28
           },
-          "id": "duplication-1774845495843-xw1a8p2ocdf",
+          "id": "duplication-1774846190036-5grqt16fpp2",
           "autoFixable": false
         },
         {
@@ -862,7 +862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 29
           },
-          "id": "duplication-1774845495843-5h0nlsnivgv",
+          "id": "duplication-1774846190036-s6fja32lx4r",
           "autoFixable": false
         },
         {
@@ -874,7 +874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 30
           },
-          "id": "duplication-1774845495843-g39kda5xez",
+          "id": "duplication-1774846190036-14avw5ufljq",
           "autoFixable": false
         },
         {
@@ -886,7 +886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 31
           },
-          "id": "duplication-1774845495843-wbozfeo4d5a",
+          "id": "duplication-1774846190036-g6rusybp71",
           "autoFixable": false
         },
         {
@@ -898,7 +898,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 32
           },
-          "id": "duplication-1774845495843-aa4ztdwfa5h",
+          "id": "duplication-1774846190036-3u4nlet8dv",
           "autoFixable": false
         },
         {
@@ -910,7 +910,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 33
           },
-          "id": "duplication-1774845495843-ek1eymp3386",
+          "id": "duplication-1774846190036-khglyos2ux",
           "autoFixable": false
         },
         {
@@ -922,7 +922,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 11
           },
-          "id": "duplication-1774845495843-2vy6shw8lxi",
+          "id": "duplication-1774846190036-c5axlalb0rg",
           "autoFixable": false
         },
         {
@@ -934,7 +934,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 13
           },
-          "id": "duplication-1774845495843-y7euhnwaqf",
+          "id": "duplication-1774846190036-y1h3ychkzud",
           "autoFixable": false
         },
         {
@@ -946,7 +946,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 31
           },
-          "id": "duplication-1774845495843-shl7618idws",
+          "id": "duplication-1774846190036-vrx3cq875zk",
           "autoFixable": false
         },
         {
@@ -958,7 +958,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberProjectsProjectId.ts",
             "line": 32
           },
-          "id": "duplication-1774845495843-nftnkcpbns",
+          "id": "duplication-1774846190036-2jp98snywhj",
           "autoFixable": false
         },
         {
@@ -970,7 +970,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberOrganizationsOrganizationId.ts",
             "line": 53
           },
-          "id": "duplication-1774845495843-phpq0ozw01",
+          "id": "duplication-1774846190036-yo7hy1nqlx",
           "autoFixable": false
         },
         {
@@ -982,7 +982,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/putErpHrmMemberDepartmentsDepartmentId.ts",
             "line": 23
           },
-          "id": "duplication-1774845495843-fj93rv1uku4",
+          "id": "duplication-1774846190036-57o09ov06l9",
           "autoFixable": false
         },
         {
@@ -994,7 +994,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 17
           },
-          "id": "duplication-1774845495843-ccnnvmapis4",
+          "id": "duplication-1774846190036-ytv51dph2t",
           "autoFixable": false
         },
         {
@@ -1006,7 +1006,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 18
           },
-          "id": "duplication-1774845495843-kgpb6vrws9",
+          "id": "duplication-1774846190036-9dunk5b1u3g",
           "autoFixable": false
         },
         {
@@ -1018,7 +1018,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
             "line": 30
           },
-          "id": "duplication-1774845495843-gt3nfkz8ipl",
+          "id": "duplication-1774846190036-l4bb007fm4h",
           "autoFixable": false
         },
         {
@@ -1030,7 +1030,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberTimesheetsTimesheetIdApprove.ts",
             "line": 31
           },
-          "id": "duplication-1774845495843-zd8ccbawbz",
+          "id": "duplication-1774846190036-ra5vh1kkduc",
           "autoFixable": false
         },
         {
@@ -1042,7 +1042,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
             "line": 24
           },
-          "id": "duplication-1774845495843-j7iyfe7cg1",
+          "id": "duplication-1774846190036-a7peiagvd49",
           "autoFixable": false
         },
         {
@@ -1054,7 +1054,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/postErpHrmMemberRoles.ts",
             "line": 25
           },
-          "id": "duplication-1774845495843-uw46xzgdkx",
+          "id": "duplication-1774846190036-tjv1y3rp04g",
           "autoFixable": false
         },
         {
@@ -1066,7 +1066,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimesheets.ts",
             "line": 117
           },
-          "id": "duplication-1774845495843-8vbg8o390tv",
+          "id": "duplication-1774846190036-isuwt30m9sk",
           "autoFixable": false
         },
         {
@@ -1078,7 +1078,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberTimers.ts",
             "line": 108
           },
-          "id": "duplication-1774845495843-o4koojwduch",
+          "id": "duplication-1774846190036-grsh7clntbb",
           "autoFixable": false
         },
         {
@@ -1090,7 +1090,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 23
           },
-          "id": "duplication-1774845495843-emlmjlpgaj5",
+          "id": "duplication-1774846190036-4cdq666bknz",
           "autoFixable": false
         },
         {
@@ -1102,7 +1102,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 25
           },
-          "id": "duplication-1774845495843-asb6ilaaey",
+          "id": "duplication-1774846190036-hx8gry7nc9a",
           "autoFixable": false
         },
         {
@@ -1114,7 +1114,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 26
           },
-          "id": "duplication-1774845495843-06bsoflc8zzc",
+          "id": "duplication-1774846190036-2xup0peko0g",
           "autoFixable": false
         },
         {
@@ -1126,7 +1126,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberRoles.ts",
             "line": 27
           },
-          "id": "duplication-1774845495843-lkp4orjluu",
+          "id": "duplication-1774846190036-tg29gx76c4",
           "autoFixable": false
         },
         {
@@ -1138,7 +1138,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/patchErpHrmMemberProjects.ts",
             "line": 115
           },
-          "id": "duplication-1774845495843-22c4s0x55mb",
+          "id": "duplication-1774846190036-eofe5ix4239",
           "autoFixable": false
         },
         {
@@ -1150,7 +1150,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 40
           },
-          "id": "duplication-1774845495843-y6nydl30m6h",
+          "id": "duplication-1774846190036-l3vqks8q47",
           "autoFixable": false
         },
         {
@@ -1162,7 +1162,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 41
           },
-          "id": "duplication-1774845495843-0bmo76n63kr",
+          "id": "duplication-1774846190036-zyly636t43o",
           "autoFixable": false
         },
         {
@@ -1174,7 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 42
           },
-          "id": "duplication-1774845495843-gs0it5oi5sk",
+          "id": "duplication-1774846190036-4ib6ieywxu8",
           "autoFixable": false
         },
         {
@@ -1186,7 +1186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberTimelogsTimelogId.ts",
             "line": 43
           },
-          "id": "duplication-1774845495843-hwn1ao9p8p",
+          "id": "duplication-1774846190036-c0edrbu0fs7",
           "autoFixable": false
         },
         {
@@ -1198,7 +1198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/getErpHrmMemberOrganizationsOrganizationIdActivityLogsActivityLogIdDetailsDetailId.ts",
             "line": 23
           },
-          "id": "duplication-1774845495843-x0f2blesrdc",
+          "id": "duplication-1774846190036-ci0znizv58",
           "autoFixable": false
         },
         {
@@ -1210,7 +1210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 18
           },
-          "id": "duplication-1774845495843-jvlp8i5vl3a",
+          "id": "duplication-1774846190036-pnim2sweadf",
           "autoFixable": false
         },
         {
@@ -1222,7 +1222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 19
           },
-          "id": "duplication-1774845495843-quz787yimch",
+          "id": "duplication-1774846190036-pedwgd53o8",
           "autoFixable": false
         },
         {
@@ -1234,7 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberRolesRoleIdPermissionsPermissionId.ts",
             "line": 20
           },
-          "id": "duplication-1774845495843-tep4b0yputn",
+          "id": "duplication-1774846190036-uuauxgla9t",
           "autoFixable": false
         },
         {
@@ -1246,7 +1246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 18
           },
-          "id": "duplication-1774845495843-4fdd1niusow",
+          "id": "duplication-1774846190036-4ey9iq4hmqi",
           "autoFixable": false
         },
         {
@@ -1258,7 +1258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 19
           },
-          "id": "duplication-1774845495843-gzn5754poj4",
+          "id": "duplication-1774846190036-ibdiuk1zv1j",
           "autoFixable": false
         },
         {
@@ -1270,7 +1270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 20
           },
-          "id": "duplication-1774845495843-avjdk0rhny",
+          "id": "duplication-1774846190036-4q19aiyrdak",
           "autoFixable": false
         },
         {
@@ -1282,7 +1282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberProjectsProjectIdTasksTaskId.ts",
             "line": 21
           },
-          "id": "duplication-1774845495843-5qqvfheg6wi",
+          "id": "duplication-1774846190036-7f090cjfg0n",
           "autoFixable": false
         },
         {
@@ -1294,7 +1294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 9
           },
-          "id": "duplication-1774845495843-n3c450urrgc",
+          "id": "duplication-1774846190036-yq1wm64fhor",
           "autoFixable": false
         },
         {
@@ -1306,7 +1306,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 10
           },
-          "id": "duplication-1774845495843-0v23b1rt7vrp",
+          "id": "duplication-1774846190036-5ss9dcor6q",
           "autoFixable": false
         },
         {
@@ -1318,7 +1318,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 11
           },
-          "id": "duplication-1774845495843-ls7lcitoo5j",
+          "id": "duplication-1774846190036-uny8vqd6wpr",
           "autoFixable": false
         },
         {
@@ -1330,7 +1330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 12
           },
-          "id": "duplication-1774845495843-xibwf0lzyel",
+          "id": "duplication-1774846190036-jv8wzvl4zk",
           "autoFixable": false
         },
         {
@@ -1342,7 +1342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/providers/deleteErpHrmMemberOrganizationsOrganizationIdLogo.ts",
             "line": 13
           },
-          "id": "duplication-1774845495843-qemrxfpt2a",
+          "id": "duplication-1774846190036-gy6gcqib8yc",
           "autoFixable": false
         }
       ]
@@ -1359,7 +1359,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774845495845-hv3ta24dam",
+          "id": "naming-1774846190044-2sb27qietid",
           "autoFixable": false
         },
         {
@@ -1371,7 +1371,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
             "line": 12
           },
-          "id": "naming-1774845495845-g411dxoz7t",
+          "id": "naming-1774846190043-m63ha5n8z49",
           "autoFixable": false
         }
       ]
@@ -1384,24 +1384,24 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
+          "message": "Class \"ErphrmGuestSessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
-            "line": 10
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/guest/sessions/ErphrmGuestSessionsController.ts",
+            "line": 12
           },
-          "id": "jsdoc-1774845495871-0m0hsaa70t5",
+          "id": "jsdoc-1774846190068-nrifob1wixf",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"ErphrmGuestSessionsController\" missing JSDoc",
+          "message": "Class \"ErphrmAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/guest/sessions/ErphrmGuestSessionsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/member/ErphrmAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774845495871-kdxidy33029",
+          "id": "jsdoc-1774846190067-9x384i1wi5j",
           "autoFixable": false
         },
         {
@@ -1413,55 +1413,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/auth/guest/ErphrmAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845495873-7f82c934iil",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberTimelogsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845495873-bnpbg3g2t6q",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberRolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/ErphrmMemberRolesController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845495877-h7ztocltz07",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberTimerController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timer/ErphrmMemberTimerController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845495873-syw08a46eik",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberTimersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774845495874-wqpyermktja",
+          "id": "jsdoc-1774846190071-tu8roeqhpw",
           "autoFixable": false
         },
         {
@@ -1473,7 +1425,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timesheets/ErphrmMemberTimesheetsController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774845495873-gi6g8o1zfm7",
+          "id": "jsdoc-1774846190068-hni3lg1qtbb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timers/ErphrmMemberTimersController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846190068-he9sry75v2",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timer/ErphrmMemberTimerController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846190067-f6nwq1k87ra",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/timelogs/ErphrmMemberTimelogsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846190069-akleg0hddpk",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/ErphrmMemberRolesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846190070-vgxh80tfyn",
           "autoFixable": false
         },
         {
@@ -1485,7 +1485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizationMembers/ErphrmMemberOrganizationmembersController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845495875-1i8se6ceslb",
+          "id": "jsdoc-1774846190070-625ufzlj9il",
           "autoFixable": false
         },
         {
@@ -1497,43 +1497,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/members/ErphrmMemberMembersController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845495874-y1sj47ssa",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/departments/ErphrmMemberDepartmentsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845495874-oh434w2lki9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberContractsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/contracts/ErphrmMemberContractsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845495875-hfzw8p5y0e",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberRolesPermissionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/permissions/ErphrmMemberRolesPermissionsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774845495879-0y1n1pcc63gp",
+          "id": "jsdoc-1774846190079-dr7iuv1afmc",
           "autoFixable": false
         },
         {
@@ -1545,7 +1509,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/ErphrmMemberProjectsController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774845495886-cmhd8yka0a",
+          "id": "jsdoc-1774846190078-hn2h30rmac",
           "autoFixable": false
         },
         {
@@ -1557,7 +1521,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/ErphrmMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845495875-vso8pu5v90e",
+          "id": "jsdoc-1774846190077-oez4h6pgt9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/departments/ErphrmMemberDepartmentsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846190077-8l7sxxqdv2r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberContractsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/contracts/ErphrmMemberContractsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846190079-wk9fddqzmm8",
           "autoFixable": false
         },
         {
@@ -1569,19 +1557,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/ErphrmMemberOrganizationsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845495876-n69ainxhdyo",
+          "id": "jsdoc-1774846190080-s8o4cufrmf9",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"ErphrmMemberProjectsMembersController\" missing JSDoc",
+          "message": "Class \"ErphrmMemberRolesPermissionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
-            "line": 15
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/roles/permissions/ErphrmMemberRolesPermissionsController.ts",
+            "line": 13
           },
-          "id": "jsdoc-1774845495877-q053rcrmhlg",
+          "id": "jsdoc-1774846190080-62ibwhzq45",
           "autoFixable": false
         },
         {
@@ -1593,7 +1581,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/ErphrmMemberProjectsTasksController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845495876-dqrqg868p",
+          "id": "jsdoc-1774846190081-r1k3civong",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberProjectsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/members/ErphrmMemberProjectsMembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846190083-v2si1hpbvaj",
           "autoFixable": false
         },
         {
@@ -1605,19 +1605,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/profile/avatar/ErphrmMemberProfileAvatarController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845495876-2w28oajpnxa",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"ErphrmMemberOrganizationsActivity_logsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845495877-1wte4eiyl3p",
+          "id": "jsdoc-1774846190080-oy0wqeob4ip",
           "autoFixable": false
         },
         {
@@ -1629,7 +1617,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/logo/ErphrmMemberOrganizationsLogoController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845495877-44obtawj2se",
+          "id": "jsdoc-1774846190081-2vdaz6ocvi3",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"ErphrmMemberOrganizationsActivity_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/ErphrmMemberOrganizationsActivity_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846190082-8uj3puwrl7e",
           "autoFixable": false
         },
         {
@@ -1641,7 +1641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/projects/tasks/histories/ErphrmMemberProjectsTasksHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845495878-u9r57a81ogq",
+          "id": "jsdoc-1774846190082-3bvqdxg69o",
           "autoFixable": false
         },
         {
@@ -1653,7 +1653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/erp/src/controllers/erpHrm/member/organizations/activity-logs/details/ErphrmMemberOrganizationsActivity_logsDetailsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845495878-q0w4owybtlo",
+          "id": "jsdoc-1774846190082-q4zrtm49sd",
           "autoFixable": false
         }
       ]
@@ -1672,7 +1672,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 94
           },
-          "id": "completeness-1774845495890-i16od041xoo",
+          "id": "completeness-1774846190095-5nnd8jz4ecp",
           "autoFixable": false
         },
         {
@@ -1684,7 +1684,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 102
           },
-          "id": "completeness-1774845495890-my56aknf2bs",
+          "id": "completeness-1774846190095-qpj75od3vvp",
           "autoFixable": false
         },
         {
@@ -1696,7 +1696,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 350
           },
-          "id": "completeness-1774845495890-ysom8ze0l6b",
+          "id": "completeness-1774846190095-xk56vi5bqk",
           "autoFixable": false
         },
         {
@@ -1708,7 +1708,7 @@
             "file": "src/api/structures/IErpHrmTimesheet.ts",
             "line": 358
           },
-          "id": "completeness-1774845495890-g73wz6srjhf",
+          "id": "completeness-1774846190095-j7vxq0t380q",
           "autoFixable": false
         },
         {
@@ -1720,7 +1720,7 @@
             "file": "src/api/structures/IErpHrmTaskHistory.ts",
             "line": 171
           },
-          "id": "completeness-1774845495890-h1g9wc8sreu",
+          "id": "completeness-1774846190095-2aa7rokc94o",
           "autoFixable": false
         },
         {
@@ -1732,7 +1732,7 @@
             "file": "src/api/structures/IErpHrmRolePermission.ts",
             "line": 37
           },
-          "id": "completeness-1774845495891-3f0p19j451i",
+          "id": "completeness-1774846190095-l45sk68pj89",
           "autoFixable": false
         },
         {
@@ -1744,7 +1744,7 @@
             "file": "src/api/structures/IErpHrmProjectMember.ts",
             "line": 30
           },
-          "id": "completeness-1774845495891-sojlms5r8n8",
+          "id": "completeness-1774846190095-o1wlr5p7jvh",
           "autoFixable": false
         },
         {
@@ -1756,7 +1756,7 @@
             "file": "src/api/structures/IErpHrmProjectMember.ts",
             "line": 38
           },
-          "id": "completeness-1774845495891-jl3ojcn2w9",
+          "id": "completeness-1774846190095-z9qqdi0mpqm",
           "autoFixable": false
         },
         {
@@ -1768,7 +1768,7 @@
             "file": "src/api/structures/IErpHrmDepartment.ts",
             "line": 53
           },
-          "id": "completeness-1774845495891-t1a1fbabdnc",
+          "id": "completeness-1774846190096-g6udnvngca",
           "autoFixable": false
         },
         {
@@ -1780,7 +1780,7 @@
             "file": "src/api/structures/IErpHrmContract.ts",
             "line": 343
           },
-          "id": "completeness-1774845495891-hr1c57qc2in",
+          "id": "completeness-1774846190096-1tupxk6ihcd",
           "autoFixable": false
         },
         {
@@ -1792,7 +1792,7 @@
             "file": "src/api/structures/IErpHrmActivityLog.ts",
             "line": 64
           },
-          "id": "completeness-1774845495892-2xucn4o9nm6",
+          "id": "completeness-1774846190096-njvuchb6i49",
           "autoFixable": false
         },
         {
@@ -1804,7 +1804,7 @@
             "file": "src/api/structures/IErpHrmActivityLog.ts",
             "line": 72
           },
-          "id": "completeness-1774845495892-n8moacy5maj",
+          "id": "completeness-1774846190096-rf298gv4v5",
           "autoFixable": false
         }
       ]
@@ -1827,7 +1827,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845495466-w7psbribmo",
+      "id": "type-error-1774846189684-3htqu4so4yr",
       "autoFixable": false
     },
     {
@@ -1839,7 +1839,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3463
       },
-      "id": "type-error-1774845495466-erwns3a43gj",
+      "id": "type-error-1774846189684-yqshjkfamfj",
       "autoFixable": false
     },
     {
@@ -1851,7 +1851,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3599
       },
-      "id": "type-error-1774845495466-zi7je7uchak",
+      "id": "type-error-1774846189684-ab455gpdf35",
       "autoFixable": false
     },
     {
@@ -1863,7 +1863,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3906
       },
-      "id": "type-error-1774845495466-32mm7ivkxxl",
+      "id": "type-error-1774846189684-8fi7ci322m4",
       "autoFixable": false
     },
     {
@@ -1875,7 +1875,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4034
       },
-      "id": "type-error-1774845495466-igjovcebnt",
+      "id": "type-error-1774846189684-nkt1ahaaxdc",
       "autoFixable": false
     },
     {
@@ -1887,7 +1887,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4351
       },
-      "id": "type-error-1774845495466-dow6vct6rj8",
+      "id": "type-error-1774846189684-d9tnlm019rc",
       "autoFixable": false
     },
     {
@@ -1899,7 +1899,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 4487
       },
-      "id": "type-error-1774845495466-3i9d5jo992u",
+      "id": "type-error-1774846189684-lyiwm22x1cs",
       "autoFixable": false
     },
     {
@@ -1911,7 +1911,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2210
       },
-      "id": "type-error-1774845495466-a5qunr6s72t",
+      "id": "type-error-1774846189684-3kwzt8li3rw",
       "autoFixable": false
     },
     {
@@ -1923,7 +1923,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2334
       },
-      "id": "type-error-1774845495466-h04k6zuxvwh",
+      "id": "type-error-1774846189684-h3oay3p2ph8",
       "autoFixable": false
     },
     {
@@ -1935,7 +1935,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2623
       },
-      "id": "type-error-1774845495466-8vrzu9disqq",
+      "id": "type-error-1774846189684-bcxmzlb9u2i",
       "autoFixable": false
     },
     {
@@ -1947,7 +1947,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 2741
       },
-      "id": "type-error-1774845495466-l7evv6yrbk",
+      "id": "type-error-1774846189684-szdrisv8zxc",
       "autoFixable": false
     },
     {
@@ -1959,7 +1959,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 3037
       },
-      "id": "type-error-1774845495466-4i888ph6irq",
+      "id": "type-error-1774846189684-kxdimz4aj4c",
       "autoFixable": false
     },
     {
@@ -1971,7 +1971,7 @@
         "file": "src/providers/patchErpHrmMemberProjects.ts",
         "line": 3157
       },
-      "id": "type-error-1774845495466-th3aiaot9vo",
+      "id": "type-error-1774846189684-l5wmnr2m34",
       "autoFixable": false
     },
     {
@@ -1983,7 +1983,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4186
       },
-      "id": "type-error-1774845495466-go1d74okn3t",
+      "id": "type-error-1774846189684-ise8t9hh1bg",
       "autoFixable": false
     },
     {
@@ -1995,7 +1995,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4332
       },
-      "id": "type-error-1774845495466-ufll62nw7ad",
+      "id": "type-error-1774846189684-610uvi0w4gr",
       "autoFixable": false
     },
     {
@@ -2007,7 +2007,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4669
       },
-      "id": "type-error-1774845495466-fjaup3orrcj",
+      "id": "type-error-1774846189684-5p8ap3q29zs",
       "autoFixable": false
     },
     {
@@ -2019,7 +2019,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 4841
       },
-      "id": "type-error-1774845495466-xztqyh86iv9",
+      "id": "type-error-1774846189684-u1r3zxbgvrl",
       "autoFixable": false
     },
     {
@@ -2031,7 +2031,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 5210
       },
-      "id": "type-error-1774845495466-ddsal9ug6km",
+      "id": "type-error-1774846189684-jakokiovmgk",
       "autoFixable": false
     },
     {
@@ -2043,7 +2043,7 @@
         "file": "src/providers/patchErpHrmMemberProjectsProjectIdTasks.ts",
         "line": 5393
       },
-      "id": "type-error-1774845495466-96htvqpsuin",
+      "id": "type-error-1774846189684-twgu0ck5tz",
       "autoFixable": false
     },
     {
@@ -2055,7 +2055,7 @@
         "file": "src/providers/patchErpHrmMemberRoles.ts",
         "line": 2272
       },
-      "id": "type-error-1774845495466-47i0usut6o5",
+      "id": "type-error-1774846189684-b9q1o23ffba",
       "autoFixable": false
     },
     {
@@ -2067,7 +2067,7 @@
         "file": "src/providers/patchErpHrmMemberRoles.ts",
         "line": 2395
       },
-      "id": "type-error-1774845495466-fng994uegz",
+      "id": "type-error-1774846189684-czoz0dpmc9",
       "autoFixable": false
     },
     {
@@ -2079,7 +2079,7 @@
         "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
         "line": 2681
       },
-      "id": "type-error-1774845495466-x7axvhnwj6",
+      "id": "type-error-1774846189684-qupcs252vs",
       "autoFixable": false
     },
     {
@@ -2091,7 +2091,7 @@
         "file": "src/providers/putErpHrmMemberRolesRoleId.ts",
         "line": 3759
       },
-      "id": "type-error-1774845495466-med4evvma3",
+      "id": "type-error-1774846189684-loirzh0atzf",
       "autoFixable": false
     },
     {
@@ -2103,7 +2103,7 @@
         "file": "src/transformers/ErpHrmActivityLogTransformer.ts",
         "line": 2671
       },
-      "id": "type-error-1774845495466-5plqlww5xci",
+      "id": "type-error-1774846189684-9iqwon2nwxd",
       "autoFixable": false
     },
     {
@@ -2115,7 +2115,7 @@
         "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
         "line": 1597
       },
-      "id": "type-error-1774845495466-z94ul9kitd",
+      "id": "type-error-1774846189684-8wnrwcs5698",
       "autoFixable": false
     },
     {
@@ -2127,7 +2127,7 @@
         "file": "src/transformers/ErpHrmDepartmentAtSummaryTransformer.ts",
         "line": 1789
       },
-      "id": "type-error-1774845495466-fxkeq5snc9v",
+      "id": "type-error-1774846189684-nzl5apyev6p",
       "autoFixable": false
     },
     {
@@ -2139,7 +2139,7 @@
         "file": "src/transformers/ErpHrmProjectTransformer.ts",
         "line": 1903
       },
-      "id": "type-error-1774845495466-44uihq6si0d",
+      "id": "type-error-1774846189684-kgvpbm969mm",
       "autoFixable": false
     },
     {
@@ -2151,7 +2151,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1383
       },
-      "id": "type-error-1774845495466-prch7m5cx9j",
+      "id": "type-error-1774846189684-kpu5qruilvo",
       "autoFixable": false
     },
     {
@@ -2163,7 +2163,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1401
       },
-      "id": "type-error-1774845495466-rzro589t07g",
+      "id": "type-error-1774846189684-it7l7c4vi",
       "autoFixable": false
     },
     {
@@ -2175,7 +2175,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1422
       },
-      "id": "type-error-1774845495466-tegsil7oy5f",
+      "id": "type-error-1774846189684-4xi53r96jsx",
       "autoFixable": false
     },
     {
@@ -2187,7 +2187,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1444
       },
-      "id": "type-error-1774845495466-e1pki42q3f4",
+      "id": "type-error-1774846189684-exoear9rqfw",
       "autoFixable": false
     },
     {
@@ -2199,7 +2199,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1468
       },
-      "id": "type-error-1774845495466-6cogzqfde6q",
+      "id": "type-error-1774846189684-geyzosho8t9",
       "autoFixable": false
     },
     {
@@ -2211,7 +2211,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1492
       },
-      "id": "type-error-1774845495466-a7gjqbmqn0w",
+      "id": "type-error-1774846189684-03n75fc0510e",
       "autoFixable": false
     },
     {
@@ -2223,7 +2223,7 @@
         "file": "src/transformers/ErpHrmTaskAtSummaryTransformer.ts",
         "line": 1523
       },
-      "id": "type-error-1774845495466-cwudxa82z4m",
+      "id": "type-error-1774846189684-m6d7s0wd5gj",
       "autoFixable": false
     }
   ],
@@ -2237,7 +2237,7 @@
         "file": "src/providers/patchErpHrmGuestSessions.ts",
         "line": 1600
       },
-      "id": "type-error-1774845495466-kkh5dslbwb",
+      "id": "type-error-1774846189684-55eri82vkgi",
       "autoFixable": false
     },
     {
@@ -2249,7 +2249,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 2717
       },
-      "id": "type-error-1774845495466-dtibft9qmhd",
+      "id": "type-error-1774846189684-08gs81w81qyt",
       "autoFixable": false
     },
     {
@@ -2261,7 +2261,7 @@
         "file": "src/providers/patchErpHrmMemberContracts.ts",
         "line": 3109
       },
-      "id": "type-error-1774845495466-ezqbglh4ij6",
+      "id": "type-error-1774846189684-u8gn0wu7ew",
       "autoFixable": false
     },
     {
@@ -2273,13 +2273,13 @@
         "file": "src/providers/postErpHrmMemberTimersTimerIdStop.ts",
         "line": 2627
       },
-      "id": "type-error-1774845495466-t9h8fd95tu9",
+      "id": "type-error-1774846189684-hcup9anb4i",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:38:15.892Z",
-    "totalDurationMs": 5975,
+    "evaluatedAt": "2026-03-30T04:49:50.096Z",
+    "totalDurationMs": 5217,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 244
   },

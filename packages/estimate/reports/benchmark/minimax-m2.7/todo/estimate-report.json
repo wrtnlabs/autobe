@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845488616-wyvgs6hoif9",
+          "id": "type-error-1774846183484-jnlpxonvr5k",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 3555
           },
-          "id": "type-error-1774845488616-j3fcapnnqp",
+          "id": "type-error-1774846183484-wsenvfhlom",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 2880
           },
-          "id": "type-error-1774845488616-vtyhe3gvksq",
+          "id": "type-error-1774846183484-0lu3ljy572v",
           "autoFixable": false
         },
         {
@@ -55,11 +55,11 @@
             "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
             "line": 5071
           },
-          "id": "type-error-1774845488616-dkq96ysvdbp",
+          "id": "type-error-1774846183484-vzr3rf2f2sg",
           "autoFixable": false
         }
       ],
-      "durationMs": 2574,
+      "durationMs": 2782,
       "metrics": {
         "totalFiles": 75,
         "filesWithErrors": 0,
@@ -193,7 +193,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845488677-ckjng7ph1fm",
+          "id": "complexity-1774846183719-ny29qezz5mo",
           "autoFixable": false
         },
         {
@@ -206,7 +206,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845488689-7q4jfvwjxbv",
+          "id": "complexity-1774846183725-mtz2axnu7md",
           "autoFixable": false
         },
         {
@@ -219,7 +219,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845488683-2xoqubgn0vk",
+          "id": "complexity-1774846183726-1cxj4j253ql",
           "autoFixable": false
         }
       ]
@@ -236,7 +236,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 22
           },
-          "id": "duplication-1774845488710-grm9sju6khc",
+          "id": "duplication-1774846183750-uorpynkur9o",
           "autoFixable": false
         },
         {
@@ -248,7 +248,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 23
           },
-          "id": "duplication-1774845488710-den5ptnzx8d",
+          "id": "duplication-1774846183750-gn30fdj9wow",
           "autoFixable": false
         },
         {
@@ -260,7 +260,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoMemberTodosTodoIdRestore.ts",
             "line": 24
           },
-          "id": "duplication-1774845488710-qt3m15yrdcf",
+          "id": "duplication-1774846183750-y77oko10uf",
           "autoFixable": false
         },
         {
@@ -272,7 +272,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberRefresh.ts",
             "line": 23
           },
-          "id": "duplication-1774845488710-n0fqlo5yiy",
+          "id": "duplication-1774846183750-w66rtz9v3nm",
           "autoFixable": false
         },
         {
@@ -284,7 +284,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 44
           },
-          "id": "duplication-1774845488710-yv8r7hu8f6",
+          "id": "duplication-1774846183750-2rhc0npygpa",
           "autoFixable": false
         },
         {
@@ -296,7 +296,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 45
           },
-          "id": "duplication-1774845488710-vmdnjiwb349",
+          "id": "duplication-1774846183750-ko3cxwgj6u",
           "autoFixable": false
         },
         {
@@ -308,7 +308,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 46
           },
-          "id": "duplication-1774845488710-ny51rgn3fb",
+          "id": "duplication-1774846183750-bqp518h7qif",
           "autoFixable": false
         },
         {
@@ -320,7 +320,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 47
           },
-          "id": "duplication-1774845488710-2mlx5t693ti",
+          "id": "duplication-1774846183750-e6vdhg38dp",
           "autoFixable": false
         },
         {
@@ -332,7 +332,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 48
           },
-          "id": "duplication-1774845488710-gbe05vp29f7",
+          "id": "duplication-1774846183750-kq24v4syd9a",
           "autoFixable": false
         },
         {
@@ -344,7 +344,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 49
           },
-          "id": "duplication-1774845488710-8e5abuvi28d",
+          "id": "duplication-1774846183750-qcdpxona9c",
           "autoFixable": false
         },
         {
@@ -356,7 +356,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 50
           },
-          "id": "duplication-1774845488710-mg51n6joijo",
+          "id": "duplication-1774846183750-ghe01nzfs4k",
           "autoFixable": false
         },
         {
@@ -368,7 +368,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 51
           },
-          "id": "duplication-1774845488710-j8xfpigy2he",
+          "id": "duplication-1774846183750-bw8jorg5wyp",
           "autoFixable": false
         },
         {
@@ -380,7 +380,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 52
           },
-          "id": "duplication-1774845488710-xffha7pt6ai",
+          "id": "duplication-1774846183750-ex7r4ea8uv",
           "autoFixable": false
         },
         {
@@ -392,7 +392,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 53
           },
-          "id": "duplication-1774845488710-651irjsdybo",
+          "id": "duplication-1774846183750-phgse8wc3ha",
           "autoFixable": false
         },
         {
@@ -404,7 +404,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 54
           },
-          "id": "duplication-1774845488710-0g2q93aaasmp",
+          "id": "duplication-1774846183750-mbaj1ofcmk",
           "autoFixable": false
         },
         {
@@ -416,7 +416,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 55
           },
-          "id": "duplication-1774845488710-ndoqtvihgqc",
+          "id": "duplication-1774846183750-neq5jqc5ugm",
           "autoFixable": false
         },
         {
@@ -428,7 +428,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 56
           },
-          "id": "duplication-1774845488710-iyjtxjrgivg",
+          "id": "duplication-1774846183750-eaid02gqbyu",
           "autoFixable": false
         },
         {
@@ -440,7 +440,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/postMultiUserTodoAuthMemberLogin.ts",
             "line": 57
           },
-          "id": "duplication-1774845488710-dkdsxnb3tvl",
+          "id": "duplication-1774846183750-uhdl74bbvag",
           "autoFixable": false
         },
         {
@@ -452,7 +452,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 47
           },
-          "id": "duplication-1774845488710-v7zf7bsgyhp",
+          "id": "duplication-1774846183750-ucby6byn8jg",
           "autoFixable": false
         },
         {
@@ -464,7 +464,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 48
           },
-          "id": "duplication-1774845488710-gkkylm1788b",
+          "id": "duplication-1774846183750-j0ce8cjqn8s",
           "autoFixable": false
         },
         {
@@ -476,7 +476,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/patchMultiUserTodoMemberTodosTrash.ts",
             "line": 49
           },
-          "id": "duplication-1774845488710-qnjymins8qf",
+          "id": "duplication-1774846183750-kf7oflx2e7",
           "autoFixable": false
         },
         {
@@ -488,7 +488,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 8
           },
-          "id": "duplication-1774845488710-zl06bmftlz",
+          "id": "duplication-1774846183750-t7dn00k1ul",
           "autoFixable": false
         },
         {
@@ -500,7 +500,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 9
           },
-          "id": "duplication-1774845488710-2yp513xzfnt",
+          "id": "duplication-1774846183750-jadmd00ehx",
           "autoFixable": false
         },
         {
@@ -512,7 +512,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 10
           },
-          "id": "duplication-1774845488710-88zfvibh1wu",
+          "id": "duplication-1774846183750-5n9jekdndyi",
           "autoFixable": false
         },
         {
@@ -524,7 +524,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 11
           },
-          "id": "duplication-1774845488710-4a72fjxwz3x",
+          "id": "duplication-1774846183750-xflf6sx2qhe",
           "autoFixable": false
         },
         {
@@ -536,7 +536,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 12
           },
-          "id": "duplication-1774845488710-ule04nsenyn",
+          "id": "duplication-1774846183750-wleb0jk67bb",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 13
           },
-          "id": "duplication-1774845488710-2ecslgie4yw",
+          "id": "duplication-1774846183750-802t4q83m5k",
           "autoFixable": false
         },
         {
@@ -560,7 +560,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 14
           },
-          "id": "duplication-1774845488710-jlwbhf2yi07",
+          "id": "duplication-1774846183750-nw2eoddp0o",
           "autoFixable": false
         },
         {
@@ -572,7 +572,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 15
           },
-          "id": "duplication-1774845488710-g2tf1z5qvo",
+          "id": "duplication-1774846183750-i3zv1zllah",
           "autoFixable": false
         },
         {
@@ -584,7 +584,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/providers/deleteMultiUserTodoMemberTodosTrashTodoId.ts",
             "line": 16
           },
-          "id": "duplication-1774845488710-gts87bdb8o8",
+          "id": "duplication-1774846183750-nk3dzt6xklj",
           "autoFixable": false
         }
       ]
@@ -601,24 +601,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
-            "line": 17
-          },
-          "id": "jsdoc-1774845488715-gl28tdp8nuh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845488713-xbmo44w40p",
+          "id": "jsdoc-1774846183758-fuuyp7xorg",
           "autoFixable": false
         },
         {
@@ -630,19 +618,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845488713-sjg1b5rjgub",
+          "id": "jsdoc-1774846183758-m3rexky3a7n",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845488713-08bzt843cpis",
+          "id": "jsdoc-1774846183758-65ww4rkwf9w",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846183760-m25y31zq9a",
           "autoFixable": false
         },
         {
@@ -654,7 +654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845488713-7iit11fndwe",
+          "id": "jsdoc-1774846183759-x621q3kdsso",
           "autoFixable": false
         },
         {
@@ -666,7 +666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/minimax/minimax-m2.7/todo/src/controllers/multiUserTodo/member/todos/history/MultiusertodoMemberTodosHistoryController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845488714-42xjlupruy",
+          "id": "jsdoc-1774846183759-bctgw7qcule",
           "autoFixable": false
         }
       ]
@@ -685,7 +685,7 @@
             "file": "src/api/structures/IMultiUserTodoTodoEditHistory.ts",
             "line": 93
           },
-          "id": "completeness-1774845488720-nvyyzua8dsc",
+          "id": "completeness-1774846183763-vglbcv5z0k",
           "autoFixable": false
         },
         {
@@ -697,7 +697,7 @@
             "file": "src/api/structures/IMultiUserTodoTodo.ts",
             "line": 154
           },
-          "id": "completeness-1774845488720-ze7jz9o1bjr",
+          "id": "completeness-1774846183763-p6teb2fmp6f",
           "autoFixable": false
         }
       ]
@@ -720,7 +720,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845488616-wyvgs6hoif9",
+      "id": "type-error-1774846183484-jnlpxonvr5k",
       "autoFixable": false
     },
     {
@@ -732,7 +732,7 @@
         "file": "src/controllers/multiUserTodo/member/todos/trash/MultiusertodoMemberTodosTrashController.ts",
         "line": 3555
       },
-      "id": "type-error-1774845488616-j3fcapnnqp",
+      "id": "type-error-1774846183484-wsenvfhlom",
       "autoFixable": false
     },
     {
@@ -744,7 +744,7 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 5071
       },
-      "id": "type-error-1774845488616-dkq96ysvdbp",
+      "id": "type-error-1774846183484-vzr3rf2f2sg",
       "autoFixable": false
     }
   ],
@@ -758,13 +758,13 @@
         "file": "src/providers/putMultiUserTodoMemberTodosTodoId.ts",
         "line": 2880
       },
-      "id": "type-error-1774845488616-vtyhe3gvksq",
+      "id": "type-error-1774846183484-0lu3ljy572v",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:38:08.721Z",
-    "totalDurationMs": 2655,
+    "evaluatedAt": "2026-03-30T04:49:43.764Z",
+    "totalDurationMs": 2869,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 75
   },

@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774600949280-5s10rjj3v9",
+          "id": "type-error-1774846358157-2ga0wubo257",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
             "line": 422
           },
-          "id": "type-error-1774600949280-cjx4axv618",
+          "id": "type-error-1774846358158-tanjrvkf6e",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
             "line": 312
           },
-          "id": "type-error-1774600949280-oyxexuk555c",
+          "id": "type-error-1774846358158-ae45rfslsy5",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
             "line": 2034
           },
-          "id": "type-error-1774600949280-u9h9kmuhe",
+          "id": "type-error-1774846358158-mi34rsuvm3n",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
             "line": 355
           },
-          "id": "type-error-1774600949280-2snxmwm8doz",
+          "id": "type-error-1774846358158-hsb9ok3aeec",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
             "line": 375
           },
-          "id": "type-error-1774600949280-369z7fk3a3a",
+          "id": "type-error-1774846358158-nnl933pjio",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/deleteHrmTrackerMemberDepartmentsDepartmentId.ts",
             "line": 1459
           },
-          "id": "type-error-1774600949280-28b1zu61sfaj",
+          "id": "type-error-1774846358158-eqadvxgjipb",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
             "line": 1207
           },
-          "id": "type-error-1774600949280-1dc8j93gwb2",
+          "id": "type-error-1774846358158-ek5jwghuvt6",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
             "line": 1483
           },
-          "id": "type-error-1774600949280-ally2ifvd96",
+          "id": "type-error-1774846358158-ghuny1oie1",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
             "line": 1961
           },
-          "id": "type-error-1774600949280-3o2v4tg506e",
+          "id": "type-error-1774846358158-9aee9jcx5dh",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
             "line": 2079
           },
-          "id": "type-error-1774600949280-gvrxmvymbun",
+          "id": "type-error-1774846358158-i5odn2q2w7k",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
             "line": 6176
           },
-          "id": "type-error-1774600949280-3myawwtrge9",
+          "id": "type-error-1774846358158-byvrcllk9m6",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
             "line": 2038
           },
-          "id": "type-error-1774600949280-u9gl1dvcql",
+          "id": "type-error-1774846358158-f62vrqqyejq",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
             "line": 2140
           },
-          "id": "type-error-1774600949280-ae6juvv4gqt",
+          "id": "type-error-1774846358158-ewmtoghpzva",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchHrmTrackerMemberVersions.ts",
             "line": 1370
           },
-          "id": "type-error-1774600949280-epyig4uvpis",
+          "id": "type-error-1774846358158-zukk9i1ydsd",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchHrmTrackerMemberVersions.ts",
             "line": 1480
           },
-          "id": "type-error-1774600949280-ohu549t5qv",
+          "id": "type-error-1774846358158-yh4ggn52r48",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
             "line": 2270
           },
-          "id": "type-error-1774600949280-l0hm8wvvf4a",
+          "id": "type-error-1774846358158-rtdopg0mdhq",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
             "line": 3442
           },
-          "id": "type-error-1774600949280-72wfswyb46g",
+          "id": "type-error-1774846358158-dpfqj95hkxl",
           "autoFixable": false
         },
         {
@@ -235,11 +235,11 @@
             "file": "src/providers/postHrmTrackerMemberRolesRoleIdPermissions.ts",
             "line": 1444
           },
-          "id": "type-error-1774600949280-ws3s1y0yw7o",
+          "id": "type-error-1774846358158-i5y6ixk9ly",
           "autoFixable": false
         }
       ],
-      "durationMs": 6301,
+      "durationMs": 6348,
       "metrics": {
         "totalFiles": 283,
         "filesWithErrors": 0,
@@ -266,7 +266,7 @@
         "docFileCount": 6,
         "totalDocLength": 334250,
         "cached": true,
-        "originalDurationMs": 146
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -287,7 +287,7 @@
         "unmappedControllers": 0,
         "mappingRatio": 1,
         "cached": true,
-        "originalDurationMs": 3
+        "originalDurationMs": 0
       }
     },
     "testCoverage": {
@@ -312,7 +312,7 @@
         "assertionTests": 193,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 56
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -332,7 +332,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 66
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -353,7 +353,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 72
+        "originalDurationMs": 0
       }
     }
   },
@@ -373,7 +373,7 @@
             "line": 15
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600949581-4a5tdtnqsb9",
+          "id": "complexity-1774846358642-1khd6snbb9q",
           "autoFixable": false
         },
         {
@@ -386,7 +386,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600949585-eyzftiit2b6",
+          "id": "complexity-1774846358645-i6u99g5ysr",
           "autoFixable": false
         },
         {
@@ -399,7 +399,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600949583-olfvx196s",
+          "id": "complexity-1774846358644-utg2oqdsij",
           "autoFixable": false
         },
         {
@@ -412,7 +412,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600949609-ln4kw1g0e4",
+          "id": "complexity-1774846358659-rd7qmwhpbqn",
           "autoFixable": false
         },
         {
@@ -425,7 +425,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774600949598-n8hc6o2si2",
+          "id": "complexity-1774846358662-hixdak5hb4h",
           "autoFixable": false
         },
         {
@@ -438,7 +438,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774600949601-5yam0pkfz79",
+          "id": "complexity-1774846358664-jjwq5yfudkq",
           "autoFixable": false
         }
       ]
@@ -455,7 +455,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
             "line": 100
           },
-          "id": "duplication-1774600949730-3kibkwwid9z",
+          "id": "duplication-1774846358765-8w7jtecrcwf",
           "autoFixable": false
         },
         {
@@ -467,7 +467,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
             "line": 101
           },
-          "id": "duplication-1774600949730-zfn077f4etf",
+          "id": "duplication-1774846358765-2a2rpaom9ob",
           "autoFixable": false
         },
         {
@@ -479,7 +479,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
             "line": 190
           },
-          "id": "duplication-1774600949730-4ro2a9r8ktl",
+          "id": "duplication-1774846358765-h6qrwgxplj",
           "autoFixable": false
         },
         {
@@ -491,7 +491,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
             "line": 191
           },
-          "id": "duplication-1774600949730-5x1z0kfnm1f",
+          "id": "duplication-1774846358765-wknbeif9spm",
           "autoFixable": false
         },
         {
@@ -503,7 +503,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 13
           },
-          "id": "duplication-1774600949730-92y461745b6",
+          "id": "duplication-1774846358765-u1oxzwx4rx",
           "autoFixable": false
         },
         {
@@ -515,7 +515,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 14
           },
-          "id": "duplication-1774600949730-q5by4x8acl",
+          "id": "duplication-1774846358765-8m535k0anaw",
           "autoFixable": false
         },
         {
@@ -527,7 +527,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 15
           },
-          "id": "duplication-1774600949730-8b08tgz53fn",
+          "id": "duplication-1774846358765-n78tylt1k8",
           "autoFixable": false
         },
         {
@@ -539,7 +539,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 16
           },
-          "id": "duplication-1774600949730-6epxsczep8u",
+          "id": "duplication-1774846358765-dwpowj8rc6c",
           "autoFixable": false
         },
         {
@@ -551,7 +551,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 17
           },
-          "id": "duplication-1774600949730-069dyx9l5xw7",
+          "id": "duplication-1774846358765-3pth6fzl32t",
           "autoFixable": false
         },
         {
@@ -563,7 +563,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 76
           },
-          "id": "duplication-1774600949730-4pky3d2gpz7",
+          "id": "duplication-1774846358765-tkftgdah3vh",
           "autoFixable": false
         },
         {
@@ -575,7 +575,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 77
           },
-          "id": "duplication-1774600949730-mkze9eo0p",
+          "id": "duplication-1774846358765-e9yflm6vydb",
           "autoFixable": false
         },
         {
@@ -587,7 +587,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberTimesheetsTimesheetId.ts",
             "line": 78
           },
-          "id": "duplication-1774600949730-3ehfrbs464",
+          "id": "duplication-1774846358765-kr1y7vfpkf",
           "autoFixable": false
         },
         {
@@ -599,7 +599,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberProjectsProjectIdTasksTaskId.ts",
             "line": 15
           },
-          "id": "duplication-1774600949730-z79d1iv16y",
+          "id": "duplication-1774846358765-5q8efipwb3y",
           "autoFixable": false
         },
         {
@@ -611,7 +611,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/putHrmTrackerMemberProjectsProjectIdTasksTaskId.ts",
             "line": 16
           },
-          "id": "duplication-1774600949730-giebysqcg1m",
+          "id": "duplication-1774846358765-7nfpq1ytoe",
           "autoFixable": false
         },
         {
@@ -623,7 +623,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 30
           },
-          "id": "duplication-1774600949730-8y6b9r0cy2k",
+          "id": "duplication-1774846358765-fw9ndynkew9",
           "autoFixable": false
         },
         {
@@ -635,7 +635,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 31
           },
-          "id": "duplication-1774600949730-ptkhrxbphz",
+          "id": "duplication-1774846358765-08gttyuq8p5c",
           "autoFixable": false
         },
         {
@@ -647,7 +647,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 32
           },
-          "id": "duplication-1774600949730-v0rz39slxp",
+          "id": "duplication-1774846358765-amtktsg4cz8",
           "autoFixable": false
         },
         {
@@ -659,7 +659,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 33
           },
-          "id": "duplication-1774600949730-p2477w5xy4",
+          "id": "duplication-1774846358765-86ujh4lhlxc",
           "autoFixable": false
         },
         {
@@ -671,7 +671,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 34
           },
-          "id": "duplication-1774600949730-x1yboyd9rf",
+          "id": "duplication-1774846358765-1ugz9dyq28s",
           "autoFixable": false
         },
         {
@@ -683,7 +683,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 35
           },
-          "id": "duplication-1774600949730-y4aek4h4s3n",
+          "id": "duplication-1774846358765-vrnradfxm1",
           "autoFixable": false
         },
         {
@@ -695,7 +695,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 36
           },
-          "id": "duplication-1774600949730-kv9pnvn54s",
+          "id": "duplication-1774846358765-kht469kfqz",
           "autoFixable": false
         },
         {
@@ -707,7 +707,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 37
           },
-          "id": "duplication-1774600949730-1cqjbsdbzis",
+          "id": "duplication-1774846358765-16zwqswvooo",
           "autoFixable": false
         },
         {
@@ -719,7 +719,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 38
           },
-          "id": "duplication-1774600949730-7piszutb5vy",
+          "id": "duplication-1774846358765-asfnjwpb5f",
           "autoFixable": false
         },
         {
@@ -731,7 +731,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 39
           },
-          "id": "duplication-1774600949730-vhe231izw4",
+          "id": "duplication-1774846358765-jp4mws4mt",
           "autoFixable": false
         },
         {
@@ -743,7 +743,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 40
           },
-          "id": "duplication-1774600949730-ztrmiar5nj",
+          "id": "duplication-1774846358765-z0lkp5pay9s",
           "autoFixable": false
         },
         {
@@ -755,7 +755,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 41
           },
-          "id": "duplication-1774600949730-9w5mongp2y7",
+          "id": "duplication-1774846358765-vs1glcg7839",
           "autoFixable": false
         },
         {
@@ -767,7 +767,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 42
           },
-          "id": "duplication-1774600949730-mf6pinv8hmd",
+          "id": "duplication-1774846358765-zm65d4zq85",
           "autoFixable": false
         },
         {
@@ -779,7 +779,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 43
           },
-          "id": "duplication-1774600949730-lk6jm83ar8m",
+          "id": "duplication-1774846358765-qaztzbdycyf",
           "autoFixable": false
         },
         {
@@ -791,7 +791,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 44
           },
-          "id": "duplication-1774600949730-ujey0qo6xr8",
+          "id": "duplication-1774846358765-yayoq1am1p",
           "autoFixable": false
         },
         {
@@ -803,7 +803,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 45
           },
-          "id": "duplication-1774600949730-rjjsh959o7j",
+          "id": "duplication-1774846358765-5isjo2hxyj9",
           "autoFixable": false
         },
         {
@@ -815,7 +815,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 46
           },
-          "id": "duplication-1774600949730-w5027yiiuj",
+          "id": "duplication-1774846358765-a80h99lel85",
           "autoFixable": false
         },
         {
@@ -827,7 +827,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 47
           },
-          "id": "duplication-1774600949730-z9foxyycmx",
+          "id": "duplication-1774846358765-77fu3poowyu",
           "autoFixable": false
         },
         {
@@ -839,7 +839,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 48
           },
-          "id": "duplication-1774600949730-2d40f5sx7gh",
+          "id": "duplication-1774846358765-el9tmmddxqh",
           "autoFixable": false
         },
         {
@@ -851,7 +851,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 49
           },
-          "id": "duplication-1774600949730-948fq0y0689",
+          "id": "duplication-1774846358765-kffj5ljdqxa",
           "autoFixable": false
         },
         {
@@ -863,7 +863,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 50
           },
-          "id": "duplication-1774600949730-uw505jzz38",
+          "id": "duplication-1774846358765-7va9u59hkal",
           "autoFixable": false
         },
         {
@@ -875,7 +875,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 51
           },
-          "id": "duplication-1774600949730-8kfyzpczei",
+          "id": "duplication-1774846358765-rmyyurk25jp",
           "autoFixable": false
         },
         {
@@ -887,7 +887,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 52
           },
-          "id": "duplication-1774600949730-8w2yfx68hue",
+          "id": "duplication-1774846358765-0uxmt4pv4e8q",
           "autoFixable": false
         },
         {
@@ -899,7 +899,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
             "line": 12
           },
-          "id": "duplication-1774600949730-qjoi3euda1",
+          "id": "duplication-1774846358765-fidlqchfc37",
           "autoFixable": false
         },
         {
@@ -911,7 +911,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerAuthMemberJoin.ts",
             "line": 42
           },
-          "id": "duplication-1774600949730-viqvywt7apr",
+          "id": "duplication-1774846358765-ppqcjj1fd6r",
           "autoFixable": false
         },
         {
@@ -923,7 +923,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/postHrmTrackerAuthMemberJoin.ts",
             "line": 43
           },
-          "id": "duplication-1774600949730-7uu3ww616sq",
+          "id": "duplication-1774846358765-v0yaa8gas5",
           "autoFixable": false
         },
         {
@@ -935,7 +935,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
             "line": 10
           },
-          "id": "duplication-1774600949730-fng3ju672t",
+          "id": "duplication-1774846358765-hp8novjcxys",
           "autoFixable": false
         },
         {
@@ -947,7 +947,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
             "line": 11
           },
-          "id": "duplication-1774600949730-pnic3u25j7r",
+          "id": "duplication-1774846358765-n1egk8f82rl",
           "autoFixable": false
         },
         {
@@ -959,7 +959,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberTimesheetsMetrics.ts",
             "line": 12
           },
-          "id": "duplication-1774600949730-1qydsfnsxdq",
+          "id": "duplication-1774846358765-01wkrang78ti",
           "autoFixable": false
         },
         {
@@ -971,7 +971,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 97
           },
-          "id": "duplication-1774600949730-4go2l03ohkl",
+          "id": "duplication-1774846358765-uc35tr34q6f",
           "autoFixable": false
         },
         {
@@ -983,7 +983,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 98
           },
-          "id": "duplication-1774600949730-fz4r5w3s3br",
+          "id": "duplication-1774846358765-aabqn1yrrnd",
           "autoFixable": false
         },
         {
@@ -995,7 +995,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 99
           },
-          "id": "duplication-1774600949730-br90q4ddrf9",
+          "id": "duplication-1774846358765-ir17jcknf49",
           "autoFixable": false
         },
         {
@@ -1007,7 +1007,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 100
           },
-          "id": "duplication-1774600949730-byh7qgt65ft",
+          "id": "duplication-1774846358765-82w6zztkzdh",
           "autoFixable": false
         },
         {
@@ -1019,7 +1019,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/providers/patchHrmTrackerMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 101
           },
-          "id": "duplication-1774600949730-4b75h6hrkfl",
+          "id": "duplication-1774846358765-p9ejba8i9jg",
           "autoFixable": false
         }
       ]
@@ -1036,7 +1036,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/activity-logs/HrmtrackerActivity_logsController.ts",
             "line": 10
           },
-          "id": "naming-1774600949706-6d9l8z8ab7",
+          "id": "naming-1774846358765-aryn90vq8cw",
           "autoFixable": false
         },
         {
@@ -1048,19 +1048,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/role-changes/HrmtrackerEmployeesRole_changesController.ts",
             "line": 8
           },
-          "id": "naming-1774600949731-k35rf1j28l",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
-            "line": 10
-          },
-          "id": "naming-1774600949734-6964vuv5ri",
+          "id": "naming-1774846358766-iosej4wnwdr",
           "autoFixable": false
         },
         {
@@ -1072,7 +1060,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/status-change/HrmtrackerMemberProjectsStatus_changeController.ts",
             "line": 10
           },
-          "id": "naming-1774600949735-3r2fkqd0y4b",
+          "id": "naming-1774846358770-rqck4ii7fqp",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
+            "line": 10
+          },
+          "id": "naming-1774846358771-i5009crqsvk",
           "autoFixable": false
         },
         {
@@ -1084,7 +1084,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/status-history/HrmtrackerMemberOrganizationsStatus_historyController.ts",
             "line": 10
           },
-          "id": "naming-1774600949740-f05kzy1j135",
+          "id": "naming-1774846358771-i0fg6jq27we",
           "autoFixable": false
         },
         {
@@ -1096,7 +1096,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/audit/role-changes/HrmtrackerMemberAuditRole_changesController.ts",
             "line": 11
           },
-          "id": "naming-1774600949736-95s6qvx5qhr",
+          "id": "naming-1774846358771-1pkcsv9nekqi",
           "autoFixable": false
         }
       ]
@@ -1114,31 +1114,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774600949758-rnfixfzgh8h",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/departments/HrmtrackerDepartmentsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600949759-gx83caw19p8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerRolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/roles/HrmtrackerRolesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600949759-kyt868bher",
+          "id": "jsdoc-1774846358790-ljr3wdl3qxc",
           "autoFixable": false
         },
         {
@@ -1150,7 +1126,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/activity-logs/HrmtrackerActivity_logsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949759-yqhce7wus68",
+          "id": "jsdoc-1774846358791-u9dqmmw1rvj",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/departments/HrmtrackerDepartmentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846358791-fsw0elwpavs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/roles/HrmtrackerRolesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846358791-etbabjgthys",
           "autoFixable": false
         },
         {
@@ -1162,19 +1162,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/role-changes/HrmtrackerEmployeesRole_changesController.ts",
             "line": 8
           },
-          "id": "jsdoc-1774600949759-8t9edevayje",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerEmployeesHistoriesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774600949759-x6r23xyrvw",
+          "id": "jsdoc-1774846358791-uddlwjs7w9c",
           "autoFixable": false
         },
         {
@@ -1186,7 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/auth/guest/HrmtrackerAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774600949759-cv98iry3qyb",
+          "id": "jsdoc-1774846358792-ikqdhuymsec",
           "autoFixable": false
         },
         {
@@ -1198,7 +1186,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949760-4b1mknxdj0l",
+          "id": "jsdoc-1774846358792-6x53e3wtwnt",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerEmployeesHistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846358791-nlvb3jhcd1d",
           "autoFixable": false
         },
         {
@@ -1210,7 +1210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/versions/HrmtrackerMemberVersionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949759-99ktikqm1fu",
+          "id": "jsdoc-1774846358792-anxnlvlk6nn",
           "autoFixable": false
         },
         {
@@ -1222,7 +1222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/HrmtrackerMemberTimesheetsController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774600949760-j395jqjbwq",
+          "id": "jsdoc-1774846358794-c2i685y647w",
           "autoFixable": false
         },
         {
@@ -1234,7 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timelogs/HrmtrackerMemberTimelogsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774600949762-jiagbdchmw",
+          "id": "jsdoc-1774846358794-t9jg3noof9k",
           "autoFixable": false
         },
         {
@@ -1246,7 +1246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/sessions/HrmtrackerMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949761-jus1ffa82qi",
+          "id": "jsdoc-1774846358793-yzp6xnbmo2",
           "autoFixable": false
         },
         {
@@ -1258,7 +1258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/settings/HrmtrackerMemberSettingsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949761-8pe3z1ki7of",
+          "id": "jsdoc-1774846358793-1hqj43strmg",
           "autoFixable": false
         },
         {
@@ -1270,7 +1270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/roles/HrmtrackerMemberRolesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949761-tymvui4cad",
+          "id": "jsdoc-1774846358793-ac1jv6pxeb6",
           "autoFixable": false
         },
         {
@@ -1282,7 +1282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/HrmtrackerMemberProjectsController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774600949761-cvwlfz8a37v",
+          "id": "jsdoc-1774846358793-4o7es8c694i",
           "autoFixable": false
         },
         {
@@ -1294,31 +1294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/profile/HrmtrackerMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949762-3u0oue3pel9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/HrmtrackerMemberOrganizationsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774600949762-yyitatj5iac",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberInvitationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/invitations/HrmtrackerMemberInvitationsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774600949763-bv6wguqgmv",
+          "id": "jsdoc-1774846358797-1qo4ytvnjdg",
           "autoFixable": false
         },
         {
@@ -1330,7 +1306,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/employees/HrmtrackerMemberEmployeesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949763-otbcemp3xo",
+          "id": "jsdoc-1774846358795-e8dtxx9iq9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/HrmtrackerMemberOrganizationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846358795-2oe5twnxczl",
           "autoFixable": false
         },
         {
@@ -1342,7 +1330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/departments/HrmtrackerMemberDepartmentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949764-1so34zsjjxt",
+          "id": "jsdoc-1774846358795-7piaw4uzw29",
           "autoFixable": false
         },
         {
@@ -1354,7 +1342,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949763-vbm8ilja0wi",
+          "id": "jsdoc-1774846358796-uyxa8wufbfp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberInvitationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/invitations/HrmtrackerMemberInvitationsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846358796-ay2rbbbkl5d",
           "autoFixable": false
         },
         {
@@ -1366,19 +1366,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/configs/HrmtrackerMemberConfigsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949764-if8y1m6kq1n",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberTimersStatusController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timers/status/HrmtrackerMemberTimersStatusController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600949763-a7lb3d19nn8",
+          "id": "jsdoc-1774846358796-ytooyyo1klk",
           "autoFixable": false
         },
         {
@@ -1390,7 +1378,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timesheets/metrics/HrmtrackerMemberTimesheetsMetricsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949763-a81rf19ee78",
+          "id": "jsdoc-1774846358796-7pq032epo2o",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberTimersStatusController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/timers/status/HrmtrackerMemberTimersStatusController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846358799-x7vm41c8vi",
           "autoFixable": false
         },
         {
@@ -1402,55 +1402,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/roles/permissions/HrmtrackerMemberRolesPermissionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949766-3kzs9hvw7ia",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774600949765-gys5ummzyt4",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsProjectmembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/projectMembers/HrmtrackerMemberProjectsProjectmembersController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774600949764-918ea9mm96o",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/dashboard/HrmtrackerMemberProjectsDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600949764-nzp1x1slgo",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774600949765-9f4xch6l6l5",
+          "id": "jsdoc-1774846358797-ovque8pqlej",
           "autoFixable": false
         },
         {
@@ -1462,19 +1414,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/status-change/HrmtrackerMemberProjectsStatus_changeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949764-bx21ih14deg",
+          "id": "jsdoc-1774846358797-3pdziaipl41",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtrackerMemberOrganizationsStatus_historyController\" missing JSDoc",
+          "message": "Class \"HrmtrackerMemberProjectsDashboardController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/status-history/HrmtrackerMemberOrganizationsStatus_historyController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/dashboard/HrmtrackerMemberProjectsDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949765-8yjqyen8xyg",
+          "id": "jsdoc-1774846358797-iv97q0g43li",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberProjectsProjectmembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/projectMembers/HrmtrackerMemberProjectsProjectmembersController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846358798-f7nenkznd67",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/HrmtrackerMemberProjectsTasksController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846358797-ceogvlkagzm",
           "autoFixable": false
         },
         {
@@ -1486,7 +1462,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/employees/role/HrmtrackerMemberEmployeesRoleController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949765-5bwx0i2jmq8",
+          "id": "jsdoc-1774846358798-2vczplcx2k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberProjectsActivity_summaryController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/activity-summary/HrmtrackerMemberProjectsActivity_summaryController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846358798-u2d99i4zzz",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtrackerMemberOrganizationsStatus_historyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/status-history/HrmtrackerMemberOrganizationsStatus_historyController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846358798-oz0ipdiidj",
           "autoFixable": false
         },
         {
@@ -1498,7 +1498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/audit/role-changes/HrmtrackerMemberAuditRole_changesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949765-ei2rk5bxbmk",
+          "id": "jsdoc-1774846358798-lausegxm91",
           "autoFixable": false
         },
         {
@@ -1510,7 +1510,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/analytics/activities/HrmtrackerMemberAnalyticsActivitiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949765-4aytbsxtfj5",
+          "id": "jsdoc-1774846358799-ff0eqg6qy1d",
           "autoFixable": false
         },
         {
@@ -1522,7 +1522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949767-ls7x1hsbm4l",
+          "id": "jsdoc-1774846358799-i5nwjvf9h6",
           "autoFixable": false
         },
         {
@@ -1534,7 +1534,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/projects/tasks/taskHistories/HrmtrackerMemberProjectsTasksTaskhistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774600949766-3dhtczx3558",
+          "id": "jsdoc-1774846358799-n30zsk81pxr",
           "autoFixable": false
         },
         {
@@ -1546,7 +1546,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/dashboard/overview/HrmtrackerMemberOrganizationsDashboardOverviewController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774600949765-ids0vczg4q",
+          "id": "jsdoc-1774846358799-3gsguwgg8y2",
           "autoFixable": false
         },
         {
@@ -1558,7 +1558,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3-coder-next/erp/src/controllers/hrmTracker/member/organizations/analytics/employees/HrmtrackerMemberOrganizationsAnalyticsEmployeesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774600949766-408cn52f16k",
+          "id": "jsdoc-1774846358799-rkpdaw58qre",
           "autoFixable": false
         }
       ]
@@ -1577,7 +1577,7 @@
             "file": "src/api/structures/IHrmTrackerSystemConfig.ts",
             "line": 80
           },
-          "id": "completeness-1774600949787-fchl67e1l9",
+          "id": "completeness-1774846358814-2323cf7gt3j",
           "autoFixable": false
         },
         {
@@ -1589,7 +1589,7 @@
             "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
             "line": 29
           },
-          "id": "completeness-1774600949787-syd83q18hhi",
+          "id": "completeness-1774846358814-djy4dp590jm",
           "autoFixable": false
         },
         {
@@ -1601,7 +1601,7 @@
             "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
             "line": 33
           },
-          "id": "completeness-1774600949787-7bmhnwlwu2a",
+          "id": "completeness-1774846358814-wm5fspajuod",
           "autoFixable": false
         },
         {
@@ -1613,7 +1613,7 @@
             "file": "src/api/structures/IHrmTrackerPendingInvitation.ts",
             "line": 197
           },
-          "id": "completeness-1774600949787-ke6ag222o2l",
+          "id": "completeness-1774846358814-9nygdd52zb6",
           "autoFixable": false
         },
         {
@@ -1625,7 +1625,7 @@
             "file": "src/api/structures/IHrmTrackerOrganization.ts",
             "line": 94
           },
-          "id": "completeness-1774600949788-vv6obuy0dgr",
+          "id": "completeness-1774846358814-8twfeof9m26",
           "autoFixable": false
         },
         {
@@ -1637,7 +1637,7 @@
             "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
             "line": 74
           },
-          "id": "completeness-1774600949788-vmfwlvxul18",
+          "id": "completeness-1774846358815-s4qihgpkewl",
           "autoFixable": false
         },
         {
@@ -1649,7 +1649,7 @@
             "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
             "line": 82
           },
-          "id": "completeness-1774600949788-paa7q5g2mh",
+          "id": "completeness-1774846358815-w01w7da2c5p",
           "autoFixable": false
         },
         {
@@ -1661,7 +1661,7 @@
             "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
             "line": 90
           },
-          "id": "completeness-1774600949788-xpdfkhpmdl",
+          "id": "completeness-1774846358815-u5vtv6f00t",
           "autoFixable": false
         },
         {
@@ -1673,7 +1673,7 @@
             "file": "src/api/structures/IHrmTrackerEmployeeRoleChange.ts",
             "line": 98
           },
-          "id": "completeness-1774600949788-czlfwbra5ce",
+          "id": "completeness-1774846358815-xn7r1e3drk",
           "autoFixable": false
         },
         {
@@ -1685,7 +1685,7 @@
             "file": "src/api/structures/IHrmTrackerAnalytic.ts",
             "line": 33
           },
-          "id": "completeness-1774600949788-7jc5brc8swk",
+          "id": "completeness-1774846358815-602bn5a8l1j",
           "autoFixable": false
         }
       ]
@@ -1708,7 +1708,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774600949280-5s10rjj3v9",
+      "id": "type-error-1774846358157-2ga0wubo257",
       "autoFixable": false
     },
     {
@@ -1720,7 +1720,7 @@
         "file": "src/controllers/hrmTracker/auth/member/HrmtrackerAuthMemberController.ts",
         "line": 422
       },
-      "id": "type-error-1774600949280-cjx4axv618",
+      "id": "type-error-1774846358158-tanjrvkf6e",
       "autoFixable": false
     },
     {
@@ -1732,7 +1732,7 @@
         "file": "src/controllers/hrmTracker/employees/HrmtrackerEmployeesController.ts",
         "line": 312
       },
-      "id": "type-error-1774600949280-oyxexuk555c",
+      "id": "type-error-1774846358158-ae45rfslsy5",
       "autoFixable": false
     },
     {
@@ -1744,7 +1744,7 @@
         "file": "src/controllers/hrmTracker/member/dashboard/HrmtrackerMemberDashboardController.ts",
         "line": 355
       },
-      "id": "type-error-1774600949280-2snxmwm8doz",
+      "id": "type-error-1774846358158-hsb9ok3aeec",
       "autoFixable": false
     },
     {
@@ -1756,7 +1756,7 @@
         "file": "src/controllers/hrmTracker/member/projects/tasks/timeline/HrmtrackerMemberProjectsTasksTimelineController.ts",
         "line": 375
       },
-      "id": "type-error-1774600949280-369z7fk3a3a",
+      "id": "type-error-1774846358158-nnl933pjio",
       "autoFixable": false
     },
     {
@@ -1768,7 +1768,7 @@
         "file": "src/providers/deleteHrmTrackerMemberDepartmentsDepartmentId.ts",
         "line": 1459
       },
-      "id": "type-error-1774600949280-28b1zu61sfaj",
+      "id": "type-error-1774846358158-eqadvxgjipb",
       "autoFixable": false
     },
     {
@@ -1780,7 +1780,7 @@
         "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
         "line": 1961
       },
-      "id": "type-error-1774600949280-3o2v4tg506e",
+      "id": "type-error-1774846358158-9aee9jcx5dh",
       "autoFixable": false
     },
     {
@@ -1792,7 +1792,7 @@
         "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
         "line": 2079
       },
-      "id": "type-error-1774600949280-gvrxmvymbun",
+      "id": "type-error-1774846358158-i5odn2q2w7k",
       "autoFixable": false
     },
     {
@@ -1804,7 +1804,7 @@
         "file": "src/providers/patchHrmTrackerMemberProjectsProjectIdProjectMembers.ts",
         "line": 6176
       },
-      "id": "type-error-1774600949280-3myawwtrge9",
+      "id": "type-error-1774846358158-byvrcllk9m6",
       "autoFixable": false
     },
     {
@@ -1816,7 +1816,7 @@
         "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
         "line": 2038
       },
-      "id": "type-error-1774600949280-u9gl1dvcql",
+      "id": "type-error-1774846358158-f62vrqqyejq",
       "autoFixable": false
     },
     {
@@ -1828,7 +1828,7 @@
         "file": "src/providers/patchHrmTrackerMemberTimelogs.ts",
         "line": 2140
       },
-      "id": "type-error-1774600949280-ae6juvv4gqt",
+      "id": "type-error-1774846358158-ewmtoghpzva",
       "autoFixable": false
     },
     {
@@ -1840,7 +1840,7 @@
         "file": "src/providers/postHrmTrackerMemberRolesRoleIdPermissions.ts",
         "line": 1444
       },
-      "id": "type-error-1774600949280-ws3s1y0yw7o",
+      "id": "type-error-1774846358158-i5y6ixk9ly",
       "autoFixable": false
     }
   ],
@@ -1854,7 +1854,7 @@
         "file": "src/controllers/hrmTracker/employees/histories/HrmtrackerEmployeesHistoriesController.ts",
         "line": 2034
       },
-      "id": "type-error-1774600949280-u9h9kmuhe",
+      "id": "type-error-1774846358158-mi34rsuvm3n",
       "autoFixable": false
     },
     {
@@ -1866,7 +1866,7 @@
         "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
         "line": 1207
       },
-      "id": "type-error-1774600949280-1dc8j93gwb2",
+      "id": "type-error-1774846358158-ek5jwghuvt6",
       "autoFixable": false
     },
     {
@@ -1878,7 +1878,7 @@
         "file": "src/providers/patchHrmTrackerMemberOrganizationsOrganizationIdAnalyticsEmployees.ts",
         "line": 1483
       },
-      "id": "type-error-1774600949280-ally2ifvd96",
+      "id": "type-error-1774846358158-ghuny1oie1",
       "autoFixable": false
     },
     {
@@ -1890,7 +1890,7 @@
         "file": "src/providers/patchHrmTrackerMemberVersions.ts",
         "line": 1370
       },
-      "id": "type-error-1774600949280-epyig4uvpis",
+      "id": "type-error-1774846358158-zukk9i1ydsd",
       "autoFixable": false
     },
     {
@@ -1902,7 +1902,7 @@
         "file": "src/providers/patchHrmTrackerMemberVersions.ts",
         "line": 1480
       },
-      "id": "type-error-1774600949280-ohu549t5qv",
+      "id": "type-error-1774846358158-yh4ggn52r48",
       "autoFixable": false
     },
     {
@@ -1914,7 +1914,7 @@
         "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
         "line": 2270
       },
-      "id": "type-error-1774600949280-l0hm8wvvf4a",
+      "id": "type-error-1774846358158-rtdopg0mdhq",
       "autoFixable": false
     },
     {
@@ -1926,13 +1926,13 @@
         "file": "src/providers/postHrmTrackerMemberProjectsProjectIdStatusChange.ts",
         "line": 3442
       },
-      "id": "type-error-1774600949280-72wfswyb46g",
+      "id": "type-error-1774846358158-dpfqj95hkxl",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:42:29.789Z",
-    "totalDurationMs": 6599,
+    "evaluatedAt": "2026-03-30T04:52:38.815Z",
+    "totalDurationMs": 6602,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 283
   },

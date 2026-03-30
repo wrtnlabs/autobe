@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845592931-wm235d5dn8f",
+          "id": "type-error-1774846286751-r4ndosu5gsc",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/hrmTimeTracking/auth/member/HrmtimetrackingAuthMemberController.ts",
             "line": 232
           },
-          "id": "type-error-1774845592931-rfa4onjx79c",
+          "id": "type-error-1774846286751-dnn9khkv0nw",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/hrmTimeTracking/member/employees/contracts/HrmtimetrackingMemberEmployeesContractsController.ts",
             "line": 866
           },
-          "id": "type-error-1774845592931-677xalbbrk9",
+          "id": "type-error-1774846286751-6qbsxfgsmdc",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/hrmTimeTracking/member/hrmTimeTracking/activity-records/HrmtimetrackingMemberHrmtimetrackingActivity_recordsController.ts",
             "line": 724
           },
-          "id": "type-error-1774845592931-59xcz9fg0vv",
+          "id": "type-error-1774846286751-jvkp4n84mp",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/hrmTimeTracking/member/invitations/HrmtimetrackingMemberInvitationsController.ts",
             "line": 1022
           },
-          "id": "type-error-1774845592931-x5dek9kd48h",
+          "id": "type-error-1774846286751-n2jlmvo0euk",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/controllers/hrmTimeTracking/member/organizations/HrmtimetrackingMemberOrganizationsController.ts",
             "line": 814
           },
-          "id": "type-error-1774845592931-9t330vj8iys",
+          "id": "type-error-1774846286751-dkbr9ac3uxc",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberReportsTime.ts",
             "line": 4662
           },
-          "id": "type-error-1774845592931-wb9o8ps6e8l",
+          "id": "type-error-1774846286751-m4soyxrc1mc",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberReportsWeeklySummary.ts",
             "line": 3497
           },
-          "id": "type-error-1774845592931-9umxd27xp1h",
+          "id": "type-error-1774846286751-55zg11ltcu9",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberRolesRoleId.ts",
             "line": 2682
           },
-          "id": "type-error-1774845592931-o93puocjmfe",
+          "id": "type-error-1774846286751-t067l8pz79n",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberRolesRoleIdPermissions.ts",
             "line": 2629
           },
-          "id": "type-error-1774845592931-93bnsikugth",
+          "id": "type-error-1774846286751-3umyn0ysugk",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 10177
           },
-          "id": "type-error-1774845592931-3wsizrc8dj9",
+          "id": "type-error-1774846286751-ymdl3c115e",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 11180
           },
-          "id": "type-error-1774845592931-kodhmosq6u",
+          "id": "type-error-1774846286751-oq83yjwaryg",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/postHrmTimeTrackingMemberMeTimesheetsDraft.ts",
             "line": 4610
           },
-          "id": "type-error-1774845592931-vtc1uo3d9zp",
+          "id": "type-error-1774846286751-po5xz4i6etm",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/postHrmTimeTrackingMemberRolesRoleIdPermissions.ts",
             "line": 2743
           },
-          "id": "type-error-1774845592931-8jceehvrc5",
+          "id": "type-error-1774846286751-6mqx0yto7gc",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/postHrmTimeTrackingMemberTimesheets.ts",
             "line": 3971
           },
-          "id": "type-error-1774845592931-jyw82zvzwmq",
+          "id": "type-error-1774846286751-v7qx9mtji7i",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/putHrmTimeTrackingMemberRolesRoleId.ts",
             "line": 5084
           },
-          "id": "type-error-1774845592931-uz6te29mnf",
+          "id": "type-error-1774846286751-f88m3mo2mhr",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
             "line": 2246
           },
-          "id": "type-error-1774845592931-3a3sowzizyt",
+          "id": "type-error-1774846286751-4z8c3oxt8rp",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
             "line": 2266
           },
-          "id": "type-error-1774845592931-xhp5166o3",
+          "id": "type-error-1774846286751-zy3tki8rf2r",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
             "line": 2314
           },
-          "id": "type-error-1774845592931-fzk3texp1t6",
+          "id": "type-error-1774846286751-5lnh5n75kbj",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
             "line": 2362
           },
-          "id": "type-error-1774845592931-amh5fx9gdfn",
+          "id": "type-error-1774846286751-hhji5azkbs6",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
             "line": 2794
           },
-          "id": "type-error-1774845592931-371cdz07l1n",
+          "id": "type-error-1774846286751-jenoetd9lh",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
             "line": 2847
           },
-          "id": "type-error-1774845592931-gxfig9b0vl",
+          "id": "type-error-1774846286751-efbn0tihgvh",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
             "line": 2901
           },
-          "id": "type-error-1774845592931-rhvg27wn1dd",
+          "id": "type-error-1774846286751-vc05h3p3icb",
           "autoFixable": false
         },
         {
@@ -295,11 +295,11 @@
             "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
             "line": 2950
           },
-          "id": "type-error-1774845592931-2ty7k6z3yzg",
+          "id": "type-error-1774846286751-rc12h9irmkf",
           "autoFixable": false
         }
       ],
-      "durationMs": 7901,
+      "durationMs": 8072,
       "metrics": {
         "totalFiles": 332,
         "filesWithErrors": 0,
@@ -433,7 +433,7 @@
             "line": 23
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593417-4ivtpc3fpfp",
+          "id": "complexity-1774846286947-psovraf00pa",
           "autoFixable": false
         },
         {
@@ -446,7 +446,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593418-sioo5rmir2",
+          "id": "complexity-1774846286951-u75qumlsjo",
           "autoFixable": false
         },
         {
@@ -459,7 +459,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593419-ogcdog61qth",
+          "id": "complexity-1774846286949-hswhzy58ls",
           "autoFixable": false
         },
         {
@@ -472,7 +472,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593424-g5io5kfe3a",
+          "id": "complexity-1774846286950-8z4riv8i7m",
           "autoFixable": false
         },
         {
@@ -485,7 +485,7 @@
             "line": 21
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593423-gn7aoo1o3m",
+          "id": "complexity-1774846286952-an77v1jd9f",
           "autoFixable": false
         },
         {
@@ -498,7 +498,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593437-9zy7eh88iaf",
+          "id": "complexity-1774846286965-4wnak5nrtl7",
           "autoFixable": false
         },
         {
@@ -511,7 +511,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593441-ffnpwnec14o",
+          "id": "complexity-1774846286967-ujkeelpnw1k",
           "autoFixable": false
         },
         {
@@ -524,7 +524,7 @@
             "line": 24
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593439-dcatcord9zh",
+          "id": "complexity-1774846286970-3uhn0d65ffe",
           "autoFixable": false
         },
         {
@@ -537,7 +537,7 @@
             "line": 24
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593450-gzkm4vypakk",
+          "id": "complexity-1774846286975-s57567db1gm",
           "autoFixable": false
         },
         {
@@ -550,7 +550,7 @@
             "line": 25
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593440-det1dxy8ojs",
+          "id": "complexity-1774846286971-tk07i08i7v",
           "autoFixable": false
         },
         {
@@ -563,7 +563,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593444-lfcifmi2y8",
+          "id": "complexity-1774846286972-ux105q5v23e",
           "autoFixable": false
         },
         {
@@ -576,7 +576,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593447-1azf2pf30tf",
+          "id": "complexity-1774846286980-dowym91bupu",
           "autoFixable": false
         },
         {
@@ -589,7 +589,7 @@
             "line": 23
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593452-iuzmw4bel2",
+          "id": "complexity-1774846286979-4ut55uwqfk",
           "autoFixable": false
         },
         {
@@ -602,7 +602,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593453-rntsvikz82h",
+          "id": "complexity-1774846286988-k776xf4tda",
           "autoFixable": false
         },
         {
@@ -615,7 +615,7 @@
             "line": 24
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593457-2im7bljb0q",
+          "id": "complexity-1774846287000-erfsqy5sa4l",
           "autoFixable": false
         },
         {
@@ -628,7 +628,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593461-e9go2x7apyk",
+          "id": "complexity-1774846286995-b107pvyx5tk",
           "autoFixable": false
         },
         {
@@ -641,7 +641,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593462-ptm370ri769",
+          "id": "complexity-1774846286994-606ey3iz2ht",
           "autoFixable": false
         },
         {
@@ -654,7 +654,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593463-p1p82ux5e2s",
+          "id": "complexity-1774846286996-ifpz2zw7r5",
           "autoFixable": false
         },
         {
@@ -667,7 +667,7 @@
             "line": 33
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845593470-ltp89ztrpbl",
+          "id": "complexity-1774846287003-r8w2ffq57cm",
           "autoFixable": false
         },
         {
@@ -680,7 +680,7 @@
             "line": 33
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845593479-pq2qlh2ykh",
+          "id": "complexity-1774846287009-vihjki0wyr",
           "autoFixable": false
         }
       ]
@@ -694,58 +694,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
-            "line": 37
-          },
-          "id": "duplication-1774845593689-zacui80qv8",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
-            "line": 38
-          },
-          "id": "duplication-1774845593689-8w8vt5rtlnb",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
-            "line": 106
-          },
-          "id": "duplication-1774845593689-rk6q41wgjc7",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
-            "line": 107
-          },
-          "id": "duplication-1774845593689-0hoc1cadxwve",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "duplication",
-          "code": "D001",
-          "message": "Duplicate code block found in 2 locations",
-          "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timesheets/HrmtimetrackingMemberTimesheetsController.ts",
             "line": 42
           },
-          "id": "duplication-1774845593689-gw154df99k",
+          "id": "duplication-1774846287207-erzopahxggs",
           "autoFixable": false
         },
         {
@@ -757,7 +709,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timesheets/HrmtimetrackingMemberTimesheetsController.ts",
             "line": 43
           },
-          "id": "duplication-1774845593689-fqhq9vcfb19",
+          "id": "duplication-1774846287207-v2k515li52",
           "autoFixable": false
         },
         {
@@ -766,10 +718,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
-            "line": 93
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
+            "line": 37
           },
-          "id": "duplication-1774845593689-hpi8jlhguxj",
+          "id": "duplication-1774846287207-kto58oyxxih",
           "autoFixable": false
         },
         {
@@ -778,10 +730,34 @@
           "code": "D001",
           "message": "Duplicate code block found in 2 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
-            "line": 94
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
+            "line": 38
           },
-          "id": "duplication-1774845593689-9vn0ihx6bto",
+          "id": "duplication-1774846287207-lmg61lqoyhe",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
+            "line": 106
+          },
+          "id": "duplication-1774846287207-49zchtmbxri",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
+            "line": 107
+          },
+          "id": "duplication-1774846287207-vz1k6wcm1hh",
           "autoFixable": false
         },
         {
@@ -793,7 +769,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timelogs/HrmtimetrackingMemberTimelogsController.ts",
             "line": 88
           },
-          "id": "duplication-1774845593689-2ligitjbydk",
+          "id": "duplication-1774846287207-5iwp4c928py",
           "autoFixable": false
         },
         {
@@ -805,7 +781,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timelogs/HrmtimetrackingMemberTimelogsController.ts",
             "line": 89
           },
-          "id": "duplication-1774845593689-2bustswm3v",
+          "id": "duplication-1774846287207-u2n8ci4w5d",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
+            "line": 93
+          },
+          "id": "duplication-1774846287207-5e98x0hz76u",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "duplication",
+          "code": "D001",
+          "message": "Duplicate code block found in 2 locations",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
+            "line": 94
+          },
+          "id": "duplication-1774846287207-fvwm2npfln5",
           "autoFixable": false
         },
         {
@@ -817,7 +817,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
             "line": 35
           },
-          "id": "duplication-1774845593689-5nzclkylq1n",
+          "id": "duplication-1774846287207-xk1ikmwdyxe",
           "autoFixable": false
         },
         {
@@ -829,7 +829,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
             "line": 36
           },
-          "id": "duplication-1774845593689-rdyu0fujc2",
+          "id": "duplication-1774846287207-m8qv2nnr4nq",
           "autoFixable": false
         },
         {
@@ -841,7 +841,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
             "line": 73
           },
-          "id": "duplication-1774845593689-kovdw8dwk1r",
+          "id": "duplication-1774846287207-spwj8f3hchm",
           "autoFixable": false
         },
         {
@@ -853,7 +853,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
             "line": 74
           },
-          "id": "duplication-1774845593689-un8u5gedlw",
+          "id": "duplication-1774846287207-puab070hwwf",
           "autoFixable": false
         },
         {
@@ -865,7 +865,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberRolesRoleId.ts",
             "line": 11
           },
-          "id": "duplication-1774845593689-th9ot4129rf",
+          "id": "duplication-1774846287208-ogyevvkrhe",
           "autoFixable": false
         },
         {
@@ -877,7 +877,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberRolesRoleId.ts",
             "line": 154
           },
-          "id": "duplication-1774845593689-h39ynmnrxbj",
+          "id": "duplication-1774846287208-ikjrrdrdwt",
           "autoFixable": false
         },
         {
@@ -889,7 +889,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 37
           },
-          "id": "duplication-1774845593689-7j5nhbg5ius",
+          "id": "duplication-1774846287208-te706t81bzs",
           "autoFixable": false
         },
         {
@@ -901,7 +901,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 38
           },
-          "id": "duplication-1774845593689-2mfpwxff7u9",
+          "id": "duplication-1774846287208-zwger34a6m",
           "autoFixable": false
         },
         {
@@ -913,7 +913,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 39
           },
-          "id": "duplication-1774845593689-dhyqn5ndfd6",
+          "id": "duplication-1774846287208-8kvnwvdbgkk",
           "autoFixable": false
         },
         {
@@ -925,7 +925,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 40
           },
-          "id": "duplication-1774845593689-o3qvl88275",
+          "id": "duplication-1774846287208-mrltbhmsnk9",
           "autoFixable": false
         },
         {
@@ -937,7 +937,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 41
           },
-          "id": "duplication-1774845593689-t5ihy8fsnj",
+          "id": "duplication-1774846287208-2zck0t2ur8b",
           "autoFixable": false
         },
         {
@@ -949,7 +949,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 42
           },
-          "id": "duplication-1774845593689-qxgl25836z9",
+          "id": "duplication-1774846287208-o3a3r4eov1",
           "autoFixable": false
         },
         {
@@ -961,7 +961,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 43
           },
-          "id": "duplication-1774845593689-nt74k6bofae",
+          "id": "duplication-1774846287208-7fz7masjrxf",
           "autoFixable": false
         },
         {
@@ -973,7 +973,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberInvitationsInvitationId.ts",
             "line": 44
           },
-          "id": "duplication-1774845593689-kotxn8caqx",
+          "id": "duplication-1774846287208-ufpxi2189g",
           "autoFixable": false
         },
         {
@@ -985,7 +985,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 13
           },
-          "id": "duplication-1774845593689-dt392vpc9x",
+          "id": "duplication-1774846287208-qqnq7l6fufi",
           "autoFixable": false
         },
         {
@@ -997,7 +997,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 63
           },
-          "id": "duplication-1774845593689-qme05wofmhg",
+          "id": "duplication-1774846287208-tjn3w9rja3m",
           "autoFixable": false
         },
         {
@@ -1009,7 +1009,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 64
           },
-          "id": "duplication-1774845593689-rlknk0uybw",
+          "id": "duplication-1774846287208-vhm46d27lwm",
           "autoFixable": false
         },
         {
@@ -1021,7 +1021,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 65
           },
-          "id": "duplication-1774845593689-9pfrtwep4ms",
+          "id": "duplication-1774846287208-inxnw6h0t3h",
           "autoFixable": false
         },
         {
@@ -1033,7 +1033,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 66
           },
-          "id": "duplication-1774845593689-0nv4dyx8p2pr",
+          "id": "duplication-1774846287208-hwp8t0xrwbw",
           "autoFixable": false
         },
         {
@@ -1045,7 +1045,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 67
           },
-          "id": "duplication-1774845593689-hxh9kbiv4hn",
+          "id": "duplication-1774846287208-1wby9x1ffcm",
           "autoFixable": false
         },
         {
@@ -1057,7 +1057,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 68
           },
-          "id": "duplication-1774845593689-qsznb36ung",
+          "id": "duplication-1774846287208-j927gofvv0l",
           "autoFixable": false
         },
         {
@@ -1069,7 +1069,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/putHrmTimeTrackingMemberEmployeesEmployeeId.ts",
             "line": 69
           },
-          "id": "duplication-1774845593689-i73m898s9vj",
+          "id": "duplication-1774846287208-9qmzw0m3kx4",
           "autoFixable": false
         },
         {
@@ -1081,7 +1081,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 14
           },
-          "id": "duplication-1774845593689-8pl8l230wv",
+          "id": "duplication-1774846287208-e45jbcu7e3n",
           "autoFixable": false
         },
         {
@@ -1093,7 +1093,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 15
           },
-          "id": "duplication-1774845593689-4nxb6mzrlj",
+          "id": "duplication-1774846287208-90r4rzm7ny7",
           "autoFixable": false
         },
         {
@@ -1105,7 +1105,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdSubmit.ts",
             "line": 16
           },
-          "id": "duplication-1774845593689-fzkymp1xbn",
+          "id": "duplication-1774846287208-tn6qxibo62k",
           "autoFixable": false
         },
         {
@@ -1117,7 +1117,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 72
           },
-          "id": "duplication-1774845593689-ek1dn7k257t",
+          "id": "duplication-1774846287208-u7e5iykdxgo",
           "autoFixable": false
         },
         {
@@ -1129,7 +1129,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 73
           },
-          "id": "duplication-1774845593689-4uhahetr8yd",
+          "id": "duplication-1774846287208-j90ux7uhk4g",
           "autoFixable": false
         },
         {
@@ -1141,7 +1141,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 74
           },
-          "id": "duplication-1774845593689-39ddfh7o4nv",
+          "id": "duplication-1774846287208-vrr4t1zgjsd",
           "autoFixable": false
         },
         {
@@ -1153,7 +1153,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 75
           },
-          "id": "duplication-1774845593689-youk8bgeifd",
+          "id": "duplication-1774846287208-04lzf78vch1e",
           "autoFixable": false
         },
         {
@@ -1165,7 +1165,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 76
           },
-          "id": "duplication-1774845593689-me61ap5qd3o",
+          "id": "duplication-1774846287208-8bz8np15o85",
           "autoFixable": false
         },
         {
@@ -1177,7 +1177,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheetsTimesheetIdReject.ts",
             "line": 77
           },
-          "id": "duplication-1774845593689-8mu98azj3ac",
+          "id": "duplication-1774846287208-9j8of3db8v8",
           "autoFixable": false
         },
         {
@@ -1189,7 +1189,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheets.ts",
             "line": 63
           },
-          "id": "duplication-1774845593689-64flbk1jls",
+          "id": "duplication-1774846287208-hevhq1elpvi",
           "autoFixable": false
         },
         {
@@ -1201,7 +1201,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheets.ts",
             "line": 64
           },
-          "id": "duplication-1774845593689-gz2rwxrvij",
+          "id": "duplication-1774846287208-vuysivcjoqn",
           "autoFixable": false
         },
         {
@@ -1213,7 +1213,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimesheets.ts",
             "line": 65
           },
-          "id": "duplication-1774845593689-mj69pf6gizb",
+          "id": "duplication-1774846287208-g117ujnm9iv",
           "autoFixable": false
         },
         {
@@ -1225,7 +1225,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 17
           },
-          "id": "duplication-1774845593689-zuptphxxr8",
+          "id": "duplication-1774846287208-u3suoe3zsbc",
           "autoFixable": false
         },
         {
@@ -1237,7 +1237,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 18
           },
-          "id": "duplication-1774845593689-sbcvcbk4gp",
+          "id": "duplication-1774846287208-36nxy48g4kg",
           "autoFixable": false
         },
         {
@@ -1249,7 +1249,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 19
           },
-          "id": "duplication-1774845593689-kzzudyex5rq",
+          "id": "duplication-1774846287208-6txa9g9fq2e",
           "autoFixable": false
         },
         {
@@ -1261,7 +1261,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 20
           },
-          "id": "duplication-1774845593689-odk1c5yjx3",
+          "id": "duplication-1774846287208-i8psgzmcaq",
           "autoFixable": false
         },
         {
@@ -1273,7 +1273,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 21
           },
-          "id": "duplication-1774845593689-0qmzl3s0ns5",
+          "id": "duplication-1774846287208-zronph7zlci",
           "autoFixable": false
         },
         {
@@ -1285,7 +1285,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 22
           },
-          "id": "duplication-1774845593689-p3aozucqdvr",
+          "id": "duplication-1774846287208-spsmgur6gtf",
           "autoFixable": false
         },
         {
@@ -1297,7 +1297,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 23
           },
-          "id": "duplication-1774845593689-7ajqvminxz",
+          "id": "duplication-1774846287208-li9e3br91t",
           "autoFixable": false
         },
         {
@@ -1309,7 +1309,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 24
           },
-          "id": "duplication-1774845593689-irqn5h9xxud",
+          "id": "duplication-1774846287208-51fj3h0bw1r",
           "autoFixable": false
         },
         {
@@ -1321,7 +1321,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 25
           },
-          "id": "duplication-1774845593689-e8j8y9k79oc",
+          "id": "duplication-1774846287208-yufmz741r0a",
           "autoFixable": false
         },
         {
@@ -1333,7 +1333,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 59
           },
-          "id": "duplication-1774845593689-dmro2jwmorn",
+          "id": "duplication-1774846287208-dnclpy1gbnv",
           "autoFixable": false
         },
         {
@@ -1345,7 +1345,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 60
           },
-          "id": "duplication-1774845593689-qfaoaa8vit",
+          "id": "duplication-1774846287208-e730nkuasjg",
           "autoFixable": false
         },
         {
@@ -1357,7 +1357,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 61
           },
-          "id": "duplication-1774845593689-0tcf9o744dtf",
+          "id": "duplication-1774846287208-99vea7gfffk",
           "autoFixable": false
         },
         {
@@ -1369,7 +1369,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberTimerSessions.ts",
             "line": 62
           },
-          "id": "duplication-1774845593689-gt5dx6uo84f",
+          "id": "duplication-1774846287208-dnzuf0ula1",
           "autoFixable": false
         },
         {
@@ -1381,7 +1381,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberRolesRoleIdPermissions.ts",
             "line": 77
           },
-          "id": "duplication-1774845593689-zva4m2ghvw",
+          "id": "duplication-1774846287208-69zrr1d7tk",
           "autoFixable": false
         },
         {
@@ -1393,7 +1393,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimesheetsDraft.ts",
             "line": 32
           },
-          "id": "duplication-1774845593689-nkoc65cijr",
+          "id": "duplication-1774846287208-b7q7cbjknhc",
           "autoFixable": false
         },
         {
@@ -1405,7 +1405,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 16
           },
-          "id": "duplication-1774845593689-datipjmb2wi",
+          "id": "duplication-1774846287208-6mmxvrla1tv",
           "autoFixable": false
         },
         {
@@ -1417,7 +1417,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 17
           },
-          "id": "duplication-1774845593689-0d9r80xhk6cc",
+          "id": "duplication-1774846287208-otfawosel5",
           "autoFixable": false
         },
         {
@@ -1429,7 +1429,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 18
           },
-          "id": "duplication-1774845593689-vqz5zgbjff",
+          "id": "duplication-1774846287208-rkna91qncq",
           "autoFixable": false
         },
         {
@@ -1441,7 +1441,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 19
           },
-          "id": "duplication-1774845593689-yi1v5qwanb8",
+          "id": "duplication-1774846287208-fk3rcakkg94",
           "autoFixable": false
         },
         {
@@ -1453,7 +1453,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 20
           },
-          "id": "duplication-1774845593689-bgkc41qws2",
+          "id": "duplication-1774846287208-cfqnnxdm38f",
           "autoFixable": false
         },
         {
@@ -1465,7 +1465,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 21
           },
-          "id": "duplication-1774845593689-2u3r6pewkhu",
+          "id": "duplication-1774846287208-qt1aq6b5ooj",
           "autoFixable": false
         },
         {
@@ -1477,7 +1477,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 22
           },
-          "id": "duplication-1774845593689-j7fvgjn88ua",
+          "id": "duplication-1774846287208-u1fpemk9u",
           "autoFixable": false
         },
         {
@@ -1489,7 +1489,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 23
           },
-          "id": "duplication-1774845593689-vvky5genis",
+          "id": "duplication-1774846287208-2xas0ol0w9",
           "autoFixable": false
         },
         {
@@ -1501,7 +1501,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberMeTimerSessionDiscard.ts",
             "line": 24
           },
-          "id": "duplication-1774845593689-p9j0gb6dasj",
+          "id": "duplication-1774846287208-y9uo72dlz9n",
           "autoFixable": false
         },
         {
@@ -1513,7 +1513,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 13
           },
-          "id": "duplication-1774845593689-mwog8wt26u",
+          "id": "duplication-1774846287208-74mxat7cqnr",
           "autoFixable": false
         },
         {
@@ -1525,7 +1525,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 14
           },
-          "id": "duplication-1774845593689-chbcu1oi9so",
+          "id": "duplication-1774846287208-mbf826uh0mm",
           "autoFixable": false
         },
         {
@@ -1537,7 +1537,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 15
           },
-          "id": "duplication-1774845593689-v653p3rm91q",
+          "id": "duplication-1774846287208-cjmny8zb3lp",
           "autoFixable": false
         },
         {
@@ -1549,7 +1549,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 16
           },
-          "id": "duplication-1774845593689-u6m1spyieh",
+          "id": "duplication-1774846287208-arhjpk6bplp",
           "autoFixable": false
         },
         {
@@ -1561,7 +1561,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 17
           },
-          "id": "duplication-1774845593689-pfx7zai2mpj",
+          "id": "duplication-1774846287208-enqei1905io",
           "autoFixable": false
         },
         {
@@ -1573,7 +1573,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 18
           },
-          "id": "duplication-1774845593689-iijmvusngdl",
+          "id": "duplication-1774846287208-2sxikrqlyi5",
           "autoFixable": false
         },
         {
@@ -1585,7 +1585,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/postHrmTimeTrackingMemberEmployeesEmployeeIdReactivate.ts",
             "line": 19
           },
-          "id": "duplication-1774845593689-65bl4v1oets",
+          "id": "duplication-1774846287208-lc99rnoznv",
           "autoFixable": false
         },
         {
@@ -1597,7 +1597,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 28
           },
-          "id": "duplication-1774845593689-4usz0wybfp9",
+          "id": "duplication-1774846287208-sual5svtgy",
           "autoFixable": false
         },
         {
@@ -1609,7 +1609,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 29
           },
-          "id": "duplication-1774845593689-ls4chj7pan9",
+          "id": "duplication-1774846287208-l4npmwjiqi",
           "autoFixable": false
         },
         {
@@ -1621,7 +1621,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 33
           },
-          "id": "duplication-1774845593689-69ot7nmtwtl",
+          "id": "duplication-1774846287208-mc0t7t41a6q",
           "autoFixable": false
         },
         {
@@ -1633,7 +1633,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 34
           },
-          "id": "duplication-1774845593689-5iiqwadxsm",
+          "id": "duplication-1774846287208-f6i1wx0vg1w",
           "autoFixable": false
         },
         {
@@ -1645,7 +1645,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 144
           },
-          "id": "duplication-1774845593689-exxcdmjgalf",
+          "id": "duplication-1774846287208-xb9z8k05ue",
           "autoFixable": false
         },
         {
@@ -1657,7 +1657,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 165
           },
-          "id": "duplication-1774845593689-on0jya8zkfs",
+          "id": "duplication-1774846287208-tsxelfwfgph",
           "autoFixable": false
         },
         {
@@ -1669,7 +1669,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 166
           },
-          "id": "duplication-1774845593689-8bnvtphg2km",
+          "id": "duplication-1774846287208-no0ojdu7az",
           "autoFixable": false
         },
         {
@@ -1681,7 +1681,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 167
           },
-          "id": "duplication-1774845593689-s35wb8q26a",
+          "id": "duplication-1774846287208-uo3l0px3od",
           "autoFixable": false
         },
         {
@@ -1693,7 +1693,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 168
           },
-          "id": "duplication-1774845593689-ey0pctqtkb",
+          "id": "duplication-1774846287208-hkqgwciiyhl",
           "autoFixable": false
         },
         {
@@ -1705,7 +1705,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheetsTimesheetIdTimelogs.ts",
             "line": 181
           },
-          "id": "duplication-1774845593689-nc7grelwdo",
+          "id": "duplication-1774846287208-k496p3hwbvr",
           "autoFixable": false
         },
         {
@@ -1717,7 +1717,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 60
           },
-          "id": "duplication-1774845593689-zu3pthm8zqn",
+          "id": "duplication-1774846287208-u12ngs14ab",
           "autoFixable": false
         },
         {
@@ -1729,7 +1729,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 61
           },
-          "id": "duplication-1774845593689-tgufkqnfl4f",
+          "id": "duplication-1774846287208-s13x5zq89ee",
           "autoFixable": false
         },
         {
@@ -1741,7 +1741,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 62
           },
-          "id": "duplication-1774845593689-2qktcam78bo",
+          "id": "duplication-1774846287208-p3k8orsjrxh",
           "autoFixable": false
         },
         {
@@ -1753,7 +1753,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 64
           },
-          "id": "duplication-1774845593689-ueyhr2z8w59",
+          "id": "duplication-1774846287208-aifg0dh06a",
           "autoFixable": false
         },
         {
@@ -1765,7 +1765,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 65
           },
-          "id": "duplication-1774845593689-udh1l0gozc",
+          "id": "duplication-1774846287208-clg7joyn5gk",
           "autoFixable": false
         },
         {
@@ -1777,7 +1777,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 66
           },
-          "id": "duplication-1774845593689-tg97s3er9v",
+          "id": "duplication-1774846287208-7zh2fyaqc6l",
           "autoFixable": false
         },
         {
@@ -1789,7 +1789,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 67
           },
-          "id": "duplication-1774845593689-19oqledz2af",
+          "id": "duplication-1774846287208-ezanb9wxai",
           "autoFixable": false
         },
         {
@@ -1801,7 +1801,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 68
           },
-          "id": "duplication-1774845593689-7z890ym1gue",
+          "id": "duplication-1774846287208-24k0dk9y6sh",
           "autoFixable": false
         },
         {
@@ -1813,7 +1813,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 69
           },
-          "id": "duplication-1774845593689-f3af0g828dc",
+          "id": "duplication-1774846287208-frjzfeztds7",
           "autoFixable": false
         },
         {
@@ -1825,7 +1825,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 70
           },
-          "id": "duplication-1774845593689-xas5fy48dt",
+          "id": "duplication-1774846287208-mgjx26v7o2o",
           "autoFixable": false
         },
         {
@@ -1837,7 +1837,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 71
           },
-          "id": "duplication-1774845593689-8t9ghvmg5o5",
+          "id": "duplication-1774846287208-s1ul5oj1ybh",
           "autoFixable": false
         },
         {
@@ -1849,7 +1849,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 72
           },
-          "id": "duplication-1774845593689-kvtflwmi1v",
+          "id": "duplication-1774846287208-k3oas7m5bgr",
           "autoFixable": false
         },
         {
@@ -1861,7 +1861,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 73
           },
-          "id": "duplication-1774845593689-4nupgph7idx",
+          "id": "duplication-1774846287208-7ha5iiyxhft",
           "autoFixable": false
         },
         {
@@ -1873,7 +1873,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 74
           },
-          "id": "duplication-1774845593689-msos1icgtn",
+          "id": "duplication-1774846287208-hao6q7mcz29",
           "autoFixable": false
         },
         {
@@ -1885,7 +1885,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 75
           },
-          "id": "duplication-1774845593689-v6jbpu9f22g",
+          "id": "duplication-1774846287208-fcflj8v4bq6",
           "autoFixable": false
         },
         {
@@ -1897,7 +1897,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 76
           },
-          "id": "duplication-1774845593689-ic1mls6v8o",
+          "id": "duplication-1774846287208-6fhqmi6f9p9",
           "autoFixable": false
         },
         {
@@ -1909,7 +1909,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 82
           },
-          "id": "duplication-1774845593689-t6ediewcgn",
+          "id": "duplication-1774846287208-iz4ihycazk",
           "autoFixable": false
         },
         {
@@ -1921,7 +1921,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 83
           },
-          "id": "duplication-1774845593689-s7v7tqwy5j",
+          "id": "duplication-1774846287208-mj9enhtk7j",
           "autoFixable": false
         },
         {
@@ -1933,7 +1933,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 84
           },
-          "id": "duplication-1774845593689-omimza3f8qf",
+          "id": "duplication-1774846287208-qn9opnddpro",
           "autoFixable": false
         },
         {
@@ -1945,7 +1945,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 85
           },
-          "id": "duplication-1774845593689-ghj8lmd9fqk",
+          "id": "duplication-1774846287208-gxt393ohrm6",
           "autoFixable": false
         },
         {
@@ -1957,7 +1957,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 86
           },
-          "id": "duplication-1774845593689-w5w1daw4tcm",
+          "id": "duplication-1774846287208-piy3xtoavp",
           "autoFixable": false
         },
         {
@@ -1969,7 +1969,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 87
           },
-          "id": "duplication-1774845593689-h6wqntlnidv",
+          "id": "duplication-1774846287208-xy7m6sk7k8f",
           "autoFixable": false
         },
         {
@@ -1981,7 +1981,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 88
           },
-          "id": "duplication-1774845593689-ftaeqda7gn4",
+          "id": "duplication-1774846287208-hyk7jkdtnr",
           "autoFixable": false
         },
         {
@@ -1993,7 +1993,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 89
           },
-          "id": "duplication-1774845593689-9i3ei8tfxee",
+          "id": "duplication-1774846287208-kb62zsszoi",
           "autoFixable": false
         },
         {
@@ -2005,7 +2005,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 92
           },
-          "id": "duplication-1774845593689-y5pig8d6lx",
+          "id": "duplication-1774846287208-flbu7luq4tv",
           "autoFixable": false
         },
         {
@@ -2017,7 +2017,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 93
           },
-          "id": "duplication-1774845593689-augoqyeyp8i",
+          "id": "duplication-1774846287208-w8ewfje90j",
           "autoFixable": false
         },
         {
@@ -2029,7 +2029,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 94
           },
-          "id": "duplication-1774845593689-6jgvi6afn4b",
+          "id": "duplication-1774846287208-by0qjpjtsdu",
           "autoFixable": false
         },
         {
@@ -2041,7 +2041,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 95
           },
-          "id": "duplication-1774845593689-452x7qzymp",
+          "id": "duplication-1774846287208-v97kn08lxzj",
           "autoFixable": false
         },
         {
@@ -2053,7 +2053,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 96
           },
-          "id": "duplication-1774845593689-2c88qwq8s99",
+          "id": "duplication-1774846287208-es9a6zpr6ev",
           "autoFixable": false
         },
         {
@@ -2065,7 +2065,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 102
           },
-          "id": "duplication-1774845593689-kz5bxvglkb",
+          "id": "duplication-1774846287208-0pu3pdlb8y2a",
           "autoFixable": false
         },
         {
@@ -2077,7 +2077,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 103
           },
-          "id": "duplication-1774845593689-1glqls2yjdb",
+          "id": "duplication-1774846287208-azem7axjym",
           "autoFixable": false
         },
         {
@@ -2089,7 +2089,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 104
           },
-          "id": "duplication-1774845593689-sn5dxdepp3",
+          "id": "duplication-1774846287208-to541gkpaib",
           "autoFixable": false
         },
         {
@@ -2101,7 +2101,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 105
           },
-          "id": "duplication-1774845593689-nd1x9to1l5s",
+          "id": "duplication-1774846287208-7zro95tvjwr",
           "autoFixable": false
         },
         {
@@ -2113,7 +2113,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 106
           },
-          "id": "duplication-1774845593689-nd0qavvdu5",
+          "id": "duplication-1774846287208-r9ah7r4vtu7",
           "autoFixable": false
         },
         {
@@ -2125,7 +2125,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 107
           },
-          "id": "duplication-1774845593689-yv9tgm4kgf",
+          "id": "duplication-1774846287208-k0qf0ddtvo",
           "autoFixable": false
         },
         {
@@ -2137,7 +2137,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 108
           },
-          "id": "duplication-1774845593689-6zs5ifw3bhy",
+          "id": "duplication-1774846287208-zwi9fkryp8",
           "autoFixable": false
         },
         {
@@ -2149,7 +2149,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 109
           },
-          "id": "duplication-1774845593689-7fziwvwta6a",
+          "id": "duplication-1774846287208-rny85g7bwhp",
           "autoFixable": false
         },
         {
@@ -2161,7 +2161,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 110
           },
-          "id": "duplication-1774845593689-bd65ypfbupb",
+          "id": "duplication-1774846287208-vmpw2hvjwem",
           "autoFixable": false
         },
         {
@@ -2173,7 +2173,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 111
           },
-          "id": "duplication-1774845593689-tkgswjdp3ej",
+          "id": "duplication-1774846287208-lijeb9ddd8q",
           "autoFixable": false
         },
         {
@@ -2185,7 +2185,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 112
           },
-          "id": "duplication-1774845593689-6vd3vqi8s7",
+          "id": "duplication-1774846287208-2el5ulkmcgo",
           "autoFixable": false
         },
         {
@@ -2197,7 +2197,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 113
           },
-          "id": "duplication-1774845593689-q9dwwd5ifp8",
+          "id": "duplication-1774846287208-ad66fbup8et",
           "autoFixable": false
         },
         {
@@ -2209,7 +2209,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 114
           },
-          "id": "duplication-1774845593689-xl74linkwa",
+          "id": "duplication-1774846287208-e6etj3iy0jw",
           "autoFixable": false
         },
         {
@@ -2221,7 +2221,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 115
           },
-          "id": "duplication-1774845593689-0mccisf86vqp",
+          "id": "duplication-1774846287208-3kfa5uo5cir",
           "autoFixable": false
         },
         {
@@ -2233,7 +2233,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 116
           },
-          "id": "duplication-1774845593689-hoyadb6u3h",
+          "id": "duplication-1774846287208-n3qgjguv04l",
           "autoFixable": false
         },
         {
@@ -2245,7 +2245,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 117
           },
-          "id": "duplication-1774845593689-stjsyhpfiar",
+          "id": "duplication-1774846287208-d3k1nvgv1n8",
           "autoFixable": false
         },
         {
@@ -2257,7 +2257,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 118
           },
-          "id": "duplication-1774845593689-qu2lci7qnun",
+          "id": "duplication-1774846287208-82mzdu8hml9",
           "autoFixable": false
         },
         {
@@ -2269,7 +2269,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 119
           },
-          "id": "duplication-1774845593689-sfh1dtckq49",
+          "id": "duplication-1774846287208-6ejxnxc10fi",
           "autoFixable": false
         },
         {
@@ -2281,7 +2281,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 120
           },
-          "id": "duplication-1774845593689-2o783maf9yd",
+          "id": "duplication-1774846287208-nkof9zk7suc",
           "autoFixable": false
         },
         {
@@ -2293,7 +2293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 121
           },
-          "id": "duplication-1774845593689-b05q7140eb9",
+          "id": "duplication-1774846287208-odnbihht83f",
           "autoFixable": false
         },
         {
@@ -2305,7 +2305,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 122
           },
-          "id": "duplication-1774845593689-mrtech9f37s",
+          "id": "duplication-1774846287208-09c9gmzozz5o",
           "autoFixable": false
         },
         {
@@ -2317,7 +2317,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 123
           },
-          "id": "duplication-1774845593689-mlp42ebrrbn",
+          "id": "duplication-1774846287208-vi07gusgmag",
           "autoFixable": false
         },
         {
@@ -2329,7 +2329,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 124
           },
-          "id": "duplication-1774845593689-l3n8wwicuwo",
+          "id": "duplication-1774846287208-hwxuunyblna",
           "autoFixable": false
         },
         {
@@ -2341,7 +2341,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 125
           },
-          "id": "duplication-1774845593689-6567pt7e3vo",
+          "id": "duplication-1774846287208-uuud7d91f8",
           "autoFixable": false
         },
         {
@@ -2353,7 +2353,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 126
           },
-          "id": "duplication-1774845593689-l7tfbsctl2s",
+          "id": "duplication-1774846287208-1krox1ux5e6",
           "autoFixable": false
         },
         {
@@ -2365,7 +2365,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 127
           },
-          "id": "duplication-1774845593689-2twmown67zx",
+          "id": "duplication-1774846287208-411xsf5vdip",
           "autoFixable": false
         },
         {
@@ -2377,7 +2377,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 128
           },
-          "id": "duplication-1774845593689-icqrmlmyt3q",
+          "id": "duplication-1774846287208-um7wb147kf9",
           "autoFixable": false
         },
         {
@@ -2389,7 +2389,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 129
           },
-          "id": "duplication-1774845593689-s3vaqp9xnj",
+          "id": "duplication-1774846287208-umcbqwto227",
           "autoFixable": false
         },
         {
@@ -2401,7 +2401,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 227
           },
-          "id": "duplication-1774845593689-tuc3p8te9ej",
+          "id": "duplication-1774846287208-k9bizavth9m",
           "autoFixable": false
         },
         {
@@ -2413,7 +2413,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 259
           },
-          "id": "duplication-1774845593689-wbhb329trms",
+          "id": "duplication-1774846287208-wymmgfjw17",
           "autoFixable": false
         },
         {
@@ -2425,7 +2425,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimesheets.ts",
             "line": 260
           },
-          "id": "duplication-1774845593689-od592kkzn6",
+          "id": "duplication-1774846287208-rgxwb41y1cq",
           "autoFixable": false
         },
         {
@@ -2437,7 +2437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 51
           },
-          "id": "duplication-1774845593689-d3mx7zfvcv",
+          "id": "duplication-1774846287208-g1px52ofbft",
           "autoFixable": false
         },
         {
@@ -2449,7 +2449,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 52
           },
-          "id": "duplication-1774845593689-dfgc0j6uzfp",
+          "id": "duplication-1774846287208-10z8e7yuaxb",
           "autoFixable": false
         },
         {
@@ -2461,7 +2461,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 53
           },
-          "id": "duplication-1774845593689-p7a9jjrnava",
+          "id": "duplication-1774846287208-f6d5ntwa6mf",
           "autoFixable": false
         },
         {
@@ -2473,7 +2473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 54
           },
-          "id": "duplication-1774845593689-sjjomhdz95",
+          "id": "duplication-1774846287208-scq2cm4fqda",
           "autoFixable": false
         },
         {
@@ -2485,7 +2485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 135
           },
-          "id": "duplication-1774845593689-ddlsluatkkh",
+          "id": "duplication-1774846287208-haqsupps6vi",
           "autoFixable": false
         },
         {
@@ -2497,7 +2497,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 136
           },
-          "id": "duplication-1774845593689-2r15nvbg6u8",
+          "id": "duplication-1774846287208-oq44btos5y",
           "autoFixable": false
         },
         {
@@ -2509,7 +2509,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 137
           },
-          "id": "duplication-1774845593689-567bgkfbths",
+          "id": "duplication-1774846287208-yok09y4e1l",
           "autoFixable": false
         },
         {
@@ -2521,7 +2521,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 138
           },
-          "id": "duplication-1774845593689-p751p24539c",
+          "id": "duplication-1774846287208-wqbnq7uicp",
           "autoFixable": false
         },
         {
@@ -2533,7 +2533,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 139
           },
-          "id": "duplication-1774845593689-yvkksil8808",
+          "id": "duplication-1774846287208-hep4xwx3zc",
           "autoFixable": false
         },
         {
@@ -2545,7 +2545,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
             "line": 140
           },
-          "id": "duplication-1774845593689-bb7i8zj7tet",
+          "id": "duplication-1774846287208-d7kpq20hvx",
           "autoFixable": false
         },
         {
@@ -2557,7 +2557,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 17
           },
-          "id": "duplication-1774845593689-1iuchqhgih1",
+          "id": "duplication-1774846287208-opw030jska7",
           "autoFixable": false
         },
         {
@@ -2569,7 +2569,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 18
           },
-          "id": "duplication-1774845593689-mgoh0vb8d9i",
+          "id": "duplication-1774846287208-ilmsppzmihe",
           "autoFixable": false
         },
         {
@@ -2581,7 +2581,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 19
           },
-          "id": "duplication-1774845593689-wcx535ny14",
+          "id": "duplication-1774846287208-wfj2kkv051l",
           "autoFixable": false
         },
         {
@@ -2593,7 +2593,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 20
           },
-          "id": "duplication-1774845593689-m9l5oneve1t",
+          "id": "duplication-1774846287208-6132ry9eykt",
           "autoFixable": false
         },
         {
@@ -2605,7 +2605,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 21
           },
-          "id": "duplication-1774845593689-5nfbm63vzhp",
+          "id": "duplication-1774846287208-ukxsou5o5ir",
           "autoFixable": false
         },
         {
@@ -2617,7 +2617,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 61
           },
-          "id": "duplication-1774845593689-pgj1ioqgjq",
+          "id": "duplication-1774846287208-8f11avorv0m",
           "autoFixable": false
         },
         {
@@ -2629,7 +2629,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 146
           },
-          "id": "duplication-1774845593689-fxody14tbul",
+          "id": "duplication-1774846287208-q45uj75zmoc",
           "autoFixable": false
         },
         {
@@ -2641,7 +2641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 147
           },
-          "id": "duplication-1774845593689-lmqbyt6ewrh",
+          "id": "duplication-1774846287208-p8jv3e6u7h",
           "autoFixable": false
         },
         {
@@ -2653,7 +2653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 148
           },
-          "id": "duplication-1774845593689-o0psfk8yox7",
+          "id": "duplication-1774846287208-5js49eqju2k",
           "autoFixable": false
         },
         {
@@ -2665,7 +2665,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 149
           },
-          "id": "duplication-1774845593689-q2537rvack8",
+          "id": "duplication-1774846287208-dv864kfjv3",
           "autoFixable": false
         },
         {
@@ -2677,7 +2677,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 150
           },
-          "id": "duplication-1774845593689-0m6supalohiq",
+          "id": "duplication-1774846287208-4idtfv65eol",
           "autoFixable": false
         },
         {
@@ -2689,7 +2689,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 151
           },
-          "id": "duplication-1774845593689-bhfqbfabjfk",
+          "id": "duplication-1774846287208-zji7fs8wxql",
           "autoFixable": false
         },
         {
@@ -2701,7 +2701,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 152
           },
-          "id": "duplication-1774845593689-59ecxr9c5bl",
+          "id": "duplication-1774846287208-8yxf0ebjqbo",
           "autoFixable": false
         },
         {
@@ -2713,7 +2713,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 153
           },
-          "id": "duplication-1774845593689-18ay99uz848",
+          "id": "duplication-1774846287208-y12n5wo67j",
           "autoFixable": false
         },
         {
@@ -2725,7 +2725,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 154
           },
-          "id": "duplication-1774845593689-fswnv05eiuj",
+          "id": "duplication-1774846287208-sn683kcwvs",
           "autoFixable": false
         },
         {
@@ -2737,7 +2737,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 155
           },
-          "id": "duplication-1774845593689-aff2edlr2lk",
+          "id": "duplication-1774846287208-800oenz1d4f",
           "autoFixable": false
         },
         {
@@ -2749,7 +2749,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 156
           },
-          "id": "duplication-1774845593689-rd4vlezvh3",
+          "id": "duplication-1774846287208-q1o32py30di",
           "autoFixable": false
         },
         {
@@ -2761,7 +2761,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 157
           },
-          "id": "duplication-1774845593689-gqu36jr7isd",
+          "id": "duplication-1774846287208-1ktmd8zq68n",
           "autoFixable": false
         },
         {
@@ -2773,7 +2773,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 164
           },
-          "id": "duplication-1774845593689-ap20ubwo3da",
+          "id": "duplication-1774846287208-s6yiw1jnn4m",
           "autoFixable": false
         },
         {
@@ -2785,7 +2785,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 165
           },
-          "id": "duplication-1774845593689-iahpa3okh9",
+          "id": "duplication-1774846287208-v7rya2u35j",
           "autoFixable": false
         },
         {
@@ -2797,7 +2797,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 166
           },
-          "id": "duplication-1774845593689-ng1muhkeuck",
+          "id": "duplication-1774846287208-zvvvrox2x2",
           "autoFixable": false
         },
         {
@@ -2809,7 +2809,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 167
           },
-          "id": "duplication-1774845593689-a48ravve7z",
+          "id": "duplication-1774846287208-08k3jcnczmrg",
           "autoFixable": false
         },
         {
@@ -2821,7 +2821,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 168
           },
-          "id": "duplication-1774845593689-mn51kahh72",
+          "id": "duplication-1774846287208-ys1ord54z9",
           "autoFixable": false
         },
         {
@@ -2833,7 +2833,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 169
           },
-          "id": "duplication-1774845593689-zl78l8cin7k",
+          "id": "duplication-1774846287208-aqnc4cazgoi",
           "autoFixable": false
         },
         {
@@ -2845,7 +2845,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 170
           },
-          "id": "duplication-1774845593689-z6bzrjehm6c",
+          "id": "duplication-1774846287208-36un7t7b4k4",
           "autoFixable": false
         },
         {
@@ -2857,7 +2857,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 171
           },
-          "id": "duplication-1774845593689-a5m0aaxeda",
+          "id": "duplication-1774846287208-86a3mx2tao",
           "autoFixable": false
         },
         {
@@ -2869,7 +2869,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 172
           },
-          "id": "duplication-1774845593689-k8vtofq4ine",
+          "id": "duplication-1774846287208-z0dmfvysu6p",
           "autoFixable": false
         },
         {
@@ -2881,7 +2881,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 173
           },
-          "id": "duplication-1774845593689-x5up4f7eynl",
+          "id": "duplication-1774846287208-pfra2xm7t9",
           "autoFixable": false
         },
         {
@@ -2893,7 +2893,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 174
           },
-          "id": "duplication-1774845593689-5ylnjt5vtfm",
+          "id": "duplication-1774846287208-i54kurtmjsh",
           "autoFixable": false
         },
         {
@@ -2905,7 +2905,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 175
           },
-          "id": "duplication-1774845593689-rcyjquwio7",
+          "id": "duplication-1774846287208-e9423ehqh5",
           "autoFixable": false
         },
         {
@@ -2917,7 +2917,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 176
           },
-          "id": "duplication-1774845593689-re5uj8ssem9",
+          "id": "duplication-1774846287208-juuverbm9y",
           "autoFixable": false
         },
         {
@@ -2929,7 +2929,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 177
           },
-          "id": "duplication-1774845593689-ohohpomkh8k",
+          "id": "duplication-1774846287208-v3ecp5dwroi",
           "autoFixable": false
         },
         {
@@ -2941,7 +2941,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 178
           },
-          "id": "duplication-1774845593689-p92xszbdy9",
+          "id": "duplication-1774846287208-sekgfqmgo6i",
           "autoFixable": false
         },
         {
@@ -2953,7 +2953,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 179
           },
-          "id": "duplication-1774845593689-zamjpjbuorh",
+          "id": "duplication-1774846287208-7mdvi5eg2d5",
           "autoFixable": false
         },
         {
@@ -2965,7 +2965,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 180
           },
-          "id": "duplication-1774845593689-0er741l3dq4",
+          "id": "duplication-1774846287208-uqmstr89q1",
           "autoFixable": false
         },
         {
@@ -2977,7 +2977,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 181
           },
-          "id": "duplication-1774845593689-f9l5v43er4q",
+          "id": "duplication-1774846287208-ltndarnkx1j",
           "autoFixable": false
         },
         {
@@ -2989,7 +2989,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 182
           },
-          "id": "duplication-1774845593689-3iuiid1d5k3",
+          "id": "duplication-1774846287208-ok3hankrm5c",
           "autoFixable": false
         },
         {
@@ -3001,7 +3001,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 185
           },
-          "id": "duplication-1774845593689-ewquefqnkhk",
+          "id": "duplication-1774846287208-ovvqu8s5jid",
           "autoFixable": false
         },
         {
@@ -3013,7 +3013,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 186
           },
-          "id": "duplication-1774845593689-s8x1syyjt8c",
+          "id": "duplication-1774846287208-t901yoksur",
           "autoFixable": false
         },
         {
@@ -3025,7 +3025,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 187
           },
-          "id": "duplication-1774845593689-hl03upuen5d",
+          "id": "duplication-1774846287208-d7ew68tluuu",
           "autoFixable": false
         },
         {
@@ -3037,7 +3037,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 188
           },
-          "id": "duplication-1774845593689-yvuudrf0vi",
+          "id": "duplication-1774846287208-1r07zyx1jy9",
           "autoFixable": false
         },
         {
@@ -3049,7 +3049,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 304
           },
-          "id": "duplication-1774845593689-ludbolgcf8b",
+          "id": "duplication-1774846287208-9ghdphpfz4o",
           "autoFixable": false
         },
         {
@@ -3061,7 +3061,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 305
           },
-          "id": "duplication-1774845593689-d3hq1j0qh78",
+          "id": "duplication-1774846287208-4rurw3kttxy",
           "autoFixable": false
         },
         {
@@ -3073,7 +3073,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 306
           },
-          "id": "duplication-1774845593689-mgi7hhtssy",
+          "id": "duplication-1774846287208-40nm59l73sa",
           "autoFixable": false
         },
         {
@@ -3085,7 +3085,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 307
           },
-          "id": "duplication-1774845593689-64nw4rlc3zt",
+          "id": "duplication-1774846287208-42vcidkbm1n",
           "autoFixable": false
         },
         {
@@ -3097,7 +3097,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 308
           },
-          "id": "duplication-1774845593689-eygu9moe6ia",
+          "id": "duplication-1774846287208-n9qjo8pnw1i",
           "autoFixable": false
         },
         {
@@ -3109,7 +3109,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 309
           },
-          "id": "duplication-1774845593689-kpkrzujt18k",
+          "id": "duplication-1774846287208-qq2ehgxws2g",
           "autoFixable": false
         },
         {
@@ -3121,7 +3121,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 310
           },
-          "id": "duplication-1774845593689-32rlp21wvcy",
+          "id": "duplication-1774846287208-525sii12yew",
           "autoFixable": false
         },
         {
@@ -3133,7 +3133,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 311
           },
-          "id": "duplication-1774845593689-mpmgrw8zpmo",
+          "id": "duplication-1774846287208-f6saub1m7fm",
           "autoFixable": false
         },
         {
@@ -3145,7 +3145,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 312
           },
-          "id": "duplication-1774845593689-0kefyinao1yr",
+          "id": "duplication-1774846287208-8bsw4czu56d",
           "autoFixable": false
         },
         {
@@ -3157,7 +3157,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 313
           },
-          "id": "duplication-1774845593689-cde414x8qpi",
+          "id": "duplication-1774846287208-r4bxnem5nq",
           "autoFixable": false
         },
         {
@@ -3169,7 +3169,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 314
           },
-          "id": "duplication-1774845593689-vmlnv6vjmjj",
+          "id": "duplication-1774846287208-00ajfahshizwn",
           "autoFixable": false
         },
         {
@@ -3181,7 +3181,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 315
           },
-          "id": "duplication-1774845593689-dxcsesjrg0g",
+          "id": "duplication-1774846287208-8k793qmdidp",
           "autoFixable": false
         },
         {
@@ -3193,7 +3193,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogsOrganizationView.ts",
             "line": 316
           },
-          "id": "duplication-1774845593689-6snjk38ujsf",
+          "id": "duplication-1774846287208-5okmg21e7c8",
           "autoFixable": false
         },
         {
@@ -3205,7 +3205,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 29
           },
-          "id": "duplication-1774845593689-eq8bp8c0p3a",
+          "id": "duplication-1774846287208-i01hrylym2m",
           "autoFixable": false
         },
         {
@@ -3217,7 +3217,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 30
           },
-          "id": "duplication-1774845593689-27f4rbycp87",
+          "id": "duplication-1774846287208-flpt8dsc0n",
           "autoFixable": false
         },
         {
@@ -3229,7 +3229,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 31
           },
-          "id": "duplication-1774845593689-v48ntzm125c",
+          "id": "duplication-1774846287208-3qfyidpc63v",
           "autoFixable": false
         },
         {
@@ -3241,7 +3241,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 76
           },
-          "id": "duplication-1774845593689-7wwb0xphua9",
+          "id": "duplication-1774846287208-ybt64ald2l",
           "autoFixable": false
         },
         {
@@ -3253,7 +3253,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 77
           },
-          "id": "duplication-1774845593689-s5w52kdfoxo",
+          "id": "duplication-1774846287208-9mxogi3emh8",
           "autoFixable": false
         },
         {
@@ -3265,7 +3265,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 78
           },
-          "id": "duplication-1774845593689-w3cu8ej0t",
+          "id": "duplication-1774846287208-oid6042ay89",
           "autoFixable": false
         },
         {
@@ -3277,7 +3277,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 79
           },
-          "id": "duplication-1774845593689-vsrqwl0v2iq",
+          "id": "duplication-1774846287208-632d5yuffkp",
           "autoFixable": false
         },
         {
@@ -3289,7 +3289,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 80
           },
-          "id": "duplication-1774845593689-zjams0hp75",
+          "id": "duplication-1774846287208-npgvrwyvwi",
           "autoFixable": false
         },
         {
@@ -3301,7 +3301,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 81
           },
-          "id": "duplication-1774845593689-9yuqm6bkard",
+          "id": "duplication-1774846287208-p05n0upd6f",
           "autoFixable": false
         },
         {
@@ -3313,7 +3313,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 82
           },
-          "id": "duplication-1774845593689-pji6h8t2or",
+          "id": "duplication-1774846287208-plekkwbyqhd",
           "autoFixable": false
         },
         {
@@ -3325,7 +3325,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 83
           },
-          "id": "duplication-1774845593689-zvnfup8qb19",
+          "id": "duplication-1774846287208-obo94pmsfar",
           "autoFixable": false
         },
         {
@@ -3337,7 +3337,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 84
           },
-          "id": "duplication-1774845593689-g57zfkcbog",
+          "id": "duplication-1774846287208-s76xp7o12te",
           "autoFixable": false
         },
         {
@@ -3349,7 +3349,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 85
           },
-          "id": "duplication-1774845593689-cepr56533wq",
+          "id": "duplication-1774846287208-7qwzd4uupzi",
           "autoFixable": false
         },
         {
@@ -3361,7 +3361,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 86
           },
-          "id": "duplication-1774845593689-pvrqpkohusf",
+          "id": "duplication-1774846287208-hh8u379mbds",
           "autoFixable": false
         },
         {
@@ -3373,7 +3373,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 87
           },
-          "id": "duplication-1774845593689-2pzm0uu0vpg",
+          "id": "duplication-1774846287208-jd8jbndirc",
           "autoFixable": false
         },
         {
@@ -3385,7 +3385,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 88
           },
-          "id": "duplication-1774845593689-bzf5maczem",
+          "id": "duplication-1774846287208-siols57j8sd",
           "autoFixable": false
         },
         {
@@ -3397,7 +3397,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 89
           },
-          "id": "duplication-1774845593689-8709imtd64i",
+          "id": "duplication-1774846287208-engsna1az7t",
           "autoFixable": false
         },
         {
@@ -3409,7 +3409,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 90
           },
-          "id": "duplication-1774845593689-f6uvk5wwa38",
+          "id": "duplication-1774846287208-j0oig3bzwbp",
           "autoFixable": false
         },
         {
@@ -3421,7 +3421,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 91
           },
-          "id": "duplication-1774845593689-kn96zofudsk",
+          "id": "duplication-1774846287208-ueh2o0tb32o",
           "autoFixable": false
         },
         {
@@ -3433,7 +3433,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 92
           },
-          "id": "duplication-1774845593689-167qhz327ek",
+          "id": "duplication-1774846287208-8jrs5mz1ez7",
           "autoFixable": false
         },
         {
@@ -3445,7 +3445,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 93
           },
-          "id": "duplication-1774845593689-dwmzlasvpxj",
+          "id": "duplication-1774846287208-cez3awutfa6",
           "autoFixable": false
         },
         {
@@ -3457,7 +3457,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberTimelogs.ts",
             "line": 95
           },
-          "id": "duplication-1774845593689-e01bddoznhn",
+          "id": "duplication-1774846287208-vdl83la3r8a",
           "autoFixable": false
         },
         {
@@ -3469,7 +3469,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 62
           },
-          "id": "duplication-1774845593689-9jzlgxbiijs",
+          "id": "duplication-1774846287208-uajbqbkipoh",
           "autoFixable": false
         },
         {
@@ -3481,7 +3481,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 63
           },
-          "id": "duplication-1774845593689-at2ce4n23bh",
+          "id": "duplication-1774846287208-9v2ivl15iev",
           "autoFixable": false
         },
         {
@@ -3493,7 +3493,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 64
           },
-          "id": "duplication-1774845593689-40beyu89ua",
+          "id": "duplication-1774846287208-pyjrw1c6qwa",
           "autoFixable": false
         },
         {
@@ -3505,7 +3505,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 83
           },
-          "id": "duplication-1774845593689-fbz6osujfse",
+          "id": "duplication-1774846287208-h0n40sts4k6",
           "autoFixable": false
         },
         {
@@ -3517,7 +3517,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 84
           },
-          "id": "duplication-1774845593689-p68tfozbpqp",
+          "id": "duplication-1774846287208-tyl60oar4i",
           "autoFixable": false
         },
         {
@@ -3529,7 +3529,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 85
           },
-          "id": "duplication-1774845593689-unmn7iwnybj",
+          "id": "duplication-1774846287208-pnpwuj75g4",
           "autoFixable": false
         },
         {
@@ -3541,7 +3541,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 102
           },
-          "id": "duplication-1774845593689-0w9kg890zshc",
+          "id": "duplication-1774846287208-h2di9q1sqqg",
           "autoFixable": false
         },
         {
@@ -3553,7 +3553,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 103
           },
-          "id": "duplication-1774845593689-x4i3cwmizaa",
+          "id": "duplication-1774846287208-xfzgq5npikh",
           "autoFixable": false
         },
         {
@@ -3565,7 +3565,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 104
           },
-          "id": "duplication-1774845593689-njmluyxaolq",
+          "id": "duplication-1774846287208-h957j44brrc",
           "autoFixable": false
         },
         {
@@ -3577,7 +3577,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasksTaskIdTaskHistories.ts",
             "line": 105
           },
-          "id": "duplication-1774845593689-280o7umffji",
+          "id": "duplication-1774846287208-xyjm3wc4qg",
           "autoFixable": false
         },
         {
@@ -3589,7 +3589,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasks.ts",
             "line": 118
           },
-          "id": "duplication-1774845593689-zgebeuy7ty",
+          "id": "duplication-1774846287208-cbokik306r8",
           "autoFixable": false
         },
         {
@@ -3601,7 +3601,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdTasks.ts",
             "line": 119
           },
-          "id": "duplication-1774845593689-jmonh40zqx8",
+          "id": "duplication-1774846287208-my25a272koe",
           "autoFixable": false
         },
         {
@@ -3613,7 +3613,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdMembers.ts",
             "line": 103
           },
-          "id": "duplication-1774845593689-9hq2qynwoje",
+          "id": "duplication-1774846287208-yztvje7zka",
           "autoFixable": false
         },
         {
@@ -3625,7 +3625,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdMembers.ts",
             "line": 104
           },
-          "id": "duplication-1774845593689-2w608hr48n9",
+          "id": "duplication-1774846287208-zn93h2zzrtm",
           "autoFixable": false
         },
         {
@@ -3637,7 +3637,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjectsProjectIdMembers.ts",
             "line": 105
           },
-          "id": "duplication-1774845593689-9evwkrgyaaa",
+          "id": "duplication-1774846287208-x5e97zz4sc",
           "autoFixable": false
         },
         {
@@ -3649,7 +3649,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjects.ts",
             "line": 82
           },
-          "id": "duplication-1774845593689-ly9ib5dfgw",
+          "id": "duplication-1774846287208-qxqumxzhkc",
           "autoFixable": false
         },
         {
@@ -3661,7 +3661,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjects.ts",
             "line": 83
           },
-          "id": "duplication-1774845593689-ezxodobuw7",
+          "id": "duplication-1774846287208-74lkrbalu08",
           "autoFixable": false
         },
         {
@@ -3673,7 +3673,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjects.ts",
             "line": 84
           },
-          "id": "duplication-1774845593689-8cjua9cbwfn",
+          "id": "duplication-1774846287208-5kl9xy2ugef",
           "autoFixable": false
         },
         {
@@ -3685,7 +3685,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberProjects.ts",
             "line": 85
           },
-          "id": "duplication-1774845593689-hnnas0olplu",
+          "id": "duplication-1774846287208-4tedpfa20c6",
           "autoFixable": false
         },
         {
@@ -3697,7 +3697,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberMeTimerSession.ts",
             "line": 100
           },
-          "id": "duplication-1774845593689-8274oupyd86",
+          "id": "duplication-1774846287208-rlv13va7wmn",
           "autoFixable": false
         },
         {
@@ -3709,7 +3709,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberMeTimerSession.ts",
             "line": 101
           },
-          "id": "duplication-1774845593689-jhkcuxpg9om",
+          "id": "duplication-1774846287208-od7lwj1zjy",
           "autoFixable": false
         },
         {
@@ -3721,7 +3721,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberMeTimelogs.ts",
             "line": 230
           },
-          "id": "duplication-1774845593689-ha5bjnli0sr",
+          "id": "duplication-1774846287208-ugr53fdbttc",
           "autoFixable": false
         },
         {
@@ -3733,7 +3733,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberEmployees.ts",
             "line": 95
           },
-          "id": "duplication-1774845593689-o4cm3ctuvd",
+          "id": "duplication-1774846287208-apy0sii6zdn",
           "autoFixable": false
         },
         {
@@ -3745,7 +3745,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberEmployees.ts",
             "line": 96
           },
-          "id": "duplication-1774845593689-12dp9pvkwe8n",
+          "id": "duplication-1774846287208-xp42c5v6ir",
           "autoFixable": false
         },
         {
@@ -3757,7 +3757,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberEmployees.ts",
             "line": 97
           },
-          "id": "duplication-1774845593689-o7d53ke7fdq",
+          "id": "duplication-1774846287208-9yj698c9i0k",
           "autoFixable": false
         },
         {
@@ -3769,7 +3769,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberEmployees.ts",
             "line": 98
           },
-          "id": "duplication-1774845593689-nragekx4yjq",
+          "id": "duplication-1774846287208-q9ippic45y",
           "autoFixable": false
         },
         {
@@ -3781,7 +3781,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/patchHrmTimeTrackingMemberEmployees.ts",
             "line": 133
           },
-          "id": "duplication-1774845593689-frj52guzwac",
+          "id": "duplication-1774846287208-v6nwnmp5gw",
           "autoFixable": false
         },
         {
@@ -3793,7 +3793,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
             "line": 26
           },
-          "id": "duplication-1774845593689-5fm74xle9cl",
+          "id": "duplication-1774846287208-r8jf7nlsw7c",
           "autoFixable": false
         },
         {
@@ -3805,7 +3805,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
             "line": 27
           },
-          "id": "duplication-1774845593689-59kmsm7fplo",
+          "id": "duplication-1774846287208-52rp044bf6f",
           "autoFixable": false
         },
         {
@@ -3817,7 +3817,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberTimerSessionsTimerSessionId.ts",
             "line": 28
           },
-          "id": "duplication-1774845593689-t39nky3eip",
+          "id": "duplication-1774846287208-20ntsny86ju",
           "autoFixable": false
         },
         {
@@ -3829,7 +3829,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 26
           },
-          "id": "duplication-1774845593689-87b8fhd5kz",
+          "id": "duplication-1774846287208-vs279kjrwrf",
           "autoFixable": false
         },
         {
@@ -3841,7 +3841,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 27
           },
-          "id": "duplication-1774845593689-9m2nejazpr",
+          "id": "duplication-1774846287208-ihr8n1c08ga",
           "autoFixable": false
         },
         {
@@ -3853,7 +3853,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 28
           },
-          "id": "duplication-1774845593689-1hycyhdt5tn",
+          "id": "duplication-1774846287208-zhch99nbmum",
           "autoFixable": false
         },
         {
@@ -3865,7 +3865,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 29
           },
-          "id": "duplication-1774845593689-vvgnevhtvk",
+          "id": "duplication-1774846287208-sp2z85xuhjo",
           "autoFixable": false
         },
         {
@@ -3877,7 +3877,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 30
           },
-          "id": "duplication-1774845593689-37pfbw0bmsq",
+          "id": "duplication-1774846287208-4t6c5fdsx9s",
           "autoFixable": false
         },
         {
@@ -3889,7 +3889,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 31
           },
-          "id": "duplication-1774845593689-5aatxk3axf3",
+          "id": "duplication-1774846287208-3f4mru4jka",
           "autoFixable": false
         },
         {
@@ -3901,7 +3901,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 32
           },
-          "id": "duplication-1774845593689-l1az3r9zwh",
+          "id": "duplication-1774846287208-mvekwwcnsvn",
           "autoFixable": false
         },
         {
@@ -3913,7 +3913,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 33
           },
-          "id": "duplication-1774845593689-djqtb9z31j",
+          "id": "duplication-1774846287208-cc92ym3yeeh",
           "autoFixable": false
         },
         {
@@ -3925,7 +3925,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 34
           },
-          "id": "duplication-1774845593689-zq89bs8boi",
+          "id": "duplication-1774846287208-ykf6t2cwiv",
           "autoFixable": false
         },
         {
@@ -3937,7 +3937,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 35
           },
-          "id": "duplication-1774845593689-7pvd3qth7rc",
+          "id": "duplication-1774846287208-03e4hhjmxihj",
           "autoFixable": false
         },
         {
@@ -3949,7 +3949,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 36
           },
-          "id": "duplication-1774845593689-8y911b51hvr",
+          "id": "duplication-1774846287208-jn75mqlvinc",
           "autoFixable": false
         },
         {
@@ -3961,7 +3961,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 37
           },
-          "id": "duplication-1774845593689-dqfmerj97",
+          "id": "duplication-1774846287208-v38vwh5apya",
           "autoFixable": false
         },
         {
@@ -3973,7 +3973,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 64
           },
-          "id": "duplication-1774845593689-p2yb21e25d",
+          "id": "duplication-1774846287208-w8ucs0aymdn",
           "autoFixable": false
         },
         {
@@ -3985,7 +3985,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 65
           },
-          "id": "duplication-1774845593689-0yxuftk0f5y",
+          "id": "duplication-1774846287208-206jjvw6e19",
           "autoFixable": false
         },
         {
@@ -3997,7 +3997,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 66
           },
-          "id": "duplication-1774845593689-pn7goi2nna",
+          "id": "duplication-1774846287208-w3ylwvxfshg",
           "autoFixable": false
         },
         {
@@ -4009,7 +4009,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 67
           },
-          "id": "duplication-1774845593689-m3nmo36iyw9",
+          "id": "duplication-1774846287208-9uy567p570r",
           "autoFixable": false
         },
         {
@@ -4021,7 +4021,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 68
           },
-          "id": "duplication-1774845593689-jwmb8f6iprb",
+          "id": "duplication-1774846287208-f8apf7z3936",
           "autoFixable": false
         },
         {
@@ -4033,7 +4033,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 69
           },
-          "id": "duplication-1774845593689-oxw603w6twe",
+          "id": "duplication-1774846287208-4f2dcp1vlz9",
           "autoFixable": false
         },
         {
@@ -4045,7 +4045,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 124
           },
-          "id": "duplication-1774845593689-ebyt9uacv8v",
+          "id": "duplication-1774846287208-2ppuig65eyj",
           "autoFixable": false
         },
         {
@@ -4057,7 +4057,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 151
           },
-          "id": "duplication-1774845593689-xf4hvwt66dd",
+          "id": "duplication-1774846287208-4ywnr125amg",
           "autoFixable": false
         },
         {
@@ -4069,7 +4069,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 152
           },
-          "id": "duplication-1774845593689-togfv4qnbl",
+          "id": "duplication-1774846287208-czy7p8mha6",
           "autoFixable": false
         },
         {
@@ -4081,7 +4081,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 153
           },
-          "id": "duplication-1774845593689-d87eyjczhe",
+          "id": "duplication-1774846287208-dc3r0aw518o",
           "autoFixable": false
         },
         {
@@ -4093,7 +4093,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 154
           },
-          "id": "duplication-1774845593689-eunzijzjttf",
+          "id": "duplication-1774846287208-kh0cmfh6br",
           "autoFixable": false
         },
         {
@@ -4105,7 +4105,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 155
           },
-          "id": "duplication-1774845593689-s26l785ct4",
+          "id": "duplication-1774846287208-rvphr7fqsj",
           "autoFixable": false
         },
         {
@@ -4117,7 +4117,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 156
           },
-          "id": "duplication-1774845593689-1h8zrjvyaab",
+          "id": "duplication-1774846287208-d88jxr7jdo",
           "autoFixable": false
         },
         {
@@ -4129,7 +4129,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 157
           },
-          "id": "duplication-1774845593689-a9t8guhde24",
+          "id": "duplication-1774846287208-7rmyowf4qto",
           "autoFixable": false
         },
         {
@@ -4141,7 +4141,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 158
           },
-          "id": "duplication-1774845593689-6553xib5i7y",
+          "id": "duplication-1774846287208-j0eesk8aw2e",
           "autoFixable": false
         },
         {
@@ -4153,7 +4153,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 159
           },
-          "id": "duplication-1774845593689-jnxu751tfv",
+          "id": "duplication-1774846287208-1ne2k5ppuno",
           "autoFixable": false
         },
         {
@@ -4165,7 +4165,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 160
           },
-          "id": "duplication-1774845593689-6c4s6fnqjz2",
+          "id": "duplication-1774846287208-sqf5oyjdcv",
           "autoFixable": false
         },
         {
@@ -4177,7 +4177,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 161
           },
-          "id": "duplication-1774845593689-yk3m02jjyg",
+          "id": "duplication-1774846287208-aobragi85va",
           "autoFixable": false
         },
         {
@@ -4189,7 +4189,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 162
           },
-          "id": "duplication-1774845593689-svltu7psrj",
+          "id": "duplication-1774846287208-y8ohqgo1pi",
           "autoFixable": false
         },
         {
@@ -4201,7 +4201,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 163
           },
-          "id": "duplication-1774845593689-uopbcpt9n4j",
+          "id": "duplication-1774846287208-pyjhugcy8uo",
           "autoFixable": false
         },
         {
@@ -4213,7 +4213,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 164
           },
-          "id": "duplication-1774845593689-v6mfxfs2vk",
+          "id": "duplication-1774846287208-59go8a3js56",
           "autoFixable": false
         },
         {
@@ -4225,7 +4225,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 165
           },
-          "id": "duplication-1774845593689-hcmgizzy5yw",
+          "id": "duplication-1774846287208-fjlwzi843zt",
           "autoFixable": false
         },
         {
@@ -4237,7 +4237,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 166
           },
-          "id": "duplication-1774845593689-2jsapgmpwvy",
+          "id": "duplication-1774846287208-j6vkml3u4k",
           "autoFixable": false
         },
         {
@@ -4249,7 +4249,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 167
           },
-          "id": "duplication-1774845593689-ocsse9tto19",
+          "id": "duplication-1774846287208-bgvz2njcm7h",
           "autoFixable": false
         },
         {
@@ -4261,7 +4261,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 168
           },
-          "id": "duplication-1774845593689-0q9tck5i8hkk",
+          "id": "duplication-1774846287208-p7r1rp1n25",
           "autoFixable": false
         },
         {
@@ -4273,7 +4273,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 169
           },
-          "id": "duplication-1774845593689-wydwmjr4bl",
+          "id": "duplication-1774846287208-e68rcb1vy7q",
           "autoFixable": false
         },
         {
@@ -4285,7 +4285,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 170
           },
-          "id": "duplication-1774845593689-6find9te1yi",
+          "id": "duplication-1774846287208-tiw99qe3k9n",
           "autoFixable": false
         },
         {
@@ -4297,7 +4297,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 171
           },
-          "id": "duplication-1774845593689-1ul4outsypej",
+          "id": "duplication-1774846287208-35eevz2nl35",
           "autoFixable": false
         },
         {
@@ -4309,7 +4309,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 172
           },
-          "id": "duplication-1774845593689-gfhf967wxuk",
+          "id": "duplication-1774846287208-m91cdaa5ap9",
           "autoFixable": false
         },
         {
@@ -4321,7 +4321,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 173
           },
-          "id": "duplication-1774845593689-wicont68ccj",
+          "id": "duplication-1774846287208-y2v219u02xg",
           "autoFixable": false
         },
         {
@@ -4333,7 +4333,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 174
           },
-          "id": "duplication-1774845593689-m2x665j4rqq",
+          "id": "duplication-1774846287208-ksmt3jrss7",
           "autoFixable": false
         },
         {
@@ -4345,7 +4345,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 175
           },
-          "id": "duplication-1774845593689-cmr25gd3o6w",
+          "id": "duplication-1774846287208-gc8tgynabtp",
           "autoFixable": false
         },
         {
@@ -4357,7 +4357,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 176
           },
-          "id": "duplication-1774845593689-bqtyl10jdgf",
+          "id": "duplication-1774846287208-t6dy0gkp96",
           "autoFixable": false
         },
         {
@@ -4369,7 +4369,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 177
           },
-          "id": "duplication-1774845593689-jxgwg9f6w6d",
+          "id": "duplication-1774846287208-2itvwhj7nx",
           "autoFixable": false
         },
         {
@@ -4381,7 +4381,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 178
           },
-          "id": "duplication-1774845593689-84bthh5fs7c",
+          "id": "duplication-1774846287208-b6yuxyvlgh",
           "autoFixable": false
         },
         {
@@ -4393,7 +4393,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 179
           },
-          "id": "duplication-1774845593689-fsroqm6v2mi",
+          "id": "duplication-1774846287208-2orkl2fyxwc",
           "autoFixable": false
         },
         {
@@ -4405,7 +4405,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 180
           },
-          "id": "duplication-1774845593689-j5ree7pmqp",
+          "id": "duplication-1774846287208-8tgwfy3w9jy",
           "autoFixable": false
         },
         {
@@ -4417,7 +4417,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 181
           },
-          "id": "duplication-1774845593689-u89mdy9x74h",
+          "id": "duplication-1774846287208-mcre2y78m7",
           "autoFixable": false
         },
         {
@@ -4429,7 +4429,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 182
           },
-          "id": "duplication-1774845593689-13gbc7uvapx",
+          "id": "duplication-1774846287208-n6yw3o0drp9",
           "autoFixable": false
         },
         {
@@ -4441,7 +4441,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 183
           },
-          "id": "duplication-1774845593689-rmm4o8hbhs8",
+          "id": "duplication-1774846287208-rw5w7mewy18",
           "autoFixable": false
         },
         {
@@ -4453,7 +4453,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 184
           },
-          "id": "duplication-1774845593689-yoaxx816hsh",
+          "id": "duplication-1774846287208-sk8nc9at3x",
           "autoFixable": false
         },
         {
@@ -4465,7 +4465,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberMeDashboard.ts",
             "line": 185
           },
-          "id": "duplication-1774845593689-9n3fg95msyd",
+          "id": "duplication-1774846287208-4wk4io2r985",
           "autoFixable": false
         },
         {
@@ -4477,7 +4477,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDepartmentsDepartmentIdOverview.ts",
             "line": 10
           },
-          "id": "duplication-1774845593689-9005lfpo5wm",
+          "id": "duplication-1774846287208-en1vpigyzps",
           "autoFixable": false
         },
         {
@@ -4489,7 +4489,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDepartmentsDepartmentIdOverview.ts",
             "line": 11
           },
-          "id": "duplication-1774845593689-3sraxzdyd0m",
+          "id": "duplication-1774846287208-ngev34ita0a",
           "autoFixable": false
         },
         {
@@ -4501,7 +4501,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDepartmentsDepartmentIdOverview.ts",
             "line": 12
           },
-          "id": "duplication-1774845593690-7pu9p8h0gb6",
+          "id": "duplication-1774846287208-aiaro9k6yi7",
           "autoFixable": false
         },
         {
@@ -4513,7 +4513,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDepartmentsDepartmentIdOverview.ts",
             "line": 13
           },
-          "id": "duplication-1774845593690-cxkbf5huud",
+          "id": "duplication-1774846287208-ifta029sc5m",
           "autoFixable": false
         },
         {
@@ -4525,7 +4525,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 233
           },
-          "id": "duplication-1774845593690-g4rtr96cnx",
+          "id": "duplication-1774846287208-ydr0awnsyn",
           "autoFixable": false
         },
         {
@@ -4537,7 +4537,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 234
           },
-          "id": "duplication-1774845593690-l3q2uyx8ors",
+          "id": "duplication-1774846287208-nqobh7t0u0o",
           "autoFixable": false
         },
         {
@@ -4549,7 +4549,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 235
           },
-          "id": "duplication-1774845593690-o7gghni9hp",
+          "id": "duplication-1774846287208-7kh0ka7tcc7",
           "autoFixable": false
         },
         {
@@ -4561,7 +4561,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 236
           },
-          "id": "duplication-1774845593690-kz7h1mky8p",
+          "id": "duplication-1774846287208-fr4qs00u9j6",
           "autoFixable": false
         },
         {
@@ -4573,7 +4573,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 237
           },
-          "id": "duplication-1774845593690-21q6eunzcqp",
+          "id": "duplication-1774846287208-cy3ixfmm43w",
           "autoFixable": false
         },
         {
@@ -4585,7 +4585,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 238
           },
-          "id": "duplication-1774845593690-jpek6awn6ze",
+          "id": "duplication-1774846287208-1qf4v7ii0ke",
           "autoFixable": false
         },
         {
@@ -4597,7 +4597,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 239
           },
-          "id": "duplication-1774845593690-1hfymji04id",
+          "id": "duplication-1774846287208-mc1w9ncy66h",
           "autoFixable": false
         },
         {
@@ -4609,7 +4609,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 240
           },
-          "id": "duplication-1774845593690-ubw2b6wmrgc",
+          "id": "duplication-1774846287208-v95bx5h1or",
           "autoFixable": false
         },
         {
@@ -4621,7 +4621,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 241
           },
-          "id": "duplication-1774845593690-7z9zp8ofasy",
+          "id": "duplication-1774846287208-c2o2s8kv0a",
           "autoFixable": false
         },
         {
@@ -4633,7 +4633,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 242
           },
-          "id": "duplication-1774845593690-74frm66mrpj",
+          "id": "duplication-1774846287208-6miuzhgexcp",
           "autoFixable": false
         },
         {
@@ -4645,7 +4645,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 243
           },
-          "id": "duplication-1774845593690-3sf3f5v3374",
+          "id": "duplication-1774846287208-n77m851x26s",
           "autoFixable": false
         },
         {
@@ -4657,7 +4657,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 244
           },
-          "id": "duplication-1774845593690-6ddkho0d2c",
+          "id": "duplication-1774846287208-gbo97wct88c",
           "autoFixable": false
         },
         {
@@ -4669,7 +4669,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 479
           },
-          "id": "duplication-1774845593690-qywxx595ayc",
+          "id": "duplication-1774846287208-iq3z174m5zm",
           "autoFixable": false
         },
         {
@@ -4681,7 +4681,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 480
           },
-          "id": "duplication-1774845593690-y6n1qkfowdc",
+          "id": "duplication-1774846287208-uchgqw37crb",
           "autoFixable": false
         },
         {
@@ -4693,7 +4693,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 481
           },
-          "id": "duplication-1774845593690-y5pk90ycf3",
+          "id": "duplication-1774846287208-shf7t3v58i",
           "autoFixable": false
         },
         {
@@ -4705,7 +4705,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 482
           },
-          "id": "duplication-1774845593690-98l401kwf1",
+          "id": "duplication-1774846287208-1xdy8lpfa1s",
           "autoFixable": false
         },
         {
@@ -4717,7 +4717,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 483
           },
-          "id": "duplication-1774845593690-y98lwt10oh8",
+          "id": "duplication-1774846287208-h5nnles9vt5",
           "autoFixable": false
         },
         {
@@ -4729,7 +4729,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 484
           },
-          "id": "duplication-1774845593690-jrjz5d152db",
+          "id": "duplication-1774846287208-5juvsu64bo6",
           "autoFixable": false
         },
         {
@@ -4741,7 +4741,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 485
           },
-          "id": "duplication-1774845593690-zq9zot71pvi",
+          "id": "duplication-1774846287208-qt4gbrh4sj",
           "autoFixable": false
         },
         {
@@ -4753,7 +4753,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 486
           },
-          "id": "duplication-1774845593690-s2cjlh0k3v",
+          "id": "duplication-1774846287208-nxk0lnil15l",
           "autoFixable": false
         },
         {
@@ -4765,7 +4765,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 487
           },
-          "id": "duplication-1774845593690-kra191vti8f",
+          "id": "duplication-1774846287208-xjm0lfot1uj",
           "autoFixable": false
         },
         {
@@ -4777,7 +4777,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 488
           },
-          "id": "duplication-1774845593690-pufhm43qpoi",
+          "id": "duplication-1774846287208-0y5kz6axc1bb",
           "autoFixable": false
         },
         {
@@ -4789,7 +4789,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 489
           },
-          "id": "duplication-1774845593690-jl9i1h9fbjj",
+          "id": "duplication-1774846287208-yrkc9t0ou2q",
           "autoFixable": false
         },
         {
@@ -4801,7 +4801,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 490
           },
-          "id": "duplication-1774845593690-7foga3zi9kl",
+          "id": "duplication-1774846287208-3yd734m8979",
           "autoFixable": false
         },
         {
@@ -4813,7 +4813,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 491
           },
-          "id": "duplication-1774845593690-qmfdrg8p5gl",
+          "id": "duplication-1774846287208-ajuq61hznmu",
           "autoFixable": false
         },
         {
@@ -4825,7 +4825,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 492
           },
-          "id": "duplication-1774845593690-ww1jtotvdcc",
+          "id": "duplication-1774846287208-l82o7xuoz88",
           "autoFixable": false
         },
         {
@@ -4837,7 +4837,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 493
           },
-          "id": "duplication-1774845593690-njwmed40nv",
+          "id": "duplication-1774846287208-k49eqkqnki",
           "autoFixable": false
         },
         {
@@ -4849,7 +4849,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 494
           },
-          "id": "duplication-1774845593690-qbyfnakhec",
+          "id": "duplication-1774846287208-khwc42r78r",
           "autoFixable": false
         },
         {
@@ -4861,7 +4861,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 495
           },
-          "id": "duplication-1774845593690-ceit5bileo",
+          "id": "duplication-1774846287208-3veqzed4mg9",
           "autoFixable": false
         },
         {
@@ -4873,7 +4873,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 500
           },
-          "id": "duplication-1774845593690-scyst52s66o",
+          "id": "duplication-1774846287208-4a48slf5kf3",
           "autoFixable": false
         },
         {
@@ -4885,7 +4885,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 501
           },
-          "id": "duplication-1774845593690-u6tmhu7kbe",
+          "id": "duplication-1774846287208-jxobr4g6f9g",
           "autoFixable": false
         },
         {
@@ -4897,7 +4897,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 502
           },
-          "id": "duplication-1774845593690-y33t2wqpwrp",
+          "id": "duplication-1774846287208-ed2sthlyfk",
           "autoFixable": false
         },
         {
@@ -4909,7 +4909,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 503
           },
-          "id": "duplication-1774845593690-kmyfcbwjnvk",
+          "id": "duplication-1774846287208-v7meh0soq4k",
           "autoFixable": false
         },
         {
@@ -4921,7 +4921,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 504
           },
-          "id": "duplication-1774845593690-o3b24kgg8ae",
+          "id": "duplication-1774846287208-qbpdhk65zhb",
           "autoFixable": false
         },
         {
@@ -4933,7 +4933,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 505
           },
-          "id": "duplication-1774845593690-ympnimr9lmk",
+          "id": "duplication-1774846287208-5h2b3r978pj",
           "autoFixable": false
         },
         {
@@ -4945,7 +4945,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 506
           },
-          "id": "duplication-1774845593690-t558ohett7f",
+          "id": "duplication-1774846287208-d7l3bsimste",
           "autoFixable": false
         },
         {
@@ -4957,7 +4957,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 507
           },
-          "id": "duplication-1774845593690-pa6tk3dokns",
+          "id": "duplication-1774846287208-5f7lthe62z",
           "autoFixable": false
         },
         {
@@ -4969,7 +4969,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 508
           },
-          "id": "duplication-1774845593690-677ojgihfiw",
+          "id": "duplication-1774846287208-oatpiwxtzn",
           "autoFixable": false
         },
         {
@@ -4981,7 +4981,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 509
           },
-          "id": "duplication-1774845593690-jypqkw02pus",
+          "id": "duplication-1774846287208-rbdo39i322g",
           "autoFixable": false
         },
         {
@@ -4993,7 +4993,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 528
           },
-          "id": "duplication-1774845593690-i9ix5cuyofr",
+          "id": "duplication-1774846287208-d7utt94zxdj",
           "autoFixable": false
         },
         {
@@ -5005,7 +5005,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 529
           },
-          "id": "duplication-1774845593690-zrsescj4s18",
+          "id": "duplication-1774846287208-iz965hq18m",
           "autoFixable": false
         },
         {
@@ -5017,7 +5017,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 530
           },
-          "id": "duplication-1774845593690-a5dhbkzcymf",
+          "id": "duplication-1774846287208-p18jg25v37p",
           "autoFixable": false
         },
         {
@@ -5029,7 +5029,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 531
           },
-          "id": "duplication-1774845593690-d7hk0n7miyr",
+          "id": "duplication-1774846287208-0egms5ag4grc",
           "autoFixable": false
         },
         {
@@ -5041,7 +5041,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 532
           },
-          "id": "duplication-1774845593690-eq61gjb3b9u",
+          "id": "duplication-1774846287208-357xtsss6cx",
           "autoFixable": false
         },
         {
@@ -5053,7 +5053,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 533
           },
-          "id": "duplication-1774845593690-q5gpvi67bo",
+          "id": "duplication-1774846287208-se4gn25o5s9",
           "autoFixable": false
         },
         {
@@ -5065,7 +5065,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 534
           },
-          "id": "duplication-1774845593690-qbi0vdt68c",
+          "id": "duplication-1774846287208-edv4blvdxo",
           "autoFixable": false
         },
         {
@@ -5077,7 +5077,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 535
           },
-          "id": "duplication-1774845593690-p8njqsmjlj",
+          "id": "duplication-1774846287208-o8j5t3j1j8",
           "autoFixable": false
         },
         {
@@ -5089,7 +5089,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 536
           },
-          "id": "duplication-1774845593690-htg4wz3u2q5",
+          "id": "duplication-1774846287208-nh3osmv64j",
           "autoFixable": false
         },
         {
@@ -5101,7 +5101,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 537
           },
-          "id": "duplication-1774845593690-iifae5iyxji",
+          "id": "duplication-1774846287208-bij403qvibp",
           "autoFixable": false
         },
         {
@@ -5113,7 +5113,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 538
           },
-          "id": "duplication-1774845593690-o3jt6unlhv",
+          "id": "duplication-1774846287208-0plrm6gk3f4",
           "autoFixable": false
         },
         {
@@ -5125,7 +5125,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 539
           },
-          "id": "duplication-1774845593690-gdx064titui",
+          "id": "duplication-1774846287208-l0w7bpnx8tn",
           "autoFixable": false
         },
         {
@@ -5137,7 +5137,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/providers/getHrmTimeTrackingMemberDashboard.ts",
             "line": 540
           },
-          "id": "duplication-1774845593690-g6w4kcxelw7",
+          "id": "duplication-1774846287208-e0r97hbjofg",
           "autoFixable": false
         }
       ]
@@ -5154,7 +5154,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
             "line": 14
           },
-          "id": "naming-1774845593632-qsia5w21d2",
+          "id": "naming-1774846287155-cpukciezqra",
           "autoFixable": false
         },
         {
@@ -5166,7 +5166,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/password-resets/HrmtimetrackingMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774845593694-lusvm37bybq",
+          "id": "naming-1774846287156-ff0hg3zjixi",
           "autoFixable": false
         },
         {
@@ -5178,7 +5178,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/email-verifications/HrmtimetrackingMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "naming-1774845593697-q7cgs350fvb",
+          "id": "naming-1774846287158-targyhm61j",
           "autoFixable": false
         },
         {
@@ -5190,19 +5190,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
             "line": 12
           },
-          "id": "naming-1774845593700-aqsua7lwfad",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmtimetrackingMemberReportsWeekly_summaryController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/weekly-summary/HrmtimetrackingMemberReportsWeekly_summaryController.ts",
-            "line": 11
-          },
-          "id": "naming-1774845593703-wjd8fnjw0mo",
+          "id": "naming-1774846287162-ambkfxhwlwm",
           "autoFixable": false
         },
         {
@@ -5214,7 +5202,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timelogs/organization-view/HrmtimetrackingMemberTimelogsOrganization_viewController.ts",
             "line": 11
           },
-          "id": "naming-1774845593713-tb56l054axo",
+          "id": "naming-1774846287163-hxzlfs8ppa",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmtimetrackingMemberReportsWeekly_summaryController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/weekly-summary/HrmtimetrackingMemberReportsWeekly_summaryController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846287164-qsyqfafbcqi",
           "autoFixable": false
         },
         {
@@ -5226,7 +5226,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timer-session/HrmtimetrackingMemberMeTimer_sessionController.ts",
             "line": 15
           },
-          "id": "naming-1774845593709-nhecr5hzjj",
+          "id": "naming-1774846287166-psrxpl714a",
           "autoFixable": false
         },
         {
@@ -5238,7 +5238,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/hrmTimeTracking/activity-records/HrmtimetrackingMemberHrmtimetrackingActivity_recordsController.ts",
             "line": 12
           },
-          "id": "naming-1774845593709-fhm4pvb998b",
+          "id": "naming-1774846287208-38ie2zt7ijo",
           "autoFixable": false
         },
         {
@@ -5250,7 +5250,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/tasks/task-histories/HrmtimetrackingMemberProjectsTasksTask_historiesController.ts",
             "line": 11
           },
-          "id": "naming-1774845593712-wscwsg66lgp",
+          "id": "naming-1774846287209-3f7gd1hsxun",
           "autoFixable": false
         },
         {
@@ -5262,7 +5262,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timer-session/start/HrmtimetrackingMemberMeTimer_sessionStartController.ts",
             "line": 10
           },
-          "id": "naming-1774845593712-0vab16pa47b",
+          "id": "naming-1774846287209-7vfq7vqtuzx",
           "autoFixable": false
         }
       ]
@@ -5275,36 +5275,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/auth/guest/HrmtimetrackingAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845593765-h69pl3e6e2a",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/auth/member/HrmtimetrackingAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845593766-8d1g10uigs",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
           "message": "Class \"HrmtimetrackingGuestSessionsController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/guest/sessions/HrmtimetrackingGuestSessionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593767-bfnhrn7stx9",
+          "id": "jsdoc-1774846287242-rkjqf48ejx",
           "autoFixable": false
         },
         {
@@ -5316,19 +5292,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/guest/guests/HrmtimetrackingGuestGuestsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845593767-49lp51t1bu7",
+          "id": "jsdoc-1774846287243-9n42i4dla8v",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberTimer_sessionsController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
-            "line": 14
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/auth/member/HrmtimetrackingAuthMemberController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774845593767-ww97l9p3n9",
+          "id": "jsdoc-1774846287242-ugho7ep1boq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/auth/guest/HrmtimetrackingAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846287242-0kehubq14cta",
           "autoFixable": false
         },
         {
@@ -5340,19 +5328,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timesheets/HrmtimetrackingMemberTimesheetsController.ts",
             "line": 17
           },
-          "id": "jsdoc-1774845593767-d7mhnmwfk89",
+          "id": "jsdoc-1774846287245-ogn3926laxr",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberProjectsController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberTimer_sessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
-            "line": 15
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timer-sessions/HrmtimetrackingMemberTimer_sessionsController.ts",
+            "line": 14
           },
-          "id": "jsdoc-1774845593768-bh25wtcb9f",
+          "id": "jsdoc-1774846287243-u915vminbcg",
           "autoFixable": false
         },
         {
@@ -5364,19 +5352,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timelogs/HrmtimetrackingMemberTimelogsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845593769-kbamc9720u",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/profile/HrmtimetrackingMemberProfileController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845593770-rt7alnodzh8",
+          "id": "jsdoc-1774846287247-vysm7uymxa",
           "autoFixable": false
         },
         {
@@ -5388,7 +5364,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/roles/HrmtimetrackingMemberRolesController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774845593768-apmc9henqne",
+          "id": "jsdoc-1774846287244-49qm8hvapd",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/profile/HrmtimetrackingMemberProfileController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846287250-sua44gvsql8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberProjectsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/HrmtimetrackingMemberProjectsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846287247-fj57u0uu4jm",
           "autoFixable": false
         },
         {
@@ -5400,19 +5400,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/password-resets/HrmtimetrackingMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845593770-163cvtbgg0u",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberOrganizationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/organizations/HrmtimetrackingMemberOrganizationsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845593769-70mux276nbo",
+          "id": "jsdoc-1774846287248-rznwznnm85n",
           "autoFixable": false
         },
         {
@@ -5424,43 +5412,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/members/HrmtimetrackingMemberMembersController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593770-d7vx7t0k45",
+          "id": "jsdoc-1774846287246-3k7t5gvocs8",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberEmail_verificationsController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberOrganizationsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/email-verifications/HrmtimetrackingMemberEmail_verificationsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/organizations/HrmtimetrackingMemberOrganizationsController.ts",
+            "line": 15
           },
-          "id": "jsdoc-1774845593770-x7tl6ya0c7",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberInvitationsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/invitations/HrmtimetrackingMemberInvitationsController.ts",
-            "line": 17
-          },
-          "id": "jsdoc-1774845593773-d1622gr1oj6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/departments/HrmtimetrackingMemberDepartmentsController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774845593772-96zo05h0pmr",
+          "id": "jsdoc-1774846287248-vsm77efxuf",
           "autoFixable": false
         },
         {
@@ -5472,19 +5436,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/employees/HrmtimetrackingMemberEmployeesController.ts",
             "line": 18
           },
-          "id": "jsdoc-1774845593771-auzbdx9osje",
+          "id": "jsdoc-1774846287249-dq74ml3wa6s",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberActivity_recordsController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberEmail_verificationsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/email-verifications/HrmtimetrackingMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845593771-2x7xr6i0iqi",
+          "id": "jsdoc-1774846287248-mcl68i4gnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberInvitationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/invitations/HrmtimetrackingMemberInvitationsController.ts",
+            "line": 17
+          },
+          "id": "jsdoc-1774846287251-4qtezy50gcm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/departments/HrmtimetrackingMemberDepartmentsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846287252-kj5jzlgrxq",
           "autoFixable": false
         },
         {
@@ -5496,7 +5484,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/dashboard/HrmtimetrackingMemberDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845593771-lfiplhyb6el",
+          "id": "jsdoc-1774846287252-e9zy0zi3eva",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberActivity_recordsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/activity-records/HrmtimetrackingMemberActivity_recordsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846287251-1bt2v0k3e4g",
           "autoFixable": false
         },
         {
@@ -5508,31 +5508,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timesheets/timelogs/HrmtimetrackingMemberTimesheetsTimelogsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593772-pvp6xle3cl9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberProjectsAssignedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/assigned/HrmtimetrackingMemberProjectsAssignedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845593773-hwiwlib1stv",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberReportsWeekly_summaryController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/weekly-summary/HrmtimetrackingMemberReportsWeekly_summaryController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845593772-98zha17y9a",
+          "id": "jsdoc-1774846287252-gr7apbah6dc",
           "autoFixable": false
         },
         {
@@ -5544,43 +5520,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timesheets/submit/HrmtimetrackingMemberTimesheetsSubmitController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845593773-4mnlenxno17",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberProjectsMembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/members/HrmtimetrackingMemberProjectsMembersController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845593773-kmk5kx1z3qq",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberProjectsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/tasks/HrmtimetrackingMemberProjectsTasksController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845593774-kmbf2twiz3l",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberReportsTimeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/time/HrmtimetrackingMemberReportsTimeController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845593774-w3prf7talsa",
+          "id": "jsdoc-1774846287252-2bbckqezt83",
           "autoFixable": false
         },
         {
@@ -5592,7 +5532,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/timelogs/organization-view/HrmtimetrackingMemberTimelogsOrganization_viewController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593773-295prbhywe4",
+          "id": "jsdoc-1774846287252-yd7yzvqlv49",
           "autoFixable": false
         },
         {
@@ -5604,43 +5544,67 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/roles/permissions/HrmtimetrackingMemberRolesPermissionsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845593775-4trqvotkkj3",
+          "id": "jsdoc-1774846287253-mi1lpcgz1u",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberMeDashboardController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberReportsWeekly_summaryController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/dashboard/HrmtimetrackingMemberMeDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845593775-i3xwvra3ad",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberMeTimelogsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timelogs/HrmtimetrackingMemberMeTimelogsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/weekly-summary/HrmtimetrackingMemberReportsWeekly_summaryController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593775-zle3yfekjs",
+          "id": "jsdoc-1774846287253-xijm9wqyec",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberMeTimer_sessionController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberReportsTimeController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timer-session/HrmtimetrackingMemberMeTimer_sessionController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/reports/time/HrmtimetrackingMemberReportsTimeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846287253-vfbisnpr2r",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberProjectsTasksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/tasks/HrmtimetrackingMemberProjectsTasksController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845593777-9m3sd8g8nlh",
+          "id": "jsdoc-1774846287254-vjh5ec3khi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberProjectsMembersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/members/HrmtimetrackingMemberProjectsMembersController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846287254-08meuazgptlc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberProjectsAssignedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/assigned/HrmtimetrackingMemberProjectsAssignedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846287254-tm8pys7fi3f",
           "autoFixable": false
         },
         {
@@ -5652,19 +5616,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/employees/roles/HrmtimetrackingMemberEmployeesRolesController.ts",
             "line": 16
           },
-          "id": "jsdoc-1774845593776-jreqq1mcjkj",
+          "id": "jsdoc-1774846287255-d1q5wd3e9i",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmtimetrackingMemberHrmtimetrackingActivity_recordsController\" missing JSDoc",
+          "message": "Class \"HrmtimetrackingMemberMeTimer_sessionController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/hrmTimeTracking/activity-records/HrmtimetrackingMemberHrmtimetrackingActivity_recordsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timer-session/HrmtimetrackingMemberMeTimer_sessionController.ts",
+            "line": 15
           },
-          "id": "jsdoc-1774845593777-5d3pum1c9c",
+          "id": "jsdoc-1774846287256-wlewvu0gssg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberMeTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timelogs/HrmtimetrackingMemberMeTimelogsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846287256-dw6rwqnipd8",
           "autoFixable": false
         },
         {
@@ -5676,7 +5652,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/employees/contracts/HrmtimetrackingMemberEmployeesContractsController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845593777-k7jsb0lrxyi",
+          "id": "jsdoc-1774846287257-e7xfo50rvl9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberMeDashboardController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/dashboard/HrmtimetrackingMemberMeDashboardController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846287256-ulee0paz6do",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmtimetrackingMemberHrmtimetrackingActivity_recordsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/hrmTimeTracking/activity-records/HrmtimetrackingMemberHrmtimetrackingActivity_recordsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846287258-townbog6n2",
           "autoFixable": false
         },
         {
@@ -5688,7 +5688,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/tasks/status/HrmtimetrackingMemberProjectsTasksStatusController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845593778-8hdiqyub99",
+          "id": "jsdoc-1774846287256-ebia3tqqlf",
           "autoFixable": false
         },
         {
@@ -5700,7 +5700,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/projects/tasks/task-histories/HrmtimetrackingMemberProjectsTasksTask_historiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845593778-08dxbqu83n4l",
+          "id": "jsdoc-1774846287257-ki4dptrpt7",
           "autoFixable": false
         },
         {
@@ -5712,7 +5712,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timesheets/draft/HrmtimetrackingMemberMeTimesheetsDraftController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845593777-j9rw3e3vb6",
+          "id": "jsdoc-1774846287257-4gdqgijvay6",
           "autoFixable": false
         },
         {
@@ -5724,7 +5724,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4-mini/erp/src/controllers/hrmTimeTracking/member/me/timer-session/start/HrmtimetrackingMemberMeTimer_sessionStartController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845593777-enn483o3ivb",
+          "id": "jsdoc-1774846287258-h4upin3o0vn",
           "autoFixable": false
         }
       ]
@@ -5743,7 +5743,7 @@
             "file": "src/api/structures/IHrmTimeTrackingUserAccount.ts",
             "line": 5
           },
-          "id": "completeness-1774845593800-0tg6ovt13u2c",
+          "id": "completeness-1774846287439-jfpc7alc09",
           "autoFixable": false
         },
         {
@@ -5755,7 +5755,7 @@
             "file": "src/api/structures/IHrmTimeTrackingPermission.ts",
             "line": 5
           },
-          "id": "completeness-1774845593800-f19envsi5pe",
+          "id": "completeness-1774846287440-g1l9zdnp5v",
           "autoFixable": false
         },
         {
@@ -5767,7 +5767,7 @@
             "file": "src/api/structures/IHrmTimeTrackingGuest.ts",
             "line": 46
           },
-          "id": "completeness-1774845593801-afue7lq90w6",
+          "id": "completeness-1774846287440-0gcuazlumy4w",
           "autoFixable": false
         },
         {
@@ -5779,7 +5779,7 @@
             "file": "src/api/structures/IHrmTimeTrackingGuest.ts",
             "line": 95
           },
-          "id": "completeness-1774845593801-pp6qaexdqa",
+          "id": "completeness-1774846287440-z2854zgrnmk",
           "autoFixable": false
         },
         {
@@ -5791,7 +5791,7 @@
             "file": "src/api/structures/IHrmTimeTrackingEmployeeContract.ts",
             "line": 212
           },
-          "id": "completeness-1774845593801-nff6iv7a2p",
+          "id": "completeness-1774846287440-4e77833hxm",
           "autoFixable": false
         }
       ]
@@ -5814,7 +5814,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845592931-wm235d5dn8f",
+      "id": "type-error-1774846286751-r4ndosu5gsc",
       "autoFixable": false
     },
     {
@@ -5826,7 +5826,7 @@
         "file": "src/controllers/hrmTimeTracking/auth/member/HrmtimetrackingAuthMemberController.ts",
         "line": 232
       },
-      "id": "type-error-1774845592931-rfa4onjx79c",
+      "id": "type-error-1774846286751-dnn9khkv0nw",
       "autoFixable": false
     },
     {
@@ -5838,7 +5838,7 @@
         "file": "src/controllers/hrmTimeTracking/member/employees/contracts/HrmtimetrackingMemberEmployeesContractsController.ts",
         "line": 866
       },
-      "id": "type-error-1774845592931-677xalbbrk9",
+      "id": "type-error-1774846286751-6qbsxfgsmdc",
       "autoFixable": false
     },
     {
@@ -5850,7 +5850,7 @@
         "file": "src/controllers/hrmTimeTracking/member/hrmTimeTracking/activity-records/HrmtimetrackingMemberHrmtimetrackingActivity_recordsController.ts",
         "line": 724
       },
-      "id": "type-error-1774845592931-59xcz9fg0vv",
+      "id": "type-error-1774846286751-jvkp4n84mp",
       "autoFixable": false
     },
     {
@@ -5862,7 +5862,7 @@
         "file": "src/controllers/hrmTimeTracking/member/invitations/HrmtimetrackingMemberInvitationsController.ts",
         "line": 1022
       },
-      "id": "type-error-1774845592931-x5dek9kd48h",
+      "id": "type-error-1774846286751-n2jlmvo0euk",
       "autoFixable": false
     },
     {
@@ -5874,7 +5874,7 @@
         "file": "src/controllers/hrmTimeTracking/member/organizations/HrmtimetrackingMemberOrganizationsController.ts",
         "line": 814
       },
-      "id": "type-error-1774845592931-9t330vj8iys",
+      "id": "type-error-1774846286751-dkbr9ac3uxc",
       "autoFixable": false
     },
     {
@@ -5886,7 +5886,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberReportsTime.ts",
         "line": 4662
       },
-      "id": "type-error-1774845592931-wb9o8ps6e8l",
+      "id": "type-error-1774846286751-m4soyxrc1mc",
       "autoFixable": false
     },
     {
@@ -5898,7 +5898,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberReportsWeeklySummary.ts",
         "line": 3497
       },
-      "id": "type-error-1774845592931-9umxd27xp1h",
+      "id": "type-error-1774846286751-55zg11ltcu9",
       "autoFixable": false
     },
     {
@@ -5910,7 +5910,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberRolesRoleId.ts",
         "line": 2682
       },
-      "id": "type-error-1774845592931-o93puocjmfe",
+      "id": "type-error-1774846286751-t067l8pz79n",
       "autoFixable": false
     },
     {
@@ -5922,7 +5922,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberRolesRoleIdPermissions.ts",
         "line": 2629
       },
-      "id": "type-error-1774845592931-93bnsikugth",
+      "id": "type-error-1774846286751-3umyn0ysugk",
       "autoFixable": false
     },
     {
@@ -5934,7 +5934,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
         "line": 10177
       },
-      "id": "type-error-1774845592931-3wsizrc8dj9",
+      "id": "type-error-1774846286751-ymdl3c115e",
       "autoFixable": false
     },
     {
@@ -5946,7 +5946,7 @@
         "file": "src/providers/patchHrmTimeTrackingMemberTimerSessions.ts",
         "line": 11180
       },
-      "id": "type-error-1774845592931-kodhmosq6u",
+      "id": "type-error-1774846286751-oq83yjwaryg",
       "autoFixable": false
     },
     {
@@ -5958,7 +5958,7 @@
         "file": "src/providers/postHrmTimeTrackingMemberMeTimesheetsDraft.ts",
         "line": 4610
       },
-      "id": "type-error-1774845592931-vtc1uo3d9zp",
+      "id": "type-error-1774846286751-po5xz4i6etm",
       "autoFixable": false
     },
     {
@@ -5970,7 +5970,7 @@
         "file": "src/providers/postHrmTimeTrackingMemberRolesRoleIdPermissions.ts",
         "line": 2743
       },
-      "id": "type-error-1774845592931-8jceehvrc5",
+      "id": "type-error-1774846286751-6mqx0yto7gc",
       "autoFixable": false
     },
     {
@@ -5982,7 +5982,7 @@
         "file": "src/providers/postHrmTimeTrackingMemberTimesheets.ts",
         "line": 3971
       },
-      "id": "type-error-1774845592931-jyw82zvzwmq",
+      "id": "type-error-1774846286751-v7qx9mtji7i",
       "autoFixable": false
     },
     {
@@ -5994,7 +5994,7 @@
         "file": "src/providers/putHrmTimeTrackingMemberRolesRoleId.ts",
         "line": 5084
       },
-      "id": "type-error-1774845592931-uz6te29mnf",
+      "id": "type-error-1774846286751-f88m3mo2mhr",
       "autoFixable": false
     },
     {
@@ -6006,7 +6006,7 @@
         "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
         "line": 2246
       },
-      "id": "type-error-1774845592931-3a3sowzizyt",
+      "id": "type-error-1774846286751-4z8c3oxt8rp",
       "autoFixable": false
     },
     {
@@ -6018,7 +6018,7 @@
         "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
         "line": 2266
       },
-      "id": "type-error-1774845592931-xhp5166o3",
+      "id": "type-error-1774846286751-zy3tki8rf2r",
       "autoFixable": false
     },
     {
@@ -6030,7 +6030,7 @@
         "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
         "line": 2314
       },
-      "id": "type-error-1774845592931-fzk3texp1t6",
+      "id": "type-error-1774846286751-5lnh5n75kbj",
       "autoFixable": false
     },
     {
@@ -6042,7 +6042,7 @@
         "file": "src/transformers/HrmTimeTrackingDashboardRecentTimelogTransformer.ts",
         "line": 2362
       },
-      "id": "type-error-1774845592931-amh5fx9gdfn",
+      "id": "type-error-1774846286751-hhji5azkbs6",
       "autoFixable": false
     },
     {
@@ -6054,7 +6054,7 @@
         "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
         "line": 2794
       },
-      "id": "type-error-1774845592931-371cdz07l1n",
+      "id": "type-error-1774846286751-jenoetd9lh",
       "autoFixable": false
     },
     {
@@ -6066,7 +6066,7 @@
         "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
         "line": 2847
       },
-      "id": "type-error-1774845592931-gxfig9b0vl",
+      "id": "type-error-1774846286751-efbn0tihgvh",
       "autoFixable": false
     },
     {
@@ -6078,7 +6078,7 @@
         "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
         "line": 2901
       },
-      "id": "type-error-1774845592931-rhvg27wn1dd",
+      "id": "type-error-1774846286751-vc05h3p3icb",
       "autoFixable": false
     },
     {
@@ -6090,14 +6090,14 @@
         "file": "src/transformers/HrmTimeTrackingTaskTransformer.ts",
         "line": 2950
       },
-      "id": "type-error-1774845592931-2ty7k6z3yzg",
+      "id": "type-error-1774846286751-rc12h9irmkf",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:39:53.802Z",
-    "totalDurationMs": 8418,
+    "evaluatedAt": "2026-03-30T04:51:27.441Z",
+    "totalDurationMs": 8672,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 332
   },

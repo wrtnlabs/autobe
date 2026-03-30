@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845583474-uzqcq3gi6h",
+          "id": "type-error-1774846276927-nfxdpvgk5gq",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2041
           },
-          "id": "type-error-1774845583474-2phi2pz0px1",
+          "id": "type-error-1774846276927-kn6t66yeryl",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2093
           },
-          "id": "type-error-1774845583474-qbupztfq5yg",
+          "id": "type-error-1774846276927-0smd2po9hxg",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2224
           },
-          "id": "type-error-1774845583474-sa8v2prnzlf",
+          "id": "type-error-1774846276927-vnv4gqcnivh",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2279
           },
-          "id": "type-error-1774845583474-sc5kc2scyt",
+          "id": "type-error-1774846276927-ejgjgicynuh",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2416
           },
-          "id": "type-error-1774845583474-yqskppp51i",
+          "id": "type-error-1774846276927-x75s2zucbgk",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2472
           },
-          "id": "type-error-1774845583474-h30v95pmwr7",
+          "id": "type-error-1774846276927-blcat5e2ap4",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2619
           },
-          "id": "type-error-1774845583474-kbwcnszqlma",
+          "id": "type-error-1774846276927-3k51mx5ubbh",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2678
           },
-          "id": "type-error-1774845583474-7z4bnl3bqh",
+          "id": "type-error-1774846276927-9p43pzwzbz",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2815
           },
-          "id": "type-error-1774845583474-7wrccqd1t23",
+          "id": "type-error-1774846276927-gocnzgn1oa8",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 2875
           },
-          "id": "type-error-1774845583474-uyn9hd6ese8",
+          "id": "type-error-1774846276927-wel1lfp6qui",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3022
           },
-          "id": "type-error-1774845583474-mvg3pm6z49k",
+          "id": "type-error-1774846276927-3ecjqwgvbbe",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3085
           },
-          "id": "type-error-1774845583474-6v685skun2e",
+          "id": "type-error-1774846276927-7lqqozn6zer",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3242
           },
-          "id": "type-error-1774845583474-7nzdjglq6do",
+          "id": "type-error-1774846276927-8bmjdzdsnny",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3306
           },
-          "id": "type-error-1774845583474-xc6cprpzkdl",
+          "id": "type-error-1774846276927-go6pem49fsh",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3473
           },
-          "id": "type-error-1774845583474-67ncb1j89ne",
+          "id": "type-error-1774846276927-y99x9gfsbxm",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3540
           },
-          "id": "type-error-1774845583474-7az5l8l2wpp",
+          "id": "type-error-1774846276927-1zwl7q7kni3j",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3721
           },
-          "id": "type-error-1774845583474-j2fgoxinhbf",
+          "id": "type-error-1774846276927-51fkkuah718",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3789
           },
-          "id": "type-error-1774845583474-0cv0jjpcrewp",
+          "id": "type-error-1774846276927-eus6re0cmm6",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 3980
           },
-          "id": "type-error-1774845583474-5nwrlhda8wb",
+          "id": "type-error-1774846276927-ibkiv9yubnh",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 4051
           },
-          "id": "type-error-1774845583474-4ey5zd11kwg",
+          "id": "type-error-1774846276927-oc7wg7o8nh",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 4186
           },
-          "id": "type-error-1774845583474-cckxxlt4gu",
+          "id": "type-error-1774846276927-s844nxq4yg",
           "autoFixable": false
         },
         {
@@ -283,11 +283,11 @@
             "file": "src/providers/patchTodoAppMemberSessions.ts",
             "line": 4257
           },
-          "id": "type-error-1774845583474-7jyef81r1u6",
+          "id": "type-error-1774846276927-im3vhpisxg",
           "autoFixable": false
         }
       ],
-      "durationMs": 5694,
+      "durationMs": 2789,
       "metrics": {
         "totalFiles": 97,
         "filesWithErrors": 0,
@@ -421,7 +421,7 @@
             "line": 16
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845583628-tro1jrw2xll",
+          "id": "complexity-1774846277064-sbyvaawd3y",
           "autoFixable": false
         },
         {
@@ -434,7 +434,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845583631-h6hkzokcq8f",
+          "id": "complexity-1774846277063-vgng8t3wxe",
           "autoFixable": false
         },
         {
@@ -447,7 +447,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845583639-98u6ol5enkb",
+          "id": "complexity-1774846277077-zaw8w1nvkc",
           "autoFixable": false
         },
         {
@@ -460,7 +460,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845583636-x0x94whta1",
+          "id": "complexity-1774846277078-zuousr0f11c",
           "autoFixable": false
         }
       ]
@@ -477,7 +477,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 40
           },
-          "id": "duplication-1774845583726-u7r4hxvjjlo",
+          "id": "duplication-1774846277195-hshe2oiceo",
           "autoFixable": false
         },
         {
@@ -489,7 +489,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 41
           },
-          "id": "duplication-1774845583726-wqfjuhzg8cc",
+          "id": "duplication-1774846277195-2ap83xy9hug",
           "autoFixable": false
         },
         {
@@ -501,7 +501,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 42
           },
-          "id": "duplication-1774845583726-qkrwuiy54wt",
+          "id": "duplication-1774846277195-cigvi6v7nqt",
           "autoFixable": false
         },
         {
@@ -513,7 +513,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 43
           },
-          "id": "duplication-1774845583726-g7a78d559p",
+          "id": "duplication-1774846277195-b7lik05p8i9",
           "autoFixable": false
         },
         {
@@ -525,7 +525,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 44
           },
-          "id": "duplication-1774845583726-le4izedgr3",
+          "id": "duplication-1774846277195-c7eojnqxbfj",
           "autoFixable": false
         },
         {
@@ -537,7 +537,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 166
           },
-          "id": "duplication-1774845583726-pzrchppjh5h",
+          "id": "duplication-1774846277195-h26zgk3ehrh",
           "autoFixable": false
         },
         {
@@ -549,7 +549,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 167
           },
-          "id": "duplication-1774845583726-v9se72evhmd",
+          "id": "duplication-1774846277195-0qe2ly5a15sr",
           "autoFixable": false
         },
         {
@@ -561,7 +561,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 168
           },
-          "id": "duplication-1774845583726-uf1r0go5k4",
+          "id": "duplication-1774846277195-xymh1zw234s",
           "autoFixable": false
         },
         {
@@ -573,7 +573,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 169
           },
-          "id": "duplication-1774845583726-eayotbuxobe",
+          "id": "duplication-1774846277195-rklbjdl8h1k",
           "autoFixable": false
         },
         {
@@ -585,7 +585,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 170
           },
-          "id": "duplication-1774845583726-34h0xt1vimp",
+          "id": "duplication-1774846277195-2yzcsye71ab",
           "autoFixable": false
         },
         {
@@ -597,7 +597,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 171
           },
-          "id": "duplication-1774845583726-xksqnofwg9",
+          "id": "duplication-1774846277195-oegpz271kif",
           "autoFixable": false
         },
         {
@@ -609,7 +609,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 172
           },
-          "id": "duplication-1774845583726-rawol90yzi",
+          "id": "duplication-1774846277195-mkdzplgzm0n",
           "autoFixable": false
         },
         {
@@ -621,7 +621,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/providers/patchTodoAppMemberTodosTrash.ts",
             "line": 173
           },
-          "id": "duplication-1774845583726-qmjh1g9jan",
+          "id": "duplication-1774846277195-25d5w11oat6",
           "autoFixable": false
         }
       ]
@@ -643,31 +643,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/members/TodoappMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845583736-enqx8pyzxww",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774845583738-xmapz2wkidd",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845583736-q0vbc0tdd8k",
+          "id": "jsdoc-1774846277170-lv8fn9wlj1t",
           "autoFixable": false
         },
         {
@@ -679,19 +655,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845583737-lu6d8gw6bn",
+          "id": "jsdoc-1774846277171-tiuso31hpmg",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberPasswordresetsController\" missing JSDoc",
+          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/passwordResets/TodoappMemberPasswordresetsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845583737-ac31dbn3a3l",
+          "id": "jsdoc-1774846277170-3rz01yb809a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846277172-r8nss2ov2p",
           "autoFixable": false
         },
         {
@@ -703,7 +691,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/emailVerifications/TodoappMemberEmailverificationsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845583738-j1m308b7j1l",
+          "id": "jsdoc-1774846277171-jbw1ureu3ke",
           "autoFixable": false
         },
         {
@@ -715,19 +703,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845583738-e2uhhcrblls",
+          "id": "jsdoc-1774846277173-3lpvfyf15nv",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"TodoappMemberTodosEdithistoriesController\" missing JSDoc",
+          "message": "Class \"TodoappMemberPasswordresetsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/passwordResets/TodoappMemberPasswordresetsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845583740-8el0c1zyghd",
+          "id": "jsdoc-1774846277172-zqqum6514cf",
           "autoFixable": false
         },
         {
@@ -739,7 +727,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/trash/TodoappMemberTodosTrashController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845583739-fb2h0we2se5",
+          "id": "jsdoc-1774846277173-99qfcwojsbl",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosEdithistoriesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846277174-fw20tlwfks4",
           "autoFixable": false
         }
       ]
@@ -768,7 +768,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845583474-uzqcq3gi6h",
+      "id": "type-error-1774846276927-nfxdpvgk5gq",
       "autoFixable": false
     }
   ],
@@ -782,7 +782,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2041
       },
-      "id": "type-error-1774845583474-2phi2pz0px1",
+      "id": "type-error-1774846276927-kn6t66yeryl",
       "autoFixable": false
     },
     {
@@ -794,7 +794,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2093
       },
-      "id": "type-error-1774845583474-qbupztfq5yg",
+      "id": "type-error-1774846276927-0smd2po9hxg",
       "autoFixable": false
     },
     {
@@ -806,7 +806,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2224
       },
-      "id": "type-error-1774845583474-sa8v2prnzlf",
+      "id": "type-error-1774846276927-vnv4gqcnivh",
       "autoFixable": false
     },
     {
@@ -818,7 +818,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2279
       },
-      "id": "type-error-1774845583474-sc5kc2scyt",
+      "id": "type-error-1774846276927-ejgjgicynuh",
       "autoFixable": false
     },
     {
@@ -830,7 +830,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2416
       },
-      "id": "type-error-1774845583474-yqskppp51i",
+      "id": "type-error-1774846276927-x75s2zucbgk",
       "autoFixable": false
     },
     {
@@ -842,7 +842,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2472
       },
-      "id": "type-error-1774845583474-h30v95pmwr7",
+      "id": "type-error-1774846276927-blcat5e2ap4",
       "autoFixable": false
     },
     {
@@ -854,7 +854,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2619
       },
-      "id": "type-error-1774845583474-kbwcnszqlma",
+      "id": "type-error-1774846276927-3k51mx5ubbh",
       "autoFixable": false
     },
     {
@@ -866,7 +866,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2678
       },
-      "id": "type-error-1774845583474-7z4bnl3bqh",
+      "id": "type-error-1774846276927-9p43pzwzbz",
       "autoFixable": false
     },
     {
@@ -878,7 +878,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2815
       },
-      "id": "type-error-1774845583474-7wrccqd1t23",
+      "id": "type-error-1774846276927-gocnzgn1oa8",
       "autoFixable": false
     },
     {
@@ -890,7 +890,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 2875
       },
-      "id": "type-error-1774845583474-uyn9hd6ese8",
+      "id": "type-error-1774846276927-wel1lfp6qui",
       "autoFixable": false
     },
     {
@@ -902,7 +902,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3022
       },
-      "id": "type-error-1774845583474-mvg3pm6z49k",
+      "id": "type-error-1774846276927-3ecjqwgvbbe",
       "autoFixable": false
     },
     {
@@ -914,7 +914,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3085
       },
-      "id": "type-error-1774845583474-6v685skun2e",
+      "id": "type-error-1774846276927-7lqqozn6zer",
       "autoFixable": false
     },
     {
@@ -926,7 +926,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3242
       },
-      "id": "type-error-1774845583474-7nzdjglq6do",
+      "id": "type-error-1774846276927-8bmjdzdsnny",
       "autoFixable": false
     },
     {
@@ -938,7 +938,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3306
       },
-      "id": "type-error-1774845583474-xc6cprpzkdl",
+      "id": "type-error-1774846276927-go6pem49fsh",
       "autoFixable": false
     },
     {
@@ -950,7 +950,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3473
       },
-      "id": "type-error-1774845583474-67ncb1j89ne",
+      "id": "type-error-1774846276927-y99x9gfsbxm",
       "autoFixable": false
     },
     {
@@ -962,7 +962,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3540
       },
-      "id": "type-error-1774845583474-7az5l8l2wpp",
+      "id": "type-error-1774846276927-1zwl7q7kni3j",
       "autoFixable": false
     },
     {
@@ -974,7 +974,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3721
       },
-      "id": "type-error-1774845583474-j2fgoxinhbf",
+      "id": "type-error-1774846276927-51fkkuah718",
       "autoFixable": false
     },
     {
@@ -986,7 +986,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3789
       },
-      "id": "type-error-1774845583474-0cv0jjpcrewp",
+      "id": "type-error-1774846276927-eus6re0cmm6",
       "autoFixable": false
     },
     {
@@ -998,7 +998,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 3980
       },
-      "id": "type-error-1774845583474-5nwrlhda8wb",
+      "id": "type-error-1774846276927-ibkiv9yubnh",
       "autoFixable": false
     },
     {
@@ -1010,7 +1010,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 4051
       },
-      "id": "type-error-1774845583474-4ey5zd11kwg",
+      "id": "type-error-1774846276927-oc7wg7o8nh",
       "autoFixable": false
     },
     {
@@ -1022,7 +1022,7 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 4186
       },
-      "id": "type-error-1774845583474-cckxxlt4gu",
+      "id": "type-error-1774846276927-s844nxq4yg",
       "autoFixable": false
     },
     {
@@ -1034,13 +1034,13 @@
         "file": "src/providers/patchTodoAppMemberSessions.ts",
         "line": 4257
       },
-      "id": "type-error-1774845583474-7jyef81r1u6",
+      "id": "type-error-1774846276927-im3vhpisxg",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:39:43.746Z",
-    "totalDurationMs": 5866,
+    "evaluatedAt": "2026-03-30T04:51:17.214Z",
+    "totalDurationMs": 2983,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 97
   },

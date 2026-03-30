@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845557772-y8y3ac6dsb",
+          "id": "type-error-1774846254869-kykkeij6ism",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/providers/getCommunityPlatformMemberReportsReportId.ts",
             "line": 3402
           },
-          "id": "type-error-1774845557772-3sbs1ycytgv",
+          "id": "type-error-1774846254869-gaftjshhgas",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/providers/getCommunityPlatformMemberReportsReportId.ts",
             "line": 3553
           },
-          "id": "type-error-1774845557772-w1c49u5ye7j",
+          "id": "type-error-1774846254869-t6qaij06yyg",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/providers/getCommunityPlatformMemberVotesPostVoteId.ts",
             "line": 2310
           },
-          "id": "type-error-1774845557772-qi9fbq4q3z",
+          "id": "type-error-1774846254869-41lpra4dq3a",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerators.ts",
             "line": 2952
           },
-          "id": "type-error-1774845557772-d700bmzqufq",
+          "id": "type-error-1774846254869-hcn4zma7j2s",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 6516
           },
-          "id": "type-error-1774845557772-5h8hgl544qw",
+          "id": "type-error-1774846254869-bpon126ea4b",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 8586
           },
-          "id": "type-error-1774845557772-j1l7cb8ttd",
+          "id": "type-error-1774846254869-in9fxrqx7dj",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 9039
           },
-          "id": "type-error-1774845557772-6gqaaq61y6j",
+          "id": "type-error-1774846254869-hz71jzy58ae",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunitySlug.ts",
             "line": 1905
           },
-          "id": "type-error-1774845557772-pwyj5bg3my",
+          "id": "type-error-1774846254869-u6t7uxlau5",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentId.ts",
             "line": 2920
           },
-          "id": "type-error-1774845557772-oh2jbyrrz2l",
+          "id": "type-error-1774846254869-o77cv9gf61",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/transformers/CommunityPlatformReportTransformer.ts",
             "line": 2156
           },
-          "id": "type-error-1774845557772-7k91713kshq",
+          "id": "type-error-1774846254869-jmwbvq6vnks",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/transformers/CommunityPlatformReportTransformer.ts",
             "line": 2307
           },
-          "id": "type-error-1774845557772-fs23cwa0vhg",
+          "id": "type-error-1774846254869-41rrxanu0xb",
           "autoFixable": false
         },
         {
@@ -163,11 +163,11 @@
             "file": "src/transformers/CommunityPlatformReportTransformer.ts",
             "line": 2618
           },
-          "id": "type-error-1774845557772-ri8nrn0cmre",
+          "id": "type-error-1774846254869-z1opq91g1k",
           "autoFixable": false
         }
       ],
-      "durationMs": 13629,
+      "durationMs": 12738,
       "metrics": {
         "totalFiles": 460,
         "filesWithErrors": 0,
@@ -301,7 +301,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558064-coqfgg0vfyd",
+          "id": "complexity-1774846255202-2b70xccfznd",
           "autoFixable": false
         },
         {
@@ -314,7 +314,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558066-d92qjkdajnq",
+          "id": "complexity-1774846255206-3wcupw0l2sr",
           "autoFixable": false
         },
         {
@@ -327,7 +327,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558070-k9y4wgqpuek",
+          "id": "complexity-1774846255209-7rnzfyzng5m",
           "autoFixable": false
         },
         {
@@ -340,7 +340,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558074-decye4vxpx8",
+          "id": "complexity-1774846255212-wl0jsdv63z",
           "autoFixable": false
         },
         {
@@ -353,7 +353,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558086-lzd9z0y2bds",
+          "id": "complexity-1774846255219-bnj9fvaplei",
           "autoFixable": false
         },
         {
@@ -366,7 +366,7 @@
             "line": 22
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558080-smbe1od1h19",
+          "id": "complexity-1774846255217-awx42bxhr3",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "line": 16
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558090-pkyxsa0h27o",
+          "id": "complexity-1774846255231-8g6ux7gjr8",
           "autoFixable": false
         },
         {
@@ -392,7 +392,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558094-16oxpco3d6z",
+          "id": "complexity-1774846255232-anqnf703hw",
           "autoFixable": false
         },
         {
@@ -405,7 +405,7 @@
             "line": 16
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558091-3t5aiel4mon",
+          "id": "complexity-1774846255235-du3cpu7uhk",
           "autoFixable": false
         },
         {
@@ -418,7 +418,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558092-maphkub3vc",
+          "id": "complexity-1774846255233-47a2m2egkc2",
           "autoFixable": false
         },
         {
@@ -431,7 +431,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558093-wmkmsj4zqob",
+          "id": "complexity-1774846255230-1i4jqgrdibti",
           "autoFixable": false
         },
         {
@@ -444,7 +444,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558095-6h882t1z6s8",
+          "id": "complexity-1774846255236-5i60qhrny8c",
           "autoFixable": false
         },
         {
@@ -457,7 +457,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558107-2pn6uuaed5o",
+          "id": "complexity-1774846255237-4p68ypgsghl",
           "autoFixable": false
         },
         {
@@ -470,7 +470,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558102-1htpigrp02r",
+          "id": "complexity-1774846255245-v6xk6ytc9z",
           "autoFixable": false
         },
         {
@@ -483,7 +483,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558105-0p38sq9l6w8k",
+          "id": "complexity-1774846255247-srphrf3tgq",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558104-ks2n81qmknf",
+          "id": "complexity-1774846255249-ses476cyak",
           "autoFixable": false
         },
         {
@@ -509,7 +509,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558106-saiovdxklt",
+          "id": "complexity-1774846255251-ib24tr76pj",
           "autoFixable": false
         },
         {
@@ -522,7 +522,7 @@
             "line": 22
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558107-h2jkfq6jmaa",
+          "id": "complexity-1774846255250-0t7zx11i3h5d",
           "autoFixable": false
         },
         {
@@ -535,7 +535,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558114-zpoaii22krn",
+          "id": "complexity-1774846255252-wtrxx734ko9",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558108-ibp02q5o5e9",
+          "id": "complexity-1774846255253-q17kwtj0ss",
           "autoFixable": false
         },
         {
@@ -561,7 +561,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558112-zn6r7drelzd",
+          "id": "complexity-1774846255260-ok3c7bbkm5r",
           "autoFixable": false
         },
         {
@@ -574,7 +574,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558109-u1t3yperyv",
+          "id": "complexity-1774846255257-x07tbqg5hgb",
           "autoFixable": false
         },
         {
@@ -587,7 +587,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558113-19jbzkczg6sj",
+          "id": "complexity-1774846255255-9qpp9jdxs5p",
           "autoFixable": false
         },
         {
@@ -600,7 +600,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558117-stku3qda4xp",
+          "id": "complexity-1774846255256-t6yluzcqxk",
           "autoFixable": false
         },
         {
@@ -613,7 +613,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558118-1at5gtdtubz",
+          "id": "complexity-1774846255258-gkxn0qvzr3",
           "autoFixable": false
         },
         {
@@ -626,7 +626,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558119-01enov27ux99",
+          "id": "complexity-1774846255261-09ggztposvc3",
           "autoFixable": false
         },
         {
@@ -639,7 +639,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558120-4hfhpsa4ws2",
+          "id": "complexity-1774846255263-cei6v20zoop",
           "autoFixable": false
         },
         {
@@ -652,7 +652,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845558123-81iiosvy8fx",
+          "id": "complexity-1774846255269-u8ilqbetwk",
           "autoFixable": false
         },
         {
@@ -665,7 +665,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845558121-co6i2ebyml6",
+          "id": "complexity-1774846255266-lzcrp7dbumb",
           "autoFixable": false
         }
       ]
@@ -682,7 +682,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
             "line": 97
           },
-          "id": "duplication-1774845558366-92ducwzp7kg",
+          "id": "duplication-1774846255548-y8rbbyvai8a",
           "autoFixable": false
         },
         {
@@ -694,7 +694,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
             "line": 166
           },
-          "id": "duplication-1774845558366-7naqoc0ezh9",
+          "id": "duplication-1774846255548-jv26dx4atmg",
           "autoFixable": false
         },
         {
@@ -706,7 +706,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
             "line": 96
           },
-          "id": "duplication-1774845558366-crh89na379p",
+          "id": "duplication-1774846255548-fanfpssacw",
           "autoFixable": false
         },
         {
@@ -718,7 +718,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
             "line": 163
           },
-          "id": "duplication-1774845558366-gh2qc36gm4r",
+          "id": "duplication-1774846255548-bdvuvmw188",
           "autoFixable": false
         },
         {
@@ -730,7 +730,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
             "line": 219
           },
-          "id": "duplication-1774845558366-2o0fshpzzz8",
+          "id": "duplication-1774846255548-2msh70vrr2q",
           "autoFixable": false
         },
         {
@@ -742,7 +742,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/CommunityplatformMemberCommunitiesModerationactionsController.ts",
             "line": 97
           },
-          "id": "duplication-1774845558366-ij7gur5bpo",
+          "id": "duplication-1774846255548-fc5oxx4tpzk",
           "autoFixable": false
         },
         {
@@ -754,7 +754,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/CommunityplatformAdminPostsCommentsController.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-8hweof8xp03",
+          "id": "duplication-1774846255548-1cst83nu9dr",
           "autoFixable": false
         },
         {
@@ -766,7 +766,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/CommunityplatformAdminCommunitiesModerationactionsController.ts",
             "line": 97
           },
-          "id": "duplication-1774845558366-hd6z7tpxibr",
+          "id": "duplication-1774846255548-7zwubl0nepx",
           "autoFixable": false
         },
         {
@@ -778,7 +778,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/CommunityplatformMemberPostsCommentsSnapshotsController.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-xlsj4cm1029",
+          "id": "duplication-1774846255548-ioangev8hwl",
           "autoFixable": false
         },
         {
@@ -790,7 +790,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/CommunityplatformMemberPostsCommentsSnapshotsController.ts",
             "line": 105
           },
-          "id": "duplication-1774845558366-110xfpjo943f",
+          "id": "duplication-1774846255548-pc5k4mhaiab",
           "autoFixable": false
         },
         {
@@ -802,7 +802,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/CommunityplatformMemberPostsCommentsSnapshotsController.ts",
             "line": 173
           },
-          "id": "duplication-1774845558366-dez7ix2o7zl",
+          "id": "duplication-1774846255548-i54f86gcoo8",
           "autoFixable": false
         },
         {
@@ -814,7 +814,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/snapshots/CommunityplatformMemberCommunitiesModeratorsSnapshotsController.ts",
             "line": 53
           },
-          "id": "duplication-1774845558366-diwydqytqj5",
+          "id": "duplication-1774846255548-9jlzrbd4ff",
           "autoFixable": false
         },
         {
@@ -826,7 +826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/reports/CommunityplatformMemberCommunitiesModerationactionsReportsController.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-36xk8detaev",
+          "id": "duplication-1774846255548-ycm2u2pkre",
           "autoFixable": false
         },
         {
@@ -838,7 +838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/reports/CommunityplatformMemberCommunitiesModerationactionsReportsController.ts",
             "line": 114
           },
-          "id": "duplication-1774845558366-kdv3otyxh7l",
+          "id": "duplication-1774846255548-utohc33c49r",
           "autoFixable": false
         },
         {
@@ -850,7 +850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/comments/CommunityplatformMemberCommunitiesModerationactionsCommentsController.ts",
             "line": 122
           },
-          "id": "duplication-1774845558366-qdbxigro279",
+          "id": "duplication-1774846255548-42ed8hx4o6t",
           "autoFixable": false
         },
         {
@@ -859,10 +859,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 3 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/snapshots/CommunityplatformAdminPostsCommentsSnapshotsController.ts",
-            "line": 50
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/files/CommunityplatformAdminPostsCommentsFilesController.ts",
+            "line": 46
           },
-          "id": "duplication-1774845558366-1ozhkpufi97",
+          "id": "duplication-1774846255548-6j63qilcnbt",
           "autoFixable": false
         },
         {
@@ -874,7 +874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/snapshots/CommunityplatformAdminPostsCommentsSnapshotsController.ts",
             "line": 173
           },
-          "id": "duplication-1774845558366-w0dzcelbnrc",
+          "id": "duplication-1774846255548-tuwlstgn6d",
           "autoFixable": false
         },
         {
@@ -883,10 +883,10 @@
           "code": "D001",
           "message": "Duplicate code block found in 3 locations",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/comments/CommunityplatformAdminCommunitiesModerationactionsCommentsController.ts",
-            "line": 42
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/reports/CommunityplatformAdminCommunitiesModerationactionsReportsController.ts",
+            "line": 41
           },
-          "id": "duplication-1774845558366-ccr0nchq5fa",
+          "id": "duplication-1774846255548-4pyklvbz4iq",
           "autoFixable": false
         },
         {
@@ -898,7 +898,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/files/CommunityplatformMemberPostsCommentsSnapshotsFilesController.ts",
             "line": 231
           },
-          "id": "duplication-1774845558366-cr30n4mi2hs",
+          "id": "duplication-1774846255548-pz1zuvg9cch",
           "autoFixable": false
         },
         {
@@ -910,7 +910,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberPostsPostIdLinksLinkId.ts",
             "line": 35
           },
-          "id": "duplication-1774845558366-ep7w95yulrn",
+          "id": "duplication-1774846255548-v9ekahvyp4n",
           "autoFixable": false
         },
         {
@@ -922,7 +922,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 12
           },
-          "id": "duplication-1774845558366-lue6fcv5f3b",
+          "id": "duplication-1774846255548-bzbritxe8od",
           "autoFixable": false
         },
         {
@@ -934,7 +934,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 13
           },
-          "id": "duplication-1774845558366-k8a3uft51w",
+          "id": "duplication-1774846255548-zcfmn2dma2c",
           "autoFixable": false
         },
         {
@@ -946,7 +946,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentIdFilesFileId.ts",
             "line": 9
           },
-          "id": "duplication-1774845558366-ya73n3uipg",
+          "id": "duplication-1774846255548-mcukibf17de",
           "autoFixable": false
         },
         {
@@ -958,7 +958,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentId.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-t0t2d3rrzdc",
+          "id": "duplication-1774846255548-3wg16w6v0e5",
           "autoFixable": false
         },
         {
@@ -970,7 +970,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdOwnersOwnerId.ts",
             "line": 12
           },
-          "id": "duplication-1774845558366-u4e6h1ikicg",
+          "id": "duplication-1774846255548-eimepiwvumv",
           "autoFixable": false
         },
         {
@@ -982,7 +982,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdOwnersOwnerId.ts",
             "line": 71
           },
-          "id": "duplication-1774845558366-0lw6fagfyfd",
+          "id": "duplication-1774846255548-pn4uxip961d",
           "autoFixable": false
         },
         {
@@ -994,7 +994,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 11
           },
-          "id": "duplication-1774845558366-xvs20gyqerj",
+          "id": "duplication-1774846255548-efgzo5721gf",
           "autoFixable": false
         },
         {
@@ -1006,7 +1006,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 12
           },
-          "id": "duplication-1774845558366-2j5wmxxrh5s",
+          "id": "duplication-1774846255548-orzqq67w4xn",
           "autoFixable": false
         },
         {
@@ -1018,7 +1018,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 13
           },
-          "id": "duplication-1774845558366-837582zsnpi",
+          "id": "duplication-1774846255548-olhhmtc615",
           "autoFixable": false
         },
         {
@@ -1030,7 +1030,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 14
           },
-          "id": "duplication-1774845558366-yspgafw3li",
+          "id": "duplication-1774846255548-y3xlaey2fbi",
           "autoFixable": false
         },
         {
@@ -1042,7 +1042,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 15
           },
-          "id": "duplication-1774845558366-tl70nbvs13",
+          "id": "duplication-1774846255548-nnch880bzr",
           "autoFixable": false
         },
         {
@@ -1054,7 +1054,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 16
           },
-          "id": "duplication-1774845558366-x629k26e2lc",
+          "id": "duplication-1774846255548-0x6szh0k1pfn",
           "autoFixable": false
         },
         {
@@ -1066,7 +1066,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorId.ts",
             "line": 17
           },
-          "id": "duplication-1774845558366-zy8fruzi3m",
+          "id": "duplication-1774846255548-lvfig9cmmc",
           "autoFixable": false
         },
         {
@@ -1078,7 +1078,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformAdminPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 12
           },
-          "id": "duplication-1774845558366-55z937nhko",
+          "id": "duplication-1774846255548-3raya86ephs",
           "autoFixable": false
         },
         {
@@ -1090,7 +1090,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformAdminPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 13
           },
-          "id": "duplication-1774845558366-r2twyjr17t9",
+          "id": "duplication-1774846255548-cscvou0dqmi",
           "autoFixable": false
         },
         {
@@ -1102,7 +1102,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/putCommunityPlatformAdminPostsPostIdCommentsCommentIdFilesFileId.ts",
             "line": 9
           },
-          "id": "duplication-1774845558366-mvn0zqcpe3n",
+          "id": "duplication-1774846255548-8cfog8v3h5k",
           "autoFixable": false
         },
         {
@@ -1114,7 +1114,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-vi1ck1927kr",
+          "id": "duplication-1774846255548-ec2icut6o3w",
           "autoFixable": false
         },
         {
@@ -1126,7 +1126,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-g6r2gp3iz0a",
+          "id": "duplication-1774846255548-00xkmxm0v7qd",
           "autoFixable": false
         },
         {
@@ -1138,7 +1138,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-vix3177hgfe",
+          "id": "duplication-1774846255548-ri6v4b6l8h",
           "autoFixable": false
         },
         {
@@ -1150,7 +1150,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-b2zgs4o7g6d",
+          "id": "duplication-1774846255548-paef8v8asv",
           "autoFixable": false
         },
         {
@@ -1162,7 +1162,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-c3heybn0rld",
+          "id": "duplication-1774846255548-mud98r88h6",
           "autoFixable": false
         },
         {
@@ -1174,7 +1174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-23mnytmolw6",
+          "id": "duplication-1774846255548-jh3abrk1pje",
           "autoFixable": false
         },
         {
@@ -1186,7 +1186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-3ao2q1txuqg",
+          "id": "duplication-1774846255548-p81m8idos07",
           "autoFixable": false
         },
         {
@@ -1198,7 +1198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-4veju7zveta",
+          "id": "duplication-1774846255548-ly7uevah1ok",
           "autoFixable": false
         },
         {
@@ -1210,7 +1210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-we7n91bpos",
+          "id": "duplication-1774846255548-n0n1k1n3gpr",
           "autoFixable": false
         },
         {
@@ -1222,7 +1222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-t1expy7f07p",
+          "id": "duplication-1774846255548-xi3rym32qn",
           "autoFixable": false
         },
         {
@@ -1234,7 +1234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-14obvrxxpql",
+          "id": "duplication-1774846255548-51h25gl0i1m",
           "autoFixable": false
         },
         {
@@ -1246,7 +1246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-h0gadyrni1o",
+          "id": "duplication-1774846255548-t3mvylxl0hm",
           "autoFixable": false
         },
         {
@@ -1258,7 +1258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-k5cwh5udmdg",
+          "id": "duplication-1774846255548-3gkgodlce0y",
           "autoFixable": false
         },
         {
@@ -1270,7 +1270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-e8lyeszmifa",
+          "id": "duplication-1774846255548-zzrx3rbytxt",
           "autoFixable": false
         },
         {
@@ -1282,7 +1282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-uxyhy2wwrg",
+          "id": "duplication-1774846255548-42gpabyv7zd",
           "autoFixable": false
         },
         {
@@ -1294,7 +1294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberReports.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-97hzyg0ywiv",
+          "id": "duplication-1774846255548-eewelfias7j",
           "autoFixable": false
         },
         {
@@ -1306,7 +1306,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-a1pbhd2rhaf",
+          "id": "duplication-1774846255548-cpqwq7t3rb",
           "autoFixable": false
         },
         {
@@ -1318,7 +1318,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-wxzhdg10dgm",
+          "id": "duplication-1774846255548-aovyw0k485",
           "autoFixable": false
         },
         {
@@ -1330,7 +1330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-p8umbed01bg",
+          "id": "duplication-1774846255548-uavxj4lqq",
           "autoFixable": false
         },
         {
@@ -1342,7 +1342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-bzc13q6pkds",
+          "id": "duplication-1774846255548-rh9qba1jkgg",
           "autoFixable": false
         },
         {
@@ -1354,7 +1354,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-hj9mntvabqa",
+          "id": "duplication-1774846255548-1zlheiy8635",
           "autoFixable": false
         },
         {
@@ -1366,7 +1366,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-wzztofk0b8f",
+          "id": "duplication-1774846255548-oyrh9i54yf",
           "autoFixable": false
         },
         {
@@ -1378,7 +1378,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-cdxt7b1se",
+          "id": "duplication-1774846255548-71obprjo6ba",
           "autoFixable": false
         },
         {
@@ -1390,7 +1390,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-t8gog9kpck9",
+          "id": "duplication-1774846255548-pkg4hjg8jl",
           "autoFixable": false
         },
         {
@@ -1402,7 +1402,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-241p3mzeu3m",
+          "id": "duplication-1774846255548-bmwzib52tob",
           "autoFixable": false
         },
         {
@@ -1414,7 +1414,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-yflt09ylkug",
+          "id": "duplication-1774846255548-d6vs3fq5ql6",
           "autoFixable": false
         },
         {
@@ -1426,7 +1426,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-c0m6i4uvwa",
+          "id": "duplication-1774846255548-qzj9npjssg9",
           "autoFixable": false
         },
         {
@@ -1438,7 +1438,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-c6la3dy9g0d",
+          "id": "duplication-1774846255548-687jht1xrjx",
           "autoFixable": false
         },
         {
@@ -1450,7 +1450,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-r7uw1dhg5of",
+          "id": "duplication-1774846255548-amv17iymw5i",
           "autoFixable": false
         },
         {
@@ -1462,7 +1462,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-dxrb84gmn0q",
+          "id": "duplication-1774846255548-q434iwtfl5b",
           "autoFixable": false
         },
         {
@@ -1474,7 +1474,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 53
           },
-          "id": "duplication-1774845558366-s5wnqnl5jb",
+          "id": "duplication-1774846255548-3vmsvzk56kw",
           "autoFixable": false
         },
         {
@@ -1486,7 +1486,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 54
           },
-          "id": "duplication-1774845558366-tqsqb69jtko",
+          "id": "duplication-1774846255548-el1205zw8hn",
           "autoFixable": false
         },
         {
@@ -1498,7 +1498,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 55
           },
-          "id": "duplication-1774845558366-8l62cmgz74j",
+          "id": "duplication-1774846255548-eexpkc2akr4",
           "autoFixable": false
         },
         {
@@ -1510,7 +1510,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 56
           },
-          "id": "duplication-1774845558366-xf5ivwehdfo",
+          "id": "duplication-1774846255548-1rcmt93n6xc",
           "autoFixable": false
         },
         {
@@ -1522,7 +1522,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 57
           },
-          "id": "duplication-1774845558366-gwt48tqegtv",
+          "id": "duplication-1774846255548-qrx0cmhwdz8",
           "autoFixable": false
         },
         {
@@ -1534,7 +1534,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 58
           },
-          "id": "duplication-1774845558366-e9liq81q9vb",
+          "id": "duplication-1774846255548-r01ukc18op",
           "autoFixable": false
         },
         {
@@ -1546,7 +1546,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 59
           },
-          "id": "duplication-1774845558366-9c4ee6gc1rf",
+          "id": "duplication-1774846255548-flao2qco90g",
           "autoFixable": false
         },
         {
@@ -1558,7 +1558,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 60
           },
-          "id": "duplication-1774845558366-bhulffqdo46",
+          "id": "duplication-1774846255548-75j1cxdh4gv",
           "autoFixable": false
         },
         {
@@ -1570,7 +1570,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-mbehgsmcoyr",
+          "id": "duplication-1774846255548-4aqwnfasp8d",
           "autoFixable": false
         },
         {
@@ -1582,7 +1582,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-j1p0r8grxeh",
+          "id": "duplication-1774846255548-s6bp8uoap3",
           "autoFixable": false
         },
         {
@@ -1594,7 +1594,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 64
           },
-          "id": "duplication-1774845558366-gurjetgdr3",
+          "id": "duplication-1774846255548-ka8c97j1tmq",
           "autoFixable": false
         },
         {
@@ -1606,7 +1606,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 65
           },
-          "id": "duplication-1774845558366-q0dy00nzxt",
+          "id": "duplication-1774846255548-0h1te75wnc8",
           "autoFixable": false
         },
         {
@@ -1618,7 +1618,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 66
           },
-          "id": "duplication-1774845558366-g3op3auqf16",
+          "id": "duplication-1774846255548-t2il71zzwu",
           "autoFixable": false
         },
         {
@@ -1630,7 +1630,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 67
           },
-          "id": "duplication-1774845558366-72p2ho4hn1c",
+          "id": "duplication-1774846255548-90l0yq8hofd",
           "autoFixable": false
         },
         {
@@ -1642,7 +1642,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 68
           },
-          "id": "duplication-1774845558366-o84r069h3r8",
+          "id": "duplication-1774846255548-anfifbtrlao",
           "autoFixable": false
         },
         {
@@ -1654,7 +1654,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 69
           },
-          "id": "duplication-1774845558366-vri06pse2dd",
+          "id": "duplication-1774846255548-6bod8dbgzkd",
           "autoFixable": false
         },
         {
@@ -1666,7 +1666,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 142
           },
-          "id": "duplication-1774845558366-5ui7kwiyc2x",
+          "id": "duplication-1774846255548-m5i04ha48dg",
           "autoFixable": false
         },
         {
@@ -1678,7 +1678,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 143
           },
-          "id": "duplication-1774845558366-6im5x9stsl7",
+          "id": "duplication-1774846255548-hrak19bkpo4",
           "autoFixable": false
         },
         {
@@ -1690,7 +1690,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 144
           },
-          "id": "duplication-1774845558366-funk8gu3qm4",
+          "id": "duplication-1774846255548-apgdkfvigl7",
           "autoFixable": false
         },
         {
@@ -1702,7 +1702,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 145
           },
-          "id": "duplication-1774845558366-jrlfiuf6se",
+          "id": "duplication-1774846255548-qdvus4krsl",
           "autoFixable": false
         },
         {
@@ -1714,7 +1714,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 146
           },
-          "id": "duplication-1774845558366-zqmb38ssff",
+          "id": "duplication-1774846255548-pywb106lu4",
           "autoFixable": false
         },
         {
@@ -1726,7 +1726,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 147
           },
-          "id": "duplication-1774845558366-kcwzp9cn9ta",
+          "id": "duplication-1774846255548-wf44s895o69",
           "autoFixable": false
         },
         {
@@ -1738,7 +1738,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
             "line": 148
           },
-          "id": "duplication-1774845558366-0p129oxp1f8",
+          "id": "duplication-1774846255548-8grg5mwwoow",
           "autoFixable": false
         },
         {
@@ -1750,7 +1750,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 36
           },
-          "id": "duplication-1774845558366-zjg7ag2hn4h",
+          "id": "duplication-1774846255548-wxsx5rt48k",
           "autoFixable": false
         },
         {
@@ -1762,7 +1762,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-h066j1xr1hw",
+          "id": "duplication-1774846255548-9uml2xiq76w",
           "autoFixable": false
         },
         {
@@ -1774,7 +1774,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-hxykm5g5hu6",
+          "id": "duplication-1774846255548-3kts92vn4rx",
           "autoFixable": false
         },
         {
@@ -1786,7 +1786,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-zwl0lm02b5o",
+          "id": "duplication-1774846255548-vjfu1y2fwnb",
           "autoFixable": false
         },
         {
@@ -1798,7 +1798,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-p7jttzmu7e",
+          "id": "duplication-1774846255548-8pjuhavd8xc",
           "autoFixable": false
         },
         {
@@ -1810,7 +1810,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-t9picvqv82",
+          "id": "duplication-1774846255548-fgl7x4sb7rn",
           "autoFixable": false
         },
         {
@@ -1822,7 +1822,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 19
           },
-          "id": "duplication-1774845558366-3v2o6km8uuy",
+          "id": "duplication-1774846255548-b0x8f1akf7",
           "autoFixable": false
         },
         {
@@ -1834,7 +1834,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 20
           },
-          "id": "duplication-1774845558366-rn5019jmpgf",
+          "id": "duplication-1774846255548-4d2e1aa63vn",
           "autoFixable": false
         },
         {
@@ -1846,7 +1846,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 21
           },
-          "id": "duplication-1774845558366-hhq5m7kgr4q",
+          "id": "duplication-1774846255548-4ijz3l8hzr",
           "autoFixable": false
         },
         {
@@ -1858,7 +1858,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 22
           },
-          "id": "duplication-1774845558366-y96vul14bae",
+          "id": "duplication-1774846255548-z7qm8tefz5f",
           "autoFixable": false
         },
         {
@@ -1870,7 +1870,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 23
           },
-          "id": "duplication-1774845558366-sxvesb5iwnd",
+          "id": "duplication-1774846255548-okj11572dpb",
           "autoFixable": false
         },
         {
@@ -1882,7 +1882,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdReportsReportIdReviews.ts",
             "line": 60
           },
-          "id": "duplication-1774845558366-dgwkh3tws0u",
+          "id": "duplication-1774846255548-z06arngxcv",
           "autoFixable": false
         },
         {
@@ -1894,7 +1894,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdReportsReportIdReviews.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-2uyce8vpgok",
+          "id": "duplication-1774846255548-qh3lyfr3gu",
           "autoFixable": false
         },
         {
@@ -1906,7 +1906,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdReportsReportIdReviews.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-jjf6k95zf2",
+          "id": "duplication-1774846255548-6qfyo4ndhng",
           "autoFixable": false
         },
         {
@@ -1918,7 +1918,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdReportsReportIdReviews.ts",
             "line": 63
           },
-          "id": "duplication-1774845558366-n21zrhdzg2",
+          "id": "duplication-1774846255548-on1toa6gse",
           "autoFixable": false
         },
         {
@@ -1930,7 +1930,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdOwners.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-d59ioaund5r",
+          "id": "duplication-1774846255548-4zgd8pf3chp",
           "autoFixable": false
         },
         {
@@ -1942,7 +1942,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdOwners.ts",
             "line": 54
           },
-          "id": "duplication-1774845558366-pg0i7znm59",
+          "id": "duplication-1774846255548-o5t21wcfpel",
           "autoFixable": false
         },
         {
@@ -1954,7 +1954,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 97
           },
-          "id": "duplication-1774845558366-su14y5m3sv",
+          "id": "duplication-1774846255548-32u1j6jovsd",
           "autoFixable": false
         },
         {
@@ -1966,7 +1966,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/postCommunityPlatformAuthMemberLogin.ts",
             "line": 110
           },
-          "id": "duplication-1774845558366-lq7mrbxttum",
+          "id": "duplication-1774846255548-vk0gtdoe7dg",
           "autoFixable": false
         },
         {
@@ -1978,7 +1978,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 154
           },
-          "id": "duplication-1774845558366-awl4h4ctgqa",
+          "id": "duplication-1774846255548-h56bupme1so",
           "autoFixable": false
         },
         {
@@ -1990,7 +1990,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 155
           },
-          "id": "duplication-1774845558366-d542gyb6rl9",
+          "id": "duplication-1774846255548-e1t6jx5c5f8",
           "autoFixable": false
         },
         {
@@ -2002,7 +2002,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberSubscriptions.ts",
             "line": 156
           },
-          "id": "duplication-1774845558366-0nlvx9wkyah",
+          "id": "duplication-1774846255548-hhl3ypp9ei7",
           "autoFixable": false
         },
         {
@@ -2014,7 +2014,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberSessions.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-6lffqzh9hnp",
+          "id": "duplication-1774846255548-s5d2tw5338g",
           "autoFixable": false
         },
         {
@@ -2026,7 +2026,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 59
           },
-          "id": "duplication-1774845558366-sjesyzer6a",
+          "id": "duplication-1774846255548-1uepez6uljx",
           "autoFixable": false
         },
         {
@@ -2038,7 +2038,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 60
           },
-          "id": "duplication-1774845558366-fgeumqsqn3v",
+          "id": "duplication-1774846255548-zr7k74hgrd",
           "autoFixable": false
         },
         {
@@ -2050,7 +2050,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-ba0b2f8281c",
+          "id": "duplication-1774846255548-51otxznn9bo",
           "autoFixable": false
         },
         {
@@ -2062,7 +2062,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-0qu89ygo6ge",
+          "id": "duplication-1774846255548-jfv3ogkzrip",
           "autoFixable": false
         },
         {
@@ -2074,7 +2074,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 125
           },
-          "id": "duplication-1774845558366-7nt78kvqoqi",
+          "id": "duplication-1774846255548-54l4xdb4obx",
           "autoFixable": false
         },
         {
@@ -2086,7 +2086,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 126
           },
-          "id": "duplication-1774845558366-bchedar0dk",
+          "id": "duplication-1774846255548-jtg0ou1lfb",
           "autoFixable": false
         },
         {
@@ -2098,7 +2098,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 146
           },
-          "id": "duplication-1774845558366-ipvyma6dgh",
+          "id": "duplication-1774846255548-ijoo7ic01d",
           "autoFixable": false
         },
         {
@@ -2110,7 +2110,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 147
           },
-          "id": "duplication-1774845558366-2sbq050r0xm",
+          "id": "duplication-1774846255548-n6g4vcocqkq",
           "autoFixable": false
         },
         {
@@ -2122,7 +2122,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 148
           },
-          "id": "duplication-1774845558366-ab8h0puhvhv",
+          "id": "duplication-1774846255548-alvru6q6sem",
           "autoFixable": false
         },
         {
@@ -2134,7 +2134,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberReports.ts",
             "line": 149
           },
-          "id": "duplication-1774845558366-jgn7prhnmq9",
+          "id": "duplication-1774846255548-88pjgvqq1r7",
           "autoFixable": false
         },
         {
@@ -2146,7 +2146,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 28
           },
-          "id": "duplication-1774845558366-mnd84empkva",
+          "id": "duplication-1774846255548-7ywi14j55j7",
           "autoFixable": false
         },
         {
@@ -2158,7 +2158,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 29
           },
-          "id": "duplication-1774845558366-intqjmgcm1n",
+          "id": "duplication-1774846255548-37jqpstvnx3",
           "autoFixable": false
         },
         {
@@ -2170,7 +2170,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 30
           },
-          "id": "duplication-1774845558366-f0olerdw5u5",
+          "id": "duplication-1774846255548-nhkq3xsy5l",
           "autoFixable": false
         },
         {
@@ -2182,7 +2182,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 31
           },
-          "id": "duplication-1774845558366-mdxly04etdr",
+          "id": "duplication-1774846255548-sik2n7boie",
           "autoFixable": false
         },
         {
@@ -2194,7 +2194,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 32
           },
-          "id": "duplication-1774845558366-8felno7nyao",
+          "id": "duplication-1774846255548-88ytcq5ylcq",
           "autoFixable": false
         },
         {
@@ -2206,7 +2206,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 33
           },
-          "id": "duplication-1774845558366-313t7zbewhg",
+          "id": "duplication-1774846255548-otoz6s32ds",
           "autoFixable": false
         },
         {
@@ -2218,7 +2218,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 34
           },
-          "id": "duplication-1774845558366-2s61gsbaegv",
+          "id": "duplication-1774846255548-a2x71y6jh69",
           "autoFixable": false
         },
         {
@@ -2230,7 +2230,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 35
           },
-          "id": "duplication-1774845558366-gx840qi7b6",
+          "id": "duplication-1774846255548-7mj5fwsua0r",
           "autoFixable": false
         },
         {
@@ -2242,7 +2242,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 36
           },
-          "id": "duplication-1774845558366-d989medcfab",
+          "id": "duplication-1774846255548-y3501orhx5",
           "autoFixable": false
         },
         {
@@ -2254,7 +2254,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-4qeoan902qm",
+          "id": "duplication-1774846255548-9t7ilh5sr5u",
           "autoFixable": false
         },
         {
@@ -2266,7 +2266,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-50eoz9vzh1",
+          "id": "duplication-1774846255548-qwrdve6d11s",
           "autoFixable": false
         },
         {
@@ -2278,7 +2278,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-3nam50fbyt7",
+          "id": "duplication-1774846255548-ydmoag9cthr",
           "autoFixable": false
         },
         {
@@ -2290,7 +2290,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-n45c3j8rcpf",
+          "id": "duplication-1774846255548-nhk1cwprutm",
           "autoFixable": false
         },
         {
@@ -2302,7 +2302,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 70
           },
-          "id": "duplication-1774845558366-ay3u9j4gkfe",
+          "id": "duplication-1774846255548-9hlrjn5bqci",
           "autoFixable": false
         },
         {
@@ -2314,7 +2314,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 71
           },
-          "id": "duplication-1774845558366-fq1fi1nbtdh",
+          "id": "duplication-1774846255548-hygzorvlxr",
           "autoFixable": false
         },
         {
@@ -2326,7 +2326,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 72
           },
-          "id": "duplication-1774845558366-trvvslnteqp",
+          "id": "duplication-1774846255548-ymtrohy0ht",
           "autoFixable": false
         },
         {
@@ -2338,7 +2338,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 73
           },
-          "id": "duplication-1774845558366-hayukdekeu",
+          "id": "duplication-1774846255548-byjcwgs8e85",
           "autoFixable": false
         },
         {
@@ -2350,7 +2350,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 74
           },
-          "id": "duplication-1774845558366-rxzwzbrrxqe",
+          "id": "duplication-1774846255548-ttl5dwygko",
           "autoFixable": false
         },
         {
@@ -2362,7 +2362,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 75
           },
-          "id": "duplication-1774845558366-d42aejs64rd",
+          "id": "duplication-1774846255548-rrw17ycjr3i",
           "autoFixable": false
         },
         {
@@ -2374,7 +2374,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 76
           },
-          "id": "duplication-1774845558366-azk6rp2r6t",
+          "id": "duplication-1774846255548-ye9lzlnfiq",
           "autoFixable": false
         },
         {
@@ -2386,7 +2386,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 77
           },
-          "id": "duplication-1774845558366-cveq191y3ph",
+          "id": "duplication-1774846255548-97w30tisiqe",
           "autoFixable": false
         },
         {
@@ -2398,7 +2398,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 78
           },
-          "id": "duplication-1774845558366-4r7u44pcrz",
+          "id": "duplication-1774846255548-ypp4ddsmnx",
           "autoFixable": false
         },
         {
@@ -2410,7 +2410,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 79
           },
-          "id": "duplication-1774845558366-izo04senx3",
+          "id": "duplication-1774846255548-wro3moj78q",
           "autoFixable": false
         },
         {
@@ -2422,7 +2422,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 80
           },
-          "id": "duplication-1774845558366-iev8czdg4y",
+          "id": "duplication-1774846255548-k2ywp5fjbu",
           "autoFixable": false
         },
         {
@@ -2434,7 +2434,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFiles.ts",
             "line": 81
           },
-          "id": "duplication-1774845558366-rfz8wuhkmw",
+          "id": "duplication-1774846255548-h6us0rjzm9w",
           "autoFixable": false
         },
         {
@@ -2446,7 +2446,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 20
           },
-          "id": "duplication-1774845558366-cbbhmo13ktl",
+          "id": "duplication-1774846255548-riqx1p8u6p",
           "autoFixable": false
         },
         {
@@ -2458,7 +2458,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 21
           },
-          "id": "duplication-1774845558366-1t9n4f9ovvy",
+          "id": "duplication-1774846255548-r9vvxzyoov",
           "autoFixable": false
         },
         {
@@ -2470,7 +2470,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 22
           },
-          "id": "duplication-1774845558366-2a36ne6t1it",
+          "id": "duplication-1774846255548-pin95jks5kj",
           "autoFixable": false
         },
         {
@@ -2482,7 +2482,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 23
           },
-          "id": "duplication-1774845558366-bxsl3js1oje",
+          "id": "duplication-1774846255548-7ygkdws5y6",
           "autoFixable": false
         },
         {
@@ -2494,7 +2494,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 24
           },
-          "id": "duplication-1774845558366-2dkicfq27vs",
+          "id": "duplication-1774846255548-sda335jrs2m",
           "autoFixable": false
         },
         {
@@ -2506,7 +2506,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 25
           },
-          "id": "duplication-1774845558366-hjfi0viehu",
+          "id": "duplication-1774846255548-joejl8u0ktk",
           "autoFixable": false
         },
         {
@@ -2518,7 +2518,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 26
           },
-          "id": "duplication-1774845558366-n8gettxxqu",
+          "id": "duplication-1774846255548-qebfwgp4n2",
           "autoFixable": false
         },
         {
@@ -2530,7 +2530,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 27
           },
-          "id": "duplication-1774845558366-qa89eozq9di",
+          "id": "duplication-1774846255548-f48ezrw5vso",
           "autoFixable": false
         },
         {
@@ -2542,7 +2542,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 28
           },
-          "id": "duplication-1774845558366-58tnus9f6o9",
+          "id": "duplication-1774846255548-ds93ixknrhe",
           "autoFixable": false
         },
         {
@@ -2554,7 +2554,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 29
           },
-          "id": "duplication-1774845558366-97b0nj0oyo",
+          "id": "duplication-1774846255548-2rb7sbuy7xm",
           "autoFixable": false
         },
         {
@@ -2566,7 +2566,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 30
           },
-          "id": "duplication-1774845558366-fko25ibnbu",
+          "id": "duplication-1774846255548-qoxml17193d",
           "autoFixable": false
         },
         {
@@ -2578,7 +2578,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 31
           },
-          "id": "duplication-1774845558366-6bgpajozxcb",
+          "id": "duplication-1774846255548-hn3mpk5agrv",
           "autoFixable": false
         },
         {
@@ -2590,7 +2590,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 32
           },
-          "id": "duplication-1774845558366-1ovlujcit5d",
+          "id": "duplication-1774846255548-21yd9gje6e0g",
           "autoFixable": false
         },
         {
@@ -2602,7 +2602,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 33
           },
-          "id": "duplication-1774845558366-m626p1w9k6",
+          "id": "duplication-1774846255548-xd4fn1765c",
           "autoFixable": false
         },
         {
@@ -2614,7 +2614,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 34
           },
-          "id": "duplication-1774845558366-4en8lwfnour",
+          "id": "duplication-1774846255548-g8gx8zflg2",
           "autoFixable": false
         },
         {
@@ -2626,7 +2626,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 35
           },
-          "id": "duplication-1774845558366-0j9dgcxil4wc",
+          "id": "duplication-1774846255548-mac170pvmul",
           "autoFixable": false
         },
         {
@@ -2638,7 +2638,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 84
           },
-          "id": "duplication-1774845558366-7vub4mbz9av",
+          "id": "duplication-1774846255548-gbs6wcwkldh",
           "autoFixable": false
         },
         {
@@ -2650,7 +2650,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 85
           },
-          "id": "duplication-1774845558366-obzkz3jvgu",
+          "id": "duplication-1774846255548-z3aw0qsspdj",
           "autoFixable": false
         },
         {
@@ -2662,7 +2662,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 86
           },
-          "id": "duplication-1774845558366-jbr07x55rrd",
+          "id": "duplication-1774846255548-o59e94953p",
           "autoFixable": false
         },
         {
@@ -2674,7 +2674,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 87
           },
-          "id": "duplication-1774845558366-45l3hz7xd1t",
+          "id": "duplication-1774846255548-qkx0jfjlrze",
           "autoFixable": false
         },
         {
@@ -2686,7 +2686,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 88
           },
-          "id": "duplication-1774845558366-f0o33yfth1n",
+          "id": "duplication-1774846255548-vbslvwdy419",
           "autoFixable": false
         },
         {
@@ -2698,7 +2698,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 89
           },
-          "id": "duplication-1774845558366-figgqde15v",
+          "id": "duplication-1774846255548-47k98pqd8j4",
           "autoFixable": false
         },
         {
@@ -2710,7 +2710,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshots.ts",
             "line": 90
           },
-          "id": "duplication-1774845558366-2sjxlm2vzn6",
+          "id": "duplication-1774846255548-w72ma3oiyjk",
           "autoFixable": false
         },
         {
@@ -2722,7 +2722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 23
           },
-          "id": "duplication-1774845558366-o9nllz8bxgc",
+          "id": "duplication-1774846255548-ggj7mrynvg",
           "autoFixable": false
         },
         {
@@ -2734,7 +2734,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 26
           },
-          "id": "duplication-1774845558366-2yyf2nr49u7",
+          "id": "duplication-1774846255548-qsawsb1six",
           "autoFixable": false
         },
         {
@@ -2746,7 +2746,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 27
           },
-          "id": "duplication-1774845558366-csykz5egf6g",
+          "id": "duplication-1774846255548-bmgdzkkrcou",
           "autoFixable": false
         },
         {
@@ -2758,7 +2758,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 28
           },
-          "id": "duplication-1774845558366-44nyz2pufdk",
+          "id": "duplication-1774846255548-8hjldvtkvvy",
           "autoFixable": false
         },
         {
@@ -2770,7 +2770,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 29
           },
-          "id": "duplication-1774845558366-3p7psmesstf",
+          "id": "duplication-1774846255548-39tewth7n27",
           "autoFixable": false
         },
         {
@@ -2782,7 +2782,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 60
           },
-          "id": "duplication-1774845558366-2n2y78hdevv",
+          "id": "duplication-1774846255548-q0bgrbijvpm",
           "autoFixable": false
         },
         {
@@ -2794,7 +2794,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-53qxfaf74c6",
+          "id": "duplication-1774846255548-f4kzsajpehu",
           "autoFixable": false
         },
         {
@@ -2806,7 +2806,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberPostsPostIdCommentsCommentIdFiles.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-fiq3dfvypi",
+          "id": "duplication-1774846255548-357bmk9a3wz",
           "autoFixable": false
         },
         {
@@ -2818,7 +2818,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-k3ak0fip20o",
+          "id": "duplication-1774846255548-tdf06w1m2ie",
           "autoFixable": false
         },
         {
@@ -2830,7 +2830,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-bl9bgip4rf",
+          "id": "duplication-1774846255548-mtlatm4sb5",
           "autoFixable": false
         },
         {
@@ -2842,7 +2842,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-jddhfswgqcm",
+          "id": "duplication-1774846255548-zmehu4cmivh",
           "autoFixable": false
         },
         {
@@ -2854,7 +2854,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-jlmwb7imhon",
+          "id": "duplication-1774846255548-74akx1hx6ac",
           "autoFixable": false
         },
         {
@@ -2866,7 +2866,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-fb492kfagqp",
+          "id": "duplication-1774846255548-ltxt3g4tqp9",
           "autoFixable": false
         },
         {
@@ -2878,7 +2878,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdReports.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-mx5v7uv23v",
+          "id": "duplication-1774846255548-61wf7orm4xr",
           "autoFixable": false
         },
         {
@@ -2890,7 +2890,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdSnapshots.ts",
             "line": 74
           },
-          "id": "duplication-1774845558366-wfw6dibb7u",
+          "id": "duplication-1774846255548-ce6hm28og6a",
           "autoFixable": false
         },
         {
@@ -2902,7 +2902,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModeratorsModeratorIdSnapshots.ts",
             "line": 75
           },
-          "id": "duplication-1774845558366-kzue02r7o4b",
+          "id": "duplication-1774846255548-dx3s6u0wwff",
           "autoFixable": false
         },
         {
@@ -2914,7 +2914,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerators.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-gfhwtbecu1j",
+          "id": "duplication-1774846255548-2avns3i936o",
           "autoFixable": false
         },
         {
@@ -2926,7 +2926,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-uzxq5hl00j",
+          "id": "duplication-1774846255548-y8z56dq1wb",
           "autoFixable": false
         },
         {
@@ -2938,7 +2938,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-cnt7hbpm1yp",
+          "id": "duplication-1774846255548-5996e7bhrpw",
           "autoFixable": false
         },
         {
@@ -2950,7 +2950,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-ivcltq43bza",
+          "id": "duplication-1774846255548-imtxfr6i8v",
           "autoFixable": false
         },
         {
@@ -2962,7 +2962,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-dtj2020yd4s",
+          "id": "duplication-1774846255548-wlffw0eak4",
           "autoFixable": false
         },
         {
@@ -2974,7 +2974,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-g960o9ozw2n",
+          "id": "duplication-1774846255548-ch45bxf85tm",
           "autoFixable": false
         },
         {
@@ -2986,7 +2986,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-vsg39ebrbsh",
+          "id": "duplication-1774846255548-283imad7q5x",
           "autoFixable": false
         },
         {
@@ -2998,7 +2998,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-40ctpww564v",
+          "id": "duplication-1774846255548-wxe32g0pbj",
           "autoFixable": false
         },
         {
@@ -3010,7 +3010,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-s4z1c1bq7eh",
+          "id": "duplication-1774846255548-x3zmz61rdpn",
           "autoFixable": false
         },
         {
@@ -3022,7 +3022,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdReports.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-5xci1yxjvtw",
+          "id": "duplication-1774846255548-2fo3ymje49c",
           "autoFixable": false
         },
         {
@@ -3034,7 +3034,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-1400ndnn7pxl",
+          "id": "duplication-1774846255548-zesde8jh0fh",
           "autoFixable": false
         },
         {
@@ -3046,7 +3046,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-iik82gtrsnm",
+          "id": "duplication-1774846255548-qwgsav0t6so",
           "autoFixable": false
         },
         {
@@ -3058,7 +3058,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 55
           },
-          "id": "duplication-1774845558366-k7fyc0gi1t",
+          "id": "duplication-1774846255548-g3s2q0w7uep",
           "autoFixable": false
         },
         {
@@ -3070,7 +3070,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 56
           },
-          "id": "duplication-1774845558366-zwsvbcpju2k",
+          "id": "duplication-1774846255548-o06gocvijud",
           "autoFixable": false
         },
         {
@@ -3082,7 +3082,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 57
           },
-          "id": "duplication-1774845558366-ytlqxn1d1fa",
+          "id": "duplication-1774846255548-0hhfxfux485e",
           "autoFixable": false
         },
         {
@@ -3094,7 +3094,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 58
           },
-          "id": "duplication-1774845558366-23tftvadcsy",
+          "id": "duplication-1774846255548-lxs3oq231q",
           "autoFixable": false
         },
         {
@@ -3106,7 +3106,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 59
           },
-          "id": "duplication-1774845558366-pzc2no5zmbh",
+          "id": "duplication-1774846255548-1qvo1062jv9",
           "autoFixable": false
         },
         {
@@ -3118,7 +3118,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 60
           },
-          "id": "duplication-1774845558366-4mabs87l4tj",
+          "id": "duplication-1774846255548-0yfafqq2nb3f",
           "autoFixable": false
         },
         {
@@ -3130,7 +3130,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-oohyzkevez",
+          "id": "duplication-1774846255548-igni8zu780f",
           "autoFixable": false
         },
         {
@@ -3142,7 +3142,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-boi2fjg4z2",
+          "id": "duplication-1774846255548-yjpp24yqywc",
           "autoFixable": false
         },
         {
@@ -3154,7 +3154,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 63
           },
-          "id": "duplication-1774845558366-pb23s5mw9a",
+          "id": "duplication-1774846255548-8j2mbca2wk7",
           "autoFixable": false
         },
         {
@@ -3166,7 +3166,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 64
           },
-          "id": "duplication-1774845558366-nv65xk8dd7",
+          "id": "duplication-1774846255548-kosp5tfxfyb",
           "autoFixable": false
         },
         {
@@ -3178,7 +3178,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 65
           },
-          "id": "duplication-1774845558366-xbthswt60gn",
+          "id": "duplication-1774846255548-v15yokqyrbl",
           "autoFixable": false
         },
         {
@@ -3190,7 +3190,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 87
           },
-          "id": "duplication-1774845558366-q1lnpt7o89h",
+          "id": "duplication-1774846255548-53xvyfp6gzu",
           "autoFixable": false
         },
         {
@@ -3202,7 +3202,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 88
           },
-          "id": "duplication-1774845558366-sif9h6j35t",
+          "id": "duplication-1774846255548-39nrkokyy1n",
           "autoFixable": false
         },
         {
@@ -3214,7 +3214,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 89
           },
-          "id": "duplication-1774845558366-he06utngvh",
+          "id": "duplication-1774846255548-4gg4ke1i33q",
           "autoFixable": false
         },
         {
@@ -3226,7 +3226,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 90
           },
-          "id": "duplication-1774845558366-461dnepar7t",
+          "id": "duplication-1774846255548-xb8zr7qhe8",
           "autoFixable": false
         },
         {
@@ -3238,7 +3238,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 134
           },
-          "id": "duplication-1774845558366-tb0khlt3cx",
+          "id": "duplication-1774846255548-btj7jmpbg34",
           "autoFixable": false
         },
         {
@@ -3250,7 +3250,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdComments.ts",
             "line": 135
           },
-          "id": "duplication-1774845558366-yjr5ob0c029",
+          "id": "duplication-1774846255548-o2ktbfapj77",
           "autoFixable": false
         },
         {
@@ -3262,7 +3262,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 149
           },
-          "id": "duplication-1774845558366-acfka2aave",
+          "id": "duplication-1774846255548-qzxequ65uw",
           "autoFixable": false
         },
         {
@@ -3274,7 +3274,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 150
           },
-          "id": "duplication-1774845558366-fuxa3h8718p",
+          "id": "duplication-1774846255548-sb5ghup2mc9",
           "autoFixable": false
         },
         {
@@ -3286,7 +3286,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 151
           },
-          "id": "duplication-1774845558366-72j9vbun558",
+          "id": "duplication-1774846255548-pxj1izfix1",
           "autoFixable": false
         },
         {
@@ -3298,7 +3298,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 152
           },
-          "id": "duplication-1774845558366-2u5y06zhu01",
+          "id": "duplication-1774846255548-kspjzk11ksa",
           "autoFixable": false
         },
         {
@@ -3310,7 +3310,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-29weyibm67k",
+          "id": "duplication-1774846255548-yy9s7sjd16p",
           "autoFixable": false
         },
         {
@@ -3322,7 +3322,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-n216m3jx9df",
+          "id": "duplication-1774846255548-lurqfk1l1kk",
           "autoFixable": false
         },
         {
@@ -3334,7 +3334,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-d07hkvw3h6r",
+          "id": "duplication-1774846255548-tigfd0vbsxa",
           "autoFixable": false
         },
         {
@@ -3346,7 +3346,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-v9092wzdozn",
+          "id": "duplication-1774846255548-9f8g2r3u18",
           "autoFixable": false
         },
         {
@@ -3358,7 +3358,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-3jld10p134r",
+          "id": "duplication-1774846255548-1n0rlci91ol",
           "autoFixable": false
         },
         {
@@ -3370,7 +3370,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-de59hhgujo",
+          "id": "duplication-1774846255548-0724kqnt331a",
           "autoFixable": false
         },
         {
@@ -3382,7 +3382,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-qabso6eqrhj",
+          "id": "duplication-1774846255548-jsq9is6x2qb",
           "autoFixable": false
         },
         {
@@ -3394,7 +3394,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-95r3qkh00b6",
+          "id": "duplication-1774846255548-p7xm79j77ob",
           "autoFixable": false
         },
         {
@@ -3406,7 +3406,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerationActions.ts",
             "line": 53
           },
-          "id": "duplication-1774845558366-vlxiyu18dqr",
+          "id": "duplication-1774846255548-atf9blhq8e7",
           "autoFixable": false
         },
         {
@@ -3418,7 +3418,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 33
           },
-          "id": "duplication-1774845558366-3zmw3rx4m6v",
+          "id": "duplication-1774846255548-5tlxrcq6t4e",
           "autoFixable": false
         },
         {
@@ -3430,7 +3430,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 34
           },
-          "id": "duplication-1774845558366-njdbhvm34yl",
+          "id": "duplication-1774846255548-e9r3kfrlb8",
           "autoFixable": false
         },
         {
@@ -3442,7 +3442,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 35
           },
-          "id": "duplication-1774845558366-y5rr1r38tr9",
+          "id": "duplication-1774846255548-520dxrb1aqu",
           "autoFixable": false
         },
         {
@@ -3454,7 +3454,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 36
           },
-          "id": "duplication-1774845558366-u2y9a4pjtvl",
+          "id": "duplication-1774846255548-r3ebgyw724",
           "autoFixable": false
         },
         {
@@ -3466,7 +3466,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-3qqazk82c4q",
+          "id": "duplication-1774846255548-uu0967tbvko",
           "autoFixable": false
         },
         {
@@ -3478,7 +3478,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-hz4eusnj1xa",
+          "id": "duplication-1774846255548-fxhdk4tama6",
           "autoFixable": false
         },
         {
@@ -3490,7 +3490,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-0wijlt16j6nm",
+          "id": "duplication-1774846255548-52w895i0gxi",
           "autoFixable": false
         },
         {
@@ -3502,7 +3502,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-01bw8n2zyzn8",
+          "id": "duplication-1774846255548-xdfsir4u1v",
           "autoFixable": false
         },
         {
@@ -3514,7 +3514,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-svk5b9f345q",
+          "id": "duplication-1774846255548-lohmxghgcn9",
           "autoFixable": false
         },
         {
@@ -3526,7 +3526,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-cintgky0t19",
+          "id": "duplication-1774846255548-6o9k9sdnxki",
           "autoFixable": false
         },
         {
@@ -3538,7 +3538,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 257
           },
-          "id": "duplication-1774845558366-0qgred8646",
+          "id": "duplication-1774846255548-c50f6427rst",
           "autoFixable": false
         },
         {
@@ -3550,7 +3550,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformCommunitiesCommunityIdPosts.ts",
             "line": 258
           },
-          "id": "duplication-1774845558366-jzm1ubid72r",
+          "id": "duplication-1774846255548-hz7ogedzdu",
           "autoFixable": false
         },
         {
@@ -3562,7 +3562,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 27
           },
-          "id": "duplication-1774845558366-yc0gtbslxp8",
+          "id": "duplication-1774846255548-ae7ev2271xd",
           "autoFixable": false
         },
         {
@@ -3574,7 +3574,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 28
           },
-          "id": "duplication-1774845558366-vxpbh1qpmco",
+          "id": "duplication-1774846255548-wt3bes1dolj",
           "autoFixable": false
         },
         {
@@ -3586,7 +3586,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 29
           },
-          "id": "duplication-1774845558366-es0kymdst7",
+          "id": "duplication-1774846255548-l27hjafybwl",
           "autoFixable": false
         },
         {
@@ -3598,7 +3598,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 31
           },
-          "id": "duplication-1774845558366-9ifvpoo0xh",
+          "id": "duplication-1774846255548-bm6f3kghueo",
           "autoFixable": false
         },
         {
@@ -3610,7 +3610,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 32
           },
-          "id": "duplication-1774845558366-fu7yz92qiei",
+          "id": "duplication-1774846255548-j9usothtbxf",
           "autoFixable": false
         },
         {
@@ -3622,7 +3622,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-vnykvkgtk2q",
+          "id": "duplication-1774846255548-6mq4xz5uca",
           "autoFixable": false
         },
         {
@@ -3634,7 +3634,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdModerationActionsModerationActionIdBans.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-r3j381zm3t",
+          "id": "duplication-1774846255548-tixymm4e36",
           "autoFixable": false
         },
         {
@@ -3646,7 +3646,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/patchCommunityPlatformAdminCommunitiesCommunityIdBans.ts",
             "line": 25
           },
-          "id": "duplication-1774845558366-i1n9qdykme9",
+          "id": "duplication-1774846255548-qk4nnic34b",
           "autoFixable": false
         },
         {
@@ -3658,7 +3658,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 27
           },
-          "id": "duplication-1774845558366-c8je5zx8c4p",
+          "id": "duplication-1774846255548-g7rw62awh6",
           "autoFixable": false
         },
         {
@@ -3670,7 +3670,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 28
           },
-          "id": "duplication-1774845558366-mh0v12uzm",
+          "id": "duplication-1774846255548-zhxlbfp5bjd",
           "autoFixable": false
         },
         {
@@ -3682,7 +3682,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 29
           },
-          "id": "duplication-1774845558366-jwox2aa6aae",
+          "id": "duplication-1774846255548-bo7r0gfu6e",
           "autoFixable": false
         },
         {
@@ -3694,7 +3694,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 30
           },
-          "id": "duplication-1774845558366-f34qsonkb7",
+          "id": "duplication-1774846255548-1w9vbp37txh",
           "autoFixable": false
         },
         {
@@ -3706,7 +3706,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 31
           },
-          "id": "duplication-1774845558366-hh0notvmr2m",
+          "id": "duplication-1774846255548-ni54fav64kd",
           "autoFixable": false
         },
         {
@@ -3718,7 +3718,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 32
           },
-          "id": "duplication-1774845558366-wb5flm55wpo",
+          "id": "duplication-1774846255548-a6i0wfz2otc",
           "autoFixable": false
         },
         {
@@ -3730,7 +3730,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 33
           },
-          "id": "duplication-1774845558366-8zqlcj3qheo",
+          "id": "duplication-1774846255548-9z16xw60t9",
           "autoFixable": false
         },
         {
@@ -3742,7 +3742,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 34
           },
-          "id": "duplication-1774845558366-6wbpyuzhc18",
+          "id": "duplication-1774846255548-bsqzqpea7n",
           "autoFixable": false
         },
         {
@@ -3754,7 +3754,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 35
           },
-          "id": "duplication-1774845558366-7hgzca4qujl",
+          "id": "duplication-1774846255548-aelc0wr9a8n",
           "autoFixable": false
         },
         {
@@ -3766,7 +3766,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 36
           },
-          "id": "duplication-1774845558366-5ru81g7kxhx",
+          "id": "duplication-1774846255548-n6vn45m2v6k",
           "autoFixable": false
         },
         {
@@ -3778,7 +3778,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-mm50sqqiz79",
+          "id": "duplication-1774846255548-d0mkjl23gcs",
           "autoFixable": false
         },
         {
@@ -3790,7 +3790,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-le3y3s3ioyn",
+          "id": "duplication-1774846255548-xhy4l38mlzs",
           "autoFixable": false
         },
         {
@@ -3802,7 +3802,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 39
           },
-          "id": "duplication-1774845558366-rxua9k12z5a",
+          "id": "duplication-1774846255548-gxv1m0lby9p",
           "autoFixable": false
         },
         {
@@ -3814,7 +3814,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-6bk3imvhl5u",
+          "id": "duplication-1774846255548-nzsd2jraved",
           "autoFixable": false
         },
         {
@@ -3826,7 +3826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-b045jhtux9",
+          "id": "duplication-1774846255548-g93osbzzmvv",
           "autoFixable": false
         },
         {
@@ -3838,7 +3838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-5z21t7x1d35",
+          "id": "duplication-1774846255548-r39me94ceyo",
           "autoFixable": false
         },
         {
@@ -3850,7 +3850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-jh7ck19nq6",
+          "id": "duplication-1774846255548-8ox242s8r9l",
           "autoFixable": false
         },
         {
@@ -3862,7 +3862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-vsnwu98mssj",
+          "id": "duplication-1774846255548-hf9m76a70ba",
           "autoFixable": false
         },
         {
@@ -3874,7 +3874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-vyxonxaej7k",
+          "id": "duplication-1774846255548-gbk8hu1mikm",
           "autoFixable": false
         },
         {
@@ -3886,7 +3886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-9jpauoi7oq4",
+          "id": "duplication-1774846255548-7gus1ejehz4",
           "autoFixable": false
         },
         {
@@ -3898,7 +3898,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-d18jal6fru7",
+          "id": "duplication-1774846255548-zn1leqnwjmm",
           "autoFixable": false
         },
         {
@@ -3910,7 +3910,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-z83zt9fxy6",
+          "id": "duplication-1774846255548-id68bayuo",
           "autoFixable": false
         },
         {
@@ -3922,7 +3922,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-lmno198p0a",
+          "id": "duplication-1774846255548-erykzzxnmbg",
           "autoFixable": false
         },
         {
@@ -3934,7 +3934,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-0g28r5guvpu",
+          "id": "duplication-1774846255548-2va5dbkvnis",
           "autoFixable": false
         },
         {
@@ -3946,7 +3946,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-polz5wh25a",
+          "id": "duplication-1774846255548-que6cw1auzo",
           "autoFixable": false
         },
         {
@@ -3958,7 +3958,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-q8kxj75ill9",
+          "id": "duplication-1774846255548-szeyo2uddfl",
           "autoFixable": false
         },
         {
@@ -3970,7 +3970,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotIdFilesSnapshotFileId.ts",
             "line": 53
           },
-          "id": "duplication-1774845558366-nz4vll1ir19",
+          "id": "duplication-1774846255548-an8m1d8bo96",
           "autoFixable": false
         },
         {
@@ -3982,7 +3982,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 18
           },
-          "id": "duplication-1774845558366-qbjbz4twrjk",
+          "id": "duplication-1774846255548-f57y5fcpkrw",
           "autoFixable": false
         },
         {
@@ -3994,7 +3994,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 19
           },
-          "id": "duplication-1774845558366-9ek6y6jxgn7",
+          "id": "duplication-1774846255548-7s1frdnx2hu",
           "autoFixable": false
         },
         {
@@ -4006,7 +4006,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 20
           },
-          "id": "duplication-1774845558366-wkjcjzafkh",
+          "id": "duplication-1774846255548-tufd86f7fd9",
           "autoFixable": false
         },
         {
@@ -4018,7 +4018,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 21
           },
-          "id": "duplication-1774845558366-i29xyf5r69",
+          "id": "duplication-1774846255548-vnmwfut2ihk",
           "autoFixable": false
         },
         {
@@ -4030,7 +4030,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 23
           },
-          "id": "duplication-1774845558366-k5n8vmx8mz",
+          "id": "duplication-1774846255548-2mn4z0v7a1t",
           "autoFixable": false
         },
         {
@@ -4042,7 +4042,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 24
           },
-          "id": "duplication-1774845558366-bxywrqsu7fq",
+          "id": "duplication-1774846255548-lq84hetwbap",
           "autoFixable": false
         },
         {
@@ -4054,7 +4054,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 25
           },
-          "id": "duplication-1774845558366-mjnmx22vi1o",
+          "id": "duplication-1774846255548-xx7szcgquq9",
           "autoFixable": false
         },
         {
@@ -4066,7 +4066,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 37
           },
-          "id": "duplication-1774845558366-3m99dw426xb",
+          "id": "duplication-1774846255548-ytnktp7jwu",
           "autoFixable": false
         },
         {
@@ -4078,7 +4078,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberPostsPostIdCommentsCommentIdSnapshotsSnapshotId.ts",
             "line": 38
           },
-          "id": "duplication-1774845558366-79i6k2f5gay",
+          "id": "duplication-1774846255548-aom62bawal5",
           "autoFixable": false
         },
         {
@@ -4090,7 +4090,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionIdPostsModerationActionPostId.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-y0az686eo8o",
+          "id": "duplication-1774846255548-sjuoxn4r0n",
           "autoFixable": false
         },
         {
@@ -4102,7 +4102,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 40
           },
-          "id": "duplication-1774845558366-t4mjtfcn04p",
+          "id": "duplication-1774846255548-hqp6lr8ogb8",
           "autoFixable": false
         },
         {
@@ -4114,7 +4114,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 41
           },
-          "id": "duplication-1774845558366-c28zu7i6xrl",
+          "id": "duplication-1774846255548-pbhcxuo6q0h",
           "autoFixable": false
         },
         {
@@ -4126,7 +4126,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 42
           },
-          "id": "duplication-1774845558366-anoief7uw6",
+          "id": "duplication-1774846255548-4f85ig7zdff",
           "autoFixable": false
         },
         {
@@ -4138,7 +4138,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 43
           },
-          "id": "duplication-1774845558366-zvi57caiaun",
+          "id": "duplication-1774846255548-9j5hkseg688",
           "autoFixable": false
         },
         {
@@ -4150,7 +4150,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 44
           },
-          "id": "duplication-1774845558366-i6unnnh5i4p",
+          "id": "duplication-1774846255548-7th2x84gzhd",
           "autoFixable": false
         },
         {
@@ -4162,7 +4162,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 45
           },
-          "id": "duplication-1774845558366-2bvjho08n73",
+          "id": "duplication-1774846255548-4079gquvtey",
           "autoFixable": false
         },
         {
@@ -4174,7 +4174,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 46
           },
-          "id": "duplication-1774845558366-9u5bflxc6wc",
+          "id": "duplication-1774846255548-xyzx9esefbh",
           "autoFixable": false
         },
         {
@@ -4186,7 +4186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 47
           },
-          "id": "duplication-1774845558366-nq23edmfmjl",
+          "id": "duplication-1774846255548-zzq0lx0f7e8",
           "autoFixable": false
         },
         {
@@ -4198,7 +4198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 48
           },
-          "id": "duplication-1774845558366-yzsevx2spbi",
+          "id": "duplication-1774846255548-q3j1h9u3okr",
           "autoFixable": false
         },
         {
@@ -4210,7 +4210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 49
           },
-          "id": "duplication-1774845558366-ubhe5owwwe",
+          "id": "duplication-1774846255548-jvzrcgxcjel",
           "autoFixable": false
         },
         {
@@ -4222,7 +4222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 50
           },
-          "id": "duplication-1774845558366-d3d6wd69eik",
+          "id": "duplication-1774846255548-ucapmbcdvr",
           "autoFixable": false
         },
         {
@@ -4234,7 +4234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 51
           },
-          "id": "duplication-1774845558366-cyax6ctdu96",
+          "id": "duplication-1774846255548-wn18bjbwk7p",
           "autoFixable": false
         },
         {
@@ -4246,7 +4246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/getCommunityPlatformMemberCommunitiesCommunityIdModerationActionsModerationActionId.ts",
             "line": 52
           },
-          "id": "duplication-1774845558366-cl6xihjev38",
+          "id": "duplication-1774846255548-ja1m8xdm5t",
           "autoFixable": false
         },
         {
@@ -4258,7 +4258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 7
           },
-          "id": "duplication-1774845558366-j7u06l46xs9",
+          "id": "duplication-1774846255548-57t4z9h79me",
           "autoFixable": false
         },
         {
@@ -4270,7 +4270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 8
           },
-          "id": "duplication-1774845558366-hu9wrp8vsh",
+          "id": "duplication-1774846255548-r0hela5msxg",
           "autoFixable": false
         },
         {
@@ -4282,7 +4282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 9
           },
-          "id": "duplication-1774845558366-45znmnwkxeb",
+          "id": "duplication-1774846255548-4pij4yx3q1f",
           "autoFixable": false
         },
         {
@@ -4294,7 +4294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 10
           },
-          "id": "duplication-1774845558366-q0ze6ognbka",
+          "id": "duplication-1774846255548-ftixelcnuv8",
           "autoFixable": false
         },
         {
@@ -4306,7 +4306,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 11
           },
-          "id": "duplication-1774845558366-2cdsvwomtxs",
+          "id": "duplication-1774846255548-x4jkx5po31",
           "autoFixable": false
         },
         {
@@ -4318,7 +4318,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdVotes.ts",
             "line": 12
           },
-          "id": "duplication-1774845558366-uirf6gat0o",
+          "id": "duplication-1774846255548-raua47kmogf",
           "autoFixable": false
         },
         {
@@ -4330,7 +4330,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdFilesFileId.ts",
             "line": 61
           },
-          "id": "duplication-1774845558366-enkphxbqq9d",
+          "id": "duplication-1774846255548-dypfa0zw2kg",
           "autoFixable": false
         },
         {
@@ -4342,7 +4342,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/providers/deleteCommunityPlatformMemberPostsPostIdCommentsCommentIdFilesFileId.ts",
             "line": 62
           },
-          "id": "duplication-1774845558366-hb4eldb7qo",
+          "id": "duplication-1774846255548-82id5yscqkt",
           "autoFixable": false
         }
       ]
@@ -4354,24 +4354,24 @@
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"CommunityplatformAdminEmail_verificationsController\" should be PascalCase",
+          "message": "Class \"CommunityplatformAdminPassword_resetsController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/email-verifications/CommunityplatformAdminEmail_verificationsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
             "line": 16
           },
-          "id": "naming-1774845558320-54yxtz5h93c",
+          "id": "naming-1774846255494-m04f8il452h",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"CommunityplatformAdminPassword_resetsController\" should be PascalCase",
+          "message": "Class \"CommunityplatformAdminEmail_verificationsController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/email-verifications/CommunityplatformAdminEmail_verificationsController.ts",
             "line": 16
           },
-          "id": "naming-1774845558370-55rrzodnhad",
+          "id": "naming-1774846255495-oxlgu5g7cn",
           "autoFixable": false
         }
       ]
@@ -4389,19 +4389,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/profiles/CommunityplatformProfilesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558424-3ozcxoitglz",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMembersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/members/CommunityplatformMembersController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845558422-zjm2rvza9xd",
+          "id": "jsdoc-1774846255609-a7hadcouzuf",
           "autoFixable": false
         },
         {
@@ -4413,19 +4401,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/CommunityplatformPostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558424-59fp99fdjs8",
+          "id": "jsdoc-1774846255610-6m2k6ovnzv",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformGuestsessionsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformMembersController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/guestSessions/CommunityplatformGuestsessionsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/members/CommunityplatformMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558426-vmussamnrf",
+          "id": "jsdoc-1774846255610-5jrvj56s3cj",
           "autoFixable": false
         },
         {
@@ -4437,19 +4425,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/guests/CommunityplatformGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558424-4kqsuum8vdh",
+          "id": "jsdoc-1774846255609-zdkmbq047t",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformCommunitiesController\" missing JSDoc",
+          "message": "Class \"CommunityplatformGuestsessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/guestSessions/CommunityplatformGuestsessionsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558425-jtwaxb6qx9",
+          "id": "jsdoc-1774846255612-ruamq6l0ai8",
           "autoFixable": false
         },
         {
@@ -4461,67 +4449,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admins/CommunityplatformAdminsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558425-3p0qufoon6q",
+          "id": "jsdoc-1774846255611-pv29fplmehp",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformPostsTextsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformCommunitiesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/texts/CommunityplatformPostsTextsController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774845558424-8g1o8hm7lbx",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformPostsSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/snapshots/CommunityplatformPostsSnapshotsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/CommunityplatformCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558425-l82ulzgzod",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformPostsLinksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/links/CommunityplatformPostsLinksController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774845558426-k0owdh3nfkg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformPostsImagesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/images/CommunityplatformPostsImagesController.ts",
-            "line": 8
-          },
-          "id": "jsdoc-1774845558425-oj7lkstbafb",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformPostsCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/comments/CommunityplatformPostsCommentsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845558427-717izqce3ro",
+          "id": "jsdoc-1774846255611-yxf36xvcywc",
           "autoFixable": false
         },
         {
@@ -4533,7 +4473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/votes/CommunityplatformMemberVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558425-eil8x1ch04a",
+          "id": "jsdoc-1774846255611-4xy8cww4azq",
           "autoFixable": false
         },
         {
@@ -4545,19 +4485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/subscriptions/CommunityplatformMemberSubscriptionsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558426-yo44urra67r",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774845558427-8hsaxtlb0sx",
+          "id": "jsdoc-1774846255612-88x3xhi723r",
           "autoFixable": false
         },
         {
@@ -4569,7 +4497,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/sessions/CommunityplatformMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558426-dx280xh1915",
+          "id": "jsdoc-1774846255616-qph5a8ucvif",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/reports/CommunityplatformMemberReportsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846255613-31qogorikig",
           "autoFixable": false
         },
         {
@@ -4581,19 +4521,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/profile/CommunityplatformMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558427-caxq27138nh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostvotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/postVotes/CommunityplatformMemberPostvotesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845558428-7bso9ms55i4",
+          "id": "jsdoc-1774846255612-fdzm39wwx4g",
           "autoFixable": false
         },
         {
@@ -4605,55 +4533,79 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/CommunityplatformMemberPostsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558428-bik4m3n8r5p",
+          "id": "jsdoc-1774846255615-nkkdbgjo9x",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
+          "message": "Class \"CommunityplatformMemberPostvotesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/postVotes/CommunityplatformMemberPostvotesController.ts",
+            "line": 11
           },
-          "id": "jsdoc-1774845558428-cap3xy3c97s",
+          "id": "jsdoc-1774846255613-l6i448bnb2m",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformAdminEmail_verificationsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformPostsTextsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/email-verifications/CommunityplatformAdminEmail_verificationsController.ts",
-            "line": 16
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/texts/CommunityplatformPostsTextsController.ts",
+            "line": 8
           },
-          "id": "jsdoc-1774845558431-7l9bs2zc0pw",
+          "id": "jsdoc-1774846255614-6lb7tjvhs1q",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformAdminPassword_resetsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformPostsSnapshotsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774845558429-c5gux1jqdvt",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformCommunitiesSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/snapshots/CommunityplatformCommunitiesSnapshotsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/snapshots/CommunityplatformPostsSnapshotsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558430-puvdeutrrak",
+          "id": "jsdoc-1774846255614-lwfapb7elg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsLinksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/links/CommunityplatformPostsLinksController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846255614-iwj274a8ex",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsImagesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/images/CommunityplatformPostsImagesController.ts",
+            "line": 8
+          },
+          "id": "jsdoc-1774846255615-cgawctvumwi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/posts/comments/CommunityplatformPostsCommentsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846255615-p6x7zimk6b",
           "autoFixable": false
         },
         {
@@ -4665,19 +4617,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/auth/member/CommunityplatformAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558429-smvdl3n4od",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformCommunitiesPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/posts/CommunityplatformCommunitiesPostsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845558429-ub8kcon06sf",
+          "id": "jsdoc-1774846255617-shz60agad4s",
           "autoFixable": false
         },
         {
@@ -4689,7 +4629,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/auth/guest/CommunityplatformAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845558429-o1p61tffm4",
+          "id": "jsdoc-1774846255622-xwx56i55ge8",
           "autoFixable": false
         },
         {
@@ -4701,7 +4641,67 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/auth/admin/CommunityplatformAuthAdminController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558430-pfkhyyxomur",
+          "id": "jsdoc-1774846255616-zoevoky1hg",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformCommunitiesSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/snapshots/CommunityplatformCommunitiesSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846255618-qlfl69xgryn",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformCommunitiesPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/communities/posts/CommunityplatformCommunitiesPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846255617-4q6bkg8d4yw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/CommunityplatformMemberCommunitiesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255618-d8b76tkccs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminPassword_resetsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/password-resets/CommunityplatformAdminPassword_resetsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846255620-7cu7iih6xnp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminEmail_verificationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/email-verifications/CommunityplatformAdminEmail_verificationsController.ts",
+            "line": 16
+          },
+          "id": "jsdoc-1774846255621-kc89d6gfh0j",
           "autoFixable": false
         },
         {
@@ -4713,139 +4713,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/profiles/files/CommunityplatformMemberProfilesFilesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558433-41ugyqleolc",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsTextsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/texts/CommunityplatformMemberPostsTextsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774845558430-h7qedk0vlgj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/snapshots/CommunityplatformMemberPostsSnapshotsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845558435-eyhk0mdi99",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsLinksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/links/CommunityplatformMemberPostsLinksController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774845558431-xv2uerq9jgf",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsImagesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/images/CommunityplatformMemberPostsImagesController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558440-2ptldp8d94o",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberPostsCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558432-pypz4g1btjo",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommentsVotesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845558433-h1fxji4dlvi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesSubscriptionController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/subscription/CommunityplatformMemberCommunitiesSubscriptionController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845558432-mh9j72j2aog",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/snapshots/CommunityplatformMemberCommunitiesSnapshotsController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845558432-j122w61ev5i",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/reports/CommunityplatformMemberCommunitiesReportsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558434-fzd5zbxar5d",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesModeratorsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845558436-a0q2jwvro19",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesModerationactionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/CommunityplatformMemberCommunitiesModerationactionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558434-okcxngxatfj",
+          "id": "jsdoc-1774846255623-mmi9qo314v",
           "autoFixable": false
         },
         {
@@ -4857,7 +4725,139 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/votes/CommunityplatformMemberPostsVotesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558434-60foynjdje",
+          "id": "jsdoc-1774846255619-mbdo7ys8wsi",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsLinksController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/links/CommunityplatformMemberPostsLinksController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846255622-rjoaftr0v3h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsTextsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/texts/CommunityplatformMemberPostsTextsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846255632-juye8wwvrl8",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/snapshots/CommunityplatformMemberPostsSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846255622-kpurl4oduc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/CommunityplatformMemberPostsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255625-j20x5lw2q4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberPostsImagesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/images/CommunityplatformMemberPostsImagesController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255626-l30d1q3c98b",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommentsVotesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/comments/votes/CommunityplatformMemberCommentsVotesController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846255627-mj6l2x4mp8a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSubscriptionController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/subscription/CommunityplatformMemberCommunitiesSubscriptionController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846255624-z7uyefmfnca",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/reports/CommunityplatformMemberCommunitiesReportsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255627-fy87zue0xye",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/snapshots/CommunityplatformMemberCommunitiesSnapshotsController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846255626-ys7u6iy1vap",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/CommunityplatformMemberCommunitiesModeratorsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846255636-q1az64bl1i",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformMemberCommunitiesModerationactionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/CommunityplatformMemberCommunitiesModerationactionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255628-g7kfcddk6gt",
           "autoFixable": false
         },
         {
@@ -4869,7 +4869,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/CommunityplatformAdminPostsCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845558435-0vrh9vkf4hc",
+          "id": "jsdoc-1774846255628-qw6rdiejik9",
           "autoFixable": false
         },
         {
@@ -4881,7 +4881,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/CommunityplatformAdminCommunitiesModerationactionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558434-2ywuc643df8",
+          "id": "jsdoc-1774846255628-hifm276jve8",
           "autoFixable": false
         },
         {
@@ -4893,7 +4893,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/bans/CommunityplatformAdminCommunitiesBansController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774845558435-fymzdze21o8",
+          "id": "jsdoc-1774846255629-g2xssgbtxt",
           "autoFixable": false
         },
         {
@@ -4905,7 +4905,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/CommunityplatformMemberPostsCommentsSnapshotsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558437-1138vyo49l4",
+          "id": "jsdoc-1774846255630-t0ngqwx5g9f",
           "autoFixable": false
         },
         {
@@ -4917,7 +4917,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/files/CommunityplatformMemberPostsCommentsFilesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558439-habc9izrjm",
+          "id": "jsdoc-1774846255639-0rqhl9wx4f6",
           "autoFixable": false
         },
         {
@@ -4929,7 +4929,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/reports/reviews/CommunityplatformMemberCommunitiesReportsReviewsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845558436-3zcbylnrdt7",
+          "id": "jsdoc-1774846255630-dqwozsywcce",
           "autoFixable": false
         },
         {
@@ -4941,7 +4941,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/snapshots/CommunityplatformMemberCommunitiesModeratorsSnapshotsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558437-qzbwkka08gn",
+          "id": "jsdoc-1774846255631-21bhhyq1iw9",
           "autoFixable": false
         },
         {
@@ -4953,7 +4953,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderators/owners/CommunityplatformMemberCommunitiesModeratorsOwnersController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558444-e721hh9xmrv",
+          "id": "jsdoc-1774846255641-rgqd250sqs",
           "autoFixable": false
         },
         {
@@ -4965,19 +4965,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/reports/CommunityplatformMemberCommunitiesModerationactionsReportsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558437-13xs01wh0wgg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformMemberCommunitiesModerationactionsCommentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/comments/CommunityplatformMemberCommunitiesModerationactionsCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558438-t21apoecsfj",
+          "id": "jsdoc-1774846255632-1fgabekouq3",
           "autoFixable": false
         },
         {
@@ -4989,7 +4977,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/posts/CommunityplatformMemberCommunitiesModerationactionsPostsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558439-ij0zgfevha",
+          "id": "jsdoc-1774846255633-jtq5a7663eo",
           "autoFixable": false
         },
         {
@@ -5001,19 +4989,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/bans/CommunityplatformMemberCommunitiesModerationactionsBansController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845558440-e3tcesbupt8",
+          "id": "jsdoc-1774846255634-ahk164iibfl",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformAdminPostsCommentsSnapshotsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformMemberCommunitiesModerationactionsCommentsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/snapshots/CommunityplatformAdminPostsCommentsSnapshotsController.ts",
-            "line": 13
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/communities/moderationActions/comments/CommunityplatformMemberCommunitiesModerationactionsCommentsController.ts",
+            "line": 12
           },
-          "id": "jsdoc-1774845558441-r4f3eirklb",
+          "id": "jsdoc-1774846255633-nzhh7rr7u1",
           "autoFixable": false
         },
         {
@@ -5025,55 +5013,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/files/CommunityplatformAdminPostsCommentsFilesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558443-ejwbj2rd29g",
+          "id": "jsdoc-1774846255635-me2ncymdljn",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsCommentsController\" missing JSDoc",
+          "message": "Class \"CommunityplatformAdminPostsCommentsSnapshotsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/comments/CommunityplatformAdminCommunitiesModerationactionsCommentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558441-aw42vy2ml2g",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/posts/CommunityplatformAdminCommunitiesModerationactionsPostsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558442-b6vn9p8oaj9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsBansController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/bans/CommunityplatformAdminCommunitiesModerationactionsBansController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845558442-ijqjj9s788",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"CommunityplatformAdminCommunitiesBansSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/bans/snapshots/CommunityplatformAdminCommunitiesBansSnapshotsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/snapshots/CommunityplatformAdminPostsCommentsSnapshotsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558441-z9tctgy1vpk",
+          "id": "jsdoc-1774846255636-to3bg9rtvnp",
           "autoFixable": false
         },
         {
@@ -5085,7 +5037,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/reports/CommunityplatformAdminCommunitiesModerationactionsReportsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845558442-2ztc4fxa1gh",
+          "id": "jsdoc-1774846255637-tzysrlqktnc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/posts/CommunityplatformAdminCommunitiesModerationactionsPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255642-4clwrxi3iv4",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsCommentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/comments/CommunityplatformAdminCommunitiesModerationactionsCommentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255637-ximdqhtykh",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesModerationactionsBansController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/moderationActions/bans/CommunityplatformAdminCommunitiesModerationactionsBansController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846255639-c9ot6cule78",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"CommunityplatformAdminCommunitiesBansSnapshotsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/communities/bans/snapshots/CommunityplatformAdminCommunitiesBansSnapshotsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846255640-l2bg0dwhi6s",
           "autoFixable": false
         },
         {
@@ -5097,7 +5097,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/member/posts/comments/snapshots/files/CommunityplatformMemberPostsCommentsSnapshotsFilesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558445-2xt1og79v9o",
+          "id": "jsdoc-1774846255643-e9w0b605ulp",
           "autoFixable": false
         },
         {
@@ -5109,7 +5109,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/openai/gpt-5.4/reddit/src/controllers/communityPlatform/admin/posts/comments/snapshots/files/CommunityplatformAdminPostsCommentsSnapshotsFilesController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845558457-ynatpwzyryi",
+          "id": "jsdoc-1774846255672-nwy81feysri",
           "autoFixable": false
         }
       ]
@@ -5128,7 +5128,7 @@
             "file": "src/api/structures/ICommunityPlatformProfile.ts",
             "line": 129
           },
-          "id": "completeness-1774845558467-lnzn0zxe2kd",
+          "id": "completeness-1774846255678-dxwarswrm47",
           "autoFixable": false
         },
         {
@@ -5140,7 +5140,7 @@
             "file": "src/api/structures/ICommunityPlatformModerationActionBan.ts",
             "line": 22
           },
-          "id": "completeness-1774845558468-0nzj5730hobs",
+          "id": "completeness-1774846255679-c43t6xm7gxp",
           "autoFixable": false
         },
         {
@@ -5152,7 +5152,7 @@
             "file": "src/api/structures/ICommunityPlatformModerationActionBan.ts",
             "line": 30
           },
-          "id": "completeness-1774845558468-pydmmyayf8a",
+          "id": "completeness-1774846255679-mkg5huy1ovg",
           "autoFixable": false
         },
         {
@@ -5164,7 +5164,7 @@
             "file": "src/api/structures/ICommunityPlatformMemberEmailVerification.ts",
             "line": 21
           },
-          "id": "completeness-1774845558468-9rd1e2j22dl",
+          "id": "completeness-1774846255679-fhlgruddzmw",
           "autoFixable": false
         },
         {
@@ -5176,7 +5176,7 @@
             "file": "src/api/structures/ICommunityPlatformCommunityModeratorOwner.ts",
             "line": 48
           },
-          "id": "completeness-1774845558469-yssj5coy2mn",
+          "id": "completeness-1774846255679-z81o6hke3ef",
           "autoFixable": false
         },
         {
@@ -5188,7 +5188,7 @@
             "file": "src/api/structures/ICommunityPlatformCommunityBanSnapshot.ts",
             "line": 41
           },
-          "id": "completeness-1774845558468-oas65oogwgi",
+          "id": "completeness-1774846255680-iou0425y8g",
           "autoFixable": false
         },
         {
@@ -5200,7 +5200,7 @@
             "file": "src/api/structures/ICommunityPlatformComment.ts",
             "line": 11
           },
-          "id": "completeness-1774845558469-hoyns69ma4i",
+          "id": "completeness-1774846255680-91eqb4eoqmf",
           "autoFixable": false
         },
         {
@@ -5212,7 +5212,7 @@
             "file": "src/api/structures/ICommunityPlatformComment.ts",
             "line": 83
           },
-          "id": "completeness-1774845558469-1vo3hi9gwf3",
+          "id": "completeness-1774846255680-diniheait1e",
           "autoFixable": false
         }
       ]
@@ -5235,7 +5235,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845557772-y8y3ac6dsb",
+      "id": "type-error-1774846254869-kykkeij6ism",
       "autoFixable": false
     },
     {
@@ -5247,7 +5247,7 @@
         "file": "src/providers/getCommunityPlatformMemberVotesPostVoteId.ts",
         "line": 2310
       },
-      "id": "type-error-1774845557772-qi9fbq4q3z",
+      "id": "type-error-1774846254869-41lpra4dq3a",
       "autoFixable": false
     },
     {
@@ -5259,7 +5259,7 @@
         "file": "src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
         "line": 8586
       },
-      "id": "type-error-1774845557772-j1l7cb8ttd",
+      "id": "type-error-1774846254869-in9fxrqx7dj",
       "autoFixable": false
     },
     {
@@ -5271,7 +5271,7 @@
         "file": "src/providers/postCommunityPlatformMemberPostsPostIdLinks.ts",
         "line": 9039
       },
-      "id": "type-error-1774845557772-6gqaaq61y6j",
+      "id": "type-error-1774846254869-hz71jzy58ae",
       "autoFixable": false
     },
     {
@@ -5283,7 +5283,7 @@
         "file": "src/providers/putCommunityPlatformMemberCommunitiesCommunitySlug.ts",
         "line": 1905
       },
-      "id": "type-error-1774845557772-pwyj5bg3my",
+      "id": "type-error-1774846254869-u6t7uxlau5",
       "autoFixable": false
     },
     {
@@ -5295,7 +5295,7 @@
         "file": "src/providers/putCommunityPlatformMemberPostsPostIdCommentsCommentId.ts",
         "line": 2920
       },
-      "id": "type-error-1774845557772-oh2jbyrrz2l",
+      "id": "type-error-1774846254869-o77cv9gf61",
       "autoFixable": false
     }
   ],
@@ -5309,7 +5309,7 @@
         "file": "src/providers/getCommunityPlatformMemberReportsReportId.ts",
         "line": 3402
       },
-      "id": "type-error-1774845557772-3sbs1ycytgv",
+      "id": "type-error-1774846254869-gaftjshhgas",
       "autoFixable": false
     },
     {
@@ -5321,7 +5321,7 @@
         "file": "src/providers/getCommunityPlatformMemberReportsReportId.ts",
         "line": 3553
       },
-      "id": "type-error-1774845557772-w1c49u5ye7j",
+      "id": "type-error-1774846254869-t6qaij06yyg",
       "autoFixable": false
     },
     {
@@ -5333,7 +5333,7 @@
         "file": "src/providers/patchCommunityPlatformMemberCommunitiesCommunityIdModerators.ts",
         "line": 2952
       },
-      "id": "type-error-1774845557772-d700bmzqufq",
+      "id": "type-error-1774846254869-hcn4zma7j2s",
       "autoFixable": false
     },
     {
@@ -5345,7 +5345,7 @@
         "file": "src/providers/patchCommunityPlatformMemberSubscriptions.ts",
         "line": 6516
       },
-      "id": "type-error-1774845557772-5h8hgl544qw",
+      "id": "type-error-1774846254869-bpon126ea4b",
       "autoFixable": false
     },
     {
@@ -5357,7 +5357,7 @@
         "file": "src/transformers/CommunityPlatformReportTransformer.ts",
         "line": 2156
       },
-      "id": "type-error-1774845557772-7k91713kshq",
+      "id": "type-error-1774846254869-jmwbvq6vnks",
       "autoFixable": false
     },
     {
@@ -5369,7 +5369,7 @@
         "file": "src/transformers/CommunityPlatformReportTransformer.ts",
         "line": 2307
       },
-      "id": "type-error-1774845557772-fs23cwa0vhg",
+      "id": "type-error-1774846254869-41rrxanu0xb",
       "autoFixable": false
     },
     {
@@ -5381,13 +5381,13 @@
         "file": "src/transformers/CommunityPlatformReportTransformer.ts",
         "line": 2618
       },
-      "id": "type-error-1774845557772-ri8nrn0cmre",
+      "id": "type-error-1774846254869-z1opq91g1k",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:39:18.469Z",
-    "totalDurationMs": 14189,
+    "evaluatedAt": "2026-03-30T04:50:55.681Z",
+    "totalDurationMs": 13362,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 460
   },

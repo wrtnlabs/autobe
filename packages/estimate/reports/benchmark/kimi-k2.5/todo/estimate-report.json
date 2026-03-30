@@ -19,11 +19,11 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845532056-eah4vh1uq8a",
+          "id": "type-error-1774846230304-uze8uugix6a",
           "autoFixable": false
         }
       ],
-      "durationMs": 2508,
+      "durationMs": 2316,
       "metrics": {
         "totalFiles": 87,
         "filesWithErrors": 0,
@@ -157,7 +157,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845532112-h9cx79f6jxg",
+          "id": "complexity-1774846230359-9vwi6xzvf3",
           "autoFixable": false
         },
         {
@@ -170,7 +170,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845532117-v8vzam92317",
+          "id": "complexity-1774846230354-l812ntgmh5d",
           "autoFixable": false
         }
       ]
@@ -191,36 +191,24 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
+          "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846230394-zmugnfn2d",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
           "message": "Class \"MultiusertodoAuthMemberController\" missing JSDoc",
           "location": {
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/member/MultiusertodoAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845532169-5ox87n7yazx",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845532169-6ieuthg0ypi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845532169-czx8e4jngfh",
+          "id": "jsdoc-1774846230394-vd1l61soyxc",
           "autoFixable": false
         },
         {
@@ -232,31 +220,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/auth/guest/MultiusertodoAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845532171-yhgbs9o9k3a",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845532172-r6fe5f2gxio",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoMemberAccountController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845532170-azommm6ptqh",
+          "id": "jsdoc-1774846230394-u0id06qxcaj",
           "autoFixable": false
         },
         {
@@ -268,19 +232,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/MultiusertodoMemberTodosController.ts",
             "line": 15
           },
-          "id": "jsdoc-1774845532170-y5t9qo6nqpp",
+          "id": "jsdoc-1774846230395-3fupym90utf",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoGuestSessionsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoMemberSessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/guest/sessions/MultiusertodoGuestSessionsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/sessions/MultiusertodoMemberSessionsController.ts",
+            "line": 9
           },
-          "id": "jsdoc-1774845532170-kijdp9qeex",
+          "id": "jsdoc-1774846230394-c6p9k85bg5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/profile/MultiusertodoMemberProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846230395-ed8j3b5h8nw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberPasswordController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/password/MultiusertodoMemberPasswordController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846230395-jamscw1s7dq",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoMemberAccountController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/account/MultiusertodoMemberAccountController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846230395-6ba7s37qy7k",
           "autoFixable": false
         },
         {
@@ -292,7 +292,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/todo/src/controllers/multiUserTodo/member/todos/histories/MultiusertodoMemberTodosHistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845532170-2su3vxxzoff",
+          "id": "jsdoc-1774846230396-qm2ro1bn7lj",
           "autoFixable": false
         }
       ]
@@ -311,7 +311,7 @@
             "file": "src/api/structures/IMultiUserTodoMember.ts",
             "line": 136
           },
-          "id": "completeness-1774845532174-t2cggwp8ka",
+          "id": "completeness-1774846230399-8iiqs9uxc7m",
           "autoFixable": false
         }
       ]
@@ -334,14 +334,14 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845532056-eah4vh1uq8a",
+      "id": "type-error-1774846230304-uze8uugix6a",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:38:52.174Z",
-    "totalDurationMs": 2602,
+    "evaluatedAt": "2026-03-30T04:50:30.399Z",
+    "totalDurationMs": 2505,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 87
   },

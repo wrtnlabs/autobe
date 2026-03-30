@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845506015-zpydhc55yqe",
+          "id": "type-error-1774846201466-2ozr70mo9pi",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
             "line": 2642
           },
-          "id": "type-error-1774845506015-o0kol0z400n",
+          "id": "type-error-1774846201466-civpguvluoh",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
             "line": 10621
           },
-          "id": "type-error-1774845506015-n4p45yz2gl",
+          "id": "type-error-1774846201466-t2b6xc0b16",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
             "line": 4988
           },
-          "id": "type-error-1774845506015-n2853m9cgrs",
+          "id": "type-error-1774846201466-6v620um9lbe",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
             "line": 2642
           },
-          "id": "type-error-1774845506015-sk4d6zapzd",
+          "id": "type-error-1774846201466-h5zwnbl1da7",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 186
           },
-          "id": "type-error-1774845506015-ra97q3k12d8",
+          "id": "type-error-1774846201466-ho6vs5i0jp5",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 338
           },
-          "id": "type-error-1774845506015-y2kppsj1hkq",
+          "id": "type-error-1774846201466-sizhc1h58b",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 345
           },
-          "id": "type-error-1774845506015-7ytkv1k2red",
+          "id": "type-error-1774846201466-2gqb8b7zyhv",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/decorators/AdminAuth.ts",
             "line": 476
           },
-          "id": "type-error-1774845506015-bwmzh5so32g",
+          "id": "type-error-1774846201466-d9b7lqamdo",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/authorize/adminAuthorize.ts",
             "line": 546
           },
-          "id": "type-error-1774845506015-4t0wz6icods",
+          "id": "type-error-1774846201466-wzv5nz2fcdn",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 1281
           },
-          "id": "type-error-1774845506015-x8fte1usvt8",
+          "id": "type-error-1774846201466-uwwruy2id6",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
             "line": 2363
           },
-          "id": "type-error-1774845506015-msyaw7jw13e",
+          "id": "type-error-1774846201466-zztszdwdmr",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3215
           },
-          "id": "type-error-1774845506015-bmyn14q3rkt",
+          "id": "type-error-1774846201466-5693wa0ch08",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3461
           },
-          "id": "type-error-1774845506015-dacvrk9nm1",
+          "id": "type-error-1774846201466-qia6l02xy7",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
             "line": 3475
           },
-          "id": "type-error-1774845506015-95ynkqyhbso",
+          "id": "type-error-1774846201466-a9k0yccuw17",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/patchRedditLikeGuestSessions.ts",
             "line": 2324
           },
-          "id": "type-error-1774845506015-kweewwva9h",
+          "id": "type-error-1774846201466-w2ornidg0al",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/patchRedditLikeGuestSessions.ts",
             "line": 2779
           },
-          "id": "type-error-1774845506015-wypupji012",
+          "id": "type-error-1774846201466-lifbn29jpn",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
             "line": 3451
           },
-          "id": "type-error-1774845506015-vu9ogf3yvmf",
+          "id": "type-error-1774846201466-hgyfrimnt2g",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
             "line": 3515
           },
-          "id": "type-error-1774845506015-p3iwnjr0nw",
+          "id": "type-error-1774846201466-wl0ftt0ovi",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 2554
           },
-          "id": "type-error-1774845506015-e9cet8u7e79",
+          "id": "type-error-1774846201466-fimir16q6n9",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 2657
           },
-          "id": "type-error-1774845506015-rxgpxgshm2",
+          "id": "type-error-1774846201466-aoxr117mxj",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 3492
           },
-          "id": "type-error-1774845506015-7bulsnip7uo",
+          "id": "type-error-1774846201466-1e61d5zytu2",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
             "line": 715
           },
-          "id": "type-error-1774845506015-cek9abo51m",
+          "id": "type-error-1774846201466-ubs5ei8cxx",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
             "line": 1836
           },
-          "id": "type-error-1774845506015-g2amc0id71r",
+          "id": "type-error-1774846201466-9mptiyvsxig",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/transformers/RedditLikeCommunityTransformer.ts",
             "line": 1871
           },
-          "id": "type-error-1774845506015-a8c1a5dvzk9",
+          "id": "type-error-1774846201466-mc1d3fcr9qk",
           "autoFixable": false
         },
         {
@@ -319,11 +319,11 @@
             "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
             "line": 1213
           },
-          "id": "type-error-1774845506015-3erfveel2wj",
+          "id": "type-error-1774846201466-deurb19f3z9",
           "autoFixable": false
         }
       ],
-      "durationMs": 9077,
+      "durationMs": 10381,
       "metrics": {
         "totalFiles": 410,
         "filesWithErrors": 0,
@@ -457,7 +457,7 @@
             "line": 15
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845506269-hr8lm6u38yi",
+          "id": "complexity-1774846201709-9xsxffk4lt",
           "autoFixable": false
         },
         {
@@ -470,7 +470,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845506292-lamdezjzoqf",
+          "id": "complexity-1774846201725-4ut7gydccdm",
           "autoFixable": false
         },
         {
@@ -483,7 +483,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845506288-6h2tdih5m8r",
+          "id": "complexity-1774846201725-4jobaw04w",
           "autoFixable": false
         },
         {
@@ -496,7 +496,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845506286-xgv8695q8aq",
+          "id": "complexity-1774846201726-t6n4ppxdue",
           "autoFixable": false
         },
         {
@@ -509,7 +509,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845506287-nleh1apwab",
+          "id": "complexity-1774846201727-ibwda1eujhn",
           "autoFixable": false
         },
         {
@@ -522,7 +522,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845506295-i9fedwkl67e",
+          "id": "complexity-1774846201732-dex0iam91in",
           "autoFixable": false
         },
         {
@@ -535,7 +535,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845506294-sozi1buhe7k",
+          "id": "complexity-1774846201733-gai9910hejb",
           "autoFixable": false
         },
         {
@@ -548,7 +548,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774845506295-akuzizz2lp",
+          "id": "complexity-1774846201735-f5a6ie2mmrp",
           "autoFixable": false
         },
         {
@@ -561,7 +561,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774845506300-bjpyshaqea5",
+          "id": "complexity-1774846201738-m09j6g5egdq",
           "autoFixable": false
         }
       ]
@@ -578,7 +578,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 25
           },
-          "id": "duplication-1774845506442-3w89jg8zm3h",
+          "id": "duplication-1774846201904-a6v2sybn6wb",
           "autoFixable": false
         },
         {
@@ -590,7 +590,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 26
           },
-          "id": "duplication-1774845506442-ylkjr8fsx3j",
+          "id": "duplication-1774846201904-6xy74yzyjq",
           "autoFixable": false
         },
         {
@@ -602,7 +602,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
             "line": 46
           },
-          "id": "duplication-1774845506442-iwd2vnqcsk",
+          "id": "duplication-1774846201904-j2rdgeyble",
           "autoFixable": false
         },
         {
@@ -614,7 +614,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
             "line": 48
           },
-          "id": "duplication-1774845506442-nl9h9mneie",
+          "id": "duplication-1774846201904-ywg7g7t42vj",
           "autoFixable": false
         },
         {
@@ -626,7 +626,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeOwnerCommunitiesCommunityId.ts",
             "line": 49
           },
-          "id": "duplication-1774845506442-sfcyuwv826s",
+          "id": "duplication-1774846201904-qhptmmw9if",
           "autoFixable": false
         },
         {
@@ -638,7 +638,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 29
           },
-          "id": "duplication-1774845506442-vuw5k3nxkyd",
+          "id": "duplication-1774846201904-ll4bif3x8d",
           "autoFixable": false
         },
         {
@@ -650,7 +650,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 30
           },
-          "id": "duplication-1774845506442-9v78akdy0gr",
+          "id": "duplication-1774846201904-u9kffw3uwv",
           "autoFixable": false
         },
         {
@@ -662,7 +662,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 42
           },
-          "id": "duplication-1774845506442-hg9sj5xn4hs",
+          "id": "duplication-1774846201904-r5o8eknyug",
           "autoFixable": false
         },
         {
@@ -674,7 +674,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeModeratorReportsReportId.ts",
             "line": 43
           },
-          "id": "duplication-1774845506442-53na9k5kgpj",
+          "id": "duplication-1774846201904-bqecaaf0eti",
           "autoFixable": false
         },
         {
@@ -686,7 +686,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 46
           },
-          "id": "duplication-1774845506442-rfhyz665ng",
+          "id": "duplication-1774846201904-juhmtbn518",
           "autoFixable": false
         },
         {
@@ -698,7 +698,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 47
           },
-          "id": "duplication-1774845506442-8umj44h2fy",
+          "id": "duplication-1774846201904-vcjm85r1sl",
           "autoFixable": false
         },
         {
@@ -710,7 +710,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/putRedditLikeMemberCommentsCommentIdMyVote.ts",
             "line": 48
           },
-          "id": "duplication-1774845506442-fyv2eilpmr",
+          "id": "duplication-1774846201904-oug3m725ac",
           "autoFixable": false
         },
         {
@@ -722,7 +722,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerReportsReportIdApprove.ts",
             "line": 83
           },
-          "id": "duplication-1774845506442-40zrlu88s8d",
+          "id": "duplication-1774846201904-jiwju0d19m",
           "autoFixable": false
         },
         {
@@ -734,7 +734,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeOwnerModerators.ts",
             "line": 45
           },
-          "id": "duplication-1774845506442-9tl09wkovip",
+          "id": "duplication-1774846201904-tlcb7zlelh",
           "autoFixable": false
         },
         {
@@ -746,7 +746,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 19
           },
-          "id": "duplication-1774845506442-dkkum5gpspc",
+          "id": "duplication-1774846201904-1gir1aq1jmn",
           "autoFixable": false
         },
         {
@@ -758,7 +758,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 20
           },
-          "id": "duplication-1774845506442-45hdjpigy74",
+          "id": "duplication-1774846201904-ltud5478c39",
           "autoFixable": false
         },
         {
@@ -770,7 +770,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 21
           },
-          "id": "duplication-1774845506442-t0icj2at7la",
+          "id": "duplication-1774846201904-vmhb8l5j7i9",
           "autoFixable": false
         },
         {
@@ -782,7 +782,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 22
           },
-          "id": "duplication-1774845506442-fccdq4q2mu7",
+          "id": "duplication-1774846201904-86ho47syixn",
           "autoFixable": false
         },
         {
@@ -794,7 +794,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 23
           },
-          "id": "duplication-1774845506442-4ywgt0liwov",
+          "id": "duplication-1774846201904-8eqa31yaq6t",
           "autoFixable": false
         },
         {
@@ -806,7 +806,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 24
           },
-          "id": "duplication-1774845506442-35rar3fcgyj",
+          "id": "duplication-1774846201904-117oln56lamq",
           "autoFixable": false
         },
         {
@@ -818,7 +818,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 25
           },
-          "id": "duplication-1774845506442-3a6cd9ioxo",
+          "id": "duplication-1774846201904-6dtxd4zomjm",
           "autoFixable": false
         },
         {
@@ -830,7 +830,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 26
           },
-          "id": "duplication-1774845506442-f6du5d1yhru",
+          "id": "duplication-1774846201904-lqkefrmigx",
           "autoFixable": false
         },
         {
@@ -842,7 +842,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorReportsReportIdDismiss.ts",
             "line": 27
           },
-          "id": "duplication-1774845506442-0nt4w9xuf3u",
+          "id": "duplication-1774846201904-qd5ytyqu9wi",
           "autoFixable": false
         },
         {
@@ -854,7 +854,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 19
           },
-          "id": "duplication-1774845506442-d0ywy3jvd7",
+          "id": "duplication-1774846201904-yc1pj6dfkug",
           "autoFixable": false
         },
         {
@@ -866,7 +866,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 20
           },
-          "id": "duplication-1774845506442-ua3rjr73g6e",
+          "id": "duplication-1774846201904-i52jru9d2v8",
           "autoFixable": false
         },
         {
@@ -878,7 +878,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 21
           },
-          "id": "duplication-1774845506442-rtfzasuwjs",
+          "id": "duplication-1774846201904-7xjgud49jig",
           "autoFixable": false
         },
         {
@@ -890,7 +890,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 22
           },
-          "id": "duplication-1774845506442-4q9w4vkbnwh",
+          "id": "duplication-1774846201904-wqgvgqnmk29",
           "autoFixable": false
         },
         {
@@ -902,7 +902,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 23
           },
-          "id": "duplication-1774845506442-q6ht57wnmsr",
+          "id": "duplication-1774846201904-xvckdrpw4am",
           "autoFixable": false
         },
         {
@@ -914,7 +914,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 24
           },
-          "id": "duplication-1774845506442-siutujvhk9",
+          "id": "duplication-1774846201904-ycdcf7rrq8",
           "autoFixable": false
         },
         {
@@ -926,7 +926,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 25
           },
-          "id": "duplication-1774845506442-c0ymwhducyp",
+          "id": "duplication-1774846201904-cz15xz22fj6",
           "autoFixable": false
         },
         {
@@ -938,7 +938,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 26
           },
-          "id": "duplication-1774845506442-l1jw57hwl",
+          "id": "duplication-1774846201904-yjdzdauosd",
           "autoFixable": false
         },
         {
@@ -950,7 +950,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 27
           },
-          "id": "duplication-1774845506442-y2hktyfziv",
+          "id": "duplication-1774846201904-ff560t7ykf",
           "autoFixable": false
         },
         {
@@ -962,7 +962,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 28
           },
-          "id": "duplication-1774845506442-vh7k6t7s7x8",
+          "id": "duplication-1774846201904-hz7u1coknwi",
           "autoFixable": false
         },
         {
@@ -974,7 +974,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdGenerateThumbnails.ts",
             "line": 29
           },
-          "id": "duplication-1774845506442-sjntqr9ibks",
+          "id": "duplication-1774846201904-keja6zrsshs",
           "autoFixable": false
         },
         {
@@ -986,7 +986,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
             "line": 34
           },
-          "id": "duplication-1774845506442-qciwf791zhb",
+          "id": "duplication-1774846201904-vyejzmg9qzb",
           "autoFixable": false
         },
         {
@@ -998,7 +998,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeModeratorAttachmentsAttachmentIdAccess.ts",
             "line": 35
           },
-          "id": "duplication-1774845506442-yx0wqjif9ro",
+          "id": "duplication-1774846201904-i091mz68v0b",
           "autoFixable": false
         },
         {
@@ -1010,7 +1010,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 13
           },
-          "id": "duplication-1774845506442-jcasyk3doai",
+          "id": "duplication-1774846201904-vzr3rd6fhz",
           "autoFixable": false
         },
         {
@@ -1022,7 +1022,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 14
           },
-          "id": "duplication-1774845506442-rmj6h8gthys",
+          "id": "duplication-1774846201904-2j0wqrreej3",
           "autoFixable": false
         },
         {
@@ -1034,7 +1034,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeMemberCommunitiesCommunityIdSubscriptions.ts",
             "line": 15
           },
-          "id": "duplication-1774845506442-h03y6gr61m7",
+          "id": "duplication-1774846201904-wexl5lhwkwe",
           "autoFixable": false
         },
         {
@@ -1046,7 +1046,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 37
           },
-          "id": "duplication-1774845506442-9q60uekwm69",
+          "id": "duplication-1774846201904-yog1w1ti4v",
           "autoFixable": false
         },
         {
@@ -1058,7 +1058,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 76
           },
-          "id": "duplication-1774845506442-a8bphdror4s",
+          "id": "duplication-1774846201904-qj2fs8tgbbq",
           "autoFixable": false
         },
         {
@@ -1070,7 +1070,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/postRedditLikeAuthModeratorLogin.ts",
             "line": 77
           },
-          "id": "duplication-1774845506442-9f2nw90w3pw",
+          "id": "duplication-1774846201904-c4ithzhvmmw",
           "autoFixable": false
         },
         {
@@ -1082,7 +1082,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 38
           },
-          "id": "duplication-1774845506442-t6363il704p",
+          "id": "duplication-1774846201904-lh2iwogxnlo",
           "autoFixable": false
         },
         {
@@ -1094,7 +1094,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 39
           },
-          "id": "duplication-1774845506442-soowyxmlrde",
+          "id": "duplication-1774846201904-gybh28v0ry9",
           "autoFixable": false
         },
         {
@@ -1106,7 +1106,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 40
           },
-          "id": "duplication-1774845506442-tidxhk74sj",
+          "id": "duplication-1774846201904-v77jvj9uuyl",
           "autoFixable": false
         },
         {
@@ -1118,7 +1118,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 41
           },
-          "id": "duplication-1774845506442-5fqk5uylbe",
+          "id": "duplication-1774846201904-5vj4b6vifb3",
           "autoFixable": false
         },
         {
@@ -1130,7 +1130,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 42
           },
-          "id": "duplication-1774845506442-4fkfmjy9hxn",
+          "id": "duplication-1774846201904-hl93cm0gnnc",
           "autoFixable": false
         },
         {
@@ -1142,7 +1142,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 43
           },
-          "id": "duplication-1774845506442-owlxi75it2h",
+          "id": "duplication-1774846201904-f0ap7snzdjh",
           "autoFixable": false
         },
         {
@@ -1154,7 +1154,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 44
           },
-          "id": "duplication-1774845506442-o2p1vmg9jnp",
+          "id": "duplication-1774846201904-5rugnw1e0ir",
           "autoFixable": false
         },
         {
@@ -1166,7 +1166,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 45
           },
-          "id": "duplication-1774845506442-ic65wrdqaeh",
+          "id": "duplication-1774846201904-9s55cbmbs1",
           "autoFixable": false
         },
         {
@@ -1178,7 +1178,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 59
           },
-          "id": "duplication-1774845506442-1z2apfy2vla",
+          "id": "duplication-1774846201904-ri60ai8pkp",
           "autoFixable": false
         },
         {
@@ -1190,7 +1190,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 60
           },
-          "id": "duplication-1774845506442-s1wh279biln",
+          "id": "duplication-1774846201904-qrvfkc17x2",
           "autoFixable": false
         },
         {
@@ -1202,7 +1202,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 61
           },
-          "id": "duplication-1774845506442-ip9hdzx6039",
+          "id": "duplication-1774846201904-iy4ih7y24j",
           "autoFixable": false
         },
         {
@@ -1214,7 +1214,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 62
           },
-          "id": "duplication-1774845506442-wjhhbm26lhn",
+          "id": "duplication-1774846201904-ywyq3a9vf2m",
           "autoFixable": false
         },
         {
@@ -1226,7 +1226,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 63
           },
-          "id": "duplication-1774845506442-ka6wxkyu9cb",
+          "id": "duplication-1774846201904-fza6x3v0qg",
           "autoFixable": false
         },
         {
@@ -1238,7 +1238,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 64
           },
-          "id": "duplication-1774845506442-s2bl5jyrzni",
+          "id": "duplication-1774846201904-pinj9pgfy8",
           "autoFixable": false
         },
         {
@@ -1250,7 +1250,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 65
           },
-          "id": "duplication-1774845506442-oj3y9fc0c9i",
+          "id": "duplication-1774846201904-l7ak6wfqia",
           "autoFixable": false
         },
         {
@@ -1262,7 +1262,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 66
           },
-          "id": "duplication-1774845506442-03frwoqtkvg6",
+          "id": "duplication-1774846201904-69tki1rp7ww",
           "autoFixable": false
         },
         {
@@ -1274,7 +1274,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 67
           },
-          "id": "duplication-1774845506442-ntyuq07ciks",
+          "id": "duplication-1774846201904-bfm7nm3fd8k",
           "autoFixable": false
         },
         {
@@ -1286,7 +1286,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 68
           },
-          "id": "duplication-1774845506442-3ko982kkznn",
+          "id": "duplication-1774846201904-8c42qlzq8d",
           "autoFixable": false
         },
         {
@@ -1298,7 +1298,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 69
           },
-          "id": "duplication-1774845506442-l8dfc3j0o7",
+          "id": "duplication-1774846201904-vt24ve8alfh",
           "autoFixable": false
         },
         {
@@ -1310,7 +1310,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 70
           },
-          "id": "duplication-1774845506442-9aptmjryjvk",
+          "id": "duplication-1774846201904-2ycpma9jt6a",
           "autoFixable": false
         },
         {
@@ -1322,7 +1322,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 71
           },
-          "id": "duplication-1774845506442-u8k0djc4e2k",
+          "id": "duplication-1774846201904-5p7042ym57k",
           "autoFixable": false
         },
         {
@@ -1334,7 +1334,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 72
           },
-          "id": "duplication-1774845506442-2uk97ww1vjl",
+          "id": "duplication-1774846201904-c3vymt8hhd6",
           "autoFixable": false
         },
         {
@@ -1346,7 +1346,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikePostsPostIdComments.ts",
             "line": 73
           },
-          "id": "duplication-1774845506442-8dhrp25t124",
+          "id": "duplication-1774846201904-dmemv4tl1ag",
           "autoFixable": false
         },
         {
@@ -1358,7 +1358,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 67
           },
-          "id": "duplication-1774845506442-0vqofgchw7sr",
+          "id": "duplication-1774846201904-nblhksit4sd",
           "autoFixable": false
         },
         {
@@ -1370,7 +1370,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 75
           },
-          "id": "duplication-1774845506442-3svutn5o0wx",
+          "id": "duplication-1774846201904-62jb0yoygl",
           "autoFixable": false
         },
         {
@@ -1382,7 +1382,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 76
           },
-          "id": "duplication-1774845506442-9fvzpoz7bna",
+          "id": "duplication-1774846201904-oogwbrveln",
           "autoFixable": false
         },
         {
@@ -1394,7 +1394,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 77
           },
-          "id": "duplication-1774845506442-xd74ytpipg",
+          "id": "duplication-1774846201904-4w2sphbbo44",
           "autoFixable": false
         },
         {
@@ -1406,7 +1406,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 78
           },
-          "id": "duplication-1774845506442-dw192p2lhe",
+          "id": "duplication-1774846201904-bt89qsq9d65",
           "autoFixable": false
         },
         {
@@ -1418,7 +1418,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 79
           },
-          "id": "duplication-1774845506442-zrw88pohcxd",
+          "id": "duplication-1774846201904-pdx320f67i",
           "autoFixable": false
         },
         {
@@ -1430,7 +1430,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerPostsPostIdCommentsSorted.ts",
             "line": 80
           },
-          "id": "duplication-1774845506442-fpmse3q5k85",
+          "id": "duplication-1774846201904-ctzrnmdupg",
           "autoFixable": false
         },
         {
@@ -1442,7 +1442,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 29
           },
-          "id": "duplication-1774845506442-0hd53igzbe9p",
+          "id": "duplication-1774846201904-qt9w16vk6v9",
           "autoFixable": false
         },
         {
@@ -1454,7 +1454,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 30
           },
-          "id": "duplication-1774845506442-s18bk0davxd",
+          "id": "duplication-1774846201904-ak6vvfg8cqo",
           "autoFixable": false
         },
         {
@@ -1466,7 +1466,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 31
           },
-          "id": "duplication-1774845506442-fy6jfte1mr",
+          "id": "duplication-1774846201904-l95k4hy671m",
           "autoFixable": false
         },
         {
@@ -1478,7 +1478,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeOwnerAuditLogs.ts",
             "line": 32
           },
-          "id": "duplication-1774845506442-z5ilwk0ckg",
+          "id": "duplication-1774846201904-mvoywy352se",
           "autoFixable": false
         },
         {
@@ -1490,7 +1490,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 74
           },
-          "id": "duplication-1774845506442-zucdfa7hqc",
+          "id": "duplication-1774846201904-beq01jsj3me",
           "autoFixable": false
         },
         {
@@ -1502,7 +1502,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 76
           },
-          "id": "duplication-1774845506442-4zcmzoe20ud",
+          "id": "duplication-1774846201904-8zhw8337m09",
           "autoFixable": false
         },
         {
@@ -1514,7 +1514,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 77
           },
-          "id": "duplication-1774845506442-afog9cblmp9",
+          "id": "duplication-1774846201904-wox9ncnt0mp",
           "autoFixable": false
         },
         {
@@ -1526,7 +1526,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 78
           },
-          "id": "duplication-1774845506442-73ndk787y53",
+          "id": "duplication-1774846201904-mjvhfm1291",
           "autoFixable": false
         },
         {
@@ -1538,7 +1538,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 79
           },
-          "id": "duplication-1774845506442-s09urscl95",
+          "id": "duplication-1774846201904-b61nhjycram",
           "autoFixable": false
         },
         {
@@ -1550,7 +1550,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 80
           },
-          "id": "duplication-1774845506442-ex7rsdg52fd",
+          "id": "duplication-1774846201904-jyrvqaf9d3",
           "autoFixable": false
         },
         {
@@ -1562,7 +1562,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 81
           },
-          "id": "duplication-1774845506442-o1jazgl65t",
+          "id": "duplication-1774846201904-jyorsecgw2",
           "autoFixable": false
         },
         {
@@ -1574,7 +1574,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeModeratorPostsPostIdCommentsSorted.ts",
             "line": 82
           },
-          "id": "duplication-1774845506442-olfhqt25tw",
+          "id": "duplication-1774846201904-hjxq7u3b1nv",
           "autoFixable": false
         },
         {
@@ -1586,7 +1586,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/patchRedditLikeMemberFeedsPopular.ts",
             "line": 132
           },
-          "id": "duplication-1774845506442-jn38vwcicy",
+          "id": "duplication-1774846201904-jkyicqb3ffb",
           "autoFixable": false
         },
         {
@@ -1598,7 +1598,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeOwnerPostsPostIdCommentsThread.ts",
             "line": 19
           },
-          "id": "duplication-1774845506442-6bj6754x6a9",
+          "id": "duplication-1774846201904-x5hiz4lggg",
           "autoFixable": false
         },
         {
@@ -1610,7 +1610,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 20
           },
-          "id": "duplication-1774845506442-2ee2f78bv4",
+          "id": "duplication-1774846201904-23exisost87h",
           "autoFixable": false
         },
         {
@@ -1622,7 +1622,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 21
           },
-          "id": "duplication-1774845506442-a04fp4xodep",
+          "id": "duplication-1774846201904-oknc6a9a2xd",
           "autoFixable": false
         },
         {
@@ -1634,7 +1634,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 22
           },
-          "id": "duplication-1774845506442-prm73kps9p",
+          "id": "duplication-1774846201904-kfwoc2pxa5r",
           "autoFixable": false
         },
         {
@@ -1646,7 +1646,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 23
           },
-          "id": "duplication-1774845506442-az8ponqryfi",
+          "id": "duplication-1774846201904-8bq9iz0644b",
           "autoFixable": false
         },
         {
@@ -1658,7 +1658,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 24
           },
-          "id": "duplication-1774845506442-nn8hqlrobk8",
+          "id": "duplication-1774846201904-l4bifet5m0o",
           "autoFixable": false
         },
         {
@@ -1670,7 +1670,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 25
           },
-          "id": "duplication-1774845506442-hwx57vek51w",
+          "id": "duplication-1774846201904-i5ehbx188md",
           "autoFixable": false
         },
         {
@@ -1682,7 +1682,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 26
           },
-          "id": "duplication-1774845506442-1v1sdnc1hjd",
+          "id": "duplication-1774846201904-41slbjvtau",
           "autoFixable": false
         },
         {
@@ -1694,7 +1694,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 27
           },
-          "id": "duplication-1774845506442-g68928dyxkh",
+          "id": "duplication-1774846201904-odnlxka2jc",
           "autoFixable": false
         },
         {
@@ -1706,7 +1706,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 28
           },
-          "id": "duplication-1774845506442-eki9b1z9r9o",
+          "id": "duplication-1774846201904-kji3kvl6ien",
           "autoFixable": false
         },
         {
@@ -1718,7 +1718,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/getRedditLikeModeratorPostsPostIdCommentsThread.ts",
             "line": 29
           },
-          "id": "duplication-1774845506442-icyl9g75jw",
+          "id": "duplication-1774846201904-xsxhl00erh8",
           "autoFixable": false
         },
         {
@@ -1730,7 +1730,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 16
           },
-          "id": "duplication-1774845506442-2almqc88tgw",
+          "id": "duplication-1774846201904-9afh2jzfk0a",
           "autoFixable": false
         },
         {
@@ -1742,7 +1742,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 17
           },
-          "id": "duplication-1774845506442-cs0wdyncpk8",
+          "id": "duplication-1774846201904-394vckheetn",
           "autoFixable": false
         },
         {
@@ -1754,7 +1754,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 18
           },
-          "id": "duplication-1774845506442-h5qn7f90ssh",
+          "id": "duplication-1774846201904-onq67m1tre",
           "autoFixable": false
         },
         {
@@ -1766,7 +1766,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 19
           },
-          "id": "duplication-1774845506442-7hk3frn0ajg",
+          "id": "duplication-1774846201904-1rgrv0l6xkk",
           "autoFixable": false
         },
         {
@@ -1778,7 +1778,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 20
           },
-          "id": "duplication-1774845506442-g9t3qn7r9w5",
+          "id": "duplication-1774846201904-49lzy39874",
           "autoFixable": false
         },
         {
@@ -1790,7 +1790,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 21
           },
-          "id": "duplication-1774845506442-8925x1zmagx",
+          "id": "duplication-1774846201904-kuic59iqauf",
           "autoFixable": false
         },
         {
@@ -1802,7 +1802,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 22
           },
-          "id": "duplication-1774845506442-gzsqx75u6k",
+          "id": "duplication-1774846201904-pj4rz02rld",
           "autoFixable": false
         },
         {
@@ -1814,7 +1814,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 23
           },
-          "id": "duplication-1774845506442-993y49wlwq",
+          "id": "duplication-1774846201904-o7hkzn0brem",
           "autoFixable": false
         },
         {
@@ -1826,7 +1826,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 24
           },
-          "id": "duplication-1774845506442-w590cwsvu1",
+          "id": "duplication-1774846201904-kdwk9y6yr8c",
           "autoFixable": false
         },
         {
@@ -1838,7 +1838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 25
           },
-          "id": "duplication-1774845506442-60cwyxd2sao",
+          "id": "duplication-1774846201904-9o9zs4ajd2h",
           "autoFixable": false
         },
         {
@@ -1850,7 +1850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 26
           },
-          "id": "duplication-1774845506442-5ekbky5dt97",
+          "id": "duplication-1774846201904-uik6lv25t28",
           "autoFixable": false
         },
         {
@@ -1862,7 +1862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 27
           },
-          "id": "duplication-1774845506442-ybmtjzydbl",
+          "id": "duplication-1774846201904-fjubiys4yks",
           "autoFixable": false
         },
         {
@@ -1874,7 +1874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 28
           },
-          "id": "duplication-1774845506442-3z79vt6q2lp",
+          "id": "duplication-1774846201904-hk4yklgn1lf",
           "autoFixable": false
         },
         {
@@ -1886,7 +1886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/providers/deleteRedditLikeModeratorPostsPostIdCommentsCommentId.ts",
             "line": 29
           },
-          "id": "duplication-1774845506442-3ojsc9xojbw",
+          "id": "duplication-1774846201904-r0rn34eisji",
           "autoFixable": false
         }
       ]
@@ -1903,7 +1903,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
             "line": 10
           },
-          "id": "naming-1774845506415-hy8m5spt0lp",
+          "id": "naming-1774846201905-xdtoszcc7v",
           "autoFixable": false
         },
         {
@@ -1915,7 +1915,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774845506443-jmmot8vsbm",
+          "id": "naming-1774846201906-c8eiuhjnu4a",
           "autoFixable": false
         },
         {
@@ -1927,7 +1927,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
             "line": 11
           },
-          "id": "naming-1774845506416-pcnmkqfocuq",
+          "id": "naming-1774846201907-ajayfffjff",
           "autoFixable": false
         },
         {
@@ -1939,7 +1939,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
             "line": 13
           },
-          "id": "naming-1774845506444-ijj1ylat3k",
+          "id": "naming-1774846201908-6q5dzwss9jv",
           "autoFixable": false
         },
         {
@@ -1951,7 +1951,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
             "line": 11
           },
-          "id": "naming-1774845506444-956kms3foz9",
+          "id": "naming-1774846201908-4qcbnbk7mkx",
           "autoFixable": false
         },
         {
@@ -1963,7 +1963,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774845506445-g0g5la3sq0b",
+          "id": "naming-1774846201910-whajrqk6w7e",
           "autoFixable": false
         },
         {
@@ -1975,7 +1975,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
             "line": 10
           },
-          "id": "naming-1774845506446-zck70zhp3ah",
+          "id": "naming-1774846201910-l2w7k94nea",
           "autoFixable": false
         },
         {
@@ -1987,7 +1987,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774845506445-tzijryopk8",
+          "id": "naming-1774846201911-kw2kpdz15vh",
           "autoFixable": false
         },
         {
@@ -1999,7 +1999,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
             "line": 11
           },
-          "id": "naming-1774845506446-zc15n1p45nm",
+          "id": "naming-1774846201911-30zhsa63uyd",
           "autoFixable": false
         },
         {
@@ -2011,7 +2011,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774845506446-ix6kept9dx",
+          "id": "naming-1774846201911-vur9mj8p0v",
           "autoFixable": false
         },
         {
@@ -2023,7 +2023,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774845506447-yt19zsk5nui",
+          "id": "naming-1774846201913-6dksdfzjvsp",
           "autoFixable": false
         },
         {
@@ -2035,7 +2035,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
             "line": 12
           },
-          "id": "naming-1774845506447-jijzjd54w7k",
+          "id": "naming-1774846201912-t4hmnfot4rh",
           "autoFixable": false
         },
         {
@@ -2047,7 +2047,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "naming-1774845506448-z75vycxt85e",
+          "id": "naming-1774846201913-lk0u14haol",
           "autoFixable": false
         },
         {
@@ -2059,7 +2059,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
             "line": 12
           },
-          "id": "naming-1774845506448-jneiqimzg",
+          "id": "naming-1774846201913-4pypyih61ct",
           "autoFixable": false
         }
       ]
@@ -2077,19 +2077,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/RedditlikePostsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506474-d39ypozeo1j",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owners/RedditlikeOwnersController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845506474-pg8712yhzv",
+          "id": "jsdoc-1774846201943-qdudo6if2s",
           "autoFixable": false
         },
         {
@@ -2101,7 +2089,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderators/RedditlikeModeratorsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506474-mi64aiuekls",
+          "id": "jsdoc-1774846201942-n5qtqbm103j",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnersController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owners/RedditlikeOwnersController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-deum18qlg3d",
           "autoFixable": false
         },
         {
@@ -2113,7 +2113,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/members/RedditlikeMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506474-6awcgjqs4xp",
+          "id": "jsdoc-1774846201942-v94tqjs59w",
           "autoFixable": false
         },
         {
@@ -2125,7 +2125,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guests/RedditlikeGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506475-97x6tnuprl",
+          "id": "jsdoc-1774846201942-0ydgqy4li0v",
           "autoFixable": false
         },
         {
@@ -2137,19 +2137,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/RedditlikeAttachmentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506475-e0oltiuv7fh",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAttachment_referencesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845506475-b4bnmwtjjm8",
+          "id": "jsdoc-1774846201943-r2l67a3qiu",
           "autoFixable": false
         },
         {
@@ -2161,7 +2149,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/communities/RedditlikeCommunitiesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506476-us70h6cj2i",
+          "id": "jsdoc-1774846201943-ol8vxf11wx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAttachment_referencesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachment-references/RedditlikeAttachment_referencesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201943-52tte93wygr",
           "autoFixable": false
         },
         {
@@ -2173,7 +2173,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/snapshots/RedditlikePostsSnapshotsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506475-3q838q4aniz",
+          "id": "jsdoc-1774846201944-yjxw97gtowi",
           "autoFixable": false
         },
         {
@@ -2185,7 +2185,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/posts/comments/RedditlikePostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506475-2fjnid4a7tq",
+          "id": "jsdoc-1774846201944-o5xvuww44xm",
           "autoFixable": false
         },
         {
@@ -2197,43 +2197,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/reports/RedditlikeOwnerReportsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506476-tfxwl8t2q5",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorReportsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
-            "line": 15
-          },
-          "id": "jsdoc-1774845506475-yrf92qea6yo",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerCommunitiesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/RedditlikeOwnerCommunitiesController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506476-ffzcixrr3e",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerModeratorsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/moderators/RedditlikeOwnerModeratorsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845506476-membdipcv78",
+          "id": "jsdoc-1774846201944-5g3ekhxzphh",
           "autoFixable": false
         },
         {
@@ -2245,19 +2209,43 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/RedditlikeOwnerAudit_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506476-52d5qigqh1h",
+          "id": "jsdoc-1774846201944-2kthlmlw7m8",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeModeratorPostsController\" missing JSDoc",
+          "message": "Class \"RedditlikeOwnerCommunitiesController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/RedditlikeModeratorPostsController.ts",
-            "line": 9
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/RedditlikeOwnerCommunitiesController.ts",
+            "line": 11
           },
-          "id": "jsdoc-1774845506477-f9iwfyx44p6",
+          "id": "jsdoc-1774846201945-xiuzi2njzen",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerModeratorsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/moderators/RedditlikeOwnerModeratorsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201945-w5dz6u9b8fp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/RedditlikeModeratorReportsController.ts",
+            "line": 15
+          },
+          "id": "jsdoc-1774846201945-s6qgma8xxx",
           "autoFixable": false
         },
         {
@@ -2269,7 +2257,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/moderators/RedditlikeModeratorModeratorsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506477-xe11h2zy9jm",
+          "id": "jsdoc-1774846201946-cp094jwp2gc",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/RedditlikeModeratorPostsController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846201946-m8pp1o8p6ns",
           "autoFixable": false
         },
         {
@@ -2281,7 +2281,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscribed-communities/RedditlikeMemberSubscribed_communitiesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506476-fifvguel3l7",
+          "id": "jsdoc-1774846201945-ar98y412uzf",
           "autoFixable": false
         },
         {
@@ -2293,7 +2293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/subscriptions/RedditlikeMemberSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506477-t49s5enr5d",
+          "id": "jsdoc-1774846201946-2adwsiu6c1i",
           "autoFixable": false
         },
         {
@@ -2305,7 +2305,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/reports/RedditlikeMemberReportsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506476-ond6va18z3",
+          "id": "jsdoc-1774846201946-pti7a6m2ktm",
           "autoFixable": false
         },
         {
@@ -2317,19 +2317,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/profile/RedditlikeMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506477-mh299lsfv3",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845506477-hzsm2lnid5l",
+          "id": "jsdoc-1774846201947-6scrbzkp88y",
           "autoFixable": false
         },
         {
@@ -2341,7 +2329,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/password-resets/RedditlikeMemberPassword_resetsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845506477-uosdjn9tao",
+          "id": "jsdoc-1774846201946-9j3ghox58h",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberPostsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/RedditlikeMemberPostsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201947-4fksqrts58p",
           "autoFixable": false
         },
         {
@@ -2353,7 +2353,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/me/RedditlikeMemberMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506478-52iupkwxpqs",
+          "id": "jsdoc-1774846201947-txp8avk4d9h",
           "autoFixable": false
         },
         {
@@ -2365,19 +2365,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/RedditlikeMemberCommunitiesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506478-g7iv72jq6y6",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberAttachmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/RedditlikeMemberAttachmentsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506478-h6six28q6ww",
+          "id": "jsdoc-1774846201948-gxeoztnf7l",
           "autoFixable": false
         },
         {
@@ -2389,7 +2377,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachment-references/RedditlikeMemberAttachment_referencesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506478-wn1u5ktrx88",
+          "id": "jsdoc-1774846201947-o1qzkdrycm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberAttachmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/RedditlikeMemberAttachmentsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201948-vmxka0kzpja",
           "autoFixable": false
         },
         {
@@ -2401,7 +2401,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/owner/RedditlikeAuthOwnerController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506478-m5bsxurymn",
+          "id": "jsdoc-1774846201948-t4v7s443kzm",
           "autoFixable": false
         },
         {
@@ -2413,7 +2413,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/moderator/RedditlikeAuthModeratorController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506478-6h51y0yf86m",
+          "id": "jsdoc-1774846201948-ks4rww3wdyk",
           "autoFixable": false
         },
         {
@@ -2425,7 +2425,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/member/RedditlikeAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506479-sw37vo18lb",
+          "id": "jsdoc-1774846201949-bbbx99s9muo",
           "autoFixable": false
         },
         {
@@ -2437,19 +2437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/attachments/thumbnails/RedditlikeAttachmentsThumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506479-bcvp9y1m5o9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845506479-7mttzc2umn4",
+          "id": "jsdoc-1774846201949-tax4sya5o",
           "autoFixable": false
         },
         {
@@ -2461,7 +2449,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/RedditlikeMemberCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506479-dk26kofyjj5",
+          "id": "jsdoc-1774846201949-qzv960tt0ko",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/auth/guest/RedditlikeAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846201949-5oyd4auh5wx",
           "autoFixable": false
         },
         {
@@ -2473,7 +2473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/RedditlikeGuestSessionsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845506479-j5477zae7r7",
+          "id": "jsdoc-1774846201950-pfnqel3xwmb",
           "autoFixable": false
         },
         {
@@ -2485,7 +2485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/comments/snapshots/RedditlikeCommentsSnapshotsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506486-lpiz88rnldn",
+          "id": "jsdoc-1774846201950-52rpaxm9gtq",
           "autoFixable": false
         },
         {
@@ -2497,7 +2497,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/sessions/me/RedditlikeOwnerSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506479-5l6wc6lusg6",
+          "id": "jsdoc-1774846201950-arpziky4bma",
           "autoFixable": false
         },
         {
@@ -2509,7 +2509,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/generate-thumbnails/RedditlikeOwnerAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506479-fapu3pytbm",
+          "id": "jsdoc-1774846201950-qxoddeldx9k",
           "autoFixable": false
         },
         {
@@ -2521,19 +2521,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/batch-cleanup/RedditlikeOwnerAttachmentsBatch_cleanupController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-jtvcoygb97m",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeOwnerAttachmentsAccess_logsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845506479-aglqvkry0x",
+          "id": "jsdoc-1774846201950-pcoa4yrw189",
           "autoFixable": false
         },
         {
@@ -2545,7 +2533,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access/RedditlikeOwnerAttachmentsAccessController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-uni51aswlsb",
+          "id": "jsdoc-1774846201951-fjsac0pofa9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeOwnerAttachmentsAccess_logsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/attachments/access-logs/RedditlikeOwnerAttachmentsAccess_logsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846201951-nzuqom4n6s",
           "autoFixable": false
         },
         {
@@ -2557,19 +2557,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/sessions/me/RedditlikeModeratorSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-wo0o21bhf2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeModeratorReportsSnapshotsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/snapshots/RedditlikeModeratorReportsSnapshotsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506480-o7oxj9g8qw8",
+          "id": "jsdoc-1774846201951-5q2o6mkv47n",
           "autoFixable": false
         },
         {
@@ -2581,19 +2569,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/audit-logs/my-activity/RedditlikeOwnerAudit_logsMy_activityController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506480-6km6mxi9cou",
+          "id": "jsdoc-1774846201951-pmyecn4rp3",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeModeratorAttachmentsGenerate_thumbnailsController\" missing JSDoc",
+          "message": "Class \"RedditlikeModeratorReportsSnapshotsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
-            "line": 10
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/reports/snapshots/RedditlikeModeratorReportsSnapshotsController.ts",
+            "line": 11
           },
-          "id": "jsdoc-1774845506480-c3cdd8ua1fm",
+          "id": "jsdoc-1774846201951-dftdrbl8xun",
           "autoFixable": false
         },
         {
@@ -2605,19 +2593,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506481-s03776xgvta",
+          "id": "jsdoc-1774846201951-2an775i5vij",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeModeratorAttachmentsAccessController\" missing JSDoc",
+          "message": "Class \"RedditlikeModeratorAttachmentsGenerate_thumbnailsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access/RedditlikeModeratorAttachmentsAccessController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/generate-thumbnails/RedditlikeModeratorAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-vfgrbh9p0d7",
+          "id": "jsdoc-1774846201952-ja3fj8ay94n",
           "autoFixable": false
         },
         {
@@ -2629,7 +2617,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access-logs/RedditlikeModeratorAttachmentsAccess_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506480-wkakp427ht",
+          "id": "jsdoc-1774846201952-iu7rsfoh9af",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeModeratorAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/attachments/access/RedditlikeModeratorAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201952-pfobm2eqbch",
           "autoFixable": false
         },
         {
@@ -2641,31 +2641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/sessions/me/RedditlikeMemberSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-wc1dogho4uj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberFeedsPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506487-9lhbzjjuftl",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberFeedsHomeController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/home/RedditlikeMemberFeedsHomeController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506487-y9znmiq0xq",
+          "id": "jsdoc-1774846201952-bc32l3rsix",
           "autoFixable": false
         },
         {
@@ -2677,7 +2653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/votes/RedditlikeMemberPostsVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506480-55ipzz0bz2v",
+          "id": "jsdoc-1774846201952-ea4bekzkzrf",
           "autoFixable": false
         },
         {
@@ -2689,7 +2665,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/my-vote/RedditlikeMemberPostsMy_voteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506481-ky8kl58ot0j",
+          "id": "jsdoc-1774846201952-3s7fc0xiwuo",
           "autoFixable": false
         },
         {
@@ -2701,7 +2677,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774845506481-a8ercenj76h",
+          "id": "jsdoc-1774846201953-x6mzptrqqpb",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/popular/RedditlikeMemberFeedsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201953-lb6ge12v94k",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeMemberFeedsHomeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/feeds/home/RedditlikeMemberFeedsHomeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201953-7ziccpex6rn",
           "autoFixable": false
         },
         {
@@ -2713,7 +2713,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscriptions/RedditlikeMemberCommunitiesSubscriptionsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506481-z489e41onyj",
+          "id": "jsdoc-1774846201953-ngjlv5y7c48",
           "autoFixable": false
         },
         {
@@ -2725,7 +2725,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/communities/subscription/RedditlikeMemberCommunitiesSubscriptionController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506481-34wn9056pzs",
+          "id": "jsdoc-1774846201954-xod28eyhffj",
           "autoFixable": false
         },
         {
@@ -2737,7 +2737,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/generate-thumbnails/RedditlikeMemberAttachmentsGenerate_thumbnailsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506481-f8qthdglwhn",
+          "id": "jsdoc-1774846201954-zzrlhnds59c",
           "autoFixable": false
         },
         {
@@ -2749,7 +2749,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/attachments/access/RedditlikeMemberAttachmentsAccessController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506486-1btbt3fnmf7",
+          "id": "jsdoc-1774846201954-jtu8rhepa",
           "autoFixable": false
         },
         {
@@ -2761,7 +2761,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/votes/RedditlikeMemberCommentsVotesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506481-xzu1jrtudqa",
+          "id": "jsdoc-1774846201960-bhnb2fs3bww",
           "autoFixable": false
         },
         {
@@ -2773,31 +2773,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/comments/my-vote/RedditlikeMemberCommentsMy_voteController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845506486-5kufc2u429",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestFeedsPopularController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/feeds/popular/RedditlikeGuestFeedsPopularController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506486-fpasdtl1rc4",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeGuestAttachmentsAccessController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/attachments/access/RedditlikeGuestAttachmentsAccessController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774845506486-obzutonb6t",
+          "id": "jsdoc-1774846201960-5c5xoxw559p",
           "autoFixable": false
         },
         {
@@ -2809,7 +2785,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/sessions/me/RedditlikeGuestSessionsMeController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506486-ryl2zt7avz",
+          "id": "jsdoc-1774846201960-h4wohb78ac5",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestFeedsPopularController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/feeds/popular/RedditlikeGuestFeedsPopularController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201960-n0zmv7txmob",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestAttachmentsAccessController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/attachments/access/RedditlikeGuestAttachmentsAccessController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846201961-pfnb9n4xklk",
           "autoFixable": false
         },
         {
@@ -2821,7 +2821,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506486-56hp3zigks8",
+          "id": "jsdoc-1774846201961-uor9wwwg9hf",
           "autoFixable": false
         },
         {
@@ -2833,7 +2833,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/posts/comments/sorted/RedditlikeOwnerPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506492-2qwpmh9c0sq",
+          "id": "jsdoc-1774846201961-3axjc9isj9y",
           "autoFixable": false
         },
         {
@@ -2845,7 +2845,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/owner/communities/reports/pending/RedditlikeOwnerCommunitiesReportsPendingController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506487-vvevgk6jyz9",
+          "id": "jsdoc-1774846201961-bhu0fnu854r",
           "autoFixable": false
         },
         {
@@ -2857,19 +2857,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/posts/comments/sorted/RedditlikeModeratorPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506487-vt8z5ibo0z",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"RedditlikeMemberPostsCommentsSortedController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/sorted/RedditlikeMemberPostsCommentsSortedController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774845506486-acqybdbvws",
+          "id": "jsdoc-1774846201961-npqwj6pecqg",
           "autoFixable": false
         },
         {
@@ -2881,19 +2869,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/moderator/communities/reports/pending/RedditlikeModeratorCommunitiesReportsPendingController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506488-eiujuldod3h",
+          "id": "jsdoc-1774846201961-imds7rjj30g",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"RedditlikeGuestPostsCommentsSortedController\" missing JSDoc",
+          "message": "Class \"RedditlikeMemberPostsCommentsSortedController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/sorted/RedditlikeGuestPostsCommentsSortedController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/member/posts/comments/sorted/RedditlikeMemberPostsCommentsSortedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845506487-s4dizhy4oci",
+          "id": "jsdoc-1774846201962-0q02tk55frze",
           "autoFixable": false
         },
         {
@@ -2905,7 +2893,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845506487-b573xrh2keu",
+          "id": "jsdoc-1774846201961-s4hajzc5hri",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"RedditlikeGuestPostsCommentsSortedController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/moonshotai/kimi-k2.5/reddit/src/controllers/redditLike/guest/posts/comments/sorted/RedditlikeGuestPostsCommentsSortedController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846201961-tkf3t0yco89",
           "autoFixable": false
         }
       ]
@@ -2924,7 +2924,7 @@
             "file": "src/api/structures/IRedditLikeReport.ts",
             "line": 25
           },
-          "id": "completeness-1774845506499-m8smj0yrhs",
+          "id": "completeness-1774846201977-rtqv598r3gd",
           "autoFixable": false
         },
         {
@@ -2936,7 +2936,7 @@
             "file": "src/api/structures/IRedditLikeReport.ts",
             "line": 33
           },
-          "id": "completeness-1774845506499-5u3qfxxcspd",
+          "id": "completeness-1774846201977-yplzu8hulg",
           "autoFixable": false
         },
         {
@@ -2948,7 +2948,7 @@
             "file": "src/api/structures/IRedditLikePostSnapshot.ts",
             "line": 128
           },
-          "id": "completeness-1774845506499-gy3rq5rby6",
+          "id": "completeness-1774846201977-6buefxahvcb",
           "autoFixable": false
         },
         {
@@ -2960,7 +2960,7 @@
             "file": "src/api/structures/IRedditLikePostImageContent.ts",
             "line": 21
           },
-          "id": "completeness-1774845506499-6zo3gd25n94",
+          "id": "completeness-1774846201977-aubtfl5nxk8",
           "autoFixable": false
         },
         {
@@ -2972,7 +2972,7 @@
             "file": "src/api/structures/IRedditLikePostImageContent.ts",
             "line": 29
           },
-          "id": "completeness-1774845506499-tgyhmbrikrr",
+          "id": "completeness-1774846201977-lhzk5k4gzgd",
           "autoFixable": false
         },
         {
@@ -2984,7 +2984,7 @@
             "file": "src/api/structures/IRedditLikePost.ts",
             "line": 316
           },
-          "id": "completeness-1774845506499-m984m8jyg9r",
+          "id": "completeness-1774846201978-p2lxpyjhmuq",
           "autoFixable": false
         },
         {
@@ -2996,7 +2996,7 @@
             "file": "src/api/structures/IRedditLikeOwnerAuditLog.ts",
             "line": 77
           },
-          "id": "completeness-1774845506499-zo1i53octx8",
+          "id": "completeness-1774846201977-20fh1li6mw6",
           "autoFixable": false
         },
         {
@@ -3008,7 +3008,7 @@
             "file": "src/api/structures/IRedditLikeModerator.ts",
             "line": 31
           },
-          "id": "completeness-1774845506499-z8u6m7iwwhh",
+          "id": "completeness-1774846201977-275xrjemlxj",
           "autoFixable": false
         },
         {
@@ -3020,7 +3020,7 @@
             "file": "src/api/structures/IRedditLikeModerator.ts",
             "line": 39
           },
-          "id": "completeness-1774845506499-mwg4ncoju5i",
+          "id": "completeness-1774846201977-ginpje7gfzj",
           "autoFixable": false
         },
         {
@@ -3032,7 +3032,7 @@
             "file": "src/api/structures/IRedditLikeCommunitySubscription.ts",
             "line": 110
           },
-          "id": "completeness-1774845506500-spq656hzwj",
+          "id": "completeness-1774846201978-nvh6gfty45j",
           "autoFixable": false
         },
         {
@@ -3044,7 +3044,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 215
           },
-          "id": "completeness-1774845506500-fdppkyxvicr",
+          "id": "completeness-1774846201978-rkpr89ata6j",
           "autoFixable": false
         },
         {
@@ -3056,7 +3056,7 @@
             "file": "src/api/structures/IRedditLikeCommunity.ts",
             "line": 223
           },
-          "id": "completeness-1774845506500-go91kmcifd6",
+          "id": "completeness-1774846201978-ptkfdp7lh2c",
           "autoFixable": false
         },
         {
@@ -3068,7 +3068,7 @@
             "file": "src/api/structures/IRedditLikeComment.ts",
             "line": 235
           },
-          "id": "completeness-1774845506500-3z9x8i0jel4",
+          "id": "completeness-1774846201978-itgekvmbjbl",
           "autoFixable": false
         },
         {
@@ -3080,7 +3080,7 @@
             "file": "src/api/structures/IRedditLikeAttachmentAccessLog.ts",
             "line": 240
           },
-          "id": "completeness-1774845506500-ls8rqgzq4a8",
+          "id": "completeness-1774846201978-t17w04co5wa",
           "autoFixable": false
         },
         {
@@ -3092,7 +3092,7 @@
             "file": "src/api/structures/IRedditLikeAttachment.ts",
             "line": 178
           },
-          "id": "completeness-1774845506500-fce6nmahsbd",
+          "id": "completeness-1774846201978-l0nczm3l6l",
           "autoFixable": false
         }
       ]
@@ -3115,7 +3115,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845506015-zpydhc55yqe",
+      "id": "type-error-1774846201466-2ozr70mo9pi",
       "autoFixable": false
     },
     {
@@ -3127,7 +3127,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 186
       },
-      "id": "type-error-1774845506015-ra97q3k12d8",
+      "id": "type-error-1774846201466-ho6vs5i0jp5",
       "autoFixable": false
     },
     {
@@ -3139,7 +3139,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 338
       },
-      "id": "type-error-1774845506015-y2kppsj1hkq",
+      "id": "type-error-1774846201466-sizhc1h58b",
       "autoFixable": false
     },
     {
@@ -3151,7 +3151,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 345
       },
-      "id": "type-error-1774845506015-7ytkv1k2red",
+      "id": "type-error-1774846201466-2gqb8b7zyhv",
       "autoFixable": false
     },
     {
@@ -3163,7 +3163,7 @@
         "file": "src/decorators/AdminAuth.ts",
         "line": 476
       },
-      "id": "type-error-1774845506015-bwmzh5so32g",
+      "id": "type-error-1774846201466-d9b7lqamdo",
       "autoFixable": false
     },
     {
@@ -3175,7 +3175,7 @@
         "file": "src/providers/authorize/adminAuthorize.ts",
         "line": 546
       },
-      "id": "type-error-1774845506015-4t0wz6icods",
+      "id": "type-error-1774846201466-wzv5nz2fcdn",
       "autoFixable": false
     },
     {
@@ -3187,7 +3187,7 @@
         "file": "src/providers/deleteRedditLikeMemberCommentsCommentIdMyVote.ts",
         "line": 1281
       },
-      "id": "type-error-1774845506015-x8fte1usvt8",
+      "id": "type-error-1774846201466-uwwruy2id6",
       "autoFixable": false
     },
     {
@@ -3199,7 +3199,7 @@
         "file": "src/providers/getRedditLikeGuestSessionsMe.ts",
         "line": 2363
       },
-      "id": "type-error-1774845506015-msyaw7jw13e",
+      "id": "type-error-1774846201466-zztszdwdmr",
       "autoFixable": false
     },
     {
@@ -3211,7 +3211,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3461
       },
-      "id": "type-error-1774845506015-dacvrk9nm1",
+      "id": "type-error-1774846201466-qia6l02xy7",
       "autoFixable": false
     },
     {
@@ -3223,7 +3223,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3475
       },
-      "id": "type-error-1774845506015-95ynkqyhbso",
+      "id": "type-error-1774846201466-a9k0yccuw17",
       "autoFixable": false
     },
     {
@@ -3235,7 +3235,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 2554
       },
-      "id": "type-error-1774845506015-e9cet8u7e79",
+      "id": "type-error-1774846201466-fimir16q6n9",
       "autoFixable": false
     },
     {
@@ -3247,7 +3247,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 2657
       },
-      "id": "type-error-1774845506015-rxgpxgshm2",
+      "id": "type-error-1774846201466-aoxr117mxj",
       "autoFixable": false
     },
     {
@@ -3259,7 +3259,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsPopular.ts",
         "line": 3492
       },
-      "id": "type-error-1774845506015-7bulsnip7uo",
+      "id": "type-error-1774846201466-1e61d5zytu2",
       "autoFixable": false
     },
     {
@@ -3271,7 +3271,7 @@
         "file": "src/transformers/RedditLikeCommunityAtSummaryTransformer.ts",
         "line": 1836
       },
-      "id": "type-error-1774845506015-g2amc0id71r",
+      "id": "type-error-1774846201466-9mptiyvsxig",
       "autoFixable": false
     },
     {
@@ -3283,7 +3283,7 @@
         "file": "src/transformers/RedditLikeCommunityTransformer.ts",
         "line": 1871
       },
-      "id": "type-error-1774845506015-a8c1a5dvzk9",
+      "id": "type-error-1774846201466-mc1d3fcr9qk",
       "autoFixable": false
     },
     {
@@ -3295,7 +3295,7 @@
         "file": "src/transformers/RedditLikeGuestAtSummaryTransformer.ts",
         "line": 1213
       },
-      "id": "type-error-1774845506015-3erfveel2wj",
+      "id": "type-error-1774846201466-deurb19f3z9",
       "autoFixable": false
     }
   ],
@@ -3309,7 +3309,7 @@
         "file": "src/controllers/redditLike/guest/posts/comments/thread/RedditlikeGuestPostsCommentsController.ts",
         "line": 2642
       },
-      "id": "type-error-1774845506015-o0kol0z400n",
+      "id": "type-error-1774846201466-civpguvluoh",
       "autoFixable": false
     },
     {
@@ -3321,7 +3321,7 @@
         "file": "src/controllers/redditLike/member/posts/comments/RedditlikeMemberPostsCommentsController.ts",
         "line": 10621
       },
-      "id": "type-error-1774845506015-n4p45yz2gl",
+      "id": "type-error-1774846201466-t2b6xc0b16",
       "autoFixable": false
     },
     {
@@ -3333,7 +3333,7 @@
         "file": "src/controllers/redditLike/moderator/posts/comments/RedditlikeModeratorPostsCommentsController.ts",
         "line": 4988
       },
-      "id": "type-error-1774845506015-n2853m9cgrs",
+      "id": "type-error-1774846201466-6v620um9lbe",
       "autoFixable": false
     },
     {
@@ -3345,7 +3345,7 @@
         "file": "src/controllers/redditLike/owner/posts/comments/thread/RedditlikeOwnerPostsCommentsController.ts",
         "line": 2642
       },
-      "id": "type-error-1774845506015-sk4d6zapzd",
+      "id": "type-error-1774846201466-h5zwnbl1da7",
       "autoFixable": false
     },
     {
@@ -3357,7 +3357,7 @@
         "file": "src/providers/patchRedditLikeGuestPostsPostIdCommentsSorted.ts",
         "line": 3215
       },
-      "id": "type-error-1774845506015-bmyn14q3rkt",
+      "id": "type-error-1774846201466-5693wa0ch08",
       "autoFixable": false
     },
     {
@@ -3369,7 +3369,7 @@
         "file": "src/providers/patchRedditLikeGuestSessions.ts",
         "line": 2324
       },
-      "id": "type-error-1774845506015-kweewwva9h",
+      "id": "type-error-1774846201466-w2ornidg0al",
       "autoFixable": false
     },
     {
@@ -3381,7 +3381,7 @@
         "file": "src/providers/patchRedditLikeGuestSessions.ts",
         "line": 2779
       },
-      "id": "type-error-1774845506015-wypupji012",
+      "id": "type-error-1774846201466-lifbn29jpn",
       "autoFixable": false
     },
     {
@@ -3393,7 +3393,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
         "line": 3451
       },
-      "id": "type-error-1774845506015-vu9ogf3yvmf",
+      "id": "type-error-1774846201466-hgyfrimnt2g",
       "autoFixable": false
     },
     {
@@ -3405,7 +3405,7 @@
         "file": "src/providers/patchRedditLikeMemberFeedsHome.ts",
         "line": 3515
       },
-      "id": "type-error-1774845506015-p3iwnjr0nw",
+      "id": "type-error-1774846201466-wl0ftt0ovi",
       "autoFixable": false
     },
     {
@@ -3417,13 +3417,13 @@
         "file": "src/transformers/RedditLikeCommentAtThreadTransformer.ts",
         "line": 715
       },
-      "id": "type-error-1774845506015-cek9abo51m",
+      "id": "type-error-1774846201466-ubs5ei8cxx",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:38:26.500Z",
-    "totalDurationMs": 9439,
+    "evaluatedAt": "2026-03-30T04:50:01.979Z",
+    "totalDurationMs": 10750,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 410
   },

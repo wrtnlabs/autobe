@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774845414773-3jghf5haeub",
+          "id": "type-error-1774846109568-cmrb7rxwfm5",
           "autoFixable": false
         },
         {
@@ -31,11 +31,11 @@
             "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
             "line": 695
           },
-          "id": "type-error-1774845414773-pn819fp00hl",
+          "id": "type-error-1774846109568-6boytcn3vyn",
           "autoFixable": false
         }
       ],
-      "durationMs": 5393,
+      "durationMs": 2989,
       "metrics": {
         "totalFiles": 90,
         "filesWithErrors": 0,
@@ -172,7 +172,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 11
           },
-          "id": "duplication-1774845414940-w5enavxe6k",
+          "id": "duplication-1774846109651-jte3b3klp0p",
           "autoFixable": false
         },
         {
@@ -184,7 +184,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 12
           },
-          "id": "duplication-1774845414940-mgfxaiqjzzj",
+          "id": "duplication-1774846109651-aemzi9o3b17",
           "autoFixable": false
         },
         {
@@ -196,7 +196,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/providers/patchTodoAppMemberTodosTrashed.ts",
             "line": 13
           },
-          "id": "duplication-1774845414940-zthfkvtdgvg",
+          "id": "duplication-1774846109651-e0btbitqyfv",
           "autoFixable": false
         }
       ]
@@ -218,7 +218,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/guest/TodoappAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774845414949-sdymrgl9dlb",
+          "id": "jsdoc-1774846109659-w4jlwxy1jk",
           "autoFixable": false
         },
         {
@@ -230,7 +230,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/auth/member/TodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845414950-id1wme63vl9",
+          "id": "jsdoc-1774846109659-pq3cqgida8m",
           "autoFixable": false
         },
         {
@@ -242,19 +242,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/TodoappMemberTodosController.ts",
             "line": 17
           },
-          "id": "jsdoc-1774845414953-x90i9bbmwfp",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774845414951-eyswlxuf5dj",
+          "id": "jsdoc-1774846109661-kahq0629wy",
           "autoFixable": false
         },
         {
@@ -266,7 +254,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/profile/TodoappMemberProfileController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845414951-20wcc5u5sig",
+          "id": "jsdoc-1774846109659-kouwj5kmwwe",
           "autoFixable": false
         },
         {
@@ -278,7 +266,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/accounts/TodoappMemberAccountsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774845414951-3rsxt2hbd7",
+          "id": "jsdoc-1774846109660-48mky2kfejx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberSessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/sessions/TodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846109660-axf4b1qhdp",
           "autoFixable": false
         },
         {
@@ -290,19 +290,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/editHistories/TodoappMemberTodosEdithistoriesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774845414952-61knmf0nbf2",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"TodoappMemberTodosPermanentController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/permanent/TodoappMemberTodosPermanentController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774845414951-ra11fca0wp",
+          "id": "jsdoc-1774846109660-nyj17oozzwr",
           "autoFixable": false
         },
         {
@@ -314,7 +302,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/trashed/TodoappMemberTodosTrashedController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774845414952-h363xbevsg8",
+          "id": "jsdoc-1774846109660-str003ucifp",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"TodoappMemberTodosPermanentController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/anthropic/claude-sonnet-4.6/todo/src/controllers/todoApp/member/todos/permanent/TodoappMemberTodosPermanentController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846109660-r0je1dof6hi",
           "autoFixable": false
         }
       ]
@@ -333,7 +333,7 @@
             "file": "src/api/structures/ITodoAppMember.ts",
             "line": 170
           },
-          "id": "completeness-1774845414960-fpizuczlk1p",
+          "id": "completeness-1774846109666-jxn0ytnxcaj",
           "autoFixable": false
         }
       ]
@@ -356,7 +356,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774845414773-3jghf5haeub",
+      "id": "type-error-1774846109568-cmrb7rxwfm5",
       "autoFixable": false
     }
   ],
@@ -370,13 +370,13 @@
         "file": "src/transformers/TodoAppTodoEditHistoryTransformer.ts",
         "line": 695
       },
-      "id": "type-error-1774845414773-pn819fp00hl",
+      "id": "type-error-1774846109568-6boytcn3vyn",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:36:54.961Z",
-    "totalDurationMs": 5557,
+    "evaluatedAt": "2026-03-30T04:48:29.666Z",
+    "totalDurationMs": 3090,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 90
   },

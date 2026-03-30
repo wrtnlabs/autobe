@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774601149408-nx8mdgk1a2q",
+          "id": "type-error-1774846498374-vycdxxby6fd",
           "autoFixable": false
         },
         {
@@ -31,11 +31,11 @@
             "file": "src/providers/deleteMultiUserTodoAppMemberTodosTrashTodoId.ts",
             "line": 1109
           },
-          "id": "type-error-1774601149408-ghjjbhy0ztt",
+          "id": "type-error-1774846498374-83339i5v2em",
           "autoFixable": false
         }
       ],
-      "durationMs": 3264,
+      "durationMs": 2300,
       "metrics": {
         "totalFiles": 80,
         "filesWithErrors": 0,
@@ -62,7 +62,7 @@
         "docFileCount": 6,
         "totalDocLength": 111450,
         "cached": true,
-        "originalDurationMs": 30
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -108,7 +108,7 @@
         "assertionTests": 49,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 6
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -128,7 +128,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 20
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -149,7 +149,7 @@
         "completionRate": 100,
         "implementationRate": 100,
         "cached": true,
-        "originalDurationMs": 19
+        "originalDurationMs": 0
       }
     }
   },
@@ -169,7 +169,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601149468-4b38cyubagp",
+          "id": "complexity-1774846498435-j2kp9hanrk",
           "autoFixable": false
         }
       ]
@@ -186,7 +186,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
             "line": 118
           },
-          "id": "duplication-1774601149504-l2i8i3r8l9t",
+          "id": "duplication-1774846498467-1vs97q0970q",
           "autoFixable": false
         },
         {
@@ -198,7 +198,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
             "line": 119
           },
-          "id": "duplication-1774601149504-aklhvod2m2m",
+          "id": "duplication-1774846498467-0gk33zmrhtuh",
           "autoFixable": false
         },
         {
@@ -210,7 +210,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
             "line": 12
           },
-          "id": "duplication-1774601149504-i3ijm0xep9",
+          "id": "duplication-1774846498467-55mmrsgdaxn",
           "autoFixable": false
         },
         {
@@ -222,7 +222,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
             "line": 13
           },
-          "id": "duplication-1774601149504-itft3cqls1",
+          "id": "duplication-1774846498467-p13fo9iq3kn",
           "autoFixable": false
         },
         {
@@ -234,7 +234,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
             "line": 14
           },
-          "id": "duplication-1774601149504-hz60vmuuib",
+          "id": "duplication-1774846498467-uj17y5giydi",
           "autoFixable": false
         },
         {
@@ -246,7 +246,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
             "line": 15
           },
-          "id": "duplication-1774601149504-lnfbdwrmeu",
+          "id": "duplication-1774846498467-adlxxw8ph3",
           "autoFixable": false
         },
         {
@@ -258,7 +258,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoIdRestore.ts",
             "line": 16
           },
-          "id": "duplication-1774601149504-jhrxhnuyyh",
+          "id": "duplication-1774846498467-f6b05a73jb",
           "autoFixable": false
         },
         {
@@ -270,7 +270,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/putMultiUserTodoAppMemberTodosTodoId.ts",
             "line": 29
           },
-          "id": "duplication-1774601149504-i7etjq8n1ap",
+          "id": "duplication-1774846498467-z26v5ga0anj",
           "autoFixable": false
         },
         {
@@ -282,7 +282,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoAppMemberTodosTrash.ts",
             "line": 11
           },
-          "id": "duplication-1774601149504-6qu0zhh582t",
+          "id": "duplication-1774846498467-38a29t27cq6",
           "autoFixable": false
         },
         {
@@ -294,7 +294,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/providers/patchMultiUserTodoAppMemberTodosTrash.ts",
             "line": 12
           },
-          "id": "duplication-1774601149504-xuxi0oqbkrh",
+          "id": "duplication-1774846498467-4j0ongmnlt",
           "autoFixable": false
         }
       ]
@@ -311,24 +311,12 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappMemberSessionsController\" missing JSDoc",
+          "message": "Class \"MultiusertodoappAuthMemberController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/sessions/MultiusertodoappMemberSessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601149508-4vgsoknhl0m",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"MultiusertodoappMemberProfileController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/profile/MultiusertodoappMemberProfileController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/auth/member/MultiusertodoappAuthMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601149508-3atwkiexvs9",
+          "id": "jsdoc-1774846498473-kiho7bxb5ql",
           "autoFixable": false
         },
         {
@@ -340,19 +328,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/auth/guest/MultiusertodoappAuthGuestController.ts",
             "line": 9
           },
-          "id": "jsdoc-1774601149508-figcgdue4ja",
+          "id": "jsdoc-1774846498474-4b60incu0pb",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"MultiusertodoappAuthMemberController\" missing JSDoc",
+          "message": "Class \"MultiusertodoappMemberSessionsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/auth/member/MultiusertodoappAuthMemberController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/sessions/MultiusertodoappMemberSessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846498474-sm1jm639r1",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"MultiusertodoappMemberProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/profile/MultiusertodoappMemberProfileController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601149509-21ghgvw3xim",
+          "id": "jsdoc-1774846498473-195qcs6ekge",
           "autoFixable": false
         },
         {
@@ -364,7 +364,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/MultiusertodoappMemberTodosController.ts",
             "line": 17
           },
-          "id": "jsdoc-1774601149513-eo47yyv2jed",
+          "id": "jsdoc-1774846498475-ga3oklxdrlc",
           "autoFixable": false
         },
         {
@@ -376,7 +376,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/trash/MultiusertodoappMemberTodosTrashController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601149510-tr6qo70tb5g",
+          "id": "jsdoc-1774846498474-6erqbfqsoot",
           "autoFixable": false
         },
         {
@@ -388,7 +388,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/todo/src/controllers/multiUserTodoApp/member/todos/history/MultiusertodoappMemberTodosHistoryController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601149510-p4bp7lzomdi",
+          "id": "jsdoc-1774846498474-4a5qhxmhi9",
           "autoFixable": false
         }
       ]
@@ -407,7 +407,7 @@
             "file": "src/api/structures/IMultiUserTodoAppMember.ts",
             "line": 164
           },
-          "id": "completeness-1774601149514-0ffrpkxu0q88",
+          "id": "completeness-1774846498478-i6vq8dv8zv",
           "autoFixable": false
         }
       ]
@@ -430,7 +430,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774601149408-nx8mdgk1a2q",
+      "id": "type-error-1774846498374-vycdxxby6fd",
       "autoFixable": false
     },
     {
@@ -442,14 +442,14 @@
         "file": "src/providers/deleteMultiUserTodoAppMemberTodosTrashTodoId.ts",
         "line": 1109
       },
-      "id": "type-error-1774601149408-ghjjbhy0ztt",
+      "id": "type-error-1774846498374-83339i5v2em",
       "autoFixable": false
     }
   ],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:45:49.515Z",
-    "totalDurationMs": 3382,
+    "evaluatedAt": "2026-03-30T04:54:58.478Z",
+    "totalDurationMs": 2394,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 80
   },

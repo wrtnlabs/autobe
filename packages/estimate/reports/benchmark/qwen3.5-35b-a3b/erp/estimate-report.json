@@ -19,7 +19,7 @@
             "file": "src/MyGlobal.ts",
             "line": 903
           },
-          "id": "type-error-1774601110762-1g23xbu0gi4",
+          "id": "type-error-1774846471055-vst6t13mqpj",
           "autoFixable": false
         },
         {
@@ -31,7 +31,7 @@
             "file": "src/controllers/hrms/member/organizations/HrmsMemberOrganizationsController.ts",
             "line": 5031
           },
-          "id": "type-error-1774601110762-w15qx4j88g",
+          "id": "type-error-1774846471055-0fnv547st3tc",
           "autoFixable": false
         },
         {
@@ -43,7 +43,7 @@
             "file": "src/controllers/hrms/member/organizations/projects/HrmsMemberOrganizationsProjectsController.ts",
             "line": 4062
           },
-          "id": "type-error-1774601110762-2f424ntjkew",
+          "id": "type-error-1774846471055-7kk3km1utvh",
           "autoFixable": false
         },
         {
@@ -55,7 +55,7 @@
             "file": "src/controllers/hrms/member/organizations/tasks/HrmsMemberOrganizationsTasksController.ts",
             "line": 2667
           },
-          "id": "type-error-1774601110762-r8vf7jstbs",
+          "id": "type-error-1774846471055-xacw8tei5n",
           "autoFixable": false
         },
         {
@@ -67,7 +67,7 @@
             "file": "src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
             "line": 3597
           },
-          "id": "type-error-1774601110762-qm7jbsh9j5a",
+          "id": "type-error-1774846471055-5k3gooce8o7",
           "autoFixable": false
         },
         {
@@ -79,7 +79,7 @@
             "file": "src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
             "line": 7181
           },
-          "id": "type-error-1774601110762-gsr7lj7e",
+          "id": "type-error-1774846471055-38smht6tuo1",
           "autoFixable": false
         },
         {
@@ -91,7 +91,7 @@
             "file": "src/controllers/hrms/member/projects/tasks/status-history/HrmsMemberProjectsTasksStatus_historyController.ts",
             "line": 4122
           },
-          "id": "type-error-1774601110762-3ttlf6m0y48",
+          "id": "type-error-1774846471055-nba7x6mpi5a",
           "autoFixable": false
         },
         {
@@ -103,7 +103,7 @@
             "file": "src/controllers/hrms/member/timer/active/HrmsMemberTimerActiveController.ts",
             "line": 2744
           },
-          "id": "type-error-1774601110762-nn28z4bxalk",
+          "id": "type-error-1774846471055-2p39g2v5gq4",
           "autoFixable": false
         },
         {
@@ -115,7 +115,7 @@
             "file": "src/providers/deleteHrmsMemberDepartmentsDepartmentId.ts",
             "line": 2094
           },
-          "id": "type-error-1774601110762-3dtnen7fr77",
+          "id": "type-error-1774846471055-plsh7iq5xu",
           "autoFixable": false
         },
         {
@@ -127,7 +127,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 2848
           },
-          "id": "type-error-1774601110762-pxu7847mao",
+          "id": "type-error-1774846471055-a1mdrpdsvyj",
           "autoFixable": false
         },
         {
@@ -139,7 +139,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 2871
           },
-          "id": "type-error-1774601110762-44a5an3l1lq",
+          "id": "type-error-1774846471055-t7cq1irf2q",
           "autoFixable": false
         },
         {
@@ -151,7 +151,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 2909
           },
-          "id": "type-error-1774601110762-iyhafftnb1",
+          "id": "type-error-1774846471055-db82go2uzcd",
           "autoFixable": false
         },
         {
@@ -163,7 +163,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 2932
           },
-          "id": "type-error-1774601110762-dumt9fyvghl",
+          "id": "type-error-1774846471055-mktlrif4vf",
           "autoFixable": false
         },
         {
@@ -175,7 +175,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 2978
           },
-          "id": "type-error-1774601110762-fq0a9bfdhdq",
+          "id": "type-error-1774846471055-7u87wcmym0s",
           "autoFixable": false
         },
         {
@@ -187,7 +187,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 3001
           },
-          "id": "type-error-1774601110762-a25d0rp6lk",
+          "id": "type-error-1774846471055-6zblp0tn34r",
           "autoFixable": false
         },
         {
@@ -199,7 +199,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4462
           },
-          "id": "type-error-1774601110762-6xwjwtmr32n",
+          "id": "type-error-1774846471055-9d1ab3h957t",
           "autoFixable": false
         },
         {
@@ -211,7 +211,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4492
           },
-          "id": "type-error-1774601110762-6pe54ce6s88",
+          "id": "type-error-1774846471055-jvlmeumx1i",
           "autoFixable": false
         },
         {
@@ -223,7 +223,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4532
           },
-          "id": "type-error-1774601110762-epnpwrac8ts",
+          "id": "type-error-1774846471055-3wz88kjfltb",
           "autoFixable": false
         },
         {
@@ -235,7 +235,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4562
           },
-          "id": "type-error-1774601110762-refasfvxbo9",
+          "id": "type-error-1774846471055-znbmjxy3hwf",
           "autoFixable": false
         },
         {
@@ -247,7 +247,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4598
           },
-          "id": "type-error-1774601110762-q7ky2mlds",
+          "id": "type-error-1774846471055-uo1tvbcfvqe",
           "autoFixable": false
         },
         {
@@ -259,7 +259,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 4628
           },
-          "id": "type-error-1774601110762-jrzyjffwig",
+          "id": "type-error-1774846471055-bx22ger1y4",
           "autoFixable": false
         },
         {
@@ -271,7 +271,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 6022
           },
-          "id": "type-error-1774601110762-vgsg0hk5k6e",
+          "id": "type-error-1774846471055-2ttmrb8fomz",
           "autoFixable": false
         },
         {
@@ -283,7 +283,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 6993
           },
-          "id": "type-error-1774601110762-ptejpqxj2z",
+          "id": "type-error-1774846471055-m4plcj1ktp",
           "autoFixable": false
         },
         {
@@ -295,7 +295,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7009
           },
-          "id": "type-error-1774601110762-aal8z0rn7yc",
+          "id": "type-error-1774846471055-qxjov4pyy8",
           "autoFixable": false
         },
         {
@@ -307,7 +307,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7051
           },
-          "id": "type-error-1774601110762-b7ajxix6omt",
+          "id": "type-error-1774846471055-l52ka7q1a6",
           "autoFixable": false
         },
         {
@@ -319,7 +319,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7067
           },
-          "id": "type-error-1774601110762-elul4ifl28",
+          "id": "type-error-1774846471055-qkdco5q2uu",
           "autoFixable": false
         },
         {
@@ -331,7 +331,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7117
           },
-          "id": "type-error-1774601110762-hm4dzasmcan",
+          "id": "type-error-1774846471055-iniux69ycx",
           "autoFixable": false
         },
         {
@@ -343,7 +343,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7133
           },
-          "id": "type-error-1774601110762-h5hho9upfzi",
+          "id": "type-error-1774846471055-slzgqy4a4jo",
           "autoFixable": false
         },
         {
@@ -355,7 +355,7 @@
             "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 7479
           },
-          "id": "type-error-1774601110762-gamf6cpv0ta",
+          "id": "type-error-1774846471055-a33yrwes34j",
           "autoFixable": false
         },
         {
@@ -367,7 +367,7 @@
             "file": "src/providers/getHrmsMemberOrganizationsOrganizationId.ts",
             "line": 1886
           },
-          "id": "type-error-1774601110762-m0ga9n0bwor",
+          "id": "type-error-1774846471055-jewley2bjqa",
           "autoFixable": false
         },
         {
@@ -379,7 +379,7 @@
             "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 2427
           },
-          "id": "type-error-1774601110762-r4c4kr96on8",
+          "id": "type-error-1774846471055-n5fax8i76p7",
           "autoFixable": false
         },
         {
@@ -391,7 +391,7 @@
             "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 2518
           },
-          "id": "type-error-1774601110762-g67ta32ij5e",
+          "id": "type-error-1774846471055-yh8kq347u7",
           "autoFixable": false
         },
         {
@@ -403,7 +403,7 @@
             "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 2572
           },
-          "id": "type-error-1774601110762-7jto8kry2k5",
+          "id": "type-error-1774846471055-mdce5m5a7wl",
           "autoFixable": false
         },
         {
@@ -415,7 +415,7 @@
             "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskIdStatusHistory.ts",
             "line": 1896
           },
-          "id": "type-error-1774601110762-4a7uw7efox3",
+          "id": "type-error-1774846471055-wthh42zp8c",
           "autoFixable": false
         },
         {
@@ -427,7 +427,7 @@
             "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
             "line": 1600
           },
-          "id": "type-error-1774601110762-xie9kt4gw9h",
+          "id": "type-error-1774846471055-0hunsb9de9sd",
           "autoFixable": false
         },
         {
@@ -439,7 +439,7 @@
             "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
             "line": 1957
           },
-          "id": "type-error-1774601110762-lupln3w77rb",
+          "id": "type-error-1774846471055-benet0oikc4",
           "autoFixable": false
         },
         {
@@ -451,7 +451,7 @@
             "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
             "line": 2891
           },
-          "id": "type-error-1774601110762-0ta2oques4g",
+          "id": "type-error-1774846471055-br7p0vjzms5",
           "autoFixable": false
         },
         {
@@ -463,7 +463,7 @@
             "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
             "line": 2937
           },
-          "id": "type-error-1774601110762-jkqykgl07h",
+          "id": "type-error-1774846471055-fgjw0k8bg8",
           "autoFixable": false
         },
         {
@@ -475,7 +475,7 @@
             "file": "src/providers/getHrmsMemberTasksTaskId.ts",
             "line": 4487
           },
-          "id": "type-error-1774601110762-gik3ogimnqn",
+          "id": "type-error-1774846471055-b6ic8y312qt",
           "autoFixable": false
         },
         {
@@ -487,7 +487,7 @@
             "file": "src/providers/getHrmsMemberTasksTaskId.ts",
             "line": 4533
           },
-          "id": "type-error-1774601110762-fn69bjutevr",
+          "id": "type-error-1774846471055-orhz8ss6t7p",
           "autoFixable": false
         },
         {
@@ -499,7 +499,7 @@
             "file": "src/providers/patchHrmsMemberActivityLogs.ts",
             "line": 4271
           },
-          "id": "type-error-1774601110762-cjzjxodsuea",
+          "id": "type-error-1774846471055-qjfh8c38dgm",
           "autoFixable": false
         },
         {
@@ -511,7 +511,7 @@
             "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
             "line": 1993
           },
-          "id": "type-error-1774601110763-2a50w8t3uyf",
+          "id": "type-error-1774846471055-97aab6howe",
           "autoFixable": false
         },
         {
@@ -523,7 +523,7 @@
             "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
             "line": 2260
           },
-          "id": "type-error-1774601110763-etygq4frbg7",
+          "id": "type-error-1774846471055-n6bl7z7i8eq",
           "autoFixable": false
         },
         {
@@ -535,7 +535,7 @@
             "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
             "line": 2290
           },
-          "id": "type-error-1774601110763-6g4drjgsi5",
+          "id": "type-error-1774846471055-9f9q1u382jo",
           "autoFixable": false
         },
         {
@@ -547,7 +547,7 @@
             "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
             "line": 4215
           },
-          "id": "type-error-1774601110763-rm7xdp4dtb",
+          "id": "type-error-1774846471055-qtef0u2ng8",
           "autoFixable": false
         },
         {
@@ -559,7 +559,7 @@
             "file": "src/providers/patchHrmsMemberMetrics.ts",
             "line": 2523
           },
-          "id": "type-error-1774601110763-3wbribadxca",
+          "id": "type-error-1774846471055-vs5w2xbiocm",
           "autoFixable": false
         },
         {
@@ -571,7 +571,7 @@
             "file": "src/providers/patchHrmsMemberMetrics.ts",
             "line": 5337
           },
-          "id": "type-error-1774601110763-hroacue6lrs",
+          "id": "type-error-1774846471055-7gf0fo7e21d",
           "autoFixable": false
         },
         {
@@ -583,7 +583,7 @@
             "file": "src/providers/patchHrmsMemberMetrics.ts",
             "line": 5800
           },
-          "id": "type-error-1774601110763-0epzlliwelu7",
+          "id": "type-error-1774846471055-1l736f8kx99",
           "autoFixable": false
         },
         {
@@ -595,7 +595,7 @@
             "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdDepartments.ts",
             "line": 2596
           },
-          "id": "type-error-1774601110763-8pwq3nzx078",
+          "id": "type-error-1774846471055-w5iuyfpkytg",
           "autoFixable": false
         },
         {
@@ -607,7 +607,7 @@
             "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 5546
           },
-          "id": "type-error-1774601110763-9o8pbu10jcv",
+          "id": "type-error-1774846471055-brw5ri7pfqk",
           "autoFixable": false
         },
         {
@@ -619,7 +619,7 @@
             "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
             "line": 4043
           },
-          "id": "type-error-1774601110763-lp4ikgy8vlr",
+          "id": "type-error-1774846471055-74uk5bf9u8c",
           "autoFixable": false
         },
         {
@@ -631,7 +631,7 @@
             "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
             "line": 4407
           },
-          "id": "type-error-1774601110763-tzrfj08l9qk",
+          "id": "type-error-1774846471055-0r5cyno6z03",
           "autoFixable": false
         },
         {
@@ -643,7 +643,7 @@
             "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
             "line": 6381
           },
-          "id": "type-error-1774601110763-o7tpy6tlsb",
+          "id": "type-error-1774846471055-jip2wdqhu5i",
           "autoFixable": false
         },
         {
@@ -655,7 +655,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 2559
           },
-          "id": "type-error-1774601110763-q66sdjuc4g",
+          "id": "type-error-1774846471055-c3ft9i0070n",
           "autoFixable": false
         },
         {
@@ -667,7 +667,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 2778
           },
-          "id": "type-error-1774601110763-ikhj9dw2jq",
+          "id": "type-error-1774846471055-dd40yhb779",
           "autoFixable": false
         },
         {
@@ -679,7 +679,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 2970
           },
-          "id": "type-error-1774601110763-fn6soxg4n7b",
+          "id": "type-error-1774846471055-y1wpcagswdm",
           "autoFixable": false
         },
         {
@@ -691,7 +691,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 3228
           },
-          "id": "type-error-1774601110763-t4pecmnjqbq",
+          "id": "type-error-1774846471055-77mo157b4ww",
           "autoFixable": false
         },
         {
@@ -703,7 +703,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 3273
           },
-          "id": "type-error-1774601110763-psx7umw6owb",
+          "id": "type-error-1774846471055-a77r9z1t9tj",
           "autoFixable": false
         },
         {
@@ -715,7 +715,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 3387
           },
-          "id": "type-error-1774601110763-09qpc21t0n64",
+          "id": "type-error-1774846471055-86qhh3pz626",
           "autoFixable": false
         },
         {
@@ -727,7 +727,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 3805
           },
-          "id": "type-error-1774601110763-1an64oit8px",
+          "id": "type-error-1774846471055-eabjexvi31i",
           "autoFixable": false
         },
         {
@@ -739,7 +739,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 3931
           },
-          "id": "type-error-1774601110763-4h5re1p4cy6",
+          "id": "type-error-1774846471055-fdrvpgy0e4s",
           "autoFixable": false
         },
         {
@@ -751,7 +751,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 4329
           },
-          "id": "type-error-1774601110763-2nsmmo7klwc",
+          "id": "type-error-1774846471055-6q0pzxp8csi",
           "autoFixable": false
         },
         {
@@ -763,7 +763,7 @@
             "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
             "line": 5563
           },
-          "id": "type-error-1774601110763-t0cvpxbr5sn",
+          "id": "type-error-1774846471055-q49klxy7wsr",
           "autoFixable": false
         },
         {
@@ -775,7 +775,7 @@
             "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 3136
           },
-          "id": "type-error-1774601110763-vblw23nni1h",
+          "id": "type-error-1774846471055-hhvd309ahkr",
           "autoFixable": false
         },
         {
@@ -787,7 +787,7 @@
             "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 4099
           },
-          "id": "type-error-1774601110763-7248vmo0qux",
+          "id": "type-error-1774846471055-s9rtx1jowy",
           "autoFixable": false
         },
         {
@@ -799,7 +799,7 @@
             "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 5007
           },
-          "id": "type-error-1774601110763-y8jsvmesgfs",
+          "id": "type-error-1774846471055-aop8izevd07",
           "autoFixable": false
         },
         {
@@ -811,7 +811,7 @@
             "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 5491
           },
-          "id": "type-error-1774601110763-evcrvii6wip",
+          "id": "type-error-1774846471055-42h68e5s1uu",
           "autoFixable": false
         },
         {
@@ -823,7 +823,7 @@
             "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 6586
           },
-          "id": "type-error-1774601110763-0t8zogky4kk",
+          "id": "type-error-1774846471055-21uu10e8t05j",
           "autoFixable": false
         },
         {
@@ -835,7 +835,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
             "line": 2892
           },
-          "id": "type-error-1774601110763-rym44oji9th",
+          "id": "type-error-1774846471055-5nukf12xuj4",
           "autoFixable": false
         },
         {
@@ -847,7 +847,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
             "line": 3317
           },
-          "id": "type-error-1774601110763-j0eagekshh",
+          "id": "type-error-1774846471055-fc8thot7nsb",
           "autoFixable": false
         },
         {
@@ -859,7 +859,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
             "line": 3352
           },
-          "id": "type-error-1774601110763-c14oxnllz7",
+          "id": "type-error-1774846471055-gjaut28nybn",
           "autoFixable": false
         },
         {
@@ -871,7 +871,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
             "line": 3571
           },
-          "id": "type-error-1774601110763-oap7h0xm84p",
+          "id": "type-error-1774846471055-wsj90cwzfbc",
           "autoFixable": false
         },
         {
@@ -883,7 +883,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 3248
           },
-          "id": "type-error-1774601110763-qnkjooftk4j",
+          "id": "type-error-1774846471055-8ezbt287lz7",
           "autoFixable": false
         },
         {
@@ -895,7 +895,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 3280
           },
-          "id": "type-error-1774601110763-o8oyzlmj7lc",
+          "id": "type-error-1774846471055-6smrrhfot3l",
           "autoFixable": false
         },
         {
@@ -907,7 +907,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 3604
           },
-          "id": "type-error-1774601110763-70iy5ecnoq9",
+          "id": "type-error-1774846471055-e39erkatuq",
           "autoFixable": false
         },
         {
@@ -919,7 +919,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 3879
           },
-          "id": "type-error-1774601110763-af1hkrsqvjv",
+          "id": "type-error-1774846471055-8ttwv62wsmt",
           "autoFixable": false
         },
         {
@@ -931,7 +931,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 4262
           },
-          "id": "type-error-1774601110763-s0kxtin43zl",
+          "id": "type-error-1774846471055-gcit3h1p4pp",
           "autoFixable": false
         },
         {
@@ -943,7 +943,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 4380
           },
-          "id": "type-error-1774601110763-pry9uxvedgr",
+          "id": "type-error-1774846471055-em4wi4rktr6",
           "autoFixable": false
         },
         {
@@ -955,7 +955,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 4495
           },
-          "id": "type-error-1774601110763-dptpnhrf4q",
+          "id": "type-error-1774846471055-2giozre029d",
           "autoFixable": false
         },
         {
@@ -967,7 +967,7 @@
             "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
             "line": 4662
           },
-          "id": "type-error-1774601110763-512lvborhjj",
+          "id": "type-error-1774846471055-dz5rwfprpiq",
           "autoFixable": false
         },
         {
@@ -979,7 +979,7 @@
             "file": "src/providers/patchHrmsMemberReportsBudget.ts",
             "line": 2871
           },
-          "id": "type-error-1774601110763-6mg718jgro5",
+          "id": "type-error-1774846471055-z2wojc4qxf",
           "autoFixable": false
         },
         {
@@ -991,7 +991,7 @@
             "file": "src/providers/patchHrmsMemberReportsBudget.ts",
             "line": 4352
           },
-          "id": "type-error-1774601110763-vvdyyf1c5w",
+          "id": "type-error-1774846471055-pw8p3zhzvub",
           "autoFixable": false
         },
         {
@@ -1003,7 +1003,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 2351
           },
-          "id": "type-error-1774601110763-fb3gog2g12q",
+          "id": "type-error-1774846471055-879k3dx01ig",
           "autoFixable": false
         },
         {
@@ -1015,7 +1015,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 2665
           },
-          "id": "type-error-1774601110763-hetq8ocxoq",
+          "id": "type-error-1774846471055-bvcpfvughvj",
           "autoFixable": false
         },
         {
@@ -1027,7 +1027,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3132
           },
-          "id": "type-error-1774601110763-jv2wkoa2bra",
+          "id": "type-error-1774846471055-tupyp2920i",
           "autoFixable": false
         },
         {
@@ -1039,7 +1039,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3149
           },
-          "id": "type-error-1774601110763-l7883vyl6f",
+          "id": "type-error-1774846471055-kfzj85r2mar",
           "autoFixable": false
         },
         {
@@ -1051,7 +1051,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3206
           },
-          "id": "type-error-1774601110763-h49qwaro5sd",
+          "id": "type-error-1774846471055-m7ylaolymuo",
           "autoFixable": false
         },
         {
@@ -1063,7 +1063,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3223
           },
-          "id": "type-error-1774601110763-xj77esypd4",
+          "id": "type-error-1774846471055-r4d5rqz95om",
           "autoFixable": false
         },
         {
@@ -1075,7 +1075,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3268
           },
-          "id": "type-error-1774601110763-ywbtn6mrui",
+          "id": "type-error-1774846471055-7ocqwvu5vgv",
           "autoFixable": false
         },
         {
@@ -1087,7 +1087,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3285
           },
-          "id": "type-error-1774601110763-pwa3h6d6zu7",
+          "id": "type-error-1774846471055-iflmp1voiyi",
           "autoFixable": false
         },
         {
@@ -1099,7 +1099,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3386
           },
-          "id": "type-error-1774601110763-djgoritqtn9",
+          "id": "type-error-1774846471055-ky3px4u8xpf",
           "autoFixable": false
         },
         {
@@ -1111,7 +1111,7 @@
             "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
             "line": 3403
           },
-          "id": "type-error-1774601110763-jfq4h1asycn",
+          "id": "type-error-1774846471055-xp2l6bsxuwn",
           "autoFixable": false
         },
         {
@@ -1123,7 +1123,7 @@
             "file": "src/providers/patchHrmsMemberTimesheets.ts",
             "line": 5163
           },
-          "id": "type-error-1774601110763-x7ssc7lxq9",
+          "id": "type-error-1774846471055-qwdto18mgf9",
           "autoFixable": false
         },
         {
@@ -1135,7 +1135,7 @@
             "file": "src/providers/postHrmsAuthMemberJoin.ts",
             "line": 5658
           },
-          "id": "type-error-1774601110763-kqoruhsmbw",
+          "id": "type-error-1774846471055-2bz9lsvnbd",
           "autoFixable": false
         },
         {
@@ -1147,7 +1147,7 @@
             "file": "src/providers/postHrmsAuthMemberJoin.ts",
             "line": 7847
           },
-          "id": "type-error-1774601110763-c9nc01mdxt",
+          "id": "type-error-1774846471055-ya2e53z5w4l",
           "autoFixable": false
         },
         {
@@ -1159,7 +1159,7 @@
             "file": "src/providers/postHrmsMemberOrganizationsOrganizationIdRoles.ts",
             "line": 2677
           },
-          "id": "type-error-1774601110763-emr7pij7xb",
+          "id": "type-error-1774846471055-jja4adxqm7m",
           "autoFixable": false
         },
         {
@@ -1171,7 +1171,7 @@
             "file": "src/providers/postHrmsMemberTimesheets.ts",
             "line": 2187
           },
-          "id": "type-error-1774601110763-aowe3x6pxso",
+          "id": "type-error-1774846471055-dm3wfbgqndk",
           "autoFixable": false
         },
         {
@@ -1183,7 +1183,7 @@
             "file": "src/providers/postHrmsMemberTimesheets.ts",
             "line": 2857
           },
-          "id": "type-error-1774601110763-jf5owy6agrm",
+          "id": "type-error-1774846471055-jddxguyf9y",
           "autoFixable": false
         },
         {
@@ -1195,7 +1195,7 @@
             "file": "src/providers/putHrmsMemberTimelogsTimelogId.ts",
             "line": 2537
           },
-          "id": "type-error-1774601110763-d75c24uynam",
+          "id": "type-error-1774846471055-b8hxzwgt4do",
           "autoFixable": false
         },
         {
@@ -1207,7 +1207,7 @@
             "file": "src/providers/putHrmsMemberTimelogsTimelogId.ts",
             "line": 5096
           },
-          "id": "type-error-1774601110763-r6fgeyj0tnf",
+          "id": "type-error-1774846471055-ws65bqj6uv",
           "autoFixable": false
         },
         {
@@ -1219,7 +1219,7 @@
             "file": "src/transformers/HrmsMemberAtSummaryTransformer.ts",
             "line": 1224
           },
-          "id": "type-error-1774601110763-gyq3aihe1ql",
+          "id": "type-error-1774846471055-y27y9nil6xq",
           "autoFixable": false
         },
         {
@@ -1231,7 +1231,7 @@
             "file": "src/transformers/HrmsOrganizationRoleAtSummaryTransformer.ts",
             "line": 1644
           },
-          "id": "type-error-1774601110763-moko88u0c6",
+          "id": "type-error-1774846471055-zg8jaj9cmni",
           "autoFixable": false
         },
         {
@@ -1243,7 +1243,7 @@
             "file": "src/transformers/HrmsTimesheetTransformer.ts",
             "line": 2647
           },
-          "id": "type-error-1774601110763-hivwihiyhfj",
+          "id": "type-error-1774846471055-vi6an3m999d",
           "autoFixable": false
         },
         {
@@ -1255,11 +1255,11 @@
             "file": "src/transformers/HrmsTimesheetTransformer.ts",
             "line": 3137
           },
-          "id": "type-error-1774601110763-hyc13b612f5",
+          "id": "type-error-1774846471055-palnl7yea7j",
           "autoFixable": false
         }
       ],
-      "durationMs": 14844,
+      "durationMs": 7682,
       "metrics": {
         "totalFiles": 369,
         "filesWithErrors": 0,
@@ -1286,7 +1286,7 @@
         "docFileCount": 6,
         "totalDocLength": 483385,
         "cached": true,
-        "originalDurationMs": 206
+        "originalDurationMs": 0
       }
     },
     "requirementsCoverage": {
@@ -1307,7 +1307,7 @@
         "unmappedControllers": 0,
         "mappingRatio": 1,
         "cached": true,
-        "originalDurationMs": 1
+        "originalDurationMs": 0
       }
     },
     "testCoverage": {
@@ -1332,7 +1332,7 @@
         "assertionTests": 296,
         "runtimeVerified": false,
         "cached": true,
-        "originalDurationMs": 53
+        "originalDurationMs": 0
       }
     },
     "logicCompleteness": {
@@ -1352,7 +1352,7 @@
         "emptyMethods": 0,
         "emptyCatch": 0,
         "cached": true,
-        "originalDurationMs": 130
+        "originalDurationMs": 0
       }
     },
     "apiCompleteness": {
@@ -1373,7 +1373,7 @@
         "completionRate": 100,
         "implementationRate": 99,
         "cached": true,
-        "originalDurationMs": 139
+        "originalDurationMs": 0
       }
     }
   },
@@ -1393,7 +1393,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111300-qqiqo8f4sfj",
+          "id": "complexity-1774846471211-ukhsb6aqny",
           "autoFixable": false
         },
         {
@@ -1406,7 +1406,7 @@
             "line": 15
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111302-uxcrehrok59",
+          "id": "complexity-1774846471213-zonn4r9vzzp",
           "autoFixable": false
         },
         {
@@ -1419,7 +1419,7 @@
             "line": 15
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111305-rn5731noiy9",
+          "id": "complexity-1774846471215-vnuv46kdggp",
           "autoFixable": false
         },
         {
@@ -1432,7 +1432,7 @@
             "line": 20
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111303-cvm4izgiy2c",
+          "id": "complexity-1774846471216-eh5raffomjk",
           "autoFixable": false
         },
         {
@@ -1445,7 +1445,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111307-i78r7lxvjfp",
+          "id": "complexity-1774846471217-vwhx2jlk31",
           "autoFixable": false
         },
         {
@@ -1458,7 +1458,7 @@
             "line": 16
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111330-guiejiber24",
+          "id": "complexity-1774846471219-bnnveg31i4w",
           "autoFixable": false
         },
         {
@@ -1471,7 +1471,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111312-b2huwgs67g",
+          "id": "complexity-1774846471223-n42ohdog3kj",
           "autoFixable": false
         },
         {
@@ -1484,7 +1484,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111322-scgg8hnstr",
+          "id": "complexity-1774846471230-sseldzi8ly",
           "autoFixable": false
         },
         {
@@ -1497,7 +1497,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111323-7brsawgj67j",
+          "id": "complexity-1774846471234-potm7odvwn9",
           "autoFixable": false
         },
         {
@@ -1510,7 +1510,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111326-vox3jbp4tu7",
+          "id": "complexity-1774846471238-5pb05yq4tbp",
           "autoFixable": false
         },
         {
@@ -1523,7 +1523,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111327-h1ptmf3ov2",
+          "id": "complexity-1774846471239-6qpt4i687sh",
           "autoFixable": false
         },
         {
@@ -1536,7 +1536,7 @@
             "line": 21
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111409-33le5fpacyd",
+          "id": "complexity-1774846471244-b3x9al8w0co",
           "autoFixable": false
         },
         {
@@ -1549,7 +1549,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111332-ww40dogcy1",
+          "id": "complexity-1774846471245-xb6qovt4oln",
           "autoFixable": false
         },
         {
@@ -1562,7 +1562,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111334-g57m6a7vi6",
+          "id": "complexity-1774846471246-p68uaqlf5hm",
           "autoFixable": false
         },
         {
@@ -1575,7 +1575,7 @@
             "line": 15
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111337-k4lfq828jj",
+          "id": "complexity-1774846471249-zycrglr6dx",
           "autoFixable": false
         },
         {
@@ -1588,7 +1588,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111338-25lykrbgbtz",
+          "id": "complexity-1774846471247-3m9g29wqu5g",
           "autoFixable": false
         },
         {
@@ -1601,7 +1601,7 @@
             "line": 21
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111341-10iogeigd1cb",
+          "id": "complexity-1774846471250-i8kqtezkjt",
           "autoFixable": false
         },
         {
@@ -1614,7 +1614,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111336-5q5whutpb67",
+          "id": "complexity-1774846471251-0atsbnn7omg",
           "autoFixable": false
         },
         {
@@ -1627,7 +1627,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111340-cbe02zep634",
+          "id": "complexity-1774846471252-u2pmapxapc",
           "autoFixable": false
         },
         {
@@ -1640,7 +1640,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111343-os8u724z5ro",
+          "id": "complexity-1774846471255-sc85484bnv",
           "autoFixable": false
         },
         {
@@ -1653,7 +1653,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111345-vobhaxtz34h",
+          "id": "complexity-1774846471256-su1tpmeez",
           "autoFixable": false
         },
         {
@@ -1666,7 +1666,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111348-z6q352x8mpg",
+          "id": "complexity-1774846471263-b1qy43gkjeu",
           "autoFixable": false
         },
         {
@@ -1679,7 +1679,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111350-vv1bg8him0h",
+          "id": "complexity-1774846471258-0pngwb1dnw3c",
           "autoFixable": false
         },
         {
@@ -1692,7 +1692,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111358-3tyebua7irg",
+          "id": "complexity-1774846471260-yf8d74dx8t",
           "autoFixable": false
         },
         {
@@ -1705,7 +1705,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111352-odkox1xmc8",
+          "id": "complexity-1774846471259-2sa6rao4usf",
           "autoFixable": false
         },
         {
@@ -1718,7 +1718,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111353-x05up7iz6gc",
+          "id": "complexity-1774846471262-63tbvadl233",
           "autoFixable": false
         },
         {
@@ -1731,7 +1731,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111354-kfzrznwy0qs",
+          "id": "complexity-1774846471265-wr1btg4iyih",
           "autoFixable": false
         },
         {
@@ -1744,7 +1744,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111361-c1rcqoesjf",
+          "id": "complexity-1774846471264-a4mp85xaaqt",
           "autoFixable": false
         },
         {
@@ -1757,7 +1757,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111360-sqnhfoj5tyi",
+          "id": "complexity-1774846471266-lzdcezoyzo",
           "autoFixable": false
         },
         {
@@ -1770,7 +1770,7 @@
             "line": 18
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111363-efxezrj7iq8",
+          "id": "complexity-1774846471268-vy04plzyd3a",
           "autoFixable": false
         },
         {
@@ -1783,7 +1783,7 @@
             "line": 19
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111367-unjyr1xbxof",
+          "id": "complexity-1774846471269-qy2iq9j9pt",
           "autoFixable": false
         },
         {
@@ -1796,7 +1796,7 @@
             "line": 18
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111369-pck48bufx9",
+          "id": "complexity-1774846471271-sbq7a5qykfb",
           "autoFixable": false
         },
         {
@@ -1809,7 +1809,7 @@
             "line": 19
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111365-zabhf365p7",
+          "id": "complexity-1774846471271-2t6mze1vtxn",
           "autoFixable": false
         },
         {
@@ -1822,7 +1822,7 @@
             "line": 20
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111381-gasdcjnhitv",
+          "id": "complexity-1774846471277-qk8lfw1sxon",
           "autoFixable": false
         },
         {
@@ -1835,7 +1835,7 @@
             "line": 17
           },
           "suggestion": "Consider simplifying this function",
-          "id": "complexity-1774601111384-wqsjifl8b4k",
+          "id": "complexity-1774846471279-sxa0cc8z0v",
           "autoFixable": false
         },
         {
@@ -1848,7 +1848,7 @@
             "line": 17
           },
           "suggestion": "Consider breaking this function into smaller functions",
-          "id": "complexity-1774601111394-umeg2adq4u",
+          "id": "complexity-1774846471282-ta5ttol9ct",
           "autoFixable": false
         }
       ]
@@ -1865,7 +1865,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/employees/HrmsMemberEmployeesController.ts",
             "line": 110
           },
-          "id": "duplication-1774601111597-11eexjgliyjj",
+          "id": "duplication-1774846471447-rov7io30we",
           "autoFixable": false
         },
         {
@@ -1877,7 +1877,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/HrmsMemberProjectsTasksController.ts",
             "line": 291
           },
-          "id": "duplication-1774601111597-aizbhmofb0m",
+          "id": "duplication-1774846471447-onlqs639ib",
           "autoFixable": false
         },
         {
@@ -1889,7 +1889,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/HrmsMemberProjectsTasksController.ts",
             "line": 292
           },
-          "id": "duplication-1774601111597-mw13an3zq4c",
+          "id": "duplication-1774846471447-891ngp04h8u",
           "autoFixable": false
         },
         {
@@ -1901,7 +1901,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTimesheetsTimesheetId.ts",
             "line": 122
           },
-          "id": "duplication-1774601111597-7o2vbsdy0da",
+          "id": "duplication-1774846471447-2zvll6rt8ci",
           "autoFixable": false
         },
         {
@@ -1913,7 +1913,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTimelogsTimelogId.ts",
             "line": 24
           },
-          "id": "duplication-1774601111597-4gyke088hod",
+          "id": "duplication-1774846471447-bf5ghoflted",
           "autoFixable": false
         },
         {
@@ -1925,7 +1925,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTasksTaskId.ts",
             "line": 22
           },
-          "id": "duplication-1774601111597-221f98wtqxs",
+          "id": "duplication-1774846471447-cb2n2gsxwsd",
           "autoFixable": false
         },
         {
@@ -1937,7 +1937,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTasksTaskId.ts",
             "line": 23
           },
-          "id": "duplication-1774601111597-u7ed8kkyod",
+          "id": "duplication-1774846471447-2diq83co1xg",
           "autoFixable": false
         },
         {
@@ -1949,7 +1949,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTasksTaskId.ts",
             "line": 24
           },
-          "id": "duplication-1774601111597-wd4hy0luhs",
+          "id": "duplication-1774846471447-1t47fx9499o",
           "autoFixable": false
         },
         {
@@ -1961,7 +1961,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberTasksTaskId.ts",
             "line": 25
           },
-          "id": "duplication-1774601111597-e9qm7pp447c",
+          "id": "duplication-1774846471447-ppl7oyz5cm",
           "autoFixable": false
         },
         {
@@ -1973,7 +1973,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 74
           },
-          "id": "duplication-1774601111597-r1xmvogolwl",
+          "id": "duplication-1774846471447-ffgwwx98tbf",
           "autoFixable": false
         },
         {
@@ -1985,7 +1985,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 75
           },
-          "id": "duplication-1774601111597-j2iuqkouuy8",
+          "id": "duplication-1774846471447-tlnfhyy8yhf",
           "autoFixable": false
         },
         {
@@ -1997,7 +1997,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 76
           },
-          "id": "duplication-1774601111597-uf605stsb8r",
+          "id": "duplication-1774846471447-dp47dka76nc",
           "autoFixable": false
         },
         {
@@ -2009,7 +2009,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 77
           },
-          "id": "duplication-1774601111597-xcakn5g0qzl",
+          "id": "duplication-1774846471447-lxdzi4nnyfm",
           "autoFixable": false
         },
         {
@@ -2021,7 +2021,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 78
           },
-          "id": "duplication-1774601111597-07c9kjyfyd5u",
+          "id": "duplication-1774846471447-222tvg4uvi7",
           "autoFixable": false
         },
         {
@@ -2033,7 +2033,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 79
           },
-          "id": "duplication-1774601111597-iyei65ms7q",
+          "id": "duplication-1774846471447-vp3mvc48bve",
           "autoFixable": false
         },
         {
@@ -2045,7 +2045,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 80
           },
-          "id": "duplication-1774601111597-gvca5lmhe27",
+          "id": "duplication-1774846471447-wkpf6n1nkmn",
           "autoFixable": false
         },
         {
@@ -2057,7 +2057,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 81
           },
-          "id": "duplication-1774601111597-7g4evkhwmhh",
+          "id": "duplication-1774846471447-vwsqt58qkyk",
           "autoFixable": false
         },
         {
@@ -2069,7 +2069,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectIdTasksTaskId.ts",
             "line": 82
           },
-          "id": "duplication-1774601111597-hfixptcrpo",
+          "id": "duplication-1774846471447-dh723fywudo",
           "autoFixable": false
         },
         {
@@ -2081,7 +2081,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 28
           },
-          "id": "duplication-1774601111597-ter5c1hzcn",
+          "id": "duplication-1774846471447-wgey6e6mvp",
           "autoFixable": false
         },
         {
@@ -2093,7 +2093,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 29
           },
-          "id": "duplication-1774601111597-1lw6juu141v",
+          "id": "duplication-1774846471447-jaosvtw8kkd",
           "autoFixable": false
         },
         {
@@ -2105,7 +2105,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 30
           },
-          "id": "duplication-1774601111597-607gtoxhj8p",
+          "id": "duplication-1774846471447-owiruf6e55",
           "autoFixable": false
         },
         {
@@ -2117,7 +2117,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 31
           },
-          "id": "duplication-1774601111597-5jyfoqtenml",
+          "id": "duplication-1774846471447-ellsyu74ts4",
           "autoFixable": false
         },
         {
@@ -2129,7 +2129,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 32
           },
-          "id": "duplication-1774601111597-v21c12oxeb",
+          "id": "duplication-1774846471447-bxkjm82js3c",
           "autoFixable": false
         },
         {
@@ -2141,7 +2141,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 33
           },
-          "id": "duplication-1774601111597-9zk2itise4",
+          "id": "duplication-1774846471447-ornkgjf408g",
           "autoFixable": false
         },
         {
@@ -2153,7 +2153,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 34
           },
-          "id": "duplication-1774601111597-f32a765z77f",
+          "id": "duplication-1774846471447-5o7egb47fx",
           "autoFixable": false
         },
         {
@@ -2165,7 +2165,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 35
           },
-          "id": "duplication-1774601111597-tz1a1v19w1",
+          "id": "duplication-1774846471447-kbrjukihrne",
           "autoFixable": false
         },
         {
@@ -2177,7 +2177,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 36
           },
-          "id": "duplication-1774601111597-rer49gbxu3j",
+          "id": "duplication-1774846471447-sbzr8ph0bl",
           "autoFixable": false
         },
         {
@@ -2189,7 +2189,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 37
           },
-          "id": "duplication-1774601111597-1xfnbcmbm2d",
+          "id": "duplication-1774846471447-5rhbkhy0lfd",
           "autoFixable": false
         },
         {
@@ -2201,7 +2201,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 38
           },
-          "id": "duplication-1774601111597-cqp9m4ghvp8",
+          "id": "duplication-1774846471447-6amyud9ch8p",
           "autoFixable": false
         },
         {
@@ -2213,7 +2213,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberProjectsProjectId.ts",
             "line": 39
           },
-          "id": "duplication-1774601111597-scd50qftrs",
+          "id": "duplication-1774846471447-aqk8i6z4qmj",
           "autoFixable": false
         },
         {
@@ -2225,7 +2225,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 136
           },
-          "id": "duplication-1774601111597-6urt8q1rg4",
+          "id": "duplication-1774846471447-fi0nvs583l4",
           "autoFixable": false
         },
         {
@@ -2237,7 +2237,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 137
           },
-          "id": "duplication-1774601111597-j96a4dtoy6m",
+          "id": "duplication-1774846471447-fb4ag4ou0m",
           "autoFixable": false
         },
         {
@@ -2249,7 +2249,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 138
           },
-          "id": "duplication-1774601111597-wgj9crkvl3a",
+          "id": "duplication-1774846471447-ykq81q9di8",
           "autoFixable": false
         },
         {
@@ -2261,7 +2261,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 139
           },
-          "id": "duplication-1774601111597-laidtpgqc8d",
+          "id": "duplication-1774846471447-szqvqq1x5y",
           "autoFixable": false
         },
         {
@@ -2273,7 +2273,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 140
           },
-          "id": "duplication-1774601111597-v1kqxfgipch",
+          "id": "duplication-1774846471447-s0psv80h8bn",
           "autoFixable": false
         },
         {
@@ -2285,7 +2285,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 141
           },
-          "id": "duplication-1774601111597-vjqd2krw1k",
+          "id": "duplication-1774846471447-055hxs8snmg",
           "autoFixable": false
         },
         {
@@ -2297,7 +2297,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 142
           },
-          "id": "duplication-1774601111597-y47ogmnl66j",
+          "id": "duplication-1774846471447-i17l0w1jv5k",
           "autoFixable": false
         },
         {
@@ -2309,7 +2309,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 143
           },
-          "id": "duplication-1774601111597-hn0yq26zkea",
+          "id": "duplication-1774846471447-r56dm8od1vk",
           "autoFixable": false
         },
         {
@@ -2321,7 +2321,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 144
           },
-          "id": "duplication-1774601111597-tjquzbrhx8",
+          "id": "duplication-1774846471447-qszzytzzvn",
           "autoFixable": false
         },
         {
@@ -2333,7 +2333,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 145
           },
-          "id": "duplication-1774601111597-fhuikmadgas",
+          "id": "duplication-1774846471447-87h2f2si4vn",
           "autoFixable": false
         },
         {
@@ -2345,7 +2345,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 146
           },
-          "id": "duplication-1774601111597-6cujtsyt52k",
+          "id": "duplication-1774846471447-30hh7bz8t1m",
           "autoFixable": false
         },
         {
@@ -2357,7 +2357,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 147
           },
-          "id": "duplication-1774601111597-ko1xd97hhx",
+          "id": "duplication-1774846471447-jk4ss2reyik",
           "autoFixable": false
         },
         {
@@ -2369,7 +2369,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 148
           },
-          "id": "duplication-1774601111597-pfe7v89fcva",
+          "id": "duplication-1774846471447-6xgm6jt6msp",
           "autoFixable": false
         },
         {
@@ -2381,7 +2381,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 149
           },
-          "id": "duplication-1774601111597-qb4cr8c9ate",
+          "id": "duplication-1774846471447-wfrh0wmoark",
           "autoFixable": false
         },
         {
@@ -2393,7 +2393,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 150
           },
-          "id": "duplication-1774601111597-nwo26xzh5eo",
+          "id": "duplication-1774846471447-yoctzflftch",
           "autoFixable": false
         },
         {
@@ -2405,7 +2405,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 151
           },
-          "id": "duplication-1774601111597-fvlieadqn8u",
+          "id": "duplication-1774846471447-rtmb9h4991l",
           "autoFixable": false
         },
         {
@@ -2417,7 +2417,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 152
           },
-          "id": "duplication-1774601111597-kg37tkzqfi",
+          "id": "duplication-1774846471447-ieoclatjlr",
           "autoFixable": false
         },
         {
@@ -2429,7 +2429,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 153
           },
-          "id": "duplication-1774601111597-kfhlkmp268i",
+          "id": "duplication-1774846471447-9sr98jayo2c",
           "autoFixable": false
         },
         {
@@ -2441,7 +2441,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 154
           },
-          "id": "duplication-1774601111597-i8vo2x8xoyk",
+          "id": "duplication-1774846471447-zokpqvdlee",
           "autoFixable": false
         },
         {
@@ -2453,7 +2453,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/putHrmsMemberOrganizationsOrganizationIdTimer.ts",
             "line": 155
           },
-          "id": "duplication-1774601111597-zm4p41kaofk",
+          "id": "duplication-1774846471447-03w214f5qkdi",
           "autoFixable": false
         },
         {
@@ -2465,7 +2465,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsMemberTimerStop.ts",
             "line": 105
           },
-          "id": "duplication-1774601111597-589qo50bxql",
+          "id": "duplication-1774846471447-gzdrza06vol",
           "autoFixable": false
         },
         {
@@ -2477,7 +2477,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsMemberFilesFileIdRecover.ts",
             "line": 11
           },
-          "id": "duplication-1774601111597-ej2bq73s8j6",
+          "id": "duplication-1774846471447-etqr78sduh",
           "autoFixable": false
         },
         {
@@ -2489,7 +2489,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 109
           },
-          "id": "duplication-1774601111597-vrpcig81hvm",
+          "id": "duplication-1774846471447-52i009j6eqb",
           "autoFixable": false
         },
         {
@@ -2501,7 +2501,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 110
           },
-          "id": "duplication-1774601111597-6rp7ysw4bzl",
+          "id": "duplication-1774846471447-nrgw1jnvmx",
           "autoFixable": false
         },
         {
@@ -2513,7 +2513,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 111
           },
-          "id": "duplication-1774601111597-y0hevyfdfh",
+          "id": "duplication-1774846471447-dpi1cloyh2d",
           "autoFixable": false
         },
         {
@@ -2525,7 +2525,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 112
           },
-          "id": "duplication-1774601111597-onslsu3pgmp",
+          "id": "duplication-1774846471447-tbdvb1qxnpf",
           "autoFixable": false
         },
         {
@@ -2537,7 +2537,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 113
           },
-          "id": "duplication-1774601111597-0dfeasbzu7zg",
+          "id": "duplication-1774846471447-73bei8bhbhl",
           "autoFixable": false
         },
         {
@@ -2549,7 +2549,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 114
           },
-          "id": "duplication-1774601111597-x2egarhoutf",
+          "id": "duplication-1774846471447-okn4kelqmba",
           "autoFixable": false
         },
         {
@@ -2561,7 +2561,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 115
           },
-          "id": "duplication-1774601111597-cowwfa4214q",
+          "id": "duplication-1774846471447-ndvi1dsp7c",
           "autoFixable": false
         },
         {
@@ -2573,7 +2573,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 116
           },
-          "id": "duplication-1774601111597-v7kzuwe9gxg",
+          "id": "duplication-1774846471447-lolixq5d8s",
           "autoFixable": false
         },
         {
@@ -2585,7 +2585,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 117
           },
-          "id": "duplication-1774601111597-dw5c9ddqy05",
+          "id": "duplication-1774846471447-uv1f7v7ays",
           "autoFixable": false
         },
         {
@@ -2597,7 +2597,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 118
           },
-          "id": "duplication-1774601111597-0ak3s4q2fymk",
+          "id": "duplication-1774846471447-uuc7xnvdho",
           "autoFixable": false
         },
         {
@@ -2609,7 +2609,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 119
           },
-          "id": "duplication-1774601111597-f87axlvyp7s",
+          "id": "duplication-1774846471447-tfdzi2ef39n",
           "autoFixable": false
         },
         {
@@ -2621,7 +2621,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 120
           },
-          "id": "duplication-1774601111597-lcyeedg35c",
+          "id": "duplication-1774846471447-93uvp3ym9vj",
           "autoFixable": false
         },
         {
@@ -2633,7 +2633,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 121
           },
-          "id": "duplication-1774601111597-3pgov3v8uti",
+          "id": "duplication-1774846471447-w7ai9f2ulf",
           "autoFixable": false
         },
         {
@@ -2645,7 +2645,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 122
           },
-          "id": "duplication-1774601111597-3a5u1iaqppj",
+          "id": "duplication-1774846471447-s5pa1hzmgfp",
           "autoFixable": false
         },
         {
@@ -2657,7 +2657,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 123
           },
-          "id": "duplication-1774601111597-nen7ngpn0sp",
+          "id": "duplication-1774846471447-angveonbfp9",
           "autoFixable": false
         },
         {
@@ -2669,7 +2669,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 124
           },
-          "id": "duplication-1774601111597-uukj19ofoh",
+          "id": "duplication-1774846471447-igjq6tajasb",
           "autoFixable": false
         },
         {
@@ -2681,7 +2681,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 125
           },
-          "id": "duplication-1774601111597-fymecni01ge",
+          "id": "duplication-1774846471447-q0ufpalrab",
           "autoFixable": false
         },
         {
@@ -2693,7 +2693,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 126
           },
-          "id": "duplication-1774601111597-7rzll9o5vzb",
+          "id": "duplication-1774846471447-u8krsexmnx",
           "autoFixable": false
         },
         {
@@ -2705,7 +2705,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 127
           },
-          "id": "duplication-1774601111597-jbkfhqy9pr",
+          "id": "duplication-1774846471447-ld9vnylpofo",
           "autoFixable": false
         },
         {
@@ -2717,7 +2717,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 128
           },
-          "id": "duplication-1774601111597-l3gmrb3x6p",
+          "id": "duplication-1774846471447-abtrx19xvga",
           "autoFixable": false
         },
         {
@@ -2729,7 +2729,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 129
           },
-          "id": "duplication-1774601111597-428er8i81iu",
+          "id": "duplication-1774846471447-89mqu2gvjrv",
           "autoFixable": false
         },
         {
@@ -2741,7 +2741,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 130
           },
-          "id": "duplication-1774601111597-2i5vprdfw2t",
+          "id": "duplication-1774846471447-0g3zfqv14kbn",
           "autoFixable": false
         },
         {
@@ -2753,7 +2753,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 131
           },
-          "id": "duplication-1774601111597-fxfm3nlqoj7",
+          "id": "duplication-1774846471447-mh9kuut6sqr",
           "autoFixable": false
         },
         {
@@ -2765,7 +2765,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 132
           },
-          "id": "duplication-1774601111597-lomto5bezf",
+          "id": "duplication-1774846471447-hb5xh8gwbsk",
           "autoFixable": false
         },
         {
@@ -2777,7 +2777,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 133
           },
-          "id": "duplication-1774601111597-ejohsd42tmp",
+          "id": "duplication-1774846471447-c09nlic8bad",
           "autoFixable": false
         },
         {
@@ -2789,7 +2789,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 134
           },
-          "id": "duplication-1774601111597-5dpg48uw8pt",
+          "id": "duplication-1774846471447-zvs97a031i",
           "autoFixable": false
         },
         {
@@ -2801,7 +2801,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 135
           },
-          "id": "duplication-1774601111597-4ua28638t2w",
+          "id": "duplication-1774846471447-9aat1cmfhkt",
           "autoFixable": false
         },
         {
@@ -2813,7 +2813,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 136
           },
-          "id": "duplication-1774601111597-x8rmqatf8a8",
+          "id": "duplication-1774846471447-47vibsup0fg",
           "autoFixable": false
         },
         {
@@ -2825,7 +2825,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 137
           },
-          "id": "duplication-1774601111597-o42f5oimo4f",
+          "id": "duplication-1774846471447-cqdg80shuwn",
           "autoFixable": false
         },
         {
@@ -2837,7 +2837,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 138
           },
-          "id": "duplication-1774601111597-nphocxija",
+          "id": "duplication-1774846471447-onn7a25tb99",
           "autoFixable": false
         },
         {
@@ -2849,7 +2849,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 139
           },
-          "id": "duplication-1774601111597-cdb7e171kko",
+          "id": "duplication-1774846471447-ob91ndknlam",
           "autoFixable": false
         },
         {
@@ -2861,7 +2861,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 140
           },
-          "id": "duplication-1774601111597-2uj01urnj59",
+          "id": "duplication-1774846471447-kcrvmr49wnk",
           "autoFixable": false
         },
         {
@@ -2873,7 +2873,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 141
           },
-          "id": "duplication-1774601111597-hhk5p1huqbv",
+          "id": "duplication-1774846471447-ya5nd48rzye",
           "autoFixable": false
         },
         {
@@ -2885,7 +2885,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 142
           },
-          "id": "duplication-1774601111597-d0s5vfz1ttu",
+          "id": "duplication-1774846471447-dlpn89d21dv",
           "autoFixable": false
         },
         {
@@ -2897,7 +2897,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 143
           },
-          "id": "duplication-1774601111597-w27lamresw",
+          "id": "duplication-1774846471447-kwujnzabd3",
           "autoFixable": false
         },
         {
@@ -2909,7 +2909,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 144
           },
-          "id": "duplication-1774601111597-b8h2maq059f",
+          "id": "duplication-1774846471447-mx38iwrtqdn",
           "autoFixable": false
         },
         {
@@ -2921,7 +2921,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 145
           },
-          "id": "duplication-1774601111597-3zeqka0zl1v",
+          "id": "duplication-1774846471447-0zauu7tt61jo",
           "autoFixable": false
         },
         {
@@ -2933,7 +2933,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 146
           },
-          "id": "duplication-1774601111597-mgjn8eqixtc",
+          "id": "duplication-1774846471447-vm13cf5qk1k",
           "autoFixable": false
         },
         {
@@ -2945,7 +2945,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberRefresh.ts",
             "line": 147
           },
-          "id": "duplication-1774601111597-2dg2ewqpef3",
+          "id": "duplication-1774846471447-4c9heqalqgz",
           "autoFixable": false
         },
         {
@@ -2957,7 +2957,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 116
           },
-          "id": "duplication-1774601111597-88ikd87ncz2",
+          "id": "duplication-1774846471447-zws1oy0a37",
           "autoFixable": false
         },
         {
@@ -2969,7 +2969,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 117
           },
-          "id": "duplication-1774601111597-780r3l3w3ej",
+          "id": "duplication-1774846471447-uh94xjkbct",
           "autoFixable": false
         },
         {
@@ -2981,7 +2981,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 118
           },
-          "id": "duplication-1774601111597-dxluhvfrpje",
+          "id": "duplication-1774846471447-jch06tvytu",
           "autoFixable": false
         },
         {
@@ -2993,7 +2993,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 119
           },
-          "id": "duplication-1774601111597-3fng015bp6t",
+          "id": "duplication-1774846471447-fz1crvmiga6",
           "autoFixable": false
         },
         {
@@ -3005,7 +3005,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 120
           },
-          "id": "duplication-1774601111597-hb0g2pik9so",
+          "id": "duplication-1774846471447-ns7s0o9lsjr",
           "autoFixable": false
         },
         {
@@ -3017,7 +3017,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 121
           },
-          "id": "duplication-1774601111597-rhy4yls8wz",
+          "id": "duplication-1774846471447-80qdtpr8zk6",
           "autoFixable": false
         },
         {
@@ -3029,7 +3029,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 122
           },
-          "id": "duplication-1774601111597-ty12vdsff0e",
+          "id": "duplication-1774846471447-z9etm9ixsq",
           "autoFixable": false
         },
         {
@@ -3041,7 +3041,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 129
           },
-          "id": "duplication-1774601111597-lp0cqg0j71",
+          "id": "duplication-1774846471447-fnrelmtp3tu",
           "autoFixable": false
         },
         {
@@ -3053,7 +3053,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 130
           },
-          "id": "duplication-1774601111597-p47uxamwkq",
+          "id": "duplication-1774846471447-e3x716r2itq",
           "autoFixable": false
         },
         {
@@ -3065,7 +3065,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/postHrmsAuthMemberJoin.ts",
             "line": 131
           },
-          "id": "duplication-1774601111597-6nzkzhtn9jk",
+          "id": "duplication-1774846471447-6qlmuft5pwm",
           "autoFixable": false
         },
         {
@@ -3077,7 +3077,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberTimesheets.ts",
             "line": 99
           },
-          "id": "duplication-1774601111597-4cmhg0o7nc9",
+          "id": "duplication-1774846471447-gxonu1fqc5d",
           "autoFixable": false
         },
         {
@@ -3089,7 +3089,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberTimelogs.ts",
             "line": 10
           },
-          "id": "duplication-1774601111597-8g6qulgemee",
+          "id": "duplication-1774846471447-n506tf9ek5a",
           "autoFixable": false
         },
         {
@@ -3101,7 +3101,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberTimelogs.ts",
             "line": 11
           },
-          "id": "duplication-1774601111597-s0tuevsq2l8",
+          "id": "duplication-1774846471447-97qj4njtnr5",
           "autoFixable": false
         },
         {
@@ -3113,7 +3113,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberTasks.ts",
             "line": 92
           },
-          "id": "duplication-1774601111597-zz8ypepdj8b",
+          "id": "duplication-1774846471447-jo70pckc9k8",
           "autoFixable": false
         },
         {
@@ -3125,7 +3125,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 89
           },
-          "id": "duplication-1774601111597-0nbtqvwo7wco",
+          "id": "duplication-1774846471447-m04ncf034x",
           "autoFixable": false
         },
         {
@@ -3137,7 +3137,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 91
           },
-          "id": "duplication-1774601111597-1ojd2t1wh9f",
+          "id": "duplication-1774846471447-uqzqa6ct1gg",
           "autoFixable": false
         },
         {
@@ -3149,7 +3149,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 92
           },
-          "id": "duplication-1774601111597-5jz7582d4om",
+          "id": "duplication-1774846471447-htam1jn78cq",
           "autoFixable": false
         },
         {
@@ -3161,7 +3161,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 93
           },
-          "id": "duplication-1774601111597-ymflbf2nutj",
+          "id": "duplication-1774846471447-i3692fp2mj8",
           "autoFixable": false
         },
         {
@@ -3173,7 +3173,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 94
           },
-          "id": "duplication-1774601111597-6cz4hwv9y8b",
+          "id": "duplication-1774846471447-lvwwe8melvk",
           "autoFixable": false
         },
         {
@@ -3185,7 +3185,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 95
           },
-          "id": "duplication-1774601111597-f6c1j40gy6",
+          "id": "duplication-1774846471447-ham260vo4te",
           "autoFixable": false
         },
         {
@@ -3197,7 +3197,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 96
           },
-          "id": "duplication-1774601111597-1u4xbzwtedq",
+          "id": "duplication-1774846471447-45tk713p57i",
           "autoFixable": false
         },
         {
@@ -3209,7 +3209,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 97
           },
-          "id": "duplication-1774601111597-oimmx4qdyxl",
+          "id": "duplication-1774846471447-o95395ioxp",
           "autoFixable": false
         },
         {
@@ -3221,7 +3221,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
             "line": 98
           },
-          "id": "duplication-1774601111597-25so92b783t",
+          "id": "duplication-1774846471447-ib4839zis1f",
           "autoFixable": false
         },
         {
@@ -3233,7 +3233,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 149
           },
-          "id": "duplication-1774601111597-sq1rs8ohdg",
+          "id": "duplication-1774846471447-ufrkay6d08h",
           "autoFixable": false
         },
         {
@@ -3245,7 +3245,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 199
           },
-          "id": "duplication-1774601111597-lxqgnbauxx",
+          "id": "duplication-1774846471447-dhflry2oq58",
           "autoFixable": false
         },
         {
@@ -3257,7 +3257,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 200
           },
-          "id": "duplication-1774601111597-5ll35gbapkf",
+          "id": "duplication-1774846471447-zm0eujiid9a",
           "autoFixable": false
         },
         {
@@ -3269,7 +3269,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 202
           },
-          "id": "duplication-1774601111597-uxux18bobw",
+          "id": "duplication-1774846471447-j3z3ntmisl",
           "autoFixable": false
         },
         {
@@ -3281,7 +3281,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
             "line": 203
           },
-          "id": "duplication-1774601111597-9qwp2xh0b3k",
+          "id": "duplication-1774846471447-3dbt17twymh",
           "autoFixable": false
         },
         {
@@ -3293,7 +3293,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberOrganizations.ts",
             "line": 62
           },
-          "id": "duplication-1774601111597-v20ywm8sjxc",
+          "id": "duplication-1774846471447-wncg4orojth",
           "autoFixable": false
         },
         {
@@ -3305,7 +3305,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberMetrics.ts",
             "line": 119
           },
-          "id": "duplication-1774601111597-cnnxesc1tjs",
+          "id": "duplication-1774846471447-7nfpyyq6qin",
           "autoFixable": false
         },
         {
@@ -3317,7 +3317,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberEmployeesAnalytics.ts",
             "line": 10
           },
-          "id": "duplication-1774601111597-tpd6e16ma7",
+          "id": "duplication-1774846471447-4bmju1ahfci",
           "autoFixable": false
         },
         {
@@ -3329,7 +3329,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 120
           },
-          "id": "duplication-1774601111597-frohzm91b89",
+          "id": "duplication-1774846471447-139lfm74p7z",
           "autoFixable": false
         },
         {
@@ -3341,7 +3341,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 121
           },
-          "id": "duplication-1774601111597-5p07kl0gzr4",
+          "id": "duplication-1774846471447-d97uthjmhyj",
           "autoFixable": false
         },
         {
@@ -3353,7 +3353,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 122
           },
-          "id": "duplication-1774601111597-jzhwh66xbt",
+          "id": "duplication-1774846471447-o2sdljudhbr",
           "autoFixable": false
         },
         {
@@ -3365,7 +3365,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 123
           },
-          "id": "duplication-1774601111597-fx2e8ho4yw8",
+          "id": "duplication-1774846471447-wr3qjw9gfz8",
           "autoFixable": false
         },
         {
@@ -3377,7 +3377,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 124
           },
-          "id": "duplication-1774601111597-rq1c3rh7hi",
+          "id": "duplication-1774846471447-svehfo4ypee",
           "autoFixable": false
         },
         {
@@ -3389,7 +3389,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 125
           },
-          "id": "duplication-1774601111597-vvlqcozw3t",
+          "id": "duplication-1774846471447-v7vx0hm0ru",
           "autoFixable": false
         },
         {
@@ -3401,7 +3401,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 126
           },
-          "id": "duplication-1774601111597-x348g7rgboj",
+          "id": "duplication-1774846471447-tdz7fgcog0e",
           "autoFixable": false
         },
         {
@@ -3413,7 +3413,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 127
           },
-          "id": "duplication-1774601111597-nufpq5epl3b",
+          "id": "duplication-1774846471447-d6awd7gw5kg",
           "autoFixable": false
         },
         {
@@ -3425,7 +3425,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/patchHrmsMemberAvatar.ts",
             "line": 130
           },
-          "id": "duplication-1774601111597-60l3o67a33g",
+          "id": "duplication-1774846471447-gku3lu4qkkp",
           "autoFixable": false
         },
         {
@@ -3437,7 +3437,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 9
           },
-          "id": "duplication-1774601111597-c5ewqwhjwbw",
+          "id": "duplication-1774846471448-ie9lsci141",
           "autoFixable": false
         },
         {
@@ -3449,7 +3449,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 10
           },
-          "id": "duplication-1774601111597-d5utvid447p",
+          "id": "duplication-1774846471448-i9wv6kxhd1",
           "autoFixable": false
         },
         {
@@ -3461,7 +3461,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 11
           },
-          "id": "duplication-1774601111597-qlxc64zfoci",
+          "id": "duplication-1774846471448-u40bajdwhvk",
           "autoFixable": false
         },
         {
@@ -3473,7 +3473,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 12
           },
-          "id": "duplication-1774601111597-qmz68jgt1yc",
+          "id": "duplication-1774846471448-mc6dugc3bjd",
           "autoFixable": false
         },
         {
@@ -3485,7 +3485,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 13
           },
-          "id": "duplication-1774601111597-lv4nw2j4m7",
+          "id": "duplication-1774846471448-qee507xirr",
           "autoFixable": false
         },
         {
@@ -3497,7 +3497,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 14
           },
-          "id": "duplication-1774601111597-4l138fzowwj",
+          "id": "duplication-1774846471448-o46gr4wtgqm",
           "autoFixable": false
         },
         {
@@ -3509,7 +3509,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 15
           },
-          "id": "duplication-1774601111597-g6o4v2byj5j",
+          "id": "duplication-1774846471448-gxx80ubisnw",
           "autoFixable": false
         },
         {
@@ -3521,7 +3521,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberOrganizationDashboard.ts",
             "line": 16
           },
-          "id": "duplication-1774601111597-5m6kmkkkt7d",
+          "id": "duplication-1774846471448-ckgeobhrhj",
           "autoFixable": false
         },
         {
@@ -3533,7 +3533,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 65
           },
-          "id": "duplication-1774601111597-dz7iebiehif",
+          "id": "duplication-1774846471448-vvpxlwaisvo",
           "autoFixable": false
         },
         {
@@ -3545,7 +3545,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 66
           },
-          "id": "duplication-1774601111597-y6raz7ivwvr",
+          "id": "duplication-1774846471448-wqyhzcblus",
           "autoFixable": false
         },
         {
@@ -3557,7 +3557,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 67
           },
-          "id": "duplication-1774601111597-qp197h4x05d",
+          "id": "duplication-1774846471448-jylswu9xlg",
           "autoFixable": false
         },
         {
@@ -3569,7 +3569,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboardOrganization.ts",
             "line": 68
           },
-          "id": "duplication-1774601111597-pcuj4qrjg8r",
+          "id": "duplication-1774846471448-vr3y7wtjpbo",
           "autoFixable": false
         },
         {
@@ -3581,7 +3581,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 144
           },
-          "id": "duplication-1774601111597-0ta1enxqtg7d",
+          "id": "duplication-1774846471448-ac4xsjozqz9",
           "autoFixable": false
         },
         {
@@ -3593,7 +3593,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 145
           },
-          "id": "duplication-1774601111597-g4201as6qwl",
+          "id": "duplication-1774846471448-zx12xd54vxt",
           "autoFixable": false
         },
         {
@@ -3605,7 +3605,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 146
           },
-          "id": "duplication-1774601111597-1mm3rwrzrmoi",
+          "id": "duplication-1774846471448-bu9h23eytf",
           "autoFixable": false
         },
         {
@@ -3617,7 +3617,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 147
           },
-          "id": "duplication-1774601111597-mxro0pjgaio",
+          "id": "duplication-1774846471448-tmztcnsskzg",
           "autoFixable": false
         },
         {
@@ -3629,7 +3629,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 148
           },
-          "id": "duplication-1774601111597-68nlaef8izj",
+          "id": "duplication-1774846471448-utaer3oyfle",
           "autoFixable": false
         },
         {
@@ -3641,7 +3641,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 149
           },
-          "id": "duplication-1774601111597-mutndp5h22",
+          "id": "duplication-1774846471448-vsm0p1f8k8",
           "autoFixable": false
         },
         {
@@ -3653,7 +3653,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 150
           },
-          "id": "duplication-1774601111597-iksdzukfphp",
+          "id": "duplication-1774846471448-cf1tqqli3h",
           "autoFixable": false
         },
         {
@@ -3665,7 +3665,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 151
           },
-          "id": "duplication-1774601111597-0l9s4c5z9qh",
+          "id": "duplication-1774846471448-4leqpdgo867",
           "autoFixable": false
         },
         {
@@ -3677,7 +3677,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 152
           },
-          "id": "duplication-1774601111597-0eh6gpf3pmt",
+          "id": "duplication-1774846471448-vw8zqzrck0p",
           "autoFixable": false
         },
         {
@@ -3689,7 +3689,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 172
           },
-          "id": "duplication-1774601111597-n5a3ygi2u1",
+          "id": "duplication-1774846471448-6724mz1z7ns",
           "autoFixable": false
         },
         {
@@ -3701,7 +3701,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 173
           },
-          "id": "duplication-1774601111597-h9lfdiuoriw",
+          "id": "duplication-1774846471448-mmxhw5evtvl",
           "autoFixable": false
         },
         {
@@ -3713,7 +3713,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 174
           },
-          "id": "duplication-1774601111597-pm52suksy8",
+          "id": "duplication-1774846471448-pg0wf8xayt",
           "autoFixable": false
         },
         {
@@ -3725,7 +3725,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 362
           },
-          "id": "duplication-1774601111597-0ax7xea3vyno",
+          "id": "duplication-1774846471448-n9svdld6k5",
           "autoFixable": false
         },
         {
@@ -3737,7 +3737,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/providers/getHrmsMemberDashboard.ts",
             "line": 363
           },
-          "id": "duplication-1774601111597-w3tqrlmkwo",
+          "id": "duplication-1774846471448-0tbggynbol3",
           "autoFixable": false
         }
       ]
@@ -3754,7 +3754,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/HrmsMemberUpload_requestsController.ts",
             "line": 13
           },
-          "id": "naming-1774601111529-u2qga8soe7c",
+          "id": "naming-1774846471448-5055f7t6y89",
           "autoFixable": false
         },
         {
@@ -3766,19 +3766,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/password-resets/HrmsMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "naming-1774601111532-5nahc9pgn9y",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmsMemberOrganization_membersController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-members/HrmsMemberOrganization_membersController.ts",
-            "line": 13
-          },
-          "id": "naming-1774601111533-lma9x4o6yg",
+          "id": "naming-1774846471451-nvpkrwvg0kn",
           "autoFixable": false
         },
         {
@@ -3790,19 +3778,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-dashboard/HrmsMemberOrganization_dashboardController.ts",
             "line": 7
           },
-          "id": "naming-1774601111533-tf36z4bsf2e",
+          "id": "naming-1774846471451-q3o56m7jxd",
           "autoFixable": false
         },
         {
           "severity": "warning",
           "category": "naming",
           "code": "N001",
-          "message": "Class \"HrmsGuestGuest_sessionsController\" should be PascalCase",
+          "message": "Class \"HrmsMemberOrganization_membersController\" should be PascalCase",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/guest-sessions/HrmsGuestGuest_sessionsController.ts",
-            "line": 12
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-members/HrmsMemberOrganization_membersController.ts",
+            "line": 13
           },
-          "id": "naming-1774601111599-xnhd9k1n6o",
+          "id": "naming-1774846471451-aaomic0atjb",
           "autoFixable": false
         },
         {
@@ -3814,7 +3802,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/email-verifications/HrmsMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "naming-1774601111599-baq16uebkz5",
+          "id": "naming-1774846471453-7tun58f9gm",
           "autoFixable": false
         },
         {
@@ -3826,7 +3814,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/activity-logs/HrmsMemberActivity_logsController.ts",
             "line": 12
           },
-          "id": "naming-1774601111599-b6p7mjvu6im",
+          "id": "naming-1774846471453-pd7g7vyql2k",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmsGuestGuest_sessionsController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/guest-sessions/HrmsGuestGuest_sessionsController.ts",
+            "line": 12
+          },
+          "id": "naming-1774846471453-gomiqr645ht",
           "autoFixable": false
         },
         {
@@ -3838,7 +3838,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/assign-ownership/HrmsMemberUpload_requestsAssign_ownershipController.ts",
             "line": 10
           },
-          "id": "naming-1774601111600-zg4b7dmhlrn",
+          "id": "naming-1774846471454-eql940xxu95",
           "autoFixable": false
         },
         {
@@ -3850,7 +3850,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/validation-status/HrmsMemberUpload_requestsValidation_statusController.ts",
             "line": 10
           },
-          "id": "naming-1774601111599-vnoxx4v2lid",
+          "id": "naming-1774846471454-ms8n45k1b9f",
           "autoFixable": false
         },
         {
@@ -3862,7 +3862,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/top-employees/HrmsMemberProjectsTop_employeesController.ts",
             "line": 10
           },
-          "id": "naming-1774601111600-ohu1jj7c6is",
+          "id": "naming-1774846471454-1ps89m6v4ox",
           "autoFixable": false
         },
         {
@@ -3874,7 +3874,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/status-analytics/HrmsMemberProjectsStatus_analyticsController.ts",
             "line": 10
           },
-          "id": "naming-1774601111607-u0wf2fnoka",
+          "id": "naming-1774846471454-7qz0q8e8ozw",
           "autoFixable": false
         },
         {
@@ -3886,19 +3886,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/switch/HrmsMemberOrganizations_switchController.ts",
             "line": 10
           },
-          "id": "naming-1774601111619-2xue2x14x0h",
-          "autoFixable": false
-        },
-        {
-          "severity": "warning",
-          "category": "naming",
-          "code": "N001",
-          "message": "Class \"HrmsMemberReportsTop_employeesController\" should be PascalCase",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/top-employees/HrmsMemberReportsTop_employeesController.ts",
-            "line": 11
-          },
-          "id": "naming-1774601111606-2lqm33kagjj",
+          "id": "naming-1774846471456-zdtwc73986",
           "autoFixable": false
         },
         {
@@ -3910,7 +3898,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/files/permanently-delete/HrmsMemberFilesPermanently_deleteController.ts",
             "line": 10
           },
-          "id": "naming-1774601111603-x1pire0acq",
+          "id": "naming-1774846471456-ttk9vkj1f6h",
+          "autoFixable": false
+        },
+        {
+          "severity": "warning",
+          "category": "naming",
+          "code": "N001",
+          "message": "Class \"HrmsMemberReportsTop_employeesController\" should be PascalCase",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/top-employees/HrmsMemberReportsTop_employeesController.ts",
+            "line": 11
+          },
+          "id": "naming-1774846471457-hjeytn0dyej",
           "autoFixable": false
         },
         {
@@ -3922,7 +3922,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/status-history/HrmsMemberProjectsTasksStatus_historyController.ts",
             "line": 12
           },
-          "id": "naming-1774601111604-o3fx24jyid",
+          "id": "naming-1774846471458-dxo09cqq0sm",
           "autoFixable": false
         }
       ]
@@ -3935,24 +3935,24 @@
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMembersController\" missing JSDoc",
+          "message": "Class \"HrmsGuestsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/members/HrmsMembersController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guests/HrmsGuestsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111655-g5wp9cxfiok",
+          "id": "jsdoc-1774846471501-8xx4rkghve",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsGuestsController\" missing JSDoc",
+          "message": "Class \"HrmsMembersController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guests/HrmsGuestsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/members/HrmsMembersController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111654-uxux6k68l1m",
+          "id": "jsdoc-1774846471500-8dfw953h5av",
           "autoFixable": false
         },
         {
@@ -3964,7 +3964,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/HrmsMemberUpload_requestsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601111657-g7l92flj1zt",
+          "id": "jsdoc-1774846471500-4vwpfbz4x7",
           "autoFixable": false
         },
         {
@@ -3976,19 +3976,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timers/HrmsMemberTimersController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111655-bm3anngialj",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberTimelogsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timelogs/HrmsMemberTimelogsController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774601111655-gsgkr2z1ljn",
+          "id": "jsdoc-1774846471500-3ps5k04s472",
           "autoFixable": false
         },
         {
@@ -4000,19 +3988,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timesheets/HrmsMemberTimesheetsController.ts",
             "line": 19
           },
-          "id": "jsdoc-1774601111657-ai4tqtwkr8",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberTimerController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timer/HrmsMemberTimerController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601111659-bjx14xlc6gu",
+          "id": "jsdoc-1774846471502-4y8t5fa3i1",
           "autoFixable": false
         },
         {
@@ -4024,7 +4000,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/tasks/HrmsMemberTasksController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774601111656-67wgwzmzor",
+          "id": "jsdoc-1774846471502-4usf55og89m",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberTimerController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timer/HrmsMemberTimerController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846471502-xaghlshgmdf",
           "autoFixable": false
         },
         {
@@ -4036,7 +4024,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/sessions/HrmsMemberSessionsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111658-lk6s3o9kvye",
+          "id": "jsdoc-1774846471503-a0eoq4ex0gf",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberTimelogsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timelogs/HrmsMemberTimelogsController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846471503-yjh8whc2dce",
           "autoFixable": false
         },
         {
@@ -4048,19 +4048,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/roles/HrmsMemberRolesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111659-y7qabsd1f6o",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberProjectsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774601111658-7usjjfc830j",
+          "id": "jsdoc-1774846471503-qpxlw8h04gc",
           "autoFixable": false
         },
         {
@@ -4072,31 +4060,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/password-resets/HrmsMemberPassword_resetsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111658-i7jzvqeq8mc",
+          "id": "jsdoc-1774846471503-a2thjvw28n9",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsController\" missing JSDoc",
+          "message": "Class \"HrmsMemberProjectsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/HrmsMemberOrganizationsController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601111660-929rle8r4uf",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganization_membersController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-members/HrmsMemberOrganization_membersController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774601111659-joo05bc398s",
+          "id": "jsdoc-1774846471504-57tyb0ct6y",
           "autoFixable": false
         },
         {
@@ -4108,19 +4084,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-dashboard/HrmsMemberOrganization_dashboardController.ts",
             "line": 7
           },
-          "id": "jsdoc-1774601111659-dlhp8wxdgkg",
+          "id": "jsdoc-1774846471503-umxq7wir3id",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberFilesController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganization_membersController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/files/HrmsMemberFilesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization-members/HrmsMemberOrganization_membersController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601111659-52js8i4pfv8",
+          "id": "jsdoc-1774846471504-s4zb56su0a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberOrganizationsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/HrmsMemberOrganizationsController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846471504-8ibtqdmh6za",
           "autoFixable": false
         },
         {
@@ -4132,7 +4120,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/metrics/HrmsMemberController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111660-hzagy4hezn",
+          "id": "jsdoc-1774846471505-i399nheosdm",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberFilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/files/HrmsMemberFilesController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846471505-8e5oktvdijp",
           "autoFixable": false
         },
         {
@@ -4144,19 +4144,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/employees/HrmsMemberEmployeesController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111661-xssc0u6txfi",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberDashboardController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/dashboard/HrmsMemberDashboardController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774601111660-re6txtnhpw",
+          "id": "jsdoc-1774846471505-dcy16tsiccq",
           "autoFixable": false
         },
         {
@@ -4168,55 +4156,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/departments/HrmsMemberDepartmentsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111661-nx5y8st9d9",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberAvatarController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/avatar/HrmsMemberAvatarController.ts",
-            "line": 13
-          },
-          "id": "jsdoc-1774601111661-bvlcsg2dov",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsAuthMemberController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/auth/member/HrmsAuthMemberController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774601111660-6cq39qpxhi5",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsAuthGuestController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/auth/guest/HrmsAuthGuestController.ts",
-            "line": 9
-          },
-          "id": "jsdoc-1774601111662-yi079l58m7k",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsGuestGuest_sessionsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/guest-sessions/HrmsGuestGuest_sessionsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601111663-7t3lgy0xsif",
+          "id": "jsdoc-1774846471505-gvipunmkay8",
           "autoFixable": false
         },
         {
@@ -4228,19 +4168,19 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/email-verifications/HrmsMemberEmail_verificationsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111661-hlh04tqkvkh",
+          "id": "jsdoc-1774846471506-yfp6gozh85",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsGuestProfileController\" missing JSDoc",
+          "message": "Class \"HrmsMemberDashboardController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/profile/HrmsGuestProfileController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/dashboard/HrmsMemberDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111662-y6ve2lg5oqm",
+          "id": "jsdoc-1774846471506-92hybzycph",
           "autoFixable": false
         },
         {
@@ -4252,7 +4192,67 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/activity-logs/HrmsMemberActivity_logsController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111662-cxqicile9g",
+          "id": "jsdoc-1774846471506-42r8t7uls0x",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsGuestProfileController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/profile/HrmsGuestProfileController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846471506-md4bp8j3bx",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberAvatarController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/avatar/HrmsMemberAvatarController.ts",
+            "line": 13
+          },
+          "id": "jsdoc-1774846471506-jxyqoih9ws9",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsGuestGuest_sessionsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/guest/guest-sessions/HrmsGuestGuest_sessionsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846471509-z8sq6mcdy1q",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsAuthGuestController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/auth/guest/HrmsAuthGuestController.ts",
+            "line": 9
+          },
+          "id": "jsdoc-1774846471507-awxx5auciik",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsAuthMemberController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/auth/member/HrmsAuthMemberController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846471507-bxyt0e1sejq",
           "autoFixable": false
         },
         {
@@ -4264,7 +4264,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/assign-ownership/HrmsMemberUpload_requestsAssign_ownershipController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111662-y8klni0l58a",
+          "id": "jsdoc-1774846471507-cilqidvemwv",
           "autoFixable": false
         },
         {
@@ -4276,7 +4276,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/upload-requests/validation-status/HrmsMemberUpload_requestsValidation_statusController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111663-96r77e1i49f",
+          "id": "jsdoc-1774846471507-7qmlssprjcm",
           "autoFixable": false
         },
         {
@@ -4288,7 +4288,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timer/start/HrmsMemberTimerStartController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111662-exr098220xt",
+          "id": "jsdoc-1774846471507-yma2x3sihl",
           "autoFixable": false
         },
         {
@@ -4300,7 +4300,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/timer/active/HrmsMemberTimerActiveController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111662-kihgds2uxr",
+          "id": "jsdoc-1774846471507-crakydiaver",
           "autoFixable": false
         },
         {
@@ -4312,31 +4312,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/top-employees/HrmsMemberProjectsTop_employeesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111665-u0xg53opbgg",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberProjectsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/HrmsMemberProjectsTasksController.ts",
-            "line": 16
-          },
-          "id": "jsdoc-1774601111663-gjgp48iseab",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberProjectsAnalyticsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/analytics/HrmsMemberProjectsAnalyticsController.ts",
-            "line": 11
-          },
-          "id": "jsdoc-1774601111663-tsu2x8mgmwn",
+          "id": "jsdoc-1774846471507-dnh2etayf4",
           "autoFixable": false
         },
         {
@@ -4348,7 +4324,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/status-analytics/HrmsMemberProjectsStatus_analyticsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111663-ksa7p3mxo8h",
+          "id": "jsdoc-1774846471508-a28qv0nlyxe",
           "autoFixable": false
         },
         {
@@ -4360,103 +4336,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/members/HrmsMemberProjectsMembersController.ts",
             "line": 14
           },
-          "id": "jsdoc-1774601111664-fq60owlzjda",
+          "id": "jsdoc-1774846471508-x38mm7bu0za",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsTimerController\" missing JSDoc",
+          "message": "Class \"HrmsMemberProjectsTasksController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/timer/HrmsMemberOrganizationsTimerController.ts",
-            "line": 10
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/HrmsMemberProjectsTasksController.ts",
+            "line": 16
           },
-          "id": "jsdoc-1774601111664-1o2wyrlv165",
+          "id": "jsdoc-1774846471509-aa6hhd81w2b",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsProjectsController\" missing JSDoc",
+          "message": "Class \"HrmsMemberProjectsAnalyticsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/projects/HrmsMemberOrganizationsProjectsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601111664-aojjj8yxyvc",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizations_switchController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/switch/HrmsMemberOrganizations_switchController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774601111665-k6hpjq33y9q",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsRolesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/roles/HrmsMemberOrganizationsRolesController.ts",
-            "line": 14
-          },
-          "id": "jsdoc-1774601111665-s6qmazsltnl",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsTasksController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/tasks/HrmsMemberOrganizationsTasksController.ts",
-            "line": 10
-          },
-          "id": "jsdoc-1774601111665-kfjcpqnsv2b",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsLogoController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/logo/HrmsMemberOrganizationsLogoController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601111666-8l6v7s8mgr",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsDepartmentsController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/departments/HrmsMemberOrganizationsDepartmentsController.ts",
-            "line": 12
-          },
-          "id": "jsdoc-1774601111666-n4i8bksywl",
-          "autoFixable": false
-        },
-        {
-          "severity": "suggestion",
-          "category": "jsdoc",
-          "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsFilesController\" missing JSDoc",
-          "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/files/HrmsMemberOrganizationsFilesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/analytics/HrmsMemberProjectsAnalyticsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601111665-g0fvhj1bdnj",
+          "id": "jsdoc-1774846471509-19r6hjl1rhv",
           "autoFixable": false
         },
         {
@@ -4468,67 +4372,91 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organization/dashboard/HrmsMemberOrganizationDashboardController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111666-2ujytf7g5yt",
+          "id": "jsdoc-1774846471509-cbb1blg8ivn",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberOrganizationsEmployeesController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganizationsTimerController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/employees/HrmsMemberOrganizationsEmployeesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/timer/HrmsMemberOrganizationsTimerController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111666-daeh6qhzhkw",
+          "id": "jsdoc-1774846471510-feljb9gkd9i",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberReportsWeeklyController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganizationsTasksController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/weekly/HrmsMemberReportsWeeklyController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/tasks/HrmsMemberOrganizationsTasksController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774601111666-eo8w6i1oio4",
+          "id": "jsdoc-1774846471509-46v7v56lbi9",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberReportsTimeController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganizations_switchController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/time/HrmsMemberReportsTimeController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/switch/HrmsMemberOrganizations_switchController.ts",
+            "line": 10
           },
-          "id": "jsdoc-1774601111666-nxzd3toecp",
+          "id": "jsdoc-1774846471509-9kji8k6mmg",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberReportsController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganizationsLogoController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/budget/HrmsMemberReportsController.ts",
-            "line": 11
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/logo/HrmsMemberOrganizationsLogoController.ts",
+            "line": 12
           },
-          "id": "jsdoc-1774601111667-u784ufl7che",
+          "id": "jsdoc-1774846471510-6lysuipulld",
           "autoFixable": false
         },
         {
           "severity": "suggestion",
           "category": "jsdoc",
           "code": "J001",
-          "message": "Class \"HrmsMemberReportsTop_employeesController\" missing JSDoc",
+          "message": "Class \"HrmsMemberOrganizationsProjectsController\" missing JSDoc",
           "location": {
-            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/top-employees/HrmsMemberReportsTop_employeesController.ts",
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/projects/HrmsMemberOrganizationsProjectsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846471510-rwkzxjiesxs",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberOrganizationsRolesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/roles/HrmsMemberOrganizationsRolesController.ts",
+            "line": 14
+          },
+          "id": "jsdoc-1774846471511-lg6esxic55",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberOrganizationsFilesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/files/HrmsMemberOrganizationsFilesController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601111667-7p7mvx843u3",
+          "id": "jsdoc-1774846471511-xweq47nucg",
           "autoFixable": false
         },
         {
@@ -4540,7 +4468,31 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/files/permanently-delete/HrmsMemberFilesPermanently_deleteController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111667-ij2dvad67",
+          "id": "jsdoc-1774846471511-7916w0r1ac6",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberOrganizationsEmployeesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/employees/HrmsMemberOrganizationsEmployeesController.ts",
+            "line": 10
+          },
+          "id": "jsdoc-1774846471511-e7ae7l08yrw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberOrganizationsDepartmentsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/departments/HrmsMemberOrganizationsDepartmentsController.ts",
+            "line": 12
+          },
+          "id": "jsdoc-1774846471511-ibw8fs8ghnf",
           "autoFixable": false
         },
         {
@@ -4552,7 +4504,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/employees/contracts/HrmsMemberEmployeesContractsController.ts",
             "line": 13
           },
-          "id": "jsdoc-1774601111667-j0lo537wbn",
+          "id": "jsdoc-1774846471512-8jra62jeuoo",
           "autoFixable": false
         },
         {
@@ -4564,7 +4516,55 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/employees/analytics/HrmsMemberEmployeesAnalyticsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601111667-btcgx526to9",
+          "id": "jsdoc-1774846471512-ibs4va1ul6a",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberReportsWeeklyController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/weekly/HrmsMemberReportsWeeklyController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846471512-7ifgo72qzte",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberReportsTop_employeesController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/top-employees/HrmsMemberReportsTop_employeesController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846471512-bve6x1io1qw",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberReportsTimeController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/time/HrmsMemberReportsTimeController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846471512-3h1g2ijcves",
+          "autoFixable": false
+        },
+        {
+          "severity": "suggestion",
+          "category": "jsdoc",
+          "code": "J001",
+          "message": "Class \"HrmsMemberReportsController\" missing JSDoc",
+          "location": {
+            "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/reports/budget/HrmsMemberReportsController.ts",
+            "line": 11
+          },
+          "id": "jsdoc-1774846471513-midj0bur3ih",
           "autoFixable": false
         },
         {
@@ -4576,7 +4576,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/dashboard/organization/HrmsMemberDashboardOrganizationController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111668-uqj1fsicww8",
+          "id": "jsdoc-1774846471513-0pro0l542z1",
           "autoFixable": false
         },
         {
@@ -4588,7 +4588,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/contracts/analytics/HrmsMemberContractsController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601111668-ln39pmtfst",
+          "id": "jsdoc-1774846471512-ym8vn94z7hm",
           "autoFixable": false
         },
         {
@@ -4600,7 +4600,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/projects/tasks/status-history/HrmsMemberProjectsTasksStatus_historyController.ts",
             "line": 12
           },
-          "id": "jsdoc-1774601111668-qbx1oh39aog",
+          "id": "jsdoc-1774846471512-3qsqmnna20c",
           "autoFixable": false
         },
         {
@@ -4612,7 +4612,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/projects/members/HrmsMemberOrganizationsProjectsMembersController.ts",
             "line": 11
           },
-          "id": "jsdoc-1774601111669-fcxwsgoc13w",
+          "id": "jsdoc-1774846471513-qvda91gu5ib",
           "autoFixable": false
         },
         {
@@ -4624,7 +4624,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/organizations/employees/timelogs/HrmsMemberOrganizationsEmployeesTimelogsController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111668-uvs0ish9ca",
+          "id": "jsdoc-1774846471513-05tbug1hzk1c",
           "autoFixable": false
         },
         {
@@ -4636,7 +4636,7 @@
             "file": "/Users/yongrean/Downloads/autobe-examples/qwen/qwen3.5-35b-a3b/erp/src/controllers/hrms/member/departments/employees/metrics/HrmsMemberDepartmentsEmployeesController.ts",
             "line": 10
           },
-          "id": "jsdoc-1774601111668-0m8353xzong",
+          "id": "jsdoc-1774846471513-cmz2fgyaiga",
           "autoFixable": false
         }
       ]
@@ -4655,7 +4655,7 @@
             "file": "src/api/structures/IHrmsTimesheet.ts",
             "line": 23
           },
-          "id": "completeness-1774601111687-qpedgrjfst",
+          "id": "completeness-1774846471533-xqg6bo7w8f",
           "autoFixable": false
         },
         {
@@ -4667,7 +4667,7 @@
             "file": "src/api/structures/IHrmsTimesheet.ts",
             "line": 32
           },
-          "id": "completeness-1774601111687-0o0m4dgg594",
+          "id": "completeness-1774846471533-sy6knvci5pi",
           "autoFixable": false
         },
         {
@@ -4679,7 +4679,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 108
           },
-          "id": "completeness-1774601111688-0smbdra91y0f",
+          "id": "completeness-1774846471533-ddvuoke4itd",
           "autoFixable": false
         },
         {
@@ -4691,7 +4691,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 116
           },
-          "id": "completeness-1774601111688-725c4vuvnpy",
+          "id": "completeness-1774846471533-0ua2z93im3o",
           "autoFixable": false
         },
         {
@@ -4703,7 +4703,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 124
           },
-          "id": "completeness-1774601111688-hn6ix5m4qnv",
+          "id": "completeness-1774846471533-rdxw3i8ac9r",
           "autoFixable": false
         },
         {
@@ -4715,7 +4715,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 161
           },
-          "id": "completeness-1774601111688-97sk041vnu",
+          "id": "completeness-1774846471533-d1lt5ot7mp",
           "autoFixable": false
         },
         {
@@ -4727,7 +4727,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 169
           },
-          "id": "completeness-1774601111688-h9ac0a4e4ed",
+          "id": "completeness-1774846471533-3lhslag968w",
           "autoFixable": false
         },
         {
@@ -4739,7 +4739,7 @@
             "file": "src/api/structures/IHrmsOrganizationMember.ts",
             "line": 177
           },
-          "id": "completeness-1774601111688-06i5ybx0of72",
+          "id": "completeness-1774846471533-x9d9rdi3mrs",
           "autoFixable": false
         },
         {
@@ -4751,7 +4751,7 @@
             "file": "src/api/structures/IHrmsOrganization.ts",
             "line": 69
           },
-          "id": "completeness-1774601111688-mwu4nnpn0c",
+          "id": "completeness-1774846471533-64vmmzge8tg",
           "autoFixable": false
         },
         {
@@ -4763,7 +4763,7 @@
             "file": "src/api/structures/IHrmsOrganization.ts",
             "line": 77
           },
-          "id": "completeness-1774601111688-oqtg563xjpo",
+          "id": "completeness-1774846471533-8mb2zbyrioe",
           "autoFixable": false
         },
         {
@@ -4775,7 +4775,7 @@
             "file": "src/api/structures/IHrmsMemberProfile.ts",
             "line": 95
           },
-          "id": "completeness-1774601111688-n7epgzct8wh",
+          "id": "completeness-1774846471533-sa7pbrypp8",
           "autoFixable": false
         },
         {
@@ -4787,7 +4787,7 @@
             "file": "src/api/structures/IHrmsGuestSession.ts",
             "line": 82
           },
-          "id": "completeness-1774601111688-qpbiwdggut",
+          "id": "completeness-1774846471534-dgbf9vvjz7w",
           "autoFixable": false
         },
         {
@@ -4799,7 +4799,7 @@
             "file": "src/api/structures/IHrmsFileUpload.ts",
             "line": 194
           },
-          "id": "completeness-1774601111689-1x03xu07rhi",
+          "id": "completeness-1774846471534-5b2ej2citqg",
           "autoFixable": false
         },
         {
@@ -4811,7 +4811,7 @@
             "file": "src/api/structures/IHrmsFileUpload.ts",
             "line": 355
           },
-          "id": "completeness-1774601111689-ag6m8lzyhg",
+          "id": "completeness-1774846471534-wugnxxf98cd",
           "autoFixable": false
         },
         {
@@ -4823,7 +4823,7 @@
             "file": "src/api/structures/IHrmsFileUpload.ts",
             "line": 364
           },
-          "id": "completeness-1774601111689-woyb4f6onoi",
+          "id": "completeness-1774846471534-b7dxjm9sngr",
           "autoFixable": false
         },
         {
@@ -4835,7 +4835,7 @@
             "file": "src/api/structures/IHrmsEmployeeContract.ts",
             "line": 29
           },
-          "id": "completeness-1774601111688-l2qo73x0t6",
+          "id": "completeness-1774846471534-b6ru44jw1y4",
           "autoFixable": false
         },
         {
@@ -4847,7 +4847,7 @@
             "file": "src/api/structures/IHrmsEmployee.ts",
             "line": 79
           },
-          "id": "completeness-1774601111688-ky70z4wyteq",
+          "id": "completeness-1774846471534-npbmjd2hgh8",
           "autoFixable": false
         },
         {
@@ -4859,7 +4859,7 @@
             "file": "src/api/structures/IHrmsEmployee.ts",
             "line": 87
           },
-          "id": "completeness-1774601111688-7ehxrrnl25k",
+          "id": "completeness-1774846471534-3gixf7rzlqa",
           "autoFixable": false
         },
         {
@@ -4871,7 +4871,7 @@
             "file": "src/api/structures/IHrmsEmployee.ts",
             "line": 95
           },
-          "id": "completeness-1774601111688-wfz2bdrs7u",
+          "id": "completeness-1774846471534-i1d58e9jgh",
           "autoFixable": false
         },
         {
@@ -4883,7 +4883,7 @@
             "file": "src/api/structures/IHrmsDepartment.ts",
             "line": 77
           },
-          "id": "completeness-1774601111689-jh0tknxxwt",
+          "id": "completeness-1774846471534-muphf5pxvk",
           "autoFixable": false
         }
       ]
@@ -4906,7 +4906,7 @@
         "file": "src/MyGlobal.ts",
         "line": 903
       },
-      "id": "type-error-1774601110762-1g23xbu0gi4",
+      "id": "type-error-1774846471055-vst6t13mqpj",
       "autoFixable": false
     },
     {
@@ -4918,7 +4918,7 @@
         "file": "src/controllers/hrms/member/projects/tasks/status-history/HrmsMemberProjectsTasksStatus_historyController.ts",
         "line": 4122
       },
-      "id": "type-error-1774601110762-3ttlf6m0y48",
+      "id": "type-error-1774846471055-nba7x6mpi5a",
       "autoFixable": false
     },
     {
@@ -4930,7 +4930,7 @@
         "file": "src/controllers/hrms/member/timer/active/HrmsMemberTimerActiveController.ts",
         "line": 2744
       },
-      "id": "type-error-1774601110762-nn28z4bxalk",
+      "id": "type-error-1774846471055-2p39g2v5gq4",
       "autoFixable": false
     },
     {
@@ -4942,7 +4942,7 @@
         "file": "src/providers/deleteHrmsMemberDepartmentsDepartmentId.ts",
         "line": 2094
       },
-      "id": "type-error-1774601110762-3dtnen7fr77",
+      "id": "type-error-1774846471055-plsh7iq5xu",
       "autoFixable": false
     },
     {
@@ -4954,7 +4954,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 2848
       },
-      "id": "type-error-1774601110762-pxu7847mao",
+      "id": "type-error-1774846471055-a1mdrpdsvyj",
       "autoFixable": false
     },
     {
@@ -4966,7 +4966,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 2871
       },
-      "id": "type-error-1774601110762-44a5an3l1lq",
+      "id": "type-error-1774846471055-t7cq1irf2q",
       "autoFixable": false
     },
     {
@@ -4978,7 +4978,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 2909
       },
-      "id": "type-error-1774601110762-iyhafftnb1",
+      "id": "type-error-1774846471055-db82go2uzcd",
       "autoFixable": false
     },
     {
@@ -4990,7 +4990,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 2932
       },
-      "id": "type-error-1774601110762-dumt9fyvghl",
+      "id": "type-error-1774846471055-mktlrif4vf",
       "autoFixable": false
     },
     {
@@ -5002,7 +5002,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 2978
       },
-      "id": "type-error-1774601110762-fq0a9bfdhdq",
+      "id": "type-error-1774846471055-7u87wcmym0s",
       "autoFixable": false
     },
     {
@@ -5014,7 +5014,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 3001
       },
-      "id": "type-error-1774601110762-a25d0rp6lk",
+      "id": "type-error-1774846471055-6zblp0tn34r",
       "autoFixable": false
     },
     {
@@ -5026,7 +5026,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4462
       },
-      "id": "type-error-1774601110762-6xwjwtmr32n",
+      "id": "type-error-1774846471055-9d1ab3h957t",
       "autoFixable": false
     },
     {
@@ -5038,7 +5038,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4492
       },
-      "id": "type-error-1774601110762-6pe54ce6s88",
+      "id": "type-error-1774846471055-jvlmeumx1i",
       "autoFixable": false
     },
     {
@@ -5050,7 +5050,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4532
       },
-      "id": "type-error-1774601110762-epnpwrac8ts",
+      "id": "type-error-1774846471055-3wz88kjfltb",
       "autoFixable": false
     },
     {
@@ -5062,7 +5062,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4562
       },
-      "id": "type-error-1774601110762-refasfvxbo9",
+      "id": "type-error-1774846471055-znbmjxy3hwf",
       "autoFixable": false
     },
     {
@@ -5074,7 +5074,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4598
       },
-      "id": "type-error-1774601110762-q7ky2mlds",
+      "id": "type-error-1774846471055-uo1tvbcfvqe",
       "autoFixable": false
     },
     {
@@ -5086,7 +5086,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 4628
       },
-      "id": "type-error-1774601110762-jrzyjffwig",
+      "id": "type-error-1774846471055-bx22ger1y4",
       "autoFixable": false
     },
     {
@@ -5098,7 +5098,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 6993
       },
-      "id": "type-error-1774601110762-ptejpqxj2z",
+      "id": "type-error-1774846471055-m4plcj1ktp",
       "autoFixable": false
     },
     {
@@ -5110,7 +5110,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7009
       },
-      "id": "type-error-1774601110762-aal8z0rn7yc",
+      "id": "type-error-1774846471055-qxjov4pyy8",
       "autoFixable": false
     },
     {
@@ -5122,7 +5122,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7051
       },
-      "id": "type-error-1774601110762-b7ajxix6omt",
+      "id": "type-error-1774846471055-l52ka7q1a6",
       "autoFixable": false
     },
     {
@@ -5134,7 +5134,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7067
       },
-      "id": "type-error-1774601110762-elul4ifl28",
+      "id": "type-error-1774846471055-qkdco5q2uu",
       "autoFixable": false
     },
     {
@@ -5146,7 +5146,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7117
       },
-      "id": "type-error-1774601110762-hm4dzasmcan",
+      "id": "type-error-1774846471055-iniux69ycx",
       "autoFixable": false
     },
     {
@@ -5158,7 +5158,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7133
       },
-      "id": "type-error-1774601110762-h5hho9upfzi",
+      "id": "type-error-1774846471055-slzgqy4a4jo",
       "autoFixable": false
     },
     {
@@ -5170,7 +5170,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 7479
       },
-      "id": "type-error-1774601110762-gamf6cpv0ta",
+      "id": "type-error-1774846471055-a33yrwes34j",
       "autoFixable": false
     },
     {
@@ -5182,7 +5182,7 @@
         "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
         "line": 2427
       },
-      "id": "type-error-1774601110762-r4c4kr96on8",
+      "id": "type-error-1774846471055-n5fax8i76p7",
       "autoFixable": false
     },
     {
@@ -5194,7 +5194,7 @@
         "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
         "line": 2518
       },
-      "id": "type-error-1774601110762-g67ta32ij5e",
+      "id": "type-error-1774846471055-yh8kq347u7",
       "autoFixable": false
     },
     {
@@ -5206,7 +5206,7 @@
         "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskId.ts",
         "line": 2572
       },
-      "id": "type-error-1774601110762-7jto8kry2k5",
+      "id": "type-error-1774846471055-mdce5m5a7wl",
       "autoFixable": false
     },
     {
@@ -5218,7 +5218,7 @@
         "file": "src/providers/getHrmsMemberProjectsProjectIdTasksTaskIdStatusHistory.ts",
         "line": 1896
       },
-      "id": "type-error-1774601110762-4a7uw7efox3",
+      "id": "type-error-1774846471055-wthh42zp8c",
       "autoFixable": false
     },
     {
@@ -5230,7 +5230,7 @@
         "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
         "line": 2891
       },
-      "id": "type-error-1774601110762-0ta2oques4g",
+      "id": "type-error-1774846471055-br7p0vjzms5",
       "autoFixable": false
     },
     {
@@ -5242,7 +5242,7 @@
         "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
         "line": 2937
       },
-      "id": "type-error-1774601110762-jkqykgl07h",
+      "id": "type-error-1774846471055-fgjw0k8bg8",
       "autoFixable": false
     },
     {
@@ -5254,7 +5254,7 @@
         "file": "src/providers/getHrmsMemberTasksTaskId.ts",
         "line": 4487
       },
-      "id": "type-error-1774601110762-gik3ogimnqn",
+      "id": "type-error-1774846471055-b6ic8y312qt",
       "autoFixable": false
     },
     {
@@ -5266,7 +5266,7 @@
         "file": "src/providers/getHrmsMemberTasksTaskId.ts",
         "line": 4533
       },
-      "id": "type-error-1774601110762-fn69bjutevr",
+      "id": "type-error-1774846471055-orhz8ss6t7p",
       "autoFixable": false
     },
     {
@@ -5278,7 +5278,7 @@
         "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
         "line": 2260
       },
-      "id": "type-error-1774601110763-etygq4frbg7",
+      "id": "type-error-1774846471055-n6bl7z7i8eq",
       "autoFixable": false
     },
     {
@@ -5290,7 +5290,7 @@
         "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
         "line": 2290
       },
-      "id": "type-error-1774601110763-6g4drjgsi5",
+      "id": "type-error-1774846471055-9f9q1u382jo",
       "autoFixable": false
     },
     {
@@ -5302,7 +5302,7 @@
         "file": "src/providers/patchHrmsMemberMetrics.ts",
         "line": 2523
       },
-      "id": "type-error-1774601110763-3wbribadxca",
+      "id": "type-error-1774846471055-vs5w2xbiocm",
       "autoFixable": false
     },
     {
@@ -5314,7 +5314,7 @@
         "file": "src/providers/patchHrmsMemberMetrics.ts",
         "line": 5337
       },
-      "id": "type-error-1774601110763-hroacue6lrs",
+      "id": "type-error-1774846471055-7gf0fo7e21d",
       "autoFixable": false
     },
     {
@@ -5326,7 +5326,7 @@
         "file": "src/providers/patchHrmsMemberMetrics.ts",
         "line": 5800
       },
-      "id": "type-error-1774601110763-0epzlliwelu7",
+      "id": "type-error-1774846471055-1l736f8kx99",
       "autoFixable": false
     },
     {
@@ -5338,7 +5338,7 @@
         "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdLogo.ts",
         "line": 5546
       },
-      "id": "type-error-1774601110763-9o8pbu10jcv",
+      "id": "type-error-1774846471055-brw5ri7pfqk",
       "autoFixable": false
     },
     {
@@ -5350,7 +5350,7 @@
         "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
         "line": 4043
       },
-      "id": "type-error-1774601110763-lp4ikgy8vlr",
+      "id": "type-error-1774846471055-74uk5bf9u8c",
       "autoFixable": false
     },
     {
@@ -5362,7 +5362,7 @@
         "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
         "line": 4407
       },
-      "id": "type-error-1774601110763-tzrfj08l9qk",
+      "id": "type-error-1774846471055-0r5cyno6z03",
       "autoFixable": false
     },
     {
@@ -5374,7 +5374,7 @@
         "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdProjects.ts",
         "line": 6381
       },
-      "id": "type-error-1774601110763-o7tpy6tlsb",
+      "id": "type-error-1774846471055-jip2wdqhu5i",
       "autoFixable": false
     },
     {
@@ -5386,7 +5386,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 2559
       },
-      "id": "type-error-1774601110763-q66sdjuc4g",
+      "id": "type-error-1774846471055-c3ft9i0070n",
       "autoFixable": false
     },
     {
@@ -5398,7 +5398,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 2778
       },
-      "id": "type-error-1774601110763-ikhj9dw2jq",
+      "id": "type-error-1774846471055-dd40yhb779",
       "autoFixable": false
     },
     {
@@ -5410,7 +5410,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 3228
       },
-      "id": "type-error-1774601110763-t4pecmnjqbq",
+      "id": "type-error-1774846471055-77mo157b4ww",
       "autoFixable": false
     },
     {
@@ -5422,7 +5422,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 3273
       },
-      "id": "type-error-1774601110763-psx7umw6owb",
+      "id": "type-error-1774846471055-a77r9z1t9tj",
       "autoFixable": false
     },
     {
@@ -5434,7 +5434,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 3805
       },
-      "id": "type-error-1774601110763-1an64oit8px",
+      "id": "type-error-1774846471055-eabjexvi31i",
       "autoFixable": false
     },
     {
@@ -5446,7 +5446,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 3931
       },
-      "id": "type-error-1774601110763-4h5re1p4cy6",
+      "id": "type-error-1774846471055-fdrvpgy0e4s",
       "autoFixable": false
     },
     {
@@ -5458,7 +5458,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 4329
       },
-      "id": "type-error-1774601110763-2nsmmo7klwc",
+      "id": "type-error-1774846471055-6q0pzxp8csi",
       "autoFixable": false
     },
     {
@@ -5470,7 +5470,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 5563
       },
-      "id": "type-error-1774601110763-t0cvpxbr5sn",
+      "id": "type-error-1774846471055-q49klxy7wsr",
       "autoFixable": false
     },
     {
@@ -5482,7 +5482,7 @@
         "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
         "line": 4099
       },
-      "id": "type-error-1774601110763-7248vmo0qux",
+      "id": "type-error-1774846471055-s9rtx1jowy",
       "autoFixable": false
     },
     {
@@ -5494,7 +5494,7 @@
         "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
         "line": 5007
       },
-      "id": "type-error-1774601110763-y8jsvmesgfs",
+      "id": "type-error-1774846471055-aop8izevd07",
       "autoFixable": false
     },
     {
@@ -5506,7 +5506,7 @@
         "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
         "line": 6586
       },
-      "id": "type-error-1774601110763-0t8zogky4kk",
+      "id": "type-error-1774846471055-21uu10e8t05j",
       "autoFixable": false
     },
     {
@@ -5518,7 +5518,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
         "line": 3317
       },
-      "id": "type-error-1774601110763-j0eagekshh",
+      "id": "type-error-1774846471055-fc8thot7nsb",
       "autoFixable": false
     },
     {
@@ -5530,7 +5530,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
         "line": 3352
       },
-      "id": "type-error-1774601110763-c14oxnllz7",
+      "id": "type-error-1774846471055-gjaut28nybn",
       "autoFixable": false
     },
     {
@@ -5542,7 +5542,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 4262
       },
-      "id": "type-error-1774601110763-s0kxtin43zl",
+      "id": "type-error-1774846471055-gcit3h1p4pp",
       "autoFixable": false
     },
     {
@@ -5554,7 +5554,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 4380
       },
-      "id": "type-error-1774601110763-pry9uxvedgr",
+      "id": "type-error-1774846471055-em4wi4rktr6",
       "autoFixable": false
     },
     {
@@ -5566,7 +5566,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 4495
       },
-      "id": "type-error-1774601110763-dptpnhrf4q",
+      "id": "type-error-1774846471055-2giozre029d",
       "autoFixable": false
     },
     {
@@ -5578,7 +5578,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 4662
       },
-      "id": "type-error-1774601110763-512lvborhjj",
+      "id": "type-error-1774846471055-dz5rwfprpiq",
       "autoFixable": false
     },
     {
@@ -5590,7 +5590,7 @@
         "file": "src/providers/patchHrmsMemberReportsBudget.ts",
         "line": 2871
       },
-      "id": "type-error-1774601110763-6mg718jgro5",
+      "id": "type-error-1774846471055-z2wojc4qxf",
       "autoFixable": false
     },
     {
@@ -5602,7 +5602,7 @@
         "file": "src/providers/patchHrmsMemberReportsBudget.ts",
         "line": 4352
       },
-      "id": "type-error-1774601110763-vvdyyf1c5w",
+      "id": "type-error-1774846471055-pw8p3zhzvub",
       "autoFixable": false
     },
     {
@@ -5614,7 +5614,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3132
       },
-      "id": "type-error-1774601110763-jv2wkoa2bra",
+      "id": "type-error-1774846471055-tupyp2920i",
       "autoFixable": false
     },
     {
@@ -5626,7 +5626,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3149
       },
-      "id": "type-error-1774601110763-l7883vyl6f",
+      "id": "type-error-1774846471055-kfzj85r2mar",
       "autoFixable": false
     },
     {
@@ -5638,7 +5638,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3206
       },
-      "id": "type-error-1774601110763-h49qwaro5sd",
+      "id": "type-error-1774846471055-m7ylaolymuo",
       "autoFixable": false
     },
     {
@@ -5650,7 +5650,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3223
       },
-      "id": "type-error-1774601110763-xj77esypd4",
+      "id": "type-error-1774846471055-r4d5rqz95om",
       "autoFixable": false
     },
     {
@@ -5662,7 +5662,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3268
       },
-      "id": "type-error-1774601110763-ywbtn6mrui",
+      "id": "type-error-1774846471055-7ocqwvu5vgv",
       "autoFixable": false
     },
     {
@@ -5674,7 +5674,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3285
       },
-      "id": "type-error-1774601110763-pwa3h6d6zu7",
+      "id": "type-error-1774846471055-iflmp1voiyi",
       "autoFixable": false
     },
     {
@@ -5686,7 +5686,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3386
       },
-      "id": "type-error-1774601110763-djgoritqtn9",
+      "id": "type-error-1774846471055-ky3px4u8xpf",
       "autoFixable": false
     },
     {
@@ -5698,7 +5698,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 3403
       },
-      "id": "type-error-1774601110763-jfq4h1asycn",
+      "id": "type-error-1774846471055-xp2l6bsxuwn",
       "autoFixable": false
     },
     {
@@ -5710,7 +5710,7 @@
         "file": "src/providers/patchHrmsMemberTimesheets.ts",
         "line": 5163
       },
-      "id": "type-error-1774601110763-x7ssc7lxq9",
+      "id": "type-error-1774846471055-qwdto18mgf9",
       "autoFixable": false
     },
     {
@@ -5722,7 +5722,7 @@
         "file": "src/providers/postHrmsAuthMemberJoin.ts",
         "line": 5658
       },
-      "id": "type-error-1774601110763-kqoruhsmbw",
+      "id": "type-error-1774846471055-2bz9lsvnbd",
       "autoFixable": false
     },
     {
@@ -5734,7 +5734,7 @@
         "file": "src/providers/postHrmsAuthMemberJoin.ts",
         "line": 7847
       },
-      "id": "type-error-1774601110763-c9nc01mdxt",
+      "id": "type-error-1774846471055-ya2e53z5w4l",
       "autoFixable": false
     },
     {
@@ -5746,7 +5746,7 @@
         "file": "src/providers/postHrmsMemberOrganizationsOrganizationIdRoles.ts",
         "line": 2677
       },
-      "id": "type-error-1774601110763-emr7pij7xb",
+      "id": "type-error-1774846471055-jja4adxqm7m",
       "autoFixable": false
     },
     {
@@ -5758,7 +5758,7 @@
         "file": "src/providers/postHrmsMemberTimesheets.ts",
         "line": 2187
       },
-      "id": "type-error-1774601110763-aowe3x6pxso",
+      "id": "type-error-1774846471055-dm3wfbgqndk",
       "autoFixable": false
     },
     {
@@ -5770,7 +5770,7 @@
         "file": "src/providers/postHrmsMemberTimesheets.ts",
         "line": 2857
       },
-      "id": "type-error-1774601110763-jf5owy6agrm",
+      "id": "type-error-1774846471055-jddxguyf9y",
       "autoFixable": false
     },
     {
@@ -5782,7 +5782,7 @@
         "file": "src/providers/putHrmsMemberTimelogsTimelogId.ts",
         "line": 2537
       },
-      "id": "type-error-1774601110763-d75c24uynam",
+      "id": "type-error-1774846471055-b8hxzwgt4do",
       "autoFixable": false
     },
     {
@@ -5794,7 +5794,7 @@
         "file": "src/transformers/HrmsMemberAtSummaryTransformer.ts",
         "line": 1224
       },
-      "id": "type-error-1774601110763-gyq3aihe1ql",
+      "id": "type-error-1774846471055-y27y9nil6xq",
       "autoFixable": false
     },
     {
@@ -5806,7 +5806,7 @@
         "file": "src/transformers/HrmsOrganizationRoleAtSummaryTransformer.ts",
         "line": 1644
       },
-      "id": "type-error-1774601110763-moko88u0c6",
+      "id": "type-error-1774846471055-zg8jaj9cmni",
       "autoFixable": false
     },
     {
@@ -5818,7 +5818,7 @@
         "file": "src/transformers/HrmsTimesheetTransformer.ts",
         "line": 2647
       },
-      "id": "type-error-1774601110763-hivwihiyhfj",
+      "id": "type-error-1774846471055-vi6an3m999d",
       "autoFixable": false
     },
     {
@@ -5830,7 +5830,7 @@
         "file": "src/transformers/HrmsTimesheetTransformer.ts",
         "line": 3137
       },
-      "id": "type-error-1774601110763-hyc13b612f5",
+      "id": "type-error-1774846471055-palnl7yea7j",
       "autoFixable": false
     }
   ],
@@ -5844,7 +5844,7 @@
         "file": "src/controllers/hrms/member/organizations/HrmsMemberOrganizationsController.ts",
         "line": 5031
       },
-      "id": "type-error-1774601110762-w15qx4j88g",
+      "id": "type-error-1774846471055-0fnv547st3tc",
       "autoFixable": false
     },
     {
@@ -5856,7 +5856,7 @@
         "file": "src/controllers/hrms/member/organizations/projects/HrmsMemberOrganizationsProjectsController.ts",
         "line": 4062
       },
-      "id": "type-error-1774601110762-2f424ntjkew",
+      "id": "type-error-1774846471055-7kk3km1utvh",
       "autoFixable": false
     },
     {
@@ -5868,7 +5868,7 @@
         "file": "src/controllers/hrms/member/organizations/tasks/HrmsMemberOrganizationsTasksController.ts",
         "line": 2667
       },
-      "id": "type-error-1774601110762-r8vf7jstbs",
+      "id": "type-error-1774846471055-xacw8tei5n",
       "autoFixable": false
     },
     {
@@ -5880,7 +5880,7 @@
         "file": "src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
         "line": 3597
       },
-      "id": "type-error-1774601110762-qm7jbsh9j5a",
+      "id": "type-error-1774846471055-5k3gooce8o7",
       "autoFixable": false
     },
     {
@@ -5892,7 +5892,7 @@
         "file": "src/controllers/hrms/member/projects/HrmsMemberProjectsController.ts",
         "line": 7181
       },
-      "id": "type-error-1774601110762-gsr7lj7e",
+      "id": "type-error-1774846471055-38smht6tuo1",
       "autoFixable": false
     },
     {
@@ -5904,7 +5904,7 @@
         "file": "src/providers/getHrmsMemberDashboardOrganization.ts",
         "line": 6022
       },
-      "id": "type-error-1774601110762-vgsg0hk5k6e",
+      "id": "type-error-1774846471055-2ttmrb8fomz",
       "autoFixable": false
     },
     {
@@ -5916,7 +5916,7 @@
         "file": "src/providers/getHrmsMemberOrganizationsOrganizationId.ts",
         "line": 1886
       },
-      "id": "type-error-1774601110762-m0ga9n0bwor",
+      "id": "type-error-1774846471055-jewley2bjqa",
       "autoFixable": false
     },
     {
@@ -5928,7 +5928,7 @@
         "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
         "line": 1600
       },
-      "id": "type-error-1774601110762-xie9kt4gw9h",
+      "id": "type-error-1774846471055-0hunsb9de9sd",
       "autoFixable": false
     },
     {
@@ -5940,7 +5940,7 @@
         "file": "src/providers/getHrmsMemberProjectsStatusAnalytics.ts",
         "line": 1957
       },
-      "id": "type-error-1774601110762-lupln3w77rb",
+      "id": "type-error-1774846471055-benet0oikc4",
       "autoFixable": false
     },
     {
@@ -5952,7 +5952,7 @@
         "file": "src/providers/patchHrmsMemberActivityLogs.ts",
         "line": 4271
       },
-      "id": "type-error-1774601110762-cjzjxodsuea",
+      "id": "type-error-1774846471055-qjfh8c38dgm",
       "autoFixable": false
     },
     {
@@ -5964,7 +5964,7 @@
         "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
         "line": 1993
       },
-      "id": "type-error-1774601110763-2a50w8t3uyf",
+      "id": "type-error-1774846471055-97aab6howe",
       "autoFixable": false
     },
     {
@@ -5976,7 +5976,7 @@
         "file": "src/providers/patchHrmsMemberDepartmentsDepartmentIdEmployeesMetrics.ts",
         "line": 4215
       },
-      "id": "type-error-1774601110763-rm7xdp4dtb",
+      "id": "type-error-1774846471055-qtef0u2ng8",
       "autoFixable": false
     },
     {
@@ -5988,7 +5988,7 @@
         "file": "src/providers/patchHrmsMemberOrganizationsOrganizationIdDepartments.ts",
         "line": 2596
       },
-      "id": "type-error-1774601110763-8pwq3nzx078",
+      "id": "type-error-1774846471055-w5iuyfpkytg",
       "autoFixable": false
     },
     {
@@ -6000,7 +6000,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 2970
       },
-      "id": "type-error-1774601110763-fn6soxg4n7b",
+      "id": "type-error-1774846471055-y1wpcagswdm",
       "autoFixable": false
     },
     {
@@ -6012,7 +6012,7 @@
         "file": "src/providers/patchHrmsMemberProjectsAnalytics.ts",
         "line": 3387
       },
-      "id": "type-error-1774601110763-09qpc21t0n64",
+      "id": "type-error-1774846471055-86qhh3pz626",
       "autoFixable": false
     },
     {
@@ -6024,7 +6024,7 @@
         "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
         "line": 3136
       },
-      "id": "type-error-1774601110763-vblw23nni1h",
+      "id": "type-error-1774846471055-hhvd309ahkr",
       "autoFixable": false
     },
     {
@@ -6036,7 +6036,7 @@
         "file": "src/providers/patchHrmsMemberProjectsProjectIdMembers.ts",
         "line": 5491
       },
-      "id": "type-error-1774601110763-evcrvii6wip",
+      "id": "type-error-1774846471055-42h68e5s1uu",
       "autoFixable": false
     },
     {
@@ -6048,7 +6048,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
         "line": 2892
       },
-      "id": "type-error-1774601110763-rym44oji9th",
+      "id": "type-error-1774846471055-5nukf12xuj4",
       "autoFixable": false
     },
     {
@@ -6060,7 +6060,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTasksAnalytics.ts",
         "line": 3571
       },
-      "id": "type-error-1774601110763-oap7h0xm84p",
+      "id": "type-error-1774846471055-wsj90cwzfbc",
       "autoFixable": false
     },
     {
@@ -6072,7 +6072,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 3248
       },
-      "id": "type-error-1774601110763-qnkjooftk4j",
+      "id": "type-error-1774846471055-8ezbt287lz7",
       "autoFixable": false
     },
     {
@@ -6084,7 +6084,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 3280
       },
-      "id": "type-error-1774601110763-o8oyzlmj7lc",
+      "id": "type-error-1774846471055-6smrrhfot3l",
       "autoFixable": false
     },
     {
@@ -6096,7 +6096,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 3604
       },
-      "id": "type-error-1774601110763-70iy5ecnoq9",
+      "id": "type-error-1774846471055-e39erkatuq",
       "autoFixable": false
     },
     {
@@ -6108,7 +6108,7 @@
         "file": "src/providers/patchHrmsMemberProjectsTopEmployees.ts",
         "line": 3879
       },
-      "id": "type-error-1774601110763-af1hkrsqvjv",
+      "id": "type-error-1774846471055-8ttwv62wsmt",
       "autoFixable": false
     },
     {
@@ -6120,7 +6120,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 2351
       },
-      "id": "type-error-1774601110763-fb3gog2g12q",
+      "id": "type-error-1774846471055-879k3dx01ig",
       "autoFixable": false
     },
     {
@@ -6132,7 +6132,7 @@
         "file": "src/providers/patchHrmsMemberReportsTopEmployees.ts",
         "line": 2665
       },
-      "id": "type-error-1774601110763-hetq8ocxoq",
+      "id": "type-error-1774846471055-bvcpfvughvj",
       "autoFixable": false
     },
     {
@@ -6144,13 +6144,13 @@
         "file": "src/providers/putHrmsMemberTimelogsTimelogId.ts",
         "line": 5096
       },
-      "id": "type-error-1774601110763-r6fgeyj0tnf",
+      "id": "type-error-1774846471055-ws65bqj6uv",
       "autoFixable": false
     }
   ],
   "meta": {
-    "evaluatedAt": "2026-03-27T08:45:11.689Z",
-    "totalDurationMs": 15471,
+    "evaluatedAt": "2026-03-30T04:54:31.534Z",
+    "totalDurationMs": 8088,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 369
   },

@@ -15,11 +15,11 @@
           "severity": "critical",
           "category": "syntax",
           "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-          "id": "syntax-1774845416496-1phv70m5c4y",
+          "id": "syntax-1774846110876-s54bihstob",
           "autoFixable": false
         }
       ],
-      "durationMs": 1,
+      "durationMs": 0,
       "metrics": {
         "failedAt": "no-source",
         "reason": "No TypeScript files found"
@@ -161,15 +161,15 @@
       "severity": "critical",
       "category": "syntax",
       "message": "No TypeScript files found in src/ — pipeline may not have generated code",
-      "id": "syntax-1774845416496-1phv70m5c4y",
+      "id": "syntax-1774846110876-s54bihstob",
       "autoFixable": false
     }
   ],
   "warnings": [],
   "suggestions": [],
   "meta": {
-    "evaluatedAt": "2026-03-30T04:36:56.497Z",
-    "totalDurationMs": 16,
+    "evaluatedAt": "2026-03-30T04:48:30.877Z",
+    "totalDurationMs": 12,
     "estimateVersion": "0.30.4",
     "evaluatedFiles": 0
   },
