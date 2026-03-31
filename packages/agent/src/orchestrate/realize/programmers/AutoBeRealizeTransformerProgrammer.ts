@@ -142,23 +142,105 @@ export namespace AutoBeRealizeTransformerProgrammer {
   export function writeTemplate(props: {
     plan: AutoBeRealizeTransformerPlan;
     schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
   }): string {
+    const recursive: string | null = getRecursiveProperty({
+      schemas: props.schemas,
+      typeName: props.plan.dtoTypeName,
+    });
+    return recursive !== null
+      ? writeRecursiveTemplate({ ...props, recursiveProperty: recursive })
+      : writeNormalTemplate(props);
+  }
+
+  function writeNormalTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  }): string {
+    const name: string = getName(props.plan.dtoTypeName);
+    const dto: string = props.plan.dtoTypeName;
+    const table: string = props.plan.databaseSchemaName;
+    const properties: string = Object.keys(props.schema.properties)
+      .map((k) => `  ${k}: ...,`)
+      .join("\n");
     return StringUtil.trim`
-      export namespace ${getName(props.plan.dtoTypeName)} {
-        export type Payload = Prisma.${props.plan.databaseSchemaName}GetPayload<ReturnType<typeof select>>;
+      export namespace ${name} {
+        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
           return {
             ...
-          } satisfies Prisma.${props.plan.databaseSchemaName}FindManyArgs;
+          } satisfies Prisma.${table}FindManyArgs;
         }
 
-        export async function transform(input: Payload): Promise<${props.plan.dtoTypeName}> {
+        export async function transform(input: Payload): Promise<${dto}> {
           return {
-${Object.keys(props.schema.properties)
-  .map((k) => `  ${k}: ...,`)
-  .join("\n")}
+${properties}
           };
+        }
+      }
+    `;
+  }
+
+  function writeRecursiveTemplate(props: {
+    plan: AutoBeRealizeTransformerPlan;
+    schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+    recursiveProperty: string;
+  }): string {
+    const name: string = getName(props.plan.dtoTypeName);
+    const dto: string = props.plan.dtoTypeName;
+    const table: string = props.plan.databaseSchemaName;
+    const rp: string = props.recursiveProperty;
+    const fk: string = `${rp}_id`;
+    const properties: string = Object.keys(props.schema.properties)
+      .map((k) =>
+        k === rp
+          ? `  ${k}: input.${fk} ? await cache.get(input.${fk}) : null,`
+          : `  ${k}: ...,`,
+      )
+      .join("\n");
+    return StringUtil.trim`
+      export namespace ${name} {
+        export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
+
+        export function select() {
+          return {
+            select: {
+              ...
+              ${fk}: true,
+              ${rp}: undefined, // DO NOT select recursive relation
+            },
+          } satisfies Prisma.${table}FindManyArgs;
+        }
+
+        export async function transform(
+          input: Payload,
+          cache: VariadicSingleton<Promise<${dto}>, [string]> = createCache(),
+        ): Promise<${dto}> {
+          return {
+${properties}
+          };
+        }
+
+        export async function transformAll(
+          inputs: Payload[],
+        ): Promise<${dto}[]> {
+          const cache = createCache();
+          return await ArrayUtil.asyncMap(inputs, (x) => transform(x, cache));
+        }
+
+        function createCache() {
+          const cache = new VariadicSingleton(
+            async (id: string): Promise<${dto}> => {
+              const record =
+                await MyGlobal.prisma.${table}.findFirstOrThrow({
+                  ...select(),
+                  where: { id },
+                });
+              return transform(record, cache);
+            },
+          );
+          return cache;
         }
       }
     `;
@@ -403,6 +485,7 @@ ${Object.keys(props.schema.properties)
     const imports: string[] = [
       `import { Prisma } from "@prisma/sdk";`,
       `import { ArrayUtil } from "@nestia/e2e";`,
+      `import { VariadicSingleton } from "tstl";`,
       `import typia, { tags } from "typia";`,
       "",
       `import { IEntity } from "@ORGANIZATION/PROJECT-api/lib/structures/IEntity";`,
@@ -460,6 +543,27 @@ ${Object.keys(props.schema.properties)
               .join("\n")}
           `,
         });
+  }
+
+  export function getRecursiveProperty(props: {
+    schemas: Record<string, AutoBeOpenApi.IJsonSchema>;
+    typeName: string;
+  }): string | null {
+    const schema: AutoBeOpenApi.IJsonSchema | undefined =
+      props.schemas[props.typeName];
+    if (schema === undefined || !AutoBeOpenApiTypeChecker.isObject(schema))
+      return null;
+
+    const selfRef: string = `#/components/schemas/${props.typeName}`;
+    const hasSelfRef = (s: AutoBeOpenApi.IJsonSchema): boolean => {
+      if (AutoBeOpenApiTypeChecker.isReference(s)) return s.$ref === selfRef;
+      if (AutoBeOpenApiTypeChecker.isOneOf(s))
+        return s.oneOf.some((sub) => hasSelfRef(sub));
+      return false;
+    };
+    for (const [key, value] of Object.entries(schema.properties))
+      if (value && hasSelfRef(value)) return key;
+    return null;
   }
 
   export const fixApplication = (props: {
