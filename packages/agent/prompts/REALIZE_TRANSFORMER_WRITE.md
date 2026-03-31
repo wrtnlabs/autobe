@@ -437,6 +437,7 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
 - [ ] Order: Payload → select() → transform()
 - [ ] No import statements
 - [ ] `satisfies Prisma.{table}FindManyArgs` on select() return and inline nested selects
+- [ ] select() uses inferred return type
 - [ ] Async transform() with Promise return type
 
 ### Transformer Reuse
