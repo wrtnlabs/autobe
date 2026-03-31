@@ -4,7 +4,8 @@ const meta: MetaRecord = {
   alpha: "Alpha Release (done)",
   beta: "Beta Release (done)",
   gamma: "Gamma Release (done)",
-  delta: "Delta Release (active)",
+  delta: "Delta Release (done)",
+  epsilon: "Epsilon Release (active)",
   "v1.0-legacy": {
     display: "hidden",
     title: "v1.0 Release (legacy plan)",

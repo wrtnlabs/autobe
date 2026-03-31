@@ -1,0 +1,239 @@
+import AutoBeDemoMovie from "../../../movies/demo/AutoBeDemoMovie";
+import AutoBeEpsilonRoadmap from "../../../template/diagrams/AutoBeEpsilonRoadmap.mdx";
+
+## Preface
+
+<AutoBeEpsilonRoadmap />
+
+초기 AutoBE는 API마다 코드를 따로 생성하고 테스트마다 코드를 따로 작성했다. 중복 코드가 넘쳐났고 모듈 재사용이 없었다. 그 상태에서 컴파일 성공률 100%를 먼저 달성했다. 이후 생성 코드의 모듈화를 도입하자 성공률이 40%로 내려갔다.
+
+Delta는 이것을 다시 100%로 끌어올리는 3개월이었다. Qwen3 같은 소형 오픈소스 모델로 반복 벤치마크하며 실패 사례를 발굴하고, Validation Logic을 강화하고, Schema Agent를 재설계했다.
+
+Epsilon은 이제 컴파일이 아닌 런타임을 본다. 서버가 실제로 기동되는가, API가 명세대로 응답하는가, E2E 테스트가 통과하는가. 3개월간 런타임 성공률 100%를 향해 달린다.
+
+## 1. Runtime 100%
+
+<br/>
+
+<AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
+
+컴파일 성공률 100%는 코드가 문법적으로 올바르다는 것을 보장한다. 하지만 런타임 성공은 그 이상을 요구한다. 서버가 실제로 뜨고, 요청을 정상 처리하며, 테스트가 통과해야 한다. 이를 위해 세 가지 도구를 개발한다.
+
+### 1.1. Estimation Agent
+
+**Estimation Agent**는 AutoBE가 생성한 결과물을 다각도로 평가하고 점수를 매기는 에이전트다. 단순히 "통과/실패"를 판정하는 것이 아니라, 생성물의 품질을 정량적으로 측정하고 약점을 발굴하며 개선이 필요한 사안들을 구체적으로 제시한다.
+
+평가 항목:
+
+- **설계 완전성**: 요구사항 문서에서 도출된 엔티티와 API가 빠짐없이 구현되었는가
+- **DB 설계 품질**: 인덱스 설계, 정규화 수준, FK 참조 무결성
+- **Interface 설계 품질**: REST 원칙 준수, DTO 일관성, 에러 응답 설계
+- **테스트 커버리지**: 각 엔드포인트에 대한 E2E 테스트 커버 여부, 엣지 케이스 포함 여부
+- **구현 품질**: Provider 로직의 정확성, 트랜잭션 처리, 예외 처리
+
+Estimation Agent는 점수와 함께 구체적인 개선 제안 목록을 출력한다. 이 출력은 개발자가 직접 활용하거나, 후술할 Benchmark Pipeline의 분석 재료로 활용된다.
+
+### 1.2. Runtime Feedback Agent
+
+**Runtime Feedback Agent**는 AutoBE가 생성한 백엔드 서버와 테스트 프로그램을 **실제로 실행**하고, 그 결과를 보고하는 에이전트다.
+
+동작 방식:
+
+1. 생성된 백엔드 애플리케이션을 로컬 환경에서 기동
+2. E2E 테스트 스위트를 순차적으로 실행
+3. 각 테스트의 성공/실패 여부와 에러 메시지를 수집
+4. 실패한 테스트에 대해 스택 트레이스와 원인 분석을 포함한 피드백 생성
+5. 피드백을 AutoBE 파이프라인에 주입하여 해당 Phase를 재생성
+
+이것이 Delta의 Compiler Feedback Loop와 대응하는 **Runtime Feedback Loop**다. 컴파일러가 정적 오류를 잡아냈다면, Runtime Feedback Agent는 동적 오류를 잡아낸다. 두 루프가 함께 작동함으로써 AutoBE는 컴파일도 되고 실제로도 동작하는 코드를 보장할 수 있게 된다.
+
+### 1.3. Benchmark Pipeline
+
+**Benchmark Pipeline**은 AutoBE의 지속적 품질 개선을 위한 자동화된 실험 프레임워크다. 다양한 LLM 모델과 다양한 요구사항 시나리오를 조합하여 백엔드 생성을 반복 실험하고, 그 결과를 체계적으로 분석한다.
+
+파이프라인 흐름:
+
+1. 복수의 모델(상용/오픈소스)과 복수의 시나리오(todo, bbs, shopping 등)로 백엔드 생성 실행
+2. Runtime Feedback Agent로 생성된 백엔드의 실제 동작 여부 측정
+3. Estimation Agent로 생성물의 품질 점수 산출
+4. 실패 케이스와 저점수 케이스를 분류하고 원인 분석
+5. AutoBE의 Validation Logic, 시스템 프롬프트, 아키텍처, 워크플로우 오케스트레이션에 대한 **개선 제안** 생성
+
+중요한 것은, Benchmark Pipeline은 어디까지나 **제안**을 출력하는 시스템이라는 점이다. 코드나 프롬프트를 자동으로 수정하지 않는다. 제안된 개선 사항은 개발자가 검토하고 직접 반영한다. 이는 Delta에서 Qwen3 벤치마크가 단순한 측정 도구가 아니라 디버깅의 나침반이었던 것과 같은 맥락이다.
+
+## 2. Workflow Enhancement
+
+Delta가 안정화를 이루기까지, AutoBE의 워크플로우 오케스트레이션은 **의도적으로** 단순하게 유지되었다. 폭포수 모델에 따라 오직 일방향으로만 흐르고, AI의 자기 리뷰와 개선은 단 한 번에 그쳤으며, 코드 생성 기회도 한 번뿐이었다.
+
+이것은 나름 전략이었다. 소형 모델로 반복 실험하여 최대한 많은 실패 사례를 발굴하고, Validation Logic을 강화하는 것이 목적이었기 때문에, 워크플로우에 기교를 부리지 않고 가장 단순한 형태를 취했다. 싸이클 횟수를 최소화함으로써 어느 단계에서 무엇이 실패하는지를 명확히 파악할 수 있었다.
+
+Delta에서 AutoBE가 안정화되고, 어지간한 모델에서 컴파일 성공률이 보장된 지금, AutoBE는 이제서야 기교를 부리기 시작한다.
+
+### 2.1. Cyclinic Workflow
+
+현재 Interface Phase의 Schema Refine은 AI가 한 번의 호출로 곧장 complete까지 처리하는 구조다. `IProps.request` 유니언에 `IComplete` 하나만 존재하기 때문에, 작성한 것을 스스로 돌아볼 여지가 없다.
+
+여기서 `IComplete`를 `IWrite`로 분리하고, 별도의 `IAutoBePreliminaryComplete`를 유니언에 추가한다. AI는 이제 `IWrite`로 초안을 작성하고, 스스로 검토한 뒤 만족스럽지 않으면 다시 `IWrite`를 호출할 수 있다. 충분히 완성되었다고 판단할 때 `IAutoBePreliminaryComplete`를 호출하며, 그 시점을 AI 스스로 결정한다.
+
+물론, 단 한 번의 기회만으로도 작동했던 것이 사실이다. 하지만 그것은 컴파일 성공률의 이야기였다. 런타임 수준의 품질, 즉 설계 완전성과 구현 정확성을 끌어올리려면 AI가 스스로 고칠 여지를 주어야 한다.
+
+```typescript
+//----
+// BEFORE
+//----
+export interface IProps {
+  thinking: string;
+  request:
+    | IComplete
+    | IAutoBePreliminaryGetAnalysisSections
+    | IAutoBePreliminaryGetDatabaseSchemas
+    | IAutoBePreliminaryGetInterfaceOperations
+    | IAutoBePreliminaryGetInterfaceSchemas;
+}
+export interface IComplete {
+  type: "complete";
+  review: string;
+  databaseSchema: string | null;
+  specification: string;
+  description: string;
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];
+  revises: AutoBeInterfaceSchemaPropertyRefine[];
+}
+
+//----
+// AFTER
+//----
+export interface IProps {
+  thinking: string;
+  request:
+    | IWrite
+    | IAutoBePreliminaryComplete
+    | IAutoBePreliminaryGetAnalysisSections
+    | IAutoBePreliminaryGetDatabaseSchemas
+    | IAutoBePreliminaryGetInterfaceOperations
+    | IAutoBePreliminaryGetInterfaceSchemas;
+}
+export interface IWrite {
+  type: "write";
+  review: string;
+  databaseSchema: string | null;
+  specification: string;
+  description: string;
+  excludes: AutoBeInterfaceSchemaPropertyExclude[];
+  revises: AutoBeInterfaceSchemaPropertyRefine[];
+}
+export interface IAutoBePreliminaryComplete {
+  type: "complete";
+}
+```
+
+### 2.2. Spiral Workflow
+
+기존의 폭포수 워크플로우는 항상 앞으로만 흘렀다. Database Phase가 끝나면 Interface Phase로, Interface Phase가 끝나면 Test Phase로. 이전 단계로 돌아가는 것은 불가능했다.
+
+이것 역시 의도적 선택이었다. 역방향 흐름을 허용하면 실패 원인을 추적하기 어렵기 때문에, 디버깅 기간 동안은 일방향을 고수했다.
+
+이제 역방향 전파를 지원한다. Interface Phase에서 DTO를 설계하다가 DB 스키마의 허점을 발견하면, Database Phase로 돌아가 수정하고 다시 앞으로 진행할 수 있다. Test Phase에서 API 명세의 결함을 발견하면 Interface Phase로 돌아갈 수 있다. 폭포수의 틀 안에서, 설계 불일치를 자동으로 수정하는 나선형 자가 치유 루프가 활성화되는 것이다.
+
+### 2.3. Orchestration Experiments
+
+순환 컨트롤러와 역방향 전파 외에도, AutoBE의 AI 에이전트 자체를 강화하기 위한 다양한 오케스트레이션 실험을 진행한다.
+
+실험 방향:
+
+- **멀티 드래프트 생성**: 동일한 작업에 대해 복수의 초안을 생성한 후 최선안을 선택하는 방식
+- **크리틱 에이전트 도입**: 생성 에이전트와 별개로 비평 전담 에이전트를 두어 상호 검증
+- **동적 에이전트 라우팅**: 작업의 복잡도와 성격에 따라 적합한 에이전트를 동적으로 선택
+- **컨텍스트 압축**: 긴 대화 맥락을 효율적으로 압축하여 토큰 낭비 없이 핵심 정보를 보존
+
+Benchmark Pipeline의 분석 결과를 바탕으로 실험 우선순위를 결정하며, 효과가 검증된 기법은 AutoBE의 표준 워크플로우에 점진적으로 통합한다.
+
+## 3. Human Modification Support
+
+AutoBE가 생성하는 백엔드 코드는 완성된 프로덕션 코드다. 그러나 현실에서 개발자는 생성된 코드를 직접 수정한다. 새로운 비즈니스 요구사항, 버그 수정, 성능 최적화 등 다양한 이유로 코드는 바뀐다. 문제는 AutoBE가 이렇게 변경된 코드를 더 이상 인식하지 못한다면, AutoBE의 가치는 일회성 코드 생성기로 전락한다는 것이다.
+
+이 기능은 원래 Delta 로드맵에 포함되어 있었다. 그러나 1분기 중 전략 방향이 바뀌었다. "AutoBE 생성물이 완벽하지 않더라도 개발자가 곧바로 사용하여 생산성을 향상시킬 수 있는 형태부터 먼저"라는 방향으로 전환되면서, Playground 애플리케이션 고도화, AutoBE 생성물 기반의 Claude Skills 구성, 발표 자료 작성 및 세미나 참여 등이 우선순위에 올랐다. Human Modification Support는 그렇게 미루어졌다.
+
+Epsilon에서 이 미션을 재개한다.
+
+### 3.1. Database Schema Parser
+
+사용자가 `schema.prisma` 파일을 직접 수정했을 때, 이를 파싱하여 `AutoBeDatabase.IApplication` AST로 변환한다. Prisma 스키마 문법에 맞는 파서를 구현하여 AutoBE의 내부 표현으로 매핑한다.
+
+파싱 대상:
+
+- **모델 정의**: 테이블명, 컬럼명, 타입, 제약 조건
+- **관계 정의**: `@relation` 어노테이션으로 표현된 FK 관계
+- **인덱스 정의**: `@@index`, `@@unique` 등의 인덱스 설정
+
+파싱 시 고려 사항:
+
+- `@default(autoincrement())`, `@updatedAt` 등 Prisma 특유 문법의 AutoBE AST 대응
+- 사용자가 추가한 커스텀 어노테이션이나 주석 보존
+- AutoBE가 생성하지 않은 신규 테이블/컬럼의 식별 및 통합
+
+### 3.2. Interface Schema Parser
+
+사용자가 NestJS Controller나 DTO 코드를 직접 수정했을 때, TypeScript 소스 코드를 파싱하여 `AutoBeOpenApi.IDocument` AST로 변환한다.
+
+**TypeScript 코드 파싱**:
+
+- NestJS Controller 파일에서 `@Get`, `@Post` 등 데코레이터를 파싱하여 오퍼레이션 정보 추출
+- DTO 클래스에서 타입 정의와 유효성 검사 데코레이터를 분석하여 스키마 정보 추출
+- TypeScript AST 파서를 활용한 정적 분석
+
+파싱 시 고려 사항:
+
+- 사용자가 추가한 신규 엔드포인트의 식별 및 통합
+- 기존 엔드포인트에 대한 변경사항 탐지 (파라미터 추가, 응답 타입 변경 등)
+- DTO 스키마 변경의 정확한 반영
+
+### 3.3. Requirements Sync Agent
+
+DB 스키마나 Interface가 변경되었다는 것은 요구사항이 변경되었다는 것을 의미한다. 개발자가 직접 코드를 수정했다는 것은, 원래 요구사항에 없던 새로운 요구사항이 생겼거나 기존 요구사항이 달라졌다는 신호다.
+
+**요구사항 동기화 에이전트**는 파싱된 AST를 분석하여 요구사항 문서를 자동으로 갱신한다:
+
+- **추가된 엔티티/속성 탐지**: 새로운 테이블이나 컬럼을 요구사항 문서에 반영
+- **변경된 관계 탐지**: FK 관계나 참조 구조가 변경되면 관련 요구사항 섹션 갱신
+- **추가된 엔드포인트 탐지**: 새로운 API 엔드포인트 추가 시 기능 요구사항 문서화
+- **변경된 스키마 탐지**: DTO 필드 추가/삭제/타입 변경을 요구사항에 반영
+
+에이전트는 변경 사항을 요약하여 사용자에게 제시하고, 승인 후 요구사항 문서를 업데이트한다. 이를 통해 코드와 문서 간의 일관성이 유지되고, 이후 대화에서도 AutoBE가 변경 이력을 인식한 채로 유지보수를 이어갈 수 있게 된다.
+
+## 4. Multilingual Support
+
+### 4.1. Lazy Joining ORM
+
+현재 Realize Agent는 DB에서 데이터를 가져와 DTO로 변환할 때 Prisma ORM 기반의 `select → transform` 이중 구조로 코드를 작성한다. 문제가 두 가지다.
+
+첫째, Prisma 전용 코드가 될 수밖에 없다. Java의 Hibernate로 전환하려면 select 방식부터 transform 로직까지 전부 다시 써야 한다. 멀티랭귀지 지원을 방해하는 구조적 원인이다.
+
+둘째, 이중으로 코드를 작성해야 하는 만큼 에러율이 높아진다. select 절과 transform 로직이 따로 존재하면 두 곳이 서로 맞아야 하고, AI가 둘 중 하나를 잘못 작성하면 런타임 오류로 이어진다.
+
+**Lazy Joining ORM**은 이 구조를 근본적으로 바꾸려는 연구다. ORM 래퍼 클래스를 제작하여, 개발자(혹은 AI)가 처음부터 모든 select/join이 완료된 객체인 것처럼 사용할 수 있게 한다. 실제 select와 join은 후행적으로 최적화되어 실행되고, DTO 바인딩까지 자동으로 처리된다. select planning 코드를 별도로 작성할 필요가 없어지는 것이다.
+
+이 접근이 성공하면 Prisma든 Java Hibernate든 동일한 상위 레이어 코드를 공유할 수 있고, AI가 작성해야 하는 코드의 양과 복잡도가 줄어 런타임 에러율도 낮아진다. 멀티랭귀지와 런타임 안정성, 두 문제를 동시에 공략하는 연구다.
+
+## 5. Documentation
+
+### 5.1. PR Articles Writing
+
+dev.to, Reddit, Hacker News 등 주요 개발자 커뮤니티에 기술 아티클을 지속적으로 게재한다. 주된 주제는 Function Calling Harness다. 6.75%의 첫 시도 성공률을 100%로 끌어올린 하네스 엔지니어링, Typia가 타입 하나로 스키마·파서·검증기·피드백 생성기를 자동화하는 원리, 소형 모델이 왜 최고의 QA 엔지니어인지 같은 내용이 중심이 된다.
+
+AutoBE의 런타임 성공률 도전도 아티클로 다룬다. 컴파일 성공과 런타임 성공의 차이, Runtime Feedback Loop의 설계, Benchmark Pipeline이 무엇을 측정하고 어떻게 개선으로 이어지는지 등이다.
+
+### 5.2. Seminar Participation
+
+컨퍼런스와 밋업에 지속적으로 참여한다. Qwen Meetup Korea에서 Function Calling Harness를 발표한 것처럼, AutoBE의 기술적 접근을 다양한 커뮤니티에 소개한다. 발표 주제는 아티클과 같은 맥락이다. 소형 오픈소스 모델로 시스템의 약점을 발굴하고 하네스를 강화하는 방식, 그리고 이것이 코드 생성을 넘어 다른 엔지니어링 도메인에도 적용될 수 있다는 관점을 공유한다.
+
+### 5.3. Tutorial Documents
+
+Guide Documents가 AutoBE의 작동 원리를 설명한다면, Tutorial Documents는 AutoBE를 실무에 써본 개발자가 체득한 노하우를 담는다. "이렇게 쓰면 더 잘 된다"는 실전 팁, 요구사항을 어떻게 작성해야 원하는 결과가 나오는지, 생성된 코드를 어떻게 다듬으면 프로덕션에 빠르게 올릴 수 있는지 같은 내용이다.
+
+예정 주제:
+
+- **요구사항 작성법**: 어떻게 대화하면 AutoBE가 더 정확한 백엔드를 생성하는가
+- **생성물 아키텍처 해설**: AutoBE가 생성하는 코드의 구조와 설계 철학. Collector/Transformer/Provider 계층이 왜 이렇게 나뉘는지, 어디를 건드리면 어떤 영향이 생기는지를 이해해야 유지보수가 가능하다
+- **Claude Code로 이어받기**: AutoBE가 생성한 백엔드를 Claude Code로 넘겨 유지보수하는 실전 워크플로우. AutoBE 생성물의 아키텍처를 이해한 Claude Code가 어떻게 기존 코드에 자연스럽게 기능을 추가하고 버그를 수정하는지 다룬다
+- **프론트엔드 연동**: AutoBE가 함께 생성하는 타입 세이프 SDK를 프론트엔드에 연동하는 방법, 그리고 OpenAPI 스펙을 바탕으로 프론트엔드 코드를 자동 생성하는 방법
