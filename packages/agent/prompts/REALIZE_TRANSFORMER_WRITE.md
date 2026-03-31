@@ -159,6 +159,23 @@ export namespace ShoppingSaleTransformer {
 }
 ```
 
+### 5.1. Why `select()` Has No Return Type Annotation
+
+`select()` relies on TypeScript's **literal type inference**. The inferred return type preserves the exact structure — which fields are `true`, which relations are nested objects. `Prisma.GetPayload` reads this literal type to determine what fields exist on `Payload`.
+
+`satisfies Prisma.{table}FindManyArgs` validates compatibility **without widening** — the inferred literal type is preserved intact.
+
+```typescript
+// ✅ How it works:
+export function select() {
+  return {
+    select: { id: true, name: true, category: CategoryTransformer.select() },
+  } satisfies Prisma.shopping_salesFindManyArgs;
+}
+// Inferred return type: { select: { id: true; name: true; category: { select: {...} } } }
+// → GetPayload sees exact fields → Payload has .id, .name, .category ✅
+```
+
 ## 6. Critical Rules
 
 **Anti-patterns that destroy type safety** — these cause COMPLETE type inference collapse (50-300 cascading errors from a single mistake):
@@ -166,7 +183,6 @@ export namespace ShoppingSaleTransformer {
 | Anti-Pattern | What Happens | Fix |
 |---|---|---|
 | `null` in select object | `GetPayload` becomes `never`, ALL field access fails | Use `true` for scalars, `{ select: {...} }` for relations |
-| Explicit return type on `select()` | Literal type widens to base type, relations disappear from Payload | Remove return type, use `satisfies` on return value |
 | `boolean` instead of `true` in select | Select value must be literal `true`, not type `boolean` | Replace `boolean` with `true` |
 | `satisfies FindManyArgs` on NESTED select (inside a relation) | Type mismatch at relation position | Only use `satisfies FindManyArgs` on the OUTERMOST select return and on inline HasMany relations |
 
@@ -421,6 +437,7 @@ export async function transform(input: Payload): Promise<IBbsArticle> {
 - [ ] Order: Payload → select() → transform()
 - [ ] No import statements
 - [ ] `satisfies Prisma.{table}FindManyArgs` on select() return and inline nested selects
+- [ ] select() uses inferred return type
 - [ ] Async transform() with Promise return type
 
 ### Transformer Reuse
