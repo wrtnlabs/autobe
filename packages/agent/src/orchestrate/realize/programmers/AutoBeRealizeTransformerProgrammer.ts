@@ -168,6 +168,7 @@ export namespace AutoBeRealizeTransformerProgrammer {
         export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
+          // implicit return type for better type inference
           return {
             ...
           } satisfies Prisma.${table}FindManyArgs;
@@ -204,6 +205,7 @@ ${properties}
         export type Payload = Prisma.${table}GetPayload<ReturnType<typeof select>>;
 
         export function select() {
+          // implicit return type for better type inference
           return {
             select: {
               ...
@@ -321,6 +323,11 @@ ${properties}
       path: "$input.request.draft",
       errors,
     });
+    validateSelectReturnType({
+      content: props.draft,
+      path: "$input.request.draft",
+      errors,
+    });
 
     // validate final
     if (props.revise.final !== null) {
@@ -333,6 +340,11 @@ ${properties}
       validateNeighbors({
         plan: props.plan,
         neighbors: props.neighbors,
+        content: props.revise.final,
+        path: "$input.request.revise.final",
+        errors,
+      });
+      validateSelectReturnType({
         content: props.revise.final,
         path: "$input.request.revise.final",
         errors,
@@ -513,6 +525,26 @@ ${properties}
         expected: `Namespace '${name}' to be present in the code.`,
         value: props.content,
         description: `The generated code does not contain the expected namespace '${name}'.`,
+      });
+  }
+
+  function validateSelectReturnType(props: {
+    content: string;
+    path: string;
+    errors: IValidation.IError[];
+  }): void {
+    if (/function\s+select\s*\(\s*\)\s*:/.test(props.content))
+      props.errors.push({
+        path: props.path,
+        expected:
+          "select() must use inferred return type (no explicit annotation).",
+        value: props.content,
+        description: StringUtil.trim`
+          select() has an explicit return type annotation. This widens the
+          literal type and destroys Prisma GetPayload inference, causing
+          cascading type errors. Remove the return type — use satisfies
+          on the return value instead.
+        `,
       });
   }
 
