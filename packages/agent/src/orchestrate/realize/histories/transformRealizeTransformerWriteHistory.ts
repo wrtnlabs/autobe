@@ -47,12 +47,13 @@ export const transformRealizeTransformerWriteHistory = async (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: recursiveProperty !== null
-          ? [
-              AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
-              AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_RECURSIVE,
-            ].join("\n\n")
-          : AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
+        text:
+          recursiveProperty !== null
+            ? [
+                AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
+                AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_RECURSIVE,
+              ].join("\n\n")
+            : AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
       },
       ...props.preliminary.getHistories(),
       {
