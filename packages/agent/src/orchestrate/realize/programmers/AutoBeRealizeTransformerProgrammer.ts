@@ -494,6 +494,7 @@ ${properties}
           `import { ${ref} } from "@ORGANIZATION/PROJECT-api/lib/structures/${ref}";`,
       ),
       "",
+      'import { MyGlobal } from "../MyGlobal";',
       `import { toISOStringSafe } from "../utils/toISOStringSafe";`,
     ];
     return imports;
