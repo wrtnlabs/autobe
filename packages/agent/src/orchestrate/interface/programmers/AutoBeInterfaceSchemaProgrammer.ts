@@ -18,8 +18,8 @@ export namespace AutoBeInterfaceSchemaProgrammer {
     /**
      * Database column type for type compatibility validation.
      *
-     * - `null` means this member is a relation (object/array), not a column,
-     *   so primitive type checking should be skipped.
+     * - `null` means this member is a relation (object/array), not a column, so
+     *   primitive type checking should be skipped.
      */
     type: AutoBeDatabase.IPlainField["type"] | null;
   }
