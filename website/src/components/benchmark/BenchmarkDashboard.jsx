@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, Fragment } from "react";
 
 /* ═══════════════════════════════════════════════════════
-   AutoBE Benchmark Leaderboard
+   AutoBE Estimate Leaderboard
    Design ref: LiveBench heatmap + Artificial Analysis clean layout
    ═══════════════════════════════════════════════════════ */
 
@@ -1027,7 +1027,7 @@ export function BenchmarkDashboard() {
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid #334155" }}>
         <div>
           <h1 style={{ fontSize: "28px", fontWeight: 700, margin: 0, color: "#f8fafc", letterSpacing: "-0.3px" }}>
-            Benchmark Leaderboard
+            Estimate Leaderboard
           </h1>
           <p style={{ fontSize: "14px", color: "#94a3b8", margin: "6px 0 0" }}>
             Multi-model evaluation across {data.projects.length} projects · Updated{" "}

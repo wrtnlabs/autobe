@@ -1,6 +1,6 @@
 {
   "name": "@autobe/rpc",
-  "version": "0.30.4",
+  "version": "0.30.5",
   "description": "AI backend server code generator",
   "main": "src/index.ts",
   "scripts": {

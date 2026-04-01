@@ -127,7 +127,7 @@ export class ContractEvaluator {
     }
 
     const scoreable = results.filter((r) => !r.skipped);
-    const skippedCount = results.length - scoreable.length;
+    const skipped = results.length - scoreable.length;
     const total = scoreable.length;
     const passed = scoreable.filter((r) => r.passed).length;
     const timings = scoreable
@@ -140,7 +140,7 @@ export class ContractEvaluator {
 
     return {
       phase: "goldenSet",
-      passed: total > 0 && passed === total,
+      passed: passed === total,
       score,
       maxScore: 100,
       weightedScore: score * (PHASE_WEIGHTS.goldenSet ?? 0),
@@ -148,12 +148,12 @@ export class ContractEvaluator {
       durationMs: Math.round(performance.now() - startTime),
       metrics: {
         contractEndpoints: total,
+        contractSkipped: skipped,
         contractPassed: passed,
         contractFailed: total - passed,
-        contractSkipped: skippedCount,
         contractPassRate: Math.round((passed / Math.max(total, 1)) * 100),
         contractAvgResponseMs: avgMs,
-        contractSchemaWarnings: scoreable.reduce(
+        contractSchemaWarnings: results.reduce(
           (sum, r) => sum + r.responseWarnings.length,
           0,
         ),
@@ -519,6 +519,7 @@ export class ContractEvaluator {
       // Skip endpoints with path parameters (we can't resolve them)
       // Excluded from scoring — neither pass nor fail
       if (path.includes("{") || path.includes(":")) {
+        console.log(`    skip: ${ep.method} ${ep.path} (unresolved path parameters)`);
         return {
           id: 0,
           name: `${ep.method} ${ep.path}`,
@@ -769,12 +770,10 @@ export class ContractEvaluator {
 
     const total = scoreable.length;
 
-    // 1. Status code score (40%) — 2xx success only
-    const statusOk = scoreable.filter(
-      (r) =>
-        r.statusCode !== undefined && r.statusCode >= 200 && r.statusCode < 300,
-    ).length;
-    const statusScore = (statusOk / total) * 100;
+    // 1. Status code score (40%) — 2xx success or expected 4xx (400/401/403 etc.)
+    //    "passed" already incorporates validateStatusCode(), so use it directly
+    const statusOk = scoreable.filter((r) => r.passed).length;
+    const statusScore = Math.round((statusOk / total) * 100);
 
     // 2. Schema match score (60%) — responses match declared schema
     const withWarnings = scoreable.filter(

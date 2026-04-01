@@ -1,6 +1,6 @@
 {
   "name": "@autobe/estimate",
-  "version": "0.30.4",
+  "version": "0.30.5",
   "description": "Code quality evaluation system for AutoBE generated code",
   "author": "Wrtn Technologies",
   "license": "AGPL-3.0",

@@ -23,6 +23,7 @@ export const orchestrateRealizeTransformerCorrectCasting = (
           schema: ctx.state().interface!.document.components.schemas[
             func.plan.dtoTypeName
           ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+          schemas: ctx.state().interface!.document.components.schemas,
         }),
       replaceImportStatements: (next) =>
         AutoBeRealizeTransformerProgrammer.replaceImportStatements(ctx, {
