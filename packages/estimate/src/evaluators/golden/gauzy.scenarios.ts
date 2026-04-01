@@ -249,12 +249,12 @@ export async function runGauzyScenarios(
   // 9. List organizations
   const orgListEndpoint = findEndpoint(routes, {
     pathKeywords: ["organizations", "orgs"],
-    method: "PATCH",
+    method: "GET",
   });
   if (!orgListEndpoint) {
     results.push(fail(9, "List organizations", "endpoint not found", "query"));
   } else {
-    const res = await http.patch(orgListEndpoint.url, {}, true);
+    const res = await http.get(orgListEndpoint.url, true);
     results.push(
       res.ok
         ? pass(9, "List organizations", "query")
@@ -294,12 +294,12 @@ export async function runGauzyScenarios(
   // 11. List departments
   const deptListEndpoint = findEndpoint(routes, {
     pathKeywords: ["departments"],
-    method: "PATCH",
+    method: "GET",
   });
   if (!deptListEndpoint) {
     results.push(fail(11, "List departments", "endpoint not found", "query"));
   } else {
-    const res = await http.patch(deptListEndpoint.url, {}, true);
+    const res = await http.get(deptListEndpoint.url, true);
     results.push(
       res.ok
         ? pass(11, "List departments", "query")
@@ -366,12 +366,12 @@ export async function runGauzyScenarios(
   // 14. List employees
   const employeeListEndpoint = findEndpoint(routes, {
     pathKeywords: ["employees"],
-    method: "PATCH",
+    method: "GET",
   });
   if (!employeeListEndpoint) {
     results.push(fail(14, "List employees", "endpoint not found", "query"));
   } else {
-    const res = await http.patch(employeeListEndpoint.url, {}, true);
+    const res = await http.get(employeeListEndpoint.url, true);
     results.push(
       res.ok
         ? pass(14, "List employees", "query")
@@ -494,12 +494,12 @@ export async function runGauzyScenarios(
   // 19. List roles
   const roleListEndpoint = findEndpoint(routes, {
     pathKeywords: ["roles"],
-    method: "PATCH",
+    method: "GET",
   });
   if (!roleListEndpoint) {
     results.push(fail(19, "List roles", "endpoint not found", "query"));
   } else {
-    const res = await http.patch(roleListEndpoint.url, {}, true);
+    const res = await http.get(roleListEndpoint.url, true);
     results.push(
       res.ok
         ? pass(19, "List roles", "query")

@@ -27,6 +27,7 @@ import type {
   EvaluationInput,
   EvaluationResult,
   PhaseResult,
+  ScoreBreakdown,
 } from "./types";
 import {
   AGENT_WEIGHTS,
@@ -131,16 +132,6 @@ export function createProgram(): Command {
     });
 
   return program;
-}
-
-/** Score breakdown with phase and agent contributions */
-interface ScoreBreakdown {
-  phaseScore: number;
-  phaseWeight: number;
-  phaseContribution: number;
-  agentScore: number | null;
-  agentWeight: number;
-  agentContribution: number;
 }
 
 export async function runCLI(options: CLIOptions): Promise<void> {
@@ -335,14 +326,28 @@ export async function runCLI(options: CLIOptions): Promise<void> {
       const agentPortion = agentAvg * AGENT_WEIGHT_RATIO;
       adjustedScore = Math.round(phasesPortion + agentPortion);
 
-      // Two-tier agent cap — only apply when enough agent coverage exists.
+      // Soft agent cap — only apply when enough agent coverage exists.
       // Successful agents must cover ≥50% of total weight to be conclusive.
+      // Uses proportional reduction instead of hard ceiling to avoid score cliffs.
       const successWeight = knownAgents
         .filter((r) => r.score >= 0)
         .reduce((sum, r) => sum + AGENT_WEIGHTS[r.agent], 0);
       if (successWeight >= totalWeight * 0.5) {
-        if (agentAvg < 25) adjustedScore = Math.min(adjustedScore, 40);
-        else if (agentAvg < 40) adjustedScore = Math.min(adjustedScore, 55);
+        if (agentAvg < 25) {
+          // Very low agent score: cap at max(adjustedScore, 40) with soft drag
+          const drag = Math.round((25 - agentAvg) * 0.5);
+          adjustedScore = Math.max(
+            Math.min(adjustedScore, 40),
+            adjustedScore - drag,
+          );
+        } else if (agentAvg < 40) {
+          // Low agent score: proportional drag toward 55
+          const drag = Math.round((40 - agentAvg) * 0.3);
+          adjustedScore = Math.max(
+            Math.min(adjustedScore, 55),
+            adjustedScore - drag,
+          );
+        }
       }
     }
     // If no known agents, adjustedScore stays as phase-only score
@@ -720,7 +725,13 @@ function printAgentResults(agentResults: AgentResult[]): void {
 
   for (const result of agentResults) {
     const scoreEmoji =
-      result.score >= 80 ? "✅" : result.score >= 60 ? "⚠️" : "❌";
+      result.score < 0
+        ? "⛔"
+        : result.score >= 80
+          ? "✅"
+          : result.score >= 60
+            ? "⚠️"
+            : "❌";
     const criticalCount = result.issues.filter(
       (i) => i.severity === "critical",
     ).length;

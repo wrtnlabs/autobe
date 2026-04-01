@@ -92,32 +92,37 @@ export class CompareEvaluator {
       throw new Error(`Report not found: ${jsonPath}`);
     }
 
-    const report: EstimateReport = JSON.parse(
-      fs.readFileSync(jsonPath, "utf-8"),
-    );
+    let report: EstimateReport;
+    try {
+      report = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+    } catch (err) {
+      throw new Error(
+        `Failed to parse report ${jsonPath}: ${err instanceof Error ? err.message : err}`,
+      );
+    }
 
     return {
       name,
       path: projectPath,
-      totalScore: report.totalScore || 0,
-      grade: report.grade || "F",
-      gatePass: report.phases?.gate?.passed || false,
+      totalScore: report.totalScore ?? 0,
+      grade: report.grade ?? "F",
+      gatePass: report.phases?.gate?.passed ?? false,
       scores: {
-        documentQuality: report.phases?.documentQuality?.score || 0,
-        requirementsCoverage: report.phases?.requirementsCoverage?.score || 0,
-        testCoverage: report.phases?.testCoverage?.score || 0,
-        logicCompleteness: report.phases?.logicCompleteness?.score || 0,
-        apiCompleteness: report.phases?.apiCompleteness?.score || 0,
+        documentQuality: report.phases?.documentQuality?.score ?? 0,
+        requirementsCoverage: report.phases?.requirementsCoverage?.score ?? 0,
+        testCoverage: report.phases?.testCoverage?.score ?? 0,
+        logicCompleteness: report.phases?.logicCompleteness?.score ?? 0,
+        apiCompleteness: report.phases?.apiCompleteness?.score ?? 0,
       },
       metrics: {
-        files: report.meta?.evaluatedFiles || 0,
+        files: report.meta?.evaluatedFiles ?? 0,
         controllers:
-          report.phases?.requirementsCoverage?.metrics?.controllerCount || 0,
+          report.phases?.requirementsCoverage?.metrics?.controllerCount ?? 0,
         providers:
-          report.phases?.requirementsCoverage?.metrics?.providerCount || 0,
+          report.phases?.requirementsCoverage?.metrics?.providerCount ?? 0,
         structures:
-          report.phases?.requirementsCoverage?.metrics?.structureCount || 0,
-        tests: report.phases?.testCoverage?.metrics?.testCount || 0,
+          report.phases?.requirementsCoverage?.metrics?.structureCount ?? 0,
+        tests: report.phases?.testCoverage?.metrics?.testCount ?? 0,
       },
       agentScores: this.extractAgentScores(report),
       penalties: this.extractPenalties(report),
@@ -140,10 +145,14 @@ export class CompareEvaluator {
     const llm = report.agentEvaluations.find(
       (a: AgentEvaluation) => a.agent === "LLMQualityAgent",
     );
+    const hallucination = report.agentEvaluations.find(
+      (a: AgentEvaluation) => a.agent === "HallucinationAgent",
+    );
 
     return {
       security: security?.score || 0,
       llmQuality: llm?.score || 0,
+      hallucination: hallucination?.score || 0,
     };
   }
 
@@ -168,6 +177,21 @@ export class CompareEvaluator {
   }
 
   private generateComparison(results: ProjectResult[]): CompareResult {
+    if (results.length === 0) {
+      return {
+        timestamp: new Date().toISOString(),
+        projectCount: 0,
+        projects: [],
+        ranking: [],
+        phaseComparison: [],
+        metricComparison: [],
+        summary: {
+          overallWinner: "N/A",
+          recommendation: "No projects to compare",
+        },
+      };
+    }
+
     // Ranking
     const ranking = results
       .map((r) => ({
@@ -266,6 +290,7 @@ export class CompareEvaluator {
       agentComparison = [
         { agent: "SecurityAgent", key: "security" as const },
         { agent: "LLMQualityAgent", key: "llmQuality" as const },
+        { agent: "HallucinationAgent", key: "hallucination" as const },
       ].map((a) => {
         const scores = results.map((r) => ({
           name: r.name,

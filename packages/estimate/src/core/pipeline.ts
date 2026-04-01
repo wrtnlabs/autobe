@@ -181,8 +181,8 @@ export class EvaluationPipeline {
     const phaseResults = await Promise.all(
       phaseStrategies.map(async (strategy) => {
         // Try to reuse cached result if dependencies haven't changed
-        if (canUseIncremental && canReusePhase(strategy.key, diff!)) {
-          const cached = cache!.phaseResults![strategy.key];
+        if (canUseIncremental && diff && canReusePhase(strategy.key, diff)) {
+          const cached = cache?.phaseResults?.[strategy.key];
           if (cached) {
             this.log(
               `  - ${strategy.label}: reusing cached result (score ${cached.score})`,
@@ -663,15 +663,19 @@ export class EvaluationPipeline {
       );
       const normFactor = activeSum > 0 ? 1 / activeSum : 1;
 
+      const safeScore = (v: number | undefined | null) => {
+        const n = v ?? 0;
+        return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 0;
+      };
       let rawScore = activePhases.reduce(
         (sum, s) =>
-          sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
+          sum +
+          safeScore(phases[s.key]?.score) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
       // Apply gate as a soft multiplier with smooth interpolation.
       // Gate failed → raw multiplier (score/100).
-      // Gate passed → linear ramp from 0.7 (at gate=0) to 1.0 (at gate=100),
-      // providing meaningful penalty for poor gate scores.
+      // Gate passed → linear ramp from 0.85 (at gate=0) to 1.0 (at gate=100).
       rawScore = Math.min(100, rawScore); // clamp before multiplier
       const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
       // C-4: Softer gate multiplier — 0.85 at gate=0 to 1.0 at gate=100
@@ -732,7 +736,8 @@ export class EvaluationPipeline {
       if (reference.jsdoc.totalMissing > 0) {
         const jsdocDenom =
           reference.jsdoc.totalApis || reference.jsdoc.totalMissing;
-        jsdocRatio = reference.jsdoc.totalMissing / jsdocDenom;
+        jsdocRatio =
+          jsdocDenom > 0 ? reference.jsdoc.totalMissing / jsdocDenom : 0;
         if (jsdocRatio > 0.3) {
           const normalizedRatio = Math.min(1, (jsdocRatio - 0.3) / 0.7);
           rawJsdocPenalty = Math.min(5, Math.round(normalizedRatio * 5));
@@ -741,6 +746,10 @@ export class EvaluationPipeline {
 
       // 4. Schema sync penalty (max 10)
       let rawSyncPenalty = 0;
+      // If no types exist at all, apply minimum penalty (missing schema)
+      if (reference.schemaSync.totalTypes === 0) {
+        rawSyncPenalty = 3;
+      }
       const syncTotal = Math.max(reference.schemaSync.totalTypes, 10);
       const emptyRatio = reference.schemaSync.emptyTypes / syncTotal;
       const mismatchRatio =
@@ -793,17 +802,20 @@ export class EvaluationPipeline {
       const scale =
         rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
 
+      // Round individual penalties for display, but use exact sum for effective total
       const warningPenalty = Math.round(rawWarningPenalty * scale);
       const dupPenalty = Math.round(rawDupPenalty * scale);
       const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
       const syncPenalty = Math.round(rawSyncPenalty * scale);
       const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
-      const effectivePenalty =
+      const effectivePenalty = Math.min(
+        MAX_COMBINED_PENALTY,
         warningPenalty +
-        dupPenalty +
-        jsdocPenalty +
-        syncPenalty +
-        suggestionPenalty;
+          dupPenalty +
+          jsdocPenalty +
+          syncPenalty +
+          suggestionPenalty,
+      );
 
       totalScore = Math.max(0, totalScore - effectivePenalty);
 

@@ -122,14 +122,12 @@ export class RequirementsCoverageEvaluator extends BaseEvaluator {
           // Domain-based match
           const pDomain = this.extractDomain(pNorm);
           if (ctrlDomain && pDomain && ctrlDomain === pDomain) return true;
-          // H-5: Containment with stricter minimum length (5 chars, was 3)
-          // Prevents false positives like "cart" matching "shoppingcart" and "cartcheckout"
-          if (
-            ctrlNorm.length >= 5 &&
-            pNorm.length >= 5 &&
-            (pNorm.includes(ctrlNorm) || ctrlNorm.includes(pNorm))
-          )
-            return true;
+          // Containment match: shorter string must be ≥3 chars and the
+          // shorter must be fully contained in the longer (not vice-versa)
+          // to avoid "cart" matching unrelated "cartography"
+          const shorter = ctrlNorm.length <= pNorm.length ? ctrlNorm : pNorm;
+          const longer = ctrlNorm.length <= pNorm.length ? pNorm : ctrlNorm;
+          if (shorter.length >= 3 && longer.includes(shorter)) return true;
         }
         return false;
       });

@@ -49,7 +49,7 @@ export class CompareReporter {
       );
       if (p.agentScores) {
         lines.push(
-          `- **Security**: ${p.agentScores.security}/100 | **LLM Quality**: ${p.agentScores.llmQuality}/100`,
+          `- **Security**: ${p.agentScores.security}/100 | **LLM Quality**: ${p.agentScores.llmQuality}/100 | **Hallucination**: ${p.agentScores.hallucination}/100`,
         );
       }
       if (p.penalties) {

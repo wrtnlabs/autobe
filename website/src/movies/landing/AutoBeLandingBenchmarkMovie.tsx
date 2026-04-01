@@ -67,7 +67,7 @@ export default function AutoBeLandingBenchmarkMovie() {
       <div className="max-w-5xl mx-auto">
         <FadeIn className="max-w-xl mb-16">
           <p className="text-xs font-medium tracking-[0.3em] uppercase text-neutral-600 mb-6">
-            Benchmark
+            Estimate
           </p>
           <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-5">
             Model leaderboard
@@ -117,7 +117,7 @@ export default function AutoBeLandingBenchmarkMovie() {
               href="/benchmark/index.html"
               className="text-sm text-neutral-500 hover:text-white transition-colors"
             >
-              View full benchmark dashboard →
+              View full estimate dashboard →
             </a>
           </div>
         </FadeIn>

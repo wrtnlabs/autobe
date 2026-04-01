@@ -58,6 +58,7 @@ export class LLMClient {
       max_tokens: this.maxTokens,
       temperature: 0,
       seed: 42,
+      response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -91,10 +92,8 @@ export class LLMClient {
     });
 
     const tokenUsage: TokenUsage = { input: inputTokens, output: outputTokens };
-    if (pricing) {
-      tokenUsage.inputCost = (inputTokens / 1_000_000) * pricing.input;
-      tokenUsage.outputCost = (outputTokens / 1_000_000) * pricing.output;
-    }
+    if (inputCost !== undefined) tokenUsage.inputCost = inputCost;
+    if (outputCost !== undefined) tokenUsage.outputCost = outputCost;
 
     return {
       content,

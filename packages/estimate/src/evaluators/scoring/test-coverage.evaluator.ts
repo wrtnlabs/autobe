@@ -187,11 +187,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
     } else {
       // Fallback: naive analysis (no @Controller/@TypedRoute found)
       const coverageRatio =
-        controllerCount > 0
-          ? Math.min(testCount / controllerCount, 1)
-          : testCount > 0
-            ? 1
-            : 0;
+        controllerCount > 0 ? Math.min(testCount / controllerCount, 1) : 0;
 
       score = this.computeCoverageScore(
         testCount,
@@ -417,10 +413,14 @@ export class TestCoverageEvaluator extends BaseEvaluator {
 
     // 2. Absolute coverage (25 pts) — reward testing MORE routes (log curve)
     // Prevents models from gaming score by generating fewer endpoints.
-    // Scale: 5→9pts, 10→17pts, 15→21pts, 20→23pts, 25+=25pts
+    // Dynamic cap based on total routes: max(25, totalRoutes) so large projects scale.
+    // Scale: 5→8pts, 10→14pts, 25→20pts, 50→23pts, 100+=25pts
+    const logCap = Math.max(25, analysis.totalRoutes);
     const absScore = Math.min(
       25,
-      Math.round((25 * Math.log2(analysis.coveredRoutes + 1)) / Math.log2(26)),
+      Math.round(
+        (25 * Math.log2(analysis.coveredRoutes + 1)) / Math.log2(logCap + 1),
+      ),
     );
     const routeScore = ratioScore + absScore;
 

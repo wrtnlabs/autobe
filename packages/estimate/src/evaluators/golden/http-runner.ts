@@ -55,7 +55,7 @@ export class HttpRunner {
   resolvePath(urlTemplate: string, params: Record<string, string>): string {
     let url = urlTemplate;
     for (const [key, value] of Object.entries(params)) {
-      url = url.replace(`:${key}`, value);
+      url = url.replaceAll(`:${key}`, value);
     }
     return url;
   }
@@ -72,16 +72,15 @@ export class HttpRunner {
     if (useToken && this.token)
       headers["Authorization"] = `Bearer ${this.token}`;
     const start = performance.now();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       const res = await fetch(`${this.baseUrl}${url}`, {
         method,
         headers,
         body: body ? JSON.stringify(body) : undefined,
         signal: controller.signal,
       });
-      clearTimeout(timeout);
       let responseBody: any = null;
       const text = await res.text();
       try {
@@ -102,6 +101,8 @@ export class HttpRunner {
         ok: false,
         durationMs: Math.round(performance.now() - start),
       };
+    } finally {
+      clearTimeout(timeout);
     }
   }
 }

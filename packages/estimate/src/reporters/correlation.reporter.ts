@@ -80,7 +80,8 @@ function mean(arr: number[]): number {
 function stddev(arr: number[]): number {
   if (arr.length < 2) return 0;
   const m = mean(arr);
-  const variance = arr.reduce((sum, x) => sum + (x - m) ** 2, 0) / arr.length;
+  const variance =
+    arr.reduce((sum, x) => sum + (x - m) ** 2, 0) / (arr.length - 1);
   return Math.sqrt(variance);
 }
 

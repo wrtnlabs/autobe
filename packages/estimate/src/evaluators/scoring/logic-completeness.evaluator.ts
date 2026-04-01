@@ -228,8 +228,9 @@ export class LogicCompletenessEvaluator extends BaseEvaluator {
   ): void {
     // Match empty method bodies, handling generic return types like Promise<Foo<Bar>>
     // by using a non-greedy match that stops at the opening brace of the body.
+    // Supports both multi-line and single-line empty bodies: `method() { }` or `method() {\n}`
     const emptyMethodPattern =
-      /(?:async\s+)?(\w+)\s*(?:<[^>]*>)?\s*\([^)]*\)\s*(?::\s*[^{]*?)?\s*\{\s*\n?\s*\}/g;
+      /(?:async\s+)?(\w+)\s*(?:<[^>]*>)?\s*\([^)]*\)\s*(?::\s*[^{]*?)?\s*\{\s*\}/g;
     let match;
     while ((match = emptyMethodPattern.exec(content)) !== null) {
       const name = match[1];

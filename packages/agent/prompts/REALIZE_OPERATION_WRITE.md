@@ -197,6 +197,16 @@ export async function patchShoppingSales(props: {
 }
 ```
 
+**Recursive Transformer (rare — only self-referencing DTOs)**: Some transformers have a `transformAll()` method because their DTO references itself (e.g., `ICategory.ISummary.parent` is `ICategory.ISummary`). Most transformers do NOT have this method. Check the transformer code via `getRealizeTransformers` — if `transformAll` exists, use it for list operations:
+
+```typescript
+// ✅ Recursive transformer (has transformAll) — use it
+data: await ShoppingMallCategoryAtSummaryTransformer.transformAll(data),
+
+// ✅ Normal transformer (no transformAll) — use ArrayUtil.asyncMap as usual
+data: await ArrayUtil.asyncMap(data, ShoppingSaleAtSummaryTransformer.transform),
+```
+
 ### 6.4. Transformer Only (UPDATE — Manual Mutation)
 
 When no Collector exists, write the mutation manually — but reuse the Transformer for the response.

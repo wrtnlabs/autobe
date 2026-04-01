@@ -27,6 +27,15 @@ export const transformRealizeTransformerWriteHistory = async (
     .flat()
     .find((m) => m.name === props.plan.databaseSchemaName)!;
   const document: AutoBeOpenApi.IDocument = ctx.state().interface!.document;
+  const schema: AutoBeOpenApi.IJsonSchemaDescriptive.IObject = document
+    .components.schemas[
+    props.plan.dtoTypeName
+  ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject;
+  const recursiveProperty: string | null =
+    AutoBeRealizeTransformerProgrammer.getRecursiveProperty({
+      schemas: document.components.schemas,
+      typeName: props.plan.dtoTypeName,
+    });
   const dto: Record<string, string> =
     await AutoBeRealizeTransformerProgrammer.writeStructures(
       ctx,
@@ -38,7 +47,13 @@ export const transformRealizeTransformerWriteHistory = async (
         id: v7(),
         created_at: new Date().toISOString(),
         type: "systemMessage",
-        text: AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
+        text:
+          recursiveProperty !== null
+            ? [
+                AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
+                AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_RECURSIVE,
+              ].join("\n\n")
+            : AutoBeSystemPromptConstant.REALIZE_TRANSFORMER_WRITE,
       },
       ...props.preliminary.getHistories(),
       {
@@ -65,9 +80,8 @@ export const transformRealizeTransformerWriteHistory = async (
           \`\`\`typescript
           ${AutoBeRealizeTransformerProgrammer.writeTemplate({
             plan: props.plan,
-            schema: ctx.state().interface!.document.components.schemas[
-              props.plan.dtoTypeName
-            ] as AutoBeOpenApi.IJsonSchemaDescriptive.IObject,
+            schema,
+            schemas: document.components.schemas,
           })}
           \`\`\`
 
