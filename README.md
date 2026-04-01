@@ -134,14 +134,42 @@ To illustrate this process, here are the phase outputs from our "Economic/Politi
 
 AutoBE includes an automated evaluation pipeline that scores generated backends across 13+ LLM models and 4 project types. View the live results at **[autobe.dev/benchmark](https://autobe.dev/benchmark/)**.
 
-The benchmark evaluates compilation correctness, documentation quality, requirements coverage, test coverage, logic completeness, and API completeness. Each model is scored 0-100 with grades A-F.
+The benchmark evaluates compilation correctness, documentation quality, requirements coverage, test coverage, logic completeness, API completeness, and AI agent analysis (security, hallucination, code quality). Each model is scored 0-100 with grades A-F.
 
 | Model | Todo | Reddit | Shopping | ERP | Avg |
 |-------|------|--------|----------|-----|-----|
 | glm-5 | 88 (B) | 87 (B) | 82 (B) | 87 (B) | **86** |
-| minimax-m2.7 | 90 (A) | 71 (C) | 77 (C) | 79 (C) | 79 |
 | claude-sonnet-4.6 | 87 (B) | 85 (B) | 72 (C) | 85 (B) | 82 |
+| gpt-5.4-mini | 89 (B) | 87 (B) | 74 (C) | 78 (C) | 82 |
 | qwen3-coder-next | 86 (B) | 76 (C) | 75 (C) | 88 (B) | 81 |
+| qwen3.5-27b | 88 (B) | 81 (B) | 77 (C) | 78 (C) | 81 |
+| minimax-m2.7 | 90 (A) | 71 (C) | 77 (C) | 79 (C) | 79 |
+| gpt-5.4 | 79 (C) | 78 (C) | 79 (C) | 80 (B) | 79 |
+
+### Running the Benchmark
+
+```bash
+# All models (default)
+corepack pnpm estimate
+
+# Single model only
+corepack pnpm estimate -- --model kimi-k2.5
+
+# Single project only
+corepack pnpm estimate -- --project todo
+
+# Model + project
+corepack pnpm estimate -- --model glm-5 --project shopping
+
+# If pnpm is globally installed
+pnpm estimate
+```
+
+Reports are saved to:
+
+```
+packages/estimate/reports/benchmark/{model}/{project}/estimate-report.json
+```
 
 Also, you don't need to use all phases - stop at any stage that fits your needs. Whether you want just requirements analysis, database design, API specification, or e2e testing, AutoBE adapts to your workflow.
 

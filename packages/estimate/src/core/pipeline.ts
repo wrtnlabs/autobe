@@ -181,8 +181,8 @@ export class EvaluationPipeline {
     const phaseResults = await Promise.all(
       phaseStrategies.map(async (strategy) => {
         // Try to reuse cached result if dependencies haven't changed
-        if (canUseIncremental && canReusePhase(strategy.key, diff!)) {
-          const cached = cache!.phaseResults![strategy.key];
+        if (canUseIncremental && diff && canReusePhase(strategy.key, diff)) {
+          const cached = cache?.phaseResults?.[strategy.key];
           if (cached) {
             this.log(
               `  - ${strategy.label}: reusing cached result (score ${cached.score})`,
@@ -663,9 +663,14 @@ export class EvaluationPipeline {
       );
       const normFactor = activeSum > 0 ? 1 / activeSum : 1;
 
+      const safeScore = (v: number | undefined | null) => {
+        const n = v ?? 0;
+        return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : 0;
+      };
       let rawScore = activePhases.reduce(
         (sum, s) =>
-          sum + (phases[s.key]?.score ?? 0) * PHASE_WEIGHTS[s.key] * normFactor,
+          sum +
+          safeScore(phases[s.key]?.score) * PHASE_WEIGHTS[s.key] * normFactor,
         0,
       );
       // Apply gate as a soft multiplier with smooth interpolation.

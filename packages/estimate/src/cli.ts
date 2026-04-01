@@ -27,6 +27,7 @@ import type {
   EvaluationInput,
   EvaluationResult,
   PhaseResult,
+  ScoreBreakdown,
 } from "./types";
 import {
   AGENT_WEIGHTS,
@@ -133,15 +134,6 @@ export function createProgram(): Command {
   return program;
 }
 
-/** Score breakdown with phase and agent contributions */
-interface ScoreBreakdown {
-  phaseScore: number;
-  phaseWeight: number;
-  phaseContribution: number;
-  agentScore: number | null;
-  agentWeight: number;
-  agentContribution: number;
-}
 
 export async function runCLI(options: CLIOptions): Promise<void> {
   if (!options.apiKey) {
