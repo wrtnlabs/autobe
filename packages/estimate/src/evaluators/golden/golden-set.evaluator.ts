@@ -143,22 +143,43 @@ export class GoldenSetEvaluator {
     const http = new HttpRunner(port);
     let results: ScenarioResult[];
 
-    switch (project) {
-      case "todo":
-        results = await runTodoScenarios(routes, http);
-        break;
-      case "bbs":
-        results = await runBbsScenarios(routes, http);
-        break;
-      case "reddit":
-        results = await runRedditScenarios(routes, http);
-        break;
-      case "shopping":
-        results = await runShoppingScenarios(routes, http);
-        break;
-      case "gauzy":
-        results = await runGauzyScenarios(routes, http);
-        break;
+    try {
+      switch (project) {
+        case "todo":
+          results = await runTodoScenarios(routes, http);
+          break;
+        case "bbs":
+          results = await runBbsScenarios(routes, http);
+          break;
+        case "reddit":
+          results = await runRedditScenarios(routes, http);
+          break;
+        case "shopping":
+          results = await runShoppingScenarios(routes, http);
+          break;
+        case "gauzy":
+          results = await runGauzyScenarios(routes, http);
+          break;
+      }
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      return {
+        phase: "goldenSet",
+        passed: false,
+        score: 0,
+        maxScore: 100,
+        weightedScore: 0,
+        issues: [
+          createIssue({
+            severity: "critical",
+            category: "runtime",
+            code: "GS004",
+            message: `Scenario execution crashed: ${errMsg}`,
+          }),
+        ],
+        durationMs: Math.round(performance.now() - startTime),
+        metrics: { totalFeatures: 0, passedFeatures: 0 },
+      };
     }
 
     const total = results.length;

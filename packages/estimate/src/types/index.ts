@@ -31,6 +31,7 @@ export type {
   JsDocPenalty,
   SchemaSyncPenalty,
   EvaluationPenalties,
+  ScoreBreakdown,
 } from "./score";
 export type {
   EvaluationContext,

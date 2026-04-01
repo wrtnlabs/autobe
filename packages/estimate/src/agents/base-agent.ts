@@ -105,13 +105,14 @@ export abstract class BaseAgent {
       };
       if (parsed.deepEvalScores) {
         const d = parsed.deepEvalScores;
+        const clamp = (v: unknown) =>
+          typeof v === "number" && Number.isFinite(v)
+            ? Math.max(0, Math.min(100, v))
+            : 0;
         result.deepEvalScores = {
-          faithfulness: typeof d.faithfulness === "number" ? d.faithfulness : 0,
-          relevancy: typeof d.relevancy === "number" ? d.relevancy : 0,
-          contextualPrecision:
-            typeof d.contextualPrecision === "number"
-              ? d.contextualPrecision
-              : 0,
+          faithfulness: clamp(d.faithfulness),
+          relevancy: clamp(d.relevancy),
+          contextualPrecision: clamp(d.contextualPrecision),
         };
       }
       return result;

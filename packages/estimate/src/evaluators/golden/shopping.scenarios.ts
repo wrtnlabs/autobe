@@ -21,6 +21,7 @@ export async function runShoppingScenarios(
   let orderItemId: string | null = null;
   let addressId: string | null = null;
   let reviewId: string | null = null;
+  let shipmentId: string | null = null;
 
   // ── Customer Auth ────────────────────────────────────────
 
@@ -827,11 +828,14 @@ export async function runShoppingScenarios(
       },
       true,
     );
-    results.push(
-      res.ok
-        ? pass(31, "Create shipment", "workflow")
-        : fail(31, "Create shipment", `status ${res.status}`, "workflow"),
-    );
+    if (res.ok) {
+      shipmentId = res.body?.id || res.body?.data?.id || null;
+      results.push(pass(31, "Create shipment", "workflow"));
+    } else {
+      results.push(
+        fail(31, "Create shipment", `status ${res.status}`, "workflow"),
+      );
+    }
   }
 
   // 32. Confirm delivery (customer)
@@ -839,15 +843,19 @@ export async function runShoppingScenarios(
     pathKeywords: ["deliver"],
     method: "PATCH",
   });
-  if (!deliveryEndpoint) {
+  if (!deliveryEndpoint || !shipmentId) {
     results.push(
-      fail(32, "Confirm delivery", "endpoint not found", "workflow"),
+      fail(
+        32,
+        "Confirm delivery",
+        !deliveryEndpoint ? "endpoint not found" : "no shipmentId",
+        "workflow",
+      ),
     );
   } else {
-    // Try with a placeholder; may fail if no shipment exists
     const url = http.resolvePath(deliveryEndpoint.url, {
       id: orderId || "unknown",
-      shipmentId: "unknown",
+      shipmentId: shipmentId,
     });
     const res = await http.patch(url, {}, true);
     results.push(
