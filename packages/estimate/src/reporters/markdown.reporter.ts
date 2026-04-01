@@ -23,7 +23,7 @@ const baseSum = SCORING_PHASE_KEYS.reduce(
 const WEIGHTS: Record<string, string> = Object.fromEntries(
   SCORING_PHASE_KEYS.map((k) => [
     k,
-    `${Math.round((PHASE_WEIGHTS[k] / baseSum) * 100)}%`,
+    baseSum > 0 ? `${Math.round((PHASE_WEIGHTS[k] / baseSum) * 100)}%` : "0%",
   ]),
 );
 

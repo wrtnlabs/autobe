@@ -189,9 +189,7 @@ export class TestCoverageEvaluator extends BaseEvaluator {
       const coverageRatio =
         controllerCount > 0
           ? Math.min(testCount / controllerCount, 1)
-          : testCount > 0
-            ? 1
-            : 0;
+          : 0;
 
       score = this.computeCoverageScore(
         testCount,

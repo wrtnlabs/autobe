@@ -122,7 +122,7 @@ export abstract class BaseAgent {
       );
       return {
         issues: [],
-        score: 0,
+        score: -1,
         summary: "Failed to parse agent response",
       };
     }

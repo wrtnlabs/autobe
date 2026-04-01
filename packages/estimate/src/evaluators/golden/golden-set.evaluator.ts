@@ -32,24 +32,21 @@ export class GoldenSetEvaluator {
 
   private aggregateTimings(results: ScenarioResult[]): {
     metrics: Record<string, number>;
-    p95: number;
   } {
     const timings = results
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
-    if (timings.length === 0) return { metrics: {}, p95: 0 };
+    if (timings.length === 0) return { metrics: {} };
     const sorted = [...timings].sort((a, b) => a - b);
-    const p95 = sorted[Math.floor(sorted.length * 0.95)];
     return {
       metrics: {
         avgResponseMs: Math.round(
           timings.reduce((a, b) => a + b, 0) / timings.length,
         ),
         p50ResponseMs: sorted[Math.floor(sorted.length * 0.5)],
-        p95ResponseMs: p95,
+        p95ResponseMs: sorted[Math.floor(sorted.length * 0.95)],
         maxResponseMs: sorted[sorted.length - 1],
       },
-      p95,
     };
   }
 
@@ -99,31 +96,6 @@ export class GoldenSetEvaluator {
     }
 
     return { score, categoryMetrics };
-  }
-
-  /** Calculate response time score (15% of total) — continuous interpolation */
-  private computeResponseTimeScore(p95: number): number {
-    if (p95 <= 0) return 100;
-    // Piecewise linear interpolation instead of discrete cliffs:
-    //   0–500ms → 100,  500–1000ms → 100→80,  1000–2000ms → 80→60,
-    //   2000–5000ms → 60→30,  5000–10000ms → 30→0,  >10000ms → 0
-    const tiers: [number, number][] = [
-      [0, 100],
-      [500, 100],
-      [1000, 80],
-      [2000, 60],
-      [5000, 30],
-      [10000, 0],
-    ];
-    for (let i = 1; i < tiers.length; i++) {
-      if (p95 <= tiers[i][0]) {
-        const [x0, y0] = tiers[i - 1];
-        const [x1, y1] = tiers[i];
-        const ratio = (p95 - x0) / (x1 - x0);
-        return Math.round(y0 + (y1 - y0) * ratio);
-      }
-    }
-    return 0;
   }
 
   /** Calculate data consistency score (15% of total) */
@@ -195,8 +167,7 @@ export class GoldenSetEvaluator {
     // Multi-dimensional scoring
     const { score: categoryScore, categoryMetrics } =
       this.computeCategoryScore(results);
-    const { metrics: timingMetrics, p95 } = this.aggregateTimings(results);
-    const responseTimeScore = this.computeResponseTimeScore(p95);
+    const { metrics: timingMetrics } = this.aggregateTimings(results);
     const consistencyScore = this.computeConsistencyScore(results);
 
     const score = Math.round(
@@ -243,7 +214,6 @@ export class GoldenSetEvaluator {
         failedFeatures: total - passed,
         passRate: Math.round((passed / total) * 100),
         categoryScore: Math.round(categoryScore),
-        responseTimeScore,
         consistencyScore,
         ...timingMetrics,
         categories: JSON.stringify(categoryMetrics),

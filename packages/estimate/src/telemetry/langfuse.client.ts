@@ -2,6 +2,7 @@ import { Langfuse } from "langfuse";
 import type { LangfuseSpanClient, LangfuseTraceClient } from "langfuse";
 
 import type { AgentResult } from "../agents/types";
+import { AGENT_WEIGHT_RATIO } from "../types";
 import type { EvaluationResult, PhaseResult } from "../types";
 
 let client: Langfuse | null = null;
@@ -141,17 +142,20 @@ export function recordAgentResults(
       },
     });
 
-    trace.score({
-      name: `agent_${agent.agent}`,
-      value: agent.score,
-      comment: `${agent.model} | ${agent.issues.length} issues`,
-    });
+    // Skip failed agents (score=-1) to avoid polluting telemetry
+    if (agent.score >= 0) {
+      trace.score({
+        name: `agent_${agent.agent}`,
+        value: agent.score,
+        comment: `${agent.model} | ${agent.issues.length} issues`,
+      });
+    }
   }
 
   // Update total score with agent-adjusted value
   trace.score({
     name: "total_with_agents",
     value: finalScore,
-    comment: `Final score including agent evaluation (30%)`,
+    comment: `Final score including agent evaluation (${Math.round(AGENT_WEIGHT_RATIO * 100)}%)`,
   });
 }

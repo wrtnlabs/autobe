@@ -126,9 +126,11 @@ export class ContractEvaluator {
       }
     }
 
-    const total = results.length;
-    const passed = results.filter((r) => r.passed).length;
-    const timings = results
+    const scoreable = results.filter((r) => !r.skipped);
+    const skippedCount = results.length - scoreable.length;
+    const total = scoreable.length;
+    const passed = scoreable.filter((r) => r.passed).length;
+    const timings = scoreable
       .map((r) => r.durationMs)
       .filter((d): d is number => d !== undefined);
     const avgMs =
@@ -138,7 +140,7 @@ export class ContractEvaluator {
 
     return {
       phase: "goldenSet",
-      passed: passed === total,
+      passed: total > 0 && passed === total,
       score,
       maxScore: 100,
       weightedScore: score * (PHASE_WEIGHTS.goldenSet ?? 0),
@@ -148,9 +150,10 @@ export class ContractEvaluator {
         contractEndpoints: total,
         contractPassed: passed,
         contractFailed: total - passed,
+        contractSkipped: skippedCount,
         contractPassRate: Math.round((passed / Math.max(total, 1)) * 100),
         contractAvgResponseMs: avgMs,
-        contractSchemaWarnings: results.reduce(
+        contractSchemaWarnings: scoreable.reduce(
           (sum, r) => sum + r.responseWarnings.length,
           0,
         ),

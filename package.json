@@ -16,7 +16,8 @@
     "sync:dependencies": "node deploy/sync_dependencies.js",
     "format": "prettier --write \"**/*.ts\"",
     "format:check": "prettier --check \"**/*.ts\"",
-    "lint": "biome check && eslint ."
+    "lint": "biome check && eslint .",
+    "estimate": "bash packages/estimate/run-benchmark.sh"
   },
   "keywords": [],
   "author": "Wrtn Technologies",

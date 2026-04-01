@@ -720,7 +720,13 @@ function printAgentResults(agentResults: AgentResult[]): void {
 
   for (const result of agentResults) {
     const scoreEmoji =
-      result.score >= 80 ? "✅" : result.score >= 60 ? "⚠️" : "❌";
+      result.score < 0
+        ? "⛔"
+        : result.score >= 80
+          ? "✅"
+          : result.score >= 60
+            ? "⚠️"
+            : "❌";
     const criticalCount = result.issues.filter(
       (i) => i.severity === "critical",
     ).length;

@@ -92,9 +92,14 @@ export class CompareEvaluator {
       throw new Error(`Report not found: ${jsonPath}`);
     }
 
-    const report: EstimateReport = JSON.parse(
-      fs.readFileSync(jsonPath, "utf-8"),
-    );
+    let report: EstimateReport;
+    try {
+      report = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
+    } catch (err) {
+      throw new Error(
+        `Failed to parse report ${jsonPath}: ${err instanceof Error ? err.message : err}`,
+      );
+    }
 
     return {
       name,
@@ -168,6 +173,18 @@ export class CompareEvaluator {
   }
 
   private generateComparison(results: ProjectResult[]): CompareResult {
+    if (results.length === 0) {
+      return {
+        timestamp: new Date().toISOString(),
+        projectCount: 0,
+        projects: [],
+        ranking: [],
+        phaseComparison: [],
+        metricComparison: [],
+        summary: { overallWinner: "N/A", recommendation: "No projects to compare" },
+      };
+    }
+
     // Ranking
     const ranking = results
       .map((r) => ({

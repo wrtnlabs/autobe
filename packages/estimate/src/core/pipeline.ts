@@ -793,17 +793,16 @@ export class EvaluationPipeline {
       const scale =
         rawTotal > MAX_COMBINED_PENALTY ? MAX_COMBINED_PENALTY / rawTotal : 1.0;
 
+      // Round individual penalties for display, but use exact sum for effective total
       const warningPenalty = Math.round(rawWarningPenalty * scale);
       const dupPenalty = Math.round(rawDupPenalty * scale);
       const jsdocPenalty = Math.round(rawJsdocPenalty * scale);
       const syncPenalty = Math.round(rawSyncPenalty * scale);
       const suggestionPenalty = Math.round(rawSuggestionPenalty * scale);
-      const effectivePenalty =
-        warningPenalty +
-        dupPenalty +
-        jsdocPenalty +
-        syncPenalty +
-        suggestionPenalty;
+      const effectivePenalty = Math.min(
+        MAX_COMBINED_PENALTY,
+        warningPenalty + dupPenalty + jsdocPenalty + syncPenalty + suggestionPenalty,
+      );
 
       totalScore = Math.max(0, totalScore - effectivePenalty);
 
