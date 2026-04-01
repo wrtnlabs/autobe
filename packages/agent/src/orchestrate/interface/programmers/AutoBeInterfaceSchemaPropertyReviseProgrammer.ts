@@ -400,7 +400,11 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
           `,
         });
       } else if (
-        !nonNull.some((s) => isTypeCompatible(props.property.type, s))
+        !nonNull.some(
+          (s) =>
+            props.property.type !== null &&
+            isTypeCompatible(props.property.type, s),
+        )
       ) {
         // no non-null member matches the DB column type
         const expected = describeExpectedSchema(props.property.type);
@@ -449,9 +453,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
     });
   };
 
-  /**
-   * Check whether a JSON Schema type is compatible with a database column type.
-   */
+  /** Check whether a JSON Schema type is compatible with a database column type. */
   const isTypeCompatible = (
     dbType: AutoBeDatabase.IPlainField["type"],
     schema: AutoBeOpenApi.IJsonSchema,
@@ -467,8 +469,7 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
         return AutoBeOpenApiTypeChecker.isString(schema);
       case "uuid":
         return (
-          AutoBeOpenApiTypeChecker.isString(schema) &&
-          schema.format === "uuid"
+          AutoBeOpenApiTypeChecker.isString(schema) && schema.format === "uuid"
         );
       case "uri":
         return (
@@ -484,7 +485,8 @@ export namespace AutoBeInterfaceSchemaPropertyReviseProgrammer {
   };
 
   /**
-   * Human-readable description of the expected JSON Schema for a DB column type.
+   * Human-readable description of the expected JSON Schema for a DB column
+   * type.
    */
   const describeExpectedSchema = (
     dbType: AutoBeDatabase.IPlainField["type"],
