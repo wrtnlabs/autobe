@@ -716,8 +716,8 @@ export class ContractEvaluator {
   }
 
   /**
-   * Resolve path parameters using collected resource IDs.
-   * Returns the resolved path, or null if a required param has no available ID.
+   * Resolve path parameters using collected resource IDs. Returns the resolved
+   * path, or null if a required param has no available ID.
    */
   private resolvePathParams(
     ep: EndpointSpec,
@@ -739,7 +739,8 @@ export class ContractEvaluator {
   }
 
   /**
-   * Find a resource ID for a path parameter by matching param name to resource names.
+   * Find a resource ID for a path parameter by matching param name to resource
+   * names.
    */
   private findResourceId(
     paramName: string,
@@ -785,9 +786,7 @@ export class ContractEvaluator {
     return null;
   }
 
-  /**
-   * Infer resource name from path: /api/articles/{id} → "articles"
-   */
+  /** Infer resource name from path: /api/articles/{id} → "articles" */
   private inferResourceFromPath(apiPath: string): string | null {
     const segments = apiPath.split("/").filter(Boolean);
     // Find the segment just before the first path param
@@ -799,9 +798,7 @@ export class ContractEvaluator {
     return null;
   }
 
-  /**
-   * Extract resource ID from a POST response body and store it.
-   */
+  /** Extract resource ID from a POST response body and store it. */
   private collectResourceId(
     apiPath: string,
     body: unknown,
@@ -824,8 +821,8 @@ export class ContractEvaluator {
   }
 
   /**
-   * Extract an ID value from a response body object.
-   * Handles both flat and nested (data/result wrapper) structures.
+   * Extract an ID value from a response body object. Handles both flat and
+   * nested (data/result wrapper) structures.
    */
   private extractId(body: unknown): string | null {
     if (!body || typeof body !== "object") return null;
