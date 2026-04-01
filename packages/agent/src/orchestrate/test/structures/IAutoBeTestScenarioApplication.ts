@@ -3,6 +3,7 @@ import { AutoBeTestScenario } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeTestScenarioApplication {
   /**
@@ -54,6 +55,7 @@ export namespace IAutoBeTestScenarioApplication {
      * repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
@@ -61,21 +63,20 @@ export namespace IAutoBeTestScenarioApplication {
   }
 
   /**
-   * Request to generate test scenarios for API endpoints.
+   * Submit test scenarios for API endpoints for validation.
    *
-   * Executes test scenario generation to create focused, implementable test
+   * Submits test scenario data to create focused, implementable test
    * scenarios (1-3 per endpoint) covering the most critical business workflows,
    * primary success paths, and important edge cases.
    */
-  export interface IComplete {
+  export interface IWrite {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
+     * Value "write" indicates this is a write submission for external
+     * validation.
      */
-    type: "complete";
+    type: "write";
 
     /**
      * Array of generated test scenarios for the target operation.
@@ -103,3 +104,7 @@ export namespace IAutoBeTestScenarioApplication {
     scenarios: AutoBeTestScenario[];
   }
 }
+
+/** @deprecated Use IAutoBeTestScenarioApplication.IWrite instead. */
+export type IAutoBeTestScenarioApplicationComplete =
+  IAutoBeTestScenarioApplication.IWrite;

@@ -3,6 +3,7 @@ import { AutoBeDatabaseGroupRevise } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseGroupReviewApplication {
   /** Process group review task or retrieve preliminary data. */
@@ -22,16 +23,17 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit group revisions after domain coverage analysis. */
-  export interface IComplete {
-    /** Type discriminator. Value "complete" indicates final submission. */
-    type: "complete";
+  /** Submit group revisions for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * How business requirements map to proposed group modifications,
@@ -54,3 +56,7 @@ export namespace IAutoBeDatabaseGroupReviewApplication {
     revises: AutoBeDatabaseGroupRevise[];
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseGroupReviewApplication.IWrite instead. */
+export type IAutoBeDatabaseGroupReviewApplicationComplete =
+  IAutoBeDatabaseGroupReviewApplication.IWrite;

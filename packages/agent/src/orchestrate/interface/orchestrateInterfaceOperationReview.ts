@@ -14,6 +14,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -102,13 +103,14 @@ async function process(
 
   const files: AutoBeDatabase.IFile[] =
     ctx.state().database?.result.data.files!;
-  const preliminary: AutoBePreliminaryController<
+
+  const cyclinic = new AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
-  > = new AutoBePreliminaryController({
+  >({
     application:
       typia.json.application<IAutoBeInterfaceOperationReviewApplication>(),
     source: SOURCE,
@@ -124,60 +126,92 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationReviewApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createReviewController({
-        preliminary,
-        databaseSchemas: files,
-        operation: props.operation,
-        build: (next: IAutoBeInterfaceOperationReviewApplication.IComplete) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: false,
-      ...transformInterfaceOperationReviewHistory({
-        preliminary,
-        operation: props.operation,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
 
-    const content: AutoBeOpenApi.IOperation | null =
-      pointer.value.content !== null
-        ? {
-            ...props.operation,
-            description: pointer.value.content.description,
-            requestBody: pointer.value.content.requestBody,
-            responseBody: pointer.value.content.responseBody,
+  return cyclinic.orchestrate<
+    IAutoBeInterfaceOperationReviewApplication.IWrite,
+    AutoBeOpenApi.IOperation | false
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeInterfaceOperationReviewApplication.IWrite;
           }
-        : null;
-    if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      operation: props.operation,
-      review: pointer.value.review,
-      plan: pointer.value.plan,
-      content,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      created_at: new Date().toISOString(),
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-    } satisfies AutoBeInterfaceOperationReviewEvent);
-    return out(result)(content ?? false);
-  });
+        | { type: "complete" }
+        | null
+      > = { value: null };
+
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createReviewController({
+          cyclinic,
+          databaseSchemas: files,
+          operation: props.operation,
+          action,
+        }),
+        enforceFunctionCall: false,
+        ...transformInterfaceOperationReviewHistory({
+          preliminary: context.preliminary,
+          operation: props.operation,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      const errors: IValidation.IError[] = [];
+      if (writeData.content !== null)
+        AutoBeInterfaceOperationProgrammer.validate({
+          accessor: "$input.request.content",
+          operation: {
+            ...props.operation,
+            description: writeData.content.description,
+            requestBody: writeData.content.requestBody,
+            responseBody: writeData.content.responseBody,
+          },
+          errors,
+        });
+      if (errors.length !== 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      const content: AutoBeOpenApi.IOperation | null =
+        lastWrite.content !== null
+          ? {
+              ...props.operation,
+              description: lastWrite.content.description,
+              requestBody: lastWrite.content.requestBody,
+              responseBody: lastWrite.content.responseBody,
+            }
+          : null;
+      if (content !== null) AutoBeInterfaceOperationProgrammer.fix(content);
+      if (result !== null)
+        ctx.dispatch({
+          type: SOURCE,
+          id: v7(),
+          operation: props.operation,
+          review: lastWrite.review,
+          plan: lastWrite.plan,
+          content,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          created_at: new Date().toISOString(),
+          step: ctx.state().analyze?.step ?? 0,
+          total: props.progress.total,
+          completed: ++props.progress.completed,
+        } satisfies AutoBeInterfaceOperationReviewEvent);
+      return content ?? false;
+    },
+  );
 }
 
 function createReviewController(props: {
-  preliminary: AutoBePreliminaryController<
+  cyclinic: AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
@@ -186,49 +220,45 @@ function createReviewController(props: {
   >;
   databaseSchemas: AutoBeDatabase.IFile[];
   operation: AutoBeOpenApi.IOperation;
-  build: (
-    reviews: IAutoBeInterfaceOperationReviewApplication.IComplete,
-  ) => void;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeInterfaceOperationReviewApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    | "analysisSections"
+    | "databaseSchemas"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceOperations"
+  > = props.cyclinic.getPreliminary();
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceOperationReviewApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationReviewApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] = [];
-    if (result.data.request.content !== null)
-      AutoBeInterfaceOperationProgrammer.validate({
-        accessor: "$input.request.content",
-        operation: {
-          ...props.operation,
-          description: result.data.request.content.description,
-          requestBody: result.data.request.content.requestBody,
-          responseBody: result.data.request.content.responseBody,
-        },
-        errors,
-      });
-    if (errors.length !== 0)
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    return result;
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
+    });
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceOperationReviewApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeInterfaceOperationReviewApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
   return {
     protocol: "class",
@@ -236,7 +266,10 @@ function createReviewController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write")
+          props.action.value = { type: "write", data: next.request };
+        else if (next.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeInterfaceOperationReviewApplication,
   };

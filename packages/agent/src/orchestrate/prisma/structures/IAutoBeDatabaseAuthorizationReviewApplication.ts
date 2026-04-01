@@ -3,6 +3,7 @@ import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseAuthorizationReviewApplication {
   /** Process authorization review task or retrieve preliminary data. */
@@ -22,16 +23,17 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit table revisions after authentication requirements analysis. */
-  export interface IComplete {
-    /** Type discriminator. Value "complete" indicates final submission. */
-    type: "complete";
+  /** Submit table revisions for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * How authentication requirements map to proposed table modifications,
@@ -54,3 +56,7 @@ export namespace IAutoBeDatabaseAuthorizationReviewApplication {
     revises: AutoBeDatabaseComponentTableRevise[];
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseAuthorizationReviewApplication.IWrite instead. */
+export type IAutoBeDatabaseAuthorizationReviewApplicationComplete =
+  IAutoBeDatabaseAuthorizationReviewApplication.IWrite;

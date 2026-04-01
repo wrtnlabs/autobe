@@ -3,6 +3,7 @@ import { AutoBeTestScenario } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetInterfaceOperations";
 import { IAutoBePreliminaryGetInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeTestScenarioReviewApplication {
   /**
@@ -54,6 +55,7 @@ export namespace IAutoBeTestScenarioReviewApplication {
      * repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetInterfaceOperations
@@ -61,21 +63,20 @@ export namespace IAutoBeTestScenarioReviewApplication {
   }
 
   /**
-   * Request to review and refine a single test scenario.
+   * Submit a test scenario review for validation.
    *
-   * Executes comprehensive scenario review to validate implementability,
+   * Submits comprehensive scenario review to validate implementability,
    * dependency correctness, authentication flows, and business logic coverage,
    * producing refined scenario ready for test implementation.
    */
-  export interface IComplete {
+  export interface IWrite {
     /**
      * Type discriminator for the request.
      *
-     * Determines which action to perform: preliminary data retrieval or actual
-     * task execution. Value "complete" indicates this is the final task
-     * execution request.
+     * Value "write" indicates this is a write submission for external
+     * validation.
      */
-    type: "complete";
+    type: "write";
 
     /**
      * Comprehensive review analysis of the test scenario.
@@ -131,3 +132,7 @@ export namespace IAutoBeTestScenarioReviewApplication {
     content: AutoBeTestScenario | "erase" | null;
   }
 }
+
+/** @deprecated Use IAutoBeTestScenarioReviewApplication.IWrite instead. */
+export type IAutoBeTestScenarioReviewApplicationComplete =
+  IAutoBeTestScenarioReviewApplication.IWrite;

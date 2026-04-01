@@ -5,6 +5,7 @@ import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/I
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceAuthorizationApplication {
   /** Process task or retrieve preliminary data. */
@@ -24,6 +25,7 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -31,10 +33,10 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Request to generate authorization operations. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit authorization operations for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the actor's authentication requirements and schema context. */
     analysis: string;
@@ -46,3 +48,7 @@ export namespace IAutoBeInterfaceAuthorizationApplication {
     operations: AutoBeOpenApi.IOperation[] & tags.MinItems<1>;
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceAuthorizationApplication.IWrite instead. */
+export type IAutoBeInterfaceAuthorizationApplicationComplete =
+  IAutoBeInterfaceAuthorizationApplication.IWrite;

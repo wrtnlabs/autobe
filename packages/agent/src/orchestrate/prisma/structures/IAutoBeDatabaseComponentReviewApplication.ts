@@ -3,6 +3,7 @@ import { AutoBeDatabaseComponentTableRevise } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseComponentReviewApplication {
   /** Process component review task or retrieve preliminary data. */
@@ -22,16 +23,17 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Submit table revisions after requirements analysis. */
-  export interface IComplete {
-    /** Type discriminator. Value "complete" indicates final submission. */
-    type: "complete";
+  /** Submit table revisions for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * How requirements map to proposed table modifications, identifying
@@ -56,3 +58,7 @@ export namespace IAutoBeDatabaseComponentReviewApplication {
     revises: AutoBeDatabaseComponentTableRevise[];
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseComponentReviewApplication.IWrite instead. */
+export type IAutoBeDatabaseComponentReviewApplicationComplete =
+  IAutoBeDatabaseComponentReviewApplication.IWrite;

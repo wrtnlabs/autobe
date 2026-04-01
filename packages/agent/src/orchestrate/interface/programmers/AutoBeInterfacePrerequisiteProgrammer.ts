@@ -20,7 +20,7 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
   export const validate = (props: {
     document: AutoBeOpenApi.IDocument;
     operation: AutoBeOpenApi.IOperation;
-    complete: IAutoBeInterfacePrerequisiteApplication.IComplete;
+    complete: IAutoBeInterfacePrerequisiteApplication.IWrite;
     accessor?: string;
     dict?: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   }): IValidation.IError[] => {
@@ -97,7 +97,7 @@ export namespace AutoBeInterfacePrerequisiteProgrammer {
           \`\`\`
         `,
       });
-    props.complete.prerequisites.forEach((raw, i) => {
+    props.complete.prerequisites.forEach((raw: AutoBeOpenApi.IPrerequisite, i: number) => {
       const it: HashMap.Iterator<
         AutoBeOpenApi.IEndpoint,
         AutoBeOpenApi.IOperation

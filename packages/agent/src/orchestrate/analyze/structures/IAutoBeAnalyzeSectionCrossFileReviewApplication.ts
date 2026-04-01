@@ -1,3 +1,4 @@
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /**
@@ -18,14 +19,15 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationProps {
 
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
-    | IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete
+    | IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite
+    | IComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
-/** Complete the cross-file section consistency review with per-file verdicts. */
-export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete {
-  /** Type discriminator for completion request. */
-  type: "complete";
+/** Submit the cross-file section consistency review with per-file verdicts. */
+export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite {
+  /** Type discriminator for write submission. */
+  type: "write";
 
   /** Per-file review results. */
   fileResults: IAutoBeAnalyzeSectionCrossFileReviewApplicationFileResult[];
@@ -100,3 +102,7 @@ export interface IAutoBeAnalyzeSectionCrossFileReviewApplicationReviewIssue {
   /** Supporting evidence from the source text. */
   evidence?: string | null;
 }
+
+/** @deprecated Use IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite instead. */
+export type IAutoBeAnalyzeSectionCrossFileReviewApplicationComplete =
+  IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite;

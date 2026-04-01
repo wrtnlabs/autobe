@@ -10,6 +10,7 @@ import typia, { ILlmApplication, IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformPrismaAuthorizationHistory } from "./histories/transformPrismaAuthorizationHistory";
 import { AutoBeDatabaseAuthorizationProgrammer } from "./programmers/AutoBeDatabaseAuthorizationProgrammer";
@@ -50,9 +51,9 @@ async function process(
     instruction: string;
   },
 ): Promise<AutoBeDatabaseComponent> {
-  const preliminary: AutoBePreliminaryController<
+  const cyclinic = new AutoBeCyclinicController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  > = new AutoBePreliminaryController({
+  >({
     application:
       typia.json.application<IAutoBeDatabaseAuthorizationApplication>(),
     source: SOURCE,
@@ -64,98 +65,125 @@ async function process(
     state: ctx.state(),
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-        actors: props.actors,
-        prefix: props.prefix,
-      }),
-      enforceFunctionCall: true,
-      ...transformPrismaAuthorizationHistory({
-        actors: props.actors,
-        prefix: props.prefix,
-        group: props.group,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  return cyclinic.orchestrate<
+    IAutoBeDatabaseAuthorizationApplication.IWrite,
+    AutoBeDatabaseComponent
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeDatabaseAuthorizationApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-    // Remove duplicated tables using shared utility
-    const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
-      [
-        {
-          ...props.group,
-          tables: pointer.value.tables,
-        },
-      ],
-    );
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      component,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-    });
-    return out(result)(component);
-  });
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          cyclinic,
+          action,
+          actors: props.actors,
+          prefix: props.prefix,
+        }),
+        enforceFunctionCall: true,
+        ...transformPrismaAuthorizationHistory({
+          actors: props.actors,
+          prefix: props.prefix,
+          group: props.group,
+          instruction: props.instruction,
+          preliminary: context.preliminary,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      const errors: IValidation.IError[] = [];
+      AutoBeDatabaseAuthorizationProgrammer.validate({
+        errors,
+        path: "$input.request.tables",
+        actors: props.actors,
+        prefix: props.prefix,
+        tables: writeData.tables,
+      });
+      if (errors.length > 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      // Remove duplicated tables using shared utility
+      const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
+        [
+          {
+            ...props.group,
+            tables: lastWrite.tables,
+          },
+        ],
+      );
+      if (result !== null)
+        ctx.dispatch({
+          type: SOURCE,
+          id: v7(),
+          created_at: new Date().toISOString(),
+          analysis: lastWrite.analysis,
+          rationale: lastWrite.rationale,
+          component,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          step: ctx.state().analyze?.step ?? 0,
+        });
+      return component;
+    },
+  );
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBeDatabaseAuthorizationApplication.IComplete | null>;
-  preliminary: AutoBePreliminaryController<
+  cyclinic: AutoBeCyclinicController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+  >;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeDatabaseAuthorizationApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
   >;
   actors: AutoBeAnalyze.IActor[];
   prefix: string | null;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+  > = props.cyclinic.getPreliminary();
+
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeDatabaseAuthorizationApplication.IProps> => {
     const result: IValidation<IAutoBeDatabaseAuthorizationApplication.IProps> =
       typia.validate<IAutoBeDatabaseAuthorizationApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] = [];
-    AutoBeDatabaseAuthorizationProgrammer.validate({
-      errors,
-      path: "$input.request.tables",
-      actors: props.actors,
-      prefix: props.prefix,
-      tables: result.data.request.tables,
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
     });
-    if (errors.length > 0)
-      return {
-        success: false,
-        errors,
-        data: result.data,
-      };
-    return result;
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeDatabaseAuthorizationApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeDatabaseAuthorizationApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
   return {
     protocol: "class",
@@ -163,8 +191,10 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write")
+          props.action.value = { type: "write", data: input.request };
+        else if (input.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeDatabaseAuthorizationApplication,
   };

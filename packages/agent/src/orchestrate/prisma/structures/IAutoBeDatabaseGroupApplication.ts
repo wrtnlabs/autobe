@@ -4,6 +4,7 @@ import { tags } from "typia";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseGroupApplication {
   /** Process group generation task or retrieve preliminary data. */
@@ -23,16 +24,17 @@ export namespace IAutoBeDatabaseGroupApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
       | IAutoBePreliminaryGetPreviousDatabaseSchemas;
   }
 
-  /** Generate database component groups organized by business domains. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit database component groups for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Analysis of the requirements structure, domain organization, and
@@ -52,3 +54,7 @@ export namespace IAutoBeDatabaseGroupApplication {
     groups: AutoBeDatabaseGroup[] & tags.MinItems<1>;
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseGroupApplication.IWrite instead. */
+export type IAutoBeDatabaseGroupApplicationComplete =
+  IAutoBeDatabaseGroupApplication.IWrite;

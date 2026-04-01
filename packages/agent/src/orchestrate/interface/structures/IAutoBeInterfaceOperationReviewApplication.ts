@@ -5,6 +5,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceOperationReviewApplication {
   /**
@@ -34,6 +35,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
      * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -43,7 +45,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Review and validate an API operation. Can ONLY modify IOperation fields:
+   * Submit API operation review for validation. Can ONLY modify IOperation fields:
    *
    * - `specification`: Can fix implementation details, algorithm descriptions,
    *   database query logic
@@ -55,9 +57,9 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
    * Return null to reject if issues exist in non-modifiable fields (path,
    * method, parameters, etc.).
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Operation-level review findings organized by severity. */
     review: string;
@@ -85,3 +87,7 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
     "specification" | "description" | "requestBody" | "responseBody"
   > {}
 }
+
+/** @deprecated Use IAutoBeInterfaceOperationReviewApplication.IWrite instead. */
+export type IAutoBeInterfaceOperationReviewApplicationComplete =
+  IAutoBeInterfaceOperationReviewApplication.IWrite;

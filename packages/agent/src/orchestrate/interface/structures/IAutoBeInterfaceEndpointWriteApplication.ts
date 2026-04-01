@@ -5,6 +5,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceEndpointWriteApplication {
   /** Process task or retrieve preliminary data. */
@@ -24,6 +25,7 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -32,10 +34,10 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to complete endpoint generation. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit endpoint designs for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of requirements and database schema for endpoint design. */
     analysis: string;
@@ -53,3 +55,7 @@ export namespace IAutoBeInterfaceEndpointWriteApplication {
     designs: AutoBeInterfaceEndpointDesign[];
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceEndpointWriteApplication.IWrite instead. */
+export type IAutoBeInterfaceEndpointWriteApplicationComplete =
+  IAutoBeInterfaceEndpointWriteApplication.IWrite;

@@ -8,6 +8,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceSchemaComplementApplication {
   /** Process task or retrieve preliminary data. */
@@ -27,6 +28,7 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -38,10 +40,10 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Add a missing schema definition referenced by $ref in components.schemas. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit a missing schema definition referenced by $ref in components.schemas for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the missing type's purpose and reference context. */
     analysis: string;
@@ -56,3 +58,7 @@ export namespace IAutoBeInterfaceSchemaComplementApplication {
     design: AutoBeInterfaceSchemaDesign;
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceSchemaComplementApplication.IWrite instead. */
+export type IAutoBeInterfaceSchemaComplementApplicationComplete =
+  IAutoBeInterfaceSchemaComplementApplication.IWrite;

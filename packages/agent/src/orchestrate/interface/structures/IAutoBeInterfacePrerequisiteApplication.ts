@@ -8,6 +8,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfacePrerequisiteApplication {
   /** Process task or retrieve preliminary data. */
@@ -27,6 +28,7 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -38,10 +40,10 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Request to analyze and generate API operation prerequisites. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit API operation prerequisites for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the operation's resource dependencies. */
     analysis: string;
@@ -56,3 +58,7 @@ export namespace IAutoBeInterfacePrerequisiteApplication {
     prerequisites: AutoBeOpenApi.IPrerequisite[];
   }
 }
+
+/** @deprecated Use IAutoBeInterfacePrerequisiteApplication.IWrite instead. */
+export type IAutoBeInterfacePrerequisiteApplicationComplete =
+  IAutoBeInterfacePrerequisiteApplication.IWrite;

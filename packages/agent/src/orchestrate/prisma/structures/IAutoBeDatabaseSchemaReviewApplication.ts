@@ -4,6 +4,7 @@ import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/I
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseSchemaReviewApplication {
   /** Process schema review task or retrieve preliminary data. */
@@ -22,6 +23,7 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -30,12 +32,11 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
   }
 
   /**
-   * Review and refine database schema models for normalization, relationships,
-   * and performance.
+   * Submit database schema review for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Review analysis covering normalization, relationships, indexes, naming,
@@ -59,3 +60,7 @@ export namespace IAutoBeDatabaseSchemaReviewApplication {
     content: AutoBeDatabaseSchemaDefinition | null;
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseSchemaReviewApplication.IWrite instead. */
+export type IAutoBeDatabaseSchemaReviewApplicationComplete =
+  IAutoBeDatabaseSchemaReviewApplication.IWrite;

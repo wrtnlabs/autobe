@@ -13,6 +13,7 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformTestScenarioReviewHistory } from "./histories/transformTestScenarioReviewHistory";
 import { AutoBeTestScenarioProgrammer } from "./programmers/AutoBeTestScenarioProgrammer";
@@ -99,61 +100,120 @@ async function process(
   const authorizations: AutoBeInterfaceAuthorization[] =
     ctx.state().interface?.authorizations ?? [];
 
-  const preliminary: AutoBePreliminaryController<
+  const cyclinic = new AutoBeCyclinicController<
     "analysisSections" | "interfaceOperations" | "interfaceSchemas"
-  > = new AutoBePreliminaryController({
+  >({
     application: typia.json.application<IAutoBeTestScenarioReviewApplication>(),
     source: SOURCE,
     kinds: ["analysisSections", "interfaceOperations", "interfaceSchemas"],
     state: ctx.state(),
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<AutoBeTestScenario | "erase" | null> = {
-      value: null,
-    };
+  return cyclinic.orchestrate<
+    IAutoBeTestScenarioReviewApplication.IWrite,
+    AutoBeTestScenario | "erase"
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeTestScenarioReviewApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          operation: props.operation,
+          scenario: props.scenario,
+          authorizations,
+          cyclinic,
+          action,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformTestScenarioReviewHistory({
+          state: ctx.state(),
+          scenario: props.scenario,
+          instruction: props.instruction,
+          preliminary: context.preliminary,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      if (
+        writeData.content === null ||
+        writeData.content === "erase"
+      )
+        return { success: true };
+
+      const errors: IValidation.IError[] = [];
+      AutoBeTestScenarioProgrammer.validate({
+        errors,
         dict: props.dict,
         operation: props.operation,
-        scenario: props.scenario,
-        authorizations,
-        preliminary,
-        build: (improved) => {
-          pointer.value = improved;
+        scenario: writeData.content,
+        accessor: "$input.request.content",
+      });
+      if (errors.length > 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      // Fulfill missing auth dependencies if content is a scenario
+      let improved: AutoBeTestScenario | "erase" | null = lastWrite.content;
+      if (improved !== null && improved !== "erase") {
+        AutoBeTestScenarioProgrammer.fulfill({
+          dict: props.dict,
+          authorizations,
+          operation: props.operation,
+          scenario: improved,
+        });
+      }
+
+      // Create event
+      const event: AutoBeTestScenarioReviewEvent = {
+        type: SOURCE,
+        id: v7(),
+        created_at: new Date().toISOString(),
+        metric: result?.metric ?? {
+          attempt: 0,
+          success: 0,
+          consent: 0,
+          validationFailure: 0,
+          invalidJson: 0,
         },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformTestScenarioReviewHistory({
-        state: ctx.state(),
-        scenario: props.scenario,
-        instruction: props.instruction,
-        preliminary,
-      }),
-    });
+        tokenUsage: result?.tokenUsage ?? {
+          total: 0,
+          input: { total: 0, cached: 0 },
+          output: {
+            total: 0,
+            reasoning: 0,
+            accepted_prediction: 0,
+            rejected_prediction: 0,
+          },
+        },
+        endpoint: props.scenario.endpoint,
+        original: props.scenario,
+        improved,
+        acquisition: cyclinic.getPreliminary().getAcquisition(),
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        step: ctx.state().interface?.step ?? 0,
+      };
 
-    // Create event with original and improved scenarios
-    const event: AutoBeTestScenarioReviewEvent = {
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      endpoint: props.scenario.endpoint,
-      original: props.scenario,
-      improved: pointer.value,
-      acquisition: preliminary.getAcquisition(),
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().interface?.step ?? 0,
-    };
-
-    ctx.dispatch(event);
-    return out(result)(event.improved ?? props.scenario);
-  });
+      if (result !== null) ctx.dispatch(event);
+      return improved ?? props.scenario;
+    },
+  );
 }
 
 /**
@@ -165,13 +225,9 @@ async function process(
  * - Validating review responses against TypeScript types
  * - Processing preliminary data requests (analysisSections, interfaceOperations,
  *   interfaceSchemas)
- * - Capturing improved scenario in build callback
+ * - Capturing improved scenario in action pointer
  *
  * @param props - Controller configuration
- * @param props.dict - Endpoint to operation lookup map
- * @param props.scenario - Original scenario being reviewed
- * @param props.preliminary - Controller for preliminary data requests
- * @param props.build - Callback to capture improved scenario
  * @returns Agentica controller instance for LLM function calling
  */
 function createController(props: {
@@ -179,11 +235,22 @@ function createController(props: {
   scenario: AutoBeTestScenario;
   operation: AutoBeOpenApi.IOperation;
   authorizations: AutoBeInterfaceAuthorization[];
-  preliminary: AutoBePreliminaryController<
+  cyclinic: AutoBeCyclinicController<
     "analysisSections" | "interfaceOperations" | "interfaceSchemas"
   >;
-  build: (improved: AutoBeTestScenario | "erase" | null) => void;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeTestScenarioReviewApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    "analysisSections" | "interfaceOperations" | "interfaceSchemas"
+  > = props.cyclinic.getPreliminary();
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeTestScenarioReviewApplication.IProps> => {
@@ -193,44 +260,25 @@ function createController(props: {
     // Validation failed at type level
     if (result.success === false) return result;
 
-    // Preliminary request (getAnalysisSections, getInterfaceOperations, getInterfaceSchemas)
-    // Delegate validation to preliminary controller
-    if (result.data.request.type !== "complete") {
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-    } else if (
-      result.data.request.content === null ||
-      result.data.request.content === "erase"
-    )
-      return result;
+    const req = result.data.request;
+    // write/complete: pass through
+    if (req.type === "write" || req.type === "complete") return result;
 
-    // Complete request validation
-    const errors: IValidation.IError[] = [];
-    AutoBeTestScenarioProgrammer.validate({
-      errors,
-      dict: props.dict,
-      operation: props.operation,
-      scenario: result.data.request.content,
-      accessor: "$input.request.content",
+    // Preliminary request: delegate to preliminary controller
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
     });
-    if (errors.length > 0) {
-      return {
-        success: false,
-        errors,
-        data: result.data,
-      };
-    }
-    return result;
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeTestScenarioReviewApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeTestScenarioReviewApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
 
   return {
@@ -239,21 +287,10 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") {
-          // Fulfill missing authentication dependencies if content is not null
-          if (
-            next.request.content !== null &&
-            next.request.content !== "erase"
-          ) {
-            AutoBeTestScenarioProgrammer.fulfill({
-              dict: props.dict,
-              authorizations: props.authorizations,
-              operation: props.operation,
-              scenario: next.request.content,
-            });
-          }
-          props.build(next.request.content);
-        }
+        if (next.request.type === "write")
+          props.action.value = { type: "write", data: next.request };
+        else if (next.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeTestScenarioReviewApplication,
   };

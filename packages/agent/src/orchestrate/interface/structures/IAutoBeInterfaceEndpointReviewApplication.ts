@@ -5,6 +5,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceEndpointReviewApplication {
   /**
@@ -27,6 +28,7 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -36,12 +38,12 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
   }
 
   /**
-   * Complete endpoint review with revision decisions (keep/create/update/erase)
-   * for ALL endpoints.
+   * Submit endpoint review with revision decisions (keep/create/update/erase)
+   * for ALL endpoints for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Summary of issues found and fixes applied. State "No issues found." if
@@ -57,3 +59,7 @@ export namespace IAutoBeInterfaceEndpointReviewApplication {
     revises: AutoBeInterfaceEndpointRevise[];
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceEndpointReviewApplication.IWrite instead. */
+export type IAutoBeInterfaceEndpointReviewApplicationComplete =
+  IAutoBeInterfaceEndpointReviewApplication.IWrite;

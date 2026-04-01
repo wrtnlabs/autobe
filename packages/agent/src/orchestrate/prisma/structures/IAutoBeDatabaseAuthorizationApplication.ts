@@ -4,6 +4,7 @@ import { tags } from "typia";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Designs ALL actor-related authentication tables. The Database Component agent
@@ -38,6 +39,7 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
      * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -45,12 +47,11 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
   }
 
   /**
-   * Complete authorization table design for all actors. Each actor must have a
-   * main actor table and a session table.
+   * Submit authorization table design for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of all actors' authentication requirements and patterns. */
     analysis: string;
@@ -68,3 +69,7 @@ export namespace IAutoBeDatabaseAuthorizationApplication {
     tables: AutoBeDatabaseComponentTableDesign[] & tags.MinItems<1>;
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseAuthorizationApplication.IWrite instead. */
+export type IAutoBeDatabaseAuthorizationApplicationComplete =
+  IAutoBeDatabaseAuthorizationApplication.IWrite;

@@ -13,6 +13,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -91,7 +92,8 @@ async function process(
       "TOPK",
       { log: false, logPrefix: "interfacePrerequisite" },
     );
-  const preliminary: AutoBePreliminaryController<
+
+  const cyclinic = new AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
@@ -100,7 +102,7 @@ async function process(
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
     | "previousInterfaceSchemas"
-  > = new AutoBePreliminaryController({
+  >({
     application:
       typia.json.application<IAutoBeInterfacePrerequisiteApplication>(),
     source: SOURCE,
@@ -124,60 +126,110 @@ async function process(
       interfaceOperations: [props.operation],
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfacePrerequisiteApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        dict: props.dict,
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-        build: (next) => {
-          pointer.value = next;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfacePrerequisiteHistory({
-        document: props.document,
-        operation: props.operation,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
 
-    const event: AutoBeInterfacePrerequisiteEvent = {
-      type: SOURCE,
-      id: v7(),
-      endpoint: {
-        path: props.operation.path,
-        method: props.operation.method,
-      },
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      prerequisites: pointer.value.prerequisites,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      step: ctx.state().database?.step ?? 0,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(event);
-  });
+  const value = await cyclinic.orchestrate<
+    IAutoBeInterfacePrerequisiteApplication.IWrite,
+    AutoBeInterfacePrerequisiteEvent | null
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeInterfacePrerequisiteApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
+
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          dict: props.dict,
+          document: props.document,
+          operation: props.operation,
+          cyclinic,
+          action,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfacePrerequisiteHistory({
+          document: props.document,
+          operation: props.operation,
+          preliminary: context.preliminary,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      const errors: IValidation.IError[] =
+        AutoBeInterfacePrerequisiteProgrammer.validate({
+          dict: props.dict,
+          document: props.document,
+          operation: props.operation,
+          complete: writeData,
+        });
+      if (errors.length !== 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      const event: AutoBeInterfacePrerequisiteEvent = {
+        type: SOURCE,
+        id: v7(),
+        endpoint: {
+          path: props.operation.path,
+          method: props.operation.method,
+        },
+        analysis: lastWrite.analysis,
+        rationale: lastWrite.rationale,
+        prerequisites: lastWrite.prerequisites,
+        acquisition: cyclinic.getPreliminary().getAcquisition(),
+        metric: result?.metric ?? {
+          attempt: 0,
+          success: 0,
+          consent: 0,
+          validationFailure: 0,
+          invalidJson: 0,
+        },
+        tokenUsage: result?.tokenUsage ?? {
+          total: 0,
+          input: { total: 0, cached: 0 },
+          output: {
+            total: 0,
+            reasoning: 0,
+            accepted_prediction: 0,
+            rejected_prediction: 0,
+          },
+        },
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        step: ctx.state().database?.step ?? 0,
+        created_at: new Date().toISOString(),
+      };
+      if (result !== null) ctx.dispatch(event);
+      return event;
+    },
+  );
+  return value;
 }
 
 function createController(props: {
   dict: HashMap<AutoBeOpenApi.IEndpoint, AutoBeOpenApi.IOperation>;
   document: AutoBeOpenApi.IDocument;
   operation: AutoBeOpenApi.IOperation;
-  preliminary: AutoBePreliminaryController<
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeInterfacePrerequisiteApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
+  cyclinic: AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "interfaceOperations"
@@ -187,42 +239,40 @@ function createController(props: {
     | "previousDatabaseSchemas"
     | "previousInterfaceSchemas"
   >;
-  build: (next: IAutoBeInterfacePrerequisiteApplication.IComplete) => void;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    | "analysisSections"
+    | "databaseSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+    | "previousInterfaceOperations"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceSchemas"
+  > = props.cyclinic.getPreliminary();
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> => {
     const result: IValidation<IAutoBeInterfacePrerequisiteApplication.IProps> =
       typia.validate<IAutoBeInterfacePrerequisiteApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] =
-      AutoBeInterfacePrerequisiteProgrammer.validate({
-        dict: props.dict,
-        document: props.document,
-        operation: props.operation,
-        complete: result.data.request,
-      });
-    return errors.length === 0
-      ? result
-      : {
-          success: false,
-          errors,
-          data: result.data,
-        };
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
+    });
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfacePrerequisiteApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeInterfacePrerequisiteApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
 
   return {
@@ -231,7 +281,10 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write")
+          props.action.value = { type: "write", data: next.request };
+        else if (next.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeInterfacePrerequisiteApplication,
   };

@@ -13,11 +13,12 @@ import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { validateUnitSectionContent } from "../../utils/validateEnglishOnly";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { transformAnalyzeWriteUnitHistory } from "./histories/transformAnalyzeWriteUnitHistory";
 import {
   IAutoBeAnalyzeWriteUnitApplication,
-  IAutoBeAnalyzeWriteUnitApplicationComplete,
+  IAutoBeAnalyzeWriteUnitApplicationWrite,
   IAutoBeAnalyzeWriteUnitApplicationProps,
 } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 import {
@@ -39,60 +40,96 @@ export const orchestrateAnalyzeWriteUnit = async (
     retry: number;
   },
 ): Promise<AutoBeAnalyzeWriteUnitEvent> => {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    new AutoBePreliminaryController({
-      application: typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
-      source: SOURCE,
-      kinds: ["previousAnalysisSections"],
-      state: ctx.state(),
-    });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformAnalyzeWriteUnitHistory(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        moduleIndex: props.moduleIndex,
-        feedback: props.feedback,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
-
-    const event: AutoBeAnalyzeWriteUnitEvent = {
-      type: SOURCE,
-      id: v7(),
-      moduleIndex: pointer.value.moduleIndex,
-      unitSections: pointer.value.unitSections,
-      acquisition: preliminary.getAcquisition(),
-      tokenUsage: result.tokenUsage,
-      metric: result.metric,
-      step: (ctx.state().analyze?.step ?? -1) + 1,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      retry: props.retry,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return out(result)(event);
+  const cyclinic = new AutoBeCyclinicController<"previousAnalysisSections">({
+    application: typia.json.application<IAutoBeAnalyzeWriteUnitApplication>(),
+    source: SOURCE,
+    kinds: ["previousAnalysisSections"],
+    state: ctx.state(),
   });
+
+  return cyclinic.orchestrate(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeAnalyzeWriteUnitApplicationWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
+
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({ cyclinic, action }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformAnalyzeWriteUnitHistory(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent: props.moduleEvent,
+          moduleIndex: props.moduleIndex,
+          feedback: props.feedback,
+          preliminary: context.preliminary,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: no external compilation — always succeeds
+    async (_writeData) => {
+      return { success: true };
+    },
+    // FINALIZE: build write unit event, dispatch, return
+    async (lastWrite, result) => {
+      const event: AutoBeAnalyzeWriteUnitEvent = {
+        type: SOURCE,
+        id: v7(),
+        moduleIndex: lastWrite.moduleIndex,
+        unitSections: lastWrite.unitSections,
+        acquisition: cyclinic.getPreliminary().getAcquisition(),
+        tokenUsage: result?.tokenUsage ?? {
+          total: 0,
+          input: { total: 0, cached: 0 },
+          output: {
+            total: 0,
+            reasoning: 0,
+            accepted_prediction: 0,
+            rejected_prediction: 0,
+          },
+        },
+        metric: result?.metric ?? {
+          attempt: 0,
+          success: 0,
+          consent: 0,
+          validationFailure: 0,
+          invalidJson: 0,
+        },
+        step: (ctx.state().analyze?.step ?? -1) + 1,
+        total: props.progress.total,
+        completed: ++props.progress.completed,
+        retry: props.retry,
+        created_at: new Date().toISOString(),
+      };
+      if (result !== null) ctx.dispatch(event);
+      return event;
+    },
+  );
 };
 
 function createController(props: {
-  pointer: IPointer<IAutoBeAnalyzeWriteUnitApplicationComplete | null>;
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
+  cyclinic: AutoBeCyclinicController<"previousAnalysisSections">;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeAnalyzeWriteUnitApplicationWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
+    props.cyclinic.getPreliminary();
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteUnitApplicationProps> => {
@@ -101,8 +138,8 @@ function createController(props: {
       typia.validate<IAutoBeAnalyzeWriteUnitApplicationProps>(input);
     if (result.success === false) return result;
 
-    // Validate English-only content for complete requests
-    if (result.data.request.type === "complete") {
+    // Validate English-only content for write requests
+    if (result.data.request.type === "write") {
       const englishValidation = validateUnitSectionContent(
         result.data.request.unitSections,
       );
@@ -120,17 +157,21 @@ function createController(props: {
       return result;
     }
 
-    return props.preliminary.validate({
+    if (result.data.request.type === "complete") return result;
+
+    return preliminary.validate({
       thinking: result.data.thinking ?? "",
       request: result.data.request,
     });
   };
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteUnitApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeAnalyzeWriteUnitApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
   return {
     protocol: "class",
@@ -138,8 +179,10 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write")
+          props.action.value = { type: "write", data: input.request };
+        else if (input.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeAnalyzeWriteUnitApplication,
   };

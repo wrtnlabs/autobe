@@ -5,6 +5,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceOperationApplication {
   /**
@@ -33,6 +34,7 @@ export namespace IAutoBeInterfaceOperationApplication {
      * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -41,10 +43,10 @@ export namespace IAutoBeInterfaceOperationApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to generate a detailed API operation. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit a detailed API operation for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the endpoint's purpose and context. */
     analysis: string;
@@ -81,3 +83,7 @@ export namespace IAutoBeInterfaceOperationApplication {
     "authorizationType" | "authorizationActor" | "prerequisites"
   > {}
 }
+
+/** @deprecated Use IAutoBeInterfaceOperationApplication.IWrite instead. */
+export type IAutoBeInterfaceOperationApplicationComplete =
+  IAutoBeInterfaceOperationApplication.IWrite;

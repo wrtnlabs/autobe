@@ -3,6 +3,7 @@ import { AutoBeDatabaseComponentTableDesign } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseComponentApplication {
   /** Process table design task or retrieve preliminary data. */
@@ -22,6 +23,7 @@ export namespace IAutoBeDatabaseComponentApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -29,12 +31,11 @@ export namespace IAutoBeDatabaseComponentApplication {
   }
 
   /**
-   * Complete the database component by filling in table designs for the given
-   * skeleton.
+   * Submit database component table designs for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Analysis of the component's scope, entities, relationships, and table
@@ -54,3 +55,7 @@ export namespace IAutoBeDatabaseComponentApplication {
     tables: AutoBeDatabaseComponentTableDesign[];
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseComponentApplication.IWrite instead. */
+export type IAutoBeDatabaseComponentApplicationComplete =
+  IAutoBeDatabaseComponentApplication.IWrite;

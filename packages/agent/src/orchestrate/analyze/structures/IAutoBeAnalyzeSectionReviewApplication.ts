@@ -1,3 +1,4 @@
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /**
@@ -18,18 +19,23 @@ export interface IAutoBeAnalyzeSectionReviewApplicationProps {
 
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
-    | IAutoBeAnalyzeSectionReviewApplicationComplete
+    | IAutoBeAnalyzeSectionReviewApplicationWrite
+    | IComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
-/** Complete the cross-file section review with per-file verdicts. */
-export interface IAutoBeAnalyzeSectionReviewApplicationComplete {
-  /** Type discriminator for completion request. */
-  type: "complete";
+/** Submit the cross-file section review with per-file verdicts. */
+export interface IAutoBeAnalyzeSectionReviewApplicationWrite {
+  /** Type discriminator for write submission. */
+  type: "write";
 
   /** Per-file review results. */
   fileResults: IAutoBeAnalyzeSectionReviewApplicationFileResult[];
 }
+
+/** @deprecated Use IAutoBeAnalyzeSectionReviewApplicationWrite instead. */
+export type IAutoBeAnalyzeSectionReviewApplicationComplete =
+  IAutoBeAnalyzeSectionReviewApplicationWrite;
 
 /** Per-file review result. */
 export interface IAutoBeAnalyzeSectionReviewApplicationFileResult {

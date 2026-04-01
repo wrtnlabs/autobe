@@ -11,6 +11,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Enriches JSON Schema properties with databaseSchemaProperty, specification,
@@ -43,6 +44,7 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
      * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -54,10 +56,10 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Complete schema refinement with object-level and property-level enrichment. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit schema refinement with object-level and property-level enrichment for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Summary of refinement analysis and actions taken. */
     review: string;
@@ -97,3 +99,7 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
     revises: AutoBeInterfaceSchemaPropertyRefine[];
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceSchemaRefineApplication.IWrite instead. */
+export type IAutoBeInterfaceSchemaRefineApplicationComplete =
+  IAutoBeInterfaceSchemaRefineApplication.IWrite;

@@ -13,6 +13,7 @@ import { AutoBeContext } from "../../context/AutoBeContext";
 import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { getEmbedder } from "../../utils/getEmbedder";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -84,9 +85,9 @@ async function process(
       { log: false, logPrefix: "prismaComponent" },
     );
 
-  const preliminary: AutoBePreliminaryController<
+  const cyclinic = new AutoBeCyclinicController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
-  > = new AutoBePreliminaryController({
+  >({
     application: typia.json.application<IAutoBeDatabaseComponentApplication>(),
     source: SOURCE,
     kinds: [
@@ -100,90 +101,117 @@ async function process(
     },
   });
 
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        pointer,
-        preliminary,
-        prefix: props.prefix,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformPrismaComponentsHistory(ctx.state(), {
-        instruction: props.instruction,
-        prefix: props.prefix,
-        preliminary,
-        group: props.group,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
+  return cyclinic.orchestrate<
+    IAutoBeDatabaseComponentApplication.IWrite,
+    AutoBeDatabaseComponent
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeDatabaseComponentApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-    // Build complete component from group skeleton + tables
-    const component: AutoBeDatabaseComponent = {
-      ...props.group,
-      tables: pointer.value.tables,
-    };
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      created_at: new Date().toISOString(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      component,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      step: ctx.state().analyze?.step ?? 0,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-    });
-    return out(result)(component);
-  });
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          cyclinic,
+          action,
+          prefix: props.prefix,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformPrismaComponentsHistory(ctx.state(), {
+          instruction: props.instruction,
+          prefix: props.prefix,
+          preliminary: context.preliminary,
+          group: props.group,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      const errors: IValidation.IError[] = [];
+      AutoBeDatabaseComponentProgrammer.validate({
+        errors,
+        prefix: props.prefix,
+        tables: writeData.tables,
+        path: "$input.request.tables",
+      });
+      if (errors.length > 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      // Build complete component from group skeleton + tables
+      const component: AutoBeDatabaseComponent = {
+        ...props.group,
+        tables: lastWrite.tables,
+      };
+      if (result !== null)
+        ctx.dispatch({
+          type: SOURCE,
+          id: v7(),
+          created_at: new Date().toISOString(),
+          analysis: lastWrite.analysis,
+          rationale: lastWrite.rationale,
+          component,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          step: ctx.state().analyze?.step ?? 0,
+          total: props.progress.total,
+          completed: ++props.progress.completed,
+        });
+      return component;
+    },
+  );
 }
 
 function createController(props: {
-  pointer: IPointer<IAutoBeDatabaseComponentApplication.IComplete | null>;
-  preliminary: AutoBePreliminaryController<
+  cyclinic: AutoBeCyclinicController<
     "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+  >;
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeDatabaseComponentApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
   >;
   prefix: string | null;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    "analysisSections" | "previousAnalysisSections" | "previousDatabaseSchemas"
+  > = props.cyclinic.getPreliminary();
+
   const validate: Validator = (input) => {
     const result: IValidation<IAutoBeDatabaseComponentApplication.IProps> =
       typia.validate<IAutoBeDatabaseComponentApplication.IProps>(input);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] = [];
-    AutoBeDatabaseComponentProgrammer.validate({
-      errors,
-      prefix: props.prefix,
-      tables: result.data.request.tables,
-      path: "$input.request.tables",
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
     });
-    if (errors.length > 0)
-      return {
-        success: false,
-        data: result.data,
-        errors,
-      };
-    return result;
   };
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeDatabaseComponentApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeDatabaseComponentApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
   return {
     protocol: "class",
@@ -191,8 +219,10 @@ function createController(props: {
     application,
     execute: {
       process: (input) => {
-        if (input.request.type === "complete")
-          props.pointer.value = input.request;
+        if (input.request.type === "write")
+          props.action.value = { type: "write", data: input.request };
+        else if (input.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeDatabaseComponentApplication,
   };

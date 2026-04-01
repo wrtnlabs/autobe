@@ -6,6 +6,7 @@ import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IA
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeInterfaceGroupApplication {
   /** Process task or retrieve preliminary data. */
@@ -25,6 +26,7 @@ export namespace IAutoBeInterfaceGroupApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -33,10 +35,10 @@ export namespace IAutoBeInterfaceGroupApplication {
       | IAutoBePreliminaryGetPreviousInterfaceOperations;
   }
 
-  /** Request to generate API endpoint groups. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /** Submit API endpoint groups for validation. */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /** Analysis of the database schema structure and grouping needs. */
     analysis: string;
@@ -52,3 +54,7 @@ export namespace IAutoBeInterfaceGroupApplication {
     groups: AutoBeInterfaceGroup[] & tags.MinItems<1>;
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceGroupApplication.IWrite instead. */
+export type IAutoBeInterfaceGroupApplicationComplete =
+  IAutoBeInterfaceGroupApplication.IWrite;

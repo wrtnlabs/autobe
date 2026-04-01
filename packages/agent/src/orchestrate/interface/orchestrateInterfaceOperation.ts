@@ -18,6 +18,7 @@ import { buildAnalysisContextSections } from "../../utils/RAGRetrieval";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
 import { getEmbedder } from "../../utils/getEmbedder";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
 import { convertToSectionEntries } from "../common/internal/convertToSectionEntries";
 import { IAnalysisSectionEntry } from "../common/structures/IAnalysisSectionEntry";
@@ -163,13 +164,14 @@ async function process(
     );
 
   const prefix: string = NamingConvention.camel(ctx.state().analyze!.prefix);
-  const preliminary: AutoBePreliminaryController<
+
+  const cyclinic = new AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
-  > = new AutoBePreliminaryController({
+  >({
     application: typia.json.application<IAutoBeInterfaceOperationApplication>(),
     source: SOURCE,
     kinds: [
@@ -184,128 +186,157 @@ async function process(
       analysisSections: ragSections,
     },
   });
-  return await preliminary.orchestrate(ctx, async (out) => {
-    const pointer: IPointer<IAutoBeInterfaceOperationApplication.IComplete | null> =
-      {
-        value: null,
-      };
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        preliminary,
-        build: (complete) => {
-          pointer.value = complete;
-        },
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...transformInterfaceOperationHistory({
-        endpoint: props.design.endpoint,
-        instruction: props.instruction,
-        prefix,
-        preliminary,
-      }),
-    });
-    if (pointer.value === null) return out(result)(null);
 
-    AutoBeInterfaceOperationProgrammer.fix(pointer.value.operation);
-    for (const p of pointer.value.operation.parameters)
-      p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
+  return cyclinic.orchestrate<
+    IAutoBeInterfaceOperationApplication.IWrite,
+    AutoBeOpenApi.IOperation[]
+  >(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | {
+            type: "write";
+            data: IAutoBeInterfaceOperationApplication.IWrite;
+          }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-    // Use authorizationActors from endpoint design (not from LLM)
-    const authorizationActors: string[] = props.design.authorizationActors;
-    const matrix: AutoBeOpenApi.IOperation[] =
-      authorizationActors.length === 0
-        ? [
-            {
-              ...pointer.value.operation,
-              path:
-                "/" +
-                [prefix, ...pointer.value.operation.path.split("/")]
-                  .filter((it) => it !== "")
-                  .join("/"),
-              authorizationActor: null,
-              authorizationType: null,
-              prerequisites: [],
-            } satisfies AutoBeOpenApi.IOperation,
-          ]
-        : authorizationActors.map(
-            (actor) =>
-              ({
-                ...pointer.value!.operation,
+      const result: AutoBeContext.IResult = await ctx.conversate({
+        source: SOURCE,
+        controller: createController({
+          cyclinic,
+          action,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...transformInterfaceOperationHistory({
+          endpoint: props.design.endpoint,
+          instruction: props.instruction,
+          prefix,
+          preliminary: context.preliminary,
+        }),
+      });
+      return { result, action: action.value };
+    },
+    // VALIDATE: run business logic validation
+    async (writeData) => {
+      const errors: IValidation.IError[] = [];
+      AutoBeInterfaceOperationProgrammer.validate({
+        accessor: "$input.request.operation",
+        errors,
+        operation: writeData.operation,
+      });
+      if (errors.length !== 0)
+        return { success: false, diagnostics: errors };
+      return { success: true };
+    },
+    // FINALIZE: build result, dispatch event, return
+    async (lastWrite, result) => {
+      AutoBeInterfaceOperationProgrammer.fix(lastWrite.operation);
+      for (const p of lastWrite.operation.parameters)
+        p.schema = AutoBeJsonSchemaFactory.fixSchema(p.schema);
+
+      // Use authorizationActors from endpoint design (not from LLM)
+      const authorizationActors: string[] = props.design.authorizationActors;
+      const matrix: AutoBeOpenApi.IOperation[] =
+        authorizationActors.length === 0
+          ? [
+              {
+                ...lastWrite.operation,
                 path:
                   "/" +
-                  [prefix, actor, ...pointer.value!.operation.path.split("/")]
+                  [prefix, ...lastWrite.operation.path.split("/")]
                     .filter((it) => it !== "")
                     .join("/"),
-                authorizationActor: actor,
+                authorizationActor: null,
                 authorizationType: null,
                 prerequisites: [],
-              }) satisfies AutoBeOpenApi.IOperation,
-          );
-    ++props.progress.completed;
+              } satisfies AutoBeOpenApi.IOperation,
+            ]
+          : authorizationActors.map(
+              (actor) =>
+                ({
+                  ...lastWrite.operation,
+                  path:
+                    "/" +
+                    [prefix, actor, ...lastWrite.operation.path.split("/")]
+                      .filter((it) => it !== "")
+                      .join("/"),
+                  authorizationActor: actor,
+                  authorizationType: null,
+                  prerequisites: [],
+                }) satisfies AutoBeOpenApi.IOperation,
+            );
 
-    ctx.dispatch({
-      type: SOURCE,
-      id: v7(),
-      analysis: pointer.value.analysis,
-      rationale: pointer.value.rationale,
-      operations: matrix,
-      acquisition: preliminary.getAcquisition(),
-      metric: result.metric,
-      tokenUsage: result.tokenUsage,
-      ...props.progress,
-      step: ctx.state().analyze?.step ?? 0,
-      created_at: new Date().toISOString(),
-    } satisfies AutoBeInterfaceOperationEvent);
-    return out(result)(matrix);
-  });
+      if (result !== null)
+        ctx.dispatch({
+          type: SOURCE,
+          id: v7(),
+          analysis: lastWrite.analysis,
+          rationale: lastWrite.rationale,
+          operations: matrix,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          ...props.progress,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        } satisfies AutoBeInterfaceOperationEvent);
+      ++props.progress.completed;
+      return matrix;
+    },
+  );
 }
 
 function createController(props: {
-  preliminary: AutoBePreliminaryController<
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeInterfaceOperationApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
+  cyclinic: AutoBeCyclinicController<
     | "analysisSections"
     | "databaseSchemas"
     | "previousAnalysisSections"
     | "previousDatabaseSchemas"
     | "previousInterfaceOperations"
   >;
-  build: (operation: IAutoBeInterfaceOperationApplication.IComplete) => void;
 }): IAgenticaController.IClass {
+  const preliminary: AutoBePreliminaryController<
+    | "analysisSections"
+    | "databaseSchemas"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceOperations"
+  > = props.cyclinic.getPreliminary();
+
   const validate = (
     next: unknown,
   ): IValidation<IAutoBeInterfaceOperationApplication.IProps> => {
     const result: IValidation<IAutoBeInterfaceOperationApplication.IProps> =
       typia.validate<IAutoBeInterfaceOperationApplication.IProps>(next);
     if (result.success === false) return result;
-    else if (result.data.request.type !== "complete")
-      return props.preliminary.validate({
-        thinking: result.data.thinking,
-        request: result.data.request,
-      });
-
-    const errors: IValidation.IError[] = [];
-    AutoBeInterfaceOperationProgrammer.validate({
-      accessor: "$input.request.operation",
-      errors,
-      operation: result.data.request.operation,
+    const req = result.data.request;
+    if (req.type === "write" || req.type === "complete") return result;
+    return preliminary.validate({
+      thinking: result.data.thinking,
+      request: req,
     });
-
-    if (errors.length !== 0)
-      return {
-        success: false,
-        errors,
-        data: next,
-      };
-    return result;
   };
 
-  const application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeInterfaceOperationApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application: ILlmApplication = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeInterfaceOperationApplication>({
+        validate: {
+          process: validate,
+        },
+      }),
+    ),
   );
   return {
     protocol: "class",
@@ -313,7 +344,10 @@ function createController(props: {
     application,
     execute: {
       process: (next) => {
-        if (next.request.type === "complete") props.build(next.request);
+        if (next.request.type === "write")
+          props.action.value = { type: "write", data: next.request };
+        else if (next.request.type === "complete")
+          props.action.value = { type: "complete" };
       },
     } satisfies IAutoBeInterfaceOperationApplication,
   };

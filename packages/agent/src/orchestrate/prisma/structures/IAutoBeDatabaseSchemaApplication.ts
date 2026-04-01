@@ -3,6 +3,7 @@ import { AutoBeDatabaseSchemaDefinition } from "@autobe/interface";
 import { IAutoBePreliminaryGetAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetAnalysisSections";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 export interface IAutoBeDatabaseSchemaApplication {
   /**
@@ -31,6 +32,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
      * union, physically preventing repeated calls.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetPreviousAnalysisSections
@@ -38,12 +40,11 @@ export namespace IAutoBeDatabaseSchemaApplication {
   }
 
   /**
-   * Generate production-ready database schema models with normalization and
-   * indexing.
+   * Submit production-ready database schema models for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Database design plan for the target table and any child tables (1NF
@@ -71,3 +72,7 @@ export namespace IAutoBeDatabaseSchemaApplication {
     definition: AutoBeDatabaseSchemaDefinition;
   }
 }
+
+/** @deprecated Use IAutoBeDatabaseSchemaApplication.IWrite instead. */
+export type IAutoBeDatabaseSchemaApplicationComplete =
+  IAutoBeDatabaseSchemaApplication.IWrite;

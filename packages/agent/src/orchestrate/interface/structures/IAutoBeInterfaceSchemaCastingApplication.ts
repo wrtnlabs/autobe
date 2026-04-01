@@ -8,6 +8,7 @@ import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/stru
 import { IAutoBePreliminaryGetPreviousDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousDatabaseSchemas";
 import { IAutoBePreliminaryGetPreviousInterfaceOperations } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceOperations";
 import { IAutoBePreliminaryGetPreviousInterfaceSchemas } from "../../common/structures/IAutoBePreliminaryGetPreviousInterfaceSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Detects and corrects degenerate type aliases (primitives that should be
@@ -32,6 +33,7 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
      * union.
      */
     request:
+      | IWrite
       | IComplete
       | IAutoBePreliminaryGetAnalysisSections
       | IAutoBePreliminaryGetDatabaseSchemas
@@ -44,12 +46,12 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
   }
 
   /**
-   * Complete schema casting analysis via Chain-of-Thought (observation,
-   * reasoning, verdict).
+   * Submit schema casting analysis via Chain-of-Thought (observation,
+   * reasoning, verdict) for validation.
    */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Factual observation of the current type definition, JSDoc, schema hints,
@@ -73,3 +75,7 @@ export namespace IAutoBeInterfaceSchemaCastingApplication {
     casting: AutoBeInterfaceSchemaCasting | null;
   }
 }
+
+/** @deprecated Use IAutoBeInterfaceSchemaCastingApplication.IWrite instead. */
+export type IAutoBeInterfaceSchemaCastingApplicationComplete =
+  IAutoBeInterfaceSchemaCastingApplication.IWrite;

@@ -1,3 +1,4 @@
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
 
 /** Generates unit-level sections (##) within approved module structures. */
@@ -18,14 +19,15 @@ export interface IAutoBeAnalyzeWriteUnitApplicationProps {
 
   /** Action to perform. Exhausted preliminary types are removed from the union. */
   request:
-    | IAutoBeAnalyzeWriteUnitApplicationComplete
+    | IAutoBeAnalyzeWriteUnitApplicationWrite
+    | IComplete
     | IAutoBePreliminaryGetPreviousAnalysisSections;
 }
 
-/** Generate unit section structure within a module section. */
-export interface IAutoBeAnalyzeWriteUnitApplicationComplete {
-  /** Type discriminator for completion request. */
-  type: "complete";
+/** Submit unit section structure within a module section. */
+export interface IAutoBeAnalyzeWriteUnitApplicationWrite {
+  /** Type discriminator for write submission. */
+  type: "write";
 
   /** Index of the parent module section (0-based). */
   moduleIndex: number;
@@ -48,3 +50,7 @@ export interface IAutoBeAnalyzeWriteUnitApplicationUnitSection {
   /** Keywords hinting at section topics to guide Section Agent generation. */
   keywords: string[];
 }
+
+/** @deprecated Use IAutoBeAnalyzeWriteUnitApplicationWrite instead. */
+export type IAutoBeAnalyzeWriteUnitApplicationComplete =
+  IAutoBeAnalyzeWriteUnitApplicationWrite;
