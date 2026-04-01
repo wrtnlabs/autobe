@@ -37,7 +37,7 @@ export function useMDXComponents(components) {
       }
 
       return (
-        <div className={hasToc ? "autobe-blog-post-layout" : undefined}>
+        <div className={hasToc ? "autobe-blog-post-layout" : "autobe-blog-post-no-toc"}>
           <div className="autobe-blog-post-main">
             {metadata?.ogImage ? (
               <img

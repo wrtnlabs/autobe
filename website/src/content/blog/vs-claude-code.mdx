@@ -1,58 +1,86 @@
-# AutoBE vs Claude Code: 2세대 코드 어시스턴트와 3세대 자율 에이전트의 해부
+---
+title: "AutoBE vs Claude Code: 유출된 소스코드 512,000줄로 들여다본 AI 코딩 에이전트의 두 설계 철학"
+description: "npm publish 사고로 Claude Code 소스코드가 잠깐 공개됐다. AutoBE 팀은 512,000줄을 전부 읽었다. while(true) 루프, 4계층 컨텍스트 압축, 6중 안전 방어, 빌드타임 피처 플래그 — 그리고 우리가 다르게 설계한 이유."
+date: "2026-04-01"
+author: "Jeongho Nam"
+tags:
+  - ai
+  - typescript
+  - opensource
+  - programming
+---
 
-> 2026년 4월, Claude Code의 소스코드가 npm publish 시 js.map 포함 사고로 만천하에 공개되었다. 512,000줄, 1,900개 파일, 301개 디렉터리.
-> AutoBE는 처음부터 오픈소스였다.
-> 이 보고서는 양쪽의 소스코드를 한 줄 한 줄 직접 분석하여, 두 프로젝트의 설계 철학과 아키텍처를 비교한다.
+import AutoBeDemoMovie from "../../movies/demo/AutoBeDemoMovie";
+
+# AutoBE vs Claude Code: 유출된 소스코드 512,000줄로 들여다본 AI 코딩 에이전트의 두 설계 철학
+
+## 1. AutoBE란
+
+[AutoBE](https://github.com/wrtnlabs/autobe)는 wrtnlabs가 만든 오픈소스 AI 백엔드 자동 생성 에이전트다. "쇼핑몰 백엔드 만들어줘"라고 말하면, 요구사항 분석부터 데이터베이스 설계, API 명세, E2E 테스트, NestJS 구현 코드까지 통째로 생성한다. **컴파일 100% 보장**.
+
+<AutoBeDemoMovie model="qwen/qwen3.5-122b-a10b" />
+
+5단계 워터폴 파이프라인이 핵심이다:
+
+```mermaid
+flowchart LR
+    A["Analyze"] --> D["Database"]
+    D --> I["Interface"]
+    I --> T["Test"]
+    T --> R["Realize"]
+    D -->|"컴파일 실패 → 자가교정"| D
+    I -->|"컴파일 실패 → 자가교정"| I
+    R -->|"컴파일 실패 → 자가교정"| R
+    style A fill:#4A90D9,color:#fff
+    style D fill:#7B68EE,color:#fff
+    style I fill:#E06C75,color:#fff
+    style T fill:#E5C07B,color:#000
+    style R fill:#98C379,color:#000
+```
+
+각 단계에서 LLM이 자유롭게 텍스트를 생성하는 게 아니다. **Function Calling으로 AST를 채우고, 컴파일러가 검증한다.** 컴파일 실패 시 진단 메시지를 에이전트에 돌려주고, 통과할 때까지 반복한다.
+
+### AutoBE의 전략: 개무식하게, validation에 올인
+
+여기서 솔직하게 털어놓자.
+
+AutoBE는 여태껏 프롬프트 기교나 에이전트 오케스트레이션에 세심한 주의를 기울인 적이 없다. 의도적으로. [Delta 로드맵](https://autobe.dev/docs/roadmap/delta) 내내 우리가 한 일은 하나였다: **validation logic을 최대한 빡빡하게 만들어서 function calling harness와 컴파일 성공률을 높이는 것.**
+
+워크플로우는 가장 단순한 형태로 유지했다. 폭포수 모델에 따라 일방향으로만 흐르고, AI의 자기 리뷰는 한 번에 그쳤으며, 코드 생성 기회도 한 번뿐이었다. 소형 모델로 반복 실험하여 최대한 많은 실패 사례를 발굴하고, 어느 단계에서 무엇이 실패하는지를 명확히 파악하기 위해서였다.
+
+그 결과, [Function Calling Harness 아티클](/blog/function-calling-harness-qwen-meetup-korea)에서 다룬 것처럼, `qwen3-coder-next`의 첫 시도 성공률 6.75%를 컴파일 성공률 99.8%+로 끌어올렸다. 5개 Qwen 모델, 동일한 파이프라인, 동일한 결과.
+
+그리고 [Epsilon 로드맵](https://autobe.dev/docs/roadmap/epsilon)에 이르러 이런 선언을 했다:
+
+> "Delta가 안정화되고, 어지간한 모델에서 컴파일 성공률이 보장된 지금, AutoBE는 이제서야 기교를 부리기 시작한다."
+
+컴파일 100%를 확보한 기반 위에, 이제 런타임 성공률을 본다. 에이전트 자기 리뷰 루프를 도입하고, 프롬프트를 고도화하고, 오케스트레이션에 기교를 더한다. 즉, 이 시점에서 우리 팀은 **"다른 AI 에이전트들은 오케스트레이션을 어떻게 설계했나"를 진지하게 공부하기 시작한** 참이었다.
+
+바로 그때, 큰 선물이 왔다.
 
 ---
 
-## 목차
+## 2. 서문
 
-1. [서론: 두 프로젝트의 해부](#1-서론-두-프로젝트의-해부)
-   1. [두 프로젝트의 정체성](#11-두-프로젝트의-정체성)
-   2. [아키텍처 비교: 전혀 다른 두 세계관](#12-아키텍처-비교-전혀-다른-두-세계관)
-   3. [2세대와 3세대, 그 경계에 대하여](#13-2세대와-3세대-그-경계에-대하여)
-2. [에이전트 오케스트레이션](#2-에이전트-오케스트레이션)
-   1. [에이전트 루프: while(true) vs 5단계 워터폴](#21-에이전트-루프-whiletrue-vs-5단계-워터폴)
-   2. [병렬 실행: Coordinator vs executeCachedBatch](#22-병렬-실행-coordinator-vs-executecachedbatch)
-   3. [서브에이전트: Fork vs MicroAgentica](#23-서브에이전트-fork-vs-microagentica)
-3. [LLM 하네싱: 프롬프트, 스키마, 도구](#3-llm-하네싱-프롬프트-스키마-도구)
-   1. [시스템 프롬프트: 범용 지침 vs 도메인 교과서](#31-시스템-프롬프트-범용-지침-vs-도메인-교과서)
-   2. [도구 시스템과 Function Calling](#32-도구-시스템과-function-calling)
-   3. [메모리와 RAG: 정적 주입 vs 동적 수집](#33-메모리와-rag-정적-주입-vs-동적-수집)
-4. [컴파일러와 검증](#4-컴파일러와-검증)
-   1. [검증 총론: 최선의 노력 vs 100% 보장](#41-검증-총론-최선의-노력-vs-100-보장)
-   2. [3층 컴파일러의 내부](#42-3층-컴파일러의-내부)
-   3. [진단의 LLM 최적화](#43-진단의-llm-최적화)
-5. [코드 생성 파이프라인](#5-코드-생성-파이프라인)
-   1. [AST 설계 철학](#51-ast-설계-철학)
-   2. [데이터베이스 스키마 생성](#52-데이터베이스-스키마-생성)
-   3. [AST에서 NestJS까지](#53-ast에서-nestjs까지)
-   4. [Collector/Transformer: 양방향 매핑](#54-collectortransformer-양방향-매핑)
-   5. [E2E 테스트 자동 생성](#55-e2e-테스트-자동-생성)
-6. [컨텍스트 엔지니어링](#6-컨텍스트-엔지니어링)
-   1. [압축의 예술 vs 변환의 정밀함](#61-압축의-예술-vs-변환의-정밀함)
-   2. [History Transformer와 메시지 정규화](#62-history-transformer와-메시지-정규화)
-   3. [토큰 경제학](#63-토큰-경제학)
-7. [에러 회복과 안전성](#7-에러-회복과-안전성)
-   1. [에러 회복: 인프라 재시도 vs 논리 자가치유](#71-에러-회복-인프라-재시도-vs-논리-자가치유)
-   2. [안전성 모델: 6중 방어 vs 컴파일러 게이트](#72-안전성-모델-6중-방어-vs-컴파일러-게이트)
-8. [인프라와 운영](#8-인프라와-운영)
-   1. [상태 관리와 영속성](#81-상태-관리와-영속성)
-   2. [이벤트 시스템과 통신](#82-이벤트-시스템과-통신)
-   3. [비용과 기여 추적](#83-비용과-기여-추적)
-   4. [Git 통합과 투기적 실행](#84-git-통합과-투기적-실행)
-   5. [설정과 프로바이더 추상화](#85-설정과-프로바이더-추상화)
-9. [확장성과 상호 학습](#9-확장성과-상호-학습)
-   1. [확장 모델: MCP 생태계 vs 컴파일러 체인](#91-확장-모델-mcp-생태계-vs-컴파일러-체인)
-   2. [상호 학습](#92-상호-학습)
-10. [결론: 수렴과 분기](#10-결론-수렴과-분기)
+2026년 4월. Anthropic 엔지니어가 `.npmignore` 없이 `npm publish`를 실행했다. Claude Code의 전체 소스코드가 몇 시간 동안 공개 레지스트리에 올라왔다. 512,000줄, 1,900개 파일, 301개 디렉터리.
+
+그 소스코드가 화면 앞에 나타났을 때, 우리는 일정을 비웠다.
+
+이 글은 그 독서 노트다. 우리가 발견한 것, 놀란 것, 그리고 AutoBE에 가져올 것들.
 
 ---
 
-## 1. 서론: 두 프로젝트의 해부
+## 3. 두 프로젝트의 해부
 
-### 1.1. 두 프로젝트의 정체성
+발견을 서술하기 전에, 두 프로젝트가 근본적으로 다른 문제를 풀고 있다는 맥락이 필요하다.
+
+**Claude Code**: 시니어 개발자가 4시간 세션을 시작한다. 문서를 읽고, 코드를 쓰고, 테스트를 돌리고, 디버깅하고, 커밋한다. 컨텍스트가 200,000 토큰에 달할 수 있고, 세션 중간에 방향이 열다섯 번 바뀔 수 있다. "helps users" — 사람이 주도하고, AI가 보조한다.
+
+**AutoBE**: "쇼핑몰 백엔드 만들어줘." 출력은 컴파일되어야 하고, 규약을 따라야 하며, 완전해야 한다. "not an assistant" — AI가 주도하고, 컴파일러가 검증한다.
+
+이 맥락을 기억하면, 이후의 모든 발견이 이해된다.
+
+### 3.1. 두 프로젝트의 정체성
 
 #### Claude Code: 사람 옆에 앉은 시니어 개발자
 
@@ -108,7 +136,7 @@ Your mission: 'Can you converse? Then you're a full-stack developer.'"
 
 ---
 
-### 1.2. 아키텍처 비교: 전혀 다른 두 세계관
+### 3.2. 아키텍처 비교: 전혀 다른 두 세계관
 
 #### Claude Code의 구조
 
@@ -193,7 +221,7 @@ return uniqBy(
 
 ---
 
-### 1.3. 2세대와 3세대, 그 경계에 대하여
+### 3.3. 2세대와 3세대, 그 경계에 대하여
 
 #### 세대 분류의 기준
 
@@ -259,11 +287,11 @@ Epsilon (이번 분기): 런타임 성공률 100% 달성
 
 ---
 
-## 2. 에이전트 오케스트레이션
+## 4. 에이전트 오케스트레이션
 
-> 1장에서 두 프로젝트의 정체성과 세대론을 살펴보았다. 이제 그 정체성이 **실행 구조**에서 어떻게 구현되는지 들여다본다.
+> 두 프로젝트의 정체성과 세대론을 살펴보았다. 이제 그 정체성이 **실행 구조**에서 어떻게 구현되는지 들여다본다.
 
-### 2.1. 에이전트 루프: while(true) vs 5단계 워터폴
+### 4.1. 에이전트 루프: while(true) vs 5단계 워터폴
 
 #### Claude Code: `while(true)` 상태 머신
 
@@ -365,11 +393,11 @@ orchestrateRealize(ctx, props):
   8. ctx.dispatch({ type: "realizeComplete" })
 ```
 
-각 오케스트레이터는 `AutoBePreliminaryController`를 통해 **RAG 루프**를 내장한다. LLM이 "이 스키마 정보가 더 필요합니다"라고 판단하면, 유니언 타입에서 해당 데이터 요청을 선택하고, 컨트롤러가 자동으로 추가 컨텍스트를 로딩한다 (최대 7회). 상세 메커니즘은 [3.3절](#33-메모리와-rag-정적-주입-vs-동적-수집)에서 다룬다.
+각 오케스트레이터는 `AutoBePreliminaryController`를 통해 **RAG 루프**를 내장한다. LLM이 "이 스키마 정보가 더 필요합니다"라고 판단하면, 유니언 타입에서 해당 데이터 요청을 선택하고, 컨트롤러가 자동으로 추가 컨텍스트를 로딩한다 (최대 7회).
 
 ---
 
-### 2.2. 병렬 실행: Coordinator vs executeCachedBatch
+### 4.2. 병렬 실행: Coordinator vs executeCachedBatch
 
 #### Claude Code: Coordinator Mode — 인간 팀 리더 패턴
 
@@ -403,7 +431,21 @@ AgentTool({ prompt: "Fix the null pointer in src/auth/validate.ts:42.
   the token remains cached. Add a null check before user.id access." })
 ```
 
-워커 재활용 전략:
+워커 결과는 스트림 안에 XML로 도착한다:
+
+```xml
+<task-notification>
+  <task-id>agent-a1b2c3</task-id>
+  <status>completed</status>
+  <result>Agent's final text response here</result>
+  <usage>
+    <total_tokens>15000</total_tokens>
+    <duration_ms>45000</duration_ms>
+  </usage>
+</task-notification>
+```
+
+코디네이터 LLM이 이 XML을 파싱하고, 다음 단계를 결정한다. **무엇을 병렬로 돌릴지, 몇 개를 돌릴지 — 모두 LLM이 추론해서 결정한다.** 워커 재활용 전략:
 
 ```
 | 상황                         | 전략       | 이유                    |
@@ -468,7 +510,7 @@ export const executeCachedBatch = async <T>(
 
 ---
 
-### 2.3. 서브에이전트: Fork vs MicroAgentica
+### 4.3. 서브에이전트: Fork vs MicroAgentica
 
 #### Claude Code: Fork — 부모 캐시를 공유하는 자식 에이전트
 
@@ -536,11 +578,11 @@ const agent = new MicroAgentica({
 
 ---
 
-## 3. LLM 하네싱: 프롬프트, 스키마, 도구
+## 5. LLM 하네싱: 프롬프트, 스키마, 도구
 
 > 오케스트레이션이 **구조**라면, 하네싱은 **재료**다. LLM에게 무엇을, 어떻게, 어떤 형식으로 시키는가.
 
-### 3.1. 시스템 프롬프트: 범용 지침 vs 도메인 교과서
+### 5.1. 시스템 프롬프트: 범용 지침 vs 도메인 교과서
 
 #### Claude Code: 모듈식 동적 조립
 
@@ -563,6 +605,22 @@ Claude Code의 시스템 프롬프트는 `getSystemPrompt()`에서 10+ 섹션을
 ```
 
 `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 마커가 핵심이다. 이 마커 **이전**은 `scope: 'global'`로 크로스-세션 캐시 가능하고, **이후**는 세션별 동적 콘텐츠다. 이로써 시스템 프롬프트의 상당 부분이 캐시되어 비용과 지연이 절감된다.
+
+```typescript
+// src/constants/prompts.ts
+export const SYSTEM_PROMPT_DYNAMIC_BOUNDARY =
+  '__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__'
+
+const [staticPart, dynamicPart] = systemPrompt.split(
+  SYSTEM_PROMPT_DYNAMIC_BOUNDARY
+)
+// staticPart → cache_control: { scope: 'global' }
+//              크로스-유저, 크로스-세션 캐시
+// dynamicPart → cache_control: { scope: 'session' }
+//               세션 내에서만 캐시
+```
+
+`scope: 'global'`은 다른 사용자의 이전 세션에서도 캐시가 히트된다. 새 사용자가 첫 세션을 열어도 정적 부분의 프롬프트 캐시 비용은 0에 가깝다.
 
 프롬프트 내용 자체는 **범용적**이다. "Don't add features beyond what was asked", "Avoid over-engineering", "Consider reversibility and blast radius" 같은 일반 원칙이 주를 이룬다.
 
@@ -612,7 +670,7 @@ MUST reuse existing collectors. NEVER write raw Prisma queries
 when a collector exists for the same entity.
 ```
 
-핵심 차이: Claude Code는 "무엇을 하지 마라"(금지 규칙)가 많고, AutoBE는 "이것만 이렇게 해라"(양성 규칙)가 많다. 이것은 Function Calling Harness 아티클에서 말하는 **핑크 코끼리 문제**와 직접 연결된다—"코끼리를 생각하지 마라"보다 "강아지를 생각해라"가 더 효과적이다.
+핵심 차이: Claude Code는 "무엇을 하지 마라"(금지 규칙)가 많고, AutoBE는 "이것만 이렇게 해라"(양성 규칙)가 많다. 이것은 **핑크 코끼리 문제**와 직접 연결된다—"코끼리를 생각하지 마라"보다 "강아지를 생각해라"가 더 효과적이다.
 
 #### Coordinator vs Facade: 멀티에이전트 프롬프트
 
@@ -646,7 +704,7 @@ Claude Code의 멀티에이전트는 "범용 작업자에게 자유롭게 위임
 
 ---
 
-### 3.2. 도구 시스템과 Function Calling
+### 5.2. 도구 시스템과 Function Calling
 
 #### Claude Code: 40+ 범용 도구의 스위스 아미 나이프
 
@@ -871,7 +929,7 @@ Typia의 3계층 Harness가 이 모든 것을 가능하게 한다:
 
 ---
 
-### 3.3. 메모리와 RAG: 정적 주입 vs 동적 수집
+### 5.3. 메모리와 RAG: 정적 주입 vs 동적 수집
 
 #### Claude Code: 4계층 CLAUDE.md + 메모리 파일
 
@@ -971,11 +1029,11 @@ Claude Code의 CLAUDE.md 시스템은 **사용자의 의도를 학습**하는 �
 
 ---
 
-## 4. 컴파일러와 검증
+## 6. 컴파일러와 검증
 
 > 하네싱이 LLM의 **입력**을 통제한다면, 컴파일러는 **출력**을 통제한다. 이것이 두 프로젝트의 가장 근본적인 차이다.
 
-### 4.1. 검증 총론: 최선의 노력 vs 100% 보장
+### 6.1. 검증 총론: 최선의 노력 vs 100% 보장
 
 이것이 두 프로젝트 사이의 **가장 근본적인 차이**다.
 
@@ -999,7 +1057,7 @@ LSP 기능: `hover`, `goToDefinition`, `findReferences`, `documentSymbol`, `work
 
 AutoBE의 컴파일러 시스템은 프로젝트의 **존재 이유**다.
 
-**Tier 1: Prisma Database Compiler** — 874줄 자체 검증기로 8가지 카테고리(중복, 네이밍, FK 무결성, 순환 참조, 예약어, 인덱스 최적화, GIN 타입 호환, 관계 충돌)를 검증한다. 상세 구조는 [4.2절](#42-3층-컴파일러의-내부)에서 다룬다.
+**Tier 1: Prisma Database Compiler** — 874줄 자체 검증기로 8가지 카테고리(중복, 네이밍, FK 무결성, 순환 참조, 예약어, 인덱스 최적화, GIN 타입 호환, 관계 충돌)를 검증한다.
 
 **Tier 2: OpenAPI Interface Compiler**
 
@@ -1046,7 +1104,7 @@ async function iterate(ctx, application, life) {
 }
 ```
 
-에러가 많으면 배치 처리한다 (기본 8개씩). 진단 메시지의 **교육적 형식**("What happened? → Why? → How to fix?")은 [4.3절](#43-진단의-llm-최적화)에서 상세히 다룬다.
+에러가 많으면 배치 처리한다 (기본 8개씩). 진단 메시지의 **교육적 형식**("What happened? → Why? → How to fix?")은 다음 절에서 상세히 다룬다.
 
 #### 비교
 
@@ -1061,7 +1119,7 @@ async function iterate(ctx, application, life) {
 
 ---
 
-### 4.2. 3층 컴파일러의 내부
+### 6.2. 3층 컴파일러의 내부
 
 #### 1층: Prisma 데이터베이스 컴파일러
 
@@ -1149,7 +1207,7 @@ for (let i = 0; i < AutoBeConfigConstant.COMPILER_RETRY; i++) {
 
 ---
 
-### 4.3. 진단의 LLM 최적화
+### 6.3. 진단의 LLM 최적화
 
 AutoBE의 컴파일러 진단 시스템은 단순히 "에러를 전달"하는 것이 아니라, **LLM이 최대한 효과적으로 이해하고 수정할 수 있도록 가공**한다.
 
@@ -1215,11 +1273,11 @@ AutoBE: TypeScript diagnostics → 필터링 → 중복 제거 → 주석화 →
 
 ---
 
-## 5. 코드 생성 파이프라인
+## 7. 코드 생성 파이프라인
 
 > 컴파일러가 "맞는가?"를 판단한다면, 이 장은 "무엇을 만드는가?"를 다룬다. AST 설계부터 완성된 NestJS 프로젝트까지의 여정이다.
 
-### 5.1. AST 설계 철학
+### 7.1. AST 설계 철학
 
 #### Claude Code: 표준 도구 스키마
 
@@ -1265,7 +1323,7 @@ export namespace AutoBeOpenApi {
 
 ---
 
-### 5.2. 데이터베이스 스키마 생성
+### 7.2. 데이터베이스 스키마 생성
 
 Claude Code에서 데이터베이스 스키마를 만드는 과정: "Prisma 스키마 만들어줘" → LLM이 자유형식으로 생성 → 끝.
 
@@ -1317,7 +1375,7 @@ Step 3 (Schema): 개별 테이블 정밀 설계
 
 ---
 
-### 5.3. AST에서 NestJS까지
+### 7.3. AST에서 NestJS까지
 
 AutoBE만의 고유한 영역: **OpenAPI AST → 완전한 NestJS 프로젝트**를 생성하는 파이프라인.
 
@@ -1355,7 +1413,7 @@ Claude Code에서 "쇼핑몰 백엔드 만들어줘"라고 하면 LLM이 파일�
 
 ---
 
-### 5.4. Collector/Transformer: 양방향 매핑
+### 7.4. Collector/Transformer: 양방향 매핑
 
 모든 CRUD API에는 두 방향의 데이터 변환이 필요하다:
 
@@ -1401,11 +1459,11 @@ export namespace ShoppingSaleTransformer {
 
 **재귀 DTO**: 트리 구조의 재귀적 DTO를 위해 `VariadicSingleton` 캐시 기반 N+1 방지 템플릿을 제공한다.
 
-**전체 매핑 검증**: Collector와 Transformer 모두 **모든 필드가 매핑되었는지** 검증한다. 누락된 필드가 있으면 검증 에러다. 이것은 3.2절의 **"excludes + revises = 완전 커버리지"**와 같은 철학이다.
+**전체 매핑 검증**: Collector와 Transformer 모두 **모든 필드가 매핑되었는지** 검증한다. 누락된 필드가 있으면 검증 에러다.
 
 ---
 
-### 5.5. E2E 테스트 자동 생성
+### 7.5. E2E 테스트 자동 생성
 
 Claude Code는 테스트를 **작성하지 않는다**. 사용자가 요청하면 LLM이 자유형식으로 생성할 뿐이다.
 
@@ -1452,11 +1510,11 @@ const traverse = (endpoint) => {
 
 ---
 
-## 6. 컨텍스트 엔지니어링
+## 8. 컨텍스트 엔지니어링
 
 > 파이프라인이 아무리 정교해도, LLM의 컨텍스트 창에 **무엇이 들어가는가**가 품질을 결정한다. 두 프로젝트는 정반대의 전략을 취한다.
 
-### 6.1. 압축의 예술 vs 변환의 정밀함
+### 8.1. 압축의 예술 vs 변환의 정밀함
 
 #### Claude Code: 5중 압축 전략
 
@@ -1465,6 +1523,19 @@ Claude Code는 긴 대화에서 컨텍스트 창을 관리하기 위해 5가지 
 **1. Snip (무료, 매 반복)** — 체크포인트 이전의 오래된 메시지를 제거한다.
 
 **2. Cached Microcompact (캐시 친화적)** — API의 `cache_edits` 블록을 생성하여 도구 결과를 서버 측에서 삭제. 로컬 메시지는 수정하지 않으므로 캐시 무효화 없음.
+
+API가 직접 컨텍스트를 지우는 메커니즘:
+
+```typescript
+{
+  type: 'clear_tool_uses_20250919',
+  trigger: { type: 'input_tokens', value: 180_000 },
+  clear_at_least: { type: 'input_tokens', value: 140_000 },
+  clear_tool_inputs: ['BashTool', 'GlobTool', 'GrepTool', 'WebFetchTool', ...]
+}
+```
+
+컨텍스트가 180k 토큰을 초과하면, API가 서버 측에서 오래된 도구 결과를 제거한다. 클라이언트는 140k 토큰어치의 Bash 출력을 재구성할 필요가 없다. 그냥 사라진다.
 
 **3. Time-based Microcompact (60분 갭)** — 마지막 어시스턴트 메시지 후 60분 이상 경과 시, 최근 5개만 유지.
 
@@ -1537,7 +1608,7 @@ const transformRealizeWriteHistories = (props) => ({
 
 ---
 
-### 6.2. History Transformer와 메시지 정규화
+### 8.2. History Transformer와 메시지 정규화
 
 #### Claude Code: 5,800줄 단일 파이프라인
 
@@ -1597,6 +1668,7 @@ return {
 ```typescript
 function summarizeFailures(array) {
   if (array.length <= 2) return array;
+  const olderCount = array.length - 2;
   const summary = {
     script: "",  // 코드 없음 (토큰 절약)
     diagnostics: [{ messageText: `[Summary of ${olderCount} previous attempts...]` }]
@@ -1622,7 +1694,7 @@ function summarizeFailures(array) {
 
 ---
 
-### 6.3. 토큰 경제학
+### 8.3. 토큰 경제학
 
 #### Claude Code: 대화가 길어질수록 비용이 증가
 
@@ -1657,11 +1729,11 @@ executeCachedBatch가 이 구조를 극대화한다:
 
 ---
 
-## 7. 에러 회복과 안전성
+## 9. 에러 회복과 안전성
 
 > 실패는 불가피하다. 문제는 **무엇이** 실패하고, **어떻게** 회복하느냐다.
 
-### 7.1. 에러 회복: 인프라 재시도 vs 논리 자가치유
+### 9.1. 에러 회복: 인프라 재시도 vs 논리 자가치유
 
 #### Claude Code: 7단계 인프라 회복
 
@@ -1743,7 +1815,7 @@ TIMEOUT = 20 * 60 * 1000     // 20분 타임아웃
 
 ---
 
-### 7.2. 안전성 모델: 6중 방어 vs 컴파일러 게이트
+### 9.2. 안전성 모델: 6중 방어 vs 컴파일러 게이트
 
 이 비교가 두 프로젝트의 **존재 이유 차이**를 가장 명확히 드러낸다.
 
@@ -1790,11 +1862,27 @@ type PermissionRuleSource =
   | 'cliArg' | 'command' | 'session'
 ```
 
-**거부 추적과 회로 차단**: auto 모드가 연속 3회 또는 총 20회 거부하면 사용자에게 물어보기로 전환한다. AI 분류기의 오작동에 대한 안전장치다.
+**거부 추적과 회로 차단**: auto 모드가 연속 3회 또는 총 20회 거부하면 사용자에게 물어보기로 전환한다.
 
 **파일 히스토리**: SHA-256 기반 스냅샷 시스템(1,115줄)으로 특정 시점으로 되감기 가능. MAX_SNAPSHOTS = 100, LRU 방출.
 
 **파괴적 명령어 감지**: `git reset --hard`, `rm -rf`, `DROP TABLE`, `kubectl delete`, `terraform destroy` 등.
+
+**타입으로 정책 강제**:
+
+```typescript
+// src/services/analytics/index.ts
+export type AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = never
+
+export function logEvent(
+  eventName: string,
+  metadata: LogEventMetadata,  // plain string 금지
+): void { ... }
+```
+
+타입 이름 자체가 정책 선언이다. 이 함수에 이벤트 데이터를 로깅하려면 개발자가 타입 캐스팅 과정에서 이름을 보게 된다: "나는 이게 코드나 파일 경로가 아님을 검증했다."
+
+주석으로 쓰면 무시된다. 타입 이름으로 쓰면 컴파일 흐름 안에 들어온다.
 
 #### AutoBE: "생성물이 올바른지 보증하는" 컴파일러 게이트
 
@@ -1833,11 +1921,11 @@ AutoBE는 **가상 파일 시스템**(`Record<string, string>`)에서 작동한�
 
 ---
 
-## 8. 인프라와 운영
+## 10. 인프라와 운영
 
 > 에이전트, 하네싱, 컴파일러, 컨텍스트, 에러 회복—이 모든 것을 **지탱하는 기반**이다.
 
-### 8.1. 상태 관리와 영속성
+### 10.1. 상태 관리와 영속성
 
 #### Claude Code: 200+ 필드의 중앙 집중 상태
 
@@ -1888,7 +1976,7 @@ interface AutoBeState {
 
 ---
 
-### 8.2. 이벤트 시스템과 통신
+### 10.2. 이벤트 시스템과 통신
 
 #### Claude Code: JWT + WebSocket Bridge
 
@@ -1942,7 +2030,7 @@ for (const key of typia.misc.literals<keyof IAutoBeRpcListener>()) {
 
 ---
 
-### 8.3. 비용과 기여 추적
+### 10.3. 비용과 기여 추적
 
 #### 비용 추적
 
@@ -1991,7 +2079,7 @@ Claude Code는 **사용자에게 비용을 보여주는** 시스템이고, AutoB
 
 ---
 
-### 8.4. Git 통합과 투기적 실행
+### 10.4. Git 통합과 투기적 실행
 
 #### Claude Code의 Git 인프라
 
@@ -2013,7 +2101,7 @@ Claude Code는 **파일 시스템 기반 도구**이므로 Git 통합이 핵심�
 
 **Git 상태 보존** (이슈 제출용): merge-base SHA, diff patch, 새 파일, format-patch. 제한: 파일당 500MB, 총 5GB, 최대 20,000개.
 
-#### Claude Code: 투기적 실행 — Copy-on-Write 오버레이
+#### 투기적 실행 — Copy-on-Write 오버레이
 
 사용자가 제안을 검토하는 동안 미리 실행하는 **투기적 실행(Speculation)** 시스템:
 
@@ -2045,7 +2133,7 @@ Git 히스토리 불필요, Git 보안 고려사항 없음
 
 ---
 
-### 8.5. 설정과 프로바이더 추상화
+### 10.5. 설정과 프로바이더 추상화
 
 #### Claude Code: Feature Flags + 4-Provider 지원
 
@@ -2053,6 +2141,7 @@ Git 히스토리 불필요, Git 보안 고려사항 없음
 // Bun DCE + GrowthBook Feature Flag 이중 구조
 if (feature('COORDINATOR_MODE')) { ... }  // 컴파일 타임 제거
 getFeatureValue_CACHED_MAY_BE_STALE('feature_name')  // 런타임 게이트
+// _CACHED_MAY_BE_STALE이 함수 이름에 포함 — "이 값은 오래됐을 수 있다"는 경고
 
 // 4개 AI 프로바이더:
 type APIProvider = 'firstParty' | 'bedrock' | 'vertex' | 'foundry';
@@ -2061,6 +2150,19 @@ type APIProvider = 'firstParty' | 'bedrock' | 'vertex' | 'foundry';
 
 // 모델 폴백: 529 3회 → claude-opus → claude-sonnet 자동 전환
 ```
+
+소스에서 발견된 피처 플래그들:
+
+```typescript
+feature('COORDINATOR_MODE')      // 멀티에이전트 오케스트레이션
+feature('CONTEXT_COLLAPSE')      // 점진적 컨텍스트 아카이빙
+feature('PROACTIVE')             // 자동 완성 모드
+feature('KAIROS')                // 응답 요약 (BriefTool)
+feature('KAIROS_BRIEF')          // KAIROS 변형
+feature('ABLATION_BASELINE')     // A/B 테스트 하네스
+```
+
+공개 CLI와 Anthropic 내부 dogfood 빌드는 **기능 표면이 다르다.** 내부 빌드에서 작동하는 기능이 공개 CLI에선 코드 자체가 없다.
 
 #### AutoBE: const enum 상수 + 벤더 인터페이스
 
@@ -2089,11 +2191,11 @@ export const enum AutoBeConfigConstant {
 
 ---
 
-## 9. 확장성과 상호 학습
+## 11. 확장성과 상호 학습
 
 > 두 프로젝트는 각각의 방식으로 진화하고 있다. 확장 모델이 다르고, 서로에게서 배울 점도 다르다.
 
-### 9.1. 확장 모델: MCP 생태계 vs 컴파일러 체인
+### 11.1. 확장 모델: MCP 생태계 vs 컴파일러 체인
 
 #### Claude Code: 3계층 확장 시스템
 
@@ -2139,7 +2241,7 @@ Epsilon 예정:
 
 ---
 
-### 9.2. 상호 학습
+### 11.2. 상호 학습
 
 #### AutoBE가 Claude Code로부터 배울 것들
 
@@ -2171,7 +2273,7 @@ Epsilon 예정:
 
 ---
 
-## 10. 결론: 수렴과 분기
+## 12. 결론: 수렴과 분기
 
 ### 현재의 위치
 
@@ -2222,4 +2324,22 @@ AutoBE가 백엔드를 통째로 생성한 후, Claude Code에 넘겨서 세밀�
 
 ---
 
-*이 보고서는 Claude Code의 소스코드(512,000줄, npm publish 시 js.map 노출로 공개)와 AutoBE의 오픈소스 코드를 직접 분석하여 작성되었다. 19개의 병렬 분석 에이전트가 양쪽 코드베이스의 모든 핵심 파일—messages.ts(5,800줄), permissions.ts, bashPermissions.ts(1,800줄), gitDiff.ts, gitSafety.ts, analytics/(datadog.ts, firstPartyEventLogger.ts, metadata.ts), sessionTracing.ts, systemPrompt.ts, coordinatorMode.ts, withRetry.ts, compact.ts (Claude Code) 및 AutoBePreliminaryController.ts, executeCachedBatch.ts, validateDatabaseApplication.ts(874줄), AutoBeTypeScriptCompiler.ts, writeRealizeControllers.ts, AutoBeRealizeOperationProgrammer.ts, transformOpenApiDocument.ts, 87개 시스템 프롬프트, 75개 이벤트 타입, 58개 히스토리 트랜스포머, 3개 컴파일러 (AutoBE)—을 읽고 분석한 결과다. 2026년 4월 기준.*
+## 우리가 가져온 것들
+
+코드를 읽고 실제로 반영한 것들:
+
+**1. 캐시 경계 명시화.** `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` 패턴에서 배웠다. 우리의 시스템 프롬프트 조립 로직에 static/dynamic 경계를 명시적으로 표현하는 작업이 진행 중이다. 묵시적 캐시보다 명시적 경계가 유지보수가 쉽다.
+
+**2. 타입으로 정책 강제.** `AnalyticsMetadata_I_VERIFIED_THIS_IS_NOT_CODE_OR_FILEPATHS = never` 패턴. 주석은 무시되지만 타입 이름은 컴파일 흐름 안에 들어온다. 우리 코드베이스의 유사한 정책 지점들에 이 패턴을 적용하고 있다.
+
+**3. 위협 모델의 구체성.** Claude Code의 6중 방어를 읽으며 각 계층이 구체적으로 무엇을 막는지 명시되어 있다는 것을 깨달았다. 우리의 4-Gate 컴파일러 시스템도 각 Gate가 어떤 위협을 막는지 문서화하는 작업을 시작했다.
+
+가져오지 않은 것들: 4계층 컨텍스트 압축, 6중 방어 시스템, Coordinator 패턴, Feature Flag 인프라. 이것들은 Claude Code의 문제에 대한 올바른 해법이지만, 우리의 문제에는 맞지 않는다.
+
+읽고 나서 AutoBE의 설계 선택에 더 확신이 생겼다. 컴파일러에 올인하고, 컨텍스트를 처음부터 선별하고, 병렬성을 코드에 하드코딩한 것. 다른 문제에서 다른 선택이 필요했기 때문에 한 선택들이었다.
+
+---
+
+**AutoBE는 AGPL 3.0 오픈소스입니다.**
+
+[GitHub](https://github.com/wrtnlabs/autobe) | [Docs](https://autobe.dev/docs) | [Discord](https://discord.gg/aMhRmzkqCx)
