@@ -134,7 +134,6 @@ export function createProgram(): Command {
   return program;
 }
 
-
 export async function runCLI(options: CLIOptions): Promise<void> {
   if (!options.apiKey) {
     options.apiKey = process.env.OPENROUTER_API_KEY;

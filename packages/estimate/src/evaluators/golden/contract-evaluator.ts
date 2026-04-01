@@ -519,7 +519,9 @@ export class ContractEvaluator {
       // Skip endpoints with path parameters (we can't resolve them)
       // Excluded from scoring — neither pass nor fail
       if (path.includes("{") || path.includes(":")) {
-        console.log(`    skip: ${ep.method} ${ep.path} (unresolved path parameters)`);
+        console.log(
+          `    skip: ${ep.method} ${ep.path} (unresolved path parameters)`,
+        );
         return {
           id: 0,
           name: `${ep.method} ${ep.path}`,

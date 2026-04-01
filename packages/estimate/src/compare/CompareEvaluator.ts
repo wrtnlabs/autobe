@@ -185,7 +185,10 @@ export class CompareEvaluator {
         ranking: [],
         phaseComparison: [],
         metricComparison: [],
-        summary: { overallWinner: "N/A", recommendation: "No projects to compare" },
+        summary: {
+          overallWinner: "N/A",
+          recommendation: "No projects to compare",
+        },
       };
     }
 
