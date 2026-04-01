@@ -114,8 +114,7 @@ export const orchestrateAnalyzeWriteSectionPatch = async (
         sectionSections: finalSectionSections,
         acquisition: cyclinic.getPreliminary().getAcquisition(),
         tokenUsage: result?.tokenUsage ?? new AutoBeTokenUsageComponent(),
-        metric:
-          result?.metric ?? AutoBeFunctionCallingMetricFactory.create(),
+        metric: result?.metric ?? AutoBeFunctionCallingMetricFactory.create(),
         step: (ctx.state().analyze?.step ?? -1) + 1,
         total: props.progress.total,
         completed: ++props.progress.completed,

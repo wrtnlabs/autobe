@@ -202,9 +202,8 @@ async function process(
     },
     // FINALIZE: dispatch event and return schema
     (lastWrite, result) => {
-      const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
-        lastWrite.design,
-      );
+      const schema: AutoBeOpenApi.IJsonSchema =
+        AutoBeJsonSchemaFactory.fixDesign(lastWrite.design);
       if (result !== null)
         ctx.dispatch({
           type: SOURCE,

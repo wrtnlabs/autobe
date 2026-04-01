@@ -178,7 +178,10 @@ async function process(
     // PROCESS: LLM conversation → action
     async (context) => {
       const action: IPointer<
-        | { type: "write"; data: IAutoBeInterfaceSchemaReviewApplication.IWrite }
+        | {
+            type: "write";
+            data: IAutoBeInterfaceSchemaReviewApplication.IWrite;
+          }
         | { type: "complete" }
         | null
       > = { value: null };

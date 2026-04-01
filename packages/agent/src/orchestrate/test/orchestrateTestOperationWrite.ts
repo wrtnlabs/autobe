@@ -107,8 +107,7 @@ async function process(
   },
 ): Promise<IAutoBeTestOperationProcedure> {
   const cyclinic = new AutoBeCyclinicController<never>({
-    application:
-      typia.json.application<IAutoBeTestOperationWriteApplication>(),
+    application: typia.json.application<IAutoBeTestOperationWriteApplication>(),
     source: SOURCE,
     kinds: [],
     state: ctx.state(),
