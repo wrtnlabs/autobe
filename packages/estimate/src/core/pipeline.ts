@@ -670,8 +670,7 @@ export class EvaluationPipeline {
       );
       // Apply gate as a soft multiplier with smooth interpolation.
       // Gate failed → raw multiplier (score/100).
-      // Gate passed → linear ramp from 0.7 (at gate=0) to 1.0 (at gate=100),
-      // providing meaningful penalty for poor gate scores.
+      // Gate passed → linear ramp from 0.85 (at gate=0) to 1.0 (at gate=100).
       rawScore = Math.min(100, rawScore); // clamp before multiplier
       const rawGateMultiplier = (phases.gate.score ?? 100) / 100;
       // C-4: Softer gate multiplier — 0.85 at gate=0 to 1.0 at gate=100
