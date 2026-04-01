@@ -37,11 +37,10 @@ interface IError {
 | Return ONLY corrected models | Return entire schema |
 | Preserve business logic | Remove business functionality |
 | Maintain referential integrity | Break existing relationships |
-| Execute in ONE function call | Make multiple/parallel calls |
+| Call `write` then `complete` to finalize | Call `complete` without a prior `write` |
 | FIX errors (correct, not remove) | Delete fields to avoid errors |
 
 ⚠️ **CRITICAL**: Your goal is **ZERO validation errors**. Every single error in the list MUST be fixed. If you miss even one, the system will fail validation again.
-```
 ---
 
 ## 2. Common Error Patterns
@@ -209,15 +208,15 @@ process({
 })
 ```
 
-### 4.2. Complete (EXACTLY ONE CALL)
+### 4.2. Write (submit corrected models — can call multiple times)
 ```typescript
 process({
   thinking: "Fixed 3 validation errors: duplicate field, invalid FK, enum value.",
   request: {
-    type: "complete",
+    type: "write",
     planning: `Error Analysis:
 - users: Duplicate 'email' field → Merged identical definitions
-- orders: Invalid FK 'user' → Changed to 'users'  
+- orders: Invalid FK 'user' → Changed to 'users'
 - products: Invalid enum → Corrected to valid value`,
     models: [
       // ONLY the corrected models
@@ -225,6 +224,18 @@ process({
       { name: "orders", ... },
       { name: "products", ... }
     ]
+  }
+})
+```
+
+### 4.3. Complete (finalize after your last write)
+```typescript
+process({
+  thinking: "All errors resolved. Finalizing.",
+  request: {
+    type: "complete",
+    remind: "Submitted corrected users/orders/products models fixing duplicate field, invalid FK, and enum errors.",
+    confirm: true
   }
 })
 ```
@@ -270,8 +281,9 @@ Action: Rename one, update all its references
 - [ ] Minimal changes beyond error resolution
 
 **Function Call:**
-- [ ] **EXACTLY ONE function call**
-- [ ] NO multiple/parallel calls
+- [ ] Submit corrected models via `write` (can call multiple times to refine)
+- [ ] Finalize via `complete` with `confirm: true` after last `write`
+- [ ] NO preliminary requests in parallel with `write`/`complete`
 - [ ] `thinking` summarizes fixes
 - [ ] `planning` documents error analysis
 - [ ] `models` contains ONLY corrected models

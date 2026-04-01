@@ -1,14 +1,23 @@
 import { IAutoBePreliminaryGetDatabaseSchemas } from "../../common/structures/IAutoBePreliminaryGetDatabaseSchemas";
+import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBeRealizeAuthorizationWriteApplication } from "./IAutoBeRealizeAuthorizationWriteApplication";
 
 export interface IAutoBeRealizeAuthorizationCorrectApplication {
   /**
    * Process authentication correction task or preliminary data requests.
    *
-   * @param next Request containing either preliminary data request or complete
-   *   task
+   * Workflow:
+   *
+   * 1. Request preliminary context if needed (getDatabaseSchemas)
+   * 2. Submit corrected components via `write` — can be called multiple times to
+   *    refine corrections
+   * 3. Confirm finalization via `complete` after you are satisfied with the
+   *    submitted components
+   *
+   * @param props Request containing preliminary data request, write submission,
+   *   or completion confirmation
    */
-  process(next: IAutoBeRealizeAuthorizationCorrectApplication.IProps): void;
+  process(props: IAutoBeRealizeAuthorizationCorrectApplication.IProps): void;
 }
 
 export namespace IAutoBeRealizeAuthorizationCorrectApplication {
@@ -16,24 +25,37 @@ export namespace IAutoBeRealizeAuthorizationCorrectApplication {
     /**
      * Think before you act.
      *
-     * For preliminary requests: what critical information is missing?
+     * For preliminary requests: what critical information is missing and why?
+     * Be brief — state the gap, don't list everything you have.
      *
-     * For completion: what did you acquire, what did you accomplish, why is it
-     * sufficient?
+     * For write submissions: summarize what errors you are fixing and how. If
+     * this is a revision, explain what changed from the previous submission.
+     *
+     * For completion: confirm that the last write submission is correct and
+     * complete.
      */
     thinking: string;
 
     /**
-     * Action to perform. Exhausted preliminary types are removed from the
-     * union, physically preventing repeated calls.
+     * Action to perform.
+     *
+     * - Preliminary `getDatabaseSchemas` is removed from the union once
+     *   exhausted.
+     * - `complete` is only available after at least one `write` submission.
      */
-    request: IComplete | IAutoBePreliminaryGetDatabaseSchemas;
+    request: IWrite | IComplete | IAutoBePreliminaryGetDatabaseSchemas;
   }
 
-  /** Request to fix authentication component compilation errors. */
-  export interface IComplete {
-    /** Type discriminator for completion request. */
-    type: "complete";
+  /**
+   * Submit corrected authentication components.
+   *
+   * This is an intermediate step — you can submit multiple times to refine your
+   * corrections. The last submitted components will be used when you call
+   * `complete`.
+   */
+  export interface IWrite {
+    /** Type discriminator for write submission. */
+    type: "write";
 
     /**
      * Categorize all compilation errors by component
