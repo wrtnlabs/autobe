@@ -148,10 +148,7 @@ async function process(
     },
     // VALIDATE: run business logic validation
     async (writeData) => {
-      if (
-        writeData.content === null ||
-        writeData.content === "erase"
-      )
+      if (writeData.content === null || writeData.content === "erase")
         return { success: true };
 
       const errors: IValidation.IError[] = [];
@@ -162,8 +159,7 @@ async function process(
         scenario: writeData.content,
         accessor: "$input.request.content",
       });
-      if (errors.length > 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length > 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return

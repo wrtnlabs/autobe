@@ -66,7 +66,9 @@ export const transformRealizeTransformerPlanHistory = (props: {
 
                         \`\`\`json
                         ${JSON.stringify(
-                          props.failures.map((f) => f.diagnostics as IValidation.IError[]).flat(),
+                          props.failures
+                            .map((f) => f.diagnostics as IValidation.IError[])
+                            .flat(),
                           null,
                           2,
                         )}

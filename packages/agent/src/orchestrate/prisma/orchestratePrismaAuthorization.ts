@@ -110,21 +110,19 @@ async function process(
         prefix: props.prefix,
         tables: writeData.tables,
       });
-      if (errors.length > 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length > 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return
     async (lastWrite, result) => {
       // Remove duplicated tables using shared utility
-      const [component] = AutoBeDatabaseComponentProgrammer.removeDuplicatedTable(
-        [
+      const [component] =
+        AutoBeDatabaseComponentProgrammer.removeDuplicatedTable([
           {
             ...props.group,
             tables: lastWrite.tables,
           },
-        ],
-      );
+        ]);
       if (result !== null)
         ctx.dispatch({
           type: SOURCE,

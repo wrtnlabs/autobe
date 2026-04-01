@@ -1,5 +1,5 @@
-import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
+import { IComplete } from "../../common/structures/IComplete";
 
 /** Generates unit-level sections (##) within approved module structures. */
 export interface IAutoBeAnalyzeWriteUnitApplication {

@@ -19,8 +19,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeSectionCrossFileReviewHistory } from "./histories/transformAnalyzeSectionCrossFileReviewHistory";
 import {
   IAutoBeAnalyzeSectionCrossFileReviewApplication,
-  IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite,
   IAutoBeAnalyzeSectionCrossFileReviewApplicationProps,
+  IAutoBeAnalyzeSectionCrossFileReviewApplicationWrite,
 } from "./structures/IAutoBeAnalyzeSectionCrossFileReviewApplication";
 import { repairSectionReviewInput } from "./utils/repairSectionReviewUtils";
 

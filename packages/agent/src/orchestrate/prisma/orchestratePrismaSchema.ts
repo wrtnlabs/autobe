@@ -159,8 +159,7 @@ async function process(
           .filter((s) => s !== props.design.name),
         definition: writeData.definition,
       });
-      if (errors.length !== 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length !== 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return

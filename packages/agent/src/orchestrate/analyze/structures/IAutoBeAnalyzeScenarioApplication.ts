@@ -4,8 +4,8 @@ import {
   CamelCasePattern,
 } from "@autobe/interface";
 
-import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
+import { IComplete } from "../../common/structures/IComplete";
 import { FixedAnalyzeTemplateFeature } from "./FixedAnalyzeTemplate";
 
 export interface IAutoBeAnalyzeScenarioApplication {

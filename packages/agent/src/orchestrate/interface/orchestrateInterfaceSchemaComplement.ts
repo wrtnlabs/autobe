@@ -209,15 +209,13 @@ Task: ${task}
         typeName: props.typeName,
         design: writeData.design,
       });
-      if (errors.length !== 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length !== 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return
     async (lastWrite, result) => {
-      const schema: AutoBeOpenApi.IJsonSchema = AutoBeJsonSchemaFactory.fixDesign(
-        lastWrite.design,
-      );
+      const schema: AutoBeOpenApi.IJsonSchema =
+        AutoBeJsonSchemaFactory.fixDesign(lastWrite.design);
 
       if (result !== null)
         ctx.dispatch({

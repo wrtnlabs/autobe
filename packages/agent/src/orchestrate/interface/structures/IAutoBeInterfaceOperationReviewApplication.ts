@@ -45,7 +45,8 @@ export namespace IAutoBeInterfaceOperationReviewApplication {
   }
 
   /**
-   * Submit API operation review for validation. Can ONLY modify IOperation fields:
+   * Submit API operation review for validation. Can ONLY modify IOperation
+   * fields:
    *
    * - `specification`: Can fix implementation details, algorithm descriptions,
    *   database query logic

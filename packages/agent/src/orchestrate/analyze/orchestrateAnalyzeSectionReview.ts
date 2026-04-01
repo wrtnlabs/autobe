@@ -19,8 +19,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeSectionReviewHistory } from "./histories/transformAnalyzeSectionReviewHistory";
 import {
   IAutoBeAnalyzeSectionReviewApplication,
-  IAutoBeAnalyzeSectionReviewApplicationWrite,
   IAutoBeAnalyzeSectionReviewApplicationProps,
+  IAutoBeAnalyzeSectionReviewApplicationWrite,
 } from "./structures/IAutoBeAnalyzeSectionReviewApplication";
 import { repairSectionReviewInput } from "./utils/repairSectionReviewUtils";
 

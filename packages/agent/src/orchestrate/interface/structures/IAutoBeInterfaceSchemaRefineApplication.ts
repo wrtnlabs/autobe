@@ -56,7 +56,10 @@ export namespace IAutoBeInterfaceSchemaRefineApplication {
       | IAutoBePreliminaryGetPreviousInterfaceSchemas;
   }
 
-  /** Submit schema refinement with object-level and property-level enrichment for validation. */
+  /**
+   * Submit schema refinement with object-level and property-level enrichment
+   * for validation.
+   */
   export interface IWrite {
     /** Type discriminator for write submission. */
     type: "write";

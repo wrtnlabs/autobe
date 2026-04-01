@@ -41,8 +41,8 @@ export namespace IAutoBeRealizeAuthorizationWriteApplication {
   /**
    * Submit authentication components (provider, decorator, payload).
    *
-   * This is an intermediate step — you can submit multiple times to refine.
-   * The last submitted components will be used when you call `complete`.
+   * This is an intermediate step — you can submit multiple times to refine. The
+   * last submitted components will be used when you call `complete`.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

@@ -68,8 +68,7 @@ export async function orchestratePrismaGroup(
         path: "$input.request.groups",
         groups: writeData.groups,
       });
-      if (errors.length > 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length > 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return

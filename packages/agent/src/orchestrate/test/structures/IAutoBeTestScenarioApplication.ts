@@ -65,9 +65,9 @@ export namespace IAutoBeTestScenarioApplication {
   /**
    * Submit test scenarios for API endpoints for validation.
    *
-   * Submits test scenario data to create focused, implementable test
-   * scenarios (1-3 per endpoint) covering the most critical business workflows,
-   * primary success paths, and important edge cases.
+   * Submits test scenario data to create focused, implementable test scenarios
+   * (1-3 per endpoint) covering the most critical business workflows, primary
+   * success paths, and important edge cases.
    */
   export interface IWrite {
     /**

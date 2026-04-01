@@ -55,8 +55,8 @@ export namespace IAutoBeRealizeCollectorPlanApplication {
   /**
    * Submit the plan entry for the given DTO.
    *
-   * This is an intermediate step — you can submit multiple times to refine.
-   * The last submitted plans will be used when you call `complete`.
+   * This is an intermediate step — you can submit multiple times to refine. The
+   * last submitted plans will be used when you call `complete`.
    */
   export interface IWrite {
     /** Type discriminator for write submission. */

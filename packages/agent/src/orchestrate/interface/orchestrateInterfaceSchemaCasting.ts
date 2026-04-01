@@ -184,8 +184,7 @@ async function process(
           typeName: props.typeName,
           design: writeData.casting,
         });
-      if (errors.length !== 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length !== 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return
@@ -223,30 +222,29 @@ async function process(
 }
 
 function createController(props: {
-    typeName: string;
-    schema: AutoBeOpenApi.IJsonSchema;
-    operations: AutoBeOpenApi.IOperation[];
-    everyModels: AutoBeDatabase.IModel[];
-    action: IPointer<
-      | {
-          type: "write";
-          data: IAutoBeInterfaceSchemaCastingApplication.IWrite;
-        }
-      | { type: "complete" }
-      | null
-    >;
-    cyclinic: AutoBeCyclinicController<
-      | "analysisSections"
-      | "databaseSchemas"
-      | "interfaceOperations"
-      | "interfaceSchemas"
-      | "previousAnalysisSections"
-      | "previousDatabaseSchemas"
-      | "previousInterfaceOperations"
-      | "previousInterfaceSchemas"
-    >;
-  },
-): IAgenticaController.IClass {
+  typeName: string;
+  schema: AutoBeOpenApi.IJsonSchema;
+  operations: AutoBeOpenApi.IOperation[];
+  everyModels: AutoBeDatabase.IModel[];
+  action: IPointer<
+    | {
+        type: "write";
+        data: IAutoBeInterfaceSchemaCastingApplication.IWrite;
+      }
+    | { type: "complete" }
+    | null
+  >;
+  cyclinic: AutoBeCyclinicController<
+    | "analysisSections"
+    | "databaseSchemas"
+    | "interfaceOperations"
+    | "interfaceSchemas"
+    | "previousAnalysisSections"
+    | "previousDatabaseSchemas"
+    | "previousInterfaceOperations"
+    | "previousInterfaceSchemas"
+  >;
+}): IAgenticaController.IClass {
   const preliminary: AutoBePreliminaryController<
     | "analysisSections"
     | "databaseSchemas"

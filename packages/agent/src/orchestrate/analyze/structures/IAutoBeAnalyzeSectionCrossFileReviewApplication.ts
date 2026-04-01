@@ -1,5 +1,5 @@
-import { IComplete } from "../../common/structures/IComplete";
 import { IAutoBePreliminaryGetPreviousAnalysisSections } from "../../common/structures/IAutoBePreliminaryGetPreviousAnalysisSections";
+import { IComplete } from "../../common/structures/IComplete";
 
 /**
  * Reviews all files' section metadata in a single call for cross-file

@@ -149,8 +149,7 @@ export const orchestrateInterfaceEndpointWrite = async (
           path: `$input.request.designs[${i}]`,
         });
       });
-      if (errors.length !== 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length !== 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return

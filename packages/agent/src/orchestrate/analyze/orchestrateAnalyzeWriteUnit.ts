@@ -18,8 +18,8 @@ import { AutoBePreliminaryController } from "../common/AutoBePreliminaryControll
 import { transformAnalyzeWriteUnitHistory } from "./histories/transformAnalyzeWriteUnitHistory";
 import {
   IAutoBeAnalyzeWriteUnitApplication,
-  IAutoBeAnalyzeWriteUnitApplicationWrite,
   IAutoBeAnalyzeWriteUnitApplicationProps,
+  IAutoBeAnalyzeWriteUnitApplicationWrite,
 } from "./structures/IAutoBeAnalyzeWriteUnitApplication";
 import {
   isRecord,

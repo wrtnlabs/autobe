@@ -140,9 +140,7 @@ async function process(
           content: lastWrite.decorator.content,
         },
         payload: {
-          location: AuthorizationFileSystem.payloadPath(
-            lastWrite.payload.name,
-          ),
+          location: AuthorizationFileSystem.payloadPath(lastWrite.payload.name),
           name: lastWrite.payload.name,
           content: await compiler.typescript.beautify(
             lastWrite.payload.content,

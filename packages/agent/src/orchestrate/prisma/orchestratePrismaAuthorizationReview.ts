@@ -107,8 +107,7 @@ async function process(
         component: props.component,
         actors: props.actors,
       });
-      if (errors.length > 0)
-        return { success: false, diagnostics: errors };
+      if (errors.length > 0) return { success: false, diagnostics: errors };
       return { success: true };
     },
     // FINALIZE: build result, dispatch event, return
