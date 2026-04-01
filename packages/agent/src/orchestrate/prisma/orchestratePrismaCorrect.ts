@@ -6,20 +6,16 @@ import {
   IAutoBeCompiler,
   IAutoBeDatabaseValidation,
 } from "@autobe/interface";
-import { LlmTypeChecker } from "@typia/utils";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
+import typia, { IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeConfigConstant } from "../../constants/AutoBeConfigConstant";
 import { AutoBeContext } from "../../context/AutoBeContext";
-import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { transformPrismaCorrectHistory } from "./histories/transformPrismaCorrectHistory";
 import { AutoBeDatabaseModelProgrammer } from "./programmers/AutoBeDatabaseModelProgrammer";
 import { IAutoBeDatabaseCorrectApplication } from "./structures/IAutoBeDatabaseCorrectApplication";
-
-const MAX_WRITE_ATTEMPTS = 3;
 
 export function orchestratePrismaCorrect(
   ctx: AutoBeContext,
@@ -43,11 +39,6 @@ type PreliminaryKinds =
   | "databaseSchemas"
   | "previousAnalysisSections"
   | "previousDatabaseSchemas";
-
-interface IWriteFailure {
-  errors: IAutoBeDatabaseValidation.IError[];
-  iteration: number;
-}
 
 // ── Outer loop: validate → batch correct → re-validate ──
 
@@ -150,7 +141,7 @@ async function execute(
   ctx: AutoBeContext,
   failure: IAutoBeDatabaseValidation.IFailure,
 ): Promise<IExecutionResult> {
-  const preliminary = new AutoBePreliminaryController<PreliminaryKinds>({
+  const cyclinic = new AutoBeCyclinicController<PreliminaryKinds>({
     application: typia.json.application<IAutoBeDatabaseCorrectApplication>(),
     source: SOURCE,
     kinds: [
@@ -180,73 +171,40 @@ async function execute(
     },
   });
 
-  // Write-validate-correct loop state
-  let lastWrite: IAutoBeDatabaseCorrectApplication.IWrite | null = null;
-  let lastCorrection: AutoBeDatabase.IApplication | null = null;
-  let writeSucceeded = false;
-  const writeFailures: IWriteFailure[] = [];
-  const sourceId = v7();
+  return await cyclinic.orchestrate(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | { type: "write"; data: IAutoBeDatabaseCorrectApplication.IWrite }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-  const maxIterations = MAX_WRITE_ATTEMPTS * 3; // preliminary + write + complete headroom
-
-  for (let i = 0; i < maxIterations; i++) {
-    const action: IPointer<
-      | { type: "write"; data: IAutoBeDatabaseCorrectApplication.IWrite }
-      | { type: "complete" }
-      | null
-    > = { value: null };
-
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController(ctx, {
-        preliminary,
-        writeSucceeded,
-        action,
-      }),
-      enforceFunctionCall: true,
-      ...buildHistories({
-        preliminary,
-        failure,
-        failures: writeFailures,
-        writeSucceeded,
-      }),
-    });
-
-    // PRELIMINARY — delegate and continue
-    if (action.value === null) {
-      await orchestratePreliminary(ctx, {
-        source_id: sourceId,
+      const result = await ctx.conversate({
         source: SOURCE,
-        preliminary,
-        trial: i + 1,
-        histories: result.histories,
+        controller: createController(cyclinic, { action }),
+        enforceFunctionCall: true,
+        ...buildHistories({
+          preliminary: context.preliminary,
+          failure,
+          failures: context.failures,
+          writeSucceeded: context.writeSucceeded,
+        }),
       });
-      continue;
-    }
 
-    // WRITE — apply corrections and validate
-    if (action.value.type === "write") {
-      const writeData = action.value.data;
-
-      // Apply corrections to the application
-      const correction: AutoBeDatabase.IApplication = {
-        files: failure.data.files.map((file) => ({
-          filename: file.filename,
-          namespace: file.namespace,
-          models: file.models.map((model) => {
-            AutoBeDatabaseModelProgrammer.emend(model);
-            const newbie = writeData.models.find((m) => m.name === model.name);
-            return newbie ?? model;
-          }),
-        })),
-      };
-
-      // Validate the corrected application
+      return { result, action: action.value };
+    },
+    // VALIDATE: apply corrections and check with Prisma compiler
+    async (writeData) => {
+      const correction: AutoBeDatabase.IApplication = buildCorrection(
+        failure,
+        writeData.models,
+      );
       const compiler: IAutoBeCompiler = await ctx.compiler();
       const validation: IAutoBeDatabaseValidation =
         await compiler.database.validate(correction);
 
-      // Check if target table errors are resolved
       const targetTables = new Set(
         failure.errors.map((e) => e.table).filter((t) => t !== null),
       );
@@ -257,70 +215,55 @@ async function execute(
               (e) => e.table !== null && targetTables.has(e.table),
             );
 
-      if (remainingTargetErrors.length === 0) {
-        lastWrite = writeData;
-        lastCorrection = validation.success ? validation.data : correction;
-        writeSucceeded = true;
-      } else {
-        writeFailures.push({ errors: remainingTargetErrors, iteration: i });
-        if (writeFailures.length >= MAX_WRITE_ATTEMPTS) {
-          // Exhausted — use last correction if available, otherwise original
-          if (lastCorrection !== null && lastWrite !== null) {
-            return {
-              type: "write",
-              planning: lastWrite.planning,
-              models: lastWrite.models,
-              correction: lastCorrection,
-            };
-          }
-          throw new Error(
-            `prismaCorrect: exhausted ${MAX_WRITE_ATTEMPTS} write attempts`,
-          );
-        }
-      }
-      continue;
-    }
-
-    // COMPLETE — finalize
-    if (
-      action.value.type === "complete" &&
-      lastWrite !== null &&
-      lastCorrection !== null
-    ) {
-      ctx.dispatch({
-        type: SOURCE,
-        id: v7(),
-        failure,
-        planning: lastWrite.planning,
-        correction: lastCorrection,
-        acquisition: preliminary.getAcquisition(),
-        metric: result.metric,
-        tokenUsage: result.tokenUsage,
-        step: ctx.state().analyze?.step ?? 0,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeDatabaseCorrectEvent);
       return {
-        type: "write",
+        success: remainingTargetErrors.length === 0,
+        diagnostics: remainingTargetErrors,
+      };
+    },
+    // FINALIZE: dispatch event and return result
+    (lastWrite, result) => {
+      const correction = buildCorrection(failure, lastWrite.models);
+      if (result !== null)
+        ctx.dispatch({
+          type: SOURCE,
+          id: v7(),
+          failure,
+          planning: lastWrite.planning,
+          correction,
+          acquisition: cyclinic.getPreliminary().getAcquisition(),
+          metric: result.metric,
+          tokenUsage: result.tokenUsage,
+          step: ctx.state().analyze?.step ?? 0,
+          created_at: new Date().toISOString(),
+        } satisfies AutoBeDatabaseCorrectEvent);
+      return {
+        type: "write" as const,
         planning: lastWrite.planning,
         models: lastWrite.models,
-        correction: lastCorrection,
+        correction,
       };
-    }
-  }
-
-  // Exhausted iterations — use last successful write if available
-  if (lastWrite !== null && lastCorrection !== null) {
-    return {
-      type: "write",
-      planning: lastWrite.planning,
-      models: lastWrite.models,
-      correction: lastCorrection,
-    };
-  }
-  throw new Error("prismaCorrect: exhausted all iterations");
+    },
+  );
 }
 
-// ── Types ──
+// ── Helpers ──
+
+function buildCorrection(
+  failure: IAutoBeDatabaseValidation.IFailure,
+  correctedModels: AutoBeDatabase.IModel[],
+): AutoBeDatabase.IApplication {
+  return {
+    files: failure.data.files.map((file) => ({
+      filename: file.filename,
+      namespace: file.namespace,
+      models: file.models.map((model) => {
+        AutoBeDatabaseModelProgrammer.emend(model);
+        const newbie = correctedModels.find((m) => m.name === model.name);
+        return newbie ?? model;
+      }),
+    })),
+  };
+}
 
 interface IExecutionResult extends IAutoBeDatabaseCorrectApplication.IWrite {
   correction: AutoBeDatabase.IApplication;
@@ -336,10 +279,8 @@ const getTableCount = (failure: IAutoBeDatabaseValidation.IFailure): number => {
 // ── Controller factory ──
 
 function createController(
-  _ctx: AutoBeContext,
+  cyclinic: AutoBeCyclinicController<PreliminaryKinds>,
   props: {
-    preliminary: AutoBePreliminaryController<PreliminaryKinds>;
-    writeSucceeded: boolean;
     action: IPointer<
       | { type: "write"; data: IAutoBeDatabaseCorrectApplication.IWrite }
       | { type: "complete" }
@@ -347,27 +288,27 @@ function createController(
     >;
   },
 ): IAgenticaController.IClass {
+  const preliminary = cyclinic.getPreliminary();
   const validate: Validator = (input) => {
     const result =
       typia.validate<IAutoBeDatabaseCorrectApplication.IProps>(input);
     if (result.success === false) return result;
     const req = result.data.request;
     if (req.type !== "write" && req.type !== "complete")
-      return props.preliminary.validate({
+      return preliminary.validate({
         thinking: result.data.thinking,
         request: req,
       });
     return result;
   };
 
-  let application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeDatabaseCorrectApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application = cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeDatabaseCorrectApplication>({
+        validate: { process: validate },
+      }),
+    ),
   );
-  application = fixCompleteAvailability(application, props.writeSucceeded);
 
   return {
     protocol: "class",
@@ -384,51 +325,12 @@ function createController(
   };
 }
 
-// ── Schema manipulation ──
-
-/** Removes IComplete from the request union when no write has succeeded. */
-function fixCompleteAvailability(
-  application: ILlmApplication,
-  writeSucceeded: boolean,
-): ILlmApplication {
-  if (writeSucceeded) return application;
-
-  const func = application.functions.find((f) => f.name === "process");
-  if (func === undefined) return application;
-
-  const request: ILlmSchema | undefined = func.parameters.properties.request;
-  if (request === undefined) return application;
-  if (LlmTypeChecker.isAnyOf(request) === false) return application;
-
-  // biome-ignore lint: type narrowing insufficient after isAnyOf guard
-  const anyOfSchema = request as ILlmSchema.IAnyOf;
-  const children = anyOfSchema.anyOf as ILlmSchema.IReference[];
-  // biome-ignore lint: x-discriminator is a runtime extension property
-  const mapping: Record<string, string> =
-    (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
-    null
-      ? ((
-          (anyOfSchema as unknown as Record<string, unknown>)[
-            "x-discriminator"
-          ] as Record<string, Record<string, string>>
-        ).mapping ?? {})
-      : {};
-
-  const completeIdx = children.findIndex(
-    (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
-  );
-  if (completeIdx !== -1) children.splice(completeIdx, 1);
-  delete mapping["complete"];
-
-  return application;
-}
-
 // ── History builder ──
 
 function buildHistories(props: {
-  preliminary: AutoBePreliminaryController<PreliminaryKinds>;
+  preliminary: AutoBeCyclinicController.IProcessContext<PreliminaryKinds>["preliminary"];
   failure: IAutoBeDatabaseValidation.IFailure;
-  failures: IWriteFailure[];
+  failures: AutoBeCyclinicController.IFailure[];
   writeSucceeded: boolean;
 }) {
   const base = transformPrismaCorrectHistory({
@@ -438,19 +340,22 @@ function buildHistories(props: {
 
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
-  const failureEntries = props.failures.map((f) => ({
-    id: v7(),
-    type: "systemMessage" as const,
-    text:
-      `[Write attempt ${f.iteration + 1} FAILED] Prisma validation errors:\n` +
-      f.errors
-        .map(
-          (e) =>
-            `  - ${e.path}${e.table ? `:${e.table}` : ""}${e.field ? `.${e.field}` : ""}: ${e.message}`,
-        )
-        .join("\n"),
-    created_at: new Date().toISOString(),
-  }));
+  const failureEntries = props.failures.map((f) => {
+    const errors = f.diagnostics as IAutoBeDatabaseValidation.IError[];
+    return {
+      id: v7(),
+      type: "systemMessage" as const,
+      text:
+        `[Write attempt ${f.iteration + 1} FAILED] Prisma validation errors:\n` +
+        errors
+          .map(
+            (e) =>
+              `  - ${e.path}${e.table ? `:${e.table}` : ""}${e.field ? `.${e.field}` : ""}: ${e.message}`,
+          )
+          .join("\n"),
+      created_at: new Date().toISOString(),
+    };
+  });
 
   const successEntries = props.writeSucceeded
     ? [

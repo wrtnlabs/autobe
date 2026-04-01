@@ -11,21 +11,19 @@ import {
   AutoBeFunctionCallingMetricFactory,
   AutoBeOpenApiTypeChecker,
 } from "@autobe/utils";
-import { LlmTypeChecker } from "@typia/utils";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
+import typia, { IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTokenUsageComponent } from "../../context/AutoBeTokenUsageComponent";
 import { executeCachedBatch } from "../../utils/executeCachedBatch";
 import { forceRetry } from "../../utils/forceRetry";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { transformTestPrepareWriteHistory } from "./histories/transformTestPrepareWriteHistory";
 import { AutoBeTestPrepareProgrammer } from "./programmers/AutoBeTestPrepareProgrammer";
 import { IAutoBeTestPrepareProcedure } from "./structures/IAutoBeTestPrepareProcedure";
 import { IAutoBeTestPrepareWriteApplication } from "./structures/IAutoBeTestPrepareWriteApplication";
-
-const MAX_WRITE_ATTEMPTS = 3;
 
 /**
  * Orchestrates the generation of test data preparation functions.
@@ -80,14 +78,7 @@ export const orchestrateTestPrepareWrite = async (
   return result.filter((r) => r !== null);
 };
 
-// ── Types ──
-
-interface IWriteFailure {
-  diagnostics: IAutoBeTypeScriptCompileResult.IDiagnostic[];
-  iteration: number;
-}
-
-// ── Main loop ──
+// ── Main process ──
 
 async function process(
   ctx: AutoBeContext,
@@ -144,50 +135,54 @@ async function process(
     };
   }
 
-  // Write-validate-correct loop
+  // LLM write-validate-correct loop
   const functionName: string = AutoBeTestPrepareProgrammer.getFunctionName(
     props.typeName,
   );
   const location: string = `test/prepare/${functionName}.ts`;
-  let lastWrite: IAutoBeTestPrepareWriteApplication.IWrite | null = null;
-  let writeSucceeded = false;
-  const failures: IWriteFailure[] = [];
-  const maxIterations = MAX_WRITE_ATTEMPTS * 3;
-  const dummyProgress: AutoBeProgressEventBase = { completed: 0, total: 0 };
 
-  for (let i = 0; i < maxIterations; i++) {
-    const action: IPointer<
-      | { type: "write"; data: IAutoBeTestPrepareWriteApplication.IWrite }
-      | { type: "complete" }
-      | null
-    > = { value: null };
+  const cyclinic = new AutoBeCyclinicController<never>({
+    application: typia.json.application<IAutoBeTestPrepareWriteApplication>(),
+    source: "testWrite",
+    kinds: [],
+    state: ctx.state(),
+  });
 
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: "testWrite",
-      controller: createController({
-        dtoTypeName: props.typeName,
-        schema: props.schema,
-        writeSucceeded,
-        action,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...(await buildHistories(ctx, {
-        typeName: props.typeName,
-        schema: props.schema,
-        document: props.document,
-        instruction: props.instruction,
-        failures,
-        writeSucceeded,
-      })),
-    });
+  return await cyclinic.orchestrate(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | { type: "write"; data: IAutoBeTestPrepareWriteApplication.IWrite }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-    // No action — shouldn't happen, skip
-    if (action.value === null) continue;
+      const result = await ctx.conversate({
+        source: "testWrite",
+        controller: createController({
+          dtoTypeName: props.typeName,
+          schema: props.schema,
+          cyclinic,
+          action,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...(await buildHistories(ctx, {
+          typeName: props.typeName,
+          schema: props.schema,
+          document: props.document,
+          instruction: props.instruction,
+          failures: context.failures,
+          writeSucceeded: context.writeSucceeded,
+        })),
+      });
 
-    // WRITE — compile and validate
-    if (action.value.type === "write") {
-      const writeData = action.value.data;
+      return { result, action: action.value };
+    },
+    // VALIDATE: TypeScript compilation
+    async (writeData) => {
+      const dummyProgress: AutoBeProgressEventBase = { completed: 0, total: 0 };
       const code: string =
         await AutoBeTestPrepareProgrammer.replaceImportStatements({
           compiler: await ctx.compiler(),
@@ -226,22 +221,10 @@ async function process(
             )
           : [];
 
-      if (diagnostics.length === 0) {
-        lastWrite = writeData;
-        writeSucceeded = true;
-      } else {
-        failures.push({ diagnostics, iteration: i });
-        if (failures.length >= MAX_WRITE_ATTEMPTS) {
-          throw new Error(
-            `testPrepareWrite: ${props.typeName} exhausted ${MAX_WRITE_ATTEMPTS} write attempts`,
-          );
-        }
-      }
-      continue;
-    }
-
-    // COMPLETE — finalize
-    if (action.value.type === "complete" && lastWrite !== null) {
+      return { success: diagnostics.length === 0, diagnostics };
+    },
+    // FINALIZE: dispatch event and return procedure
+    async (lastWrite, result) => {
       const code: string =
         await AutoBeTestPrepareProgrammer.replaceImportStatements({
           compiler: await ctx.compiler(),
@@ -256,50 +239,25 @@ async function process(
         typeName: props.typeName,
         name: functionName,
       };
-      ctx.dispatch({
-        id: v7(),
-        type: "testWrite",
-        function: func,
-        completed: ++props.progress.completed,
-        total: props.progress.total,
-        step: ctx.state().interface?.step ?? 0,
-        tokenUsage: result.tokenUsage,
-        metric: result.metric,
-        created_at: new Date().toISOString(),
-      } satisfies AutoBeTestWriteEvent<AutoBeTestPrepareFunction>);
+      if (result !== null)
+        ctx.dispatch({
+          id: v7(),
+          type: "testWrite",
+          function: func,
+          completed: ++props.progress.completed,
+          total: props.progress.total,
+          step: ctx.state().interface?.step ?? 0,
+          tokenUsage: result.tokenUsage,
+          metric: result.metric,
+          created_at: new Date().toISOString(),
+        } satisfies AutoBeTestWriteEvent<AutoBeTestPrepareFunction>);
       return {
         type: "prepare",
         typeName: props.typeName,
         schema: props.schema,
         function: func,
       };
-    }
-  }
-
-  // Exhausted iterations — use last successful write if available
-  if (lastWrite !== null) {
-    const code: string =
-      await AutoBeTestPrepareProgrammer.replaceImportStatements({
-        compiler: await ctx.compiler(),
-        typeName: props.typeName,
-        schemas: props.document.components.schemas,
-        content: lastWrite.revise.final ?? lastWrite.draft,
-      });
-    return {
-      type: "prepare",
-      typeName: props.typeName,
-      schema: props.schema,
-      function: {
-        type: "prepare",
-        location,
-        content: code,
-        typeName: props.typeName,
-        name: functionName,
-      },
-    };
-  }
-  throw new Error(
-    `testPrepareWrite: ${props.typeName} exhausted all iterations`,
+    },
   );
 }
 
@@ -308,7 +266,7 @@ async function process(
 function createController(props: {
   dtoTypeName: string;
   schema: AutoBeOpenApi.IJsonSchema.IObject;
-  writeSucceeded: boolean;
+  cyclinic: AutoBeCyclinicController<never>;
   action: IPointer<
     | { type: "write"; data: IAutoBeTestPrepareWriteApplication.IWrite }
     | { type: "complete" }
@@ -340,13 +298,11 @@ function createController(props: {
     return result;
   };
 
-  let application: ILlmApplication =
+  const application = props.cyclinic.fixCompleteAvailability(
     typia.llm.application<IAutoBeTestPrepareWriteApplication>({
-      validate: {
-        process: validate,
-      },
-    });
-  application = fixCompleteAvailability(application, props.writeSucceeded);
+      validate: { process: validate },
+    }),
+  );
 
   return {
     protocol: "class",
@@ -363,45 +319,6 @@ function createController(props: {
   };
 }
 
-// ── Schema manipulation ──
-
-/** Removes IComplete from the request union when no write has succeeded. */
-function fixCompleteAvailability(
-  application: ILlmApplication,
-  writeSucceeded: boolean,
-): ILlmApplication {
-  if (writeSucceeded) return application;
-
-  const func = application.functions.find((f) => f.name === "process");
-  if (func === undefined) return application;
-
-  const request: ILlmSchema | undefined = func.parameters.properties.request;
-  if (request === undefined) return application;
-  if (LlmTypeChecker.isAnyOf(request) === false) return application;
-
-  // biome-ignore lint: type narrowing insufficient after isAnyOf guard
-  const anyOfSchema = request as ILlmSchema.IAnyOf;
-  const children = anyOfSchema.anyOf as ILlmSchema.IReference[];
-  // biome-ignore lint: x-discriminator is a runtime extension property
-  const mapping: Record<string, string> =
-    (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
-    null
-      ? ((
-          (anyOfSchema as unknown as Record<string, unknown>)[
-            "x-discriminator"
-          ] as Record<string, Record<string, string>>
-        ).mapping ?? {})
-      : {};
-
-  const completeIdx = children.findIndex(
-    (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
-  );
-  if (completeIdx !== -1) children.splice(completeIdx, 1);
-  delete mapping["complete"];
-
-  return application;
-}
-
 // ── History builder ──
 
 async function buildHistories(
@@ -411,7 +328,7 @@ async function buildHistories(
     schema: AutoBeOpenApi.IJsonSchema.IObject;
     document: AutoBeOpenApi.IDocument;
     instruction: string;
-    failures: IWriteFailure[];
+    failures: AutoBeCyclinicController.IFailure[];
     writeSucceeded: boolean;
   },
 ) {
@@ -424,19 +341,23 @@ async function buildHistories(
 
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
-  const failureEntries = props.failures.map((f) => ({
-    id: v7(),
-    type: "systemMessage" as const,
-    text:
-      `[Write attempt ${f.iteration + 1} FAILED] TypeScript compilation errors:\n` +
-      f.diagnostics
-        .map(
-          (d) =>
-            `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
-        )
-        .join("\n"),
-    created_at: new Date().toISOString(),
-  }));
+  const failureEntries = props.failures.map((f) => {
+    const diagnostics =
+      f.diagnostics as IAutoBeTypeScriptCompileResult.IDiagnostic[];
+    return {
+      id: v7(),
+      type: "systemMessage" as const,
+      text:
+        `[Write attempt ${f.iteration + 1} FAILED] TypeScript compilation errors:\n` +
+        diagnostics
+          .map(
+            (d) =>
+              `  - ${d.file ?? "unknown"} ${d.category} TS${d.code}: ${d.messageText}`,
+          )
+          .join("\n"),
+      created_at: new Date().toISOString(),
+    };
+  });
 
   const successEntries = props.writeSucceeded
     ? [

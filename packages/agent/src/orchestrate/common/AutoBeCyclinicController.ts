@@ -127,7 +127,10 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
     validate: (
       writeData: WriteData,
     ) => Promise<AutoBeCyclinicController.IValidation>,
-    finalize: (lastWrite: WriteData) => FinalResult,
+    finalize: (
+      lastWrite: WriteData,
+      result: AutoBeContext.IResult | null,
+    ) => FinalResult | Promise<FinalResult>,
   ): Promise<FinalResult> {
     let lastWrite: WriteData | null = null;
 
@@ -166,15 +169,15 @@ export class AutoBeCyclinicController<Kind extends AutoBePreliminaryKind> {
         continue;
       }
 
-      // COMPLETE → finalize
+      // COMPLETE → finalize (pass result for event dispatch with metrics)
       if (action.type === "complete") {
         if (lastWrite === null) continue; // safety: should not happen via union narrowing
-        return finalize(lastWrite);
+        return await finalize(lastWrite, result);
       }
     }
 
-    // Exhausted — still return last successful write if available
-    if (lastWrite !== null) return finalize(lastWrite);
+    // Exhausted — still return last successful write if available (no event dispatch)
+    if (lastWrite !== null) return await finalize(lastWrite, null);
     throw new AutoBeCyclinicExhaustedError();
   }
 }

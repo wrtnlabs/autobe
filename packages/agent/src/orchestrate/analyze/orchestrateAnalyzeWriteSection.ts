@@ -9,16 +9,14 @@ import {
   AutoBeProgressEventBase,
 } from "@autobe/interface";
 import { AutoBeFunctionCallingMetricFactory } from "@autobe/utils";
-import { LlmTypeChecker } from "@typia/utils";
 import { IPointer } from "tstl";
-import typia, { ILlmApplication, ILlmSchema, IValidation } from "typia";
+import typia, { IValidation } from "typia";
 import { v7 } from "uuid";
 
 import { AutoBeContext } from "../../context/AutoBeContext";
 import { AutoBeTokenUsageComponent } from "../../context/AutoBeTokenUsageComponent";
 import { validateSectionSectionContent } from "../../utils/validateEnglishOnly";
-import { AutoBePreliminaryController } from "../common/AutoBePreliminaryController";
-import { orchestratePreliminary } from "../common/orchestratePreliminary";
+import { AutoBeCyclinicController } from "../common/AutoBeCyclinicController";
 import { transformAnalyzeWriteSectionHistory } from "./histories/transformAnalyzeWriteSectionHistory";
 import {
   IAutoBeAnalyzeWriteSectionApplication,
@@ -32,8 +30,6 @@ import {
   parseLooseStructuredString,
   tryParseStringAsRecord,
 } from "./utils/repairUtils";
-
-const MAX_WRITE_ATTEMPTS = 3;
 
 export const orchestrateAnalyzeWriteSection = async (
   ctx: AutoBeContext,
@@ -52,100 +48,70 @@ export const orchestrateAnalyzeWriteSection = async (
     scenarioEntityNames?: string[];
   },
 ): Promise<AutoBeAnalyzeWriteSectionEvent> => {
-  const preliminary: AutoBePreliminaryController<"previousAnalysisSections"> =
-    new AutoBePreliminaryController({
-      application:
-        typia.json.application<IAutoBeAnalyzeWriteSectionApplication>(),
-      source: SOURCE,
-      kinds: ["previousAnalysisSections"],
-      state: ctx.state(),
-    });
+  const cyclinic = new AutoBeCyclinicController<"previousAnalysisSections">({
+    application:
+      typia.json.application<IAutoBeAnalyzeWriteSectionApplication>(),
+    source: SOURCE,
+    kinds: ["previousAnalysisSections"],
+    state: ctx.state(),
+  });
 
-  // Write-validate-correct loop state
-  let lastWrite: IAutoBeAnalyzeWriteSectionApplicationWrite | null = null;
-  let writeSucceeded = false;
-  const failures: IWriteFailure[] = [];
-  const sourceId = v7();
+  return await cyclinic.orchestrate(
+    ctx,
+    // PROCESS: LLM conversation → action
+    async (context) => {
+      const action: IPointer<
+        | { type: "write"; data: IAutoBeAnalyzeWriteSectionApplicationWrite }
+        | { type: "complete" }
+        | null
+      > = { value: null };
 
-  const maxIterations = MAX_WRITE_ATTEMPTS * 3;
-
-  for (let i = 0; i < maxIterations; i++) {
-    const action: IPointer<
-      | { type: "write"; data: IAutoBeAnalyzeWriteSectionApplicationWrite }
-      | { type: "complete" }
-      | null
-    > = { value: null };
-
-    const result: AutoBeContext.IResult = await ctx.conversate({
-      source: SOURCE,
-      controller: createController({
-        preliminary,
-        writeSucceeded,
-        action,
-        scenarioEntityNames: props.scenarioEntityNames,
-      }),
-      enforceFunctionCall: true,
-      promptCacheKey: props.promptCacheKey,
-      ...buildHistories(ctx, {
-        scenario: props.scenario,
-        file: props.file,
-        moduleEvent: props.moduleEvent,
-        unitEvent: props.unitEvent,
-        allUnitEvents: props.allUnitEvents,
-        moduleIndex: props.moduleIndex,
-        unitIndex: props.unitIndex,
-        feedback: props.feedback,
-        preliminary,
-        failures,
-        writeSucceeded,
-      }),
-    });
-
-    // PRELIMINARY — delegate and continue
-    if (action.value === null) {
-      await orchestratePreliminary(ctx, {
-        source_id: sourceId,
+      const result = await ctx.conversate({
         source: SOURCE,
-        preliminary,
-        trial: i + 1,
-        histories: result.histories,
+        controller: createController({
+          cyclinic,
+          action,
+          scenarioEntityNames: props.scenarioEntityNames,
+        }),
+        enforceFunctionCall: true,
+        promptCacheKey: props.promptCacheKey,
+        ...buildHistories(ctx, {
+          scenario: props.scenario,
+          file: props.file,
+          moduleEvent: props.moduleEvent,
+          unitEvent: props.unitEvent,
+          allUnitEvents: props.allUnitEvents,
+          moduleIndex: props.moduleIndex,
+          unitIndex: props.unitIndex,
+          feedback: props.feedback,
+          preliminary: context.preliminary,
+          failures: context.failures,
+          writeSucceeded: context.writeSucceeded,
+        }),
       });
-      continue;
-    }
 
-    // WRITE — validate externally
-    if (action.value.type === "write") {
-      const writeData = action.value.data;
-      const errors: IValidation.IError[] = validateWriteContent(
+      return { result, action: action.value };
+    },
+    // VALIDATE: content validation
+    async (writeData) => {
+      const errors = validateWriteContent(
         writeData,
         props.scenarioEntityNames,
       );
-
-      if (errors.length === 0) {
-        lastWrite = writeData;
-        writeSucceeded = true;
-      } else {
-        failures.push({ errors, iteration: i });
-        if (failures.length >= MAX_WRITE_ATTEMPTS) {
-          throw new Error(
-            `analyzeWriteSection: exhausted ${MAX_WRITE_ATTEMPTS} write attempts`,
-          );
-        }
-      }
-      continue;
-    }
-
-    // COMPLETE — finalize
-    if (action.value.type === "complete" && lastWrite !== null) {
+      return { success: errors.length === 0, diagnostics: errors };
+    },
+    // FINALIZE: always dispatch (with empty metrics when exhausted)
+    (lastWrite, result) => {
       const event: AutoBeAnalyzeWriteSectionEvent = {
         type: SOURCE,
         id: v7(),
         moduleIndex: lastWrite.moduleIndex,
         unitIndex: lastWrite.unitIndex,
         sectionSections: lastWrite.sectionSections,
-        acquisition: preliminary.getAcquisition(),
-        tokenUsage: result.tokenUsage,
-        metric: result.metric,
+        acquisition: cyclinic.getPreliminary().getAcquisition(),
+        tokenUsage: result?.tokenUsage ?? new AutoBeTokenUsageComponent(),
+        metric:
+          result?.metric ?? AutoBeFunctionCallingMetricFactory.create(),
         step: (ctx.state().analyze?.step ?? -1) + 1,
         total: props.progress.total,
         completed: ++props.progress.completed,
@@ -154,38 +120,9 @@ export const orchestrateAnalyzeWriteSection = async (
       };
       ctx.dispatch(event);
       return event;
-    }
-  }
-
-  // Exhausted iterations — use last successful write if available
-  if (lastWrite !== null) {
-    const event: AutoBeAnalyzeWriteSectionEvent = {
-      type: SOURCE,
-      id: v7(),
-      moduleIndex: lastWrite.moduleIndex,
-      unitIndex: lastWrite.unitIndex,
-      sectionSections: lastWrite.sectionSections,
-      acquisition: preliminary.getAcquisition(),
-      tokenUsage: new AutoBeTokenUsageComponent(),
-      metric: AutoBeFunctionCallingMetricFactory.create(),
-      step: (ctx.state().analyze?.step ?? -1) + 1,
-      total: props.progress.total,
-      completed: ++props.progress.completed,
-      retry: props.retry,
-      created_at: new Date().toISOString(),
-    };
-    ctx.dispatch(event);
-    return event;
-  }
-  throw new Error("analyzeWriteSection: exhausted all iterations");
+    },
+  );
 };
-
-// ── Types ──
-
-interface IWriteFailure {
-  errors: IValidation.IError[];
-  iteration: number;
-}
 
 // ── External validation ──
 
@@ -245,8 +182,7 @@ function validateWriteContent(
 // ── Controller factory ──
 
 function createController(props: {
-  preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
-  writeSucceeded: boolean;
+  cyclinic: AutoBeCyclinicController<"previousAnalysisSections">;
   action: IPointer<
     | { type: "write"; data: IAutoBeAnalyzeWriteSectionApplicationWrite }
     | { type: "complete" }
@@ -254,6 +190,7 @@ function createController(props: {
   >;
   scenarioEntityNames?: string[];
 }): IAgenticaController.IClass {
+  const preliminary = props.cyclinic.getPreliminary();
   const validate = (
     input: unknown,
   ): IValidation<IAutoBeAnalyzeWriteSectionApplicationProps> => {
@@ -263,21 +200,20 @@ function createController(props: {
     if (result.success === false) return result;
     const req = result.data.request;
     if (req.type !== "write" && req.type !== "complete")
-      return props.preliminary.validate({
+      return preliminary.validate({
         thinking: result.data.thinking ?? "",
         request: req,
       });
     return result;
   };
 
-  let application: ILlmApplication = props.preliminary.fixApplication(
-    typia.llm.application<IAutoBeAnalyzeWriteSectionApplication>({
-      validate: {
-        process: validate,
-      },
-    }),
+  const application = props.cyclinic.fixCompleteAvailability(
+    preliminary.fixApplication(
+      typia.llm.application<IAutoBeAnalyzeWriteSectionApplication>({
+        validate: { process: validate },
+      }),
+    ),
   );
-  application = fixCompleteAvailability(application, props.writeSucceeded);
 
   return {
     protocol: "class",
@@ -294,45 +230,6 @@ function createController(props: {
   };
 }
 
-// ── Schema manipulation ──
-
-/** Removes IComplete from the request union when no write has succeeded. */
-function fixCompleteAvailability(
-  application: ILlmApplication,
-  writeSucceeded: boolean,
-): ILlmApplication {
-  if (writeSucceeded) return application;
-
-  const func = application.functions.find((f) => f.name === "process");
-  if (func === undefined) return application;
-
-  const request: ILlmSchema | undefined = func.parameters.properties.request;
-  if (request === undefined) return application;
-  if (LlmTypeChecker.isAnyOf(request) === false) return application;
-
-  // biome-ignore lint: type narrowing insufficient after isAnyOf guard
-  const anyOfSchema = request as ILlmSchema.IAnyOf;
-  const children = anyOfSchema.anyOf as ILlmSchema.IReference[];
-  // biome-ignore lint: x-discriminator is a runtime extension property
-  const mapping: Record<string, string> =
-    (anyOfSchema as unknown as Record<string, unknown>)["x-discriminator"] !=
-    null
-      ? ((
-          (anyOfSchema as unknown as Record<string, unknown>)[
-            "x-discriminator"
-          ] as Record<string, Record<string, string>>
-        ).mapping ?? {})
-      : {};
-
-  const completeIdx = children.findIndex(
-    (c) => c.$ref.endsWith("/IComplete") || c.$ref.endsWith(".IComplete"),
-  );
-  if (completeIdx !== -1) children.splice(completeIdx, 1);
-  delete mapping["complete"];
-
-  return application;
-}
-
 // ── History builder ──
 
 function buildHistories(
@@ -346,8 +243,8 @@ function buildHistories(
     moduleIndex: number;
     unitIndex: number;
     feedback?: string;
-    preliminary: AutoBePreliminaryController<"previousAnalysisSections">;
-    failures: IWriteFailure[];
+    preliminary: AutoBeCyclinicController.IProcessContext<"previousAnalysisSections">["preliminary"];
+    failures: AutoBeCyclinicController.IFailure[];
     writeSucceeded: boolean;
   },
 ) {
@@ -365,19 +262,22 @@ function buildHistories(
 
   if (props.failures.length === 0 && !props.writeSucceeded) return base;
 
-  const failureEntries = props.failures.map((f) => ({
-    id: v7(),
-    type: "systemMessage" as const,
-    text:
-      `[Write attempt ${f.iteration + 1} FAILED] Content validation errors:\n` +
-      f.errors
-        .map(
-          (e) =>
-            `  - ${e.path}: expected ${e.expected}, got ${JSON.stringify(e.value)}`,
-        )
-        .join("\n"),
-    created_at: new Date().toISOString(),
-  }));
+  const failureEntries = props.failures.map((f) => {
+    const errors = f.diagnostics as IValidation.IError[];
+    return {
+      id: v7(),
+      type: "systemMessage" as const,
+      text:
+        `[Write attempt ${f.iteration + 1} FAILED] Content validation errors:\n` +
+        errors
+          .map(
+            (e) =>
+              `  - ${e.path}: expected ${e.expected}, got ${JSON.stringify(e.value)}`,
+          )
+          .join("\n"),
+      created_at: new Date().toISOString(),
+    };
+  });
 
   const successEntries = props.writeSucceeded
     ? [
